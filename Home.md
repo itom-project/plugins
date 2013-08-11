@@ -1,42 +1,32 @@
-# Welcome
+# Plugins for *itom*
 
-Welcome to your wiki! This is the default page we've installed for your convenience. Go ahead and edit it.
+This repository contains freely available plugins for [itom](https://bitbucket.org/itom/itom).
 
-## Wiki features
+Currently there are plugins available like:
 
-This wiki uses the [Markdown](http://daringfireball.net/projects/markdown/) syntax.
+* CMU 1394 cameras
+* Dummy camera
+* cameras supported by OpenCV
+* SVS Vistek GigE cameras
+* PI Piezo Controllers
+* Serial port communication
+* GWInstek Power Supply communication plugin
+* Dummy motor
+* Import/Export methods for data objects to many image formats
 
-The wiki itself is actually a git repository, which means you can clone it, edit it locally/offline, add images or any other file type, and push it back to us. It will be live immediately.
+Further plugins will be released open source in the future.
 
-Go ahead and try:
+## Compile plugins
 
-```
-$ git clone https://bitbucket.org/itom/plugins.git/wiki
-```
+For compiling these plugins, follow these steps:
 
-Wiki pages are normal files, with the .md extension. You can edit them locally, as well as creating new ones.
+1. Clone this repository on your hard drive
+2. Make sure that you have a valid SDK of itom available on your computer. This SDK is either included in any itom setup (Release only) or you need to clone and compile itom both in debug and release configuration (recommended). See the itom documentation for more information about compiling itom.
+3. Run CMake and set the variable ITOM_SDK_DIR to the itom's SDK directory. After reconfiguring the variable ITOM_DIR should be automatically set. When setting the path of OpenCV, you normally should indicate the build-folder of a prebuild OpenCV version in Windows.
+4. Start the compilation
 
-## Syntax highlighting
+For detailed information about the compile process, one is also referred to the documentation of itom.
 
+## Notice
 
-You can also highlight snippets of text (we use the excellent [Pygments][] library).
-
-[Pygments]: http://www.pygments.org/
-
-
-Here's an example of some Python code:
-
-```
-#!python
-
-def wiki_rocks(text):
-    formatter = lambda t: "funky"+t
-    return formatter(text)
-```
-
-
-You can check out the source of this page to see how that's done, and make sure to bookmark [the vast library of Pygment lexers][lexers], we accept the 'short name' or the 'mimetype' of anything in there.
-[lexers]: http://pygments.org/docs/lexers/
-
-
-Have fun!
+If you compiled any plugin however it cannot be started in itom with the error message that any module could not be loaded, it is common that this plugin requires further drivers or libraries that can currently not be found on your computer. Then, install the necessary drivers first and make sure that the necessary libraries are in a searchable path or the lib-folder of itom.
