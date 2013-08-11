@@ -1,0 +1,80 @@
+project(itom_plugins)
+
+cmake_minimum_required(VERSION 2.8)
+
+OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
+OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
+SET(ITOM_DIR "" CACHE PATH "base path to itom") 
+
+# cmu1394
+IF (WIN32)
+	OPTION(PLUGIN_cmu1394 "Build with this plugin." ON)
+	if (PLUGIN_cmu1394)
+			ADD_SUBDIRECTORY(cmu1394)
+	endif (PLUGIN_cmu1394)
+ENDIF (WIN32)
+
+# DataObjectIO
+OPTION(PLUGIN_DataObjectIO "Build with this plugin." ON)
+if (PLUGIN_DataObjectIO)
+	ADD_SUBDIRECTORY(DataObjectIO)
+endif (PLUGIN_DataObjectIO)
+
+# DummyGrabber
+OPTION(PLUGIN_DummyGrabber "Build with this plugin." ON)
+if (PLUGIN_DummyGrabber)
+	ADD_SUBDIRECTORY(DummyGrabber)
+endif (PLUGIN_DummyGrabber)
+
+# DummyMotor
+OPTION(PLUGIN_DummyMotor "Build with this plugin." ON)
+if (PLUGIN_DummyMotor)
+	ADD_SUBDIRECTORY(DummyMotor)
+endif (PLUGIN_DummyMotor)
+
+# GWInstekPSP
+OPTION(PLUGIN_GWInstekPSP "Build with this plugin." ON)
+if (PLUGIN_GWInstekPSP)
+	ADD_SUBDIRECTORY(GWInstekPSP)
+endif (PLUGIN_GWInstekPSP)
+
+# LeicaMotorFocus
+OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." ON)
+if (PLUGIN_LeicaMotorFocus)
+	ADD_SUBDIRECTORY(LeicaMotorFocus)
+endif (PLUGIN_LeicaMotorFocus)
+
+# OpenCVGrabber
+OPTION(PLUGIN_OpenCVGrabber "Build with this plugin." ON)
+if (PLUGIN_OpenCVGrabber)
+	ADD_SUBDIRECTORY(OpenCVGrabber)
+endif (PLUGIN_OpenCVGrabber)
+
+# PIPiezoCtrl
+OPTION(PLUGIN_PIPiezoCtrl "Build with this plugin." ON)
+if (PLUGIN_PIPiezoCtrl)
+	ADD_SUBDIRECTORY(PIPiezoCtrl)
+endif (PLUGIN_PIPiezoCtrl)
+
+# SerialIO
+OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
+if (PLUGIN_SerialIO)
+	ADD_SUBDIRECTORY(SerialIO)
+endif (PLUGIN_SerialIO)
+
+# USBMotion3XIII
+IF (WIN32)
+	OPTION(PLUGIN_USBMotion3XIII "Build with this plugin." ON)
+	if (PLUGIN_USBMotion3XIII)
+		ADD_SUBDIRECTORY(USBMotion3XIII)
+	endif (PLUGIN_USBMotion3XIII)
+ENDIF (WIN32)
+
+# Vistek
+IF (WIN32)
+	OPTION(PLUGIN_Vistek "Build with this plugin." ON)
+	if (PLUGIN_Vistek)
+		ADD_SUBDIRECTORY(Vistek)
+	endif (PLUGIN_Vistek)
+ENDIF (WIN32)

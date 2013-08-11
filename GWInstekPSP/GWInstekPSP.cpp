@@ -1,0 +1,563 @@
+#include "GWInstekPSP.h"
+
+#ifdef __linux__
+    #include <unistd.h>
+#else
+    #include <windows.h>
+#endif
+
+#include <qstring.h>
+#include <qstringlist.h>
+#include <QtCore/QtPlugin>
+
+#include "pluginVersion.h"
+
+//#include "common/helperCommon.h"
+
+
+#define GWDELAY 200
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+	\detail creates new instance of GWInstekPSPInterface and returns the instance-pointer
+    \param [in,out] addInInst is a double pointer of type ito::AddInBase. The newly created GWInstekPSPInterface-instance is stored in *addInInst
+    \return retOk
+    \sa GWInstekPSP
+*/
+ito::RetVal GWInstekPSPInterface::getAddInInst(ito::AddInBase **addInInst)
+{
+    GWInstekPSP* newInst = new GWInstekPSP();
+    newInst->setBasePlugin(this);
+    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
+    //m_refCount++;
+
+    m_InstList.append(*addInInst);
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+	\detail Closes an instance of of GWInstekPSPInterface. This instance is given by parameter addInInst.
+    \param [in] double pointer to the instance which should be deleted.
+    \return retOk
+    \sa GWInstekPSP
+*/
+ito::RetVal GWInstekPSPInterface::closeThisInst(ito::AddInBase **addInInst)
+{
+   if (*addInInst)
+   {
+        delete ((GWInstekPSP *)*addInInst);
+        int idx = m_InstList.indexOf(*addInInst);
+        m_InstList.removeAt(idx);
+        //m_refCount--;
+   }
+
+   return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
+	with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
+*/
+GWInstekPSPInterface::GWInstekPSPInterface()
+{
+    m_type = ito::typeDataIO | ito::typeRawIO;
+    setObjectName("GWInstekPSP");
+
+    m_description = QObject::tr("Controller for power supplies PSP-405, PSP-603 and PSP-2010 or GWInstek");
+
+    //for the docstring, please don't set any spaces at the beginning of the line.
+    char* docstring = \
+"This itom-plugin allows communicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. \
+Therefore an opened connected via the serial port (using the plugin 'SerialIO') is required. You need to give a valid handle to this \
+instance when initializing this plugin.";
+	m_detaildescription = QObject::tr(docstring);
+    m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
+    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
+    m_minItomVer = MINVERSION;
+    m_maxItomVer = MAXVERSION;
+    m_license = QObject::tr("Licensed under LGPL");
+    m_aboutThis = QObject::tr("N.A.");      
+    
+    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toAscii().data());
+    paramVal.setMeta( new ito::HWMeta("SerialIO"), true);
+    m_initParamsMand.append(paramVal);
+
+    paramVal = ito::Param("save", ito::ParamBase::Int, 0, 1, 1, tr("Save the present status to the EEPROM").toAscii().data());
+    m_initParamsOpt.append(paramVal);
+    return;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+    clears both vectors m_initParamsMand and m_initParamsOpt.
+*/
+GWInstekPSPInterface::~GWInstekPSPInterface()
+{
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+// this makro registers the class GWInstekPSPInterface with the name GWInstekPSPInterface as plugin for the Qt-System (see Qt-DOC)
+Q_EXPORT_PLUGIN2(GWInstekPSPInterface, GWInstekPSPInterface)
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
+//! 
+/*!
+    \detail This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
+	creates new instance of dialogGWInstekPSP, calls the method setVals of dialogGWInstekPSP, starts the execution loop and if the dialog
+    is closed, reads the new parameter set and deletes the dialog.
+
+    \return retOk
+    \sa dialogGWInstekPSP
+*/
+const ito::RetVal GWInstekPSP::showConfDialog(void)
+{
+
+    dialogGWInstekPSP *confDialog = new dialogGWInstekPSP((void*)this);
+    confDialog->setVals(&m_params);
+    if (confDialog->exec())
+    {
+        confDialog->getVals(&m_params);
+    }
+    delete confDialog;
+
+    return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+const ito::RetVal GWInstekPSP::SetParams() 
+{
+    QByteArray status(m_status);
+    m_params.find("status").value().setVal<char*>(m_status);
+    m_params.find("voltage").value().setVal<double>((status.mid(1, 5).toDouble()));
+    //m_params.find("voltage").value().setMax(status.mid(19, 2).toDouble());
+    static_cast<ito::DoubleMeta*>( m_params["voltage"].getMeta() )->setMax( status.mid(19, 2).toDouble() );
+    m_params.find("current").value().setVal<double>((status.mid(7, 5).toDouble()));
+    m_params.find("load").value().setVal<double>((status.mid(13, 5).toDouble()));
+    m_params.find("voltage_limit").value().setVal<double>((status.mid(19, 2).toDouble()));
+    m_params.find("current_limit").value().setVal<double>((status.mid(22, 4).toDouble()));
+    m_params.find("load_limit").value().setVal<double>((status.mid(27, 3).toDouble()));
+    m_params.find("relay").value().setVal<int>((status.mid(31, 1).toInt()));
+    m_params.find("temperature").value().setVal<int>((status.mid(32, 1).toInt()));
+    m_params.find("wheel").value().setVal<int>((status.mid(33, 1).toInt()));
+    m_params.find("wheel_lock").value().setVal<int>((status.mid(34, 1).toInt()));
+    m_params.find("remote").value().setVal<int>((status.mid(35, 1).toInt()));
+    m_params.find("lock").value().setVal<int>((status.mid(36, 1).toInt()));
+
+    emit parametersChanged(m_params);
+    return ito::retOk;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+const ito::RetVal GWInstekPSP::ReadFromSerial(bool *state)
+{
+    QSharedPointer<int> len(new int);
+    *len = 0;
+    char buf[50];
+    QSharedPointer<char> tempBuf;
+    ito::RetVal retValue = ito::retOk;
+
+    memset( (void*)buf, 0, 50 );
+    int bufsize = sizeof(buf), totlen = 0, startpos = 0, endpos = 0, timeout = 500;
+
+    QByteArray baBuffer = "";
+
+    Sleep(GWDELAY);
+    do
+    {
+        *len = bufsize - totlen;
+        tempBuf = QSharedPointer<char>(&buf[totlen], GWInstekPSP::doNotDelSharedPtr); //trick to access part of buf using a shared pointer. the shared pointer is not allowed to delete the char-array, therefore the Deleter-method.
+        retValue += m_pSer->getVal(tempBuf, len);
+        totlen += *len;
+        Sleep(2);
+    }
+    while ((buf[totlen - 1] != '\n') && (totlen < bufsize) && (totlen > 0) && (retValue != ito::retError) && (0 < timeout--));
+
+    if (timeout == -1)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Undefined answer from serial port").toAscii().data());
+    }
+
+    for (startpos = 0; (startpos < totlen) && (buf[startpos] != 'V'); startpos++); {}
+    for (endpos = totlen - 1; (endpos > startpos) && ((buf[endpos] == '\r') || (buf[endpos] == '\n')); endpos--); {}
+    *state = (endpos - startpos == 36);
+    if (*state)
+    {
+        memcpy(m_status, &buf[startpos], 37);
+        retValue += SetParams();
+    }
+
+    return retValue;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+const ito::RetVal GWInstekPSP::WriteToSerial(const char *text) 
+{
+    bool state = false;
+
+    ito::RetVal retValue = ito::retOk;
+
+    retValue += m_pSer->setVal(text, strlen(text));
+    if (retValue == ito::retError)
+    {
+        return retValue;
+    }
+    retValue += ReadFromSerial(&state);
+    if (retValue == ito::retError)
+    {
+        return retValue;
+    }
+
+    if (!state)
+    {
+        retValue += m_pSer->setVal("L", 1);
+        if (retValue == ito::retError)
+        {
+            return retValue;
+        }
+
+        retValue += ReadFromSerial(&state);
+        if (retValue == ito::retError)
+        {
+            return retValue;
+        }
+        if (!state)
+        {
+            return ito::RetVal(ito::retError, 0, tr("No answer from serial port").toAscii().data());
+        }
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void GWInstekPSP::setParamVoltageFromWgt(double voltage)
+{
+    setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("voltage", ito::ParamBase::Double, voltage)) , NULL );
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
+{
+    qRegisterMetaType< QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
+
+    memset(&m_status, 0, 38);
+
+    ito::Param paramVal("name", ito::ParamBase::String, "GWInstekPSP", NULL);
+    m_params.insert(paramVal.getName(), paramVal);
+	
+    paramVal = ito::Param("status", ito::ParamBase::String | ito::ParamBase::Readonly, m_status, tr("Current status string of controller").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("voltage", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Ouput voltage; the unit: V").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("current", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 99.0, 0.0, tr("Ouput current; the unit: A").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("load", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 250.0, 0.0, tr("Ouput load; the unit: W").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("voltage_limit", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Ouput voltage limit; the unit: V").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("current_limit", ito::ParamBase::Double, 0.0, 5.0, 0.0, tr("Ouput current limit; the unit: A").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("load_limit", ito::ParamBase::Double, 0.0, 200.0, 0.0, tr("Ouput load limit; the unit: W").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("save", ito::ParamBase::Int, 0, 1, 1, tr("Save the present status to the EEPROM on exit").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("relay", ito::ParamBase::Int, 0, 1, 0, tr("Relay status 0: off, 1: on").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("temperature", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Temperature status 0: normal, 1: overheat").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("wheel", ito::ParamBase::Int, 0, 1, 0, tr("Wheel knob 0: normal, 1: fine").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("wheel_lock", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Wheel knob 0: lock, 1: unlock").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("remote", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Remote status 0: normal, 1: remote").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("lock", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Lock status 0: lock, 1: unlock").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+//now create dock widget for this plugin
+   DockWidgetGWInstekPSP *GWInstekPSPWidget = new DockWidgetGWInstekPSP(m_params, getID() );
+   connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), GWInstekPSPWidget, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+   connect(GWInstekPSPWidget, SIGNAL(setParamVoltage(double)), this, SLOT(setParamVoltageFromWgt(double)));
+
+   Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+   QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+   createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, GWInstekPSPWidget);
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+    \detail Class destructo which deletes the thread and clear the m_params
+    \return retOk
+*/
+GWInstekPSP::~GWInstekPSP()
+{
+   m_pThread->quit();
+   m_pThread->wait(5000);
+   delete m_pThread;
+   m_pThread = NULL;
+
+   m_params.clear();
+
+   return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GWInstekPSP::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+    QString key = val->getName();
+
+    if (key == "")
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
+    }
+    else
+    {
+        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
+        if (paramIt != m_params.constEnd())
+        {
+            *val = paramIt.value();
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+        }
+    }
+    if (waitCond) 
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+   return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+    QString key = val->getName();
+    char text[50];
+
+    if (key == "")
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+    }
+    else
+    {
+        QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
+        if (paramIt != m_params.end())
+        {
+			if (paramIt->getFlags() & ito::ParamBase::Readonly)	//check read-only
+            {
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
+                goto end;
+            }
+			else if (val->isNumeric() && paramIt->isNumeric())
+			{
+				double curval = val->getVal<double>();
+				if (curval > paramIt->getMax())
+				{
+				    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+                    goto end;
+				}
+				else if(curval < paramIt->getMin())
+				{
+				    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                    goto end;
+				}
+				else 
+				{
+				    paramIt.value().setVal<double>(curval);
+                }
+			}
+			else if (paramIt->getType() == val->getType())
+			{
+				retValue += paramIt.value().copyValueFrom( &(*val) );
+			}
+			else
+			{
+				retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
+				goto end;
+			}
+
+            if (key == "voltage") 
+            {
+                sprintf(text, "SV %05.2f", m_params["voltage"].getVal<double>());
+            }
+            else if (key == "voltage_limit") 
+            {
+                sprintf(text, "SU %02.0f", (m_params["voltage_limit"].getVal<double>()));
+            }
+            else if (key == "current_limit") 
+            {
+                sprintf(text, "SI %04.2f", (m_params["current_limit"].getVal<double>()));
+            }
+            else if (key == "load_limit") 
+            {
+                sprintf(text, "SP %03.0f", (m_params["load_limit"].getVal<double>()));
+            }
+            else if (key == "relay") 
+            {
+                if (m_params["relay"].getVal<int>())
+                {
+                    sprintf(text, "KOE");
+                }
+                else
+                {
+                    sprintf(text, "KOD");
+                }
+            }
+            else if (key == "wheel") 
+            {
+                if (m_params["wheel"].getVal<int>())
+                {
+                    sprintf(text, "KF");
+                }
+                else
+                {
+                    sprintf(text, "KN");
+                }
+            }
+            else
+            {
+				goto end;
+            }
+            retValue += WriteToSerial(text);
+
+            if (retValue != ito::retError)
+            {
+                retValue += SetParams();
+            }
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+        }
+    }
+
+end:
+    if (waitCond) 
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*! \detail Init method which is called by the addInManager after the initiation of a new instance of DummyGrabber.
+    This init method gets the mandatory and optional parameter vectors of type tParam and must copy these given parameters to the
+    internal m_params-vector. Notice that this method is called after that this instance has been moved to its own (non-gui) thread.
+
+    \param [in] paramsMand is a pointer to the vector of mandatory tParams.
+    \param [in] paramsOpt is a pointer to the vector of optional tParams.
+    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
+	\todo check if (*paramsMand)[0] is a serial port
+    \return retOk
+*/
+ito::RetVal GWInstekPSP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+{   
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue = ito::retOk;
+
+    // Set serial port
+    if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
+    {
+        m_pSer = (ito::AddInDataIO *)(*paramsMand)[0].getVal<void *>();
+        retValue += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 2400)), NULL);
+        retValue += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)), NULL);
+        retValue += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)), NULL);
+        retValue += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)), NULL);
+        retValue += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 16)), NULL);
+        retValue += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, "\r")), NULL);
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toAscii().data());
+    }
+
+    if (!retValue.containsError())
+    {
+        retValue += m_params["save"].copyValueFrom( &((*paramsOpt)[0]) );
+        retValue += WriteToSerial("L");
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+    setInitialized(true); //init method has been finished (independent on retval)
+    return retValue;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*! \detail close method which is called before that this instance is deleted by the GWInstekPSPInterface
+    notice that this method is called in the actual thread of this instance.
+
+    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
+    \return retOk
+    \sa ItomSharedSemaphore
+*/
+ito::RetVal GWInstekPSP::close(ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue = ito::retOk;
+
+    if (m_params["save"].getVal<int>() && m_pSer)
+    {
+        retValue += WriteToSerial("EEP");
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GWInstekPSP::getVal(char * /*data*/, int * /*len*/, ItomSharedSemaphore *waitCond)
+{
+//    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
+//    retval = m_serport.sread(data, len, 0);
+
+//    emit serialLog(QByteArray(data,*len), "", '<');
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GWInstekPSP::setVal(const void * /*data*/, const int /*datalength*/, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+//    const char *buf = (const char*)data;
+//    char endline[3] = {0, 0, 0};
+    ito::RetVal retval;
+
+//    m_serport.getendline(endline);
+//    emit serialLog(QByteArray(buf,datalength), QByteArray(endline, strlen(endline)), '>');
+
+//    retval = m_serport.swrite(buf, datalength, m_params["singlechar"].getVal<int>());
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------

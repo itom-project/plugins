@@ -1,0 +1,132 @@
+#ifndef SERIALIO_H
+#define SERIALIO_H
+
+#include "common/addInInterface.h"
+#include "DataObject/dataobj.h"
+#include "dialogSerialIO.h"
+
+#include <qsharedpointer.h>
+#include <qbytearray.h>
+
+class SerialPort
+{
+    private:
+        struct serParams {
+            serParams() :
+                port(0),
+                baud(9600),
+                bits(8),
+                parity(0),
+                stopbits(1),
+                flow(0),
+                debug(0),
+                singlechar(0),
+                timeout(4000) { endline[0] = '\n'; endline[1] = 0; endline[2] = 0; }
+            char port;
+            int baud;
+            char bits;
+            char parity;
+            char stopbits;
+            char flow;
+            char endline[3];
+            char debug;
+            int singlechar;
+            int timeout;
+        };
+        serParams m_serParams;
+        char *m_pDevice;
+
+#ifndef __linux__
+        HANDLE m_dev;
+#else
+        int m_dev;
+#endif
+
+    public:
+        SerialPort() : m_pDevice(0), m_dev(0) {}
+        const ito::RetVal sopen(const int port, const int baud, const char* endline, const int bits,
+            const int stopbits, const int parity, const int flow, const int singlechar, const int timeout);
+        const ito::RetVal sclose(void);
+        const ito::RetVal sread(char *buf, int *len, const int singlechar);
+        int sreadable(void) const;
+        const ito::RetVal swrite(const char c) const;
+        const ito::RetVal swrite(const char *buf, const int len, const int singlechar) const;
+        const ito::RetVal setparams(const serParams &params);
+        const ito::RetVal setparams(const int baud, const char* endline, const int bits = 8, 
+            const int stopbits = 0, const int parity = 0, const int flow = 0, const int singlechar = 0, const int timeout = 4000);
+        int isOpen() { return m_dev != 0 ? 1 : 0; }
+        const ito::RetVal sclearbuffer(int BufferType);
+        const ito::RetVal getendline(char *eline);
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------
+class SerialIO : public ito::AddInDataIO //, public DummyGrabberInterface
+{
+    Q_OBJECT
+
+    protected:
+        ~SerialIO();
+        SerialIO();
+
+    public:
+        friend class SerialIOInterface;
+//        friend class SerialPort;
+        const ito::RetVal showConfDialog(void);
+        int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
+        int isOpen() { return m_serport.isOpen(); }
+
+    private:
+        SerialPort m_serport;
+        bool m_debugMode;   /*! Enables / Disables live connection to dockingwidge-protocol */
+		static int m_instCounter;
+
+    signals:
+        void serialLog(QByteArray data, QByteArray endline, const char InOutChar);
+        void uniqueIDChanged(const int);
+        //void parametersChanged(QMap<QString, ito::tParam>); (defined in AddInBase)
+
+    public slots:
+/*
+        ito::RetVal getParam(const char *name, QSharedPointer<double> val, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal getParam(const char *name, QSharedPointer<char> val, QSharedPointer<int> len, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setParam(const char *name, const char *val, const int len, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setParam(const char *name, const double val, ItomSharedSemaphore *waitCond = NULL);
+*/
+        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
+
+        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal close(ItomSharedSemaphore *waitConde = NULL);
+
+        ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
+        ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
+        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal getVal(QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setVal(const void *data, const int length, ItomSharedSemaphore *waitCond);
+
+        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
+
+    private slots:
+        void dockWidgetVisibilityChanged(bool visible);
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------
+class SerialIOInterface : public ito::AddInInterfaceBase
+{
+    Q_OBJECT
+        Q_INTERFACES(ito::AddInInterfaceBase)
+
+    protected:
+
+    public:
+        SerialIOInterface();
+        ~SerialIOInterface();
+        ito::RetVal getAddInInst(ito::AddInBase **addInInst);
+
+    private:
+        ito::RetVal closeThisInst(ito::AddInBase **addInInst);
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------
+
+#endif // SERIALIO_H

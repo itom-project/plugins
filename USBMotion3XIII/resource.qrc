@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/library">
+      <!--<file>USB3xIII.dll</file>-->
+    </qresource>
+</RCC>
