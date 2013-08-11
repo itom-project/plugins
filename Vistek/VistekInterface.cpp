@@ -87,7 +87,6 @@ and replace the files if desired. Additionally, it is stated that SVS Vistek doe
 official SDK of SVS Vistek.";
 	m_detaildescription = QObject::tr(docstring);
 
-    m_detaildescription = QObject::tr("SVS Vistek GigE camera grabber.");
     m_author = "H. Gilbergs, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
