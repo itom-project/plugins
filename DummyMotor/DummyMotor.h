@@ -99,6 +99,8 @@ class DummyMotor : public ito::AddInActuator
 
 		ito::RetVal RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos);	//!< Slot to trigger a Status and position request
 
+        ito::RetVal startJoyStickMovement(QVector<int> axis, QVector<double> vel);
+
     private slots:
         void dockWidgetVisibilityChanged(bool visible); //overwritten from AddInBase
 };

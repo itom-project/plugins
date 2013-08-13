@@ -26,6 +26,7 @@
 #endif
 
 #include <iostream>
+#include <qdebug.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMotorInterface::getAddInInst(ito::AddInBase **addInInst)
@@ -845,3 +846,31 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
 
     return retVal;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DummyMotor::startJoyStickMovement(QVector<int> axis, QVector<double> vel)
+{
+    if(axis.size() != vel.size())
+    {
+        //qDebug()<< "Theoretically error with the \"Spass-Stecken\"\n";
+        return ito::retError;
+    }
+    if(axis.size() == 1)
+    {
+        if(abs(vel[0]) > 0.0001)
+        {
+            //qDebug() << "Theoretically started jogging due to the \"Spass-Stecken\"\n";
+        }
+        else
+        {
+            //qDebug() << "Theoretically stopped jogging due to the \"Spass-Stecken\"\n";
+        }
+    }
+    else
+    {
+        //qDebug() << "Theoretically error with the \"Spass-Stecken\"\n";
+        return ito::retError;
+    }
+
+    return ito::retOk;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
