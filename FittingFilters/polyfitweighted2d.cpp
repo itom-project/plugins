@@ -66,6 +66,9 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
     ito::RetVal retval;
 
     ito::DataObject *dataZFloat = apiCreateFromDataObject(dataZ, 2, TYPEID, NULL, &retval);
+
+    if (retval.containsError()) return retval;
+
     size_t sizes[] = {dataZFloat->getSize(0), dataZFloat->getSize(0), dataZFloat->getSize(1), dataZFloat->getSize(1)};
     ito::DataObject *weightsFloat = weights ? apiCreateFromDataObject(weights,2,TYPEID,sizes,&retval) : NULL;
 
@@ -74,7 +77,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
         retval += ito::RetVal(ito::retError,0,"orderX and orderY must be positive");
     }
 
-    int64 timer;
+    //int64 timer;
 
     if (!retval.containsError())
     {
@@ -91,7 +94,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
         _Tp *rowPtr;
         _Tp *rowPtrW;
 
-        timer = cv::getTickCount();
+        //timer = cv::getTickCount();
 
         for (size_t m = 0; m < dataZ->getSize(0); ++m)
         {
@@ -116,8 +119,8 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
         // modified vandermore matrix for different orders in x and y come from
         // http://poquitopicante.blogspot.de/2013/03/horners-method-in-2d.html
 
-        std::cout << "vector-aufbau: "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
-        timer = cv::getTickCount();
+        //std::cout << "vector-aufbau: "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
+        //timer = cv::getTickCount();
 
         //Polynomial is:
         //
@@ -219,8 +222,8 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 
             
 
-            std::cout << "vandermonde aufbau: "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
-            timer = cv::getTickCount();
+            //std::cout << "vandermonde aufbau: "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
+            //timer = cv::getTickCount();
 
 #ifndef LAPACKE
             try
@@ -232,10 +235,10 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
                 cv::Mat result;
                 cv::solve( *V, *Vals, result, cv::DECOMP_QR ); //cv::DECOMP_SVD );
 
-                std::cout << *V << "\n" << std::endl;
+                //std::cout << *V << "\n" << std::endl;
 
-                std::cout << "qr-solver: "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
-                timer = cv::getTickCount();
+                //std::cout << "qr-solver: "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
+                //timer = cv::getTickCount();
 
                 coefficients.clear();
                 coefficients.reserve(result.total());
@@ -381,8 +384,8 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
                                 delete[] pivots;
                                 pivots = NULL;
 
-                                std::cout << "qr-solver (lapack): "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
-                                timer = cv::getTickCount();
+                                //std::cout << "qr-solver (lapack): "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
+                                //timer = cv::getTickCount();
 
                                 if (info == 0)
                                 {
@@ -420,8 +423,8 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
             {
                 info = LAPACKE_FCT_NAME(gels)(LAPACK_COL_MAJOR, 'N', lm, ln, lnrhs, V, llda, Vals, lldb);
 
-                std::cout << "qr-solver (lapack): "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
-                timer = cv::getTickCount();
+                //std::cout << "qr-solver (lapack): "  << (double)(cv::getTickCount() - timer)/cv::getTickFrequency() << "\n" << std::endl;
+                //timer = cv::getTickCount();
 
                 if (info == 0)
                 {

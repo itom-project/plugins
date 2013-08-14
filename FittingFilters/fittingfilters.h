@@ -5,6 +5,7 @@
 #include "common/sharedStructures.h"
 
 #include "DataObject/dataobj.h"
+#include "numericalRecipes.h"
 
 #include <qsharedpointer.h>
 
@@ -70,6 +71,9 @@ class FittingFilters : public ito::AddInAlgo
         static ito::RetVal polyval2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal polyval2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static ito::RetVal fitPolynom1D_Z(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal fitPolynom1D_ZParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
     private:
         struct Koeffizienten {
 		     int    gradX;
@@ -100,6 +104,7 @@ class FittingFilters : public ito::AddInAlgo
         static ito::RetVal calcPolyfitWeighted2D(const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, double margin = 0.2, const ito::DataObject *weights = NULL);
         static ito::RetVal calcPolyval2D(ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> coefficients);
 
+        static void linearRegression(VecDoub_I &x, VecDoub_I &y, VecDoub_I &w, VecDoub_O &p, Doub& residual);
         
     public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);

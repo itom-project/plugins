@@ -1,12 +1,14 @@
 #include "numericalRecipes.h"
 
+#include <qnumeric.h>
+
 
 void SVD::solve(VecDoub_I &b, VecDoub_O &x, Doub thresh /*= -1.*/) 
 {
     Int i,j,jj;
     Doub s;
 
-    if (b.size() != m || x.size() != n) throw("SVD::solve bad sizes");
+    //if (b.size() != m || x.size() != n) throw("SVD::solve bad sizes"); //this don't allow openMP parallelization
 
     VecDoub tmp(n);
     tsh = (thresh >= 0. ? thresh : 0.5*sqrt(m+n+1.)*w[0]*eps);
@@ -32,7 +34,7 @@ void SVD::solve(VecDoub_I &b, VecDoub_O &x, Doub thresh /*= -1.*/)
 void SVD::solve(MatDoub_I &b, MatDoub_O &x, Doub thresh /*= -1.*/)
 {
     int i,j,m=b.ncols();
-    if (b.nrows() != n || x.nrows() != n || b.ncols() != x.ncols()) throw("SVD::solve bad sizes");
+    //if (b.nrows() != n || x.nrows() != n || b.ncols() != x.ncols()) throw("SVD::solve bad sizes"); //this don't allow openMP parallelization
     VecDoub xx(n);
     for (j=0;j<m;j++) 
     {
@@ -304,7 +306,8 @@ void SVD::decompose()
 void SVD::reorder() 
 {
     //Given the output of decompose, this routine sorts the singular values, and corresponding columns
-    //of u and v, by decreasing magnitude. Also, signs of corresponding columns are     //ipped so as to
+    //of u and v, by decreasing magnitude. Also, signs of corresponding columns are 
+    //ipped so as to
     //maximize the number of positive elements.
     Int i,j,k,s,inc=1;
     Doub sw;
@@ -361,45 +364,131 @@ Doub SVD::pythag(const Doub a, const Doub b)
 
 
 
-void FitSVD::fit() 
+
+
+//void FitSVD::fit() 
+//{
+//	Int i,j,k;
+//	Doub tmp,thresh,sum;
+//	if (x)
+//    {
+//        ma = funcs((*x)[0]).size(); //one dimensional case
+//    }
+//	else
+//    {
+//        ma = funcsmd(row(*xmd,0)).size(); //multi dimensional case
+//    }
+//
+//	a.resize(ma);
+//	covar.resize(ma,ma);
+//	MatDoub aa(ndat,ma);
+//	VecDoub b(ndat),afunc(ma);
+//	for (i=0;i<ndat;i++) 
+//    {
+//		if (x) 
+//        {
+//            afunc=funcs((*x)[i]); //one dimensional case
+//        }
+//		else
+//        {
+//            afunc=funcsmd(row(*xmd,i)); //multi dimensional case
+//        }
+//		tmp=1.0/sig[i];
+//		for (j=0;j<ma;j++) aa[i][j]=afunc[j]*tmp;
+//		b[i]=y[i]*tmp;
+//	}
+//
+//	SVD svd(aa);
+//	thresh = (tol > 0. ? tol*svd.w[0] : -1.);
+//	svd.solve(b,a,thresh);
+//	chisq=0.0;
+//
+//	for (i=0;i<ndat;i++) 
+//    {
+//		sum=0.;
+//		for (j=0;j<ma;j++) sum += aa[i][j]*a[j];
+//		chisq += NR_SQR(sum-b[i]);
+//	}
+//
+//	for (i=0;i<ma;i++) 
+//    {
+//		for (j=0;j<i+1;j++) 
+//        {
+//			sum=0.0;
+//			for (k=0;k<ma;k++) if (svd.w[k] > svd.tsh)
+//            {
+//				sum += svd.v[i][k]*svd.v[j][k]/NR_SQR(svd.w[k]);
+//            }
+//			covar[j][i]=covar[i][j]=sum;
+//		}
+//	}
+//
+//}
+
+
+
+
+
+
+
+
+
+
+
+void FitSVDSimple::fit(VecDoub_I &x, VecDoub_I &y, VecDoub_I &weights, VecDoub_O &p, Doub &chisq) const
 {
-	Int i,j,k;
-	Doub tmp,thresh,sum;
-	if (x)
+	Int i,j;
+	Doub thresh,sum;
+
+    Int ndat = y.size();
+    VecInt idxMap(ndat);
+    Int ndat_real = 0;
+    Int i_;
+
+    for (i=0;i<ndat;i++)
     {
-        ma = funcs((*x)[0]).size();
-    }
-	else
+        if (qIsFinite(y[i]) && qIsFinite(x[i]) && weights[i] > 0)
+        {
+            idxMap[ndat_real++] = i;
+        }
+    }    
+	
+    Int ma = funcs((x)[0]).size(); //one dimensional case
+
+	p.resize(ma);
+
+    if (ndat_real < ma) //too few input values
     {
-        ma = funcsmd(row(*xmd,0)).size();
+        for (i=0;i<ma;i++) p[i] = std::numeric_limits<double>::signaling_NaN();
+        chisq = std::numeric_limits<double>::signaling_NaN();
+        return;
     }
 
-	a.resize(ma);
-	covar.resize(ma,ma);
-	MatDoub aa(ndat,ma);
-	VecDoub b(ndat),afunc(ma);
-	for (i=0;i<ndat;i++) 
+	MatDoub aa(ndat_real,ma);
+	VecDoub b(ndat_real);
+    VecDoub afunc(ma);
+
+	for (i=0;i<ndat_real;i++) 
     {
-		if (x) afunc=funcs((*x)[i]);
-		else afunc=funcsmd(row(*xmd,i));
-		tmp=1.0/sig[i];
-		for (j=0;j<ma;j++) aa[i][j]=afunc[j]*tmp;
-		b[i]=y[i]*tmp;
+        i_ = idxMap[i];
+        afunc=funcs((x)[i_]); //one dimensional case
+		for (j=0;j<ma;j++) aa[i][j]=afunc[j]*weights[i_];
+		b[i]=y[i_]*weights[i_];
 	}
 
 	SVD svd(aa);
 	thresh = (tol > 0. ? tol*svd.w[0] : -1.);
-	svd.solve(b,a,thresh);
+	svd.solve(b,p,thresh);
 	chisq=0.0;
 
-	for (i=0;i<ndat;i++) 
+	for (i=0;i<ndat_real;i++) 
     {
 		sum=0.;
-		for (j=0;j<ma;j++) sum += aa[i][j]*a[j];
+		for (j=0;j<ma;j++) sum += aa[i][j]*p[j];
 		chisq += NR_SQR(sum-b[i]);
 	}
 
-	for (i=0;i<ma;i++) 
+	/*for (i=0;i<ma;i++) 
     {
 		for (j=0;j<i+1;j++) 
         {
@@ -410,6 +499,6 @@ void FitSVD::fit()
             }
 			covar[j][i]=covar[i][j]=sum;
 		}
-	}
+	}*/
 
 }

@@ -2,11 +2,13 @@
 
 #include "common/helperCommon.h"
 
+#include <omp.h>
 #include <QtCore/QtPlugin>
 #include <qstringlist.h>
 #include <qvariant.h>
 
 #include "pluginVersion.h"
+#include <qnumeric.h>
 
 
 using namespace ito;
@@ -434,7 +436,183 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+static char fitPolynom1D_ZDoc[] = "";
 
+/*static*/ ito::RetVal FittingFilters::fitPolynom1D_ZParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("data", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object (3 dimensions).") );
+    paramsMand->append( ito::Param("polynoms", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "") );
+    paramsMand->append( ito::Param("order", ito::ParamBase::Int | ito::ParamBase::In, 1, 7, 1, "polynomial order"));
+
+    paramsOpt->append( ito::Param("weights", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "weights (same dimensions than data)") );
+    paramsOpt->append( ito::Param("numThreads", ito::ParamBase::Int | ito::ParamBase::In, 1, omp_get_max_threads(), 1,  "weights (same dimensions than data)") );
+
+    return retval;
+}
+
+/*static*/ ito::RetVal FittingFilters::fitPolynom1D_Z(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    ito::DataObject *input = paramsMand->at(0).getVal<ito::DataObject*>();
+    ito::DataObject *inputWeights = paramsOpt->at(0).getVal<ito::DataObject*>();
+    ito::DataObject *output = paramsMand->at(1).getVal<ito::DataObject*>();
+    int numThreads = paramsOpt->at(1).getVal<int>();
+
+    if (input == NULL || output == NULL)
+    {
+        retval += ito::RetVal(ito::retError,0,"parameters 'data' or 'polynoms' are NULL");
+    }
+    else if(input == output)
+    {
+        retval += ito::RetVal(ito::retError,0,"inplace determination not possible. Different 'data' and 'polynoms' parameters necessary.");
+    }
+    else
+    {
+        int order = paramsMand->at(2).getVal<int>();
+
+        ito::DataObject *data = apiCreateFromDataObject(input, 3, ito::tFloat64, NULL, &retval);
+
+        if (retval.containsError()) { if (data) delete data; return retval; }
+
+        int planes = data->getSize(0);
+        int m = data->getSize(1);
+        int n = data->getSize(2);
+        size_t sizes[] = {planes, planes, m, m, n, n};
+        ito::DataObject *weights = inputWeights ? apiCreateFromDataObject(inputWeights,3,ito::tFloat64,sizes,&retval) : NULL;
+
+        if (!retval.containsError())
+        {
+            *output = ito::DataObject(order+2, data->getSize(1), data->getSize(2), ito::tFloat64); //last plane contains the quadratical error
+
+            FitSVDSimple *fit = NULL;
+
+            switch(order)
+            {
+            case 1:
+                fit = NULL; //new FitSVDSimple( FitSVDSimple::poly1d_1 );
+                break;
+            case 2:
+                fit = new FitSVDSimple( FitSVDSimple::poly1d_2 );
+                break;
+            case 3:
+                fit = new FitSVDSimple( FitSVDSimple::poly1d_3 );
+                break;
+            case 4:
+                fit = new FitSVDSimple( FitSVDSimple::poly1d_4 );
+                break;
+            case 5:
+                fit = new FitSVDSimple( FitSVDSimple::poly1d_5 );
+                break;
+            case 6:
+                fit = new FitSVDSimple( FitSVDSimple::poly1d_6 );
+                break;
+            case 7:
+                fit = new FitSVDSimple( FitSVDSimple::poly1d_7 );
+                break;
+            }
+
+            VecDoub xVals(planes);
+
+            bool isInsideImage;
+
+            cv::Mat** dataMats = new cv::Mat*[planes];
+            cv::Mat** weightMats = new cv::Mat*[planes];
+            cv::Mat** coeffMats = new cv::Mat*[order+2];
+
+            for (int i = 0; i < planes; ++i)
+            {
+                xVals[i] = data->getPixToPhys(0, (double)i, isInsideImage);
+
+                dataMats[i] = (cv::Mat*)(data->get_mdata()[ data->seekMat(i) ]);
+
+                if (weights)
+                {
+                    weightMats[i] = (cv::Mat*)(weights->get_mdata()[ weights->seekMat(i) ]);
+                } 
+            }
+
+            for (int i = 0; i < (order+2); ++i)
+            {
+                coeffMats[i] = (cv::Mat*)(output->get_mdata()[ output->seekMat(i) ]);
+            }
+
+            int dataSteps[] = { dataMats[0]->step[0], dataMats[1]->step[1] };
+            int weightSteps[] = { 0, 0 };
+            int coeffSteps[] = { coeffMats[0]->step[0], coeffMats[1]->step[1] };
+
+            if (weights)
+            {
+                weightSteps[0] = weightMats[0]->step[0];
+                weightSteps[1] = weightMats[0]->step[1];
+            }
+
+            omp_set_num_threads(numThreads);
+
+            /*#pragma omp parallel default(shared)
+            {*/
+                VecDoub yVals(planes);
+                VecDoub wVals(planes, 1);
+                VecDoub coefficients(order+1);
+                Doub chisq; // = 0.0;
+
+                #pragma omp parallel for firstprivate(yVals, wVals, coefficients, chisq)
+                for (int mi = 0; mi < m; ++mi)
+                {                  
+                    for (int ni = 0; ni < n; ++ni)
+                    {
+                        //fill yVals
+                        for (int i = 0; i < planes; ++i)
+                        {
+                            yVals[i] = *( (ito::float64*)(dataMats[i]->data + dataSteps[0] * mi + dataSteps[1] * ni) );
+                        }
+
+                        if (weights)
+                        {
+                            //fill wVals
+                            for (int i = 0; i < planes; ++i)
+                            {
+                                wVals[i] = *( (ito::float64*)(weightMats[i]->data + weightSteps[0] * mi + weightSteps[1] * ni) );
+                            }
+                        }
+
+
+                        if (fit)
+                        {
+                            fit->fit( xVals, yVals, wVals, coefficients, chisq );
+                        }
+                        else
+                        {
+                            linearRegression( xVals, yVals, wVals, coefficients, chisq );
+                        }
+
+                        //write results
+                        for (int i = 0; i <= order; ++i)
+                        {
+                            *( (ito::float64*)(coeffMats[i]->data + coeffSteps[0] * mi + coeffSteps[1] * ni) ) = coefficients[i];
+                        }
+
+                        *( (ito::float64*)(coeffMats[order+1]->data + coeffSteps[0] * mi + coeffSteps[1] * ni) ) = chisq;
+                    }
+                }
+            //} //end pragma parallel
+
+            delete[] dataMats;
+            delete[] weightMats;
+            delete[] coeffMats;
+            delete fit;
+        }
+
+        delete weights;
+        delete data;
+    }
+
+    return retval;
+}
 
 
 
@@ -659,6 +837,120 @@ template<typename _Tp> ito::RetVal FittingFilters::polyFit1DMatLab(double &offse
     return ito::retError;
 }
 
+/*static*/ void FittingFilters::linearRegression(VecDoub_I &x, VecDoub_I &y, VecDoub_I &w, VecDoub_O &p, Doub& residual)
+{
+    /*
+    This method is motivated by see polynomial regression section (motivational example of wikipedia: http://en.wikipedia.org/wiki/Linear_least_squares_%28mathematics%29)
+
+    Given the line equation y = p0 + p1 * x
+    as well as n tuples (x_i, y_i)
+
+    Then we have n-equations y_i = p0 + p1 * x_i
+
+    The sum-of-squares of the error is then
+    S(p0,p1) = \sum_{i=1}^{n} (y_i - p_0 - x_i*p_1)^2
+
+    This equation must be minimal, hence
+    dS/dp0 -> 0 and dS/dp1 -> 0
+
+    finally this leads to
+    
+    1. -sum(y_i) + n * p0 + sum(x_i) * p1 -> 0
+
+    2. -sum(x_i * y_i) + sum(x_i) * p0 + sum(x_i^2) * p1 -> 0
+
+    If weights come into this "game" ;), every pair is weighted such that the error
+    is
+
+    w_i*y_i = w_i*p0 + w_i * x_i * p1
+
+    This leads to the final equations
+
+    1. -sum(w_i^2*y_i) + sum(w_i^2) * p0 + sum(w_i^2*x_i) * p1 -> 0
+
+    2. -sum(x_i * y_i * w_i^2) + sum(x_i * w_i^2) * p0 + sum(x_i^2 * w_i^2) * p1 -> 0
+    */
+
+    Int ndat = x.size();
+    Int n = 0;
+    Int i;
+    Doub w2;
+    Doub sw2y = 0; //sum(w_i^2*y_i)
+    Doub sw2 = 0;  //sum(w_i^2)
+    Doub sw2x = 0; //sum(w_i^2*x_i)
+    Doub sw2xy = 0;//sum(x_i * y_i * w_i^2)
+    Doub sw2x2 = 0;//sum(x_i^2 * w_i^2)
+    p.resize(2);
+
+    for (i=0;i<ndat;i++)
+    {
+        if (qIsFinite(y[i]) && qIsFinite(x[i]) && w[i] > 0)
+        {
+            w2 = w[i] * w[i];
+            sw2 += w2;
+            sw2y += w2*y[i];
+            sw2x += w2*x[i];
+            sw2xy += w2*x[i]*y[i];
+            sw2x2 += w2*x[i]*x[i];
+            n++;
+        }
+    }
+
+    if (n<2 || std::abs(sw2) < std::numeric_limits<double>::epsilon())
+    {
+        p[0] = std::numeric_limits<double>::signaling_NaN();
+        p[1] = std::numeric_limits<double>::signaling_NaN();
+        residual = std::numeric_limits<double>::signaling_NaN();
+    }
+    else
+    {
+        //direct solution for
+        // [a b ; c d] * [p0 ; p1] = [e ; f] with [sw2 sw2x ; sw2x sw2x2] * [p0 ; p1] = [sw2y ; sw2xy]
+        // is p1 = (ce-af)/(bc-ad)
+        // and p0 = e-b*p1/a
+
+        Doub denominator = sw2x * sw2x - sw2 * sw2x2;
+
+        if (std::abs(denominator) >= std::numeric_limits<double>::epsilon())
+        {
+            p[1] = (sw2x * sw2y - sw2 * sw2xy) / denominator;
+            p[0] = (sw2y - sw2x * p[1]) / sw2;
+
+            residual = 0.0;
+            Doub t;
+
+            for (i=0;i<ndat;i++)
+            {
+                if (qIsFinite(y[i]) && qIsFinite(x[i]))
+                {
+                    t = (y[i]-p[0]-p[1]*x[i]);
+                    residual += (t*t);
+                }
+            }
+        }
+        else
+        {
+            p[0] = std::numeric_limits<double>::signaling_NaN();
+            p[1] = std::numeric_limits<double>::signaling_NaN();
+            residual = std::numeric_limits<double>::signaling_NaN();
+        }
+
+        /*if (std::abs(sw2) <
+        MatDoub aa(2,2);
+	    VecDoub b(2);
+        aa[0][0] = sw2;
+        aa[0][1] = sw2x;
+        aa[1][0] = sw2x;
+        aa[1][1] = sw2x2;
+        b[0] = sw2y;
+        b[1] = sw2xy;*/
+        /*SVD svd(aa);
+	    svd.solve(b,p,-1.);*/
+
+        
+    }
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
@@ -684,6 +976,9 @@ RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<it
 
     filter = new FilterDef(FittingFilters::polyval2D, FittingFilters::polyval2DParams, tr(polyval2DDoc));
     m_filterList.insert("polyval2D", filter);
+
+    filter = new FilterDef(FittingFilters::fitPolynom1D_Z, FittingFilters::fitPolynom1D_ZParams, tr(fitPolynom1D_ZDoc));
+    m_filterList.insert("fitPolynom1D_Z", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
