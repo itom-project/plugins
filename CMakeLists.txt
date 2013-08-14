@@ -33,6 +33,12 @@ if (PLUGIN_DummyMotor)
 	ADD_SUBDIRECTORY(DummyMotor)
 endif (PLUGIN_DummyMotor)
 
+# FittingFilters
+OPTION(PLUGIN_FittingFilters "Build with this plugin." ON)
+if (PLUGIN_FittingFilters)
+	ADD_SUBDIRECTORY(FittingFilters)
+endif (PLUGIN_FittingFilters)
+
 # GWInstekPSP
 OPTION(PLUGIN_GWInstekPSP "Build with this plugin." ON)
 if (PLUGIN_GWInstekPSP)
