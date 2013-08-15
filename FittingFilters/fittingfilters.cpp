@@ -436,7 +436,24 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-static char fitPolynom1D_ZDoc[] = "";
+static char fitPolynom1D_ZDoc[] = "One-dimensional polynomial fit in z-direction for a 3D - data object. \n\
+\n\
+The input data object must be three-dimensional and is internally casted to float64 (if not yet done). The resulting polynomial \
+parameters per pixel are stored in the output data object 'polynoms' whose z-dimension is equal to (order+2). The first (order+1) \
+planes contain the coefficients p0...pn and the last plane contain the pixel wise residual error. \n\
+\n\
+The polynomial is y(x) = p0 + x*p1 ... + x^n*pn \n\
+The residual is the sum of the quadratical errors from each valid pixel to the fitted polynomial. \n\
+\n\
+If no 'xVals' are assigned, the x-values for each plane are calculated using the offset and scale of the data-object in z-direction, \
+such that an equally spaced vector of (0,1,2,3...) is the default. \n\
+\n\
+You can additionally give a weight data object (same dimension than 'data') for weighting the values. NaN values in 'data' and \
+weights <= 0 are ignored. If a fit cannot be done due to too less or degenerated values, NaN is returned in 'polynoms' at this pixel. \n\
+\n\
+For a first order fit, a direct least squares solution is used which is very fast, for the other orders a system of linear equations \
+is solved (using a SVD decomposition) which can be slower. On a multi-core processor you can assign a number of threads that are used \
+to parallely compute the approximations for each pixel.";
 
 /*static*/ ito::RetVal FittingFilters::fitPolynom1D_ZParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -450,6 +467,7 @@ static char fitPolynom1D_ZDoc[] = "";
     paramsMand->append( ito::Param("order", ito::ParamBase::Int | ito::ParamBase::In, 1, 7, 1, "polynomial order"));
 
     paramsOpt->append( ito::Param("weights", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "weights (same dimensions than data)") );
+    paramsOpt->append( ito::Param("xVals", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, "x-value vector (length must be the same than z-size of data) [default: equally spaced values are assumed using scale and offset of the data object in z-direction]") );
     paramsOpt->append( ito::Param("numThreads", ito::ParamBase::Int | ito::ParamBase::In, 1, omp_get_max_threads(), 1,  "weights (same dimensions than data)") );
 
     return retval;
@@ -461,7 +479,9 @@ static char fitPolynom1D_ZDoc[] = "";
     ito::DataObject *input = paramsMand->at(0).getVal<ito::DataObject*>();
     ito::DataObject *inputWeights = paramsOpt->at(0).getVal<ito::DataObject*>();
     ito::DataObject *output = paramsMand->at(1).getVal<ito::DataObject*>();
-    int numThreads = paramsOpt->at(1).getVal<int>();
+    double *xValsArray = paramsOpt->at(1).getVal<double*>();
+    int xValsArrayLen = paramsOpt->at(1).getLen();
+    int numThreads = paramsOpt->at(2).getVal<int>();
 
     if (input == NULL || output == NULL)
     {
@@ -484,6 +504,11 @@ static char fitPolynom1D_ZDoc[] = "";
         int n = data->getSize(2);
         size_t sizes[] = {planes, planes, m, m, n, n};
         ito::DataObject *weights = inputWeights ? apiCreateFromDataObject(inputWeights,3,ito::tFloat64,sizes,&retval) : NULL;
+
+        if (xValsArrayLen > 0 && xValsArrayLen != planes)
+        {
+            retval += ito::RetVal(ito::retError,0,"xVals vector must have the same size than the size of 'data' in z-direction");
+        }
 
         if (!retval.containsError())
         {
@@ -526,7 +551,14 @@ static char fitPolynom1D_ZDoc[] = "";
 
             for (int i = 0; i < planes; ++i)
             {
-                xVals[i] = data->getPixToPhys(0, (double)i, isInsideImage);
+                if (xValsArrayLen > 0)
+                {
+                    xVals[i] = xValsArray[i];
+                }
+                else
+                {
+                    xVals[i] = data->getPixToPhys(0, (double)i, isInsideImage);
+                }
 
                 dataMats[i] = (cv::Mat*)(data->get_mdata()[ data->seekMat(i) ]);
 
@@ -551,7 +583,7 @@ static char fitPolynom1D_ZDoc[] = "";
                 weightSteps[1] = weightMats[0]->step[1];
             }
 
-            omp_set_num_threads(numThreads);
+            omp_set_num_threads( std::min(omp_get_max_threads(),numThreads));
 
             /*#pragma omp parallel default(shared)
             {*/
