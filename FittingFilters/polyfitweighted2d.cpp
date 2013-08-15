@@ -624,7 +624,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
             temp = (*Vrow) * P;
 
             //here it is assumed that data lies continuously in temp
-            memcpy( result_->ptr(row), temp.data, sizeof(ito::float32) * result_->cols );
+            memcpy( result_->ptr(row), temp.data, sizeof(_Tp) * result_->cols );
         }
 
         delete Vrow;
