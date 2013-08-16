@@ -21,11 +21,13 @@
 #if defined LAPACKE
     #include "lapacke.h"
     
-    #define CREATE_REALMAT(NAME, ROWS, COLS)  MATTYPE *NAME = new (std::nothrow) MATTYPE[(ROWS)*(COLS)]; size_t NAME ## __rows = (ROWS);   
+    #define DEF_REALMAT(NAME) MATTYPE *NAME = NULL; size_t NAME ## __rows;
+    #define ALLOC_REALMAT(NAME, ROWS, COLS) NAME = new (std::nothrow) MATTYPE[(ROWS)*(COLS)]; NAME ## __rows = (ROWS);   
     #define DELETE_REALMAT(NAME) delete[] NAME; NAME = NULL;
     #define REALMAT_REF(MAT,M,N)  MAT[(N) * MAT ##__rows + (M)]
 #else
-    #define CREATE_REALMAT(NAME, ROWS, COLS)  cv::Mat *NAME = new (std::nothrow) cv::Mat((ROWS), (COLS), CV_32FC1);
+    #define DEF_REALMAT(NAME) cv::Mat *NAME = NULL;
+    #define ALLOC_REALMAT(NAME, ROWS, COLS)  NAME = new (std::nothrow) cv::Mat((ROWS), (COLS), CV_32FC1);
     #define DELETE_REALMAT(NAME) delete NAME; NAME = NULL;
     #define REALMAT_REF(MAT,M,N)  CVMATREF_2DREAL(MAT,M,N)
 #endif
@@ -144,16 +146,26 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 
         int vcols = (std::min(m,n)+1)*(2+2*std::max(m,n)-std::min(m,n))/2;
 
-        CREATE_REALMAT(V, nrOfPoints, vcols) //cv::Mat V(nrOfPoints, vcols, CV_32FC1);
-        CREATE_REALMAT(Vals, nrOfPoints, 1)  //cv::Mat Vals(nrOfPoints, 1, CV_32FC1); 
+        DEF_REALMAT(V)
+        DEF_REALMAT(Vals)
 
-        if (V == NULL)
+        if ((unsigned int)vcols > nrOfPoints)
         {
-            retval += ito::RetVal(ito::retError,0,"error allocating memory for Vandermonde matrix V");
+            retval += ito::RetVal(ito::retError,0,"too less points for determination of the polynomial fit");
         }
-        else if (Vals == NULL)
+        else
         {
-            retval += ito::RetVal(ito::retError,0,"error allocating memory for right hand side of Vandermonde matrix");
+            ALLOC_REALMAT(V, nrOfPoints, vcols) //cv::Mat V(nrOfPoints, vcols, CV_32FC1);
+            ALLOC_REALMAT(Vals, nrOfPoints, 1)  //cv::Mat Vals(nrOfPoints, 1, CV_32FC1); 
+
+            if (V == NULL)
+            {
+                retval += ito::RetVal(ito::retError,0,"error allocating memory for Vandermonde matrix V");
+            }
+            else if (Vals == NULL)
+            {
+                retval += ito::RetVal(ito::retError,0,"error allocating memory for right hand side of Vandermonde matrix");
+            }
         }
 
         if (!retval.containsError())
