@@ -61,7 +61,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal FittingFilters::calcPolyfitWeighted2D(const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, double margin /*= 0.2*/, const ito::DataObject *weights /*= NULL*/)
+/*static*/ ito::RetVal FittingFilters::calcPolyfitWeighted2D(const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, double reduceFactor /*= -1.0*/, const ito::DataObject *weights /*= NULL*/)
 {
 
     typedef MATTYPE _Tp;
@@ -84,10 +84,10 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
     if (!retval.containsError())
     {
 
-        _Tp *Z = new _Tp[ dataZ->getTotal() ];
-        _Tp *X = new _Tp[ dataZ->getTotal() ];
-        _Tp *Y = new _Tp[ dataZ->getTotal() ];
-        _Tp *W = new _Tp[ dataZ->getTotal() ];
+        _Tp *Z = NULL;
+        _Tp *X = NULL;
+        _Tp *Y = NULL;
+        _Tp *W = NULL;
 
         size_t nrOfPoints = 0;
 
@@ -98,23 +98,100 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 
         //timer = cv::getTickCount();
 
-        for (size_t m = 0; m < dataZ->getSize(0); ++m)
+        int pointsY = qRound(reduceFactor*(orderY+1));
+        int pointsX = qRound(reduceFactor*(orderX+1));
+
+        if (reduceFactor < 1.0 || (pointsY > dataZ->getSize(0) && pointsX > dataZ->getSize(1))) //take all points
         {
-            rowPtr = (_Tp*)dataZFloat->rowPtr(0,m);
-            rowPtrW = weightsFloat ? (_Tp*)weightsFloat->rowPtr(0,m) : NULL;
+            Z = new _Tp[ dataZ->getTotal() ];
+            X = new _Tp[ dataZ->getTotal() ];
+            Y = new _Tp[ dataZ->getTotal() ];
+            W = new _Tp[ dataZ->getTotal() ];
 
-            for (size_t n = 0; n < dataZ->getSize(1); ++n)
+            for (size_t m = 0; m < dataZ->getSize(0); ++m)
             {
-                W[nrOfPoints] = rowPtrW ? rowPtrW[n] : 1.0f;
+                rowPtr = (_Tp*)dataZFloat->rowPtr(0,m);
+                rowPtrW = weightsFloat ? (_Tp*)weightsFloat->rowPtr(0,m) : NULL;
 
-                if (qIsFinite(rowPtr[n]) && W[nrOfPoints] > 0.0)
+                for (size_t n = 0; n < dataZ->getSize(1); ++n)
                 {
-                    Z[nrOfPoints] = rowPtr[n];
-                    Y[nrOfPoints]  = ((_Tp)m - offsets[0])*scales[0];
-                    X[nrOfPoints]  = ((_Tp)n - offsets[1])*scales[1];
-                    nrOfPoints++;
+                    W[nrOfPoints] = rowPtrW ? rowPtrW[n] : 1.0f;
+
+                    if (qIsFinite(rowPtr[n]) && W[nrOfPoints] > 0.0)
+                    {
+                        Z[nrOfPoints] = rowPtr[n];
+                        Y[nrOfPoints]  = ((_Tp)m - offsets[0])*scales[0];
+                        X[nrOfPoints]  = ((_Tp)n - offsets[1])*scales[1];
+                        nrOfPoints++;
+                    }
                 }
             }
+        }
+        else
+        {
+            pointsX = std::min( (int)dataZ->getSize(1), pointsX );
+            pointsY = std::min( (int)dataZ->getSize(0), pointsY );
+
+            Z = new _Tp[ pointsX * pointsY ];
+            X = new _Tp[ pointsX * pointsY ];
+            Y = new _Tp[ pointsX * pointsY ];
+            W = new _Tp[ pointsX * pointsY ];
+
+            int *xRanges = new int[2*pointsX];
+            int *yRanges = new int[2*pointsY];
+            int ystep = floor(dataZ->getSize(0) / (float)(pointsY));
+            int xstep = floor(dataZ->getSize(1) / (float)(pointsX));
+
+            for (int m = 0; m < pointsY; ++m)
+            {
+                yRanges[2*m] = m * ystep; //inclusive
+                yRanges[2*m+1] = m * ystep+ ystep; //non-inclusive
+            }
+
+            for (int n = 0; n < pointsX; ++n)
+            {
+                xRanges[2*n] = n * xstep; //inclusive
+                xRanges[2*n+1] = n * xstep + xstep; //non-inclusive
+            }
+
+            yRanges[2*pointsY-1] = dataZ->getSize(0);
+            xRanges[2*pointsX-1] = dataZ->getSize(1);
+
+            cv::RNG random;
+            int randRow, randCol;
+            cv::Mat_<_Tp> *cvPlane = (cv::Mat_<_Tp>*)(dataZFloat->get_mdata()[ dataZFloat->seekMat(0) ]);
+            cv::Mat_<_Tp> *cvWPlane = weights ? (cv::Mat_<_Tp>*)(weights->get_mdata()[ dataZFloat->seekMat(0) ]) : NULL;
+
+            int maxIterations = (xstep * ystep);
+            int iter = 0;
+
+            for (int m = 0; m < (pointsY); ++m)
+            {
+                for (int n = 0; n < (pointsX); ++n)
+                {
+                    iter = 0;
+                    while (iter++ < maxIterations) //if all values in the rect are NaN it should break sometimes and don't use any point from this. then X,Y,Z,W are longer than number of elements. this is not important
+                    {
+                        randRow = random.uniform( yRanges[m*2], yRanges[m*2+1] );
+                        randCol = random.uniform( xRanges[n*2], xRanges[n*2+1] );
+
+                        W[nrOfPoints] = cvWPlane ? CVMATREF_2DREAL(cvWPlane,randRow,randCol) : 1.0;
+
+                        if (qIsFinite(CVMATREF_2DREAL(cvPlane,randRow,randCol)) && W[nrOfPoints] > 0.0)
+                        {
+                            Z[nrOfPoints] = CVMATREF_2DREAL(cvPlane,randRow,randCol);
+                            Y[nrOfPoints]  = ((_Tp)randRow - offsets[0])*scales[0];
+                            X[nrOfPoints]  = ((_Tp)randCol - offsets[1])*scales[1];
+                            nrOfPoints++;
+                            break;
+                        }
+                    } 
+                }
+            }
+
+            delete[] xRanges; xRanges = NULL;
+            delete[] yRanges; yRanges = NULL;
+
         }
 
         //http://www.mathworks.com/matlabcentral/fileexchange/13719-2d-weighted-polynomial-fitting-and-evaluation

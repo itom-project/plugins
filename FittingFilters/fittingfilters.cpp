@@ -357,6 +357,7 @@ are used, else the solve-command of OpenCV (slower) is called.";
     paramsMand->append( ito::Param("orderY", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in y-direction"));
 
     paramsOpt->append( ito::Param("weights", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "weights") );
+    paramsOpt->append( ito::Param("reduceFactor", ito::ParamBase::Double | ito::ParamBase::In, -1.0, 100000.0, -1.0, "If this factor is >= 1.0, every plane of the data object is divided into fields (reduceFactor * (orderXorY+1)) in x-direction and y-direction respectively, where one random, valid value is picked. If < 1.0 (e.g. -1.0 [default]) all valid points are picked"));
 
     paramsOut->append( ito::Param("coefficients", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, "fitted polynom coefficients"));
 
@@ -368,13 +369,15 @@ are used, else the solve-command of OpenCV (slower) is called.";
     ito::RetVal retval;
     ito::DataObject *input = paramsMand->at(0).getVal<ito::DataObject*>();
     ito::DataObject *weights = paramsOpt->at(0).getVal<ito::DataObject*>();
+    double reduceFactor = paramsOpt->at(1).getVal<double>();
+    if (reduceFactor < 1.0) reduceFactor = -1.0;
 
     int orderX = paramsMand->at(1).getVal<int>();
     int orderY = paramsMand->at(2).getVal<int>();
 
     std::vector<double> coefficients;
 
-    retval += calcPolyfitWeighted2D(input, orderX, orderY, coefficients, 0.2, weights);
+    retval += calcPolyfitWeighted2D(input, orderX, orderY, coefficients, reduceFactor, weights);
 
     (*paramsOut)[0].setVal<double*>( coefficients.data(),  coefficients.size() );
 
@@ -818,54 +821,6 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
     return retOk;
 }
 
-/*!
-   \detail
-   \param[in]   topoIn1     Image data of 1. channel
-   \author ITO
-   \sa
-   \date
-*/
-template<typename _Tp> ito::RetVal FittingFilters::polyFit1DMatLab(double &offset, double &scale, cv::Mat *inputY, int order, QVector<QVariant> *outVals)
-{
-    double mu1, mu2;
-
-    if(inputY->rows > 1 && inputY->cols > 1)
-        return ito::RetVal(ito::retError, 0, L"Error in Polyfit 1D, matrix must be 1D-Line or Column");
-    /*
-    long totalPix = inputY->rows * inputY->cols;
-
-    if(totalPix - 1 < order )
-        return ito::RetVal(ito::retError, 0, L"Error in Polyfit 1D: less elements than polynomical order specified");
-
-    mu1 = (((totalPix - 1 - offset) * scale) + (0 - offset * scale)) / 2;
-    mu2 = 1 / sqrt(3.0) * (((totalPix - 1 - offset) * scale) - (0 - offset * scale)) / 2;
-
-    cv::Mat_<double> x(1, totalPix);
-    _Tp* xptr = x.ptr(0);
-
-    cv::Mat_<double> y(1, totalPix);
-    _Tp* yptr = y.ptr(0);
-
-    for(int i; i < totalPix; i++)
-    {
-        xptr[i] = ((i - offset) * scale - mu1)/mu2;
-        yptr[i] = (double)(inputY->at<_Tp>(i));
-    }
-
-    cv::Mat<double> V(totalPixel, order + 1);
-    memset(V->ptr(0), 1, totalPixel* (order + 1)* sizeof(double));
-
-    for(int j = n; j > 0; j--)
-    {
-        for(int i; i < totalPix; i++)
-        {
-            V->at<double>(i, j-1) = x[i] * V->at<double>(i, j);
-        }
-    }
-
-*/
-    return ito::retError;
-}
 
 /*static*/ void FittingFilters::linearRegression(VecDoub_I &x, VecDoub_I &y, VecDoub_I &w, VecDoub_O &p, Doub& residual)
 {
