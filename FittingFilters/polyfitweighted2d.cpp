@@ -157,7 +157,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
             yRanges[2*pointsY-1] = dataZ->getSize(0);
             xRanges[2*pointsX-1] = dataZ->getSize(1);
 
-            cv::RNG random;
+            cv::RNG random((uint64)cv::getTickCount() ^ 0xa8e5f936);
             int randRow, randCol;
             cv::Mat_<_Tp> *cvPlane = (cv::Mat_<_Tp>*)(dataZFloat->get_mdata()[ dataZFloat->seekMat(0) ]);
             cv::Mat_<_Tp> *cvWPlane = weights ? (cv::Mat_<_Tp>*)(weights->get_mdata()[ dataZFloat->seekMat(0) ]) : NULL;
