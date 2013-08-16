@@ -71,7 +71,6 @@ set(plugin_HEADERS
     ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-	${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/fittingfilters.h
 	${CMAKE_CURRENT_SOURCE_DIR}/numericalRecipes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
@@ -100,7 +99,6 @@ set(plugin_SOURCES
     ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.cpp
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.cpp
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp 
-	${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/fittingfilters.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/polyfit2d.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/polyfitweighted2d.cpp

@@ -17,14 +17,11 @@
 #include <qbytearray.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include "common/helperCommon.h"
 
 #include "pluginVersion.h"
 
 //#include <qdebug.h>
 //#include <qmessagebox.h>
-
-//#include "common/helperCommon.h"
 
 #ifndef linux
     #include <Windows.h>

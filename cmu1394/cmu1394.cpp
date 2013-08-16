@@ -16,7 +16,6 @@
 #include <QtCore/QtPlugin>
 
 #include "pluginVersion.h"
-//#include "common/helperCommon.h"
 
 //#include <windows.h>
 

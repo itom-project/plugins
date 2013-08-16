@@ -57,9 +57,9 @@ INCLUDE(${QT_USE_FILE})
 
 set(plugin_HEADERS
     ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.h
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
+	${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogDummyMotor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMotor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/DummyMotor.h
@@ -77,9 +77,9 @@ QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
 
 set(plugin_SOURCES 
     ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.cpp
-    ${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.cpp
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.cpp
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp
+	${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogDummyMotor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMotor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DummyMotor.cpp

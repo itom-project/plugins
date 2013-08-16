@@ -16,8 +16,9 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
-#include "common/helperCommon.h"
 #include "pluginVersion.h"
+
+#include "common/helperCommon.h"
 
 #ifdef __linux__
     #include <unistd.h>

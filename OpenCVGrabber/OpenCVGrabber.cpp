@@ -9,8 +9,6 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
-//#include "common/helperCommon.h"
-
 /**
 * \file openCVGrabber.cpp
 * \brief 

@@ -15,8 +15,6 @@
 #include <qmetaobject.h>
 #include "dockWidgetVistek.h"
 
-//#include "common/helperCommon.h"
-
 
 VistekContainer* VistekContainer::m_pVistekContainer = NULL;
 

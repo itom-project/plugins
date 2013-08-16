@@ -1,7 +1,5 @@
 #include "fittingfilters.h"
 
-#include "common/helperCommon.h"
-
 #include <omp.h>
 #include <QtCore/QtPlugin>
 #include <qstringlist.h>
@@ -101,7 +99,7 @@ RetVal FittingFilters::fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<i
 {
     ito::Param param;
     ito::RetVal retval = ito::retOk;
-    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
     paramsMand->append( Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object").toAscii().data()) );
@@ -176,7 +174,7 @@ If the input dataObject contains more than one plane, the subtraction is execute
 RetVal FittingFilters::subtractPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
     *paramsMand << Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toAscii().data());
@@ -285,7 +283,7 @@ This method firstly executes the filter *fitPlane* followed by *subtractPlane*."
 RetVal FittingFilters::subtractRegressionPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
     *paramsMand << Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toAscii().data());
@@ -351,7 +349,7 @@ are used, else the solve-command of OpenCV (slower) is called.";
 {
     ito::Param param;
     ito::RetVal retval = ito::retOk;
-    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("inputData", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object") );
@@ -402,7 +400,7 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
 /*static*/ ito::RetVal FittingFilters::polyval2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("dataZ", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "data object with given size and data type including scale and offset value. Depending on these values, this data object is finally filled with the evaluated polynomial function") );
@@ -459,7 +457,7 @@ to parallely compute the approximations for each pixel.";
 {
     ito::Param param;
     ito::RetVal retval = ito::retOk;
-    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("data", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object (3 dimensions).") );

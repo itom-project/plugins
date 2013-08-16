@@ -10,8 +10,6 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
-#include "common/helperCommon.h"
-
 #define PIDELAY 2
 #define PI_READTIMEOUT 256
 

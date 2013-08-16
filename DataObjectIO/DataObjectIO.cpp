@@ -12,7 +12,6 @@
 
 #include "common/sharedStructuresGraphics.h"
 #include "pluginVersion.h"
-//#include "common/helperCommon.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectIOInterface::getAddInInst(ito::AddInBase **addInInst)
