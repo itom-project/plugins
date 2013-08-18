@@ -124,37 +124,46 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 	ItomSharedSemaphoreLocker locker(waitCond);
     
 	ito::RetVal retValue(ito::retOk);
+	QCam_CamListItem  camList[10];
+	unsigned long camListLen = 10;
 
     
     
-    QCam_LoadDriver();
-    
-    //get list of cameras
-    QCam_CamListItem  camList[10];
-    unsigned long camListLen = sizeof(camList) / sizeof( camList[Qcam_CamListItem]);
-    QCam_ListCameras(list, &camListLen); //camListLen is now the number of cameras available. It may be larger than your QCam_CamListItem array length!
-    
-    if (camListLen > 0)
-    {
-        int i = 0;
-        while (i < 10 && camList[i].isOpen == false)
-        {
-            ++i;
-        }
+    retValue += errorCheck(QCam_LoadDriver());
+	if (!retValue.containsError())
+	{
+		//get list of cameras
+		retValue += errorCheck(QCam_ListCameras(camList, &camListLen)); //camListLen is now the number of cameras available. It may be larger than your QCam_CamListItem array length!
+		if (!retValue.containsError())
+		{
+			if (camListLen > 0)
+			{
+				int i = 0;
+				while (i < 10 && camList[i].isOpen == false)
+				{
+					++i;
+				}
         
-        if (i < 10)
-        {
-            Qcam_OpenCamera(camList[i].cameraId, &m_camHandle);
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError,0,"the first 10 connected cameras are already opened.");
-        }
-    }
-    else
-    {
-        retValue += ito::RetVal(ito::retError,0,"no QCam cameras are connected to this computer");
-    }
+				if (i < 10)
+				{
+					retValue += errorCheck(QCam_OpenCamera(camList[i].cameraId, &m_camHandle));
+				}
+				else
+				{
+					retValue += ito::RetVal(ito::retError,0,"the first 10 connected cameras are already opened.");
+				}
+			}
+			else
+			{
+				retValue += ito::RetVal(ito::retError,0,"no QCam cameras are connected to this computer");
+			}
+		}
+	}
+
+	if (!retValue.containsError())
+	{
+		retValue += errorCheck( QCam_SetStreaming( m_camHandle, true ));
+	}
     
     
     
@@ -719,4 +728,162 @@ void QCam::updateParameters(QMap<QString, ito::ParamBase> params)
         setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase(param1)), NULL);
 	}
 }
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QCam::errorCheck(QCam_Err errcode)
+{
+	ito::RetVal retval;
+
+	switch(errcode)
+	{
+	case qerrSuccess:
+		break;
+	case qerrNotSupported:    // Function is not supported for this device
+		retval += ito::RetVal(ito::retError,1,"Function is not supported for this device");
+		break;
+    case qerrInvalidValue:
+		retval += ito::RetVal(ito::retError,2,"A parameter used was invalid");
+		break;
+    case qerrBadSettings:
+		retval += ito::RetVal(ito::retError,3,"The QCam_Settings structure is corrupted");
+		break;
+	case qerrNoUserDriver:
+		retval += ito::RetVal(ito::retError,4,"No user driver");
+		break;
+    case qerrNoFirewireDriver:
+		retval += ito::RetVal(ito::retError,5,"Firewire device driver is missing");
+		break;
+	case qerrDriverConnection:
+		retval += ito::RetVal(ito::retError,6,"Driver connection error");
+		break;
+    case qerrDriverAlreadyLoaded:
+		retval += ito::RetVal(ito::retError,7,"The driver has already been loaded");
+		break;
+    case qerrDriverNotLoaded: 
+		retval += ito::RetVal(ito::retError,8,"The driver has not been loaded.");
+		break;
+    case qerrInvalidHandle:
+		retval += ito::RetVal(ito::retError,9,"The QCam_Handle has been corrupted");
+		break;
+    case qerrUnknownCamera:
+		retval += ito::RetVal(ito::retError,10,"Camera model is unknown to this version of QCam");
+		break;
+    case qerrInvalidCameraId:
+		retval += ito::RetVal(ito::retError,11,"Camera id used in QCam_OpenCamera is invalid");
+		break;
+    case qerrNoMoreConnections:
+		retval += ito::RetVal(ito::retError,12,"Deprecated");
+		break;
+	case qerrHardwareFault:
+		retval += ito::RetVal(ito::retError,13,"Hardware fault");
+		break;
+	case qerrFirewireFault:
+		retval += ito::RetVal(ito::retError,14,"Firewire fault");
+		break;
+	case qerrCameraFault:
+		retval += ito::RetVal(ito::retError,15,"Camera fault");
+		break;
+	case qerrDriverFault:
+		retval += ito::RetVal(ito::retError,16,"Driver fault");
+		break;
+	case qerrInvalidFrameIndex:
+		retval += ito::RetVal(ito::retError,17,"Invalid frame index");
+		break;
+    case qerrBufferTooSmall:
+		retval += ito::RetVal(ito::retError,18,"Frame buffer (pBuffer) is too small for image");
+		break;
+	case qerrOutOfMemory:
+		retval += ito::RetVal(ito::retError,19,"Out of memory");
+		break;
+	case qerrOutOfSharedMemory:
+		retval += ito::RetVal(ito::retError,20,"Out of shared memory");
+		break;
+    case qerrBusy:
+		retval += ito::RetVal(ito::retError,21,"The function used cannot be processed at this time");
+		break;
+    case qerrQueueFull:
+		retval += ito::RetVal(ito::retError,22,"The queue for frame and settings changes is full");
+		break;
+    case qerrCancelled:
+		retval += ito::RetVal(ito::retError,23,"Cancelled");
+		break;
+    case qerrNotStreaming:
+		retval += ito::RetVal(ito::retError,24,"The function used requires that streaming be on");
+		break;
+    case qerrLostSync:
+		retval += ito::RetVal(ito::retError,25,"The host and the computer are out of sync, the frame returned is invalid");
+		break;
+    case qerrBlackFill:
+		retval += ito::RetVal(ito::retError,26,"Data is missing in the frame returned");
+		break;
+    case qerrFirewireOverflow:
+		retval += ito::RetVal(ito::retError,27,"The host has more data than it can process, restart streaming.");
+		break;
+    case qerrUnplugged: 
+		retval += ito::RetVal(ito::retError,28,"The camera has been unplugged or turned off");
+		break;
+    case qerrAccessDenied:
+		retval += ito::RetVal(ito::retError,29,"The camera is already open");
+		break;
+    case qerrStreamFault:
+		retval += ito::RetVal(ito::retError,30,"Stream allocation failed, there may not be enough bandwidth");
+		break;
+    case qerrQCamUpdateNeeded:
+		retval += ito::RetVal(ito::retError,31,"QCam needs to be updated");
+		break;
+    case qerrRoiTooSmall:
+		retval += ito::RetVal(ito::retError,32,"The ROI used is too small");
+		break;
+    case qerr_last:
+		retval += ito::RetVal(ito::retError,33,"last");
+		break;
+    case _qerr_force32:
+		retval += ito::RetVal(ito::retError,-1,"force32");
+		break;
+	}
+
+	return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QCam::supportedFormats(bool &mono, bool &colorFilter, bool &colorBayer)
+{
+	ito::uint32 mask;
+	unsigned long ccdType;
+	ito::RetVal retval;
+	QCam_Err qerr;
+
+	if (m_camHandle)
+	{
+		QCam_GetInfo(m_camHandle, qinfCcdType, &ccdType);
+		if (ccdType == qcCcdMonochrome)
+		{
+			// Check to see if a Color Filter Wheel is supported
+			// before we say that it is.
+			qerr = QCam_IsRangeTable (&m_camSettings, qprmColorWheel);
+
+			if (qerr == qerrSuccess)
+			{
+				mono = true;
+				colorFilter = true;
+			}
+			else
+			{
+				mono = true;
+				colorFilter = false;
+			}
+		}
+		else if (ccdType == qcCcdColorBayer)
+		{
+			mono = false;
+			colorFilter = false;
+			colorBayer = true;
+		}
+	}
+	else
+	{
+		retval += ito::RetVal(ito::retError,0,"invalid camera handle");
+	}
+	return retval;
+}

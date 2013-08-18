@@ -4,6 +4,8 @@
 #include "common/addInGrabber.h"
 #include "dialogQCam.h"
 
+#include "QCamApi.h"
+
 #include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -56,8 +58,12 @@ class QCam : public ito::AddInGrabber
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);	/*! <Wait for acquired picture */
 //        ito::RetVal checkData(void);	/*!< Check if objekt has to be reallocated */
 
+		ito::RetVal errorCheck(QCam_Err errcode);
+		ito::RetVal supportedFormats(bool &mono, bool &colorFilter, bool &colorBayer);
+
     private:
         QCam_Handle m_camHandle;
+		QCam_Settings m_camSettings;
 
     public slots:
         

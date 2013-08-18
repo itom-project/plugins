@@ -63,6 +63,12 @@ if (PLUGIN_PIPiezoCtrl)
 	ADD_SUBDIRECTORY(PIPiezoCtrl)
 endif (PLUGIN_PIPiezoCtrl)
 
+# QCam
+OPTION(PLUGIN_QCam "Build with this plugin." OFF)
+if (PLUGIN_QCam)
+	ADD_SUBDIRECTORY(QCam)
+endif (PLUGIN_QCam)
+
 # SerialIO
 OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
 if (PLUGIN_SerialIO)
