@@ -2254,7 +2254,13 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
     else if(!imgPalette.isEmpty())
     {
         ito::ItomPalette newPalette;
-        apiPaletteGetColorBarName(imgPalette, newPalette);
+        ret += apiPaletteGetColorBarName(imgPalette, newPalette);
+
+        if (ret.containsError())
+        {
+            return ret;
+        }
+
         scrData = (cv::Mat *)(dObj->get_mdata()[0]);
 
         if(colorSupported)
