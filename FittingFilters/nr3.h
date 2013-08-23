@@ -65,8 +65,8 @@ inline void NR_SWAP(T &a, T &b)
 // exception handling
 
 #ifndef _USENRERRORCLASS_
-#define throw(message) \
-{printf("ERROR: %s\n     in file %s at line %d\n", message,__FILE__,__LINE__); throw(1);}
+#define throw_nr3(message) \
+{printf("ERROR: %s\n     in file %s at line %d\n", message, __FILE__,__LINE__); throw(1);}
 #else
 struct NRerror {
 	char *message;
@@ -74,7 +74,7 @@ struct NRerror {
 	int line;
 	NRerror(char *m, char *f, int l) : message(m), file(f), line(l) {}
 };
-#define throw(message) throw(NRerror(message,__FILE__,__LINE__));
+#define throw_nr3(message) throw(NRerror(message,__FILE__,__LINE__));
 void NRcatch(NRerror err) {
 	printf("ERROR: %s\n     in file %s at line %d\n",
 		err.message, err.file, err.line);
