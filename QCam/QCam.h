@@ -8,6 +8,8 @@
 
 #include <qsharedpointer.h>
 
+#define NUMBERBUFFERS 1
+
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class	QCamInterface 
@@ -54,6 +56,8 @@ class QCam : public ito::AddInGrabber
         friend class QCamInterface;
         const ito::RetVal showConfDialog(void);	/*!< Open the config nonmodal dialog to set camera parameters */
 
+		void frameCallback(unsigned long userData, QCam_Err errcode, unsigned long flags);
+
     protected:
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);	/*! <Wait for acquired picture */
 //        ito::RetVal checkData(void);	/*!< Check if objekt has to be reallocated */
@@ -61,9 +65,18 @@ class QCam : public ito::AddInGrabber
 		ito::RetVal errorCheck(QCam_Err errcode);
 		ito::RetVal supportedFormats(bool &mono, bool &colorFilter, bool &colorBayer);
 
+		ito::RetVal requeueFrame();
+
     private:
         QCam_Handle m_camHandle;
 		QCam_Settings m_camSettings;
+
+		QCam_Frame m_frames[NUMBERBUFFERS];
+		ito::RetVal m_frameCallbackRetVal;
+		int m_frameCallbackFrameIdx;
+		bool m_waitingForAcquire;
+
+		static int instanceCounter;
 
     public slots:
         
@@ -96,6 +109,7 @@ class QCam : public ito::AddInGrabber
 };
 
 
+void QCAMAPI qCamFrameCallback(void * userPtr, unsigned long userData, QCam_Err errcode, unsigned long flags);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

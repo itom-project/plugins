@@ -53,14 +53,15 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}/QImaging_SDK/Headers
  )
 
+ LINK_DIRECTORIES( 
+	${OpenCV_DIR}/lib
+	${CMAKE_CURRENT_SOURCE_DIR}/QImaging_SDK/libs
+	)
+
 if(BUILD_TARGET64)
-	LINK_DIRECTORIES(
-		${OpenCV_DIR}/lib
-	)
+	SET( QImaging_Libraries QCaptureCore_x64.lib QCamDriverx64.lib )
 else(BUILD_TARGET64)	
-	LINK_DIRECTORIES(
-		${OpenCV_DIR}/lib
-	)
+	SET( QImaging_Libraries QCaptureCore_x86.lib QCamDriverx86.lib )
 endif(BUILD_TARGET64)
 
 INCLUDE(${QT_USE_FILE})
@@ -112,7 +113,7 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 #handle translations END STEP 1
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY})
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${QImaging_Libraries})
 
 #handle translations BEGIN STEP 2
 if (UPDATE_TRANSLATIONS)
@@ -133,11 +134,3 @@ set(COPY_DESTINATIONS "")
 ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-
-# copy dlls in itoms lib folder
-#if(BUILD_TARGET64)
-#	file(GLOB dlls "${CMAKE_CURRENT_SOURCE_DIR}/cmu1394/lib64/x64/*.dll")
-#else(BUILD_TARGET64)	
-#   file(GLOB dlls "${CMAKE_CURRENT_SOURCE_DIR}/cmu1394/lib/*.dll")
-#endif(BUILD_TARGET64)
-POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
