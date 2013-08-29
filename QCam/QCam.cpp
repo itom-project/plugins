@@ -109,7 +109,7 @@ QCam::QCam() :
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
     //now create dock widget for this plugin
-    DockWidgetQCam *dockWidget = new DockWidgetQCam(m_params, getID());
+    DockWidgetQCam *dockWidget = new DockWidgetQCam();
     connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dockWidget, SLOT(valuesChanged(QMap<QString, ito::Param>)));
     connect(dockWidget, SIGNAL(changeParameters(QMap<QString, ito::ParamBase>)), this, SLOT(updateParameters(QMap<QString, ito::ParamBase>)));
 
@@ -476,6 +476,7 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//this method is called by the main thread!!! (not the camera thread)
 const ito::RetVal QCam::showConfDialog(void)
 {
 	ito::RetVal retValue(ito::retOk);
@@ -485,23 +486,14 @@ const ito::RetVal QCam::showConfDialog(void)
 	int binning_new = 0;
 	double offset_new = 0.0;
 
-    DialogQCam *confDialog = new DialogQCam();
-
-    if(grabberStartedCount() > 0)
-        return ito::RetVal(ito::retWarning, 0, tr("Please run stopDevice() and shut down live data before configuration").toAscii().data());
+    DialogQCam *confDialog = new DialogQCam(this);
 
 	connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-	connect(confDialog, SIGNAL(changeParameters(QMap<QString, ito::ParamBase>)), this , SLOT(updateParameters(QMap<QString, ito::ParamBase>)));
+    QMetaObject::invokeMethod(this, "sendParameterRequest");
 
-	confDialog->setVals(&m_params);
     if (confDialog->exec())
     {
-        confDialog->getVals(&m_params);
-        
-        foreach(const ito::ParamBase &param1, m_params)
-	    {	
-            retValue += setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase(param1)), NULL);
-	    }
+        confDialog->getVals();
     }
     delete confDialog;
 
@@ -963,6 +955,25 @@ ito::RetVal QCam::supportedFormats(bool &mono, bool &colorFilter, bool &colorBay
 		retval += ito::RetVal(ito::retError,0,"invalid camera handle");
 	}
 	return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void QCam::dockWidgetVisibilityChanged(bool visible)
+{
+    if (getDockWidget())
+    {
+        DockWidgetQCam *dw = qobject_cast<DockWidgetQCam*>(getDockWidget()->widget());
+        if (visible)
+        {
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+
+            emit parametersChanged(m_params);
+        }
+        else
+        {
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+        }
+    }
 }
 
 

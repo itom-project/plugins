@@ -58,6 +58,8 @@ class QCam : public ito::AddInGrabber
 
 		void frameCallback(unsigned long userData, QCam_Err errcode, unsigned long flags);
 
+        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
+
     protected:
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);	/*! <Wait for acquired picture */
 //        ito::RetVal checkData(void);	/*!< Check if objekt has to be reallocated */
@@ -105,7 +107,7 @@ class QCam : public ito::AddInGrabber
 		void updateParameters(QMap<QString, ito::ParamBase> params);
 
     private slots:
-
+        void dockWidgetVisibilityChanged(bool visible);
 };
 
 

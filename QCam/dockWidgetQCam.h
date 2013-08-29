@@ -15,12 +15,11 @@ class DockWidgetQCam : public QWidget
     Q_OBJECT
 
     public:
-        DockWidgetQCam(QMap<QString, ito::Param> params, int uniqueID);
+        DockWidgetQCam();
         ~DockWidgetQCam() {};
 
     private:
         Ui::DockWidgetQCam ui;
-        char updating;
 
     signals:
 		void changeParameters(QMap<QString, ito::ParamBase> params);
