@@ -81,7 +81,7 @@ QCam::QCam() :
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "QCam", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 0.0, 0.0, tr("Integrationtime of CCD programmed in s").toAscii().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 0.0, 0.0, tr("Integration time of CCD programmed in s").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -103,6 +103,10 @@ QCam::QCam() :
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 8, tr("bit depth per pixel").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	paramVal = ito::Param("cooled", ito::ParamBase::Int, 0, 1, 1, tr("CCD cooler").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
     //now create dock widget for this plugin
     DockWidgetQCam *dockWidget = new DockWidgetQCam(m_params, getID());
@@ -241,6 +245,16 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 		paramMeta->setMax(height);
 		m_params["sizey"].setVal<int>(height);
 
+		//ask camera for gain, intensity...
+		unsigned long gainMin, gainMax, gain;
+		QCam_GetParamMax( &m_camSettings, qprmNormalizedGain, &gainMax );
+		QCam_GetParamMin( &m_camSettings, qprmNormalizedGain, &gainMin );
+		QCam_GetParam(&m_camSettings, qprmNormalizedGain, &gain);
+
+		//transform normalized gain into 0-1-gain
+		double gainDbl = (double)(gain - gainMin) / (double)(gainMax - gainMin);
+		m_params["gain"].setVal<double>(gainDbl);
+
 		retValue += checkData(); //resize the internal dataObject m_data to the right size and type
 
 		//finally send the new settings to the camera
@@ -346,183 +360,119 @@ ito::RetVal QCam::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *
 */
 ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
 {
-    ItomSharedSemaphoreLocker locker(waitCond);
+	ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
 
-    int ret = 0;
-	int i = 0;
-	int maxxsize = 1;
-	int maxysize = 1;
+	bool settingsChanged = false;
 
-	int runningANDstopped = 0;
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-	int vbin = 0;
-	int hbin = 0;
-	double gain = 0.0;
-    double offset = 0.0;
-	
-	int trigger_mode = 0;
-    int trigger_on = 0;
-	
-	QString key = val->getName();
-
-//    if(key == "")	// Check if the key is valied
-//    {
-//        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
-//    }
-//    else	// key valid so go on
-//    {
-//		QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);	// try to find the parameter in the parameter list
-//
-//		if (paramIt != m_params.end()) // Okay the camera has this parameter so go on
-//		{
-//    
-//            if(paramIt->getFlags() & ito::ParamBase::Readonly)
-//            {
-//                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
-//                goto end;
-//            }
-//			else if(val->isNumeric() && paramIt->isNumeric())
-//			{
-//				double curval = val->getVal<double>();
-//				if( curval > paramIt->getMax())
-//				{
-//				    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
-//                    goto end;
-//				}
-//				else if(curval < paramIt->getMin())
-//				{
-//				    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
-//                    goto end;
-//				}
-//				else 
-//				{
-//				    paramIt.value().setVal<double>(curval);
-//				}
-//			}
-//			else if (paramIt->getType() == val->getType())
-//			{
-//				retValue += paramIt.value().copyValueFrom( &(*val) );
-//			}
-//			else
-//			{
-//				retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
-//				goto end;
-//			}
-//		
-//			Sleep(5);
-//
-//			trigger_mode = m_params["trigger_mode"].getVal<int>();
-//            trigger_on = m_params["trigger_enable"].getVal<int>();
-//			gain = (double)(m_params["gain"].getVal<double>()); 
-//            offset = (double)(m_params["offset"].getVal<double>());	
-//            int timeout_ms = (int)(m_params["timeout"].getVal<double>()*1000);	
-//			//vbin = m_params["binning"].getVal<int>();
-//			//hbin = m_params["binning"].getVal<int>();
-//
-//            if(!key.compare("gain"))
-//            {
-//                unsigned short  gainMin = 0, gainMax = 0;
-//                m_pC1394gain->GetRange(&gainMin, &gainMax);
-//			    m_pC1394gain->SetValue((unsigned short)((gainMax-gainMin)*gain)+gainMin, 0);
-//            }
-//            else if(!key.compare("offset"))
-//            {
-//                unsigned short offsMin, offsMax, offsoldVal, dummy;
-//			    m_pC1394offset->GetRange(&offsMin, &offsMax);
-//			    m_pC1394offset->GetValue(&offsoldVal, &dummy);
-//			    unsigned short offsVal = (unsigned short)((offsMax-offsMin)*offset)+offsMin;
-//			    ret = m_pC1394offset->SetValue(offsVal, 0);
-//			    ret = m_ptheCamera->CaptureImage();
-//			    if (ret)
-//			    {
-//				    m_pC1394offset->SetValue(offsoldVal, 0);
-//			    }
-//            }
-//            else 
-//            {
-//			    if (grabberStartedCount())
-//			    {
-//				    runningANDstopped = grabberStartedCount();
-//				    setGrabberStarted(1);
-//				    retValue += this->stopDevice(0);
-//			    }
-//                if(!key.compare("trigger_mode"))
-//                {
-//                    if (m_ptheCamera->HasFeature(FEATURE_TRIGGER_MODE))
-//			        {
-//				        ret=m_pC1394trigger->SetMode((unsigned short)trigger_mode);
-//			        }
-//			        else
-//                        retValue = ito::RetVal(ito::retError, 0, tr("Camera has no trigger feature").toAscii().data());
-//                }
-//                else if(!key.compare("trigger_enable"))
-//                {
-//			        if (m_ptheCamera->HasFeature(FEATURE_TRIGGER_MODE))
-//			        {
-//				        if(trigger_on > 0)
-//				        {
-//					        m_pC1394trigger->SetOnOff(true);
-//					        if ( (ret = m_ptheCamera->StartImageAcquisitionEx( 6, timeout_ms, ACQ_START_VIDEO_STREAM)))  
-//					        {
-//						        if (ret == -14)
-//                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toAscii().data()); 
-//						        else if (ret==-15)
-//                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toAscii().data());
-//						        return -1;
-//					        }
-//                            m_ptheCamera->StopImageAcquisition();
-//
-//					        ret = m_ptheCamera->GetNode();
-//				        }
-//				        else
-//				        {
-//					        m_pC1394trigger->SetOnOff(false);
-//					        if ( (ret = m_ptheCamera->StartImageAcquisition() ) )  
-//					        {
-//						        if (ret == -14)
-//                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toAscii().data()); 
-//						        else if (ret==-15)
-//                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toAscii().data());
-//						        return -1;
-//					        }
-//					        ret = m_ptheCamera->GetNode();
-//                            m_ptheCamera->StopImageAcquisition();
-//				        }
-//			        }
-//			        else
-//				        retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toAscii().data());
-//                }
-//            }
-//		}
-//		else
-//		{
-//			retValue = ito::RetVal(ito::retWarning, 0, tr("Parameter not found").toAscii().data());
-//		}
-//	}
-//
-//end:
-
-	retValue += checkData();
-
-	if (runningANDstopped)
-	{
-		retValue += this->startDevice(0);
-		setGrabberStarted(runningANDstopped);
-	}
-
-	if (!retValue.containsWarningOrError())
-	{
-		emit parametersChanged(m_params);
-	}
-
-	if (waitCond) 
+    if(!retValue.containsError())
     {
-        waitCond->returnValue = retValue;
-		waitCond->release();
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-   return retValue;
+    if(!retValue.containsError())
+    {
+        //here the new parameter is checked whether it's type corresponds or can be cast into the
+        // value in m_params and whether the new type fits to the requirements of any possible
+        // meta structure.
+        retValue += apiValidateParam(*it, *val, false, true);
+    }
+
+    if(!retValue.containsError())
+    {
+		if (key == "gain")
+		{
+			unsigned long gainMax, gainMin;
+
+			double gain = val->getVal<double>();
+			QCam_GetParamMax( &m_camSettings, qprmNormalizedGain, &gainMax );
+			QCam_GetParamMin( &m_camSettings, qprmNormalizedGain, &gainMin );
+
+			//calculate normalized-gain from 0-1-gain
+			gain = gainMin + gain * (gainMax - gainMin);
+			
+			retValue += errorCheck( QCam_SetParam(&m_camSettings, qprmNormalizedGain, gain) );
+
+			if (!retValue.containsError())
+			{
+				settingsChanged = true;
+				retValue += it->copyValueFrom( &(*val) );
+			}
+			
+			// stop the camera, clear the buffers and send the parameter to the camera.  then restart the camera.
+			// if it was running live, restart that also
+		}
+        else
+        {
+            //all parameters that don't need further checks can simply be assigned
+            //to the value in m_params (the rest is already checked above)
+            retValue += it->copyValueFrom( &(*val) );
+        }
+    }
+
+	if (settingsChanged)
+	{
+		bool acquisitionInterrupted = false;
+		if (grabberStartedCount() > 0)
+		{
+			QCam_Abort( m_camHandle);
+
+			if (m_waitingForAcquire) acquisitionInterrupted = true;
+			//m_frameCallbackFrameIdx = -1;
+			//m_waitingForAcquire = false;
+
+			// delete buffer(s)
+			for (int i = 0; i < NUMBERBUFFERS; ++i)
+			{
+				delete[] m_frames[i].pBuffer;
+				m_frames[i].pBuffer = NULL;
+			}
+		}
+
+		retValue += errorCheck(QCam_SendSettingsToCam( m_camHandle, &m_camSettings));
+
+		if (grabberStartedCount() > 0)
+		{
+			//reallocate buffer(s)
+			unsigned long size;
+			QCam_GetInfo(m_camHandle, qinfImageSize, &size);
+
+			for (int i = 0; i < NUMBERBUFFERS; ++i)
+			{
+				m_frames[i].pBuffer = new byte[size];
+				m_frames[i].bufferSize = size;
+				memset( m_frames[i].pBuffer, 0, size * sizeof(byte) );
+				QCam_QueueFrame(m_camHandle, &(m_frames[i]), qCamFrameCallback, qcCallbackDone, this, i);
+			}
+
+			if (acquisitionInterrupted)
+			{
+				retValue += acquire(NULL); //reacquire a new image, since we aborted the last acquisition
+			}
+		}
+	}
+
+    if(!retValue.containsError())
+    {
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
