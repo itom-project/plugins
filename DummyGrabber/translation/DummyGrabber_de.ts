@@ -87,7 +87,7 @@
 <context>
     <name>DummyGrabber</name>
     <message>
-        <location filename="../DummyGrabber.cpp" line="+428"/>
+        <location filename="../DummyGrabber.cpp" line="+442"/>
         <source>Time between two frames</source>
         <translation type="unfinished"></translation>
     </message>
@@ -257,18 +257,16 @@
 <context>
     <name>DummyGrabberInterface</name>
     <message>
-        <location line="-814"/>
         <source>A virtual grabber</source>
-        <translation type="unfinished">Ein virtueller Grabber</translation>
+        <translation type="obsolete">Ein virtueller Grabber</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>The DummyGrabber is a virtual camera which emulates a camera with white noise. It can be used as template for grabber implementation and for basic interface test. For simulation of measurement systems use the emulator gabber.</source>
-        <translation type="unfinished">Der DummyGrabber ist eine virtuelle Kamera, die gleichmäßiges Zufallsrauschen nachbildet. Dies kann als Vorlage zur Implementierung einer Kamera oder für rudimentäre Schnittstellentests verwendet werden. Zur Simulation eines Messsystems sollte der EmulationGrabber genutzt werden.</translation>
+        <translation type="obsolete">Der DummyGrabber ist eine virtuelle Kamera, die gleichmäßiges Zufallsrauschen nachbildet. Dies kann als Vorlage zur Implementierung einer Kamera oder für rudimentäre Schnittstellentests verwendet werden. Zur Simulation eines Messsystems sollte der EmulationGrabber genutzt werden.</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>LGPL</source>
+        <location line="-809"/>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -283,14 +281,18 @@
     </message>
     <message>
         <location line="+3"/>
+        <source>Bits per Pixel, usually 8-16bit grayvalues</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Bits per Pixel, usually 8-16bit grayvalues or 24 bit color</source>
-        <translation type="unfinished">Bits pro Pixel, 8-16 Bit Grauwerte oder 24 Bit Farbe</translation>
+        <translation type="obsolete">Bits pro Pixel, 8-16 Bit Grauwerte oder 24 Bit Farbe</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
         <source>parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
@@ -317,30 +319,30 @@
     </message>
     <message>
         <location line="+78"/>
-        <location line="+123"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-116"/>
-        <location line="+123"/>
-        <source>the parameter name &apos;%1&apos; in invald</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-99"/>
-        <source>array index of parameter out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
         <location line="+125"/>
-        <source>given index of parameter name ignored since parameter is no array type</source>
+        <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-118"/>
         <location line="+125"/>
+        <source>the parameter name &apos;%1&apos; in invald</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-101"/>
+        <source>array index of parameter out of bounds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+127"/>
+        <source>given index of parameter name ignored since parameter is no array type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-120"/>
+        <location line="+127"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -352,6 +354,16 @@
     <message>
         <location line="+55"/>
         <source>invalid parameter name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../DummyGrabber.cpp" line="-17"/>
+        <source>A virtual white noise grabber</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Licensed under LPGL.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -548,7 +560,7 @@
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Konstruktor muss überschrieben werden</translation>
     </message>
@@ -566,7 +578,7 @@
         <translation type="unfinished">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
@@ -584,7 +596,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished">Die Funktion &apos;execution&apos; wurde in diesem Plugin nicht bentzt</translation>
     </message>
@@ -646,7 +658,7 @@
 <context>
     <name>ito::AddInGrabber</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
         <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
         <translation type="unfinished"></translation>
