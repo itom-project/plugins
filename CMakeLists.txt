@@ -33,6 +33,12 @@ if (PLUGIN_DummyMotor)
 	ADD_SUBDIRECTORY(DummyMotor)
 endif (PLUGIN_DummyMotor)
 
+# FileGrabber
+OPTION(PLUGIN_FileGrabber "Build with this plugin." ON)
+if (PLUGIN_FileGrabber)
+	ADD_SUBDIRECTORY(FileGrabber)
+endif (PLUGIN_FileGrabber)
+
 # FittingFilters
 OPTION(PLUGIN_FittingFilters "Build with this plugin." ON)
 if (PLUGIN_FittingFilters)
