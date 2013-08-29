@@ -50,18 +50,25 @@ INCLUDE_DIRECTORIES(
     ${QT_QTCORE_INCLUDE_DIR}
     ${OpenCV_DIR}/include
     ${ITOM_SDK_INCLUDE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/QImaging_SDK/Headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/QImaging_SDK/2.0.13.1/Headers
  )
 
  LINK_DIRECTORIES( 
 	${OpenCV_DIR}/lib
-	${CMAKE_CURRENT_SOURCE_DIR}/QImaging_SDK/libs
 	)
 
 if(BUILD_TARGET64)
 	SET( QImaging_Libraries QCaptureCore_x64.lib QCamDriverx64.lib )
+    
+    LINK_DIRECTORIES( 
+	    ${CMAKE_CURRENT_SOURCE_DIR}/QImaging_SDK/2.0.13.1/libs/AMD64
+	)
 else(BUILD_TARGET64)	
-	SET( QImaging_Libraries QCaptureCore_x86.lib QCamDriverx86.lib )
+	SET( QImaging_Libraries QCaptureCore.lib QCamDriver.lib )
+    
+    LINK_DIRECTORIES( 
+	    ${CMAKE_CURRENT_SOURCE_DIR}/QImaging_SDK/2.0.13.1/libs/i386
+	)
 endif(BUILD_TARGET64)
 
 INCLUDE(${QT_USE_FILE})
