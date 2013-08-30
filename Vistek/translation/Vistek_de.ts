@@ -115,17 +115,21 @@
         <translation>SVS Vistek GigE Grabber.</translation>
     </message>
     <message>
+        <location line="+16"/>
+        <source>licensed under LGPL, the necessary Vistek drivers, header files and libraries have their own license.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+1"/>
+        <source>N.A.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>SVS Vistek GigE camera grabber.</source>
-        <translation>SVS Vistek GigE Kamera-Grabber.</translation>
+        <translation type="obsolete">SVS Vistek GigE Kamera-Grabber.</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>LGPL / do not copy external DLLs</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>Serial Number of the SVS Vistek camera (see camera housing)</source>
         <translation>Seriennummer der SVS Vistek-Kamera (siehe Kameragehäuse)</translation>
     </message>
@@ -133,7 +137,7 @@
 <context>
     <name>Vistek</name>
     <message>
-        <location filename="../Vistek.cpp" line="+86"/>
+        <location filename="../Vistek.cpp" line="+84"/>
         <source>Camera Model ID</source>
         <translation>Kameramodell ID</translation>
     </message>
@@ -183,12 +187,11 @@
         <translation>Höhe des aktuellen Kamerabilds</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Grabdepth for camera buffer</source>
-        <translation>Farbtiefe des Kamerapuffers</translation>
+        <translation type="obsolete">Farbtiefe des Kamerapuffers</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>Time in ms since last image (end of exposure)</source>
         <translation>Zeit in ms seit dem letzten Bild (Ende der Belichtung)</translation>
     </message>
@@ -238,7 +241,12 @@
         <translation>Seriennummer der Kamera (siehe Kameragehäuse)</translation>
     </message>
     <message>
-        <location line="+189"/>
+        <location line="+18"/>
+        <source>bit-depth for camera buffer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+171"/>
         <source>Given parameter and m_param do not have the same type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -527,7 +535,7 @@
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
@@ -545,7 +553,7 @@
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
@@ -563,7 +571,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation>Die Funktion &apos;execution&apos; wurde in diesem Plugin nicht bentzt</translation>
     </message>
@@ -625,7 +633,7 @@
 <context>
     <name>ito::AddInGrabber</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
         <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
         <translation type="unfinished"></translation>

@@ -4,7 +4,7 @@
 <context>
     <name>CMU1394</name>
     <message>
-        <location filename="../cmu1394.cpp" line="+142"/>
+        <location filename="../cmu1394.cpp" line="+154"/>
         <source>Please run stopDevice() and shut down live data before configuration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -255,7 +255,12 @@ time out!</source>
 <context>
     <name>CMU1394Interface</name>
     <message>
-        <location line="-1051"/>
+        <location line="-1053"/>
+        <source>N.A.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Formattype for the camera, first index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -316,7 +321,7 @@ time out!</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/sharedFunctionsQt.cpp" line="+67"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/sharedFunctionsQt.cpp" line="+67"/>
         <source>Tried to scale unscaleable unit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -331,13 +336,13 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>ParamList not inialized properly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+11"/>
-        <location line="+125"/>
+        <location line="+223"/>
         <location line="+193"/>
         <source>Can&apos;t open xml file</source>
         <translation type="unfinished"></translation>
@@ -610,19 +615,12 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../cmu1394.cpp" line="-16"/>
+        <location filename="../cmu1394.cpp" line="-28"/>
         <source>Firewire via generic CMU-Driver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Generic Firewire support based on CMU-Driver version 6.4.6. CMU 6.4.6 works for firewire specifications &lt;= v1.30.
- This library is currently developed and tested under Windows only. Tested with PointGrayResearch Firefly and AVT Marlin.
- Download latest CMU-driver from http://www.cs.cmu.edu/~iwan/1394/.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+13"/>
         <source>itom-plugin under LGPL / CMU1384 driver under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -723,7 +721,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -741,7 +739,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -759,7 +757,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>
@@ -821,7 +819,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInGrabber</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
         <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
         <translation type="unfinished"></translation>

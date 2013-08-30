@@ -235,7 +235,7 @@
 <context>
     <name>PIPiezoCtrl</name>
     <message>
-        <location filename="../PIPiezoCtrl.cpp" line="+133"/>
+        <location filename="../PIPiezoCtrl.cpp" line="+148"/>
         <source>Current type of controller, e.g. E-662, E-665, ...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -301,6 +301,11 @@
     </message>
     <message>
         <location line="+3"/>
+        <source>Disabled position and end switch control during positioning for fast scans</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>The current com-port ID of this specific device. -1 means undefined</source>
         <translation type="unfinished"></translation>
     </message>
@@ -362,7 +367,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+64"/>
         <source>Given parameter and m_param do not have the same type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -384,12 +389,12 @@
     </message>
     <message>
         <location line="+49"/>
-        <location line="+749"/>
+        <location line="+753"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-709"/>
+        <location line="-713"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -405,7 +410,7 @@
     </message>
     <message>
         <location line="+67"/>
-        <location line="+497"/>
+        <location line="+501"/>
         <source>controller device unknown</source>
         <translation type="unfinished"></translation>
     </message>
@@ -420,7 +425,118 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+50"/>
+        <location line="+43"/>
+        <source>error could not be parsed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-31"/>
+        <source>Parameter syntax error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unknown command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Command length out of limits or command buffer overrun</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unallowable move attempted on unreferenced axis, or move attempted with servo off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Controller was stopped by command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invalid axis identifier</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Parameter out of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Macro not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unknown parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Protected Param: current Command Level (CCL) too low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Motion commands are not allowed when wave generator is active</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open-loop commands (SVA, SVR) are not allowed when servo is on</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Command not allowed in current motion mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Illegal file name (must be 8-0 format)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Save system configuration failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Load system configuration failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Error on I2C bus</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Insufficient space to store macro</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Wave parameter out of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>unknown error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+54"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -436,15 +552,19 @@
     </message>
     <message>
         <location line="+178"/>
+        <source>the new position (rel) seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+15"/>
-        <source>the new position seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
+        <source>the new position (abs) seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>PIPiezoCtrlInterface</name>
     <message>
-        <location line="-1391"/>
+        <location line="-1409"/>
         <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -452,97 +572,25 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
-        <source>parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>mandatory parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>optional parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>output parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <location line="+21"/>
-        <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+78"/>
-        <location line="+123"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-116"/>
-        <location line="+123"/>
-        <source>the parameter name &apos;%1&apos; in invald</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-99"/>
-        <source>array index of parameter out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <location line="+125"/>
-        <source>given index of parameter name ignored since parameter is no array type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-118"/>
-        <location line="+125"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-14"/>
-        <source>array index out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+55"/>
-        <source>invalid parameter name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../PIPiezoCtrl.cpp" line="-7"/>
+        <location line="-21"/>
         <source>PI Piezos E662, E-816, E-621, E-625, E665</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>The PIPiezoCtrl is an itom-plugin, which can be used to communicate with PI piezo-controllers.
-Different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662) are implemented,
-It is used to work with Piefocs and Piezo-Stages. The ITO-Controllers have only one axis with axis number 0.
-This system needs a serial port, which differs depending on the controller type. The parameter are set automatically during initialization.
-It is initialized by actuator(&quot;PIPiezoCtrl&quot;, SerialIO, Controller Type (e.g. &apos;E662&apos;)).
-Stageparamters can be set directly by setParam(&quot;STAGEPARAMETER&quot;, value).
-WARNING: The calibration of voltage to position are hardcoded into the controller according to its corresponding stage.
-Hence, stages should not be mixed up.</source>
+        <location line="+18"/>
+        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>LGPL</source>
+        <location line="+1"/>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -560,7 +608,7 @@ Hence, stages should not be mixed up.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -578,7 +626,7 @@ Hence, stages should not be mixed up.</source>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

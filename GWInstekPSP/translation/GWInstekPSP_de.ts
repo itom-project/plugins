@@ -77,7 +77,7 @@
 <context>
     <name>GWInstekPSP</name>
     <message>
-        <location filename="../GWInstekPSP.cpp" line="+166"/>
+        <location filename="../GWInstekPSP.cpp" line="+178"/>
         <source>Undefined answer from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -214,18 +214,18 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-9"/>
-        <source>PSP-405, PSP-603 and PSP-2010</source>
+        <location line="-19"/>
+        <source>Controller for power supplies PSP-405, PSP-603 and PSP-2010 or GWInstek</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>The GWInstekPSP is a iTom-PlugIn, which can be used to communicate with GW Instek PSP-405, PSP-603 and PSP-2010</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>ito-Internal</source>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -335,7 +335,7 @@
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -353,7 +353,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -371,7 +371,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

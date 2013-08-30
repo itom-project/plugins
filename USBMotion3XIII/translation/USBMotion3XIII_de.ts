@@ -410,18 +410,18 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../USBMotion3XIII.cpp" line="+88"/>
+        <location filename="../USBMotion3XIII.cpp" line="+98"/>
         <source>A motor driver for the USB Motion 3x III card, COPTONIX GmbH, www.coptonix.com</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>This driver is able to address up to three different 3-phase stepper motors with up to 64 microstep-accuracy.</source>
+        <location line="+6"/>
+        <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>LGPL</source>
+        <location line="+1"/>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -811,7 +811,7 @@
     <name>USBMotion3XIIIInterface</name>
     <message>
         <location line="-1540"/>
-        <source>serial number of the device to open</source>
+        <source>serial number or string of the device to open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -848,7 +848,7 @@
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -866,7 +866,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -884,7 +884,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

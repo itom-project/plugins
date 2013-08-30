@@ -210,7 +210,7 @@
 <context>
     <name>LeicaMotorFocus</name>
     <message>
-        <location filename="../LeicaMotorFocus.cpp" line="+275"/>
+        <location filename="../LeicaMotorFocus.cpp" line="+282"/>
         <source>Unexspected #(17) at first sign in buffer. Sign deleted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -373,19 +373,17 @@
     <name>QObject</name>
     <message>
         <location line="-9"/>
-        <source>DLL for Leica MZ12.x Focusmotor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>The LeiceMotorFocus is an itom-plugin, which can be used to control the z-stage
-Leica MZ12 or MZ12.5 Stereomicroscope.
-It is initialized by actuator(&quot;LeicaMotorFocus&quot;, SerialIO).</source>
+        <source>Plugin for Leica MZ12.X focus actuator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>LGPL with ITO itom-exception, check license!!!</source>
+        <source>licensed under LGPL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -475,7 +473,7 @@ It is initialized by actuator(&quot;LeicaMotorFocus&quot;, SerialIO).</source>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -493,7 +491,7 @@ It is initialized by actuator(&quot;LeicaMotorFocus&quot;, SerialIO).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -511,7 +509,7 @@ It is initialized by actuator(&quot;LeicaMotorFocus&quot;, SerialIO).</source>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

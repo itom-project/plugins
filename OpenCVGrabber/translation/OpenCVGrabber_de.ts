@@ -4,7 +4,7 @@
 <context>
     <name>OpenCVGrabber</name>
     <message>
-        <location filename="../OpenCVGrabber.cpp" line="+309"/>
+        <location filename="../OpenCVGrabber.cpp" line="+321"/>
         <source>x-start for software ROI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -69,12 +69,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+145"/>
-        <source>Dialog for manually selecting any camera not yet implemented.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
+        <location line="+154"/>
         <source>Camera (%i) could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
@@ -168,25 +163,25 @@
     <name>OpenCVGrabberInterface</name>
     <message>
         <location line="-751"/>
-        <source>ID of camera</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>If true, a camera selection dialog is opened during startup</source>
+        <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-8"/>
+        <location line="-20"/>
         <source>OpenCV Video Capture (USB-Cams, Firewire CMU1384 (if compiled in OpenCV)...)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>LGPL</source>
+        <location line="+15"/>
+        <source>licensed under LGPL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -326,7 +321,7 @@
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -344,7 +339,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -362,7 +357,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>
@@ -424,7 +419,7 @@
 <context>
     <name>ito::AddInGrabber</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
         <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
         <translation type="unfinished"></translation>

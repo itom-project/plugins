@@ -4,98 +4,104 @@
 <context>
     <name>FittingFilters</name>
     <message>
-        <location filename="../fittingfilters.cpp" line="+96"/>
         <source>fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy)</source>
-        <translation type="unfinished">Fittet eine Ebene in 2D-Datenobjekten und gibt Ebenenparameter A, B, C (z=A+Bx+Cy) zurück</translation>
+        <translation type="obsolete">Fittet eine Ebene in 2D-Datenobjekten und gibt Ebenenparameter A, B, C (z=A+Bx+Cy) zurück</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>subtracts plane from 2D-dataObject given by plane-parameters A,B,C (z=A+Bx+Cy)</source>
-        <translation type="unfinished">Subtrahiert eine Ebene vom 2D-Datenobjekt, gegeben durch die Ebenenparameter A, B, C (z=A+Bx+Cy)</translation>
+        <translation type="obsolete">Subtrahiert eine Ebene vom 2D-Datenobjekt, gegeben durch die Ebenenparameter A, B, C (z=A+Bx+Cy)</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>fits plane in 2D-dataObject and subtracts this plane from the dataObject -&gt; this is a combination of fitPlane and subtractPlane</source>
-        <translation type="unfinished">Fittet eine Ebene im 2D-Datenobjekt und subtrahiert diese Ebene vom Datenobjekt -&gt; dies ist eine Kombination von &apos;fitPlane&apos; und &apos;subtractPlane&apos;</translation>
+        <translation type="obsolete">Fittet eine Ebene im 2D-Datenobjekt und subtrahiert diese Ebene vom Datenobjekt -&gt; dies ist eine Kombination von &apos;fitPlane&apos; und &apos;subtractPlane&apos;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location filename="../fittingfilters.cpp" line="+959"/>
         <source>fits 2D-polynomial in 2D-dataObject and returns a double-DataObject with the fitted surface as well as an error value sigma</source>
         <translation>Fittet ein 2D-Polynom n-ter Ordnung in ein 2D-Datenobjekt und gibt ein &apos;Double&apos;-Datenobjekt mit den gefitteten Daten und der mittleren Abweichung (sigma-Wert) zurück</translation>
     </message>
     <message>
-        <location line="+33"/>
-        <location line="+79"/>
-        <location line="+97"/>
-        <location filename="../polyfit2d.cpp" line="+98"/>
+        <location filename="../polyfit2d.cpp" line="+18"/>
         <source>uninitialized vector for mandatory, optional or output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-169"/>
-        <location line="+79"/>
-        <location line="+97"/>
+        <location filename="../fittingfilters.cpp" line="-854"/>
+        <location line="+75"/>
+        <location line="+109"/>
         <location filename="../polyfit2d.cpp" line="+7"/>
         <source>source image data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-173"/>
-        <location line="+176"/>
-        <source>keyword for the specific fit-algorithm, which should be used [leastSquareFit, ...]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-173"/>
-        <location line="+75"/>
+        <location line="-107"/>
         <source>Parameter A of regression plane z = A + Bx + Cy, which is subtracted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-74"/>
-        <location line="+75"/>
+        <location line="+1"/>
         <source>Parameter B of regression plane z = A + Bx + Cy, which is subtracted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-74"/>
-        <location line="+75"/>
+        <location line="+1"/>
         <source>Parameter C of regression plane z = A + Bx + Cy, which is subtracted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-58"/>
-        <location line="+76"/>
-        <location filename="../polyfit2d.cpp" line="-82"/>
+        <location line="-57"/>
+        <location line="+74"/>
+        <location filename="../polyfit2d.cpp" line="+34"/>
         <source>Error: source image must be two-dimensional.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-71"/>
-        <location line="+76"/>
+        <location line="-94"/>
+        <location line="+185"/>
+        <source>fitting method (leastSquareFit [default], leastSquareFitSVD)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-183"/>
+        <source>Parameter A of regression plane z = A + Bx + Cy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Parameter B of regression plane z = A + Bx + Cy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Parameter C of regression plane z = A + Bx + Cy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <location line="+74"/>
         <location filename="../polyfit2d.cpp" line="+5"/>
         <source>source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-71"/>
+        <location line="-69"/>
         <source>the chosen method is unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+45"/>
-        <location line="+97"/>
+        <location line="+44"/>
+        <location line="+109"/>
         <source>destination image data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-66"/>
+        <location line="-79"/>
         <location filename="../polyfit2d.cpp" line="+5"/>
         <source>destination matrix is NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+60"/>
         <source>Substracted plane with A = %1, B = %2, C = %3</source>
         <translation type="unfinished"></translation>
     </message>
@@ -105,7 +111,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="-84"/>
         <source>destination data object with fitted values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -130,7 +136,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+152"/>
         <source>2:  gradX und gradY =0, Funktion abgebrochen</source>
         <translation type="unfinished"></translation>
     </message>
@@ -163,7 +169,7 @@
 <context>
     <name>FittingFiltersInterface</name>
     <message>
-        <location filename="../fittingfilters.cpp" line="-249"/>
+        <location filename="../fittingfilters.cpp" line="-225"/>
         <source>plugin-instance cannot be converted to class FittingFilters. Close operation failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -176,15 +182,25 @@
         <translation>Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>LGPL with ITO itom-exception</source>
+        <location line="+1"/>
+        <source>Please fill in detailed description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>licensed under LPGL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -202,7 +218,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -220,7 +236,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

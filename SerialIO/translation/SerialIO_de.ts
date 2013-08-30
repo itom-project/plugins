@@ -62,7 +62,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+195"/>
+        <location filename="../SerialIO.cpp" line="+194"/>
         <location line="+174"/>
         <source>invalid baud rate</source>
         <translation>Ungültige Baudrate</translation>
@@ -155,9 +155,14 @@
         <translation>Puffer löschen war nicht erfolgreich</translation>
     </message>
     <message>
-        <location line="+53"/>
-        <source>LGPL</source>
-        <translation></translation>
+        <location line="+58"/>
+        <source>licensed under LGPL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>N.A.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Serialport-Interface</source>
@@ -303,21 +308,24 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
 <context>
     <name>SerialIOInterface</name>
     <message>
-        <location line="-65"/>
         <source>Serialport-Interface</source>
-        <translation>Serielle Schnittstelle</translation>
+        <translation type="obsolete">Serielle Schnittstelle</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>The SerialIO is a itom-PlugIn to give a direct access to serial ports.
 It is used by different plugins for communication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
 The plugin is implemented for Windows or Linux. Parameters and initialization differs according to operation system.</source>
-        <translation>SerialIO ist ein itom-Plugin um einen direkten Zugriff auf die serielle Schnittstelle zu bekommen.
+        <translation type="obsolete">SerialIO ist ein itom-Plugin um einen direkten Zugriff auf die serielle Schnittstelle zu bekommen.
 Es wird in unterschiedlichen Plugins zur Kommunikation benutzt (z. B. &apos;MFUCtrl&apos;, &apos;Uhltisch&apos;).
 Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisierung sind betriebssystemabhängig.</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="-71"/>
+        <source>itom-plugin for a serial port communication</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <source>The number of the serial port, starting with 1</source>
         <translation>Die Nummer des Ports der seriellen Schnittstelle beginnt mit 1</translation>
     </message>
@@ -785,7 +793,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
         <source>Constructor must be overwritten</source>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
@@ -803,7 +811,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Uninitialisierte Vektoren für Pflichtparameter!</translation>
     </message>
@@ -821,7 +829,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation>Funktion &quot;Execution&quot; in diesem Plugin nicht verwendet</translation>
     </message>
