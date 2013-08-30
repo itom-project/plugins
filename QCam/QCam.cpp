@@ -194,6 +194,7 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 		//get size and bit depth of camera
 		unsigned long size, height, width;
 		unsigned long maxBitDepth;
+		double integration_time;
 		QCam_GetInfo( m_camHandle, qinfBitDepth, &maxBitDepth );
 
 		if (maxBitDepth <= 8)
@@ -244,6 +245,11 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 		paramMeta->setMin(0);
 		paramMeta->setMax(height);
 		m_params["sizey"].setVal<int>(height);
+
+		paramMeta = (ito::IntMeta*)(m_params["integration_time"].getMeta());
+		paramMeta->setMin(0);
+		paramMeta->setMax(integration_time);
+		m_params["integration_time"].setVal<int>(integration_time);
 
 		//ask camera for gain, intensity...
 		unsigned long gainMin, gainMax, gain;
@@ -401,6 +407,34 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
 			gain = gainMin + gain * (gainMax - gainMin);
 			
 			retValue += errorCheck( QCam_SetParam(&m_camSettings, qprmNormalizedGain, gain) );
+
+			if (!retValue.containsError())
+			{
+				settingsChanged = true;
+				retValue += it->copyValueFrom( &(*val) );
+			}
+			
+			// stop the camera, clear the buffers and send the parameter to the camera.  then restart the camera.
+			// if it was running live, restart that also
+		}
+        else
+        {
+            //all parameters that don't need further checks can simply be assigned
+            //to the value in m_params (the rest is already checked above)
+            retValue += it->copyValueFrom( &(*val) );
+        }
+		if (key == "integration_time")
+		{
+			uint64 expMax, expMin;
+
+			double integration_time = val->getVal<double>();
+			QCam_GetParam64Min( &m_camSettings, qprm64Exposure, &expMax );
+			QCam_GetParam64Max( &m_camSettings, qprm64Exposure, &expMin );
+
+			//calculate normalized-gain from 0-1-gain
+			//gain = gainMin + gain * (gainMax - gainMin);
+			
+			retValue += errorCheck( QCam_SetParam64(&m_camSettings, qprm64Exposure, uint64(integration_time*1000000000)) );
 
 			if (!retValue.containsError())
 			{
