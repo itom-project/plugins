@@ -2003,7 +2003,18 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
         return ito::RetVal(ito::retError, 0, tr("Palette name empty.").toAscii().data());
     }
 
-    ito::dObjHelper::verify2DDataObject(dObj, "sourceImage", 1, std::numeric_limits<ito::int16>::max(), 1, std::numeric_limits<ito::int16>::max(), 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt8, ito::tInt8, ito::tUInt32, ito::tInt32, ito::tUInt8, ito::tInt8, ito::tFloat32, ito::tFloat64);
+    //allow all 1-plane data objects (independent on dimensions), but no complex ones
+    if (dObj->calcNumMats() != 1)
+    {
+        ret += ito::RetVal(ito::retError, 0, tr("The given dataObject must have exactly one plane").toAscii().data());
+    }
+    else if (dObj->getType() == ito::tComplex128 || dObj->getType() == ito::tComplex64)
+    {
+        ret += ito::RetVal(ito::retError, 0, tr("Complex data types not supported").toAscii().data());
+    }
+
+    //ito::dObjHelper::verify2DDataObject(dObj, "sourceImage", 1, std::numeric_limits<ito::int16>::max(), 1, std::numeric_limits<ito::int16>::max(), 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt8, ito::tInt8, ito::tUInt32, ito::tInt32, ito::tUInt8, ito::tInt8, ito::tFloat32, ito::tFloat64);
+    
     if(ret.containsError())
     {
         return ret;
@@ -2170,7 +2181,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
 	//Creating an Image in Mono Format
 	if(imgPalette.compare("gray") == 0)
     {
-        scrData = (cv::Mat *)(dObj->get_mdata()[0]);
+        scrData = (cv::Mat *)(dObj->get_mdata()[dObj->seekMat(0)]);
         saveMat.create(scrData->rows, scrData->cols, CV_8U);
 
         switch(dObj->getType())
@@ -2207,7 +2218,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
 	{
         if(gray16Supported)
         {
-            scrData = (cv::Mat *)(dObj->get_mdata()[0]);
+            scrData = (cv::Mat *)(dObj->get_mdata()[dObj->seekMat(0)]);
             saveMat.create(scrData->rows, scrData->cols, CV_16U);
 
             switch(dObj->getType())
@@ -2261,7 +2272,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
             return ret;
         }
 
-        scrData = (cv::Mat *)(dObj->get_mdata()[0]);
+        scrData = (cv::Mat *)(dObj->get_mdata()[dObj->seekMat(0)]);
 
         if(colorSupported)
         {
