@@ -2205,7 +2205,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
                 ret += itom::io::transformScaled< ito::int32, ito::uint8>(saveMat, scrData);
                 break;
             case ito::tFloat32:
-                ret += itom::io::transformScaled<ito::float64, ito::uint8>(saveMat, scrData);
+                ret += itom::io::transformScaled<ito::float32, ito::uint8>(saveMat, scrData);
                 break;
             case ito::tFloat64:
                 ret += itom::io::transformScaled<ito::float64, ito::uint8>(saveMat, scrData);
