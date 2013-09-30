@@ -95,7 +95,7 @@ class DataObjectIO : public ito::AddInAlgo
         } tImageFormat;
 
     private:
-        template<typename _Tp> static ito::RetVal writeDataBlock(QFile &outFile, ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator);
+        template<typename _Tp> static ito::RetVal writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator);
         template<typename _Tp> static ito::RetVal readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int flags, const char seperator);
         static ito::RetVal readNistHeader(QFile &inFile, ito::DataObject &newObject, double &zscale,const int flags);
 

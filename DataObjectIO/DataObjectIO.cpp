@@ -112,10 +112,10 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(DataObjectIO::loadImage, DataObjectIO::loadImageParams, tr("loads 1D and 2D dataObject from common image formats via openCV"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Images (*.pgm *.pbm *.ppm *.sr *.ras *.bmp *.dib *.png *.tif *.tiff *.jpg *.jpeg *.jp2 *.gif *.xbm *.xpm)"));
     m_filterList.insert("loadAnyImage", filter);
 
-    filter = new FilterDef(DataObjectIO::saveNistSDF, DataObjectIO::saveNistSDFParams, tr("saves 1D and 2D dataObject to aNist-Format (sdf)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("ASCII (*.sdf)"));
+    filter = new FilterDef(DataObjectIO::saveNistSDF, DataObjectIO::saveNistSDFParams, tr("saves 1D and 2D dataObject to the ascii surface data file format (sdf), version aNIST-1.0"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("ASCII Surface Data File (*.sdf)"));
     m_filterList.insert("saveSDF", filter);
 
-    filter = new FilterDef(DataObjectIO::loadNistSDF, DataObjectIO::loadNistSDFParams, tr("loads 1D and 2D dataObject from aNist-Format (sdf)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("ASCII (*.sdf)"));
+    filter = new FilterDef(DataObjectIO::loadNistSDF, DataObjectIO::loadNistSDFParams, tr("loads an ascii-based surface data file to a 1D or 2D data object (sdf), version aNIST-1.0"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("ASCII Surface Data File (*.sdf)"));
     m_filterList.insert("loadSDF", filter);
 
     filter = new FilterDef(DataObjectIO::saveTiff, DataObjectIO::saveTiffParams, tr("saveObject as tiff via openCV (tif)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.tif *.tiff)"));
@@ -941,7 +941,7 @@ ito::RetVal DataObjectIO::saveNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("decimalSigns",ito::ParamBase::Int | ito::ParamBase::In, 0, 12, -3, tr("Number of decimal signs (default: 3).").toAscii().data());
+	    param = ito::Param("decimalSigns",ito::ParamBase::Int | ito::ParamBase::In, 0, 12, 3, tr("Number of decimal signs (default: 3).").toAscii().data());
         paramsOpt->append(param);
 	    param = ito::Param("verticalScale",ito::ParamBase::Int | ito::ParamBase::In, -12, 12, -3, tr("Power of 10 for the zValue (Default: -3, micrometer), only for floating point objects.").toAscii().data());
         paramsOpt->append(param);
@@ -964,6 +964,8 @@ ito::RetVal DataObjectIO::saveNistSDFParams(QVector<ito::Param> *paramsMand, QVe
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "saveNistSDF" function.
 *	It retrieves the raw-data from the dataObject and writes them as ascii-data to the location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
+*
+*   see http://physics.nist.gov/VSC/jsp/DataFormat.jsp#a or http://resource.npl.co.uk/softgauges/Help.htm
 */
 ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
@@ -1222,7 +1224,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 *	@param [in]     zscale      The zscale, will be multiplied with the extracted data
 *   @param [int]    flags       For later improvements, not used yet
 */
-template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator)
+template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator)
 {
     ito::RetVal ret(ito::retOk);
 
@@ -1231,8 +1233,8 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
     int xsize = scrObject->getSize(1);
     int ysize = scrObject->getSize(0);
 
-    cv::Mat* dstMat = (cv::Mat*)(scrObject->get_mdata()[0]);
-    _Tp *p_Dst = NULL;
+    const cv::Mat* dstMat = (const cv::Mat*)(scrObject->get_mdata()[0]);
+    const _Tp *p_Dst = NULL;
     QByteArray curLine;
     curLine.reserve(30000);
     if(xsize == 1)
@@ -1252,7 +1254,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
             for(y = 0; y < ysize; y ++)
             {
                 p_Dst = dstMat->ptr<_Tp>(y);
-                curLine = QByteArray::number(p_Dst[0]*zScale, 'd', decimals);
+                curLine = QByteArray::number(p_Dst[0]*zScale, 'f', decimals);
                 curLine.append('\n');
                 outFile.write(curLine);
             }        
@@ -1274,7 +1276,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
         {
             for(x = 0; x < xsize; x ++)
             {
-                curLine = QByteArray::number(p_Dst[x]*zScale, 'd', decimals);
+                curLine = QByteArray::number(p_Dst[x]*zScale, 'f', decimals);
                 curLine.append('\n');
                 outFile.write(curLine);
             }        
@@ -1307,10 +1309,10 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                 curLine.clear();
                 for(x = 0; x < xsize - 1; x ++)
                 {
-                    curLine.append(QByteArray::number(p_Dst[x]*zScale, 'd', decimals));
+                    curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
                     curLine.append(seperator);
                 }
-                curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'd', decimals));
+                curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
                 curLine.append('\n');
                 outFile.write(curLine);
             }
