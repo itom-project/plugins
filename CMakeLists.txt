@@ -63,6 +63,12 @@ if (PLUGIN_OpenCVGrabber)
 	ADD_SUBDIRECTORY(OpenCVGrabber)
 endif (PLUGIN_OpenCVGrabber)
 
+# PCOPixelFly
+OPTION(PLUGIN_PCOPixelFly "Build with this plugin." ON)
+if (PLUGIN_PCOPixelFly)
+	ADD_SUBDIRECTORY(PCOPixelFly)
+endif (PLUGIN_PCOPixelFly)
+
 # PIPiezoCtrl
 OPTION(PLUGIN_PIPiezoCtrl "Build with this plugin." ON)
 if (PLUGIN_PIPiezoCtrl)
