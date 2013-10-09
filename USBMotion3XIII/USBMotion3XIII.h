@@ -1,14 +1,6 @@
 #ifndef USBMOTION3XIII_H
 #define USBMOTION3XIII_H
 
-/**\file DummyMotor.h
-* \brief In this file the class the DummyMotor and its interface are defined
-* 
-*\sa DummyMotorInterface, DummyMotor
-*\author Wolfram Lyda
-*\date	Oct2011
-*/
-
 #include "common/addInInterface.h"
 
 #include "dialogUSBMotion3XIII.h"	//! This is the configuration dialog
@@ -20,10 +12,7 @@
 #include <qevent.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** @class DummyMotorInterface
-*   @brief DummyMotor functionality
-*   
-*   AddIn Interface for the DummyMotor class s. also \ref DummyMotor
+/** @class USBMotion3XIIIInterface
 */
 class USBMotion3XIIIInterface : public ito::AddInInterfaceBase
 {
@@ -47,13 +36,7 @@ class USBMotion3XIIIInterface : public ito::AddInInterfaceBase
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** @class DummyMotor
-*   @brief DummyMotor functionality
-*   
-*   The DummyMotor-Class can be used where algorithms should be tested without actually
-*   using a specific hardware. The DummyMotor basically accepts setPos and getPos commands
-*   and keeps track of the position with an internal variable. The maximum number of 
-*   axis is currently limited to 10 - just for programmers conveniance.
+/** @class USBMotion3XIII
 */
 class USBMotion3XIII : public ito::AddInActuator 
 {
@@ -61,7 +44,6 @@ class USBMotion3XIII : public ito::AddInActuator
 
     protected:
         ~USBMotion3XIII();	//! Destructor
-//        DummyMotor(int uniqueID, QObject *parent = 0);	//!< Constructur
         USBMotion3XIII();	//!< Constructur
 
         void timerEvent( QTimerEvent *event );

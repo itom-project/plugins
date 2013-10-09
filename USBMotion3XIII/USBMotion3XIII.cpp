@@ -1,14 +1,3 @@
-/* *\file DummyMotor.cpp
-* \brief In this file the functions for the classes of the DummyMotor and its Interface are defined
-*
-*	The Dummymotor is a virtual device to test positining function and to give developers a template for the implementation of actuators and their GUI 
-*	This functions are based on the DummyMotor.cpp which was implemented into the ITO M and ITO M++ measurement programm at ITO, university stuttgart.
-*
-*\sa DummyMotorInterface, DummyMotor, DummyMotor.h
-*\author ITO
-*\date	Oct2011
-*/
-
 #include "USBMotion3XIII.h"
 #include "pluginVersion.h"
 #include <math.h>
