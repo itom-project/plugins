@@ -56,8 +56,15 @@ FittingFiltersInterface::FittingFiltersInterface()
     m_type = ito::typeAlgo;
     setObjectName("FittingFilters");
     
-    m_description = QObject::tr("Filter-Plugin for fitting-methods.");
-    m_detaildescription = QObject::tr("Please fill in detailed description");
+    char* docstring = \
+"This plugin contains algorithms for fitting planes and other two dimensional polynomials to dataObjects \
+mainly using the method of least-squares. Some of the included algorithms can also be called with \
+weighted values, such that more precise fitting results are achievable. \n\
+\n\
+Furthermore this plugin also contains methods to finally subtract or reconstruct the fitted surfaces.";
+    
+    m_description = QObject::tr("Plugin with fitting algorithms.");
+    m_detaildescription = QObject::tr(docstring);
     m_author = "M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;

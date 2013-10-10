@@ -73,7 +73,7 @@ at comile time. Therefore you need to install the drivers for the same version a
 of this plugin.";
 	m_detaildescription = QObject::tr(docstring);
 	m_author            = "W. Lyda, M. Gronle, ITO, University Stuttgart";
-    m_license           = QObject::tr("itom-plugin under LGPL / CMU1384 driver under LGPL");
+    m_license           = QObject::tr("itom-plugin under LGPL / CMU1394 driver under LGPL");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;

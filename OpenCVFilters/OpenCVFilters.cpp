@@ -62,7 +62,7 @@ OpenCVFiltersInterface::OpenCVFiltersInterface()
 - feature detections (circles, chessboard corners...) \n\
 \n\
 This plugin not only requires access to the core library of OpenCV but also to further libraries like \
-imgproc and calib3d";
+imgproc and calib3d.";
 
     m_description = QObject::tr("Wrapped algorithms from OpenCV");
     m_detaildescription = QObject::tr(docstring);

@@ -231,7 +231,7 @@ OpenCVGrabberInterface::OpenCVGrabberInterface()
     m_type = ito::typeDataIO | ito::typeGrabber;
     setObjectName("OpenCVGrabber");
 
-    m_description = QObject::tr("OpenCV Video Capture (USB-Cams, Firewire CMU1384 (if compiled in OpenCV)...)");
+    m_description = QObject::tr("OpenCV Video Capture (USB-Cams, Firewire CMU1394...)");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char* docstring = \
@@ -239,7 +239,9 @@ OpenCVGrabberInterface::OpenCVGrabberInterface()
 \n\
 Usually all ordinary USB cameras are supported. If you compiled OpenCV with the CMU1384 flag, these firewire cameras are supported as well. Currently, a queuing \
 problem in the Windows version for USB cameras exists. Therefore the plugin requests multiple images per frame in order to finally get the newest one. \
-Therefore this implementation is not the fastest connection to any USB cameras.";
+Therefore this implementation is not the fastest connection to any USB cameras. \n\
+\n\
+Some supported cameras are only available if OpenCV is compiled with their support, e.g. CMU1394 (not included per default in pre-compiled binaries of OpenCV.";
 	m_detaildescription = QObject::tr(docstring);
 
     m_author = "M. Gronle, ITO, University Stuttgart";

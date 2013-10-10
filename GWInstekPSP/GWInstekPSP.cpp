@@ -65,7 +65,7 @@ GWInstekPSPInterface::GWInstekPSPInterface()
     m_type = ito::typeDataIO | ito::typeRawIO;
     setObjectName("GWInstekPSP");
 
-    m_description = QObject::tr("Controller for power supplies PSP-405, PSP-603 and PSP-2010 or GWInstek");
+    m_description = QObject::tr("Controller for power supplies PSP-405, PSP-603 and PSP-2010 of GWInstek");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char* docstring = \
