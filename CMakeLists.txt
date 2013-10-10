@@ -21,6 +21,12 @@ if (PLUGIN_DataObjectIO)
 	ADD_SUBDIRECTORY(DataObjectIO)
 endif (PLUGIN_DataObjectIO)
 
+# dispWindow
+OPTION(PLUGIN_dispWindow "Build with this plugin." ON)
+if (PLUGIN_dispWindow)
+	ADD_SUBDIRECTORY(dispWindow)
+endif (PLUGIN_dispWindow)
+
 # DummyGrabber
 OPTION(PLUGIN_DummyGrabber "Build with this plugin." ON)
 if (PLUGIN_DummyGrabber)
@@ -56,6 +62,12 @@ OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." ON)
 if (PLUGIN_LeicaMotorFocus)
 	ADD_SUBDIRECTORY(LeicaMotorFocus)
 endif (PLUGIN_LeicaMotorFocus)
+
+# OpenCVFilters
+OPTION(PLUGIN_OpenCVFilters "Build with this plugin." ON)
+if (PLUGIN_OpenCVFilters)
+	ADD_SUBDIRECTORY(OpenCVFilters)
+endif (PLUGIN_OpenCVFilters)
 
 # OpenCVGrabber
 OPTION(PLUGIN_OpenCVGrabber "Build with this plugin." ON)
