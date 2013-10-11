@@ -141,10 +141,10 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     m_filterList.insert("savePGM", filter);
 
     filter = new FilterDef(DataObjectIO::saveItomIDO, DataObjectIO::saveItomIDOParams, tr("saveObject or only its header as xml-compatible file (ido, idh)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Raw-XML (*.ido *.idh)"));
-    m_filterList.insert("savePGM", filter);
+    m_filterList.insert("saveIDO", filter);
 
     filter = new FilterDef(DataObjectIO::loadItomIDO, DataObjectIO::loadItomIDOParams, tr("loadOject or its header from an xml-compatible file (ido, idh) into a dataObject"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Raw-XML (*.ido *.idh)"));
-    m_filterList.insert("loadAnyImage", filter);
+    m_filterList.insert("loadIDO", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
@@ -2513,22 +2513,71 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
             case CV_8UC3:
             case CV_8UC4:
                 if(reduceChanel) imageType = ito::tUInt8;
-                else return ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2013).").toAscii().data());
+                else imageType = ito::tRGBA32;
                 break;
             case CV_16UC3:
             case CV_16UC4:
                 if(reduceChanel) imageType = ito::tUInt16;
-                else return ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2013).").toAscii().data());
+                else return ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toAscii().data());
                 break;
             default:
-                return ito::RetVal(ito::retError,0,tr("Color format of the file is currently not compatible with itom. Wait for next itom version (approx end of 2013).").toAscii().data());
+                return ito::RetVal(ito::retError,0,tr("Color format of the file is currently not compatible with itom. Wait for next itom version.").toAscii().data());
         }
 
         tempObject = ito::DataObject(image.rows, image.cols, imageType);
 
         if(!reduceChanel)
         {
-            image.copyTo(*((cv::Mat*)(tempObject.get_mdata()[0])));
+
+            if(image.type() == CV_8UC3)
+            {
+                ito::rgba32* dst = NULL;
+                cv::Vec3b* scr = NULL;
+
+                for(int y = 0; y < image.rows; y++)
+                {
+                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::rgba32>(y);
+                    scr = image.ptr<cv::Vec3b>(y);
+                    for(int x = 0; x < image.cols; x++)
+                    {
+                        dst[x].alpha() = 255;
+                        dst[x].red()   = scr[x][2];
+                        dst[x].green() = scr[x][1];
+                        dst[x].blue()  = scr[x][0];
+                    }
+                }
+            }
+            else if(image.type() == CV_16UC3)
+            {
+                ret += ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toAscii().data());
+            }
+            else if(image.type() == CV_8UC4)
+            {
+                ito::rgba32* dst = NULL;
+                cv::Vec4b* scr = NULL;
+
+                for(int y = 0; y < image.rows; y++)
+                {
+                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::rgba32>(y);
+                    scr = image.ptr<cv::Vec4b>(y);
+                    for(int x = 0; x < image.cols; x++)
+                    {
+                        dst[x].alpha() = scr[x][0];
+                        dst[x].red()   = scr[x][3];
+                        dst[x].green() = scr[x][2];
+                        dst[x].blue()  = scr[x][1];
+                    }
+                }
+            }
+            else if(image.type() == CV_16UC4)
+            {
+                ret += ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toAscii().data());
+            }
+            else
+            {
+                image.copyTo(*((cv::Mat*)(tempObject.get_mdata()[0])));
+            }
+            
         }
         else
         {
@@ -2551,7 +2600,8 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
             }
             else
             {
-                return ito::RetVal(ito::retError,0,tr("Color channel not supported for extraction!").toAscii().data());
+                colIndex = -1;
+                return ito::RetVal(ito::retError,0,tr("Color format of the file is currently not compatible with itom. Wait for next itom version.").toAscii().data());
             }
 
             if(image.type() == CV_8UC3)
