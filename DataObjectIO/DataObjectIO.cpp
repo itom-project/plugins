@@ -11,6 +11,7 @@
 #include "opencv2/highgui/highgui.hpp"
 
 #include "common/sharedStructuresGraphics.h"
+#include "common/sharedFunctionsQt.h"
 #include "pluginVersion.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -138,6 +139,12 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 
     filter = new FilterDef(DataObjectIO::savePGM, DataObjectIO::savePGMParams, tr("saveObject as portabel gray map via openCV (pgm, pbm)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.pgm *.pbm)"));
     m_filterList.insert("savePGM", filter);
+
+    filter = new FilterDef(DataObjectIO::saveItomIDO, DataObjectIO::saveItomIDOParams, tr("saveObject or only its header as xml-compatible file (ido, idh)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Raw-XML (*.ido *.idh)"));
+    m_filterList.insert("savePGM", filter);
+
+    filter = new FilterDef(DataObjectIO::loadItomIDO, DataObjectIO::loadItomIDOParams, tr("loadOject or its header from an xml-compatible file (ido, idh) into a dataObject"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Raw-XML (*.ido *.idh)"));
+    m_filterList.insert("loadAnyImage", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
@@ -2629,3 +2636,78 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
 
     return ret;
 }
+
+ito::RetVal DataObjectIO::loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal ret = ito::retOk;
+    char *filename = (*paramsMand)[1].getVal<char*>();
+
+    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+
+    if(dObjDst == NULL)
+    {
+        return ito::RetVal(ito::retError,0,tr("Destination dataObject is invalid.").toAscii().data());
+    }
+
+    ito::DataObject tempObject;
+    QString fileNameQt(filename);
+    ret += ito::loadXML2DOBJ(&tempObject, fileNameQt, false);
+
+    if(!ret.containsError())
+    {
+        *dObjDst = tempObject;
+    }
+
+    return ret;
+};
+ito::RetVal DataObjectIO::loadItomIDOParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(!retval.containsError())
+    {
+        ito::Param param = ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObjet").toAscii().data());
+        paramsMand->append(param);
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source file name").toAscii().data());
+        paramsMand->append(param);
+    }
+    return retval;
+};
+
+ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal ret = ito::retOk;
+    char *filename = (*paramsMand)[1].getVal<char*>();
+
+    bool onlyHeader = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
+    bool asBinary   = (*paramsOpt)[1].getVal<int>() > 0 ? true : false;
+
+    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+
+    if(dObjDst == NULL)
+    {
+        return ito::RetVal(ito::retError,0,tr("Destination dataObject is invalid.").toAscii().data());
+    }
+
+    ito::DataObject tempObject;
+    QString fileNameQt(filename);
+    ret += ito::saveDOBJ2XML(dObjDst, fileNameQt, onlyHeader, asBinary);
+
+    return ret;
+};
+ito::RetVal DataObjectIO::saveItomIDOParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(!retval.containsError())
+    {
+        ito::Param  param = ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Any type of dataObject").toAscii().data());
+        paramsMand->append(param);
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        paramsMand->append(param);
+
+        param = ito::Param("headerOnly", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 0 the complete dataObject is saved (data + metadata), else the filter saves only metadata").toAscii().data());
+        paramsOpt->append(param);
+        param = ito::Param("tags2Binary", ito::ParamBase::String | ito::ParamBase::In, 0, 1, 0, tr("If 0 the metaData is saved as clear text, else double tags are saved as binary").toAscii().data());
+        paramsOpt->append(param);
+    }
+    return retval;
+};

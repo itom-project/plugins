@@ -64,6 +64,7 @@ set(plugin_HEADERS
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
     ${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsGraphInc.h
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresGraphics.h
+    ${ITOM_SDK_INCLUDE_DIR}/common/sharedFunctionsQt.h
     ${ITOM_SDK_INCLUDE_DIR}/common/typeDefs.h
     ${ITOM_SDK_INCLUDE_DIR}/DataObject/dataObjectFuncs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/DataObjectIO.h
@@ -82,6 +83,7 @@ set(plugin_SOURCES
     ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.cpp
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.cpp
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp
+    ${ITOM_SDK_INCLUDE_DIR}/common/sharedFunctionsQt.cpp
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresGraphics.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DataObjectIO.cpp
 )
