@@ -2706,7 +2706,7 @@ ito::RetVal DataObjectIO::saveItomIDOParams(QVector<ito::Param> *paramsMand, QVe
 
         param = ito::Param("headerOnly", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 0 the complete dataObject is saved (data + metadata), else the filter saves only metadata").toAscii().data());
         paramsOpt->append(param);
-        param = ito::Param("tags2Binary", ito::ParamBase::String | ito::ParamBase::In, 0, 1, 0, tr("If 0 the metaData is saved as clear text, else double tags are saved as binary").toAscii().data());
+        param = ito::Param("tags2Binary", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 0 the metaData is saved as clear text, else double tags are saved as binary").toAscii().data());
         paramsOpt->append(param);
     }
     return retval;
