@@ -2686,7 +2686,17 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
 
     return ret;
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+//! loadItomIDO
+//----------------------------------------------------------------------------------------------------------------------------------
+/** loadDataObject method, retrieves xml-compatible raw data and creates corresponding DataObject.
+*   @param [in] paramsMand  mandatory argument parameters
+*   @param [in] paramsOpt   optional argument parameters
+*	@param [out] outVals   optional output parameters
+*
+*   This Function accepts parameters from itom Python application according to specification provided by "loadItomIDOParams" function.
+*	It retrieves the xml-compatible raw data from file location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
+*/
 ito::RetVal DataObjectIO::loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal ret = ito::retOk;
@@ -2710,6 +2720,17 @@ ito::RetVal DataObjectIO::loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
 
     return ret;
 };
+//----------------------------------------------------------------------------------------------------------------------------------
+//! loadItomIDOParams
+//----------------------------------------------------------------------------------------------------------------------------------
+/** loadItomIDOParams method, specifies the parameter list for loadItomIDO method.
+*   @param [in] paramsMand  mandatory argument parameters
+*   @param [in] paramsOpt   optional argument parameters
+*	@param [out] outVals   optional output parameters
+*
+*   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
+*	and their specifications as required for reading a xml-compatible binary and converting into DataObject from Hard drive.
+*/
 ito::RetVal DataObjectIO::loadItomIDOParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
@@ -2722,7 +2743,17 @@ ito::RetVal DataObjectIO::loadItomIDOParams(QVector<ito::Param> *paramsMand, QVe
     }
     return retval;
 };
-
+//----------------------------------------------------------------------------------------------------------------------------------
+//! saveItomIDO
+//----------------------------------------------------------------------------------------------------------------------------------
+/** saveItomIDO method, saves the DataObject into Hard drive as xml-compatible raw file using QT XML-Parser.
+*   @param [in] paramsMand  mandatory argument parameters
+*   @param [in] paramsOpt   optional argument parameters
+*	@param [out] outVals   optional output parameters
+*
+*   This Function accepts parameters from itom Python application according to specification provided by "saveItomIDOParams" function.
+*	It converts passed DataObject into xml-compatible data and stores it to specific location provided on Hard drive.
+*/
 ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal ret = ito::retOk;
@@ -2744,6 +2775,17 @@ ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
 
     return ret;
 };
+//----------------------------------------------------------------------------------------------------------------------------------
+//! saveItomIDOParams
+//----------------------------------------------------------------------------------------------------------------------------------
+/** saveItomIDOParams method, specifies the parameter list for saveItomIDO method.
+*   @param [in] paramsMand  mandatory argument parameters
+*   @param [in] paramsOpt   optional argument parameters
+*	@param [out] outVals   optional output parameters
+*
+*   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
+*	and their specifications as required for converting DataObject into the itom native xml-compatible binary and save it into Hard drive.
+*/
 ito::RetVal DataObjectIO::saveItomIDOParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
