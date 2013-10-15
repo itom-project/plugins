@@ -110,12 +110,12 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
             Y = new _Tp[ dataZ->getTotal() ];
             W = new _Tp[ dataZ->getTotal() ];
 
-            for (size_t m = 0; m < dataZ->getSize(0); ++m)
+            for (int m = 0; m < dataZ->getSize(0); ++m)
             {
                 rowPtr = (_Tp*)dataZFloat->rowPtr(0,m);
                 rowPtrW = weightsFloat ? (_Tp*)weightsFloat->rowPtr(0,m) : NULL;
 
-                for (size_t n = 0; n < dataZ->getSize(1); ++n)
+                for (int n = 0; n < dataZ->getSize(1); ++n)
                 {
                     W[nrOfPoints] = rowPtrW ? rowPtrW[n] : 1.0f;
 
@@ -618,12 +618,12 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
         _Tp *x = new _Tp[result_->cols];
         _Tp *y = new _Tp[result_->rows];
 
-        for (size_t i = 0; i < dataZ->getSize(0); ++i)
+        for (int i = 0; i < dataZ->getSize(0); ++i)
         {
             y[i]  = ((float)i - offsets[0])*scales[0];
         }
 
-        for (size_t i = 0; i < dataZ->getSize(1); ++i)
+        for (int i = 0; i < dataZ->getSize(1); ++i)
         {
             x[i]  = ((float)i - offsets[1])*scales[1];
         }
@@ -664,7 +664,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
         size_t currentColumn = 0;
         cv::Mat temp;
 
-        for (size_t row = 0; row < dataZ->getSize(0); ++row)
+        for (int row = 0; row < dataZ->getSize(0); ++row)
         {
             majorColumn = 0;
             currentColumn = 0;
@@ -677,7 +677,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
                     if (i > 0)
                     {
                         currentColumn ++;
-                        for (size_t col = 0; col < dataZ->getSize(1); ++col)
+                        for (int col = 0; col < dataZ->getSize(1); ++col)
                             CVMATREF_2DREAL(Vrow,col,currentColumn) = x[col] * CVMATREF_2DREAL(Vrow,col,majorColumn);
                         majorColumn = currentColumn;
                     }
@@ -685,7 +685,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
                     for (size_t j = 1; j <= m-i; ++j)
                     {
                         currentColumn ++;
-                        for (size_t col = 0; col < dataZ->getSize(1); ++col)
+                        for (int col = 0; col < dataZ->getSize(1); ++col)
                             CVMATREF_2DREAL(Vrow,col,currentColumn) = y[row] * CVMATREF_2DREAL(Vrow,col,currentColumn-1);
                     }
                 }
@@ -698,7 +698,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
                     if (j > 0)
                     {
                         currentColumn ++;
-                        for (size_t col = 0; col < dataZ->getSize(1); ++col)
+                        for (int col = 0; col < dataZ->getSize(1); ++col)
                             CVMATREF_2DREAL(Vrow,col,currentColumn) = y[row] * CVMATREF_2DREAL(Vrow,col,majorColumn);
                         majorColumn = currentColumn;
                     }
@@ -706,7 +706,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
                     for (size_t i = 1; i <= n-j; ++i)
                     {
                         currentColumn ++;
-                        for (size_t col = 0; col < dataZ->getSize(1); ++col)
+                        for (int col = 0; col < dataZ->getSize(1); ++col)
                             CVMATREF_2DREAL(Vrow,col,currentColumn) = x[col] * CVMATREF_2DREAL(Vrow,col,currentColumn-1);
                     }
                 }

@@ -1179,7 +1179,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
             int x0 = m_params["x0"].getVal<int>();
             int y0 = m_params["y0"].getVal<int>();
 
-            size_t sizes[2] = {m_params["sizey"].getVal<int>(), m_params["sizex"].getVal<int>()};
+            unsigned int sizes[2] = {m_params["sizey"].getVal<int>(), m_params["sizex"].getVal<int>()};
 
             if(loadedMat.data == NULL)
             {

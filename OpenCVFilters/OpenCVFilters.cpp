@@ -1265,7 +1265,7 @@ ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *para
         ito::float32 *x = (ito::float32*)rawCorners->rowPtr(0,0);
         ito::float32 *y = (ito::float32*)rawCorners->rowPtr(0,1);
         
-        for (size_t i = 0; i < corners->getSize(1); ++i)
+        for (int i = 0; i < corners->getSize(1); ++i)
         {
             cornersVec.push_back( cv::Point2f(x[i],y[i]) );
         }
@@ -1274,7 +1274,7 @@ ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *para
         {
             cv::cornerSubPix(*image_, cornersVec, winSize, zeroZone, criteria);
 
-            for (size_t i = 0; i < corners->getSize(1); ++i)
+            for (int i = 0; i < corners->getSize(1); ++i)
             {
                 x[i] = cornersVec[i].x;
                 y[i] = cornersVec[i].y;
