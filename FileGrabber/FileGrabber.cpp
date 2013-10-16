@@ -1179,7 +1179,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
             int x0 = m_params["x0"].getVal<int>();
             int y0 = m_params["y0"].getVal<int>();
 
-            unsigned int sizes[2] = {m_params["sizey"].getVal<int>(), m_params["sizex"].getVal<int>()};
+            size_t sizes[2] = {m_params["sizey"].getVal<int>(), m_params["sizex"].getVal<int>()};
 
             if(loadedMat.data == NULL)
             {
@@ -1201,7 +1201,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                         m_data = ito::DataObject(2, sizes, ito::tUInt8, &loadedMat, 1);
                     }
                 }
-                else if (sizes[1] == loadedMat.cols && sizes[0] < loadedMat.rows)
+                else if (sizes[1] == (size_t)loadedMat.cols && sizes[0] < (size_t)loadedMat.rows)
                 {
                     lsrcstrpos = y0 * maxxsize;
                     if(copyExternal)
@@ -1213,7 +1213,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                         retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)cbuf+lsrcstrpos, maxxsize, maxysize);
                     }
                 }
-                else if (sizes[1] < loadedMat.cols && sizes[0] < loadedMat.rows)
+                else if (sizes[1] < (size_t)loadedMat.cols && sizes[0] < (size_t)loadedMat.rows)
                 {
                     if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)cbuf, maxxsize, maxysize, x0, y0, sizes[1], sizes[0]);
                     if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)cbuf, maxxsize, maxysize, x0, y0, sizes[1], sizes[0]);
@@ -1236,7 +1236,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                         m_data = ito::DataObject(2, sizes, ito::tUInt16, &loadedMat, 1);
                     }
                 }
-                else if (sizes[1] == loadedMat.cols && sizes[0] < loadedMat.rows)
+                else if (sizes[1] == (size_t)loadedMat.cols && sizes[0] < (size_t)loadedMat.rows)
                 {
                     lsrcstrpos = y0 * maxxsize;
                     if(copyExternal)
@@ -1248,7 +1248,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
                         retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, maxysize);
                     }
                 }
-                else if (sizes[1] < loadedMat.cols && sizes[0] < loadedMat.rows)
+                else if (sizes[1] < (size_t)loadedMat.cols && sizes[0] < (size_t)loadedMat.rows)
                 {
                     if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, sizes[1], sizes[0]);
                     if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, sizes[1], sizes[0]);
