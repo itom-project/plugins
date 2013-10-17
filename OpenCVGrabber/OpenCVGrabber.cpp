@@ -255,6 +255,12 @@ Some supported cameras are only available if OpenCV is compiled with their suppo
 
     ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 16, 0, tr("consecutive number of the connected camera (starting with 0, default)").toAscii().data());
     m_initParamsOpt.append(paramVal);
+
+    paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toAscii().data());
+    ito::StringMeta meta(ito::StringMeta::RegExp, "^(auto|color|red|green|blue|gray)$");
+    paramVal.setMeta(&meta, false);
+    m_initParamsOpt.append(paramVal);
+
     //paramVal = ito::Param("Init-Dialog", ito::ParamBase::Int, 0, 1, 0, tr("If true, a camera selection dialog is opened during startup").toAscii().data());
     //m_initParamsOpt.append(paramVal);
 
@@ -317,39 +323,44 @@ const ito::RetVal OpenCVGrabber::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 OpenCVGrabber::OpenCVGrabber() : AddInGrabber(), m_isgrabbing(false), m_pCam(NULL), m_CCD_ID(0), m_camStatusChecked(false)
 {
-   ito::Param paramVal("name", ito::ParamBase::String, "OpenCVGrabber", NULL);
-   m_params.insert(paramVal.getName(), paramVal);
+    ito::Param paramVal("name", ito::ParamBase::String, "OpenCVGrabber", NULL);
+    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2048, 0, tr("x-start for software ROI").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2048, 0, tr("y-start for software ROI").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizex", ito::ParamBase::Int, 1, 2048, 2048, tr("ROI-Size in x").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizey", ito::ParamBase::Int, 1, 2048, 2048, tr("ROI-Size in y").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2048, 0, tr("x-start for software ROI").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2048, 0, tr("y-start for software ROI").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizex", ito::ParamBase::Int, 1, 2048, 2048, tr("ROI-Size in x").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizey", ito::ParamBase::Int, 1, 2048, 2048, tr("ROI-Size in y").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 24, 8, tr("bpp").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 10.0, 0.01, tr("Integrationtime of CCD [s]").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 24, 8, tr("bpp").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 10.0, 0.01, tr("Integrationtime of CCD [s]").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("brightness", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("brightness [0..1]").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("contrast", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("contrast [0..1]").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("saturation", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("saturation [0..1]").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hue", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("hue [0..1]").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain [0..1]").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("brightness", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("brightness [0..1]").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("contrast", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("contrast [0..1]").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("saturation", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("saturation [0..1]").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("hue", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("hue [0..1]").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain [0..1]").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
    
-   paramVal = ito::Param("channel", ito::ParamBase::Int, 0, 3, 0, tr("selected color channel (all available (0, default), R (1), G (2), B (3)").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("channel", ito::ParamBase::Int, 0, 3, 0, tr("selected color channel (all available (0, default), R (1), G (2), B (3)").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("colorConversion", ito::ParamBase::Int, 0, 1, 1, tr("no conversion (0), RGB->Grayscale (1, default). If the camera image only has one channel or channel>0, this parameter is ignored").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("colorConversion", ito::ParamBase::Int, 0, 1, 1, tr("no conversion (0), RGB->Grayscale (1, default). If the camera image only has one channel or channel>0, this parameter is ignored").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toAscii().data());
+    ito::StringMeta meta(ito::StringMeta::RegExp, "^(auto|color|red|green|blue|gray)$");
+    paramVal.setMeta(&meta, false);
+    m_params.insert(paramVal.getName(), paramVal);
 
 }
 
@@ -360,7 +371,7 @@ OpenCVGrabber::~OpenCVGrabber()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// Funktion to set and update data imformations
+// Funktion to set and update data informations
 ito::RetVal OpenCVGrabber::checkCameraAbilities()
 {
 	bool camRetVal = false;
@@ -451,7 +462,19 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     QMap<QString,ito::Param>::iterator it;
-    ito::RetVal retValue = apiGetParamFromMapByKey(m_params, val->getName(), it, true);
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    ito::RetVal retValue = apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+
+    if(!retValue.containsError())
+    {
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+    }
 
     if(!retValue.containsError())
     {
@@ -462,13 +485,58 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
 	if (!retValue.containsError())
 	{
-        //here you can add specific sub-checks for every keyword and finally put the value into (*it).
-        retValue += it->copyValueFrom( &(*val) );
+        if (key == "colorMode")
+        {
+            const char *mode = val->getVal<char*>();
+
+            if (m_imgChannels == 1)
+            {
+                if (QString::compare(mode,"auto") != 0 || QString::compare(mode,"gray") != 0)
+                {
+                    retValue += ito::RetVal(ito::retError,0,"The connected grayscale camera cannot be operated in any colored colorMode");
+                }
+            }
+            else if (m_imgChannels == 3 && m_imgBpp > 8)
+            {
+                retValue += ito::RetVal(ito::retError,0,"The connected color camera cannot output an color image since the bit depth is > 8");
+            }
+
+            if (!retValue.containsError())
+            {
+                switch( mode[0] )
+                {
+                case 'a':
+                    m_colorMode = modeAuto;
+                    break;
+                case 'c':
+                    m_colorMode = modeColor;
+                    break;
+                case 'g':
+                    if (mode[2] == 'a')
+                        m_colorMode = modeGray;
+                    else
+                        m_colorMode = modeGreen;
+                    break;
+                case 'r':
+                    m_colorMode = modeRed;
+                    break;
+                case 'b':
+                    m_colorMode = modeBlue;
+                    break;
+                }
+            }
+        }
+
+        if (!retValue.containsError())
+        {
+            //here you can add specific sub-checks for every keyword and finally put the value into (*it).
+            retValue += it->copyValueFrom( &(*val) );
+        }
     }
 
     if (!retValue.containsError())
 	{
-        retValue += checkCameraAbilities();
+        //retValue += checkCameraAbilities();
 		emit parametersChanged(m_params);
 	}
 
@@ -489,7 +557,7 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 	ito::RetVal retValue(ito::retOk);
     bool ret;
 
-    m_CCD_ID = (*paramsOpt)[0].getVal<int>();
+    m_CCD_ID = paramsOpt->at(0).getVal<int>();
 
     /*if((*paramsOpt)[1].getVal<int>() == 1)
     {
@@ -545,17 +613,23 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             m_params.remove("integration_time");
         }
 
-        double test = m_pCam->get(CV_CAP_PROP_CONVERT_RGB);
-        test = m_pCam->get(CV_CAP_PROP_FOURCC); // 4-character code of codec.
-        test = m_pCam->get(CV_CAP_PROP_FRAME_COUNT); // Number of frames in the video file.
-        test = m_pCam->get(CV_CAP_PROP_FORMAT); //
-        test = 0.0;
+        //double test = m_pCam->get(CV_CAP_PROP_CONVERT_RGB);
+        //test = m_pCam->get(CV_CAP_PROP_FOURCC); // 4-character code of codec.
+        //test = m_pCam->get(CV_CAP_PROP_FRAME_COUNT); // Number of frames in the video file.
+        //test = m_pCam->get(CV_CAP_PROP_FORMAT); //
+        //test = 0.0;
 
 	}
 
 	if(!retValue.containsError())
 	{
 		retValue += checkCameraAbilities();
+    }
+
+    if(!retValue.containsError())
+    {
+        QSharedPointer<ito::ParamBase> colorMode( new ito::ParamBase("colorMode", ito::ParamBase::String, paramsOpt->at(1).getVal<char*>()) );
+        retValue += setParam( colorMode, NULL );
 		
         retValue += checkData();
 	}
@@ -663,11 +737,11 @@ ito::RetVal OpenCVGrabber::acquire(const int trigger, ItomSharedSemaphore *waitC
         cv::Mat temp;
 
         ////workaround, get old images in order to clean buffer queue, which leads to delivery of old images
+        /*m_pCam->retrieve(temp);
         m_pCam->retrieve(temp);
         m_pCam->retrieve(temp);
         m_pCam->retrieve(temp);
-        m_pCam->retrieve(temp);
-        m_pCam->retrieve(temp);
+        m_pCam->retrieve(temp);*/
 
         RetCode = m_pCam->grab();
 	}
@@ -714,6 +788,10 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
 	{
         ////the following lines are commented, since m_pDataMatBuffer already is filled in acquire (command read instead of grab and retrieve, which leads to buffering delays)
         RetCode = m_pCam->retrieve(m_pDataMatBuffer); //get image from cam, m_pDataMatBuffer is reference to internal memory
+        /*while(RetCode > 0)
+        {
+            RetCode = m_pCam->retrieve(m_pDataMatBuffer);
+        }*/
         //RetCode = m_pCam->read(m_pDataMatBuffer);
         
         if(!RetCode)
@@ -727,17 +805,17 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
 
         if(!retValue.containsError())
         {
-            int desiredChannel = m_params["channel"].getVal<int>();
-            if(desiredChannel > 0 && m_imgChannels == 1)
-            {
-                desiredChannel = 0; //no r,g,b channel in camera image available (grayscale camera)
-            }
+            //int desiredChannel = m_params["channel"].getVal<int>();
+            //if(desiredChannel > 0 && m_imgChannels == 1)
+            //{
+            //    desiredChannel = 0; //no r,g,b channel in camera image available (grayscale camera)
+            //}
 
-            int colorConversion = m_params["colorConversion"].getVal<int>();
-            if(colorConversion == 1 /*rgb2gray*/ && (m_imgChannels == 1 || desiredChannel > 0)) 
-            {
-                colorConversion = 0; //grayscale camera image or selected channel -> no conversion necessary
-            }
+            //int colorConversion = m_params["colorConversion"].getVal<int>();
+            //if(colorConversion == 1 /*rgb2gray*/ && (m_imgChannels == 1 || desiredChannel > 0)) 
+            //{
+            //    colorConversion = 0; //grayscale camera image or selected channel -> no conversion necessary
+            //}
 
             int desiredBpp = m_params["bpp"].getVal<int>();
             cv::Mat tempImage;
@@ -773,24 +851,21 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
                 }
 
                 //step 2. check whether 3 channel color should be transformed to 1 channel grayscale
-                if(m_imgChannels == 3 && colorConversion > 0)
+                if(m_imgChannels == 3 && m_colorMode == modeGray)
                 {
-                    int conversionCode = CV_BGR2GRAY; //camera provides BGR images in OpenCV
-                    switch(colorConversion)
-                    {
-                    case 1:
-                        conversionCode = CV_BGR2GRAY;
-                        break;
-                    default:
-                        retValue += ito::RetVal(ito::retError, 0, tr("unknown conversion code.").toAscii().data());
-                        break;
-                    }
-
-                    cv::cvtColor(tempImage, tempImage, conversionCode, 0);
+                    cv::cvtColor(tempImage, tempImage, CV_BGR2GRAY, 0); //camera provides BGR images in OpenCV
                 }
 
                 //step 3: create m_data (if not yet available)
-                retValue += checkData(externalDataObject);
+                if(externalDataObject && hasListeners)
+                {
+                    retValue += checkData(NULL); //update m_data
+                    retValue += checkData(externalDataObject); //update external object
+                }
+                else
+                {
+                    retValue += checkData(externalDataObject); //update external object or m_data
+                }
 
                 if(!retValue.containsError())
                 {
@@ -828,26 +903,30 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
                             tempImage.copyTo( *(internalMat) );
                         }
                     }
-                    else if(tempImage.channels() == 3 && desiredChannel == 0)
+                    else if(tempImage.channels() == 3 && (m_colorMode == modeAuto || m_colorMode == modeColor))
                     {
-                        cv::Mat out[] = { *(cv::Mat*)(dataObj->get_mdata()[0]) , *(cv::Mat*)(dataObj->get_mdata()[1]) , *(cv::Mat*)(dataObj->get_mdata()[2]) };
-                        int fromTo[] = {0,2,1,1,2,0}; //implicit BGR (camera) -> RGB (dataObject style) conversion
-                        cv::mixChannels( &tempImage, 1, out, 3, fromTo, 3 );
+                        cv::Mat out[] = { *(cv::Mat*)(dataObj->get_mdata()[0]) }; //{ *(cv::Mat*)(dataObj->get_mdata()[0]) , *(cv::Mat*)(dataObj->get_mdata()[1]) , *(cv::Mat*)(dataObj->get_mdata()[2]) };
+                        int fromTo[] = {0,0,1,1,2,2}; //{0,2,1,1,2,0}; //implicit BGR (camera) -> BGR (dataObject style) conversion
+                        
+                        //qDebug() << "tempImage.channels():" << tempImage.channels() << " elem1size:" << tempImage.elemSize1() << " elemSize:" << tempImage.elemSize() << "[" << tempImage.rows << "x" << tempImage.cols << "] depth:" << tempImage.depth();
+                        //qDebug() << "out.channels():" << out[0].channels() << " elem1size:" << out[0].elemSize1() << " elemSize:" << out[0].elemSize() << "[" << out[0].rows << "x" << out[0].cols << "] depth:" << out[0].depth();
+
+                        cv::mixChannels( &tempImage, 1, out, 1, fromTo, 3 );
 
                         if(externalDataObject && hasListeners)
                         {
-                            cv::Mat out[] = { *(cv::Mat*)(m_data.get_mdata()[0]) , *(cv::Mat*)(m_data.get_mdata()[1]) , *(cv::Mat*)(m_data.get_mdata()[2]) };
-                            cv::mixChannels( &tempImage, 1, out, 3, fromTo, 3 );
+                            cv::Mat out[] = { *(cv::Mat*)(dataObj->get_mdata()[0]) }; //{ *(cv::Mat*)(m_data.get_mdata()[0]) , *(cv::Mat*)(m_data.get_mdata()[1]) , *(cv::Mat*)(m_data.get_mdata()[2]) };
+                            cv::mixChannels( &tempImage, 1, out, 1, fromTo, 3 );
                         }
                     }
-                    else if(tempImage.channels() == 3 && desiredChannel > 0)
+                    else if(tempImage.channels() == 3) //R,G,B selection
                     {
                         cv::Mat out[] = { *(cv::Mat*)(dataObj->get_mdata()[0]) };
                         int fromTo[] = {0,0};
-                        switch(desiredChannel)
+                        switch(m_colorMode)
                         {
-                        case 1: fromTo[0] = 2; break; //red
-                        case 2: fromTo[0] = 1; break; //green
+                        case modeRed: fromTo[0] = 2; break; //red
+                        case modeGreen: fromTo[0] = 1; break; //green
                         default /*3*/: fromTo[0] = 0; break; //blue
                         }
                         cv::mixChannels( &tempImage, 1, out, 1, fromTo, 1 );
@@ -876,8 +955,6 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
 {
-    
-
     if(!m_camStatusChecked)
     {
         return ito::RetVal(ito::retError,0,tr("current camera status is undefined").toAscii().data());
@@ -885,47 +962,67 @@ ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
 
     int futureHeight = m_params["sizey"].getVal<int>();
     int futureWidth = m_params["sizex"].getVal<int>();
-    
+    int futureChannels;
     int futureType;
+
+    const char *colorMode = m_params["colorMode"].getVal<char*>();
+    if (m_imgChannels == 1 && (m_colorMode == modeGray || m_colorMode == modeAuto))
+    {
+        futureChannels = 1;
+    }
+    else if (m_imgChannels == 3 && (m_colorMode == modeGray || m_colorMode == modeAuto))
+    {
+        futureChannels = 3;
+    }
+    else
+    {
+        futureChannels = 1;
+    }
+
     int bpp = m_params["bpp"].getVal<int>();
-    if(bpp <= 8)
+    if(bpp <= 8 && futureChannels == 1)
     {
         futureType = ito::tUInt8;
     }
-    else if(bpp <= 16)
+    else if(bpp <= 16 && futureChannels == 1)
     {
         futureType = ito::tUInt16;
     }
-    else if(bpp <= 32)
+    else if(bpp <= 32 && futureChannels == 1)
     {
         futureType = ito::tInt32;
     }
-    else 
+    else  if(futureChannels == 1)
     {
         futureType = ito::tFloat64;
     }
-
-    int futurePlanes = 1;
-    if( m_imgChannels == 3 && m_params["channel"].getVal<int>() == 0 /*all*/ && m_params["colorConversion"].getVal<int>() == 0 /*no conversion*/)
+    else if(futureChannels == 3 && bpp <= 8)
     {
-        futurePlanes = 3;
+        futureType = ito::tRGBA32;
+    }
+    else
+    {
+        return ito::RetVal(ito::retError, 0, tr("A camera with a bitdepth > 8 cannot be operated in color mode.").toAscii().data());            
     }
 
-    if(externalDataObject == NULL)
+    if (futureType == ito::tRGBA32 && (m_alphaChannel.cols != futureWidth || m_alphaChannel.rows != futureHeight))
     {
-        if(futurePlanes == 1)
+        m_alphaChannel = cv::Mat(futureHeight, futureWidth, CV_8UC1, cv::Scalar(255));
+    }
+
+    if(!externalDataObject)
+    {
+        if(m_data.getDims() != 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
         {
-            if(m_data.getDims() != 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+            m_data = ito::DataObject(futureHeight,futureWidth,futureType);   
+
+            if (futureType == ito::tRGBA32)
             {
-                m_data = ito::DataObject(futureHeight,futureWidth,futureType);
+                //copy alpha channel to 4th channel in m_data
+                const int relations[] = {0,3};
+                cv::mixChannels( &m_alphaChannel, 1, (cv::Mat*)m_data.get_mdata()[0], 1, relations, 1);
             }
-        }
-        else
-        {
-            if(m_data.getDims() != 3 || m_data.getSize(0) != 3 || m_data.getSize(1) != (unsigned int)futureHeight || m_data.getSize(2) != (unsigned int)futureWidth || m_data.getType() != futureType)
-            {
-                m_data = ito::DataObject(3,futureHeight,futureWidth,futureType);
-            }
+
         }
     }
     else
@@ -933,14 +1030,7 @@ ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
         int dims = externalDataObject->getDims();
         if(externalDataObject->getDims() == 0) //empty external dataObject
         {
-            if(futurePlanes == 1)
-            {
-                *externalDataObject = ito::DataObject(futureHeight,futureWidth,futureType);
-            }
-            else
-            {
-                *externalDataObject = ito::DataObject(futurePlanes,futureHeight,futureWidth,futureType);
-            }
+            *externalDataObject = ito::DataObject(futureHeight,futureWidth,futureType);
         }
         else if(externalDataObject->calcNumMats () > 1)
         {
@@ -949,6 +1039,13 @@ ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
         else if(externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
         {
             return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toAscii().data());
+        }
+
+        if (futureType == ito::tRGBA32)
+        {
+            //copy alpha channel to 4th channel in m_data
+            const int relations[] = {0,3};
+            cv::mixChannels( &m_alphaChannel, 1, (cv::Mat*)externalDataObject->get_mdata()[externalDataObject->seekMat(0)], 1, relations, 1);
         }
     }
 

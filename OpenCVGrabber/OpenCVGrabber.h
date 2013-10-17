@@ -55,9 +55,23 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
         size_t m_imgBpp; /*!< number of element size of the camera image due to current parameterization */
         bool m_camStatusChecked;
 
+        int m_colorMode;
+
         cv::Mat m_pDataMatBuffer;	/*!< OpenCV DataFile to retrieve datas, this image is already filled after acquire command */
 
+        cv::Mat m_alphaChannel; /* simple uint8, 1-channel image with 255 values filled in case of colorMode. This is the alpha plane */
+
 		ito::RetVal checkCameraAbilities(); /*!< Funktion to check and set aviable data types */
+
+        enum tColorMode
+        {
+            modeAuto,
+            modeColor,
+            modeRed,
+            modeGreen,
+            modeBlue,
+            modeGray
+        };
 
     public slots:
         //!< Get Camera-Parameter
