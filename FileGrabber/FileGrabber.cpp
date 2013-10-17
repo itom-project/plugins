@@ -89,7 +89,7 @@ FileGrabberInterface::FileGrabberInterface()
     setObjectName("FileGrabber");
 
     m_description = QObject::tr("A virtual grabber");
-    char* docstring = \
+    char docstring[] = \
 "This plugin emulates a camera by grabbing images from files in a specific folder on the hard disk. Alternatively, it is possible to iteratively load images from \
 a 3D-data object (stack). The first possibility uses the command imread from OpenCV (OpenCV library highgui required). \n\
 \n\

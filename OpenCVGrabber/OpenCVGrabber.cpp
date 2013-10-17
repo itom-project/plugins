@@ -234,7 +234,7 @@ OpenCVGrabberInterface::OpenCVGrabberInterface()
     m_description = QObject::tr("OpenCV Video Capture (USB-Cams, Firewire CMU1394...)");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+    char docstring[] = \
 "This plugin wraps the video capture framework of OpenCV. Therefore it requires further libraries of OpenCV (core, highgui, improc and partially tbb). \n\
 \n\
 Usually all ordinary USB cameras are supported. If you compiled OpenCV with the CMU1384 flag, these firewire cameras are supported as well. Currently, a queuing \

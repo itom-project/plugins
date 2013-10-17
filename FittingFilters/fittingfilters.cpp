@@ -56,7 +56,7 @@ FittingFiltersInterface::FittingFiltersInterface()
     m_type = ito::typeAlgo;
     setObjectName("FittingFilters");
     
-    char* docstring = \
+    char docstring[] = \
 "This plugin contains algorithms for fitting planes and other two dimensional polynomials to dataObjects \
 mainly using the method of least-squares. Some of the included algorithms can also be called with \
 weighted values, such that more precise fitting results are achievable. \n\

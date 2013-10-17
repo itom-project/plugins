@@ -53,7 +53,7 @@ OpenCVFiltersInterface::OpenCVFiltersInterface()
     setObjectName("OpenCV-Filters");
    
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+    char docstring[] = \
 "This plugin provides wrappers for various OpenCV algorithms. These are for instance: \n\
 - morphological filters (dilation, erosion) \n\
 - image filtering (blur, median blur...) \n\

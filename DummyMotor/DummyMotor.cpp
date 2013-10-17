@@ -64,7 +64,7 @@ DummyMotorInterface::DummyMotorInterface(QObject * /*parent*/)
     setObjectName("DummyMotor");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+    char docstring[] = \
 "The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes. \n\
 \n\
 The real number of simulated axes is given by the initialization parameter 'numAxis'. Use this plugin \

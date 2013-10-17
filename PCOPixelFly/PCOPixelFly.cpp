@@ -69,7 +69,7 @@ PCOPixelFlyInterface::PCOPixelFlyInterface()
     
     m_description = QObject::tr("PCO Pixelfly cameras");
 
-    char* docstring = \
+    char docstring[] = \
 "This plugin connects the grabber family Pixelfly from PCO to itom. It has mainly been tested with the camera 'pixelfly qe', \
 that is connected to the computer by the PCO PCI interface board 540. \n\
 \n\

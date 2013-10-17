@@ -53,7 +53,7 @@ DispWindowInterface::DispWindowInterface()
     setObjectName("DispWindow");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+    char docstring[] = \
 "This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including \
 various graycode fringes (for unwrapping). The visualization is done with the help of OpenGL and the open source library GLEW. \n\
 \n\

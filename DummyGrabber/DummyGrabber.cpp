@@ -335,7 +335,7 @@ DummyGrabberInterface::DummyGrabberInterface()
     setObjectName("DummyGrabber");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+    char docstring[] = \
 "The DummyGrabber is a virtual camera which emulates a camera with white noise. \n\
 \n\
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \

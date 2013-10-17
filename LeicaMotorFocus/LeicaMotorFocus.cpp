@@ -105,7 +105,7 @@ LeicaMotorFocusInterface::LeicaMotorFocusInterface()
     setObjectName("LeicaMotorFocus");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+    char docstring[] = \
 "The LeiceMotorFocus is an itom-plugin, which can be used to control the z-stage of Leica MZ12 or MZ12.5 stereo-microscopes.\n\
 \n\
 For the initialization of this plugin you already need an opened serial IO port (using the plugin 'SerialIO'). Give the handle of \

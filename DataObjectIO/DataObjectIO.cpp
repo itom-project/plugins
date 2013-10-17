@@ -53,7 +53,7 @@ DataObjectIOInterface::DataObjectIOInterface()
     m_description = QObject::tr("import or export dataObject from/to several file formats.");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+    char docstring[] = \
 "This filter contains two different export- / import-functionalities for dataObjects, image or raw.\n\
 \n\
 Image-export functions converts dataObjects to image data and saves them as common image-formats.\n\

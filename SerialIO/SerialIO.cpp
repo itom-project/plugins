@@ -980,7 +980,7 @@ SerialIOInterface::SerialIOInterface()
     m_description = tr("itom-plugin for a serial port communication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+    char docstring[] = \
 "SerialIO is a itom-Plugin which gives direct access to serial ports.\nIt is used by different plugins for communication, (e.g. 'PIPiezoCtrl', 'UhlActuator', 'LeicaMotorFocus').\n\
 The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system.";
 
