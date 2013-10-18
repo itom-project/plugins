@@ -1,367 +1,217 @@
 #include "dialogOpenCVGrabber.h"
 
-dialogOpenCVGrabber::dialogOpenCVGrabber() 
-{ 
-	ui.setupUi(this); 
-}
 //----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail This function sets the values of the different GUI-Elements during startup of the window
- *
- * \sa OpenCVGrabber::showConfDialog(void)
- * \date	Oct.2011
- * \author	Wolfram Lyda
- * \warning	NA
-*/
-int dialogOpenCVGrabber::setVals(QMap<QString, ito::Param> *paramVals)
+DialogOpenCVGrabber::DialogOpenCVGrabber(ito::AddInGrabber *grabber, bool colorCam, int camWidth, int camHeight)
+    : m_grabber(grabber), m_colorCam(colorCam)
 {
-    QVariant qvar;
-    int bpp = 8;
-	int binning = 0;
-	int gain = 0;
+    ui.setupUi(this);
 
-	int inttemp = 0;
-	double dtemp = 0.0;
+    m_camSize = QRect(0,0,camWidth,camHeight);
 
-    setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-    // added by itobiege, Mar. 2013, but not tested!
-
-	QMap<QString, ito::Param>::const_iterator paramIt = (*paramVals).constFind("x0");	// To check if this parameter exist
-	if (paramIt != ((*paramVals).constEnd()))
-	{
-        inttemp = ((*paramVals)["x0"]).getVal<int>();    
-	    ui.spinBox_x0->setValue(inttemp);
-	    inttemp = (int)((*paramVals)["x0"]).getMax(); 
-	    ui.spinBox_x0->setMaximum(inttemp);
-	    inttemp = (int)((*paramVals)["x0"]).getMin(); 
-	    ui.spinBox_x0->setMinimum(inttemp);
+    ui.comboColorMode->clear();
+    if (colorCam)
+    {
+        ui.comboColorMode->addItem("auto");
+        ui.comboColorMode->addItem("color");
+        ui.comboColorMode->addItem("red");
+        ui.comboColorMode->addItem("green");
+        ui.comboColorMode->addItem("blue");
+        ui.comboColorMode->addItem("gray");
     }
     else
     {
-        ui.spinBox_x0->setEnabled(false);
+        ui.comboColorMode->addItem("auto");
+        ui.comboColorMode->addItem("gray");
     }
 
-    paramIt = (*paramVals).constFind("sizex");	// To check if this parameter exists
-	if (paramIt != ((*paramVals).constEnd()))
-	{
-	    inttemp = ((*paramVals)["sizex"]).getVal<int>();    
-	    ui.spinBox_xsize->setValue(inttemp);
-	    inttemp = (int)((*paramVals)["sizex"]).getMax(); 
-	    ui.spinBox_xsize->setMaximum(inttemp);
-	    inttemp = (int)((*paramVals)["sizex"]).getMin(); 
-	    ui.spinBox_xsize->setMinimum(inttemp);
-    }
-    else
+    ui.groupSettings->setVisible(false);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogOpenCVGrabber::valuesChanged(QMap<QString, ito::Param> params)
+{
+    int x0 = params["x0"].getVal<int>();
+    int x1 = params["x1"].getVal<int>();
+    int y0 = params["y0"].getVal<int>();
+    int y1 = params["y1"].getVal<int>();
+    ui.spinX0->setMaximum(m_camSize.width() - 2);
+    ui.spinX0->setValue(x0);
+    ui.spinY0->setMaximum(m_camSize.height() - 2);
+    ui.spinY0->setValue(y0);
+    ui.spinX1->setMaximum(m_camSize.width()-1);
+    ui.spinX1->setMinimum(x0+1);
+    ui.spinX1->setValue(x1);
+    ui.spinY1->setMaximum(m_camSize.height()-1);
+    ui.spinY1->setMinimum(y0+1);
+    ui.spinY1->setValue(y1);
+    ui.spinSizeX->setMaximum(m_camSize.width()-x0);
+    ui.spinSizeX->setValue(x1-x0+1);
+    ui.spinSizeY->setMaximum(m_camSize.height()-y0);
+    ui.spinSizeY->setValue(y1-y0+1);
+
+    sizeXChanged = false;
+    sizeYChanged = false;
+
+
+    ui.spinBpp->setValue( params["bpp"].getVal<int>() );
+
+    if (params.contains("colorMode"))
     {
-        ui.spinBox_xsize->setEnabled(false);
-    }
-
-
-    paramIt = (*paramVals).constFind("y0");	// To check if this parameter exists
-	if (paramIt != ((*paramVals).constEnd()))
-	{
-        inttemp = ((*paramVals)["y0"]).getVal<int>();    
-	    ui.spinBox_y0->setValue(inttemp);
-	    inttemp = (int)((*paramVals)["y0"]).getMax(); 
-	    ui.spinBox_y0->setMaximum(inttemp);
-	    inttemp = (int)((*paramVals)["y0"]).getMin(); 
-	    ui.spinBox_y0->setMinimum(inttemp);
-    }
-    else
-    {
-        ui.spinBox_y0->setEnabled(false);
-    }
-
-
-    paramIt = (*paramVals).constFind("sizey");	// To check if this parameter exists
-	if (paramIt != ((*paramVals).constEnd()))
-	{
-        inttemp = ((*paramVals)["sizey"]).getVal<int>();    
-	    ui.spinBox_ysize->setValue(inttemp);
-	    inttemp = (int)((*paramVals)["sizey"]).getMax(); 
-	    ui.spinBox_ysize->setMaximum(inttemp);
-	    inttemp = (int)((*paramVals)["sizey"]).getMin(); 
-	    ui.spinBox_ysize->setMinimum(inttemp);
-    }
-    else
-    {
-        ui.spinBox_ysize->setEnabled(false);
-    }
-
-    paramIt = (*paramVals).constFind("offset");	// To check if this parameter exists
-	if (paramIt != ((*paramVals).constEnd()))
-	{
-        dtemp = ((*paramVals)["offset"]).getVal<double>();
-        ui.doubleSpinBox_offset->setValue(dtemp);   
-    }
-    else
-    {
-        ui.doubleSpinBox_offset->setEnabled(false);
-    }
-
-    paramIt = (*paramVals).constFind("shift_bits");	// To check if this parameter exists
-	if (paramIt != ((*paramVals).constEnd()))
-	{
-        inttemp = ((*paramVals)["shift_bits"]).getVal<int>();
-        ui.spinBox_edit_shift_bits->setValue(inttemp);
-    }
-    else
-    {
-        ui.spinBox_edit_shift_bits->setEnabled(false);
-    }
-
-    paramIt = (*paramVals).constFind("integration_time");	// To check if this parameter exists
-	if (paramIt != ((*paramVals).constEnd()))
-	{
-        dtemp = ((*paramVals)["integration_time"]).getVal<double>()*1000;	// Is saved as [s] but displayed as [ms]
-        ui.doubleSpinBox_integration_time->setValue(dtemp);   
-    }
-    else
-    {
-        ui.doubleSpinBox_integration_time->setEnabled(false);
-    }
-
-    paramIt = (*paramVals).constFind("bpp");	// To check if this parameter exists
-	if (paramIt != ((*paramVals).constEnd()))
-	{
-	    bpp = ((*paramVals)["bpp"]).getVal<int>();				
-        ui.spinBox_bpp->setValue(bpp);
-
-	    switch (bpp)
+        QString mode = params["colorMode"].getVal<char*>();
+        mode = mode.toLower();
+        int idx;
+        if (m_colorCam)
         {
-            case 8:
-                ui.combo_bpp->setCurrentIndex(0);
-			    ui.spinBox_edit_shift_bits->setEnabled(1);  
-
-            break;
-            case 12:
-                ui.combo_bpp->setCurrentIndex(1);
-			    ui.spinBox_edit_shift_bits->setEnabled(0);  
-            break;
+            if (mode == "auto") idx = 0;
+            else if(mode == "color") idx = 1;
+            else if(mode == "red") idx = 2;
+            else if(mode == "green") idx = 3;
+            else if(mode == "blue") idx = 4;
+            else idx = 5;
         }
-    }
-    else
-    {
-        ui.spinBox_bpp->setEnabled(false);
-    }
-
-    paramIt = (*paramVals).constFind("gain");	// To check if this parameter exists
-	if (paramIt != ((*paramVals).constEnd()))
-	{
-	    gain = ((*paramVals)["gain"]).getVal<int>();
-	    ui.checkBox_gain->setChecked(gain);
-    }
-    else
-    {
-        ui.checkBox_gain->setEnabled(false);
-    }
-
-
-    paramIt = (*paramVals).constFind("binning");	// To check if this parameter exists
-	if (paramIt != ((*paramVals).constEnd()))
-	{
-	    binning = ((*paramVals)["binning"]).getVal<int>();
-	    switch (binning)
+        else
         {
-            case 0:
-                ui.combo_binning->setCurrentIndex(0);
-            break;
-            case 1:
-                ui.combo_binning->setCurrentIndex(1);
-            break;
+            if (mode == "auto") idx = 0;
+            else if(mode == "gray") idx = 1;
+            else idx = 0;
         }
+
+        ui.comboColorMode->setCurrentIndex(idx);
+
+        colorModeChanged = false;
     }
-    else
+
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int DialogOpenCVGrabber::sendVals()
+{
+    QVector<QSharedPointer<ito::ParamBase> > outVector;
+
+    if(sizeXChanged)
     {
-        ui.combo_binning->setEnabled(false);
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, ui.spinX0->value())));
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ui.spinX1->value())));
+    }
+    
+    if(sizeYChanged)
+    {
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, ui.spinY0->value())));
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ui.spinY1->value())));
+    }
+
+    if (colorModeChanged)
+    {
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("colorMode", ito::ParamBase::String, ui.comboColorMode->currentText().toAscii().data())));
+    }
+
+
+    if(m_grabber)   // Grabber exists
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(m_grabber, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, outVector), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        while (!locker.getSemaphore()->wait(5000))
+        {
+            if (!m_grabber->isAlive())
+            {
+                break;
+            }
+        }
+
+        sizeXChanged = false;
+        sizeYChanged = false;
+        colorModeChanged = false;
     }
     return 0;
 }
 
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail This function writes back the value of the different GUI-Elements to the Grabber before the dialog is deleted. Only the grab depth and the binning will be seperated, because they need a realloc of memory.
- *
- * \sa RetVal OpenCVGrabber::showConfDialog(void)
- * \date	Oct.2011
- * \author	Wolfram Lyda
- * \warning	NA
-*/
-int dialogOpenCVGrabber::getVals(QMap<QString, ito::Param> *paramVals)
+void DialogOpenCVGrabber::on_applyButton_clicked()
 {
-    QVariant qvar;
-    int bpp = 8;
-    int binning = 0;
-	int inttemp = 0;
-	double dtemp = 0.0;
-
-    if(ui.spinBox_x0->isEnabled())
-    {
-	    inttemp = ui.spinBox_x0->value();
-        ((*paramVals)["x0"]).setVal<int>(inttemp);
-    }
-
-    if(ui.spinBox_xsize->isEnabled())
-    {
-	    inttemp = ui.spinBox_xsize->value();
-        ((*paramVals)["sizex"]).setVal<int>(inttemp);
-    }
-
-    if(ui.spinBox_y0->isEnabled())
-    {
-	    inttemp = ui.spinBox_y0->value();
-        ((*paramVals)["y0"]).setVal<int>(inttemp);
-    }
-
-    if(ui.spinBox_ysize->isEnabled())
-    {
-        inttemp = ui.spinBox_ysize->value();
-        ((*paramVals)["sizey"]).setVal<int>(inttemp);
-    }
-
-    if(ui.doubleSpinBox_offset->isEnabled())
-    {
-	    dtemp = ui.doubleSpinBox_offset->value();
-        ((*paramVals)["offset"]).setVal<double>(dtemp);
-    }
-
-    if(ui.spinBox_edit_shift_bits->isEnabled())
-    {
-        inttemp = ui.spinBox_edit_shift_bits->value();
-        ((*paramVals)["shift_bits"]).setVal<int>(inttemp);
-    }
-
-    if(ui.doubleSpinBox_integration_time->isEnabled())
-    {
-        dtemp = ui.doubleSpinBox_integration_time->value()/1000;
-        ((*paramVals)["integration_time"]).setVal<double>(dtemp);
-    }
-
-    if(ui.combo_bpp->isEnabled())
-    {
-        qvar = ui.combo_bpp->currentIndex();
-        switch (qvar.toInt())
-        {
-            case 0:
-                ((*paramVals)["bpp"]).setVal<double>(8);
-            break;
-            case 1:
-                ((*paramVals)["bpp"]).setVal<double>(12);
-            break;
-        }
-    }
-
-    if(ui.combo_binning->isEnabled())
-    {
-	    qvar = ui.combo_binning->currentIndex();
-	    switch (qvar.toInt())
-        {
-            case 0:
-                ((*paramVals)["binning"]).setVal<double>(0);
-            break;
-            case 1:
-                ((*paramVals)["binning"]).setVal<double>(1);
-            break;
-        }
-    }
-
-    if(ui.checkBox_gain->isEnabled())
-    {
-	    inttemp = (int)ui.checkBox_gain->isChecked();
-	    ((*paramVals)["gain"]).setVal<double>(inttemp);
-    }
-    return 0;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-void dialogOpenCVGrabber::valuesChanged(QMap<QString, ito::Param> params)
-{
-	setVals(&params);
-	return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail This function resets the x-size of the ROI to the maximum value!
- *
- * \date	Oct.2011
- * \author	Wolfram Lyda
- * \warning	NA
-*/
-void dialogOpenCVGrabber::on_pushButton_setSizeXMax_clicked()
-{
-	int inttemp = 0;
-
-	inttemp = ui.spinBox_x0->minimum();
-	ui.spinBox_x0->setValue(inttemp);
-	
-	inttemp = ui.spinBox_xsize->maximum();
-	ui.spinBox_xsize->setValue(inttemp);
+    sendVals();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail This function resets the y-size of the ROI to the maximum value!
- *
- * \date	Oct.2011
- * \author	Wolfram Lyda
- * \warning	NA
-*/
-void dialogOpenCVGrabber::on_pushButton_setSizeYMax_clicked()
+void DialogOpenCVGrabber::on_spinX0_valueChanged(int value)
 {
-	int inttemp = 0;
-
-	inttemp = ui.spinBox_ysize->maximum();
-	ui.spinBox_ysize->setValue(inttemp);
-	
-	inttemp = ui.spinBox_y0->minimum();
-	ui.spinBox_y0->setValue(inttemp);
+    ui.spinX1->setMinimum(value+1);
+    ui.spinSizeX->setMaximum( 1 + ui.spinX1->maximum() - value );
+    ui.spinSizeX->setValue( 1 + ui.spinX1->value() - value );
+    sizeXChanged = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the applyButton is clicked, the bpp and the binning of the attached camera is changed!
- *  Changes of parameters lead to a reload of all camera parameters. Other unapplied values are lost!
- *
- * \date	Oct.2011
- * \author	Wolfram Lyda
- * \warning	NA
-*/
-void dialogOpenCVGrabber::on_applyButton_clicked()
+void DialogOpenCVGrabber::on_spinX1_valueChanged(int value)
 {
-	QVariant qvar;
-	int bpp = 12;
-	int binning = 0;
-	ito::ParamBase param;
-	QMap<QString, ito::ParamBase> paramsVals;
-
-	qvar = ui.combo_bpp->currentIndex();
-    switch (qvar.toInt())
-    {
-        case 0:
-            bpp = 8;
-        break;
-        case 1:
-            bpp = 12;
-        break;
-    }
-
-	param = ito::ParamBase("bpp", ito::ParamBase::Int, bpp);
-	paramsVals.insert(param.getName(), param);
-
-	qvar = ui.combo_binning->currentIndex();
-	switch (qvar.toInt())
-    {
-        case 0:
-            binning = 0;
-        break;
-        case 1:
-            binning = 1;
-        break;
-    }
-
-	param = ito::ParamBase("binning", ito::ParamBase::Int, binning);
-	paramsVals.insert(param.getName(), param);
-
-	emit changeParameters(paramsVals);
+    ui.spinX0->setMaximum( value - 1 );
+    ui.spinSizeX->setMaximum( 1 + ui.spinX1->maximum() - ui.spinX0->value() );
+    ui.spinSizeX->setValue( 1 + value - ui.spinX0->value() );
+    sizeXChanged = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void DialogOpenCVGrabber::on_spinSizeX_valueChanged(int value)
+{
+    ui.spinX1->setValue( ui.spinX0->value() + value - 1 );
+    on_spinX1_valueChanged( ui.spinX1->value() );
+    sizeXChanged = true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogOpenCVGrabber::on_spinY0_valueChanged(int value)
+{
+    ui.spinY1->setMinimum(value+1);
+    ui.spinSizeY->setMaximum( 1 + ui.spinY1->maximum() - value );
+    ui.spinSizeY->setValue( 1 + ui.spinY1->value() - value );
+    sizeYChanged = true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogOpenCVGrabber::on_spinY1_valueChanged(int value)
+{
+    ui.spinY0->setMaximum( value - 1 );
+    ui.spinSizeY->setMaximum( 1 + ui.spinY1->maximum() - ui.spinY0->value() );
+    ui.spinSizeY->setValue( 1 + value - ui.spinY0->value() );
+    sizeYChanged = true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogOpenCVGrabber::on_spinSizeY_valueChanged(int value)
+{
+    ui.spinY1->setValue( ui.spinY0->value() + value - 1 );
+    on_spinY1_valueChanged( ui.spinY1->value() );
+    sizeYChanged = true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogOpenCVGrabber::on_btnSetFullROI_clicked()
+{
+    ui.spinX0->setMinimum(0);
+    ui.spinX0->setMaximum(m_camSize.width() - 2);
+    ui.spinX0->setValue(0);
+
+    ui.spinY0->setMinimum(0);
+    ui.spinY0->setMaximum(m_camSize.height() - 2);
+    ui.spinY0->setValue(0);
+
+    ui.spinX1->setMinimum(1);
+    ui.spinX1->setMaximum(m_camSize.width() - 1);
+    ui.spinX1->setValue(ui.spinX1->maximum());
+
+    ui.spinY1->setMinimum(1);
+    ui.spinY1->setMaximum(m_camSize.height() - 1);
+    ui.spinY1->setValue(ui.spinY1->maximum());
+
+
+    ui.spinSizeX->setMaximum(ui.spinX1->maximum());
+    ui.spinSizeY->setMaximum(ui.spinY1->maximum());
+
+    ui.spinSizeX->setValue(ui.spinX1->maximum());
+    ui.spinSizeY->setValue(ui.spinY1->maximum());
+
+    sizeXChanged = true;
+    sizeYChanged = true;
+}

@@ -41,6 +41,7 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
     public:
         friend class OpenCVGrabberInterface;
         const ito::RetVal showConfDialog(void);	//! Open the config nonmodal dialog to set camera parameters 
+        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
 

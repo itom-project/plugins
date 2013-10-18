@@ -257,7 +257,13 @@ Some supported cameras are only available if OpenCV is compiled with their suppo
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toAscii().data());
-    ito::StringMeta meta(ito::StringMeta::RegExp, "^(auto|color|red|green|blue|gray)$");
+    ito::StringMeta meta(ito::StringMeta::String);
+    meta.addItem("auto");
+    meta.addItem("color");
+    meta.addItem("red");
+    meta.addItem("green");
+    meta.addItem("blue");
+    meta.addItem("gray");
     paramVal.setMeta(&meta, false);
     m_initParamsOpt.append(paramVal);
 
@@ -282,39 +288,20 @@ Q_EXPORT_PLUGIN2(OpenCVGrabberinterface, OpenCVGrabberInterface)
 const ito::RetVal OpenCVGrabber::showConfDialog(void)
 {
 	ito::RetVal retValue(ito::retOk);
-	int colorSelect_old = 8;
-	int color_old = 0;
-	int colorSelect_new = 8;
-	int color_new = 0;
-	double offset_new = 0.0;
 
-    dialogOpenCVGrabber *confDialog = new dialogOpenCVGrabber();
+    DialogOpenCVGrabber *confDialog = new DialogOpenCVGrabber(this, (m_imgChannels == 3), m_imgCols, m_imgRows);
 
 	connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-	connect(confDialog, SIGNAL(changeParameters(QMap<QString, ito::ParamBase>)), this , SLOT(updateParameters(QMap<QString, ito::ParamBase>)));
+    QMetaObject::invokeMethod(this, "sendParameterRequest");
 
-	colorSelect_old = m_params["channel"].getVal<int>();
-	color_old = m_params["color"].getVal<int>();
-
-	confDialog->setVals(&m_params);
     if (confDialog->exec())
     {
-        confDialog->getVals(&m_params);
-		colorSelect_new = m_params["channel"].getVal<int>();
-		color_new = m_params["color"].getVal<int>();
-		offset_new = m_params["offset"].getVal<int>();
-		if (color_new != color_old)
-		{
-            retValue += setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("color", ito::ParamBase::Int, color_new)), NULL);
-		}
-		else if (colorSelect_new != colorSelect_old)
-		{
-            retValue += setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("channel", ito::ParamBase::Int, colorSelect_new)), NULL);
-		} 
-		else		
-		{
-            retValue += setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Int, offset_new)), NULL);
-		}
+        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+        confDialog->sendVals();
+    }
+    else
+    {
+        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
     }
     delete confDialog;
 
@@ -326,39 +313,49 @@ OpenCVGrabber::OpenCVGrabber() : AddInGrabber(), m_isgrabbing(false), m_pCam(NUL
     ito::Param paramVal("name", ito::ParamBase::String, "OpenCVGrabber", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2048, 0, tr("x-start for software ROI").toAscii().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2048, 0, tr("y-start for software ROI").toAscii().data());
+    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizex", ito::ParamBase::Int, 1, 2048, 2048, tr("ROI-Size in x").toAscii().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int, 1, 2048, 2048, tr("ROI-Size in y").toAscii().data());
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 24, 8, tr("bpp").toAscii().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 24, 8, tr("bpp").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 10.0, 0.01, tr("Integrationtime of CCD [s]").toAscii().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.000010, 10.0, 0.01, tr("Integrationtime of CCD [s], does not exist for all cameras").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("brightness", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("brightness [0..1]").toAscii().data());
+    paramVal = ito::Param("brightness", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("brightness [0..1], does not exist for all cameras").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("contrast", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("contrast [0..1]").toAscii().data());
+    paramVal = ito::Param("contrast", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("contrast [0..1], does not exist for all cameras").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("saturation", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("saturation [0..1]").toAscii().data());
+    paramVal = ito::Param("saturation", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("saturation [0..1], does not exist for all cameras").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("hue", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("hue [0..1]").toAscii().data());
+    paramVal = ito::Param("hue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("hue [0..1], does not exist for all cameras").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain [0..1]").toAscii().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("Gain [0..1], does not exist for all cameras").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
    
-    paramVal = ito::Param("channel", ito::ParamBase::Int, 0, 3, 0, tr("selected color channel (all available (0, default), R (1), G (2), B (3)").toAscii().data());
+    /*paramVal = ito::Param("channel", ito::ParamBase::Int, 0, 3, 0, tr("selected color channel (all available (0, default), R (1), G (2), B (3)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("colorConversion", ito::ParamBase::Int, 0, 1, 1, tr("no conversion (0), RGB->Grayscale (1, default). If the camera image only has one channel or channel>0, this parameter is ignored").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
+    m_params.insert(paramVal.getName(), paramVal);*/
 
     paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toAscii().data());
-    ito::StringMeta meta(ito::StringMeta::RegExp, "^(auto|color|red|green|blue|gray)$");
+    ito::StringMeta meta(ito::StringMeta::String);
+    meta.addItem("auto");
+    meta.addItem("color");
+    meta.addItem("red");
+    meta.addItem("green");
+    meta.addItem("blue");
+    meta.addItem("gray");
     paramVal.setMeta(&meta, false);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -532,6 +529,15 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             //here you can add specific sub-checks for every keyword and finally put the value into (*it).
             retValue += it->copyValueFrom( &(*val) );
         }
+
+        if (key == "x0" || key == "x1")
+        {
+            m_params["sizex"].setVal<int>(1+ m_params["x1"].getVal<int>() - m_params["x0"].getVal<int>());
+        }
+        else if (key == "y0" || key == "y1")
+        {
+            m_params["sizey"].setVal<int>(1+ m_params["y1"].getVal<int>() - m_params["y0"].getVal<int>());
+        }
     }
 
     if (!retValue.containsError())
@@ -613,13 +619,29 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             m_params.remove("integration_time");
         }
 
-        //double test = m_pCam->get(CV_CAP_PROP_CONVERT_RGB);
-        //test = m_pCam->get(CV_CAP_PROP_FOURCC); // 4-character code of codec.
-        //test = m_pCam->get(CV_CAP_PROP_FRAME_COUNT); // Number of frames in the video file.
-        //test = m_pCam->get(CV_CAP_PROP_FORMAT); //
-        //test = 0.0;
+        qDebug() << "CV_CAP_PROP_FOCUS" << m_pCam->get(CV_CAP_PROP_FOCUS);
+        qDebug() << "CV_CAP_PROP_IRIS" << m_pCam->get(CV_CAP_PROP_IRIS);
+        qDebug() << "CV_CAP_PROP_EXPOSURE" << m_pCam->get(CV_CAP_PROP_EXPOSURE);
+        qDebug() << "CV_CAP_PROP_ZOOM" << m_pCam->get(CV_CAP_PROP_ZOOM);
+        qDebug() << "CV_CAP_PROP_ROLL" << m_pCam->get(CV_CAP_PROP_ROLL);
+        qDebug() << "CV_CAP_PROP_TILT" << m_pCam->get(CV_CAP_PROP_TILT);
+        qDebug() << "CV_CAP_PROP_PAN" << m_pCam->get(CV_CAP_PROP_PAN);
+        qDebug() << "CV_CAP_PROP_GAIN" << m_pCam->get(CV_CAP_PROP_GAIN);
+        qDebug() << "CV_CAP_PROP_BACKLIGHT" << m_pCam->get(CV_CAP_PROP_BACKLIGHT);
+        qDebug() << "CV_CAP_PROP_WHITE_BALANCE_BLUE_U" << m_pCam->get(CV_CAP_PROP_WHITE_BALANCE_BLUE_U);
+        qDebug() << "CV_CAP_PROP_MONOCROME" << m_pCam->get(CV_CAP_PROP_MONOCROME);
+        qDebug() << "CV_CAP_PROP_GAMMA" << m_pCam->get(CV_CAP_PROP_GAMMA);
+        qDebug() << "CV_CAP_PROP_SHARPNESS" << m_pCam->get(CV_CAP_PROP_SHARPNESS);
+        qDebug() << "CV_CAP_PROP_SATURATION" << m_pCam->get(CV_CAP_PROP_SATURATION);
+        qDebug() << "CV_CAP_PROP_HUE" << m_pCam->get(CV_CAP_PROP_HUE);
+        qDebug() << "CV_CAP_PROP_CONTRAST" << m_pCam->get(CV_CAP_PROP_CONTRAST);
+        qDebug() << "CV_CAP_PROP_BRIGHTNESS" << m_pCam->get(CV_CAP_PROP_BRIGHTNESS);
+        qDebug() << "CV_CAP_PROP_FPS" << m_pCam->get(CV_CAP_PROP_FPS);
+        qDebug() << "CV_CAP_PROP_FOURCC" << m_pCam->get(CV_CAP_PROP_FOURCC);
+        qDebug() << "CV_CAP_PROP_FRAME_HEIGHT" << m_pCam->get(CV_CAP_PROP_FRAME_HEIGHT);
+        qDebug() << "CV_CAP_PROP_FRAME_WIDTH" << m_pCam->get(CV_CAP_PROP_FRAME_WIDTH);
+    }
 
-	}
 
 	if(!retValue.containsError())
 	{
@@ -736,12 +758,12 @@ ito::RetVal OpenCVGrabber::acquire(const int trigger, ItomSharedSemaphore *waitC
 		m_isgrabbing = true;
         cv::Mat temp;
 
-        ////workaround, get old images in order to clean buffer queue, which leads to delivery of old images
-        /*m_pCam->retrieve(temp);
+        //workaround, get old images in order to clean buffer queue, which leads to delivery of old images
         m_pCam->retrieve(temp);
         m_pCam->retrieve(temp);
         m_pCam->retrieve(temp);
-        m_pCam->retrieve(temp);*/
+        m_pCam->retrieve(temp);
+        m_pCam->retrieve(temp);
 
         RetCode = m_pCam->grab();
 	}
@@ -970,7 +992,7 @@ ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
     {
         futureChannels = 1;
     }
-    else if (m_imgChannels == 3 && (m_colorMode == modeGray || m_colorMode == modeAuto))
+    else if (m_imgChannels == 3 && (m_colorMode == modeColor || m_colorMode == modeAuto))
     {
         futureChannels = 3;
     }

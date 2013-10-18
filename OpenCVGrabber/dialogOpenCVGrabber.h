@@ -2,50 +2,53 @@
 #define DIALOGOPENCVGRABBER_H
 
 #include "common/sharedStructures.h"
+#include "common/addInGrabber.h"
 
 #include "ui_dialogOpenCVGrabber.h"
 
-#include <QtGui>
 #include <qdialog.h>
+#include <qrect.h>
 
- /**
-  *\class	dialogOpenCVGrabber 
-  *\brief	Configurationdiablog for the PCO Pixelfly QE CCD
-  *
-  *         This dialog can be used to setup the most important parameters for the camera.
-  *			During setup, the ITOm is blocked
-  *
-  *	\sa	OpenCVGrabber
-  *	\date	11.10.2010
-  *	\author	Wolfram Lyda
-  * \warning	NA
-  *
-  */
-class dialogOpenCVGrabber : public QDialog 
+class DialogOpenCVGrabber : public QDialog 
 {
     Q_OBJECT
 
     public:
-        dialogOpenCVGrabber();	//!< Constructor
-        ~dialogOpenCVGrabber() {};//! Destructor
-        int setVals(QMap<QString, ito::Param> *paramVals);	//!< Setup called during creation
-        int getVals(QMap<QString, ito::Param> *paramVals); //!< Writeback called before closing
+        DialogOpenCVGrabber(ito::AddInGrabber *grabber, bool colorCam, int camWidth, int camHeight);	//!< Constructor
+        ~DialogOpenCVGrabber() {};//! Destructor
+        int sendVals(void);
 
     private:
-        Ui::dialogOpenCVGrabber ui;	//! The QT-Design-GUI
+        ito::AddInGrabber *m_grabber;
 
-	signals:
+        Ui::dialogOpenCVGrabber ui;
+        QMap<QString, ito::Param> m_paramsVals;
+        bool m_colorCam;
+        QRect m_camSize;
 
-		void changeParameters(QMap<QString, ito::ParamBase> params);
-		
-	public slots:
+        bool sizeXChanged;
+        bool sizeYChanged;
+        bool colorModeChanged;
 
-		void valuesChanged(QMap<QString, ito::Param> params);
+    public slots:
+        void valuesChanged(QMap<QString, ito::Param> params);
 
     private slots:
-		void on_pushButton_setSizeXMax_clicked();	//!< Set x-size to maximum valid value
-		void on_pushButton_setSizeYMax_clicked();	//!< Set y-sizes to maximum valid value
-		void on_applyButton_clicked();	//!< Set binning and grab depth
+        
+        void on_applyButton_clicked();	//!< Write the current settings to the internal paramsVals and sent them to the grabber
+
+        void on_btnSetFullROI_clicked();	//!< Set x and y-sizes to maximum valid value
+
+        void on_spinX0_valueChanged(int value);
+        void on_spinX1_valueChanged(int value);
+        void on_spinSizeX_valueChanged(int value);
+
+        void on_spinY0_valueChanged(int value);
+        void on_spinY1_valueChanged(int value);
+        void on_spinSizeY_valueChanged(int value);
+
+        void on_comboColorMode_currentIndexChanged(int index) { colorModeChanged = true; }
+
 };
 
 #endif
