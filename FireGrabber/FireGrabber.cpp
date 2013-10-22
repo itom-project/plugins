@@ -897,28 +897,7 @@ ito::RetVal FireGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCon
 	return retValue;
 }
 
-////----------------------------------------------------------------------------------------------------------------------------------
-////! slot invoked if gain or offset parameters in docking toolbox have been manually changed
-///*!
-//    \param [in] gain
-//    \param [in] offset
-//*/
-void FireGrabber::GainOffsetPropertiesChanged(double gain, double offset)
-{
-    setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, gain)), NULL);
-    setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, offset)), NULL);
-}
 
-////----------------------------------------------------------------------------------------------------------------------------------
-////! slot invoked if gain or offset parameters in docking toolbox have been manually changed
-///*!
-//    \param [in] gain
-//    \param [in] offset
-//*/
-void FireGrabber::IntegrationPropertiesChanged(double integrationtime)
-{
-    setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, integrationtime)), NULL);
-}
 
 
 
@@ -1122,35 +1101,27 @@ ito::RetVal FireGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FireGrabber::updateParameters(QMap<QString, ito::ParamBase> params)
+//! slot invoked if gain or offset parameters in docking toolbox have been manually changed
+/*!
+    \param [in] gain
+    \param [in] offset
+*/
+void FireGrabber::GainOffsetPropertiesChanged(double gain, double offset)
 {
-	int colorSelect_old = 0;
-	int color_old = 0;
-	int color_new = 0;
-	double offset_new = 0.0;
-	double value = 0.0;
-
-	char name[40] = {0};
-
-	foreach(const ito::ParamBase &param1, params)
-	{	
-		memset(name, 0, sizeof(name));
-		sprintf(name, "%s", param1.getName());
-		if (!strlen(name))
-			continue;
-		QMap<QString, ito::Param>::iterator paramIt = m_params.find(name);
-		if (paramIt != m_params.end())
-		{
-			value = param1.getVal<double>();
-			paramIt.value().setVal<double>(value);
-		}
-	}
-
-	offset_new = m_params["offset"].getVal<double>();
-	
+    setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, gain)), NULL);
+    setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, offset)), NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! slot invoked if gain or offset parameters in docking toolbox have been manually changed
+/*!
+    \param [in] gain
+    \param [in] offset
+*/
+void FireGrabber::IntegrationPropertiesChanged(double integrationtime)
+{
+    setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, integrationtime)), NULL);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FireGrabber::dockWidgetVisibilityChanged(bool visible)

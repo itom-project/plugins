@@ -100,8 +100,6 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
-		void updateParameters(QMap<QString, ito::ParamBase> params);
-
 		void GainOffsetPropertiesChanged(double gain, double offset);
         void IntegrationPropertiesChanged(double integrationtime);
 
