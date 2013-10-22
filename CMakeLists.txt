@@ -51,6 +51,14 @@ if (PLUGIN_FittingFilters)
 	ADD_SUBDIRECTORY(FittingFilters)
 endif (PLUGIN_FittingFilters)
 
+# FireGrabber
+IF (WIN32)
+	OPTION(PLUGIN_FireGrabber "Build with this plugin." ON)
+	if (PLUGIN_FireGrabber)
+		ADD_SUBDIRECTORY(FireGrabber)
+	endif (PLUGIN_FireGrabber)
+ENDIF (WIN32)
+
 # GWInstekPSP
 OPTION(PLUGIN_GWInstekPSP "Build with this plugin." ON)
 if (PLUGIN_GWInstekPSP)
