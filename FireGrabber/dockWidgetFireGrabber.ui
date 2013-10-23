@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>231</width>
-    <height>219</height>
+    <width>299</width>
+    <height>267</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -206,17 +206,16 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QLabel" name="label_integration_time">
-        <property name="text">
-         <string>Integrationtime</string>
+      <item row="1" column="1">
+       <widget class="QSlider" name="horizontalSlider_gain">
+        <property name="maximum">
+         <number>100</number>
         </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_offset">
-        <property name="text">
-         <string>Offset</string>
+        <property name="tracking">
+         <bool>false</bool>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
@@ -227,8 +226,8 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QSlider" name="horizontalSlider_gain">
+      <item row="0" column="1">
+       <widget class="QSlider" name="horizontalSlider_offset">
         <property name="maximum">
          <number>100</number>
         </property>
@@ -250,6 +249,20 @@
         </property>
         <property name="maximum">
          <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_offset">
+        <property name="text">
+         <string>Offset</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_integration_time">
+        <property name="text">
+         <string>Integrationtime</string>
         </property>
        </widget>
       </item>
@@ -275,19 +288,6 @@
         </property>
         <property name="value">
          <double>10.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QSlider" name="horizontalSlider_offset">
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="tracking">
-         <bool>false</bool>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
@@ -318,12 +318,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>204</y>
+     <x>212</x>
+     <y>146</y>
     </hint>
     <hint type="destinationlabel">
-     <x>254</x>
-     <y>214</y>
+     <x>286</x>
+     <y>147</y>
     </hint>
    </hints>
   </connection>
@@ -334,12 +334,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>112</x>
-     <y>236</y>
+     <x>204</x>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>240</y>
+     <x>286</x>
+     <y>173</y>
     </hint>
    </hints>
   </connection>
@@ -350,12 +350,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>229</x>
-     <y>200</y>
+     <x>286</x>
+     <y>147</y>
     </hint>
     <hint type="destinationlabel">
-     <x>161</x>
-     <y>207</y>
+     <x>212</x>
+     <y>146</y>
     </hint>
    </hints>
   </connection>
@@ -366,12 +366,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>255</x>
-     <y>234</y>
+     <x>286</x>
+     <y>173</y>
     </hint>
     <hint type="destinationlabel">
-     <x>128</x>
-     <y>239</y>
+     <x>212</x>
+     <y>172</y>
     </hint>
    </hints>
   </connection>

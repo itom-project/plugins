@@ -7,8 +7,10 @@
     //default settings
     ui.spinBox_gain->setEnabled(false);
     ui.spinBox_gain->setKeyboardTracking(false);
+    ui.horizontalSlider_gain->setEnabled(false);
     ui.spinBox_offset->setEnabled(false);
     ui.spinBox_offset->setKeyboardTracking(false);
+    ui.horizontalSlider_offset->setEnabled(false);
     ui.doubleSpinBox_integration_time->setEnabled(false);
     ui.doubleSpinBox_integration_time->setKeyboardTracking(false);
  }
@@ -43,10 +45,12 @@
 	        if(!(params["gain"].getFlags() & ito::ParamBase::Readonly))
 	        {
 		        ui.spinBox_gain->setEnabled(true);
+                ui.horizontalSlider_gain->setEnabled(true);
 	        }
 	        else
 	        {
 		        ui.spinBox_gain->setEnabled(false);
+                ui.horizontalSlider_gain->setEnabled(false);
 	        }
 	        ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
         }
@@ -56,10 +60,12 @@
 	        if(!(params["offset"].getFlags() & ito::ParamBase::Readonly))
 	        {
 		        ui.spinBox_offset->setEnabled(true);
+                ui.horizontalSlider_offset->setEnabled(true);
 	        }
 	        else
 	        {
 		        ui.spinBox_offset->setEnabled(false);
+                ui.horizontalSlider_offset->setEnabled(false);
 	        }
 	        ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
         }

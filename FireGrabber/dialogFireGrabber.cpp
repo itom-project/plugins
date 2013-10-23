@@ -180,41 +180,6 @@ int dialogFireGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             }
         }
 
-        if(!strcmp(param.getName(), "binning"))
-        {
-            //int ival = param.getMin();
-            //int ivalX = (int)(ival/100);
-            //int ivalY = ival - ivalX * 100;
-
-            //ui.spinBox_binX->setMinimum(ivalX);
-            //ui.spinBox_binY->setMinimum(ivalY);
-
-            //ival = param.getMax();
-            //ivalX = (int)(ival/100);
-            //ivalY = ival - ivalX * 100;
-
-            //ui.spinBox_binX->setMaximum(ivalX);
-            //ui.spinBox_binY->setMaximum(ivalY);
-
-            //ival = param.getVal<int>();
-            //ivalX = (int)(ival/100);
-            //ivalY = ival - ivalX * 100;
-
-            //ui.spinBox_binX->setValue(ivalX);
-            //ui.spinBox_binY->setValue(ivalY);
-
-            //if(!(param.getFlags() & ito::ParamBase::Readonly))
-            //{
-            //    ui.spinBox_binX->setEnabled(true);
-            //    ui.spinBox_binY->setEnabled(true);
-            //}
-            //else
-            //{
-            //    ui.spinBox_binX->setEnabled(false);
-            //    ui.spinBox_binY->setEnabled(false);
-            //}
-        }
-
 
         if(!strcmp(param.getName(), "bpp"))
         {
@@ -282,17 +247,6 @@ int dialogFireGrabber::sendVals()
     }
 
     QVector<QSharedPointer<ito::ParamBase> > outVector;
-
-
-    if((ui.spinBox_binX->isEnabled() || ui.spinBox_binY->isEnabled()))
-    {
-        int ival = ui.spinBox_binX->value() *100 + ui.spinBox_binY->value();
-        if((m_paramsVals["binning"].getVal<int>() !=  ival))
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>( new ito::ParamBase("binning", ito::ParamBase::Int, ival) ));
-            binning_changed = true;
-        }
-    }
 
     if(!binning_changed)
     {

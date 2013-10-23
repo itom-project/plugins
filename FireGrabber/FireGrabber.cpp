@@ -128,21 +128,22 @@ FireGrabber::FireGrabber() :
 
    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.001, 5000.0, 0.01, tr("Integrationtime of CCD programmed in s").toAscii().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.05, 150.0, 33.333333, tr("Time between two frames").toAscii().data());
+   paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.005, 150.0, 33.333333, tr("Transmission time per frame in s").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   
+   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 24, 8, tr("bit depth of camera").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+
+   paramVal = ito::Param("brightness", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Brightness value (if supported)").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("sharpness", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Sharpness value (if supported)").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("gamma", ito::ParamBase::Int, 0, 1, 0, tr("Gamma correction (0: off, 1: on, default: off)").toAscii().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Virtual gain").toAscii().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Currently not used").toAscii().data());
+   paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 0.0, 0.0, tr("Offset not used here.").toAscii().data());
    m_params.insert(paramVal.getName(), paramVal);
-
-   paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 202, 101, tr("Currently not used").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
-   paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
 
    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Startvalue for ROI").toAscii().data());
    m_params.insert(paramVal.getName(), paramVal);
@@ -154,13 +155,11 @@ FireGrabber::FireGrabber() :
    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Stopvalue for ROI").toAscii().data());
    m_params.insert(paramVal.getName(), paramVal);
 
+   paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
    
-   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 24, 8, tr("Grabdepth of the images").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
-   paramVal = ito::Param("gamma", ito::ParamBase::Int, 0, 1, 0, tr("gamma on or off").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
    //paramVal = ito::Param("fps", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100, 0, tr("Read frames per second").toAscii().data());
    //m_params.insert(paramVal.getName(), paramVal);
 
@@ -377,13 +376,8 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             if (!key.compare("integration_time"))
 		    {
-			    unsigned long dblVal = (unsigned long)((val->getVal<double>() * 1000.0) + 0.5);
+			    unsigned long dblVal = (unsigned long)(exposureSecToShutter(val->getVal<double>()));
 			    Result = Camera.SetParameter(FGP_SHUTTER, dblVal);
-                retValue += AlliedChkError(Result);
-		    }
-		    else if (!key.compare("gamma"))
-		    {
-                Result = Camera.SetParameter(FGP_GAMMA, it->getVal<int>());
                 retValue += AlliedChkError(Result);
 		    }
 		    else if (!key.compare("bpp"))
@@ -415,32 +409,25 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 		    }
 		    else if (!key.compare("gain"))
 		    {
-                FGPINFO valInfo;
-			    Result = Camera.GetParameterInfo(FGP_GAIN, &valInfo);
-			    
-                unsigned long valnew = (unsigned long)((valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>() + valInfo.MinValue); //rescale gain to [0 ... 1]
-                if (valnew > valInfo.MaxValue) valnew = valInfo.MaxValue;
-                if (valnew > valInfo.MinValue) valnew = valInfo.MinValue;
-
-			    if (Result == 0)
-			    {
-				    Result = Camera.SetParameter(FGP_GAIN, valnew);
-			    }
-
-                retValue += AlliedChkError(Result);
+                FGPINFO valInfo = m_camProperties["gain"];
+                unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
+                retValue += AlliedChkError(Camera.SetParameter(FGP_GAIN, valnew));
 		    }
-		    else if (!key.compare("offset"))
+            else if (!key.compare("brightness"))
 		    {
-                FGPINFO valInfo;
-			    Result = Camera.GetParameterInfo(FGP_BRIGHTNESS, &valInfo);
-			    double valnew = valInfo.MaxValue * val->getVal<double>(); //rescale offset to [0 ... 1]
-			    
-                if (Result == 0)
-			    {
-				    Result = Camera.SetParameter(FGP_BRIGHTNESS, valnew);
-			    }
-
-                retValue += AlliedChkError(Result);
+                FGPINFO valInfo = m_camProperties["brightness"];
+                unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
+                retValue += AlliedChkError(Camera.SetParameter(FGP_BRIGHTNESS, valnew));
+		    }
+            else if (!key.compare("sharpness"))
+		    {
+                FGPINFO valInfo = m_camProperties["sharpness"];
+                unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
+                retValue += AlliedChkError(Camera.SetParameter(FGP_SHARPNESS, valnew));
+		    }
+            else if (!key.compare("gamma"))
+		    {
+                retValue += AlliedChkError(Camera.SetParameter(FGP_GAMMA, it->getVal<int>()));
 		    }
 		    
             if (!retValue.containsError())
@@ -545,6 +532,12 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
                 m_params["y1"].setVal<int>( yPosInfo.IsValue + ySizeInfo.IsValue - 1 );
                 m_params["sizex"].setVal<int>(xSizeInfo.IsValue);
                 m_params["sizey"].setVal<int>(ySizeInfo.IsValue);
+
+                FGPINFO packsize;
+		        retval += AlliedChkError(Camera.GetParameterInfo(FGP_PACKETSIZE, &packsize));
+		        double fps = packsize.IsValue * 8000.0 / static_cast<double>(xSizeInfo.IsValue * ySizeInfo.IsValue);
+		        double ftime = 1.0 / fps;
+		        m_params["frame_time"].setVal<double>(ftime);
             }
 
         }
@@ -673,8 +666,191 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 	// Set camera to scalable mode and max size
 	if (Result == 0 && connected)
 	{
-        FGPINFO xInfo;
-        FGPINFO yInfo;
+        //check available parameters
+        FGPINFO info, xInfo, yInfo;
+        double val;
+
+        tempID = NodeInfo[nodeNR].Guid.High;
+		m_params["vendorID"].setVal(tempID);
+		tempID = NodeInfo[nodeNR].Guid.Low;
+		m_params["cameraID"].setVal(tempID);
+        
+        char *vendorName = new char[512];
+        vendorName[511] = '\0'; //zero-terminate it for security reason
+        char *modelName = new char[512];
+        modelName[511] = '\0'; //zero-terminate it for security reason
+
+        Result = Camera.GetDeviceName(vendorName, 511, modelName); //vendorName and modelName are zero-terminated then
+        if (Result == 0)
+        {
+            m_params["vendorName"].setVal<char*>(vendorName);
+            m_params["modelName"].setVal<char*>(modelName);
+            m_identifier = QString("%1 (%2)").arg(modelName).arg(vendorName);
+
+            if (strcmp(vendorName,"AVT") == 0)
+            {
+                m_exposureParams.AVTCam = true;
+                UINT32 regValue;
+                //try to read timebase register
+                Result = Camera.ReadRegister(0xF1000208, &regValue);
+
+                if (Result == FCE_NOERROR)
+                {
+                    if (regValue & 0x80000000) //timebase present
+                    {
+                        int id = regValue & 0x0000000f;
+                        int timebases[] = {1,2,5,10,20,50,100,200,500,1000};
+                        m_exposureParams.timebaseMs = timebases[id] / 1000.0;
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal(ito::retWarning,0,"timebase register of camera is not available. Timebase is set to 20µs per default");
+                        m_exposureParams.timebaseMs = 20.0 / 1000.0;
+                    }
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retWarning,0,"timebase register of camera could not be read. Timebase is set to 20µs per default");
+                    m_exposureParams.timebaseMs = 20.0 / 1000.0;
+                }
+
+                QMap<QString,int> offsets;
+                offsets["Marlin F033B"] = 12;
+                offsets["Marlin F033C"] = 12;
+                offsets["Marlin F046B"] = 12;
+                offsets["Marlin F046C"] = 12;
+                offsets["Marlin F080B"] = 30;
+                offsets["Marlin F080C"] = 30;
+                offsets["Marlin F080B-30fps"] = 30;
+                offsets["Marlin F080C-30fps"] = 30;
+                offsets["Marlin F145B2"] = 18;
+                offsets["Marlin F145C2"] = 18;
+                offsets["Marlin F146B"] = 26;
+                offsets["Marlin F146C"] = 26;
+                offsets["Marlin F201B"] = 39;
+                offsets["Marlin F201C"] = 39;
+                offsets["Marlin F131B"] = 1;
+                offsets["Marlin F131C"] = 1;
+
+                offsets["Pike F-032"] = 17;
+                offsets["Pike F-100"] = 42;
+                offsets["Pike F-145"] = 38;
+                offsets["Pike F-145-15fps"] = 70;
+                offsets["Pike F-210"] = 42;
+                offsets["Pike F-421"] = 69;
+                offsets["Pike F-505"] = 26;
+                offsets["Pike F-1100"] = 128;
+                offsets["Pike F-1600"] = 635;
+
+                offsets["GUPPY F-033"] = 109;
+                offsets["GUPPY F-036"] = -21;
+                offsets["GUPPY F-038"] = 42;
+                offsets["GUPPY F-038 NIR"] = 42;
+                offsets["GUPPY F-044"] = 42;
+                offsets["GUPPY F-044 NIR"] = 42;
+                offsets["GUPPY F-046"] = 22;
+                offsets["GUPPY F-080"] = 34;
+                offsets["GUPPY F-146"] = 20;
+                offsets["GUPPY F-503"] = -42;
+
+                if (offsets.contains(modelName))
+                {
+                    m_exposureParams.offsetMs = offsets[modelName] / 1000.0;
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retWarning,0,"no exposure offset is available for this camera model. Therefore the offset is set to 0 and your exposure time might be few microseconds smaller than the real value.");
+                    m_exposureParams.offsetMs = 0.0;
+                }
+            }
+            else
+            {
+                m_exposureParams.AVTCam = false;
+                m_exposureParams.offsetMs = 0.0;
+                m_exposureParams.timebaseMs = 20.0;
+                retValue += ito::RetVal(ito::retWarning,0,"Camera model is not known. Therefore the integration time represents the shutter value, not the real exposure time in seconds.");
+            }
+        }
+        else
+        {
+            m_identifier = QString::number(tempID);
+        }
+
+        delete[] vendorName; vendorName = NULL;
+        delete[] modelName; modelName = NULL;
+
+        //brightness
+        Result = Camera.GetParameterInfo(FGP_BRIGHTNESS, &info);
+        if (Result == FCE_NOTAVAILABLE)
+        {
+            m_params.remove("brightness");
+        }
+        else
+        {
+            val = (info.IsValue - info.MinValue) / (info.MaxValue - info.MinValue);
+            m_params["brightness"].setVal<double>(val);
+            m_camProperties["brightness"] = info;
+        }
+
+        //sharpness
+        Result = Camera.GetParameterInfo(FGP_SHARPNESS, &info);
+        if (Result == FCE_NOTAVAILABLE)
+        {
+            m_params.remove("sharpness");
+        }
+        else
+        {
+            val = (info.IsValue - info.MinValue) / (info.MaxValue - info.MinValue);
+            m_params["sharpness"].setVal<double>(val);
+            m_camProperties["sharpness"] = info;
+        }
+
+        //gamma
+        Result = Camera.GetParameterInfo(FGP_GAMMA, &info);
+        if (Result == FCE_NOTAVAILABLE)
+        {
+            m_params.remove("gamma");
+        }
+        else
+        {
+            m_params["gamma"].setVal<int>(info.IsValue);
+            m_camProperties["gamma"] = info;
+        }
+
+        //gain
+        Result = Camera.GetParameterInfo(FGP_GAIN, &info);
+        if (Result == FCE_NOTAVAILABLE)
+        {
+            m_params["gain"].setMeta( new ito::DoubleMeta(0.0,0.0), true );
+            m_params["gain"].setFlags(ito::ParamBase::Readonly);
+        }
+        else
+        {
+            val = (info.IsValue - info.MinValue) / (info.MaxValue - info.MinValue);
+            m_params["gain"].setVal<double>(val);
+            m_camProperties["gain"] = info;
+        }
+
+        //offset
+        m_params["offset"].setMeta( new ito::DoubleMeta(0.0,0.0), true );
+        m_params["offset"].setFlags(ito::ParamBase::Readonly);
+
+        //shutter
+        Result = Camera.GetParameterInfo(FGP_SHUTTER, &info);
+        if (Result == FCE_NOTAVAILABLE)
+        {
+            m_params["integration_time"].setMeta( new ito::DoubleMeta(0.0,0.0), true);
+            m_params["integration_time"].setFlags(ito::ParamBase::Readonly);
+        }
+        else
+        {
+            double minIntegrationTime = shutterToExposureSec(info.MinValue);
+            double maxIntegrationTime = shutterToExposureSec(info.MaxValue);
+            double integrationTime = shutterToExposureSec(info.IsValue);
+            m_params["integration_time"].setMeta( new ito::DoubleMeta(minIntegrationTime,maxIntegrationTime), true);
+            m_params["integration_time"].setVal<double>(integrationTime);
+            m_camProperties["shutter"] = info;
+        }
 
         Result = Camera.SetParameter(FGP_IMAGEFORMAT, MAKEIMAGEFORMAT(RES_SCALABLE, CM_Y8, 0));
 
@@ -704,41 +880,11 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 		static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMax(xInfo.MaxValue - 1);
 		static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMax(yInfo.MaxValue - 1);
 
-		Result = Camera.GetParameterInfo(FGP_SHUTTER, &shutterinfo);
-		double shuttermin = shutterinfo.MinValue * 0.001;
-		double shuttermax = shutterinfo.MaxValue * 0.001;
-		double shutteris = shutterinfo.IsValue * 0.001;
-
- 		static_cast<ito::DoubleMeta*>( m_params["integration_time"].getMeta() )->setMin(shuttermin);
-		static_cast<ito::DoubleMeta*>( m_params["integration_time"].getMeta() )->setMax(shuttermax);
-
-		m_params["integration_time"].setVal<double>(shutteris);
-		Result = Camera.SetParameter(FGP_GAIN, 0);
-
-		tempID = NodeInfo[nodeNR].Guid.High;
-		m_params["vendorID"].setVal(tempID);
-		tempID = NodeInfo[nodeNR].Guid.Low;
-		m_params["cameraID"].setVal(tempID);
-        
-        char *vendorName = new char[512];
-        vendorName[511] = '\0'; //zero-terminate it for security reason
-        char *modelName = new char[512];
-        modelName[511] = '\0'; //zero-terminate it for security reason
-
-        Result = Camera.GetDeviceName(vendorName, 511, modelName); //vendorName and modelName are zero-terminated then
-        if (Result == 0)
-        {
-            m_params["vendorName"].setVal<char*>(vendorName);
-            m_params["modelName"].setVal<char*>(modelName);
-            m_identifier = QString("%1 (%2)").arg(modelName).arg(vendorName);
-        }
-        else
-        {
-            m_identifier = QString::number(tempID);
-        }
-
-        delete[] vendorName; vendorName = NULL;
-        delete[] modelName; modelName = NULL;
+        FGPINFO packsize;
+		retValue += AlliedChkError(Camera.GetParameterInfo(FGP_PACKETSIZE, &packsize));
+		double fps = packsize.IsValue * 8000.0 / static_cast<double>(xInfo.IsValue * yInfo.IsValue);
+		double ftime = 1.0 / fps;
+		m_params["frame_time"].setVal<double>(ftime);
 	}
 
 	if (Result != 0)
@@ -794,6 +940,32 @@ ito::RetVal FireGrabber::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+double FireGrabber::shutterToExposureSec(int shutter)
+{
+    if(m_exposureParams.AVTCam)
+    {
+        return (m_exposureParams.timebaseMs * shutter + m_exposureParams.offsetMs) / 1000.0;
+    }
+    else
+    {
+        return static_cast<double>(shutter);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int FireGrabber::exposureSecToShutter(double exposure)
+{
+    if(m_exposureParams.AVTCam)
+    {
+        return ((exposure * 1000) - m_exposureParams.offsetMs) / m_exposureParams.timebaseMs;
+    }
+    else
+    {
+        return static_cast<int>(exposure);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
 {
 	ItomSharedSemaphoreLocker locker(waitCond);
@@ -804,27 +976,22 @@ ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() == 1) //the first instance
     {
-		// Start DMA logic
-		Result = Camera.OpenCapture();
-	
-		// Get Framerate
-		if (Result == 0)
-		{
-            FGPINFO packsize;
-			Result = Camera.GetParameter(FGP_XSIZE, &m_xSize);
-			Result = Camera.GetParameter(FGP_YSIZE, &m_ySize);
-			Result = Camera.GetParameterInfo(FGP_PACKETSIZE, &packsize);
-			int fps = packsize.IsValue * 8000 / m_xSize / m_ySize;
-			double ftime = 100.0 / static_cast<double>(fps);
-			//m_params["fps"].setVal<double>(fps);
-			m_params["frame_time"].setVal<double>(ftime);
-		}
-    }
+        retValue += AlliedChkError(Camera.SetParameter(FGP_DMAMODE, DMA_LIMP)); //this is important
+        retValue += AlliedChkError(Camera.SetParameter(FGP_BURSTCOUNT, BC_INFINITE));
 
-	if (Result != 0)
-	{
-		retValue += AlliedChkError(Result);
-	}
+        if (!retValue.containsError())
+        {
+		    // Start DMA logic
+		    retValue += AlliedChkError(Camera.OpenCapture());
+	
+		    if (!retValue.containsError())
+		    {
+                // Start image device
+	            retValue += AlliedChkError(Camera.StartDevice());
+                retValue += AlliedChkError(Camera.DiscardFrames());
+		    }
+        }
+    }
 
 	if (waitCond)
     {
@@ -843,7 +1010,10 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     decGrabberStarted();
     if (grabberStartedCount() == 0)
     {
-		Camera.CloseCapture();
+        // Start image device
+	    retValue += AlliedChkError(Camera.StopDevice());
+
+		retValue += AlliedChkError(Camera.CloseCapture());
     }
     else if (grabberStartedCount() < 0)
     {
@@ -870,21 +1040,8 @@ ito::RetVal FireGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCon
 
     ito::RetVal retValue(ito::retOk);
 
-	// Set the number of frames captured after StartDevice to 1
-	UINT32 Result = Camera.SetParameter(FGP_BURSTCOUNT, BC_ONESHOT);
-	//Result = Camera.SetParameter(FGP_BURSTCOUNT, BC_INFINITE);
-	
-	if (Result != 0)
-	{
-		retValue = AlliedChkError(Result);
-	}
-	
-	// Start image device
-	Result = Camera.StartDevice();
-	if (Result != 0)
-	{
-		retValue = AlliedChkError(Result);
-	}
+    retValue += AlliedChkError(Camera.DiscardFrames());
+    retValue += AlliedChkError(Camera.PutFrame(NULL));
 
 	m_isgrabbing = true;
 
@@ -1011,10 +1168,10 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 		}
 	}
 
-    //returns the frame back to camera for further use
+    //returns the frame back to standby queue of camera. PutFrame(NULL) in acquire then puts it to DMA queue, where camera can put new images in.
     retValue += AlliedChkError(Camera.PutFrame(&frame));
 
-	retValue += AlliedChkError(Camera.StopDevice());	// Stop the device
+	//retValue += AlliedChkError(Camera.StopDevice());	// Stop the device
 
     return retValue;
 }

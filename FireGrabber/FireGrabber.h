@@ -68,6 +68,16 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
     private:
 		CFGCamera  Camera;
 
+        struct ExposureParameters
+        {
+            ExposureParameters() : AVTCam(false), timebaseMs(0.0), offsetMs(0.0) {};
+            bool AVTCam;
+            double timebaseMs;
+            double offsetMs;
+        };
+
+        ExposureParameters m_exposureParams;
+
 		unsigned long  m_xSize, m_ySize;
         
         bool m_isgrabbing; /*!< Check if acquire was called */
@@ -78,6 +88,11 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
         ito::RetVal adjustROI(int x0, int x1, int y0, int y1);
 
         static int m_numberOfInstances;
+
+        QMap<QString, FGPINFO> m_camProperties;
+
+        double shutterToExposureSec(int shutter);
+        int exposureSecToShutter(double exposure);
 
     public slots:
         //!< Get Camera-Parameter
