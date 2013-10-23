@@ -619,15 +619,30 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             m_params.remove("integration_time");
         }
 
+#ifdef _DEBUG
+#ifdef CV_CAP_PROP_FOCUS 
         qDebug() << "CV_CAP_PROP_FOCUS" << m_pCam->get(CV_CAP_PROP_FOCUS);
+#endif
+#ifdef CV_CAP_PROP_IRIS 
         qDebug() << "CV_CAP_PROP_IRIS" << m_pCam->get(CV_CAP_PROP_IRIS);
-        qDebug() << "CV_CAP_PROP_EXPOSURE" << m_pCam->get(CV_CAP_PROP_EXPOSURE);
+#endif
+#ifdef CV_CAP_PROP_ZOOM 
         qDebug() << "CV_CAP_PROP_ZOOM" << m_pCam->get(CV_CAP_PROP_ZOOM);
+#endif
+#ifdef CV_CAP_PROP_ROLL 
         qDebug() << "CV_CAP_PROP_ROLL" << m_pCam->get(CV_CAP_PROP_ROLL);
+#endif
+#ifdef CV_CAP_PROP_TILT 
         qDebug() << "CV_CAP_PROP_TILT" << m_pCam->get(CV_CAP_PROP_TILT);
+#endif
+#ifdef CV_CAP_PROP_PAN
         qDebug() << "CV_CAP_PROP_PAN" << m_pCam->get(CV_CAP_PROP_PAN);
-        qDebug() << "CV_CAP_PROP_GAIN" << m_pCam->get(CV_CAP_PROP_GAIN);
+#endif
+#ifdef CV_CAP_PROP_BACKLIGHT
         qDebug() << "CV_CAP_PROP_BACKLIGHT" << m_pCam->get(CV_CAP_PROP_BACKLIGHT);
+#endif
+        qDebug() << "CV_CAP_PROP_EXPOSURE" << m_pCam->get(CV_CAP_PROP_EXPOSURE);
+        qDebug() << "CV_CAP_PROP_GAIN" << m_pCam->get(CV_CAP_PROP_GAIN);
         qDebug() << "CV_CAP_PROP_WHITE_BALANCE_BLUE_U" << m_pCam->get(CV_CAP_PROP_WHITE_BALANCE_BLUE_U);
         qDebug() << "CV_CAP_PROP_MONOCROME" << m_pCam->get(CV_CAP_PROP_MONOCROME);
         qDebug() << "CV_CAP_PROP_GAMMA" << m_pCam->get(CV_CAP_PROP_GAMMA);
@@ -640,6 +655,7 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         qDebug() << "CV_CAP_PROP_FOURCC" << m_pCam->get(CV_CAP_PROP_FOURCC);
         qDebug() << "CV_CAP_PROP_FRAME_HEIGHT" << m_pCam->get(CV_CAP_PROP_FRAME_HEIGHT);
         qDebug() << "CV_CAP_PROP_FRAME_WIDTH" << m_pCam->get(CV_CAP_PROP_FRAME_WIDTH);
+#endif
     }
 
 
