@@ -1639,13 +1639,17 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
     #if (useomp)
     #pragma omp parallel num_threads(NTHREADS)
     {
-    #pragma omp for schedule(guided)
     #endif
 
     ito::uint8 *tmpPtr = NULL;
     if(dObjSrc->getType() == ito::tFloat64)
     {
         ito::float64 *srcPtr = NULL; 
+        
+        #if (useomp)
+        #pragma omp for schedule(guided)
+        #endif
+
         for(int y = 0; y < cvMatIn->rows; y++)
         {
             srcPtr = cvMatIn->ptr<ito::float64>(y);
@@ -1665,6 +1669,10 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
         ito::float32 maxClipValf = cv::saturate_cast<ito::float32>(maxClipVal);
 
         ito::float32 *srcPtr = NULL;
+
+        #if (useomp)
+        #pragma omp for schedule(guided)
+        #endif
         for(int y = 0; y < cvMatIn->rows; y++)
         {
             srcPtr = cvMatIn->ptr<ito::float32>(y);
@@ -1712,12 +1720,16 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
         #if (useomp)
         #pragma omp parallel num_threads(NTHREADS)
         {
-        #pragma omp for schedule(guided)
         #endif
 
+        ito::uint8 *tmpPtr = NULL;
         if(dObjSrc->getType() == ito::tFloat64)
         {
             ito::float64 *dstPtr = NULL; 
+            #if (useomp)
+            #pragma omp for schedule(guided)
+            #endif
+            
             for(int y = 0; y < cvMatIn->rows; y++)
             {
                 dstPtr = cvMatOut->ptr<ito::float64>(y);
@@ -1736,6 +1748,10 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
             ito::float32 newValf = cv::saturate_cast<ito::float32>(newVal);
 
             ito::float32 *dstPtr = NULL;
+
+            #if (useomp)
+            #pragma omp for schedule(guided)
+            #endif
             for(int y = 0; y < cvMatIn->rows; y++)
             {
                 dstPtr = cvMatOut->ptr<ito::float32>(y);
