@@ -5,12 +5,21 @@
 #include "DataObject/dataObjectFuncs.h"
 #include "pluginVersion.h"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/calib3d/calib3d.hpp"
+
+#ifdef _DEBUG
+    #define useomp 0
+#else
+    #define useomp 1
+#endif
+
+#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+    #include "opencv2/calib3d/calib3d.hpp"
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) 
 
 #include <QtCore/QtPlugin>
 #include <qnumeric.h>
 
-#define TIMEBENCHMARK 1
+#define TIMEBENCHMARK 0
 //#include "common/helperCommon.h"
 
 int NTHREADS = 1;
@@ -120,40 +129,49 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvErode, OpenCVFilters::cvDilateErodeParams, tr(cvErodeDoc));
     m_filterList.insert("cvErode", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvMedianBlur, OpenCVFilters::cvMedianBlurParams, tr("Planewise median blur filter. Warning: NaN-handling for floats not verified"));
+    filter = new FilterDef(OpenCVFilters::cvMedianBlur, OpenCVFilters::cvMedianBlurParams, tr(cvMedianBlurDoc));
     m_filterList.insert("cvMedianBlur", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvBlur, OpenCVFilters::cvBlurParams, tr("Planewise blur filter. Warning: NaN-handling for float32 / float64 wrong"));
+    filter = new FilterDef(OpenCVFilters::cvBlur, OpenCVFilters::cvBlurParams, tr(cvBlurDoc));
     m_filterList.insert("cvBlur", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFFT2D, OpenCVFilters::cvFFTParams, tr("Planewise FFT."));
+    filter = new FilterDef(OpenCVFilters::cvFFT2D, OpenCVFilters::cvFFTParams, tr(cvFFT2DDoc));
     m_filterList.insert("cvFFT2D", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvIFFT2D, OpenCVFilters::cvFFTParams, tr("Planewise IFFT."));
+    filter = new FilterDef(OpenCVFilters::cvIFFT2D, OpenCVFilters::cvFFTParams, tr(cvIFFT2DDoc));
     m_filterList.insert("cvIFFT2D", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFFT1D, OpenCVFilters::cvFFTParams, tr("Linewise FFT."));
+    filter = new FilterDef(OpenCVFilters::cvFFT1D, OpenCVFilters::cvFFTParams, tr(cvFFT1DDoc));
     m_filterList.insert("cvFFT1D", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvIFFT1D, OpenCVFilters::cvFFTParams, tr("Linewise IFFT."));
+    filter = new FilterDef(OpenCVFilters::cvIFFT1D, OpenCVFilters::cvFFTParams, tr(cvIFFT1DDoc));
     m_filterList.insert("cvIFFT1D", filter);
 
-    /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, tr("Planewise histogram calculation"));
+    filter = new FilterDef(OpenCVFilters::cvRemoveSpikes, OpenCVFilters::cvRemoveSpikesParams, tr(cvRemoveSpikesDoc));
+    m_filterList.insert("cvRemoveSpikes", filter);
+
+    
+
+    /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, tr(cvCalcHistDoc));
     m_filterList.insert("cvCalcHistogram", filter);*/
 
-	filter = new FilterDef(OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, tr("openCV test filter."));
+#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+
+	filter = new FilterDef(OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, tr(cvFindCirclesDoc));
     m_filterList.insert("cvFindCircles", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFindChessboardCorners, OpenCVFilters::cvFindChessboardCornersParams, tr("The function locates the internal chessboard corners of the input image."));
+    filter = new FilterDef(OpenCVFilters::cvFindChessboardCorners, OpenCVFilters::cvFindChessboardCornersParams, tr(cvFindChessboardCornersDoc));
     m_filterList.insert("cvFindChessboardCorners", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvCornerSubPix, OpenCVFilters::cvCornerSubPixParams, tr("Refines the corner locations e.g. from cvFindChessboardCorners"));
+    
+    filter = new FilterDef(OpenCVFilters::cvCornerSubPix, OpenCVFilters::cvCornerSubPixParams, tr(cvCornerSubPixDoc));
     m_filterList.insert("cvCornerSubPix", filter);
     
-    filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, tr("Flip image upside down."));
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) 
+
+    filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, tr(cvFlipUpDownDoc));
     m_filterList.insert("cvFlipUpDown", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFlipLeftRight, OpenCVFilters::stdParams2Objects, tr("Flip image left right."));
+    filter = new FilterDef(OpenCVFilters::cvFlipLeftRight, OpenCVFilters::stdParams2Objects, tr(cvFlipLeftRightDoc));
     m_filterList.insert("cvFlipLeftRight", filter);
     
     setInitialized(true); //init method has been finished (independent on retval)
@@ -512,16 +530,6 @@ ito::RetVal OpenCVFilters::cvErode(QVector<ito::ParamBase> *paramsMand, QVector<
 
 
 
-
-
-
-
-
-
-
-
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvBlurParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -538,12 +546,26 @@ ito::RetVal OpenCVFilters::cvBlurParams(QVector<ito::Param> *paramsMand, QVector
         paramsOpt->append(param);
         param = ito::Param("anchor", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Position of the kernel anchor, see openCV-Help").toAscii().data());
         paramsOpt->append(param);
-        param = ito::Param("borderType", ito::ParamBase::Int | ito::ParamBase::In, 0, 3, 0, tr("Bordertype, see openCV-Help").toAscii().data());
+        param = ito::Param("borderType", ito::ParamBase::String | ito::ParamBase::In, "CONSTANT", tr("border mode used to extrapolate pixels outside of the image").toAscii().data());
         paramsOpt->append(param);
     }
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvBlurDoc = "Planewise median blur filter.\n\
+\n\
+This filter applies the method cv::blur to every plane in the source data object. The function smoothes the images by a simple mean-filter. The\
+result is contained in the destination object. It can handle data objects of type uint8, uint16, int16, ito::tInt32, float32 and float64 only. \n\
+\n\
+The cv::blur interally calls the cv::boxfilter()-method.\n\
+\n\
+The itom-wrapping does not work inplace currently. A new dataObject is allocated.\n\
+\n\
+borderType: This string defines how the filter should hande pixels at the border of the matrix.\
+Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)\
+\n\
+Warning: NaN-handling for floats not verified.";
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
@@ -584,7 +606,34 @@ ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<i
 
     ito::DataObject *dObjAnchor = (ito::DataObject*)(*paramsOpt)[2].getVal<void*>();
 
-    int borderType = (*paramsOpt)[3].getVal<int>();
+    //border type
+    QString borderTypeStr = paramsOpt->at(3).getVal<char*>() ? paramsOpt->at(3).getVal<char*>() : QString();
+    int borderType;
+    if (QString::compare(borderTypeStr, "CONSTANT", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_CONSTANT;
+    }
+    else if (QString::compare(borderTypeStr, "REPLICATE", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_REPLICATE;
+    }
+    else if (QString::compare(borderTypeStr, "REFLECT", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_REFLECT;
+    }
+    else if (QString::compare(borderTypeStr, "WRAP", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_WRAP;
+    }
+    else if (QString::compare(borderTypeStr, "REFLECT_101", Qt::CaseInsensitive) == 0)
+    {
+        borderType = cv::BORDER_REFLECT_101;
+    }
+    else
+    {
+        retval += ito::RetVal::format(ito::retError,0,"border type %s is unknown", borderTypeStr.toAscii().data());
+        return retval;
+    }
 
     if (dObjAnchor)
     {
@@ -652,6 +701,15 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvFindCirclesDoc = "Finds circles in a grayscale image using the Hough transform.\n\
+\n\
+This filter is a wrapper for the openCV-function cv::HoughCircles.\
+he function finds circles in a grayscale image using a modification of the Hough transform.\
+Based on this filter, circles are identified and located.\
+The result is dataObject with rows = (n-Circles) and cols = (x,y,r).\n\
+";
 ito::RetVal OpenCVFilters::cvFindCirclesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
 	ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
@@ -761,7 +819,40 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
 
     return retval;
 }
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) 
 
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvFFT2DDoc = "2D-dimentional fourier-transformation using cv::DFT.\n\
+\n\
+This filter tries to perform an inplace FFT for a given 2D-dataObject. The FFT is calculated planewise.\
+The result is a complex-dataObject. The axis-scales and units are invertes and modified.\n\
+\n\
+This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, false, false, false)-function.\n\
+";
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvIFFT2DDoc = "2D-dimentional inverse fourier-transformation using cv::DFT.\n\
+\n\
+This filter tries to perform an inplace FFT for a given 2D-dataObject. The FFT is calculated planewise.\
+The result is a real-dataObject. The axis-scales and units are invertes and modified.\n\
+\n\
+This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, true, true, false)-function.\n\
+";
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvFFT1DDoc = "1D-dimentional fourier-transformation using cv::DFT.\n\
+\n\
+This filter tries to perform an inplace FFT for a given line or 2D-dataObject. The FFT is calculated linewise.\
+The result is a complex-dataObject. The axis-scales and units are invertes and modified.\n\
+\n\
+This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, false, false, true)-function.\n\
+";
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvIFFT1DDoc = "1D-dimentional inverse fourier-transformation using cv::DFT.\n\
+\n\
+This filter tries to perform an inplace FFT for a given line or 2D-dataObject. The FFT is calculated linewise.\
+The result is a real-dataObject. The axis-scales and units are invertes and modified.\n\
+\n\
+This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, true, true, true)-function.\n\
+";
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvFFTParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -795,6 +886,7 @@ ito::RetVal OpenCVFilters::cvFFT2D(QVector<ito::ParamBase> *paramsMand, QVector<
     double duration = (double)testend / cv::getTickFrequency();
     std::cout << "Time: " << duration << "ms\n";
 #endif
+
 
     return retval;
 }
@@ -868,6 +960,15 @@ ito::RetVal OpenCVFilters::cvIFFT1D(QVector<ito::ParamBase> *paramsMand, QVector
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvMedianBlurDoc = "Planewise median blur filter.\n\
+\n\
+The function smoothes an image using the median filter with the kernel-size x kernel-size aperture. Each channel of a multi-channel image is processed independently. \
+It can handle data objects of type uint8, uint16, int16, ito::tInt32, float32 and float64 only. \n\
+\n\
+The itom-wrapping does not work inplace currently. A new dataObject is allocated.\n\
+\n\
+Warning: NaN-handling for floats not verified.";
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvMedianBlurParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -972,6 +1073,8 @@ end:
     delete[] cvMatOut;
     return retval;
 }
+////----------------------------------------------------------------------------------------------------------------------------------
+//static const char * cvCalcHistDoc = "Planewise histogram calculation";
 ////----------------------------------------------------------------------------------------------------------------------------------
 //ito::RetVal OpenCVFilters::cvCalcHistParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 //{
@@ -1110,7 +1213,26 @@ end:
 //}
 //----------------------------------------------------------------------------------------------------------------------------------
 
+#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 //------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvFindChessboardCornersDoc = "Finds the positions of internal corners of the chessboard.\n\
+\n\
+This filter is a wrapper for the cv::method cv::findChessboardCorners. \
+\n\
+The openCV-function attempts to determine whether the input image is a view of the chessboard pattern and locate the internal chessboard corners. \
+The function returns a non-zero value if all of the corners are found and they are placed in a certain order (row by row, left to right in every row). \
+Otherwise, if the function fails to find all the corners or reorder them, \
+it returns 0. For example, a regular chessboard has 8 x 8 squares and 7 x 7 internal corners, that is, points where the black squares touch each other. \
+The detected coordinates are approximate, and to determine their positions more accurately, the function calls cornerSubPix(). \n\
+\n\
+Remark 1: This function gives only a rough estimation of the positions. For a higher resolutions, you should use\
+the function cornerSubPix() with different parameters if returned coordinates are not accurate enough.\
+This function is wrapped to itom by the filter 'cvCornerSubPix'.\n\
+\n\
+Remark 2: The outer frame of the dataObject / the image should not be white but have approximately the same gray value than the bright field.\n\
+\n\
+Remark 3: The bright fields should be free of darker dirt or dust and you should apply a corse shading correction to improve the results. \n\
+";
 ito::RetVal OpenCVFilters::cvFindChessboardCornersParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -1181,7 +1303,10 @@ ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *para
     (*paramsOut)[0].setVal<int>(result);
     return retval;
 }
-
+static const char *cvCornerSubPixDoc = "Refines the corner locations e.g. from cvFindChessboardCorners.\n\
+\n\
+This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-doku for more details\n\
+";
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvCornerSubPixParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1296,8 +1421,24 @@ ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *para
     
 }
 
-
-
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) 
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvFlipLeftRightDoc = "This filter flips the image left to right. \n\
+\n\
+This filter applies the flip method cvFlip of OpenCV with the flipCode > 0 to a 2D source data object. The \
+result is contained in the destination object\n\
+\n\
+It is allowed to let the filter work inplace if you give the same input than destination data object, else the output data object is verified \
+if it fits to the size and type of the source data object and if not a new one is allocated\n\
+.";
+const char* OpenCVFilters::cvFlipUpDownDoc = "This filter flips the image upside down. \n\
+\n\
+This filter applies the flip method cvFlip of OpenCV with the flipCode = 0 to a 2D source data object. The \
+result is contained in the destination object\n\
+\n\
+It is allowed to let the filter work inplace if you give the same input than destination data object, else the output data object is verified \
+if it fits to the size and type of the source data object and if not a new one is allocated\n\
+.";
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvFlipLeftRight(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * paramsOut)
 {
@@ -1397,5 +1538,247 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
         dObjDst->addToProtocol(std::string(msg.toAscii().data()));
     }
 
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvRemoveSpikesDoc = "Set single spikes at measurement edges to a new value. \n\
+\n\
+This filter creates a binary mask for the input object. The value of mask(y,x) will be 1 if value of input(y,x) is within the specified range and is finite.\
+The mask is eroded and than dilated by kernel size using openCV cv::erode and cv::dilate with a single iteration. \
+In the last step the value of output(y,x) is set to newValue if mask(y,x) is 0.\n\
+\n\
+It is allowed to let the filter work inplace if you give the same input than destination data object, else the output data object is verified \
+if it fits to the size and type of the source data object and if not a new one is allocated and the input data is copied to the new object. \n\
+";
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *dObjSrc = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
+
+    if (!dObjSrc)
+    {
+        return ito::RetVal(ito::retError,0, tr("dataObjectIn must not be NULL").toAscii().data());
+    }
+
+    if (!dObjDst)
+    {
+        return ito::RetVal(ito::retError,0, tr("dataObjectOut must not be NULL").toAscii().data());
+    }
+
+    int dims = dObjSrc->getDims();
+
+    if (dims != 2)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: dataObjectIn is not a matrix or image stack").toAscii().data());
+    }
+
+    //kernelSize
+    int kernel = (*paramsOpt)[0].getVal<int>();
+
+    if (!(kernel % 2))
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: kernel must be odd").toAscii().data());
+    }
+
+    //anchor
+    cv::Point anchor(-1, -1);
+
+    // Check if input type is allowed or not
+    retval += ito::dObjHelper::verify2DDataObject(dObjSrc, "dataObjectIn", kernel, std::numeric_limits<ito::uint32>::max(), kernel, std::numeric_limits<ito::uint32>::max(), 2, ito::tFloat32, ito::tFloat64);
+    if(retval.containsError())
+    {
+        return retval;
+    }
+
+    //create structuring element
+    cv::Mat cvElement = cv::Mat::ones(kernel, kernel, CV_8U);
+
+    ito::float64 minClipVal = (*paramsOpt)[1].getVal<ito::float64>();
+    ito::float64 maxClipVal = (*paramsOpt)[2].getVal<ito::float64>();
+    ito::float64 newVal = (*paramsOpt)[3].getVal<ito::float64>();
+
+    //dObjDst is either equal to dObjSrc or must have the same size and type than dObjSrc (if not is created such it fullfills these requirements)
+    if (dObjDst != dObjSrc)
+    {
+        int dstDim = dObjDst->getDims();
+        int dstType = dObjDst->getType();
+        size_t *sizes = new size_t[dims];
+        bool sizeFit = true;
+
+        for (int i = 0; i < dims; ++i)
+        {
+            sizes[i] = dObjSrc->getSize(i);
+            if (dstDim != dims || sizes[i] != dObjDst->getSize(i))
+            {
+                sizeFit = false;
+            }
+        }
+
+        if (dstDim != dims || sizeFit == false || dstType != dObjSrc->getType())
+        {
+            (*dObjDst) = ito::DataObject(dims, sizes, dObjSrc->getType());
+        }
+
+        delete[] sizes;
+
+
+        dObjSrc->copyTo(*dObjDst);
+        dObjSrc->copyAxisTagsTo(*dObjDst);
+        dObjSrc->copyTagMapTo(*dObjDst);
+    }
+
+    cv::Mat *cvMatIn = ((cv::Mat *)dObjSrc->get_mdata()[dObjSrc->seekMat(0)]);
+    cv::Mat *cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(0)]);
+
+    cv::Mat cvTemp = cv::Mat::zeros(cvMatIn->rows, cvMatIn->cols, CV_8U);
+
+    #if (useomp)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+    #pragma omp for schedule(guided)
+    #endif
+
+    ito::uint8 *tmpPtr = NULL;
+    if(dObjSrc->getType() == ito::tFloat64)
+    {
+        ito::float64 *srcPtr = NULL; 
+        for(int y = 0; y < cvMatIn->rows; y++)
+        {
+            srcPtr = cvMatIn->ptr<ito::float64>(y);
+            tmpPtr = cvTemp.ptr<ito::uint8>(y);
+            for(int x = 0; x < cvMatIn->cols; x++)
+            {
+                if(ito::dObjHelper::isFinite(srcPtr[x]) && srcPtr[x] > minClipVal && srcPtr[x] < maxClipVal)
+                {
+                    tmpPtr[x] = 1;
+                }
+            }    
+        }
+    }
+    else
+    {
+        ito::float32 minClipValf = cv::saturate_cast<ito::float32>(minClipVal);
+        ito::float32 maxClipValf = cv::saturate_cast<ito::float32>(maxClipVal);
+
+        ito::float32 *srcPtr = NULL;
+        for(int y = 0; y < cvMatIn->rows; y++)
+        {
+            srcPtr = cvMatIn->ptr<ito::float32>(y);
+            tmpPtr = cvTemp.ptr<ito::uint8>(y);
+            for(int x = 0; x < cvMatIn->cols; x++)
+            {
+                if(ito::dObjHelper::isFinite(srcPtr[x]) && srcPtr[x] > minClipValf && srcPtr[x] < maxClipValf)
+                {
+                    tmpPtr[x] = 1;
+                }
+            }   
+        }    
+    }
+
+    #if (useomp)
+    }
+    #endif
+
+    if (!retval.containsError())
+    {
+        try
+        {
+            cv::erode(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
+        }
+        catch (cv::Exception exc)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        try
+        {
+            cv::dilate(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
+        }
+        catch (cv::Exception exc)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
+        }
+    } 
+
+    if (!retval.containsError())
+    {    
+        #if (useomp)
+        #pragma omp parallel num_threads(NTHREADS)
+        {
+        #pragma omp for schedule(guided)
+        #endif
+
+        if(dObjSrc->getType() == ito::tFloat64)
+        {
+            ito::float64 *dstPtr = NULL; 
+            for(int y = 0; y < cvMatIn->rows; y++)
+            {
+                dstPtr = cvMatOut->ptr<ito::float64>(y);
+                tmpPtr = cvTemp.ptr<ito::uint8>(y);
+                for(int x = 0; x < cvMatIn->cols; x++)
+                {
+                    if(tmpPtr[x] == 0)
+                    {
+                        dstPtr[x] = newVal;
+                    }
+                }    
+            }
+        }
+        else
+        {
+            ito::float32 newValf = cv::saturate_cast<ito::float32>(newVal);
+
+            ito::float32 *dstPtr = NULL;
+            for(int y = 0; y < cvMatIn->rows; y++)
+            {
+                dstPtr = cvMatOut->ptr<ito::float32>(y);
+                tmpPtr = cvTemp.ptr<ito::uint8>(y);
+                for(int x = 0; x < cvMatIn->cols; x++)
+                {
+                    if(tmpPtr[x] == 0)
+                    {
+                        dstPtr[x] = newValf;
+                    }
+                }   
+            }    
+        }
+
+        #if (useomp)
+        }
+        #endif
+    }
+
+    if (!retval.containsError())
+    {
+
+        QString msg;
+        msg = tr("Spike removal filter with kernel(%1, %1) and range ]%2, %3[").arg(kernel).arg(minClipVal).arg(maxClipVal);
+
+        dObjDst->addToProtocol(std::string(msg.toAscii().data()));
+    }
+
+    return retval;
+}
+//------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvRemoveSpikesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("dataObjectIn", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "32 or 64 bit floating point input image") );
+    paramsMand->append( ito::Param("dataObjectOut", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "32 or 64 bit floating point output image") );
+    paramsOpt->append( ito::Param("kernelSize", ito::ParamBase::Int | ito::ParamBase::In, 5, new ito::IntMeta(3, 13), "N defines the N x N kernel") );
+    paramsOpt->append( ito::Param("lowestValue", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), 0.0, "Lowest value to consider as valid") );
+    paramsOpt->append( ito::Param("highestValue", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), 1.0, "Highest value to consider as valid") );
+    paramsOpt->append( ito::Param("newValue", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::signaling_NaN(), "Highest value to consider as valid") );
     return retval;
 }
