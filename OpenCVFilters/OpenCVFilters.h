@@ -3,7 +3,12 @@
 
 #include "common/addInInterface.h"
 
+#include "pluginVersion.h"
+#include "opencv2/imgproc/imgproc.hpp"
 #include <qsharedpointer.h>
+#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+    #include "opencv2/calib3d/calib3d.hpp"
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class OpenCVFiltersInterface
@@ -84,35 +89,35 @@ class OpenCVFilters : public ito::AddInAlgo
         static ito::RetVal cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);   /*! Function removes spikes using dilateration and erodation filter*/
         static ito::RetVal cvRemoveSpikesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);   /*! Function gives back the parameter for the remove spike function*/
 
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) 
+#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
         static const char *cvFindCirclesDoc;
-		static ito::RetVal cvFindCircles(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);   /*! Function performs a "Blur-Filter" on the input object*/
+        static ito::RetVal cvFindCircles(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);   /*! Function performs a "Blur-Filter" on the input object*/
         static ito::RetVal cvFindCirclesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);   /*! Function gives back the optional and mandatory parameters for "Blur-Filter"*/
 
         static const char *cvFindChessboardCornersDoc;
-        static ito::RetVal cvFindChessboardCorners(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut); 
-        static ito::RetVal cvFindChessboardCornersParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut); 
+        static ito::RetVal cvFindChessboardCorners(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal cvFindChessboardCornersParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
         static const char *cvCornerSubPixDoc;
-        static ito::RetVal cvCornerSubPix(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut); 
+        static ito::RetVal cvCornerSubPix(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvCornerSubPixParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) 
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
         static const char* cvFlipUpDownDoc;
         static const char* cvFlipLeftRightDoc;
         static ito::RetVal cvFlipUpDown(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);     /*! Function flips openCV-Mats upside down by executing cvFlip(..., false)*/
         static ito::RetVal cvFlipLeftRight(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);   /*! Function flips openCV-Mats left right by executing cvFlip(..., true)*/
-        
-        static ito::RetVal stdParams2Objects(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut); 
+
+        static ito::RetVal stdParams2Objects(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
     private:
 
         static ito::RetVal cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, bool colsIfTrue);        /*! Flip upside/down (colsIfTrue == false) or left/right (colsIfTrue == true)*/
 
-		 
 
-		static ito::RetVal checkInputOutputEqual(ito::DataObject * p_input, ito::DataObject * p_output, bool * unequal);    /*! <Checks if input and output objects are equal and if the object pointers are valid*/
-		static ito::RetVal makeInputOutputEqual(ito::DataObject * p_input, ito::DataObject * p_output);                     /*! <Realloc the output object to size and type of input object */
+
+        static ito::RetVal checkInputOutputEqual(ito::DataObject * p_input, ito::DataObject * p_output, bool * unequal);    /*! <Checks if input and output objects are equal and if the object pointers are valid*/
+        static ito::RetVal makeInputOutputEqual(ito::DataObject * p_input, ito::DataObject * p_output);                     /*! <Realloc the output object to size and type of input object */
 
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> /*val*/, ItomSharedSemaphore * /*waitCond*/) { return ito::retOk; }

@@ -3,18 +3,12 @@
 
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
-#include "pluginVersion.h"
-#include "opencv2/imgproc/imgproc.hpp"
 
 #ifdef _DEBUG
     #define useomp 0
 #else
     #define useomp 1
 #endif
-
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-    #include "opencv2/calib3d/calib3d.hpp"
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) 
 
 #include <QtCore/QtPlugin>
 #include <qnumeric.h>
@@ -60,7 +54,7 @@ OpenCVFiltersInterface::OpenCVFiltersInterface()
 {
     m_type = ito::typeAlgo;
     setObjectName("OpenCV-Filters");
-   
+
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
 "This plugin provides wrappers for various OpenCV algorithms. These are for instance: \n\
@@ -80,7 +74,7 @@ imgproc and calib3d.";
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL");
-    m_aboutThis = QObject::tr("N.A."); 
+    m_aboutThis = QObject::tr("N.A.");
 
     NTHREADS  = QThread::idealThreadCount();
 
@@ -150,30 +144,30 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvRemoveSpikes, OpenCVFilters::cvRemoveSpikesParams, tr(cvRemoveSpikesDoc));
     m_filterList.insert("cvRemoveSpikes", filter);
 
-    
+
 
     /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, tr(cvCalcHistDoc));
     m_filterList.insert("cvCalcHistogram", filter);*/
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
-	filter = new FilterDef(OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, tr(cvFindCirclesDoc));
+    filter = new FilterDef(OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, tr(cvFindCirclesDoc));
     m_filterList.insert("cvFindCircles", filter);
 
     filter = new FilterDef(OpenCVFilters::cvFindChessboardCorners, OpenCVFilters::cvFindChessboardCornersParams, tr(cvFindChessboardCornersDoc));
     m_filterList.insert("cvFindChessboardCorners", filter);
-    
+
     filter = new FilterDef(OpenCVFilters::cvCornerSubPix, OpenCVFilters::cvCornerSubPixParams, tr(cvCornerSubPixDoc));
     m_filterList.insert("cvCornerSubPix", filter);
-    
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) 
+
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
     filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, tr(cvFlipUpDownDoc));
     m_filterList.insert("cvFlipUpDown", filter);
 
     filter = new FilterDef(OpenCVFilters::cvFlipLeftRight, OpenCVFilters::stdParams2Objects, tr(cvFlipLeftRightDoc));
     m_filterList.insert("cvFlipLeftRight", filter);
-    
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
@@ -382,7 +376,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
         anchor = cv::Point( paramsOpt->at(1).getVal<int*>()[0], paramsOpt->at(1).getVal<int*>()[1] );
 
         int m = dObjSrc->getSize( dims - 2 );
-        int n = dObjSrc->getSize( dims - 1 );       
+        int n = dObjSrc->getSize( dims - 1 );
 
         if (anchor.x < 0 || anchor.x >= n || anchor.y < 0 || anchor.y >= m)
         {
@@ -533,7 +527,7 @@ ito::RetVal OpenCVFilters::cvErode(QVector<ito::ParamBase> *paramsMand, QVector<
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvBlurParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
-	ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("All types except complex64 and complex128 are accepted").toAscii().data());
@@ -712,28 +706,28 @@ The result is dataObject with rows = (n-Circles) and cols = (x,y,r).\n\
 ";
 ito::RetVal OpenCVFilters::cvFindCirclesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
-	ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-		// Mandatory Parameters
+        // Mandatory Parameters
         ito::Param param = ito::Param("Image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Must be 8bit").toAscii().data());
         paramsMand->append(param);
         param = ito::Param("Circles", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("").toAscii().data());
         paramsMand->append(param);
 
-		// Optional Parameters
-		param = ito::Param("dp", ito::ParamBase::Double | ito::ParamBase::In, 1.0, 100.0, 1.0, tr("dp: Inverse ratio of the accumulator resolution to the image resolution.").toAscii().data());
-		paramsOpt->append(param);
-		param = ito::Param("Min Distance", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 20.0, tr("Minimum center distance of the circles.").toAscii().data());
-		paramsOpt->append(param);
-		param = ito::Param("threshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 255.0, 200.0, tr("The higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).").toAscii().data());
-		paramsOpt->append(param);
-		param = ito::Param("accumulator threshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 255.0, 100.0, tr("The accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.").toAscii().data());
-		paramsOpt->append(param);
-		param = ito::Param("Min Radius [px]", ito::ParamBase::Int | ito::ParamBase::In, 1, 2048, 0, tr("Min Radius in x/y").toAscii().data());
-		paramsOpt->append(param);
-		param = ito::Param("Max Radius [px]", ito::ParamBase::Int | ito::ParamBase::In, 1, 2048, 0, tr("Max Radius in x/y").toAscii().data());
-		paramsOpt->append(param);
+        // Optional Parameters
+        param = ito::Param("dp", ito::ParamBase::Double | ito::ParamBase::In, 1.0, 100.0, 1.0, tr("dp: Inverse ratio of the accumulator resolution to the image resolution.").toAscii().data());
+        paramsOpt->append(param);
+        param = ito::Param("Min Distance", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 20.0, tr("Minimum center distance of the circles.").toAscii().data());
+        paramsOpt->append(param);
+        param = ito::Param("threshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 255.0, 200.0, tr("The higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).").toAscii().data());
+        paramsOpt->append(param);
+        param = ito::Param("accumulator threshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 255.0, 100.0, tr("The accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.").toAscii().data());
+        paramsOpt->append(param);
+        param = ito::Param("Min Radius [px]", ito::ParamBase::Int | ito::ParamBase::In, 1, 2048, 0, tr("Min Radius in x/y").toAscii().data());
+        paramsOpt->append(param);
+        param = ito::Param("Max Radius [px]", ito::ParamBase::Int | ito::ParamBase::In, 1, 2048, 0, tr("Max Radius in x/y").toAscii().data());
+        paramsOpt->append(param);
     }
     return retval;
 }
@@ -747,70 +741,70 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
 
     ito::RetVal retval = ito::retOk;
 
-	// Initialize pointers to the input and output dataObjects
+    // Initialize pointers to the input and output dataObjects
     ito::DataObject *dObjImages = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-	ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
+    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
 
-	// Check if source dataObject exists
-	if (!dObjImages)
+    // Check if source dataObject exists
+    if (!dObjImages)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toAscii().data());
     }
 
-	// Check if destination dataObject exists
+    // Check if destination dataObject exists
     if (!dObjDst)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toAscii().data());
     }
 
-	// Check if source dataObject is an image (2D)
+    // Check if source dataObject is an image (2D)
     if (dObjImages->getDims() != 2)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: source is not an image").toAscii().data());
     }
 
-	double dp = (*paramsOpt)[0].getVal<double>();
-	double MinDist = (*paramsOpt)[1].getVal<double>();
-	double Threshold = (*paramsOpt)[2].getVal<double>();
-	double AccThreshold = (*paramsOpt)[3].getVal<double>();
-	int MinRadius = (*paramsOpt)[4].getVal<int>();
-	int MaxRadius = (*paramsOpt)[5].getVal<int>();
+    double dp = (*paramsOpt)[0].getVal<double>();
+    double MinDist = (*paramsOpt)[1].getVal<double>();
+    double Threshold = (*paramsOpt)[2].getVal<double>();
+    double AccThreshold = (*paramsOpt)[3].getVal<double>();
+    int MinRadius = (*paramsOpt)[4].getVal<int>();
+    int MaxRadius = (*paramsOpt)[5].getVal<int>();
 
-	// Copy input image to a cv Mat
-	cv::Mat *cvplaneIn = NULL;
-	cvplaneIn = (cv::Mat_<unsigned char> *)(dObjImages->get_mdata())[0];
+    // Copy input image to a cv Mat
+    cv::Mat *cvplaneIn = NULL;
+    cvplaneIn = (cv::Mat_<unsigned char> *)(dObjImages->get_mdata())[0];
 
-	// Declare the output vector to hold the circle coordinates and radii
-	cv::vector<cv::Vec3f> circles;
+    // Declare the output vector to hold the circle coordinates and radii
+    cv::vector<cv::Vec3f> circles;
 
-	/*	void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0 )
-		dp – Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
-		param1 – First method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).
-		param2 – Second method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.*/
-	cv::HoughCircles(*cvplaneIn, circles, CV_HOUGH_GRADIENT, dp, MinDist, Threshold, AccThreshold, MinRadius, MaxRadius);
+    /*	void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0 )
+        dp – Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
+        param1 – First method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).
+        param2 – Second method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.*/
+    cv::HoughCircles(*cvplaneIn, circles, CV_HOUGH_GRADIENT, dp, MinDist, Threshold, AccThreshold, MinRadius, MaxRadius);
 
-	
-	// Copy the circles into the output dataObject
-	if(circles.size() > 0)
-	{
-		size_t sizes[2] = {circles.size(), 3};
-		*dObjDst = ito::DataObject(2, sizes, ito::tFloat32);
-		ito::float32 *rowPtr = NULL;
 
-		for( size_t i = 0; i < circles.size(); i++ )
-		{
-			//	This can be used to draw the circles directly into the input image
-			/*	cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-				int radius = cvRound(circles[i][2]);
-				circle( *cvplaneIn, center, radius, 70, 3, 8, 0 );*/
+    // Copy the circles into the output dataObject
+    if(circles.size() > 0)
+    {
+        size_t sizes[2] = {circles.size(), 3};
+        *dObjDst = ito::DataObject(2, sizes, ito::tFloat32);
+        ito::float32 *rowPtr = NULL;
 
-			rowPtr = (ito::float32*)dObjDst->rowPtr(0, i);
-			rowPtr[0] = circles[i][0];
-			rowPtr[1] = circles[i][1];
-			rowPtr[2] = circles[i][2];
-		}
-	}
-    
+        for( size_t i = 0; i < circles.size(); i++ )
+        {
+            //	This can be used to draw the circles directly into the input image
+            /*	cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+                int radius = cvRound(circles[i][2]);
+                circle( *cvplaneIn, center, radius, 70, 3, 8, 0 );*/
+
+            rowPtr = (ito::float32*)dObjDst->rowPtr(0, i);
+            rowPtr[0] = circles[i][0];
+            rowPtr[1] = circles[i][1];
+            rowPtr[2] = circles[i][2];
+        }
+    }
+
 #if TIMEBENCHMARK
     int64 testend = cv::getTickCount() - teststart;
     double duration = (double)testend / cv::getTickFrequency();
@@ -819,7 +813,7 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
 
     return retval;
 }
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) 
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const char* OpenCVFilters::cvFFT2DDoc = "2D-dimentional fourier-transformation using cv::DFT.\n\
@@ -950,7 +944,7 @@ ito::RetVal OpenCVFilters::cvIFFT1D(QVector<ito::ParamBase> *paramsMand, QVector
 //    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
 
     ito::dObjHelper::calcCVDFT(dObjImages, true, false, true);
-    
+
 #if TIMEBENCHMARK
     int64 testend = cv::getTickCount() - teststart;
     double duration = (double)testend / cv::getTickFrequency();
@@ -1060,7 +1054,7 @@ ito::RetVal OpenCVFilters::cvMedianBlur(QVector<ito::ParamBase> *paramsMand, QVe
         msg = tr("OpenCV medianblur-filter with kernel size = %1").arg(kernelsize);
         dObjDst->addToProtocol(std::string(msg.toAscii().data()));
 //        char prot[121] = {0};
-//        _snprintf(prot, 120, "OpenCV medianblur-filter with kernel size = %i ", kernelsize);    
+//        _snprintf(prot, 120, "OpenCV medianblur-filter with kernel size = %i ", kernelsize);
 //        dObjDst->addToProtocol(std::string(prot));
 
     }
@@ -1152,7 +1146,7 @@ end:
 //    cv::Mat *cvMatIn;
 //    cv::MatND *cvMatOut = new cv::Mat[z_length];
 //
-//    int histSize[] = {hbins};        
+//    int histSize[] = {hbins};
 //    int channels[] = {0};
 //
 //    float hranges[] = { (float)minVal, (float)maxVal };
@@ -1163,7 +1157,7 @@ end:
 //        if (recalcMinMax)
 //        {
 //            cv::minMaxLoc(*cvMatIn, &minVal, &maxVal, 0, 0);
-//                
+//
 //            if (qIsNaN(maxVal)||qIsInf(maxVal))
 //            {
 //                maxVal = std::numeric_limits<float>::max();
@@ -1249,7 +1243,7 @@ ito::RetVal OpenCVFilters::cvFindChessboardCornersParams(QVector<ito::Param> *pa
     paramsOpt->append( ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE, new ito::IntMeta(0, allflags), "additional flags (OR-combination), see openCV-docu") );
 
     paramsOut->append( ito::Param("result", ito::ParamBase::Int | ito::ParamBase::Out, 0, new ito::IntMeta(0,1), "0: detection failed, 1: detection has been successful") );
-    
+
     return retval;
 }
 
@@ -1323,7 +1317,7 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
     param = ito::Param("zeroZone", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "Half of the size of the dead region in the middle of the search zone over which the summation is not done. (-1,-1) indicates that there is no such a size");
     param.setVal<int*>(zeroZone);
     paramsOpt->append (param);
-    
+
     paramsOpt->append( ito::Param("maxCount", ito::ParamBase::Int | ito::ParamBase::In, 200, new ito::IntMeta(1,100000), "position refinement stops after this maximum number of iterations") );
     paramsOpt->append( ito::Param("epsilon", ito::ParamBase::Double | ito::ParamBase::In, 0.05, new ito::DoubleMeta(0.0, 10.0), "position refinement stops when the corner position moves by less than this value") );
 
@@ -1341,7 +1335,7 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
     {
         retval += ito::RetVal(ito::retError,0, "Parameters 'image' and 'corners' may not be NULL");
     }
-    
+
     size_t limits[] = {2,2,0,1000000};
     ito::DataObject *corners = apiCreateFromDataObject(rawCorners,2,ito::tFloat32,limits,&retval);
 
@@ -1378,7 +1372,7 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
     {
         retval += ito::RetVal(ito::retError,0,"The parameter 'zeroZone' must have between 0 and 2 values");
     }
-    
+
     cv::TermCriteria criteria(cv::TermCriteria::EPS|cv::TermCriteria::MAX_ITER, paramsOpt->at(1).getVal<int>(), paramsOpt->at(2).getVal<double>());
 
     if (!retval.containsError())
@@ -1389,7 +1383,7 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
         std::vector<cv::Point2f> cornersVec;
         ito::float32 *x = (ito::float32*)rawCorners->rowPtr(0,0);
         ito::float32 *y = (ito::float32*)rawCorners->rowPtr(0,1);
-        
+
         for (int i = 0; i < corners->getSize(1); ++i)
         {
             cornersVec.push_back( cv::Point2f(x[i],y[i]) );
@@ -1411,17 +1405,17 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
         {
             retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
         }
-        
+
     }
 
     delete corners;
     corners = NULL;
 
     return retval;
-    
+
 }
 
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3) 
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 //----------------------------------------------------------------------------------------------------------------------------------
 const char* OpenCVFilters::cvFlipLeftRightDoc = "This filter flips the image left to right. \n\
 \n\
@@ -1479,7 +1473,7 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
     int ysize = dObjImages->getSize(0);
     int xsize = dObjImages->getSize(1);
 
-	retval += ito::dObjHelper::verify2DDataObject(dObjImages, "srcImage", ysize, ysize, xsize, xsize,  7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    retval += ito::dObjHelper::verify2DDataObject(dObjImages, "srcImage", ysize, ysize, xsize, xsize,  7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
 
     if(!retval.containsError())
     {
@@ -1494,7 +1488,7 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
             {
                 destTemp = *dObjDst;
                 overWrite = false;
-            } 
+            }
         }
         else
         {
@@ -1502,7 +1496,7 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
             destTemp = *dObjDst;
             overWrite = false;
         }
-    } 
+    }
 
     if(!retval.containsError())
     {
@@ -1644,8 +1638,8 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
     ito::uint8 *tmpPtr = NULL;
     if(dObjSrc->getType() == ito::tFloat64)
     {
-        ito::float64 *srcPtr = NULL; 
-        
+        ito::float64 *srcPtr = NULL;
+
         #if (useomp)
         #pragma omp for schedule(guided)
         #endif
@@ -1660,7 +1654,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
                 {
                     tmpPtr[x] = 1;
                 }
-            }    
+            }
         }
     }
     else
@@ -1683,8 +1677,8 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
                 {
                     tmpPtr[x] = 1;
                 }
-            }   
-        }    
+            }
+        }
     }
 
     #if (useomp)
@@ -1713,10 +1707,10 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
         {
             retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
         }
-    } 
+    }
 
     if (!retval.containsError())
-    {    
+    {
         #if (useomp)
         #pragma omp parallel num_threads(NTHREADS)
         {
@@ -1725,11 +1719,11 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
         ito::uint8 *tmpPtr = NULL;
         if(dObjSrc->getType() == ito::tFloat64)
         {
-            ito::float64 *dstPtr = NULL; 
+            ito::float64 *dstPtr = NULL;
             #if (useomp)
             #pragma omp for schedule(guided)
             #endif
-            
+
             for(int y = 0; y < cvMatIn->rows; y++)
             {
                 dstPtr = cvMatOut->ptr<ito::float64>(y);
@@ -1740,7 +1734,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
                     {
                         dstPtr[x] = newVal;
                     }
-                }    
+                }
             }
         }
         else
@@ -1762,8 +1756,8 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
                     {
                         dstPtr[x] = newValf;
                     }
-                }   
-            }    
+                }
+            }
         }
 
         #if (useomp)
