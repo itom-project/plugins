@@ -2531,12 +2531,12 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
 
             if(image.type() == CV_8UC3)
             {
-                ito::rgba32* dst = NULL;
+                ito::Rgba32* dst = NULL;
                 cv::Vec3b* scr = NULL;
 
                 for(int y = 0; y < image.rows; y++)
                 {
-                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::rgba32>(y);
+                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::Rgba32>(y);
                     scr = image.ptr<cv::Vec3b>(y);
                     for(int x = 0; x < image.cols; x++)
                     {
@@ -2553,12 +2553,12 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
             }
             else if(image.type() == CV_8UC4)
             {
-                ito::rgba32* dst = NULL;
+                ito::Rgba32* dst = NULL;
                 cv::Vec4b* scr = NULL;
 
                 for(int y = 0; y < image.rows; y++)
                 {
-                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::rgba32>(y);
+                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::Rgba32>(y);
                     scr = image.ptr<cv::Vec4b>(y);
                     for(int x = 0; x < image.cols; x++)
                     {

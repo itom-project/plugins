@@ -1209,7 +1209,7 @@ end:
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 //------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvFindChessboardCornersDoc = "Finds the positions of internal corners of the chessboard.\n\
+/*static*/ const char* OpenCVFilters::cvFindChessboardCornersDoc = "Finds the positions of internal corners of the chessboard.\n\
 \n\
 This filter is a wrapper for the cv::method cv::findChessboardCorners. \
 \n\
@@ -1297,7 +1297,9 @@ ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *para
     (*paramsOut)[0].setVal<int>(result);
     return retval;
 }
-static const char *cvCornerSubPixDoc = "Refines the corner locations e.g. from cvFindChessboardCorners.\n\
+
+
+/*static*/ const char *OpenCVFilters::cvCornerSubPixDoc = "Refines the corner locations e.g. from cvFindChessboardCorners.\n\
 \n\
 This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-doku for more details\n\
 ";
