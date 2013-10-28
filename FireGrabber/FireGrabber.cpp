@@ -562,7 +562,6 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 	int venID = NULL;
 	int plugNR = NULL;
 	int nodeNR = NULL;
-	FGPINFO shutterinfo;
 	int tempID = NULL;
     camID = paramsOpt->value(0).getVal<int>();
 	venID = paramsOpt->value(1).getVal<int>();
