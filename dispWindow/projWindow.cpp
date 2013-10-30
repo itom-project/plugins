@@ -9,6 +9,9 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <iostream>
+#include <qfileinfo.h>
+#include <qdir.h>
+#include <qimage.h>
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
@@ -2105,3 +2108,35 @@ ito::RetVal PrjWindow::configProjectionFull(int xpos, int sizex, int ypos, int s
     return retval;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond /*= NULL*/)
+{
+	ito::RetVal retval;
+	QFileInfo finfo(filename);
+	QDir filepath(finfo.canonicalPath());
+	
+	if (filepath.exists() == false)
+	{
+		retval += ito::RetVal::format(ito::retError,0,"folder '%s' does not exist", finfo.canonicalPath().toAscii().data());
+	}
+	else
+	{
+		paintGL();
+		QImage shot = grabFrameBuffer(false);
+		bool ok = shot.save(filepath.absoluteFilePath( finfo.fileName() ) );
+
+		if (!ok)
+		{
+			retval += ito::RetVal(ito::retError,0,"error while saving grabbed framebuffer");
+		}
+	}
+
+	if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    return retval;
+}

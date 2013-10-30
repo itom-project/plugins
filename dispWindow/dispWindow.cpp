@@ -160,6 +160,10 @@ DispWindow::DispWindow()
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
     registerExecFunc("calcLut", pMand, pOpt, pOut, tr("Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter 'lut')"));
+
+	pMand = QVector<ito::Param>() << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("absolute filename of the file where the grabbing image should be saved").toAscii().data());
+	registerExecFunc("grabFramebuffer", pMand, pOpt, pOut, tr("grab the current OpenGL frame as image and saves it to the given filename. The image format is guessed from the suffix of the filename (default QImage formats supported)"));
+
     pMand.clear();
     pOpt.clear();
     pOut.clear();
@@ -868,6 +872,22 @@ ito::RetVal DispWindow::execFunc(const QString funcName, QSharedPointer<QVector<
             }
         }
     }
+	else if (funcName == "grabFramebuffer")
+	{
+		QString filename = paramsMand->at(0).getVal<char*>();
+
+		ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(m_pWindow, "grabFramebuffer", Q_ARG(QString, filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+		if(locker.getSemaphore()->wait(5000))
+		{
+			retValue += locker.getSemaphore()->returnValue;
+		}
+		else
+		{
+			retValue += ito::RetVal(ito::retError,0,"timeout while grabbing current OpenGL frame");
+		}
+	}
     else
     {
         retValue += ito::RetVal::format(ito::retError, 0, tr("function name '%s' does not exist").toAscii().data(), funcName.toAscii().data());

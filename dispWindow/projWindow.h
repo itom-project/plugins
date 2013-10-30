@@ -113,6 +113,8 @@ class PrjWindow : public QGLWidget
 
         ito::RetVal showImageNum(const int num);
 
+		ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = NULL);
+
     private slots:
 
 };
