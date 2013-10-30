@@ -444,6 +444,10 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
 
     retval += calcPolyval2D(dataZ, paramsMand->at(2).getVal<int>(), paramsMand->at(3).getVal<int>(), coefficients);
 
+    QString msg;
+    msg = tr("Generated object via polyVal with order X = %1, Y = %2").arg(paramsMand->at(2).getVal<int>()).arg(paramsMand->at(3).getVal<int>());
+    dataZ->addToProtocol(std::string(msg.toAscii().data()));
+
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -494,6 +498,8 @@ to parallely compute the approximations for each pixel.";
     int xValsArrayLen = paramsOpt->at(1).getLen();
     int numThreads = paramsOpt->at(2).getVal<int>();
 
+    int order = 0;
+
     if (input == NULL || output == NULL)
     {
         retval += ito::RetVal(ito::retError,0,"parameters 'data' or 'polynoms' are NULL");
@@ -504,7 +510,7 @@ to parallely compute the approximations for each pixel.";
     }
     else
     {
-        int order = paramsMand->at(2).getVal<int>();
+        order = paramsMand->at(2).getVal<int>();
 
         ito::DataObject *data = apiCreateFromDataObject(input, 3, ito::tFloat64, NULL, &retval);
 
@@ -654,6 +660,12 @@ to parallely compute the approximations for each pixel.";
         delete data;
     }
 
+    if(!retval.containsError())
+    {
+        QString msg;
+        msg = tr("Caluclated polynomical coeffs along z-direction with order Z = %1").arg(order);
+        output->addToProtocol(std::string(msg.toAscii().data()));
+    }
     return retval;
 }
 
