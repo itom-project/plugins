@@ -15,6 +15,12 @@ IF (WIN32)
 	endif (PLUGIN_cmu1394)
 ENDIF (WIN32)
 
+# dataobjectarithmetic
+OPTION(PLUGIN_dataobjectarithmetic "Build with this plugin." ON)
+if (PLUGIN_dataobjectarithmetic)
+	ADD_SUBDIRECTORY(dataobjectarithmetic)
+endif (PLUGIN_dataobjectarithmetic)
+
 # DataObjectIO
 OPTION(PLUGIN_DataObjectIO "Build with this plugin." ON)
 if (PLUGIN_DataObjectIO)
