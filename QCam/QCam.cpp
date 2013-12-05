@@ -81,7 +81,7 @@ QCam::QCam() :
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "QCam", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 0.0, 0.0, tr("Integration time of CCD programmed in s").toAscii().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Integration time of CCD programmed in s").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -133,6 +133,7 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 	ito::RetVal retValue(ito::retOk);
 	QCam_CamListItem  camList[10];
 	unsigned long camListLen = 10;
+	m_camHandle = 0;
 
 	if (instanceCounter == 0)
 	{
@@ -195,6 +196,8 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 		unsigned long size, height, width;
 		unsigned long maxBitDepth;
 		double integration_time;
+		uint64 integ_time, integ_timeMax, integ_timeMin;
+
 		QCam_GetInfo( m_camHandle, qinfBitDepth, &maxBitDepth );
 
 		if (maxBitDepth <= 8)
@@ -215,6 +218,11 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 		QCam_GetInfo( m_camHandle, qinfImageSize, &size );
 		QCam_GetInfo( m_camHandle, qinfImageHeight, &height );
 		QCam_GetInfo( m_camHandle, qinfImageWidth, &width );
+
+		QCam_GetParam64(&m_camSettings, qprm64Exposure, &integ_time);
+		QCam_GetParam64Max(&m_camSettings, qprm64Exposure, &integ_timeMax);
+		QCam_GetParam64Min(&m_camSettings, qprm64Exposure, &integ_timeMin);
+		integration_time = double(integ_time)/1e9;
 
 		paramMeta = (ito::IntMeta*)(m_params["x0"].getMeta());
 		paramMeta->setMin(0);
@@ -246,16 +254,19 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 		paramMeta->setMax(height);
 		m_params["sizey"].setVal<int>(height);
 
-		paramMeta = (ito::IntMeta*)(m_params["integration_time"].getMeta());
-		paramMeta->setMin(0);
-		paramMeta->setMax(integration_time);
-		m_params["integration_time"].setVal<int>(integration_time);
+		ito::DoubleMeta *paramMetadouble;
+		paramMetadouble = (ito::DoubleMeta*)(m_params["integration_time"].getMeta());
+		paramMetadouble->setMin(double(integ_timeMin)/1e9);
+		paramMetadouble->setMax(double(integ_timeMax)/1e9);
+		m_params["integration_time"].setVal<double>(integration_time);
 
 		//ask camera for gain, intensity...
 		unsigned long gainMin, gainMax, gain;
+		
 		QCam_GetParamMax( &m_camSettings, qprmNormalizedGain, &gainMax );
 		QCam_GetParamMin( &m_camSettings, qprmNormalizedGain, &gainMin );
 		QCam_GetParam(&m_camSettings, qprmNormalizedGain, &gain);
+		
 
 		//transform normalized gain into 0-1-gain
 		double gainDbl = (double)(gain - gainMin) / (double)(gainMax - gainMin);

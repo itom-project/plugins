@@ -29,13 +29,20 @@ class DialogQCam : public QDialog
     private:
         Ui::dialogQCam ui;	//! The QT-Design-GUI
         ito::AddInDataIO *m_grabber;
+
+		bool m_gainChanged;
+		bool m_offsetChanged;
 		
 	public slots:
 		void valuesChanged(QMap<QString, ito::Param> params);
 
+
     private slots:
-		//void on_pushButton_setSizeXMax_clicked();	//!< Set x-size to maximum valid value
-		//void on_pushButton_setSizeYMax_clicked();	//!< Set y-sizes to maximum valid value
+		void on_pushButton_setSizeXMax_clicked();	//!< Set x-size to maximum valid value
+		void on_pushButton_setSizeYMax_clicked();	//!< Set y-sizes to maximum valid value
+
+		void on_doubleSpinBox_offset_valueChanged(double /*val*/) { m_offsetChanged = true; }
+		void on_doubleSpinBox_gain_valueChanged(double /*val*/) { m_gainChanged = true; }
 };
 
 #endif //DIALOGQCAM_H
