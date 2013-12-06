@@ -62,7 +62,7 @@ DataObjectArithmeticInterface::DataObjectArithmeticInterface()
     
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"This plugin provides several arithmetic calculations for dataObhect. These are for instance: \n\
+"This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
 - min- or maximum value\n\
 - centroid along dimensions or inplane \n\
 \n\
@@ -1025,7 +1025,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
         switch(dObjIN->getType())
         {
             case ito::tInt8:
-                for(int i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32 i = 0; i < dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1034,7 +1034,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tUInt8:
-                for(int i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1043,7 +1043,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tInt16:
-                for(int i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1052,7 +1052,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tUInt16:
-                for(int i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1061,7 +1061,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tInt32:
-                for(int i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1070,7 +1070,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tFloat32:
-                for(int i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1079,7 +1079,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tFloat64:
-                for(int i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);

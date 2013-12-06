@@ -71,6 +71,12 @@ if (PLUGIN_GWInstekPSP)
 	ADD_SUBDIRECTORY(GWInstekPSP)
 endif (PLUGIN_GWInstekPSP)
 
+# BasicFilters
+OPTION(PLUGIN_BasicFilters "Build with this plugin." ON)
+if (PLUGIN_BasicFilters)
+	ADD_SUBDIRECTORY(BasicFilters)
+endif (PLUGIN_BasicFilters)
+
 # LeicaMotorFocus
 OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." ON)
 if (PLUGIN_LeicaMotorFocus)
