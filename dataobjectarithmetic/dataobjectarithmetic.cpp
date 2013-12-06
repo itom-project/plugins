@@ -490,7 +490,7 @@ RetVal DataObjectArithmetic::devValueParams(QVector<ito::Param> *paramsMand, QVe
         paramsMand->append(param);
         param = Param("flag", ito::ParamBase::Int | ParamBase::In, 0, 1, 0, tr("Toggles the calculation mode of standard deviation over N or N-1 elements").toAscii().data());
         paramsOpt->append(param);
-        param = Param("ignoreInf", ParamBase::Int | ParamBase::In, 0, 1, 0, tr("Ignore invalid-Values for floating point").toAscii().data());
+        param = Param("ignoreInf", ParamBase::Int | ParamBase::In, 0, 1, 1, tr("Ignore invalid-Values for floating point").toAscii().data());
         paramsOpt->append(param);
 
         paramsOut->append( ito::Param("mean", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, NULL, tr("mean result").toAscii().data()));
