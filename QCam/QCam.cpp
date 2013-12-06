@@ -77,7 +77,13 @@ QCam::QCam() :
 	m_frameCallbackRetVal(ito::retOk),
 	m_frameCallbackFrameIdx(-1),
 	m_waitingForAcquire(false)
-{    
+{   
+    // make sure the structs are filled with 0 so we can check for allocated memory later
+    for (int nf = 0; nf < NUMBERBUFFERS; nf++)
+    {
+        memset((void*)&m_frames[nf], 0, sizeof(QCam_Frame));
+    }
+    
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "QCam", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -122,7 +128,15 @@ QCam::QCam() :
 //----------------------------------------------------------------------------------------------------------------------------------
 QCam::~QCam()
 {
-   m_params.clear();
+    for (int nf = 0; nf < NUMBERBUFFERS; nf++)
+    {
+        if (m_frames[nf].pBuffer)
+        {
+            free(m_frames[nf].pBuffer);
+            m_frames[nf].pBuffer = NULL;
+        }
+    }
+    m_params.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -196,7 +210,7 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 		unsigned long size, height, width;
 		unsigned long maxBitDepth;
 		double integration_time;
-		uint64 integ_time, integ_timeMax, integ_timeMin;
+		unsigned long long integ_time, integ_timeMax, integ_timeMin;
 
 		QCam_GetInfo( m_camHandle, qinfBitDepth, &maxBitDepth );
 
@@ -218,10 +232,10 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 		QCam_GetInfo( m_camHandle, qinfImageSize, &size );
 		QCam_GetInfo( m_camHandle, qinfImageHeight, &height );
 		QCam_GetInfo( m_camHandle, qinfImageWidth, &width );
-
-		QCam_GetParam64(&m_camSettings, qprm64Exposure, &integ_time);
-		QCam_GetParam64Max(&m_camSettings, qprm64Exposure, &integ_timeMax);
-		QCam_GetParam64Min(&m_camSettings, qprm64Exposure, &integ_timeMin);
+                
+		QCam_GetParam64(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_time);
+                QCam_GetParam64Max(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_timeMax);
+                QCam_GetParam64Min(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_timeMin);
 		integration_time = double(integ_time)/1e9;
 
 		paramMeta = (ito::IntMeta*)(m_params["x0"].getMeta());
@@ -436,11 +450,11 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
         }
 		if (key == "integration_time")
 		{
-			uint64 expMax, expMin;
+			unsigned long long expMax, expMin;
 
 			double integration_time = val->getVal<double>();
-			QCam_GetParam64Min( &m_camSettings, qprm64Exposure, &expMax );
-			QCam_GetParam64Max( &m_camSettings, qprm64Exposure, &expMin );
+                        QCam_GetParam64Min( &m_camSettings, qprm64Exposure, (unsigned long long *)&expMax );
+                        QCam_GetParam64Max( &m_camSettings, qprm64Exposure, (unsigned long long *)&expMin );
 
 			//calculate normalized-gain from 0-1-gain
 			//gain = gainMin + gain * (gainMax - gainMin);
@@ -469,40 +483,44 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
 		bool acquisitionInterrupted = false;
 		if (grabberStartedCount() > 0)
 		{
-			QCam_Abort( m_camHandle);
+                    QCam_Abort( m_camHandle);
 
-			if (m_waitingForAcquire) acquisitionInterrupted = true;
-			//m_frameCallbackFrameIdx = -1;
-			//m_waitingForAcquire = false;
+                    if (m_waitingForAcquire) acquisitionInterrupted = true;
+                    //m_frameCallbackFrameIdx = -1;
+                    //m_waitingForAcquire = false;
 
-			// delete buffer(s)
-			for (int i = 0; i < NUMBERBUFFERS; ++i)
-			{
-				delete[] m_frames[i].pBuffer;
-				m_frames[i].pBuffer = NULL;
-			}
+                    // delete buffer(s)
+                    for (int i = 0; i < NUMBERBUFFERS; ++i)
+                    {
+                        if (m_frames[i].pBuffer)
+                            free(m_frames[i].pBuffer);
+                        m_frames[i].pBuffer = NULL;
+                    }
 		}
 
 		retValue += errorCheck(QCam_SendSettingsToCam( m_camHandle, &m_camSettings));
 
 		if (grabberStartedCount() > 0)
 		{
-			//reallocate buffer(s)
-			unsigned long size;
-			QCam_GetInfo(m_camHandle, qinfImageSize, &size);
+                    //reallocate buffer(s)
+                    unsigned long size;
+                    QCam_GetInfo(m_camHandle, qinfImageSize, &size);
 
-			for (int i = 0; i < NUMBERBUFFERS; ++i)
-			{
-				m_frames[i].pBuffer = new byte[size];
-				m_frames[i].bufferSize = size;
-				memset( m_frames[i].pBuffer, 0, size * sizeof(byte) );
-				QCam_QueueFrame(m_camHandle, &(m_frames[i]), qCamFrameCallback, qcCallbackDone, this, i);
-			}
+                    for (int i = 0; i < NUMBERBUFFERS; ++i)
+                    {
+                        //MUST be 4 byte aligned according to header file!
+                        if (m_frames[i].pBuffer)
+                            free(m_frames[i].pBuffer);
+                        m_frames[i].pBuffer = calloc(size, sizeof(unsigned char));
+                        m_frames[i].bufferSize = size;
+                        memset( m_frames[i].pBuffer, 0, size * sizeof(unsigned char) );
+                        QCam_QueueFrame(m_camHandle, &(m_frames[i]), qCamFrameCallback, qcCallbackDone, this, i);
+                    }
 
-			if (acquisitionInterrupted)
-			{
-				retValue += acquire(NULL); //reacquire a new image, since we aborted the last acquisition
-			}
+                    if (acquisitionInterrupted)
+                    {
+                        retValue += acquire(0); //reacquire a new image, since we aborted the last acquisition
+                    }
 		}
 	}
 
@@ -555,19 +573,21 @@ ito::RetVal QCam::startDevice(ItomSharedSemaphore *waitCond)
 
     if(grabberStartedCount() < 1)
     {
-		QCam_Abort( m_camHandle);
+        QCam_Abort( m_camHandle);
 
         //start your camera
-		unsigned long size;
-		QCam_GetInfo(m_camHandle, qinfImageSize, &size);
+        unsigned long size;
+        QCam_GetInfo(m_camHandle, qinfImageSize, &size);
 
-		for (int i = 0; i < NUMBERBUFFERS; ++i)
-		{
-			m_frames[i].pBuffer = new byte[size];
-			m_frames[i].bufferSize = size;
-			memset( m_frames[i].pBuffer, 0, size * sizeof(byte) );
-			QCam_QueueFrame(m_camHandle, &(m_frames[i]), qCamFrameCallback, qcCallbackDone, this, i);
-		}
+        for (int i = 0; i < NUMBERBUFFERS; ++i)
+        {
+            if (m_frames[i].pBuffer)
+                free(m_frames[i].pBuffer);
+            m_frames[i].pBuffer = calloc(size, sizeof(unsigned char));
+            m_frames[i].bufferSize = size;
+            memset( m_frames[i].pBuffer, 0, size * sizeof(unsigned char) );
+            QCam_QueueFrame(m_camHandle, &(m_frames[i]), qCamFrameCallback, qcCallbackDone, this, i);
+        }
     }
 
     incGrabberStarted();
@@ -595,8 +615,9 @@ ito::RetVal QCam::stopDevice(ItomSharedSemaphore *waitCond)
 
 		for (int i = 0; i < NUMBERBUFFERS; ++i)
 		{
-			delete[] m_frames[i].pBuffer;
-			m_frames[i].pBuffer = NULL;
+                    if (m_frames[i].pBuffer)
+                        free(m_frames[i].pBuffer);
+                    m_frames[i].pBuffer = NULL;
 		}
 
 	}

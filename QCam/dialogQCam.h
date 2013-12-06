@@ -4,7 +4,7 @@
 #include <QtGui>
 #include <qdialog.h>
 
-#include "ui_dialogqcam.h"
+#include "ui_dialogQCam.h"
 #include "common/sharedStructures.h"
 #include "common/addInInterface.h"
  /**
