@@ -982,7 +982,17 @@ SerialIOInterface::SerialIOInterface()
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
 "SerialIO is a itom-Plugin which gives direct access to serial ports.\nIt is used by different plugins for communication, (e.g. 'PIPiezoCtrl', 'UhlActuator', 'LeicaMotorFocus').\n\
-The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system.";
+The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system. \n\
+\n\
+flow bitmask \n\
+-------------- \n\
+\n\
+The flow bitmask is an OR combination of the following possible values: \n\
+Bit 1: Xon/Xoff enabled, if not set disabled \n\
+Bit 2/4: not set -> no rts control, 2 only -> rts control on, 4 set, 2 arbitrary -> rts control handshake \n\
+Bit 8: cts enabled, if not set disabled \n\
+Bit 16/32: not set -> dtr disabled, 16 only -> dtr enabled, 32 set, 16 arbitrary -> dtr handshake \n\
+Bit 64: dsr enabled, if not set dsr disabled";
 
     m_detaildescription = tr(docstring);
     m_author = "H. Bieger, C. Kohler, ITO, University Stuttgart";
@@ -1003,9 +1013,9 @@ The plugin is implemented for Windows or Linux; the possible baudrates depend on
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("stopbits", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits").toAscii().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::Int, 0, 2, 0, tr("Toggle parity check").toAscii().data());
+    paramVal = ito::Param("parity", ito::ParamBase::Int, 0, 2, 0, tr("Parity: 0 -> no parity, 1 -> odd parity, 2 -> even parity").toAscii().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("flow", ito::ParamBase::Int, 0, 127, 0, tr("Bitmask for flow control").toAscii().data());
+    paramVal = ito::Param("flow", ito::ParamBase::Int, 0, 127, 0, tr("Bitmask for flow control (see docstring for more information)").toAscii().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("singlechar", ito::ParamBase::Int, 0, 1, 0, tr("Toggle: write output buffer as block or single characters").toAscii().data());
     m_initParamsOpt.append(paramVal);
