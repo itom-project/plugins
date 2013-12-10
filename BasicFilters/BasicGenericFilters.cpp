@@ -542,6 +542,18 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
     return err;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*! LowValueFilter
+* \brief   This function calculated the Lowfilter
+* \detail  The function calulates the LowFilter-function
+*          for the data specified in cv::mat planeIn in the dogenericfilter-function.
+*          The actual work is done in the runFilter method.
+*     
+* \param   GenericFilter   Handle to the filter engine
+* \author  ITO
+* \sa  GenericFilter::DoGenericFilter, _LowPassFilter
+* \date 12.2013
+*/
 template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in, 
     ito::DataObject *out, 
     ito::int32 roiX0, 
@@ -571,8 +583,6 @@ template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in,
 
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
 
-            
-
 #if (USEOMP)
     kbuf = new _Tp*[NTHREADS];
     for(int i = 0; i < NTHREADS; i++)
@@ -586,9 +596,9 @@ template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in,
         this->m_initilized = true;
     }
 #endif
-
 }
         
+//----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
 {
     if(kbuf != NULL)
@@ -605,6 +615,7 @@ template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
@@ -665,6 +676,80 @@ template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
     return ito::retOk;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*! HighValueFilter
+ * \brief   This function calculated the Highfilter
+ * \detail  The function calulates the HighFilter-function
+ *          for the data specified in cv::mat planeIn in the dogenericfilter-function.
+ *          The actual work is done in the runFilter method.
+ *     
+ * \param   GenericFilter   Handle to the filter engine
+ * \author  ITO
+ * \sa  GenericFilter::DoGenericFilter, _LowPassFilter
+ * \date 12.2013
+ */
+template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(ito::DataObject *in, 
+                                                           ito::DataObject *out, 
+                                                           ito::int32 roiX0, 
+                                                           ito::int32 roiY0, 
+                                                           ito::int32 roiXSize, 
+                                                           ito::int32 roiYSize, 
+                                                           ito::int16 kernelSizeX, 
+                                                           ito::int16 kernelSizeY,
+                                                           ito::int32 anchorPosX,
+                                                           ito::int32 anchorPosY
+) :GenericFilterEngine<_Tp>::GenericFilterEngine()
+{ 
+    this->m_pInpObj = in;
+    this->m_pOutObj = out;
+    
+    this->m_x0 = roiX0;
+    this->m_y0 = roiY0;
+    
+    this->m_dx = roiXSize;
+    this->m_dy = roiYSize;
+    
+    this->m_kernelSizeX = kernelSizeX;
+    this->m_kernelSizeY = kernelSizeY;
+    
+    this->m_AnchorX = anchorPosX;
+    this->m_AnchorY = anchorPosY;
+    
+    this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
+    
+    #if (USEOMP)
+    kbuf = new _Tp*[NTHREADS];
+    for(int i = 0; i < NTHREADS; i++)
+    {
+        kbuf[i] = new _Tp[this->m_bufsize];
+    }
+    #else
+    kbuf = new _Tp[this->m_bufsize];
+    if(kbuf != NULL)
+    {
+        this->m_initilized = true;
+    }
+    #endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> HighValueFilter<_Tp>::~HighValueFilter()
+{
+    if(kbuf != NULL)
+    {
+        #if (USEOMP)
+        for(int i = 0; i < NTHREADS; i++)
+        {
+            delete kbuf[i];
+        }
+        delete kbuf;
+        #else
+        delete kbuf;
+        #endif
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
@@ -793,12 +878,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -808,12 +893,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -823,12 +908,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -838,12 +923,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -853,12 +938,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -868,12 +953,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -883,12 +968,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -904,12 +989,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -919,12 +1004,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -934,12 +1019,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -949,12 +1034,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -964,12 +1049,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -979,12 +1064,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -994,12 +1079,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           dObjDst, 
                                                           0, 
                                                           0, 
-                                                          dObjScr->getSize(dObjScr->getDims()-1), 
-                                                          dObjScr->getSize(dObjScr->getDims()-2), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 1), 
+                                                          dObjScr->getSize(dObjScr->getDims() - 2), 
                                                           kernelsizex, 
                                                           kernelsizey, 
-                                                          kernelsizex  /2, 
-                                                          kernelsizey/2);
+                                                          kernelsizex / 2, 
+                                                          kernelsizey / 2);
                 filterEngine.runFilter(replaceNaN);
             }
             break;
@@ -1055,7 +1140,5 @@ ito::RetVal BasicFilters::genericHighValueFilter(QVector<ito::ParamBase> *params
 {
     return genericLowHighValueFilter(paramsMand, paramsOpt, paramsOut, true);
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------

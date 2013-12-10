@@ -129,7 +129,6 @@ const char* BasicFilters::calcMeanOverZDoc= "Calculate meanValue of a 3D-Object 
 const char* BasicFilters::calcObjSliceDoc= "Interpolate 1D-slice from along the defined line from a 2D-Object. \n\
 \n";
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
 {
@@ -145,13 +144,15 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(BasicFilters::mergeColorPlane, BasicFilters::mergeColorPlanesParams, tr(mergeColorPlaneDoc));
     m_filterList.insert("mergeColorPlane", filter);
 
-	filter = new FilterDef(BasicFilters::calcMeanOverZ, BasicFilters::calcMeanOverZParams, tr(calcMeanOverZDoc));
+    filter = new FilterDef(BasicFilters::calcMeanOverZ, BasicFilters::calcMeanOverZParams, tr(calcMeanOverZDoc));
     m_filterList.insert("calcMeanZ", filter);
-	filter = new FilterDef(BasicFilters::calcObjSlice, BasicFilters::calcObjSliceParams, tr(calcObjSliceDoc));
+    filter = new FilterDef(BasicFilters::calcObjSlice, BasicFilters::calcObjSliceParams, tr(calcObjSliceDoc));
     m_filterList.insert("calcObjSlice", filter);
 
-	filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("missing"));
+    filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("missing"));
     m_filterList.insert("lowValueFilter", filter);
+    filter = new FilterDef(BasicFilters::genericHighValueFilter, BasicFilters::genericStdParams, tr("missing"));
+    m_filterList.insert("lowValueFilter", filter);    
 
 
     setInitialized(true); //init method has been finished (independent on retval)
@@ -188,3 +189,4 @@ ito::RetVal BasicFilters::stdParams2Objects(QVector<ito::Param> *paramsMand, QVe
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------

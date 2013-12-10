@@ -17,7 +17,6 @@
 #endif
 
 #include "common/addInInterface.h"
-
 #include "DataObject/dataobj.h"
 
 #include <qsharedpointer.h>
@@ -67,10 +66,10 @@ class BasicFilters : public ito::AddInAlgo
         friend class BasicFiltersInterface;
 		 
         // Defined in BasicFilters.cpp
-		static ito::RetVal stdParams2Objects(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                     /**< Get the standard IO-Parameters for filters with two objects */
+        static ito::RetVal stdParams2Objects(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                     /**< Get the standard IO-Parameters for filters with two objects */
                   
-		// Defined in BasicSpecialFilters.cpp
-		static const char* replaceInfAndNaNDoc;
+        // Defined in BasicSpecialFilters.cpp
+        static const char* replaceInfAndNaNDoc;
         static const char* flaten3Dto2DDoc;
         static const char* swapByteOrderDoc;
         static const char* mergeColorPlaneDoc;
@@ -124,25 +123,22 @@ template<typename _Tp> class GenericFilterEngine
     // the easiest way is using the this-> syntax    
     public:
         GenericFilterEngine() : m_pInpObj(NULL), m_pOutObj(NULL), m_pInLines(NULL), m_pOutLine(NULL), m_pInvalidMap(NULL),
-            m_bufsize(0), m_kernelSizeX(0), m_kernelSizeY(0), m_x0(0), m_y0(0), m_dx(0), m_dy(0), m_AnchorX(0), m_AnchorY(0), m_initilized(false) {};
+            m_bufsize(0), m_kernelSizeX(0), m_kernelSizeY(0), m_x0(0), m_y0(0), m_dx(0), m_dy(0), m_AnchorX(0), m_AnchorY(0), m_initilized(false) {}
 //        explicit GenericFilterEngine(ito::DataObject *in, ito::DataObject *out) : inp(in), outp(out), buf(NULL), bufsize(0) {};
-        ~GenericFilterEngine()
-        {
-
-        }
+        ~GenericFilterEngine() {}
         ito::RetVal runFilter(bool replaceNaN);
 
     protected:
         bool m_initilized;
         ito::DataObject *m_pInpObj;
         ito::DataObject *m_pOutObj;
-        _Tp ** m_pInLines;              //< input buffer
+        _Tp ** m_pInLines;               //< input buffer
         _Tp *  m_pOutLine;               //< output buffer
-        ito::int8 ** m_pInvalidMap;        //< invalid map
+        ito::int8 **m_pInvalidMap;       //< invalid map
         ito::int32 m_bufsize;
         ito::int16 m_kernelSizeX, m_kernelSizeY;   //< Horizontal / vertical Size of kernel (x) 
-        ito::int32 m_x0, m_y0;     //< first point in x / y of filter region
-        ito::int32 m_dx, m_dy;     //< Size of filter region
+        ito::int32 m_x0, m_y0;           //< first point in x / y of filter region
+        ito::int32 m_dx, m_dy;           //< Size of filter region
         ito::int32 m_AnchorX, m_AnchorY; //< Position of the data output in respect to the kernel (anchor)
         virtual ito::RetVal filterFunc() = 0;
 };
@@ -153,7 +149,6 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax    
     private:
-
 #if (USEOMP)
         _Tp **kbuf;
 #else
@@ -170,8 +165,7 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
             ito::int16 kernelSizeX, 
             ito::int16 kernelSizeY,
             ito::int32 anchorPosX,
-            ito::int32 anchorPosY
-            );
+            ito::int32 anchorPosY);
         
         ~LowValueFilter();
 
@@ -183,7 +177,11 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax    
     private:
+#if (USEOMP)
+        _Tp **kbuf;
+#else
         _Tp *kbuf;
+#endif
 
     public:
         explicit HighValueFilter(ito::DataObject *in, 
@@ -195,41 +193,9 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
             ito::int16 kernelSizeX, 
             ito::int16 kernelSizeY,
             ito::int32 anchorPosX,
-            ito::int32 anchorPosY
-            ) : GenericFilterEngine<_Tp>::GenericFilterEngine()
-        { 
-            this->m_pInpObj = in;
-            this->m_pOutObj = out;
+            ito::int32 anchorPosY);
 
-            this->m_x0 = roiX0;
-            this->m_y0 = roiY0;
-
-            this->m_dx = roiXSize;
-            this->m_dy = roiYSize;
-
-            this->m_kernelSizeX = kernelSizeX;
-            this->m_kernelSizeY = kernelSizeY;
-
-            this->m_AnchorX = anchorPosX;
-            this->m_AnchorY = anchorPosY;
-
-            this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
-
-            kbuf = new _Tp[this->m_bufsize];
-
-            if(kbuf != NULL)
-            {
-                this->m_initilized = true;
-            }
-        }
-
-        ~HighValueFilter()
-        {
-            if(kbuf != NULL)
-            {
-                delete kbuf;
-            }
-        }
+        ~HighValueFilter();
 
         ito::RetVal filterFunc();
 };
@@ -238,7 +204,6 @@ template<typename _Tp> class highPassFilter : public GenericFilterEngine<_Tp>
 {
     ito::RetVal filterFunc();
 };
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
