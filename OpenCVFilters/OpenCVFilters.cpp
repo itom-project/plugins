@@ -4,10 +4,11 @@
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
 
-#ifdef _DEBUG
-    #define useomp 0
-#else
+//#ifdef _DEBUG
+#ifdef USEOPENMP
     #define useomp 1
+#else
+    #define useomp 0
 #endif
 
 #include <QtCore/QtPlugin>

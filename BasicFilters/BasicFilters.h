@@ -10,6 +10,12 @@
 #ifndef BASICFILTERS_H
 #define BASICFILTERS_H
 
+#ifdef USEOPENMP
+    #define USEOMP 1
+#else
+    #define USEOMP 0
+#endif
+
 #include "common/addInInterface.h"
 
 #include "DataObject/dataobj.h"
@@ -147,7 +153,12 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax    
     private:
+
+#if (USEOMP)
+        _Tp **kbuf;
+#else
         _Tp *kbuf;
+#endif
 
     public:
         explicit LowValueFilter(ito::DataObject *in, 
@@ -160,40 +171,9 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
             ito::int16 kernelSizeY,
             ito::int32 anchorPosX,
             ito::int32 anchorPosY
-            ) :GenericFilterEngine<_Tp>::GenericFilterEngine()
-        { 
-            this->m_pInpObj = in;
-            this->m_pOutObj = out;
-
-            this->m_x0 = roiX0;
-            this->m_y0 = roiY0;
-
-            this->m_dx = roiXSize;
-            this->m_dy = roiYSize;
-
-            this->m_kernelSizeX = kernelSizeX;
-            this->m_kernelSizeY = kernelSizeY;
-
-            this->m_AnchorX = anchorPosX;
-            this->m_AnchorY = anchorPosY;
-
-            this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
-
-            kbuf = new _Tp[this->m_bufsize];
-
-            if(kbuf != NULL)
-            {
-                this->m_initilized = true;
-            }
-        }
+            );
         
-        ~LowValueFilter()
-        {
-            if(kbuf != NULL)
-            {
-                delete kbuf;
-            }
-        }
+        ~LowValueFilter();
 
         ito::RetVal filterFunc();
 };

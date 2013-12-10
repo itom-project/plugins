@@ -9,7 +9,11 @@
 
 #include "DataObject/dataObjectFuncs.h"
 #include "BasicFilters.h"
-#define useomp 1
+#if (USEOMP)
+    #include <omp.h>
+#endif
+
+extern int NTHREADS;
 
 //-----------------------------------------------------------------------------------------------
 
@@ -538,7 +542,68 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
     return err;
 }
 
+template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in, 
+    ito::DataObject *out, 
+    ito::int32 roiX0, 
+    ito::int32 roiY0, 
+    ito::int32 roiXSize, 
+    ito::int32 roiYSize, 
+    ito::int16 kernelSizeX, 
+    ito::int16 kernelSizeY,
+    ito::int32 anchorPosX,
+    ito::int32 anchorPosY
+    ) :GenericFilterEngine<_Tp>::GenericFilterEngine()
+{ 
+    this->m_pInpObj = in;
+    this->m_pOutObj = out;
 
+    this->m_x0 = roiX0;
+    this->m_y0 = roiY0;
+
+    this->m_dx = roiXSize;
+    this->m_dy = roiYSize;
+
+    this->m_kernelSizeX = kernelSizeX;
+    this->m_kernelSizeY = kernelSizeY;
+
+    this->m_AnchorX = anchorPosX;
+    this->m_AnchorY = anchorPosY;
+
+    this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
+
+            
+
+#if (USEOMP)
+    kbuf = new _Tp*[NTHREADS];
+    for(int i = 0; i < NTHREADS; i++)
+    {
+        kbuf[i] = new _Tp[this->m_bufsize];
+    }
+#else
+    kbuf = new _Tp[this->m_bufsize];
+    if(kbuf != NULL)
+    {
+        this->m_initilized = true;
+    }
+#endif
+
+}
+        
+template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
+{
+    if(kbuf != NULL)
+    {
+#if (USEOMP)
+        for(int i = 0; i < NTHREADS; i++)
+        {
+            delete kbuf[i];
+        }
+        delete kbuf;
+#else
+        delete kbuf;
+#endif
+    }
+}
 
 template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
 {
@@ -546,11 +611,18 @@ template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
     // the easiest way is using the this-> syntax
 
     //ito::int32 *buf=(ito::int32 *)f->buffer;
-    #if (useomp)
+    #if (USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
     {
+    int bufNum = omp_get_thread_num();
+    qDebug() << " " << bufNum << "\n"; // << std::endl;
+    _Tp* curKernelBuff = kbuf[bufNum];
+    #endif  
+
     ito::int32 x, x1, y1, l;
-    _Tp a, b;    
+    _Tp a, b;
+
+    #if (USEOMP)
     #pragma omp for schedule(guided)
     #endif     
     for (x = 0; x < this->m_dx; x++)
@@ -559,22 +631,34 @@ template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
         {
             for (y1 = 0; y1 < this->m_kernelSizeX; y1++)
             {
+    #if (USEOMP)
+                curKernelBuff[x1 + this->m_kernelSizeX * y1] = this->m_pInLines[y1][x + x1];
+    #else
                 kbuf[x1 + this->m_kernelSizeX * y1] = this->m_pInLines[y1][x + x1];
-
-                //std::cout << " " << y1 << "  " << buf[x1+gf->m_kernelSizeX*y1] << "\n" << std::endl;
+    #endif  
+                
             }
         }
+    #if (USEOMP)
+        b = curKernelBuff[0];
+    #else
         b = kbuf[0];
-        for (l = 0; l < this->m_bufsize; l++)
+    #endif  
+        for (l = 1; l < this->m_bufsize; l++)
         {
+        #if (USEOMP)
+            a = curKernelBuff[l];
+        #else
             a = kbuf[l];
+        #endif  
+            
             if (a < b)
                 b = a;
         }
         this->m_pOutLine[x] = b;
         //std::cout << x << "  " << b << "\n" << std::endl;
     }
-    #if (useomp)
+    #if (USEOMP)
     }
     #endif
 
@@ -589,11 +673,14 @@ template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
 //    k = this->m_bufsize / 2;
 
     //ito::int32 *buf=(ito::int32 *)f->buffer;
-    #if (useomp)
+    #if (USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
     {
+    #endif 
     ito::int32 x, x1, y1, l;
-    _Tp a, b;    
+    _Tp a, b;
+
+    #if (USEOMP)
     #pragma omp for schedule(guided)
     #endif    
     for (x = 0; x < this->m_dx; x++)
@@ -608,7 +695,7 @@ template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
             }
         }
         b = kbuf[0];
-        for (l = 0; l < this->m_bufsize; l++)
+        for (l = 1; l < this->m_bufsize; l++)
         {
             a = kbuf[l];
             if (a > b)
@@ -617,7 +704,7 @@ template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
         this->m_pOutLine[x] = b;
         //std::cout << x << "  " << b << "\n" << std::endl;
     }
-    #if (useomp)
+    #if (USEOMP)
     }
     #endif        
 
