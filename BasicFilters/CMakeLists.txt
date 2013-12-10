@@ -92,6 +92,7 @@ set(plugin_SOURCES
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/BasicFilters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/BasicSpecialFilters.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/BasicGenericFilters.cpp
 )
 
 #Add version information to the plugIn-dll unter MSVC

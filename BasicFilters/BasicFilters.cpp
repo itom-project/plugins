@@ -150,6 +150,9 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 	filter = new FilterDef(BasicFilters::calcObjSlice, BasicFilters::calcObjSliceParams, tr(calcObjSliceDoc));
     m_filterList.insert("calcObjSlice", filter);
 
+	filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("missing"));
+    m_filterList.insert("lowValueFilter", filter);
+
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
