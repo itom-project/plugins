@@ -90,9 +90,9 @@ class BasicFilters : public ito::AddInAlgo
         // Defined in BasicGenericFilters.cpp
         static ito::RetVal genericStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
-        static ito::RetVal BasicFilters::genericHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
-        static ito::RetVal BasicFilters::genericLowValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
-        static ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, bool lowHigh);
+        static ito::RetVal genericHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal genericLowValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
+        static ito::RetVal genericLowHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, bool lowHigh);
 
     private:
 
@@ -114,6 +114,8 @@ To test the different filters, a python based testsuit will be implemented.
 */
 template<typename _Tp> class GenericFilterEngine
 {
+    // in case we want to access the protected members of the templated parent class we have to take special care!
+    // the easiest way is using the this-> syntax    
     public:
         GenericFilterEngine() : m_pInpObj(NULL), m_pOutObj(NULL), m_pInLines(NULL), m_pOutLine(NULL), m_pInvalidMap(NULL),
             m_bufsize(0), m_kernelSizeX(0), m_kernelSizeY(0), m_x0(0), m_y0(0), m_dx(0), m_dy(0), m_AnchorX(0), m_AnchorY(0), m_initilized(false) {};
@@ -142,6 +144,8 @@ template<typename _Tp> class GenericFilterEngine
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
 {
+    // in case we want to access the protected members of the templated parent class we have to take special care!
+    // the easiest way is using the this-> syntax    
     private:
         _Tp *kbuf;
 
@@ -156,32 +160,33 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
             ito::int16 kernelSizeY,
             ito::int32 anchorPosX,
             ito::int32 anchorPosY
-            ) : GenericFilterEngine()
+            ) :GenericFilterEngine<_Tp>::GenericFilterEngine()
         { 
-            m_pInpObj = in;
-            m_pOutObj = out;
+            this->m_pInpObj = in;
+            this->m_pOutObj = out;
 
-            m_x0 = roiX0;
-            m_y0 = roiY0;
+            this->m_x0 = roiX0;
+            this->m_y0 = roiY0;
 
-            m_dx = roiXSize;
-            m_dy = roiYSize;
+            this->m_dx = roiXSize;
+            this->m_dy = roiYSize;
 
-            m_kernelSizeX = kernelSizeX;
-            m_kernelSizeY = kernelSizeY;
+            this->m_kernelSizeX = kernelSizeX;
+            this->m_kernelSizeY = kernelSizeY;
 
-            m_AnchorX = anchorPosX;
-            m_AnchorY = anchorPosY;
+            this->m_AnchorX = anchorPosX;
+            this->m_AnchorY = anchorPosY;
 
-            m_bufsize = m_kernelSizeX * m_kernelSizeY;
+            this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
 
-            kbuf = new _Tp[m_bufsize];
+            kbuf = new _Tp[this->m_bufsize];
 
             if(kbuf != NULL)
             {
-                m_initilized = true;
+                this->m_initilized = true;
             }
-        };
+        }
+        
         ~LowValueFilter()
         {
             if(kbuf != NULL)
@@ -195,6 +200,8 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
 {
+    // in case we want to access the protected members of the templated parent class we have to take special care!
+    // the easiest way is using the this-> syntax    
     private:
         _Tp *kbuf;
 
@@ -209,32 +216,33 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
             ito::int16 kernelSizeY,
             ito::int32 anchorPosX,
             ito::int32 anchorPosY
-            ) : GenericFilterEngine()
+            ) : GenericFilterEngine<_Tp>::GenericFilterEngine()
         { 
-            m_pInpObj = in;
-            m_pOutObj = out;
+            this->m_pInpObj = in;
+            this->m_pOutObj = out;
 
-            m_x0 = roiX0;
-            m_y0 = roiY0;
+            this->m_x0 = roiX0;
+            this->m_y0 = roiY0;
 
-            m_dx = roiXSize;
-            m_dy = roiYSize;
+            this->m_dx = roiXSize;
+            this->m_dy = roiYSize;
 
-            m_kernelSizeX = kernelSizeX;
-            m_kernelSizeY = kernelSizeY;
+            this->m_kernelSizeX = kernelSizeX;
+            this->m_kernelSizeY = kernelSizeY;
 
-            m_AnchorX = anchorPosX;
-            m_AnchorY = anchorPosY;
+            this->m_AnchorX = anchorPosX;
+            this->m_AnchorY = anchorPosY;
 
-            m_bufsize = m_kernelSizeX * m_kernelSizeY;
+            this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
 
-            kbuf = new _Tp[m_bufsize];
+            kbuf = new _Tp[this->m_bufsize];
 
             if(kbuf != NULL)
             {
-                m_initilized = true;
+                this->m_initilized = true;
             }
-        };
+        }
+
         ~HighValueFilter()
         {
             if(kbuf != NULL)

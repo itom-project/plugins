@@ -9,6 +9,7 @@
 
 #include "DataObject/dataObjectFuncs.h"
 #include "BasicFilters.h"
+#define useomp 1
 
 //-----------------------------------------------------------------------------------------------
 
@@ -541,66 +542,84 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
 template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
 {
-    ito::int32 l, k;
-    ito::int32 x, x1, y1;
-    k = m_bufsize / 2;
+    // in case we want to access the protected members of the templated parent class we have to take special care!
+    // the easiest way is using the this-> syntax
 
-    _Tp a, b;
     //ito::int32 *buf=(ito::int32 *)f->buffer;
-    for (x = 0; x < m_dx; x++)
+    #if (useomp)
+    #pragma omp parallel num_threads(NTHREADS)
     {
-        for (x1 = 0; x1 < m_kernelSizeX; x1++)
+    ito::int32 x, x1, y1, l;
+    _Tp a, b;    
+    #pragma omp for schedule(guided)
+    #endif     
+    for (x = 0; x < this->m_dx; x++)
+    {
+        for (x1 = 0; x1 < this->m_kernelSizeX; x1++)
         {
-            for (y1 = 0; y1 < m_kernelSizeX; y1++)
+            for (y1 = 0; y1 < this->m_kernelSizeX; y1++)
             {
-                kbuf[x1 + m_kernelSizeX * y1] = m_pInLines[y1][x + x1];
+                kbuf[x1 + this->m_kernelSizeX * y1] = this->m_pInLines[y1][x + x1];
 
                 //std::cout << " " << y1 << "  " << buf[x1+gf->m_kernelSizeX*y1] << "\n" << std::endl;
             }
         }
         b = kbuf[0];
-        for (l = 0; l < m_bufsize; l++)
+        for (l = 0; l < this->m_bufsize; l++)
         {
             a = kbuf[l];
             if (a < b)
                 b = a;
         }
-        m_pOutLine[x] = b;
+        this->m_pOutLine[x] = b;
         //std::cout << x << "  " << b << "\n" << std::endl;
     }
+    #if (useomp)
+    }
+    #endif
 
     return ito::retOk;
 }
 
 template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
 {
-    ito::int32 l, k;
-    ito::int32 x, x1, y1;
-    k = m_bufsize / 2;
+    // in case we want to access the protected members of the templated parent class we have to take special care!
+    // the easiest way is using the this-> syntax
+    //    ito::int32 x, x1, y1;    
+//    k = this->m_bufsize / 2;
 
-    _Tp a, b;
     //ito::int32 *buf=(ito::int32 *)f->buffer;
-    for (x = 0; x < m_dx; x++)
+    #if (useomp)
+    #pragma omp parallel num_threads(NTHREADS)
     {
-        for (x1 = 0; x1 < m_kernelSizeX; x1++)
+    ito::int32 x, x1, y1, l;
+    _Tp a, b;    
+    #pragma omp for schedule(guided)
+    #endif    
+    for (x = 0; x < this->m_dx; x++)
+    {
+        for (x1 = 0; x1 < this->m_kernelSizeX; x1++)
         {
-            for (y1 = 0; y1 < m_kernelSizeX; y1++)
+            for (y1 = 0; y1 < this->m_kernelSizeX; y1++)
             {
-                kbuf[x1 + m_kernelSizeX * y1] = m_pInLines[y1][x + x1];
+                kbuf[x1 + this->m_kernelSizeX * y1] = this->m_pInLines[y1][x + x1];
 
                 //std::cout << " " << y1 << "  " << buf[x1+gf->m_kernelSizeX*y1] << "\n" << std::endl;
             }
         }
         b = kbuf[0];
-        for (l = 0; l < m_bufsize; l++)
+        for (l = 0; l < this->m_bufsize; l++)
         {
             a = kbuf[l];
             if (a > b)
                 b = a;
         }
-        m_pOutLine[x] = b;
+        this->m_pOutLine[x] = b;
         //std::cout << x << "  " << b << "\n" << std::endl;
     }
+    #if (useomp)
+    }
+    #endif        
 
     return ito::retOk;
 }
