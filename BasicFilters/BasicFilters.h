@@ -209,6 +209,9 @@ template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
     // the easiest way is using the this-> syntax    
     private:
 #if 0 //(USEOMP)
+        ito::int16 * m_chunkStart;
+        ito::int16 * m_chunkEnd;
+        
         _Tp **kbuf;
         _Tp ***kbufPtr;
 #else
