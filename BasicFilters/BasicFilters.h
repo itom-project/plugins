@@ -208,7 +208,7 @@ template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax    
     private:
-#if (USEOMP)
+#if 0 //(USEOMP)
         _Tp **kbuf;
         _Tp ***kbufPtr;
 #else

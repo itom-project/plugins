@@ -84,7 +84,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
 /*
     if(check)
     {
-        for (i = 0; i < dx; i++)
+        for (i = 0; i < dx; ++i)
         {
             if (buf[i + a] == invalidInt)
             {
@@ -95,7 +95,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
                     max = i + a - lastval;
                     v = buf[lastval];
                 }
-                for (k = 1; k < max; k++)
+                for (k = 1; k < max; ++k)
                 {
                     if (k + i >= dx)
                         break;
@@ -106,7 +106,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
                         break;
                     }
                 }
-                for (k = 1; k < max; k++)
+                for (k = 1; k < max; ++k)
                 {
                     if ((y + k >= 0) && (y + k < plane->rows))
                     {
@@ -138,7 +138,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     }
 */
  
-    for (i = 0; i < a; i++)
+    for (i = 0; i < a; ++i)
     {
         buf[i] = buf[a];
     }
@@ -146,7 +146,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     //memcpy((void*)buf[i], (void*)buf[a], a * sizeof(_Tp));
 
 
-    for (i = 0; i < b; i++)
+    for (i = 0; i < b; ++i)
     {
         buf[a + dx + i] = buf[a + dx - 1];
     }
@@ -200,7 +200,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
 
     // Do the invalid check for each pixel
  
-    for (i = 0; i < dx; i++)
+    for (i = 0; i < dx; ++i)
     {
         if (ito::dObjHelper::isFinite<ito::float32>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
         {
@@ -216,7 +216,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
                 max = i + a - lastval;
                 v = buf[lastval];
             }
-            for (k = 1; k < max; k++)
+            for (k = 1; k < max; ++k)
             {
                 if (k + i >= dx)
                     break;
@@ -227,7 +227,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
                     break;
                 }
             }
-            for (k = 1; k < max; k++)
+            for (k = 1; k < max; ++k)
             {
                 if ((y + k >= 0) && (y + k < plane->rows))
                 {
@@ -252,14 +252,14 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
         }
     }    
 
-    for (i = 0; i < a; i++)
+    for (i = 0; i < a; ++i)
     {
         buf[i] = buf[a];
     }
 
     //memcpy((void*)buf[i], (void*)buf[a], a * sizeof(_Tp));
 
-    for (i = 0; i < b; i++)
+    for (i = 0; i < b; ++i)
     {
         buf[a + dx + i] = buf[a + dx - 1];
     }
@@ -312,7 +312,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
 
     // Do the invalid check for each pixel
  
-    for (i = 0; i < dx; i++)
+    for (i = 0; i < dx; ++i)
     {
         if (ito::dObjHelper::isFinite<ito::float64>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
         {
@@ -328,7 +328,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
                 max = i + a - lastval;
                 v = buf[lastval];
             }
-            for (k = 1; k < max; k++)
+            for (k = 1; k < max; ++k /*k++*/)
             {
                 if (k + i >= dx)
                     break;
@@ -339,7 +339,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
                     break;
                 }
             }
-            for (k = 1; k < max; k++)
+            for (k = 1; k < max; ++k /*k++*/)
             {
                 if ((y + k >= 0) && (y + k < plane->rows))
                 {
@@ -364,14 +364,14 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
         }
     }    
 
-    for (i = 0; i < a; i++)
+    for (i = 0; i < a; ++i /*k++*/)
     {
         buf[i] = buf[a];
     }
 
     //memcpy((void*)buf[i], (void*)buf[a], a * sizeof(_Tp));
 
-    for (i = 0; i < b; i++)
+    for (i = 0; i < b; ++i /*k++*/)
     {
         buf[a + dx + i] = buf[a + dx - 1];
     }
@@ -442,7 +442,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
         return err;
     }
 
-    for (ito::int16 kernRow = 0; kernRow < m_kernelSizeY; kernRow++)
+    for (ito::int16 kernRow = 0; kernRow < m_kernelSizeY; ++kernRow /*kernRow++*/)
     {
         m_pInLines[kernRow] = (_Tp*)calloc(m_dx + m_kernelSizeX - 1, sizeof(_Tp));
 
@@ -470,26 +470,26 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
     _Tp* pTempLine = NULL;
     ito::int8* pTempInvLine = NULL;
-    for(ito::uint32 zPlaneCnt = 0; zPlaneCnt < m_pInpObj->calcNumMats(); zPlaneCnt++)
+    for(ito::uint32 zPlaneCnt = 0; zPlaneCnt < m_pInpObj->calcNumMats(); ++zPlaneCnt /*zPlaneCnt++*/)
     {
         cv::Mat* planeIn = (cv::Mat*)(m_pInpObj->get_mdata()[m_pInpObj->seekMat(zPlaneCnt)]);
         cv::Mat* planeOut = (cv::Mat*)(m_pOutObj->get_mdata()[m_pOutObj->seekMat(zPlaneCnt)]);
 
         if (!err.containsWarningOrError())
         {
-            for (ito::int16 kernRow = 0; kernRow <  m_kernelSizeY - 1; kernRow++)
+            for (ito::int16 kernRow = 0; kernRow <  m_kernelSizeY - 1; ++kernRow /*kernRow++*/)
             {                   
                     Get<_Tp>(planeIn, m_x0 - m_AnchorX, m_y0 + kernRow - m_AnchorY, m_dx + m_kernelSizeX - 1, m_pInLines[kernRow + 1], m_pInvalidMap[kernRow + 1], kern, invalid);
             }
 
-            for (ito::int32 y = 0; y < m_dy; y++)
+            for (ito::int32 y = 0; y < m_dy; ++y)
             {
                 pTempLine = m_pInLines[0];
                 pTempInvLine =  m_pInvalidMap[0];
 
                 ito::int32 curLastRow = m_kernelSizeY - 1;
 
-                for (ito::int16 kernRow = 0; kernRow <  curLastRow; kernRow++)
+                for (ito::int16 kernRow = 0; kernRow <  curLastRow; ++kernRow /*kernRow++*/)
                 {
                      m_pInLines[kernRow] = m_pInLines[kernRow + 1];
                      m_pInvalidMap[kernRow] = m_pInvalidMap[kernRow + 1];
@@ -504,7 +504,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
                 // Okay Invalid correction
                 if(replaceNaN == false)
                 {
-                    for (ito::int32 x = 0; x < m_dx; x++)
+                    for (ito::int32 x = 0; x < m_dx; ++x)
                     {
                         if (!m_pInvalidMap[m_AnchorY][m_AnchorX + x])
                             m_pOutLine[x] = invalid;
@@ -523,7 +523,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
     if (m_pInLines)
     {
-        for (ito::int16 kernRow = 0; kernRow < m_kernelSizeY; kernRow++)
+        for (ito::int16 kernRow = 0; kernRow < m_kernelSizeY; ++kernRow)
         {
             free(m_pInLines[kernRow]);
         }
@@ -532,7 +532,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
     if(m_pInvalidMap)
     {
-        for (ito::int16 kernRow = 0; kernRow < m_kernelSizeY; kernRow++)
+        for (ito::int16 kernRow = 0; kernRow < m_kernelSizeY; ++kernRow)
         {
             free(m_pInvalidMap[kernRow]);
         }
@@ -585,7 +585,7 @@ template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in,
 
 #if (USEOMP)
     kbuf = new _Tp*[NTHREADS];
-    for(int i = 0; i < NTHREADS; i++)
+    for(int i = 0; i < NTHREADS; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
     }
@@ -604,7 +604,7 @@ template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
     if(kbuf != NULL)
     {
 #if (USEOMP)
-        for(int i = 0; i < NTHREADS; i++)
+        for(int i = 0; i < NTHREADS; +i)
         {
             delete kbuf[i];
         }
@@ -636,11 +636,11 @@ template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
     #if (USEOMP)
     #pragma omp for schedule(guided)
     #endif     
-    for (x = 0; x < this->m_dx; x++)
+    for (x = 0; x < this->m_dx; ++x)
     {
-        for (x1 = 0; x1 < this->m_kernelSizeX; x1++)
+        for (x1 = 0; x1 < this->m_kernelSizeX; ++x1)
         {
-            for (y1 = 0; y1 < this->m_kernelSizeX; y1++)
+            for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
             {
     #if (USEOMP)
                 curKernelBuff[x1 + this->m_kernelSizeX * y1] = this->m_pInLines[y1][x + x1];
@@ -655,7 +655,7 @@ template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
     #else
         b = kbuf[0];
     #endif  
-        for (l = 1; l < this->m_bufsize; l++)
+        for (l = 1; l < this->m_bufsize; ++l)
         {
         #if (USEOMP)
             a = curKernelBuff[l];
@@ -719,7 +719,7 @@ template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(ito::DataObject *in
     
     #if (USEOMP)
     kbuf = new _Tp*[NTHREADS];
-    for(int i = 0; i < NTHREADS; i++)
+    for(int i = 0; i < NTHREADS; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
     }
@@ -738,7 +738,7 @@ template<typename _Tp> HighValueFilter<_Tp>::~HighValueFilter()
     if(kbuf != NULL)
     {
         #if (USEOMP)
-        for(int i = 0; i < NTHREADS; i++)
+        for(int i = 0; i < NTHREADS; ++i)
         {
             delete kbuf[i];
         }
@@ -766,11 +766,11 @@ template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
     #if (USEOMP)
     #pragma omp for schedule(guided)
     #endif    
-    for (x = 0; x < this->m_dx; x++)
+    for (x = 0; x < this->m_dx; ++x)
     {
-        for (x1 = 0; x1 < this->m_kernelSizeX; x1++)
+        for (x1 = 0; x1 < this->m_kernelSizeX; ++x1)
         {
-            for (y1 = 0; y1 < this->m_kernelSizeX; y1++)
+            for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
             {
 #if (USEOMP)
                 curKernelBuff[x1 + this->m_kernelSizeX * y1] = this->m_pInLines[y1][x + x1];
@@ -785,7 +785,7 @@ template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
 #else
         b = kbuf[0];
 #endif
-        for (l = 1; l < this->m_bufsize; l++)
+        for (l = 1; l < this->m_bufsize; ++l)
         {
 #if (USEOMP)
             a = curKernelBuff[l];
@@ -807,7 +807,7 @@ template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-\detail This function use to generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
+\detail This function use the generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
 \param[in|out]   paramsOpt   Optinal parameters for the filter function
 \param[out]   outVals   Outputvalues, not implemented for this function
@@ -1152,9 +1152,9 @@ ito::RetVal BasicFilters::genericHighValueFilter(QVector<ito::ParamBase> *params
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*! HighValueFilter
- * \brief   This function calculated the Highfilter
- * \detail  The function calulates the HighFilter-function
+/*! \class MedianFilter
+ * \brief   This class filters an input-image median
+ * \detail  The class calulates the MedianFilter-function
  *          for the data specified in cv::mat planeIn in the dogenericfilter-function.
  *          The actual work is done in the runFilter method.
  *     
@@ -1192,14 +1192,14 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
     
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
     
-    #if (USEOMP)
+    #if 0 //(USEOMP)
     kbuf = new _Tp*[NTHREADS];
     kbufPtr = new _Tp**[NTHREADS];
-    for(int i = 0; i < NTHREADS; i++)
+    for(int i = 0; i < NTHREADS; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
         kbufPtr[i] = new _Tp*[this->m_bufsize];
-        for (ito::int16 j = 0; j < this->m_bufsize; j++)
+        for (ito::int16 j = 0; j < this->m_bufsize; ++j)
             kbufPtr[i][j] = (_Tp*)&(kbuf[i][j]);
     }
     #else
@@ -1209,7 +1209,7 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
     {
         this->m_initilized = true;
     }
-    for (ito::int16 i = 0; i < this->m_bufsize; i++)
+    for (ito::int16 i = 0; i < this->m_bufsize; ++i)
         kbufPtr[i] = (_Tp*)&(kbuf[i]);
     #endif
 }
@@ -1219,8 +1219,8 @@ template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 {
     if(kbuf != NULL)
     {
-        #if (USEOMP)
-        for(int i = 0; i < NTHREADS; i++)
+        #if 0 //(USEOMP)
+        for(int i = 0; i < NTHREADS; ++i)
         {
             delete kbuf[i];
         }
@@ -1231,8 +1231,8 @@ template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
     }
     if (kbufPtr != NULL)
     {
-        #if (USEOMP)
-        for(int i = 0; i < NTHREADS; i++)
+        #if 0 //(USEOMP)
+        for(int i = 0; i < NTHREADS; ++i)
         {
             delete kbufPtr[i];
         }
@@ -1256,7 +1256,7 @@ template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 */
 template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
 {
-    #if (USEOMP)
+    #if 0 //(USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
     {
     int bufNum = omp_get_thread_num();
@@ -1278,21 +1278,21 @@ template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
     // buffer: internal buffer
     // bufptr: index buffer to internal buffer
 
-    for (x1 = 0; x1 + 1 < this->m_kernelSizeX; x1++)
+    for (x1 = 0; x1 + 1 < this->m_kernelSizeX; ++x1)
     {
-        for (y1 = 0; y1 < this->m_kernelSizeY; y1++)
+        for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
         {
 //            *dptr++ = ((ito::float64 **)gf->buf)[y1][x1];
             *dptr++ = this->m_pInLines[y1][x1];
         }
     }
 
-    #if (USEOMP)
+    #if 0 //(USEOMP)
     #pragma omp for schedule(guided)
     #endif    
-    for (x = 0; x < this->m_dx; x++)
+    for (x = 0; x < this->m_dx; ++x)
     {
-        for (y1 = 0; y1 < this->m_kernelSizeY; y1++)
+        for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
         {
 //            *dptr++ = ((ito::float64 **)gf->buf)[y1][x + gf->nkx - 1];
             *dptr++ = this->m_pInLines[y1][x + this->m_kernelSizeX - 1];
@@ -1301,7 +1301,7 @@ template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
         if (x1 >= this->m_kernelSizeX)
         {
 //            dptr = (ito::float64 *)f->buffer;
-    #if (USEOMP)
+    #if 0 //(USEOMP)
             dptr = kbuf[bufNum];
     #else
             dptr = kbuf;
@@ -1346,7 +1346,7 @@ template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
         }
         this->m_pOutLine[x] = *pptr[k];
     }
-    #if (USEOMP)
+    #if 0 //(USEOMP)
     }
     #endif
     return ito::retOk;
