@@ -98,6 +98,7 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal genericHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal genericLowValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal genericLowHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, bool lowHigh);
+        static ito::RetVal genericMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
 
     private:
 
@@ -171,6 +172,7 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
 
         ito::RetVal filterFunc();
 };
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
 {
@@ -199,10 +201,36 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
 
         ito::RetVal filterFunc();
 };
+
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> class highPassFilter : public GenericFilterEngine<_Tp>
+template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
 {
-    ito::RetVal filterFunc();
+    // in case we want to access the protected members of the templated parent class we have to take special care!
+    // the easiest way is using the this-> syntax    
+    private:
+#if (USEOMP)
+        _Tp **kbuf;
+        _Tp ***kbufPtr;
+#else
+        _Tp *kbuf;
+        _Tp **kbufPtr;
+#endif
+
+    public:
+        explicit MedianFilter(ito::DataObject *in, 
+            ito::DataObject *out, 
+            ito::int32 roiX0, 
+            ito::int32 roiY0, 
+            ito::int32 roiXSize, 
+            ito::int32 roiYSize, 
+            ito::int16 kernelSizeX, 
+            ito::int16 kernelSizeY,
+            ito::int32 anchorPosX,
+            ito::int32 anchorPosY);
+
+        ~MedianFilter();
+
+        ito::RetVal filterFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

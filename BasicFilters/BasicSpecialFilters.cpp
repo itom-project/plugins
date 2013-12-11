@@ -777,7 +777,7 @@ ito::RetVal BasicFilters::calcMeanOverZParams(QVector<ito::Param> *paramsMand, Q
 
     return retval;
 }
-template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***scrPtr, cv::Mat *dstMat, const int *sizes, const bool toogleInf)
+template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***srcPtr, cv::Mat *dstMat, const int *sizes, const bool toogleInf)
 {
     _TypeDst *linePtr = 0;
     ito::float64 value = 0.0;
@@ -793,7 +793,7 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***scrP
                 cnts = 0.0;
                 for(int z = 0; z < sizes[0]; z ++)
                 {
-                    value += (ito::float64)(scrPtr[z][y][x]);
+                    value += (ito::float64)(srcPtr[z][y][x]);
                     cnts++;
                 }
                 linePtr[x] = cv::saturate_cast<_TypeDst>(value / cnts);
@@ -814,9 +814,9 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***scrP
 
                     for(int z = 0; z < sizes[0]; z ++)
                     {
-                        if(ito::dObjHelper::isFinite<_Type>(scrPtr[z][y][x]))
+                        if(ito::dObjHelper::isFinite<_Type>(srcPtr[z][y][x]))
                         {
-                            value += (ito::float64)(scrPtr[z][y][x]);
+                            value += (ito::float64)(srcPtr[z][y][x]);
                             cnts++;                    
                         }
                     }
@@ -844,7 +844,7 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***scrP
 
                     for(int z = 0; z < sizes[0]; z ++)
                     {
-                        value += (ito::float64)(scrPtr[z][y][x]);
+                        value += (ito::float64)(srcPtr[z][y][x]);
                         cnts++;                    
                     }
                     if(cnts > 0.0)
@@ -935,58 +935,58 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
     {
         case ito::tInt8:
         {
-            ito::int8 ***scrPtr = NULL;
-            ito::dObjHelper::getRowPointer<ito::int8>(dObjSrc, scrPtr);
-            calcMeanOverZHelp<ito::int8, ito::int8>(scrPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
-            ito::dObjHelper::freeRowPointer<ito::int8>(scrPtr);
+            ito::int8 ***srcPtr = NULL;
+            ito::dObjHelper::getRowPointer<ito::int8>(dObjSrc, srcPtr);
+            calcMeanOverZHelp<ito::int8, ito::int8>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            ito::dObjHelper::freeRowPointer<ito::int8>(srcPtr);
         }
         break;
         case ito::tUInt8:
         {
-            ito::uint8 ***scrPtr = NULL;
-            ito::dObjHelper::getRowPointer<ito::uint8>(dObjSrc, scrPtr);
-            calcMeanOverZHelp<ito::uint8, ito::uint8>(scrPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
-            ito::dObjHelper::freeRowPointer<ito::uint8>(scrPtr);
+            ito::uint8 ***srcPtr = NULL;
+            ito::dObjHelper::getRowPointer<ito::uint8>(dObjSrc, srcPtr);
+            calcMeanOverZHelp<ito::uint8, ito::uint8>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            ito::dObjHelper::freeRowPointer<ito::uint8>(srcPtr);
         }
         break;
         case ito::tInt16:
         {
-            ito::int16 ***scrPtr = NULL;
-            ito::dObjHelper::getRowPointer<ito::int16>(dObjSrc, scrPtr);
-            calcMeanOverZHelp<ito::int16, ito::int16>(scrPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
-            ito::dObjHelper::freeRowPointer<ito::int16>(scrPtr);
+            ito::int16 ***srcPtr = NULL;
+            ito::dObjHelper::getRowPointer<ito::int16>(dObjSrc, srcPtr);
+            calcMeanOverZHelp<ito::int16, ito::int16>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            ito::dObjHelper::freeRowPointer<ito::int16>(srcPtr);
         }
         break;
         case ito::tUInt16:
         {
-            ito::uint16 ***scrPtr = NULL;
-            ito::dObjHelper::getRowPointer<ito::uint16>(dObjSrc, scrPtr);
-            calcMeanOverZHelp<ito::uint16, ito::uint16>(scrPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
-            ito::dObjHelper::freeRowPointer<ito::uint16>(scrPtr);
+            ito::uint16 ***srcPtr = NULL;
+            ito::dObjHelper::getRowPointer<ito::uint16>(dObjSrc, srcPtr);
+            calcMeanOverZHelp<ito::uint16, ito::uint16>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            ito::dObjHelper::freeRowPointer<ito::uint16>(srcPtr);
         }
         break;
         case ito::tInt32:
         {
-            ito::int32 ***scrPtr = NULL;
-            ito::dObjHelper::getRowPointer<ito::int32>(dObjSrc, scrPtr);
-            calcMeanOverZHelp<ito::int32, ito::int32>(scrPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
-            ito::dObjHelper::freeRowPointer<ito::int32>(scrPtr);
+            ito::int32 ***srcPtr = NULL;
+            ito::dObjHelper::getRowPointer<ito::int32>(dObjSrc, srcPtr);
+            calcMeanOverZHelp<ito::int32, ito::int32>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            ito::dObjHelper::freeRowPointer<ito::int32>(srcPtr);
         }
         break;
         case ito::tFloat32:
         {
-            ito::float32 ***scrPtr = NULL;
-            ito::dObjHelper::getRowPointer<ito::float32>(dObjSrc, scrPtr);
-            calcMeanOverZHelp<ito::float32, ito::float32>(scrPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
-            ito::dObjHelper::freeRowPointer<ito::float32>(scrPtr);
+            ito::float32 ***srcPtr = NULL;
+            ito::dObjHelper::getRowPointer<ito::float32>(dObjSrc, srcPtr);
+            calcMeanOverZHelp<ito::float32, ito::float32>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            ito::dObjHelper::freeRowPointer<ito::float32>(srcPtr);
         }
         break;
         case ito::tFloat64:
         {
-            ito::float64 ***scrPtr = NULL;
-            ito::dObjHelper::getRowPointer<ito::float64>(dObjSrc, scrPtr);
-            calcMeanOverZHelp<ito::float64, ito::float64>(scrPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
-            ito::dObjHelper::freeRowPointer<ito::float64>(scrPtr);
+            ito::float64 ***srcPtr = NULL;
+            ito::dObjHelper::getRowPointer<ito::float64>(dObjSrc, srcPtr);
+            calcMeanOverZHelp<ito::float64, ito::float64>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            ito::dObjHelper::freeRowPointer<ito::float64>(srcPtr);
         }
         break;
         default:
@@ -1353,120 +1353,120 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tInt8:
             {
                 ito::int8 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::int8>(0);
-                uchar *scrPtr = scrMat->data + matOffset;
+                uchar *srcPtr = scrMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
-                    dstPtr[x] = *(reinterpret_cast<ito::int8*>(scrPtr));
-                    scrPtr += matStepSize[x];
+                    dstPtr[x] = *(reinterpret_cast<ito::int8*>(srcPtr));
+                    srcPtr += matStepSize[x];
                 }
             }
             break;
             case ito::tInt16:
             {
                 ito::int16 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::int16>(0);
-                uchar *scrPtr = scrMat->data + matOffset;
+                uchar *srcPtr = scrMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
-                    dstPtr[x] = *(reinterpret_cast<ito::int16*>(scrPtr));
-                    scrPtr += matStepSize[x];
+                    dstPtr[x] = *(reinterpret_cast<ito::int16*>(srcPtr));
+                    srcPtr += matStepSize[x];
                 }
             }
             break;
             case ito::tInt32:
             {
                 ito::int32 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::int32>(0);
-                uchar *scrPtr = scrMat->data + matOffset;
+                uchar *srcPtr = scrMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
-                    dstPtr[x] = *(reinterpret_cast<ito::int32*>(scrPtr));
-                    scrPtr += matStepSize[x];
+                    dstPtr[x] = *(reinterpret_cast<ito::int32*>(srcPtr));
+                    srcPtr += matStepSize[x];
                 }
             }
             break;
             case ito::tUInt8:
             {
                 ito::uint8 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::uint8>(0);
-                uchar *scrPtr = scrMat->data + matOffset;
+                uchar *srcPtr = scrMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
-                    dstPtr[x] = *(reinterpret_cast<ito::uint8*>(scrPtr));
-                    scrPtr += matStepSize[x];
+                    dstPtr[x] = *(reinterpret_cast<ito::uint8*>(srcPtr));
+                    srcPtr += matStepSize[x];
                 }
             }
             break;
             case ito::tUInt16:
             {
                 ito::uint16 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::uint16>(0);
-                uchar *scrPtr = scrMat->data + matOffset;
+                uchar *srcPtr = scrMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
-                    dstPtr[x] = *(reinterpret_cast<ito::uint16*>(scrPtr));
-                    scrPtr += matStepSize[x];
+                    dstPtr[x] = *(reinterpret_cast<ito::uint16*>(srcPtr));
+                    srcPtr += matStepSize[x];
                 }
             }
             break;
             case ito::tFloat32:
             {
                 ito::float32 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::float32>(0);
-                uchar *scrPtr = scrMat->data + matOffset;
+                uchar *srcPtr = scrMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
-                    dstPtr[x] = *(reinterpret_cast<ito::float32*>(scrPtr));
-                    scrPtr += matStepSize[x];
+                    dstPtr[x] = *(reinterpret_cast<ito::float32*>(srcPtr));
+                    srcPtr += matStepSize[x];
                 }
             }
             break;
             case ito::tFloat64:
             {
                 ito::float64 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::float64>(0);
-                uchar *scrPtr = scrMat->data + matOffset;
+                uchar *srcPtr = scrMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
-                    dstPtr[x] = *(reinterpret_cast<ito::float64*>(scrPtr));
-                    scrPtr += matStepSize[x];
+                    dstPtr[x] = *(reinterpret_cast<ito::float64*>(srcPtr));
+                    srcPtr += matStepSize[x];
                 }
             }
             break;
             case ito::tComplex64:
             {
                 ito::complex64 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::complex64>(0);
-                uchar *scrPtr = scrMat->data + matOffset;
+                uchar *srcPtr = scrMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
-                    dstPtr[x] = *(reinterpret_cast<ito::complex64*>(scrPtr));
-                    scrPtr += matStepSize[x];
+                    dstPtr[x] = *(reinterpret_cast<ito::complex64*>(srcPtr));
+                    srcPtr += matStepSize[x];
                 }
             }
             break;
             case ito::tComplex128:
             {
                 ito::complex128 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::complex128>(0);
-                uchar *scrPtr = scrMat->data + matOffset;
+                uchar *srcPtr = scrMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
-                    dstPtr[x] = *(reinterpret_cast<ito::complex128*>(scrPtr));
-                    scrPtr += matStepSize[x];
+                    dstPtr[x] = *(reinterpret_cast<ito::complex128*>(srcPtr));
+                    srcPtr += matStepSize[x];
                 }
             }
             break;
             case ito::tRGBA32:
             {
                 ito::RgbaBase32 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::Rgba32>(0);
-                uchar *scrPtr = scrMat->data + matOffset;
+                uchar *srcPtr = scrMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
-                    dstPtr[x].rgba = (reinterpret_cast<ito::RgbaBase32*>(scrPtr))->rgba;
-                    scrPtr += matStepSize[x];
+                    dstPtr[x].rgba = (reinterpret_cast<ito::RgbaBase32*>(srcPtr))->rgba;
+                    srcPtr += matStepSize[x];
                 }            
             }
             break;

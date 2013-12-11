@@ -152,8 +152,9 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("missing"));
     m_filterList.insert("lowValueFilter", filter);
     filter = new FilterDef(BasicFilters::genericHighValueFilter, BasicFilters::genericStdParams, tr("missing"));
-    m_filterList.insert("lowValueFilter", filter);    
-
+    m_filterList.insert("lowValueFilter", filter);
+    filter = new FilterDef(BasicFilters::genericMedianFilter, BasicFilters::genericStdParams, tr("missing"));
+    m_filterList.insert("medianFilter", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
