@@ -57,11 +57,8 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     {
         y = plane->rows - 1;
     }
-
-    memset(inv, 1, dx);
-    //memset(inv, 0, dx);
-    // Check if x or dx colidate with image boarder
     
+    // Check if x or dx colidate with image boarder
     if (x < 0)
     {
         a = -x0;
@@ -82,6 +79,8 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     lastval =- kern;
 
 /*
+    memset(inv, 1, dx);   // must be one to not use invalid stuff
+    //memset(inv, 0, dx);   // must be zero to not use invalid stuff
     if(check)
     {
         for (i = 0; i < dx; ++i)
@@ -495,7 +494,9 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
                 Get<_Tp>(planeIn, m_x0 - m_AnchorX, m_y0 + y + curLastRow - m_AnchorY, m_dx + m_kernelSizeX - 1, m_pInLines[curLastRow], m_pInvalidMap[curLastRow], kern, invalid);
 
-                err += filterFunc();
+                //err += filterFunc();
+                
+                filterFunc();
 
                 // Okay Invalid correction
                 if(replaceNaN == false)
@@ -576,14 +577,22 @@ template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in,
 
     this->m_AnchorX = anchorPosX;
     this->m_AnchorY = anchorPosY;
-
+    
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
 
 #if (USEOMP)
     kbuf = new _Tp*[NTHREADS];
+    if(kbuf != NULL)
+    {
+        this->m_initilized = true;
+    }
     for(int i = 0; i < NTHREADS; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
+        if(kbuf[i] == NULL)
+        {
+            this->m_initilized = false;
+        }
     }
 #else
     kbuf = new _Tp[this->m_bufsize];
@@ -612,7 +621,7 @@ template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
+template<typename _Tp> /*ito::RetVal*/ void LowValueFilter<_Tp>::filterFunc()
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax
@@ -668,7 +677,7 @@ template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
     }
     #endif
 
-    return ito::retOk;
+    //return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -714,9 +723,17 @@ template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(ito::DataObject *in
     
     #if (USEOMP)
     kbuf = new _Tp*[NTHREADS];
+    if(kbuf != NULL)
+    {
+        this->m_initilized = true;
+    }
     for(int i = 0; i < NTHREADS; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
+        if(kbuf[i] == NULL)
+        {
+            this->m_initilized = false;
+        }
     }
     #else
     kbuf = new _Tp[this->m_bufsize];
@@ -745,7 +762,7 @@ template<typename _Tp> HighValueFilter<_Tp>::~HighValueFilter()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
+template<typename _Tp> /*ito::RetVal*/ void HighValueFilter<_Tp>::filterFunc()
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax
@@ -797,7 +814,7 @@ template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
     }
     #endif        
 
-    return ito::retOk;
+    //return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1250,7 +1267,7 @@ template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 *   \sa  GenericFilter::DoGenericFilter, _MedFilter
 *   \date 12.2013
 */
-template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
+template<typename _Tp> /*ito::RetVal*/ void MedianFilter<_Tp>::filterFunc()
 {
     #if (USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
@@ -1366,7 +1383,7 @@ template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
     #if (USEOMP)
     }
     #endif
-    return ito::retOk;
+    //return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1572,3 +1589,311 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> LowPassFilter<_Tp>::LowPassFilter(  ito::DataObject *in, 
+                                                           ito::DataObject *out, 
+                                                           ito::int32 roiX0, 
+                                                           ito::int32 roiY0, 
+                                                           ito::int32 roiXSize, 
+                                                           ito::int32 roiYSize, 
+                                                           ito::int16 kernelSizeX, 
+                                                           ito::int16 kernelSizeY,
+                                                           ito::int32 anchorPosX,
+                                                           ito::int32 anchorPosY
+) :GenericFilterEngine<_Tp>::GenericFilterEngine()
+{ 
+    this->m_pInpObj = in;
+    this->m_pOutObj = out;
+    
+    this->m_x0 = roiX0;
+    this->m_y0 = roiY0;
+    
+    this->m_dx = roiXSize;
+    this->m_dy = roiYSize;
+    
+    this->m_kernelSizeX = kernelSizeX;
+    this->m_kernelSizeY = kernelSizeY;
+    
+    this->m_AnchorX = anchorPosX;
+    this->m_AnchorY = anchorPosY;
+    
+    this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
+    
+    this->m_colwiseSumBuffer = new ito::float64[roiXSize + m_kernelSizeX - 1];
+
+    this->m_divisor = this->m_bufsize;
+
+    if(m_colwiseSumBuffer != NULL)
+    {
+        this->m_initilized = true;
+    }
+    this->m_isFilled = false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> LowPassFilter<_Tp>::~LowPassFilter()
+{
+    if(m_colwiseSumBuffer != NULL)
+    {
+        delete m_colwiseSumBuffer;
+    }
+}
+//-----------------------------------------------------------------------------------------------
+template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
+{
+
+    ito::int16 kernelLastY = this->m_kernelSizeY - 1;
+    ito::int16 kernelLastX = this->m_kernelSizeX - 1;
+
+    ito::float64 summe = 0;
+    if(!this->m_isFilled)
+    {
+        this->m_isFilled = true;
+
+        for(ito::int32 x = 0; x < this->m_dx + kernelLastX; x++)
+        {
+            this->m_colwiseSumBuffer[x] = (ito::float64) this->m_pInLines[0][x];
+            for(ito::int16 y = 1; y < this->m_kernelSizeY; y++)
+            {
+                //((ito::int32 *)this->csum)[x]+=((ito::int32 **)this->buf)[y][x];
+
+                this->m_colwiseSumBuffer[x] += (ito::float64) this->m_pInLines[y][x];
+            }
+        }
+    }
+    else
+    { 
+        for(ito::int32 x = 0; x < this->m_dx + kernelLastX; x++)
+        {
+            //((ito::int32 *)this->csum)[x]+=((ito::int32 **)this->buf)[this->nky-1][x];
+            this->m_colwiseSumBuffer[x] += (ito::float64) this->m_pInLines[kernelLastY][x];
+        }
+    }
+
+
+    for(ito::int16 x = 0; x < kernelLastX; x++)
+    {
+        //summe+=((ito::int32 *)this->csum)[x];
+        summe += this->m_colwiseSumBuffer[x];
+    }
+
+    for(ito::int16 x = 0; x < this->m_dx; x++)
+    {
+        //summe+=((ito::int32 *)this->csum)[x+this->nkx-1];
+        //((ito::int32 *)this->out)[x]=summe/this->divisor;
+        //summe-=((ito::int32 *)f->csum)[x];
+
+        summe += this->m_colwiseSumBuffer[x + kernelLastX];
+        m_pOutLine[x] = summe / m_divisor;
+        summe -= this->m_colwiseSumBuffer[x];
+    }
+
+    for(ito::int32 x = 0; x < this->m_dx + kernelLastX; x++)
+    {
+        //((ito::int32 *)f->csum)[x]-=((ito::int32 **)this->buf)[0][x];
+        this->m_colwiseSumBuffer[x] -= (ito::float64) this->m_pInLines[0][x];
+    }
+    
+
+    //return ito::retOk;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+\detail This function use to generic filter engine to set values to the lowest or the highest pixelvalue in the kernel
+\param[in|out]   paramsMand  Mandatory parameters for the filter function
+\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   outVals   Outputvalues, not implemented for this function
+\param[in]   lowHigh  Flag which toggles low or high filter
+\author ITO
+\sa  BasicFilters::genericStdParams
+\date
+*/
+ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+    ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
+    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
+
+    if(!dObjSrc)    // Report error if input object is not defined
+    {
+        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toAscii().data());
+    }
+    else if(dObjSrc->getDims() < 1) // Report error of input object is empty
+    {
+        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toAscii().data());
+    }
+    if(!dObjDst)    // Report error of output object is not defined
+    {
+        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toAscii().data());
+    }
+
+    if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
+    {
+        // Nothing
+    }
+    else if(ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
+    {
+        dObjDst->deleteAllTags();
+        dObjSrc->copyAxisTagsTo(*dObjDst);
+        dObjSrc->copyTagMapTo(*dObjDst);
+    }
+    else
+    {
+        (*dObjDst) = ito::DataObject(dObjSrc->getDims(), dObjSrc->getSize(), dObjSrc->getType(), dObjSrc->getContinuous());
+        dObjSrc->copyAxisTagsTo(*dObjDst);
+        dObjSrc->copyTagMapTo(*dObjDst);
+    }
+
+    // Check if input type is allowed or not
+    retval = ito::dObjHelper::verifyDataObjectType(dObjSrc, "dObjSrc", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    if(retval.containsError())
+        return retval;
+
+    // get the kernelsize
+    ito::int32 kernelsizex = (*paramsMand)[2].getVal<int>();
+    ito::int32 kernelsizey = (*paramsMand)[3].getVal<int>();
+
+    bool replaceNaN = (*paramsOpt)[0].getVal<int>() != 0 ? true : false; //false (default): NaN values in input image will become NaN in output, else: output will be interpolated (somehow)
+
+    if(kernelsizex % 2 == 0) //even
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toAscii().data());
+    }
+
+    if(kernelsizey % 2 == 0) //even
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toAscii().data());
+    }
+
+    ito::int32 z_length = dObjSrc->calcNumMats();  // get the number of Mats (planes) in the input object
+
+    switch(dObjSrc->getType())
+    {
+        case ito::tInt8:
+        {
+            LowPassFilter<ito::int8> filterEngine(dObjSrc, 
+                                                dObjDst, 
+                                                0, 
+                                                0, 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+                                                kernelsizex, 
+                                                kernelsizey, 
+                                                kernelsizex / 2, 
+                                                kernelsizey / 2);
+            filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tUInt8:
+        {
+            LowPassFilter<ito::uint8> filterEngine(dObjSrc, 
+                                                dObjDst, 
+                                                0, 
+                                                0, 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+                                                kernelsizex, 
+                                                kernelsizey, 
+                                                kernelsizex / 2, 
+                                                kernelsizey / 2);
+            filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tInt16:
+        {
+            LowPassFilter<ito::int16> filterEngine(dObjSrc, 
+                                                dObjDst, 
+                                                0, 
+                                                0, 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+                                                kernelsizex, 
+                                                kernelsizey, 
+                                                kernelsizex / 2, 
+                                                kernelsizey / 2);
+            filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tUInt16:
+        {
+            LowPassFilter<ito::uint16> filterEngine(dObjSrc, 
+                                                dObjDst, 
+                                                0, 
+                                                0, 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+                                                kernelsizex, 
+                                                kernelsizey, 
+                                                kernelsizex / 2, 
+                                                kernelsizey / 2);
+            filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tInt32:
+        {
+            LowPassFilter<ito::int32> filterEngine(dObjSrc, 
+                                                dObjDst, 
+                                                0, 
+                                                0, 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+                                                kernelsizex, 
+                                                kernelsizey, 
+                                                kernelsizex / 2, 
+                                                kernelsizey / 2);
+            filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tFloat32:
+        {
+            LowPassFilter<ito::float32> filterEngine(dObjSrc, 
+                                                dObjDst, 
+                                                0, 
+                                                0, 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+                                                kernelsizex, 
+                                                kernelsizey, 
+                                                kernelsizex / 2, 
+                                                kernelsizey / 2);
+            filterEngine.runFilter(replaceNaN);
+        }
+        break;
+        case ito::tFloat64:
+        {
+            LowPassFilter<ito::float64> filterEngine(dObjSrc, 
+                                                dObjDst, 
+                                                0, 
+                                                0, 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 1), 
+                                                dObjSrc->getSize(dObjSrc->getDims() - 2), 
+                                                kernelsizex, 
+                                                kernelsizey, 
+                                                kernelsizex / 2, 
+                                                kernelsizey / 2);
+            filterEngine.runFilter(replaceNaN);
+        }
+        break;
+    }
+
+    // if no errors reported -> create new dataobject with values stored in cvMatOut
+    if(!retval.containsError())
+    {
+        // Add Protokoll
+        QString msg;
+        msg = tr("lowpass-filter (mean) with kernel %1 x %2").arg(kernelsizex).arg(kernelsizey);
+        //        dObjDst -> addToProtocol(std::string(prot));
+
+        if(replaceNaN)
+        {
+            msg.append( tr(" and removed NaN-values"));
+        }
+
+        dObjDst->addToProtocol(std::string(msg.toAscii().data()));
+    }
+
+    //int64 testend = cv::getTickCount() - teststart;
+    //ito::float64 duration = (ito::float64)testend / cv::getTickFrequency();
+    //std::cout << "Time: " << duration << "ms\n";
+
+    return retval;
+}

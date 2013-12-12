@@ -99,6 +99,7 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal genericLowValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal genericLowHighValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, bool lowHigh);
         static ito::RetVal genericMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
+        static ito::RetVal genericLowPassFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
 
     private:
 
@@ -141,7 +142,7 @@ template<typename _Tp> class GenericFilterEngine
         ito::int32 m_x0, m_y0;           //< first point in x / y of filter region
         ito::int32 m_dx, m_dy;           //< Size of filter region
         ito::int32 m_AnchorX, m_AnchorY; //< Position of the data output in respect to the kernel (anchor)
-        virtual ito::RetVal filterFunc() = 0;
+        virtual void filterFunc() = 0;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -170,7 +171,7 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
         
         ~LowValueFilter();
 
-        ito::RetVal filterFunc();
+        void filterFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -199,7 +200,7 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
 
         ~HighValueFilter();
 
-        ito::RetVal filterFunc();
+        void filterFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -230,9 +231,35 @@ template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
 
         ~MedianFilter();
 
-        ito::RetVal filterFunc();
+        void filterFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> class LowPassFilter : public GenericFilterEngine<_Tp>
+{
+    // in case we want to access the protected members of the templated parent class we have to take special care!
+    // the easiest way is using the this-> syntax    
+    private:
+        ito::float64 *m_colwiseSumBuffer;
+        bool m_isFilled;
+        ito::float64 m_divisor;
 
+    public:
+        explicit LowPassFilter(ito::DataObject *in, 
+            ito::DataObject *out, 
+            ito::int32 roiX0, 
+            ito::int32 roiY0, 
+            ito::int32 roiXSize, 
+            ito::int32 roiYSize, 
+            ito::int16 kernelSizeX, 
+            ito::int16 kernelSizeY,
+            ito::int32 anchorPosX,
+            ito::int32 anchorPosY);
+
+        ~LowPassFilter();
+
+        void filterFunc();
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------
 #endif // BasicFilters_H

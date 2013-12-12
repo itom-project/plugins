@@ -149,12 +149,14 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(BasicFilters::calcObjSlice, BasicFilters::calcObjSliceParams, tr(calcObjSliceDoc));
     m_filterList.insert("calcObjSlice", filter);
 
-    filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("missing"));
+    filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("Set each pixel to the lowest value within the kernel (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("lowValueFilter", filter);
-    filter = new FilterDef(BasicFilters::genericHighValueFilter, BasicFilters::genericStdParams, tr("missing"));
+    filter = new FilterDef(BasicFilters::genericHighValueFilter, BasicFilters::genericStdParams, tr("Set each pixel to the highest value within the kernel (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("lowValueFilter", filter);
-    filter = new FilterDef(BasicFilters::genericMedianFilter, BasicFilters::genericStdParams, tr("missing"));
+    filter = new FilterDef(BasicFilters::genericMedianFilter, BasicFilters::genericStdParams, tr("Performs a median filter with kernelsize (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("medianFilter", filter);
+    filter = new FilterDef(BasicFilters::genericLowPassFilter, BasicFilters::genericStdParams, tr("Performs a low-pass filter with kernelsize (x ,y) using the generic mcpp filter engine"));
+    m_filterList.insert("lowPassFilter", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
