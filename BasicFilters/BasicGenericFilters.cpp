@@ -1290,9 +1290,9 @@ template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
     for (x = 0; x < this->m_dx; ++x)
     {
         #if (USEOMP)
-        for (ito::int16 cn = (x - lastx) % this->m_kernelSizeX - 1; cn >= 0; cn--)
+        for (ito::int16 cn = ((x - lastx) > this->m_kernelSizeX ? this->m_kernelSizeX : (x - lastx)); cn >= 0; cn--)
+        {            
         #endif
-        {
             for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
             {
     //            *dptr++ = ((ito::float64 **)gf->buf)[y1][x + gf->nkx - 1];
