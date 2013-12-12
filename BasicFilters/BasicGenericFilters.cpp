@@ -138,20 +138,17 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     }
 */
  
-    //for (i = 0; i < a; ++i)
-    //{
-    //    buf[i] = buf[a];
-    //}
-    std::fill(buf[0], buf[a-1], buf[a]);
-    //memcpy((void*)buf[i], (void*)buf[a], a * sizeof(_Tp));
+    for (i = 0; i < a; ++i)
+    {
+        buf[i] = buf[a];
+    }
+    //std::fill(buf[0], buf[a-1], buf[a]);
 
-
-    //for (i = 0; i < b; ++i)
-    //{
-    //    buf[a + dx + i] = buf[a + dx - 1];
-    //}
-    std::fill(buf[a + dx], buf[a + dx + b - 1], buf[a + dx - 1]);
-    //memcpy((void*)buf[a + dx + i], (void*)buf[a + dx - 1], n * sizeof(_Tp));
+    for (i = 0; i < b; ++i)
+    {
+        buf[a + dx + i] = buf[a + dx - 1];
+    }
+    //std::fill(buf[a + dx], buf[a + dx + b - 1], buf[a + dx - 1]);
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito::int32 y0, ito::int32 dx, ito::float32 *buf, ito::int8 *inv, const ito::int32 kern, const ito::float64 /*invalid*/ )
@@ -256,14 +253,13 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     {
         buf[i] = buf[a];
     }
-
-    //memcpy((void*)buf[i], (void*)buf[a], a * sizeof(_Tp));
+    //std::fill(buf[0], buf[a-1], buf[a]);
 
     for (i = 0; i < b; ++i)
     {
         buf[a + dx + i] = buf[a + dx - 1];
     }
-    //memcpy((void*)buf[a + dx + i], (void*)buf[a + dx - 1], n * sizeof(_Tp));
+    //std::fill(buf[a + dx], buf[a + dx + b - 1], buf[a + dx - 1]);
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito::int32 y0, ito::int32 dx, ito::float64 *buf, ito::int8 *inv, const ito::int32 kern, const ito::float64 /*invalid*/ )
@@ -622,46 +618,45 @@ template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
     // the easiest way is using the this-> syntax
 
     //ito::int32 *buf=(ito::int32 *)f->buffer;
-#if (USEOMP)
+    #if (USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
     {
     int bufNum = omp_get_thread_num();
 //    qDebug() << " " << bufNum << "\n"; // << std::endl;
     _Tp* curKernelBuff = kbuf[bufNum];
-#endif  
+    #endif  
 
     ito::int32 x, x1, y1, l;
     _Tp a, b;
 
-#if (USEOMP)
+    #if (USEOMP)
     #pragma omp for schedule(guided)
-#endif     
+    #endif     
     for (x = 0; x < this->m_dx; ++x)
     {
         for (x1 = 0; x1 < this->m_kernelSizeX; ++x1)
         {
             for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
             {
-#if (USEOMP)
+    #if (USEOMP)
                 curKernelBuff[x1 + this->m_kernelSizeX * y1] = this->m_pInLines[y1][x + x1];
-#else
+    #else
                 kbuf[x1 + this->m_kernelSizeX * y1] = this->m_pInLines[y1][x + x1];
-#endif  
-                
+    #endif  
             }
         }
-#if (USEOMP)
+    #if (USEOMP)
         b = curKernelBuff[0];
-#else
+    #else
         b = kbuf[0];
-#endif  
+    #endif  
         for (l = 1; l < this->m_bufsize; ++l)
         {
-#if (USEOMP)
+        #if (USEOMP)
             a = curKernelBuff[l];
-#else
+        #else
             a = kbuf[l];
-#endif  
+        #endif  
             
             if (a < b)
                 b = a;
@@ -669,9 +664,9 @@ template<typename _Tp> ito::RetVal LowValueFilter<_Tp>::filterFunc()
         this->m_pOutLine[x] = b;
         //std::cout << x << "  " << b << "\n" << std::endl;
     }
-#if (USEOMP)
+    #if (USEOMP)
     }
-#endif
+    #endif
 
     return ito::retOk;
 }
@@ -717,19 +712,19 @@ template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(ito::DataObject *in
     
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
     
-#if (USEOMP)
+    #if (USEOMP)
     kbuf = new _Tp*[NTHREADS];
     for(int i = 0; i < NTHREADS; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
     }
-#else
+    #else
     kbuf = new _Tp[this->m_bufsize];
     if(kbuf != NULL)
     {
         this->m_initilized = true;
     }
-#endif
+    #endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -737,15 +732,15 @@ template<typename _Tp> HighValueFilter<_Tp>::~HighValueFilter()
 {
     if(kbuf != NULL)
     {
-#if (USEOMP)
+        #if (USEOMP)
         for(int i = 0; i < NTHREADS; ++i)
         {
             delete kbuf[i];
         }
         delete kbuf;
-#else
+        #else
         delete kbuf;
-#endif
+        #endif
     }
 }
 
@@ -754,18 +749,18 @@ template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
 {
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax
-#if (USEOMP)
+    #if (USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
     {
     int bufNum = omp_get_thread_num();
     _Tp* curKernelBuff = kbuf[bufNum];
-#endif  
+    #endif  
     ito::int32 x, x1, y1, l;
     _Tp a, b;
 
-#if (USEOMP)
+    #if (USEOMP)
     #pragma omp for schedule(guided)
-#endif    
+    #endif    
     for (x = 0; x < this->m_dx; ++x)
     {
         for (x1 = 0; x1 < this->m_kernelSizeX; ++x1)
@@ -798,9 +793,9 @@ template<typename _Tp> ito::RetVal HighValueFilter<_Tp>::filterFunc()
         this->m_pOutLine[x] = b;
         //std::cout << x << "  " << b << "\n" << std::endl;
     }
-#if (USEOMP)
+    #if (USEOMP)
     }
-#endif        
+    #endif        
 
     return ito::retOk;
 }
@@ -1192,28 +1187,18 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
     
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
     
-#if 0 //(USEOMP)
+    #if (USEOMP)
     kbuf = new _Tp*[NTHREADS];
     kbufPtr = new _Tp**[NTHREADS];
-
-    //m_chunkStart = new ito::int16[NTHREADS];
-    //m_chunkEnd = new ito::int16[NTHREADS];
-
-    //int chunkSize = (roiXSize - roiX0) / NTHREADS;
-
     for(int i = 0; i < NTHREADS; ++i)
     {
-        //m_chunkStart[i] = roiX0 + i * chunkSize;
-        //m_chunkEnd[i] = roiX0 + (i + 1) * chunkSize;
-
         kbuf[i] = new _Tp[this->m_bufsize];
         kbufPtr[i] = new _Tp*[this->m_bufsize];
         for (ito::int16 j = 0; j < this->m_bufsize; ++j)
             kbufPtr[i][j] = (_Tp*)&(kbuf[i][j]);
     }
-    //m_chunkEnd[NTHREADS-1] = roiXSize;
-
-#else
+    this->m_initilized = true;
+    #else
     kbuf = new _Tp[this->m_bufsize];
     kbufPtr = new _Tp*[this->m_bufsize];
     if(kbuf != NULL && kbufPtr != NULL)
@@ -1222,7 +1207,7 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
     }
     for (ito::int16 i = 0; i < this->m_bufsize; ++i)
         kbufPtr[i] = (_Tp*)&(kbuf[i]);
-#endif
+    #endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1230,29 +1215,27 @@ template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 {
     if(kbuf != NULL)
     {
-#if 0 //(USEOMP)
+        #if (USEOMP)
         for(int i = 0; i < NTHREADS; ++i)
         {
             delete kbuf[i];
         }
         delete kbuf;
-        delete m_chunkStart;
-        delete m_chunkEnd;
-#else
+        #else
         delete kbuf;
-#endif
+        #endif
     }
     if (kbufPtr != NULL)
     {
-#if 0 //(USEOMP)
+        #if (USEOMP)
         for(int i = 0; i < NTHREADS; ++i)
         {
             delete kbufPtr[i];
         }
         delete kbufPtr;
-#else
+        #else
         delete kbufPtr;
-#endif
+        #endif
     }
 }
 
@@ -1269,7 +1252,7 @@ template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 */
 template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
 {
-    #if 0 //(USEOMP)
+    #if (USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
     {
     int bufNum = omp_get_thread_num();
@@ -1286,50 +1269,55 @@ template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
     ito::int32 size = 0;
     _Tp a;
     _Tp *t;
+    ito::int32 lastx;
 
     // buf : kernelbuffer
     // buffer: internal buffer
     // bufptr: index buffer to internal buffer
 
-//#if (USEOMP)
-//    for (x1 = m_chunkStart[bufNum]; x1 + 1 < (m_chunkStart[bufNum] + this->m_kernelSizeX); ++x1)
-//#else
     for (x1 = 0; x1 + 1 < this->m_kernelSizeX; ++x1)
-//#endif
     {
         for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
         {
-//            *dptr++ = ((ito::float64 **)gf->buf)[y1][x1];
             *dptr++ = this->m_pInLines[y1][x1];
         }
     }
 
-//    #if (USEOMP)
-//    #pragma omp for schedule(guided)
-//    #endif
-
-//#if (USEOMP)
-//    for (x = m_chunkStart[bufNum]; x < m_chunkEnd[bufNum]; ++x)
-//#else
+    lastx = 0;
+    #if (USEOMP)
+    #pragma omp for schedule(guided)
+    #endif    
     for (x = 0; x < this->m_dx; ++x)
-//#endif
     {
-        for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
+        #if (USEOMP)
+        for (ito::int16 cn = (x - lastx) % this->m_kernelSizeX - 1; cn >= 0; cn--)
+        #endif
         {
-//            *dptr++ = ((ito::float64 **)gf->buf)[y1][x + gf->nkx - 1];
-            *dptr++ = this->m_pInLines[y1][x + this->m_kernelSizeX - 1];
+            for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
+            {
+    //            *dptr++ = ((ito::float64 **)gf->buf)[y1][x + gf->nkx - 1];
+                #if (USEOMP)
+                *dptr++ = this->m_pInLines[y1][x + cn + this->m_kernelSizeX - 1];
+                #else
+                *dptr++ = this->m_pInLines[y1][x + this->m_kernelSizeX - 1];
+                #endif
+            }
+            x1++;
+            if (x1 >= this->m_kernelSizeX)
+            {
+    //            dptr = (ito::float64 *)f->buffer;
+                #if (USEOMP)
+                dptr = kbuf[bufNum];
+                #else
+                dptr = kbuf;
+                #endif
+
+                x1 = 0;
+            }
+        #if (USEOMP)
         }
-        x1++;
-        if (x1 >= this->m_kernelSizeX)
-        {
-//            dptr = (ito::float64 *)f->buffer;
-    #if 0 //(USEOMP)
-            dptr = kbuf[bufNum];
-    #else
-            dptr = kbuf;
-    #endif
-            x1 = 0;
-        }
+        #endif
+
         l = 0;
         r = this->m_bufsize - 1;
         while(l < r)
@@ -1367,9 +1355,9 @@ template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
             }
         }
         this->m_pOutLine[x] = *pptr[k];
+        lastx = x;
     }
-
-    #if 0 //(USEOMP)
+    #if (USEOMP)
     }
     #endif
     return ito::retOk;

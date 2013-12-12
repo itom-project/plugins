@@ -150,11 +150,11 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax    
     private:
-#if (USEOMP)
+        #if (USEOMP)
         _Tp **kbuf;
-#else
+        #else
         _Tp *kbuf;
-#endif
+        #endif
 
     public:
         explicit LowValueFilter(ito::DataObject *in, 
@@ -179,11 +179,11 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax    
     private:
-#if (USEOMP)
+        #if (USEOMP)
         _Tp **kbuf;
-#else
+        #else
         _Tp *kbuf;
-#endif
+        #endif
 
     public:
         explicit HighValueFilter(ito::DataObject *in, 
@@ -208,16 +208,13 @@ template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
     // in case we want to access the protected members of the templated parent class we have to take special care!
     // the easiest way is using the this-> syntax    
     private:
-#if 0 //(USEOMP)
-        ito::int16 * m_chunkStart;
-        ito::int16 * m_chunkEnd;
-        
+        #if (USEOMP)
         _Tp **kbuf;
         _Tp ***kbufPtr;
-#else
+        #else
         _Tp *kbuf;
         _Tp **kbufPtr;
-#endif
+        #endif
 
     public:
         explicit MedianFilter(ito::DataObject *in, 
