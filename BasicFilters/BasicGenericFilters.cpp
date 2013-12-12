@@ -1263,19 +1263,23 @@ template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
     _Tp *dptr = kbuf;
     #endif
 
-    ito::uint32 l = 0, r = 0, i = 0, j = 0, k = 0;
+    ito::uint32 leftElement = 0;
+    ito::uint32 rightElement = 0;
+    ito::uint32 leftPos = 0;
+    ito::uint32 rightPos = 0;
     ito::int32 x = 0, x1 = 0, y1 = 0;
-    k = this->m_bufsize / 2;
+    
+    ito::uint32 halfKernSize = this->m_bufsize / 2;
+    
     ito::int32 size = 0;
     _Tp a;
-    _Tp *t;
-    ito::int32 lastx;
+    _Tp *tempValuePtr;
 
     // buf : kernelbuffer
     // buffer: internal buffer
     // bufptr: index buffer to internal buffer
 
-    for (x1 = 0; x1 + 1 < this->m_kernelSizeX; ++x1)
+    for (x1 = 0; x1 < (this->m_kernelSizeX - 1); ++x1)
     {
         for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
         {
@@ -1283,21 +1287,23 @@ template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
         }
     }
 
-    lastx = 0;
     #if (USEOMP)
+    ito::int32 nextIdleX = 0;
     #pragma omp for schedule(guided)
     #endif    
     for (x = 0; x < this->m_dx; ++x)
     {
         #if (USEOMP)
-        for (ito::int16 cn = ((x - lastx) > this->m_kernelSizeX ? this->m_kernelSizeX : (x - lastx)); cn >= 0; cn--)
+        ito::int16 cn =  ((x - nextIdleX) >= this->m_kernelSizeX ? this->m_kernelSizeX - 1 : (x - nextIdleX));
+
+        for (; cn >= 0; cn--)
         {            
         #endif
             for (y1 = 0; y1 < this->m_kernelSizeY; ++y1)
             {
     //            *dptr++ = ((ito::float64 **)gf->buf)[y1][x + gf->nkx - 1];
                 #if (USEOMP)
-                *dptr++ = this->m_pInLines[y1][x + cn + this->m_kernelSizeX - 1];
+                *dptr++ = this->m_pInLines[y1][x - cn + this->m_kernelSizeX - 1];
                 #else
                 *dptr++ = this->m_pInLines[y1][x + this->m_kernelSizeX - 1];
                 #endif
@@ -1316,46 +1322,46 @@ template<typename _Tp> ito::RetVal MedianFilter<_Tp>::filterFunc()
             }
         #if (USEOMP)
         }
+        nextIdleX = x + 1;
         #endif
 
-        l = 0;
-        r = this->m_bufsize - 1;
-        while(l < r)
+        leftElement = 0;
+        rightElement = this->m_bufsize - 1;
+        while(leftElement < rightElement)
         {
-            a = *pptr[k];
-            i = l;
-            j = r;
+            a = *pptr[halfKernSize];
+            leftPos = leftElement;
+            rightPos = rightElement;
             do
             {
-                while(*pptr[i] < a)
+                while(*pptr[leftPos] < a)
                 {
-                    i++;
+                    leftPos++;
                 }
-                while(*pptr[j] > a)
+                while(*pptr[rightPos] > a)
                 {
-                    j--;
+                    rightPos--;
                 }
-                if(i <= j)
+                if(leftPos <= rightPos)
                 {
-                    t = pptr[i];
-                    pptr[i] = pptr[j];
-                    pptr[j] = t;
-                    i++;
-                    j--;
+                    tempValuePtr = pptr[leftPos];
+                    pptr[leftPos] = pptr[rightPos];
+                    pptr[rightPos] = tempValuePtr;
+                    leftPos++;
+                    rightPos--;
                 }
-            } while(i <= j);
+            } while(leftPos <= rightPos);
 
-            if (j < k)
+            if (rightPos < halfKernSize)
             {
-                l = i;
+                leftElement = leftPos;
             }
-            if(k < i)
+            if(halfKernSize < leftPos)
             {
-                r = j;
+                rightElement = rightPos;
             }
         }
-        this->m_pOutLine[x] = *pptr[k];
-        lastx = x;
+        this->m_pOutLine[x] = *pptr[halfKernSize];
     }
     #if (USEOMP)
     }
