@@ -1431,7 +1431,7 @@ if it fits to the size and type of the source data object and if not a new one i
 const char* OpenCVFilters::cvFlipUpDownDoc = "This filter flips the image upside down. \n\
 \n\
 This filter applies the flip method cvFlip of OpenCV with the flipCode = 0 to a 2D source data object. The \
-result is contained in the destination object\n\
+result is contained in the destination object.\n\
 \n\
 It is allowed to let the filter work inplace if you give the same input than destination data object, else the output data object is verified \
 if it fits to the size and type of the source data object and if not a new one is allocated\n\
@@ -1529,6 +1529,12 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
         if(overWrite)
         {
             *dObjDst = destTemp;
+        }
+
+        if (dObjDst != dObjImages)
+        {
+            dObjImages->copyAxisTagsTo(*dObjDst);
+            dObjImages->copyTagMapTo(*dObjDst);
         }
 
         QString msg = colsIfTrue ? tr("Flipped left/rigth with cvFlip-Filter") : tr("Flipped upside/down with cvFlip-Filter");
