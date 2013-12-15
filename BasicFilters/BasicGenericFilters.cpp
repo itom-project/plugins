@@ -1640,15 +1640,23 @@ template<typename _Tp> LowPassFilter<_Tp>::~LowPassFilter()
 //-----------------------------------------------------------------------------------------------
 template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
 {
+    ito::float64 summe = 0;
 
+//    #if (USEOMP)
+//    #pragma omp parallel num_threads(NTHREADS)
+//    {
+//    #endif
     ito::int16 kernelLastY = this->m_kernelSizeY - 1;
     ito::int16 kernelLastX = this->m_kernelSizeX - 1;
 
-    ito::float64 summe = 0;
+    
     if(!this->m_isFilled)
     {
         this->m_isFilled = true;
 
+   //     #if (USEOMP)
+   //     #pragma omp for schedule(guided)
+   //     #endif    
         for(ito::int32 x = 0; x < this->m_dx + kernelLastX; x++)
         {
             this->m_colwiseSumBuffer[x] = (ito::float64) this->m_pInLines[0][x];
@@ -1662,6 +1670,9 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
     }
     else
     { 
+ //       #if (USEOMP)
+ //       #pragma omp for schedule(guided)
+ //       #endif  
         for(ito::int32 x = 0; x < this->m_dx + kernelLastX; x++)
         {
             //((ito::int32 *)this->csum)[x]+=((ito::int32 **)this->buf)[this->nky-1][x];
@@ -1669,7 +1680,15 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
         }
     }
 
+//    if(true)
+//    {
+//        #pragma omp barrier
+//    }
 
+ //   #if (USEOMP)
+ //   #pragma omp master
+ //   {
+ //   #endif  
     for(ito::int16 x = 0; x < kernelLastX; x++)
     {
         //summe+=((ito::int32 *)this->csum)[x];
@@ -1686,14 +1705,27 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
         m_pOutLine[x] = summe / m_divisor;
         summe -= this->m_colwiseSumBuffer[x];
     }
+ //   #if (USEOMP)
+ //   }
+ //   #endif
 
+//    if(true)
+//    {
+//        #pragma omp barrier
+//    }
+
+//    #if (USEOMP)
+//    #pragma omp for schedule(guided)
+//    #endif  
     for(ito::int32 x = 0; x < this->m_dx + kernelLastX; x++)
     {
         //((ito::int32 *)f->csum)[x]-=((ito::int32 **)this->buf)[0][x];
         this->m_colwiseSumBuffer[x] -= (ito::float64) this->m_pInLines[0][x];
     }
     
-
+//    #if (USEOMP)
+//    }
+//    #endif
     //return ito::retOk;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
