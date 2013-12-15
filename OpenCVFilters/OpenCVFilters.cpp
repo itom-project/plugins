@@ -535,9 +535,9 @@ ito::RetVal OpenCVFilters::cvBlurParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("destinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty object handle. Image will be of src-type").toAscii().data());
         paramsMand->append(param);
-        param = ito::Param("kernelsizex", ito::ParamBase::Int | ito::ParamBase::In, 1, 255, 3, tr("Kernelsize for x-axis").toAscii().data());
+        param = ito::Param("kernelSizeX", ito::ParamBase::Int | ito::ParamBase::In, 1, 255, 3, tr("Kernelsize for x-axis").toAscii().data());
         paramsOpt->append(param);
-        param = ito::Param("kernelsizey", ito::ParamBase::Int | ito::ParamBase::In, 1, 255, 3, tr("Kernelsize for y-axis").toAscii().data());
+        param = ito::Param("kernelSizeY", ito::ParamBase::Int | ito::ParamBase::In, 1, 255, 3, tr("Kernelsize for y-axis").toAscii().data());
         paramsOpt->append(param);
         param = ito::Param("anchor", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Position of the kernel anchor, see openCV-Help").toAscii().data());
         paramsOpt->append(param);
@@ -592,7 +592,7 @@ ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<i
     }
 
     // Check if input type is allowed or not
-    retval = ito::dObjHelper::verifyDataObjectType(dObjImages, "dObjImages", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    retval = ito::dObjHelper::verifyDataObjectType(dObjImages, "sourceImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
     if(retval.containsError())
         return retval;
 
@@ -974,7 +974,7 @@ ito::RetVal OpenCVFilters::cvMedianBlurParams(QVector<ito::Param> *paramsMand, Q
         paramsMand->append(param);
         param = ito::Param("destinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObject-hanlde. Destination is of source type").toAscii().data());
         paramsMand->append(param);
-        param = ito::Param("kernelsize", ito::ParamBase::Int | ito::ParamBase::In, 3, 255, 3, tr("Kernelsize in x/y").toAscii().data());
+        param = ito::Param("kernelSize", ito::ParamBase::Int | ito::ParamBase::In, 3, 255, 3, tr("Kernelsize in x/y").toAscii().data());
         paramsOpt->append(param);
     }
     return retval;
@@ -1005,7 +1005,7 @@ ito::RetVal OpenCVFilters::cvMedianBlur(QVector<ito::ParamBase> *paramsMand, QVe
     }
 
     // Check if input type is allowed or not
-    retval = ito::dObjHelper::verifyDataObjectType(dObjImages, "dObjImages", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    retval = ito::dObjHelper::verifyDataObjectType(dObjImages, "sourceImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
     if(retval.containsError())
         return retval;
 
@@ -1054,14 +1054,11 @@ ito::RetVal OpenCVFilters::cvMedianBlur(QVector<ito::ParamBase> *paramsMand, QVe
         QString msg;
         msg = tr("OpenCV medianblur-filter with kernel size = %1").arg(kernelsize);
         dObjDst->addToProtocol(std::string(msg.toAscii().data()));
-//        char prot[121] = {0};
-//        _snprintf(prot, 120, "OpenCV medianblur-filter with kernel size = %i ", kernelsize);
-//        dObjDst->addToProtocol(std::string(prot));
 
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Unknown or unexpected CV-Datatype recived.").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Unknown or unexpected CV-Datatype received.").toAscii().data());
     }
 
 end:
@@ -1551,10 +1548,26 @@ This filter creates a binary mask for the input object. The value of mask(y,x) w
 The mask is eroded and than dilated by kernel size using openCV cv::erode and cv::dilate with a single iteration. \
 In the last step the value of output(y,x) is set to newValue if mask(y,x) is 0.\n\
 \n\
-It is allowed to let the filter work inplace if you give the same input than destination data object, else the output data object is verified \
+It is allowed to let the filter work inplace if you give the same source and destination data object, else the destination data object is verified \
 if it fits to the size and type of the source data object and if not a new one is allocated and the input data is copied to the new object. \n\
 ";
-//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvRemoveSpikesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "32 or 64 bit floating point input image") );
+    paramsMand->append( ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "32 or 64 bit floating point output image") );
+
+    paramsOpt->append( ito::Param("kernelSize", ito::ParamBase::Int | ito::ParamBase::In, 5, new ito::IntMeta(3, 13), "N defines the N x N kernel") );
+    paramsOpt->append( ito::Param("lowestValue", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), 0.0, "Lowest value to consider as valid") );
+    paramsOpt->append( ito::Param("highestValue", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), 1.0, "Highest value to consider as valid") );
+    paramsOpt->append( ito::Param("newValue", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::signaling_NaN(), "Replacement value for spike elements") );
+    return retval;
+}
+
 ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
@@ -1564,19 +1577,19 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
 
     if (!dObjSrc)
     {
-        return ito::RetVal(ito::retError,0, tr("dataObjectIn must not be NULL").toAscii().data());
+        return ito::RetVal(ito::retError,0, tr("sourceObject must not be NULL").toAscii().data());
     }
 
     if (!dObjDst)
     {
-        return ito::RetVal(ito::retError,0, tr("dataObjectOut must not be NULL").toAscii().data());
+        return ito::RetVal(ito::retError,0, tr("destinationObject must not be NULL").toAscii().data());
     }
 
     int dims = dObjSrc->getDims();
 
     if (dims != 2)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: dataObjectIn is not a matrix or image stack").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("sourceObject is not a matrix or image stack").toAscii().data());
     }
 
     //kernelSize
@@ -1591,7 +1604,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
     cv::Point anchor(-1, -1);
 
     // Check if input type is allowed or not
-    retval += ito::dObjHelper::verify2DDataObject(dObjSrc, "dataObjectIn", kernel, std::numeric_limits<ito::uint32>::max(), kernel, std::numeric_limits<ito::uint32>::max(), 2, ito::tFloat32, ito::tFloat64);
+    retval += ito::dObjHelper::verify2DDataObject(dObjSrc, "sourceObject", kernel, std::numeric_limits<ito::uint32>::max(), kernel, std::numeric_limits<ito::uint32>::max(), 2, ito::tFloat32, ito::tFloat64);
     if(retval.containsError())
     {
         return retval;
@@ -1698,19 +1711,9 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
     {
         try
         {
-            cv::erode(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
-        }
-        catch (cv::Exception exc)
-        {
-            retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
-        }
-    }
-
-    if (!retval.containsError())
-    {
-        try
-        {
-            cv::dilate(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
+			cv::morphologyEx(cvTemp, cvTemp, cv::MORPH_OPEN, cvElement, anchor, 1, cv::BORDER_CONSTANT);
+            //cv::erode(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
+			//cv::dilate(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
         }
         catch (cv::Exception exc)
         {
@@ -1785,19 +1788,4 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
 
     return retval;
 }
-//------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OpenCVFilters::cvRemoveSpikesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
-{
-    ito::Param param;
-    ito::RetVal retval = ito::retOk;
-    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("dataObjectIn", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "32 or 64 bit floating point input image") );
-    paramsMand->append( ito::Param("dataObjectOut", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "32 or 64 bit floating point output image") );
-    paramsOpt->append( ito::Param("kernelSize", ito::ParamBase::Int | ito::ParamBase::In, 5, new ito::IntMeta(3, 13), "N defines the N x N kernel") );
-    paramsOpt->append( ito::Param("lowestValue", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), 0.0, "Lowest value to consider as valid") );
-    paramsOpt->append( ito::Param("highestValue", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), 1.0, "Highest value to consider as valid") );
-    paramsOpt->append( ito::Param("newValue", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::signaling_NaN(), "Highest value to consider as valid") );
-    return retval;
-}
