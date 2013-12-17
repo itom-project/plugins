@@ -152,7 +152,7 @@ RetVal DataObjectArithmetic::doubleDObjInputParams(QVector<ito::Param> *paramsMa
         param = Param("sourceImage2", ParamBase::DObjPtr, NULL, tr("2. source image data object for operation").toAscii().data());
         paramsMand->append(param);
 
-        paramsOut->append( Param("result", ParamBase::Char | ParamBase::Out, 0, tr("0 if both data objects are not equal, else 1").toAscii().data()));
+        paramsOut->append( Param("result", ParamBase::Int | ParamBase::Out, 0, tr("0 if both data objects are not equal, else 1").toAscii().data()));
     }
     return retval;
 }
@@ -543,6 +543,76 @@ The filter returns 1 if both objects are pixel-wise equal, else returns 0.\n\
 \n\
 The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types\n\
 \n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Type> bool areEqualHelper(_Type* first, int xStep0, int yStep0, _Type* second, int xstep1, int ystep1, int rows, int cols)
+{
+    _Type* curSecond;
+    _Type* curFirst;
+    if(std::numeric_limits<_Type>::is_exact)
+    {
+        for(int y = 0; y < rows; y++)
+        {
+            curFirst = (_Type*)(((char*)first) + y * yStep0);
+            curSecond =(_Type*)(((char*)second) + y * yStep0);
+            for(int x = 0; x < cols - 1; x++)
+            {
+                if(first[x] != second[x]) return true;
+            }
+            if(*first != *second) return true;
+        }
+    }
+    else
+    {
+        for(int y = 0; y < rows; y++)
+        {
+            curFirst = (_Type*)(((char*)first) + y * yStep0);
+            curSecond =(_Type*)(((char*)second) + y * yStep0);
+            for(int x = 0; x < cols - 1; x++)
+            {
+                if(ito::dObjHelper::isNotZero<_Type>(first[x] != second[x])) return true;
+            }
+        }
+    }
+    return false;
+}
+
+template<> bool areEqualHelper<complex64>(complex64* first, int xStep0, int yStep0, complex64* second, int xstep1, int ystep1, int rows, int cols)
+{
+    complex64* curSecond;
+    complex64* curFirst;
+    for(int y = 0; y < rows; y++)
+    {
+        curFirst = (complex64*)(((char*)first) + y * yStep0);
+        curSecond =(complex64*)(((char*)second) + y * yStep0);
+        for(int x = 0; x < cols - 1; x++)
+        {
+            if(ito::dObjHelper::isNotZero(first[x].real() - second[x].real())) return true;
+            if(ito::dObjHelper::isNotZero(first[x].imag() - second[x].imag())) return true;
+        }
+    }
+
+    return false;
+}
+template<> bool areEqualHelper<complex128>(complex128* first, int xStep0, int yStep0, complex128* second, int xstep1, int ystep1, int rows, int cols)
+{
+
+    complex128* curSecond;
+    complex128* curFirst;
+    for(int y = 0; y < rows; y++)
+    {
+        curFirst = (complex128*)(((char*)first) + y * yStep0);
+        curSecond =(complex128*)(((char*)second) + y * yStep0);
+        for(int x = 0; x < cols - 1; x++)
+        {
+            if(ito::dObjHelper::isNotZero(first[x].real() - second[x].real())) return true;
+            if(ito::dObjHelper::isNotZero(first[x].imag() - second[x].imag())) return true;
+        }
+    }
+
+    return false;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> *paramsOut)
 {
@@ -550,12 +620,14 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
     ito::DataObject *dObj1 = static_cast<ito::DataObject*>( (*paramsMand)[0].getVal<void*>() );
     if(dObj1 == NULL)
     {
+        (*paramsOut)[0].setVal<int>(0);
         return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toAscii().data());
     }
 
     ito::DataObject *dObj2 = static_cast<ito::DataObject*>( (*paramsMand)[1].getVal<void*>() );
     if(dObj2 == NULL)
     {
+        (*paramsOut)[0].setVal<int>(0);
         return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toAscii().data());
     }
 
@@ -566,11 +638,14 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
     if(!ito::dObjHelper::dObjareEqualDetail(dObj1, dObj2, typeFlag, dimsFlag, last2DimsFlag))
     {
         //outVals->append(static_cast<bool>(false));
-        (*paramsOut)[0].setVal<char>(0);
+        (*paramsOut)[0].setVal<int>(0);
         return retOk;
     }
+    /*
+    ito::DataObject left = *dObj1;
+    ito::DataObject right = *dObj2;
 
-    ito::DataObject test = (*dObj1 == *dObj2);
+    ito::DataObject test = (left == right);
     int x, xSize = test.getSize(test.getDims()-1);
     int y, ySize = test.getSize(test.getDims()-2);
 
@@ -580,19 +655,216 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
         unsigned char* dataptr = NULL;
         for(y = 0; y < ySize; y++)
         {
-            dataptr = (unsigned char *)curMat->ptr(y);
+            dataptr = curMat->ptr<unsigned char>(y);
             for(x = 0; x < xSize; x++)
             {
                 if(!dataptr[x])
                 {
-                    (*paramsOut)[0].setVal<char>(0);
+                    (*paramsOut)[0].setVal<int>(0);
                     return retOk;
                 }
             }
         }
     }
+    */
 
-    (*paramsOut)[0].setVal<char>(1);
+    switch(dObj2->getType())
+    {
+        case ito::tInt8:
+        for (int z = 0; z < dObj1->calcNumMats(); z++)
+        {
+            cv::Mat* mat1 = (cv::Mat*)(dObj1->get_mdata()[dObj1->seekMat(z)]);
+            cv::Mat* mat2 = (cv::Mat*)(dObj2->get_mdata()[dObj1->seekMat(z)]);
+
+            int stepX0 = static_cast<int>(mat1->step[1]);
+            int stepX1 = static_cast<int>(mat2->step[1]);
+            int stepY0 = static_cast<int>(mat1->step[0]);
+            int stepY1 = static_cast<int>(mat2->step[0]);
+
+            int8* first = mat1->ptr<int8>();
+            int8* second = mat2->ptr<int8>();
+
+            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            {
+                (*paramsOut)[0].setVal<int>(0);
+                return retOk;
+            }
+        }
+        break;
+        case ito::tUInt8:
+        for (int z = 0; z < dObj1->calcNumMats(); z++)
+        {
+            cv::Mat* mat1 = (cv::Mat*)(dObj1->get_mdata()[dObj1->seekMat(z)]);
+            cv::Mat* mat2 = (cv::Mat*)(dObj2->get_mdata()[dObj1->seekMat(z)]);
+
+            int stepX0 = static_cast<int>(mat1->step[1]);
+            int stepX1 = static_cast<int>(mat2->step[1]);
+            int stepY0 = static_cast<int>(mat1->step[0]);
+            int stepY1 = static_cast<int>(mat2->step[0]);
+
+            uint8* first = mat1->ptr<uint8>();
+            uint8* second = mat2->ptr<uint8>();
+
+            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            {
+                (*paramsOut)[0].setVal<int>(0);
+                return retOk;
+            }
+        }
+        break;
+        case ito::tInt16:
+        for (int z = 0; z < dObj1->calcNumMats(); z++)
+        {
+            cv::Mat* mat1 = (cv::Mat*)(dObj1->get_mdata()[dObj1->seekMat(z)]);
+            cv::Mat* mat2 = (cv::Mat*)(dObj2->get_mdata()[dObj1->seekMat(z)]);
+
+            int stepX0 = static_cast<int>(mat1->step[1]);
+            int stepX1 = static_cast<int>(mat2->step[1]);
+            int stepY0 = static_cast<int>(mat1->step[0]);
+            int stepY1 = static_cast<int>(mat2->step[0]);
+
+            int16* first = mat1->ptr<int16>();
+            int16* second = mat2->ptr<int16>();
+
+            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            {
+                (*paramsOut)[0].setVal<int>(0);
+                return retOk;
+            }
+        }
+        break;
+        case ito::tUInt16:
+        for (int z = 0; z < dObj1->calcNumMats(); z++)
+        {
+            cv::Mat* mat1 = (cv::Mat*)(dObj1->get_mdata()[dObj1->seekMat(z)]);
+            cv::Mat* mat2 = (cv::Mat*)(dObj2->get_mdata()[dObj1->seekMat(z)]);
+
+            int stepX0 = static_cast<int>(mat1->step[1]);
+            int stepX1 = static_cast<int>(mat2->step[1]);
+            int stepY0 = static_cast<int>(mat1->step[0]);
+            int stepY1 = static_cast<int>(mat2->step[0]);
+
+            uint16* first = mat1->ptr<uint16>();
+            uint16* second = mat2->ptr<uint16>();
+
+            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            {
+                (*paramsOut)[0].setVal<int>(0);
+                return retOk;
+            }
+        }
+        break;
+        case ito::tInt32:
+        for (int z = 0; z < dObj1->calcNumMats(); z++)
+        {
+            cv::Mat* mat1 = (cv::Mat*)(dObj1->get_mdata()[dObj1->seekMat(z)]);
+            cv::Mat* mat2 = (cv::Mat*)(dObj2->get_mdata()[dObj1->seekMat(z)]);
+
+            int stepX0 = static_cast<int>(mat1->step[1]);
+            int stepX1 = static_cast<int>(mat2->step[1]);
+            int stepY0 = static_cast<int>(mat1->step[0]);
+            int stepY1 = static_cast<int>(mat2->step[0]);
+
+            int32* first = mat1->ptr<int32>();
+            int32* second = mat2->ptr<int32>();
+
+            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            {
+                (*paramsOut)[0].setVal<int>(0);
+                return retOk;
+            }
+        }
+        break;
+        case ito::tFloat32:
+        for (int z = 0; z < dObj1->calcNumMats(); z++)
+        {
+            cv::Mat* mat1 = (cv::Mat*)(dObj1->get_mdata()[dObj1->seekMat(z)]);
+            cv::Mat* mat2 = (cv::Mat*)(dObj2->get_mdata()[dObj1->seekMat(z)]);
+
+            int stepX0 = static_cast<int>(mat1->step[1]);
+            int stepX1 = static_cast<int>(mat2->step[1]);
+            int stepY0 = static_cast<int>(mat1->step[0]);
+            int stepY1 = static_cast<int>(mat2->step[0]);
+
+            float32* first = mat1->ptr<float32>();
+            float32* second = mat2->ptr<float32>();
+
+            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            {
+                (*paramsOut)[0].setVal<int>(0);
+                return retOk;
+            }
+        }
+        break;
+        case ito::tFloat64:
+        for (int z = 0; z < dObj1->calcNumMats(); z++)
+        {
+            cv::Mat* mat1 = (cv::Mat*)(dObj1->get_mdata()[dObj1->seekMat(z)]);
+            cv::Mat* mat2 = (cv::Mat*)(dObj2->get_mdata()[dObj1->seekMat(z)]);
+
+            int stepX0 = static_cast<int>(mat1->step[1]);
+            int stepX1 = static_cast<int>(mat2->step[1]);
+            int stepY0 = static_cast<int>(mat1->step[0]);
+            int stepY1 = static_cast<int>(mat2->step[0]);
+
+            float64* first = mat1->ptr<float64>();
+            float64* second = mat2->ptr<float64>();
+
+            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            {
+                (*paramsOut)[0].setVal<int>(0);
+                return retOk;
+            }
+        }
+        break;
+        case ito::tComplex64:
+        for (int z = 0; z < dObj1->calcNumMats(); z++)
+        {
+            cv::Mat* mat1 = (cv::Mat*)(dObj1->get_mdata()[dObj1->seekMat(z)]);
+            cv::Mat* mat2 = (cv::Mat*)(dObj2->get_mdata()[dObj1->seekMat(z)]);
+
+            int stepX0 = static_cast<int>(mat1->step[1]);
+            int stepX1 = static_cast<int>(mat2->step[1]);
+            int stepY0 = static_cast<int>(mat1->step[0]);
+            int stepY1 = static_cast<int>(mat2->step[0]);
+
+            complex64* first = mat1->ptr<complex64>();
+            complex64* second = mat2->ptr<complex64>();
+
+            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            {
+                (*paramsOut)[0].setVal<int>(0);
+                return retOk;
+            }
+        }
+        break;
+        case ito::tComplex128:
+        for (int z = 0; z < dObj1->calcNumMats(); z++)
+        {
+            cv::Mat* mat1 = (cv::Mat*)(dObj1->get_mdata()[dObj1->seekMat(z)]);
+            cv::Mat* mat2 = (cv::Mat*)(dObj2->get_mdata()[dObj1->seekMat(z)]);
+
+            int stepX0 = static_cast<int>(mat1->step[1]);
+            int stepX1 = static_cast<int>(mat2->step[1]);
+            int stepY0 = static_cast<int>(mat1->step[0]);
+            int stepY1 = static_cast<int>(mat2->step[0]);
+
+            complex128* first = mat1->ptr<complex128>();
+            complex128* second = mat2->ptr<complex128>();
+
+            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            {
+                (*paramsOut)[0].setVal<int>(0);
+                return retOk;
+            }
+        }
+        break;
+        default:
+            return ito::RetVal(ito::retError, 0, tr("type not supported").toAscii().data());
+    
+    }
+    
+    (*paramsOut)[0].setVal<int>(1);
 
     return retOk;
 }
