@@ -1702,7 +1702,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
         //summe-=((ito::int32 *)f->csum)[x];
 
         summe += this->m_colwiseSumBuffer[x + kernelLastX];
-        m_pOutLine[x] = summe / m_divisor;
+        this->m_pOutLine[x] = summe / m_divisor;
         summe -= this->m_colwiseSumBuffer[x];
     }
  //   #if (USEOMP)
