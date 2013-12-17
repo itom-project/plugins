@@ -77,7 +77,7 @@ class PIPiezoCtrl : public ito::AddInActuator
         ito::RetVal PIReadString(QByteArray &result, int &len, int timeoutMS);
         ito::RetVal PISendQuestionWithAnswerDouble( QByteArray questionCommand, double &answer, int timeoutMS );
         ito::RetVal PISendQuestionWithAnswerString( QByteArray questionCommand, QByteArray &answer, int timeoutMS );
-        ito::RetVal PIIdentifyAndInitializeSystem(void);
+        ito::RetVal PIIdentifyAndInitializeSystem(int keepSerialConfig);
         ito::RetVal convertPIErrorsToRetVal( QVector<QPair<int,QByteArray> > &lastErrors );
         ito::RetVal PISetOperationMode(bool localNotRemote);
         ito::RetVal PISetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);	/*!< Set a position (absolute or relative) */

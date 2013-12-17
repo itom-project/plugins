@@ -84,6 +84,9 @@ PI controller. Therefore don't mix stages and controllers but only use the origi
     ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toAscii().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
+
+	paramVal = ito::Param("keepSerialConfig", ito::ParamBase::Int, 0, 1, 0, tr("If 1 the current configuration of the given serial port is kept, else 0 [default].").toAscii().data());
+	m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -536,10 +539,12 @@ end:
 	\todo check if (*paramsMand)[0] is a serial port
     \return retOk
 */
-ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore *waitCond)
+ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, ItomSharedSemaphore *waitCond)
 {   
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
+
+	int keepSerialConfig = paramsOpt->at(0).getVal<int>(); //0: PIIdentifyAndInitializeSystem will overwrite the parameters of the serial device [default], else: let it like it is!
 
 //    m_pSer = qobject_cast<ito::AddInDataIO*>(reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>()));
 //    if (m_pSer)
@@ -548,7 +553,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         m_pSer = (ito::AddInDataIO *)(*paramsMand)[0].getVal<void *>();
 
-        retval += PIIdentifyAndInitializeSystem();
+        retval += PIIdentifyAndInitializeSystem(keepSerialConfig);
         if (!retval.containsError())
         {
             //retval += PISetOperationMode(false); //already done by identify system above
@@ -1247,7 +1252,7 @@ ito::RetVal PIPiezoCtrl::convertPIErrorsToRetVal(QVector<QPair<int,QByteArray> >
     return ito::retOk;
 }
 
-ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(void)
+ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 {
     ito::RetVal retval = ito::retOk;
     QByteArray answer;
@@ -1257,15 +1262,18 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(void)
 //    retval += PIDummyRead();
 
     //set serial settings
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud",ito::ParamBase::Int,9600)),NULL);
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits",ito::ParamBase::Int,8)),NULL);
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity",ito::ParamBase::Double,0.0)),NULL);
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",ito::ParamBase::Int,1)),NULL);
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,108)),NULL);
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\n")),NULL);
+	if (keepSerialConfig == 0)
+	{
+		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud",ito::ParamBase::Int,9600)),NULL);
+		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits",ito::ParamBase::Int,8)),NULL);
+		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity",ito::ParamBase::Double,0.0)),NULL);
+		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",ito::ParamBase::Int,1)),NULL);
+		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,108)),NULL);
+		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\n")),NULL);
+	}
 
     //1. try to read *idn? in order to indentify device
-    retval += PISendQuestionWithAnswerString("*idn?", answer, 2000);
+    retval += PISendQuestionWithAnswerString("*idn?", answer, 1500);
     if (retval.containsError() || answer.length() < 5)
     {
 		//clear error-queue
@@ -1276,13 +1284,16 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(void)
 	}
 
     //2. try to read *idn? in order to indentify device
-    retval += PISendQuestionWithAnswerString("*idn?", answer, 2000);
+    retval += PISendQuestionWithAnswerString("*idn?", answer, 1500);
     if (retval.containsError() || answer.length() < 5)
     {
         retval = ito::retOk;
-        //try to set baudrate to 115200
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 115200)), NULL);
-        retval += PISendQuestionWithAnswerString("*idn?", answer, 2000);
+		if (keepSerialConfig == 0)
+		{
+			//try to set baudrate to 115200
+			retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 115200)), NULL);
+			retval += PISendQuestionWithAnswerString("*idn?", answer, 1500);
+		}
 		m_delayAfterSendCommandMS = 5; //small delay after sendCommands (else sometimes the controller didn't not understand the commands)
     }
 
