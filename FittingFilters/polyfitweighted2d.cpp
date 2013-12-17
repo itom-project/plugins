@@ -23,7 +23,7 @@
 #if defined LAPACKE
     #include "lapacke.h"
     
-    #define DEF_REALMAT(NAME) MATTYPE *NAME = NULL; size_t NAME ## __rows;
+    #define DEF_REALMAT(NAME) MATTYPE *NAME = NULL; int NAME ## __rows;
     #define ALLOC_REALMAT(NAME, ROWS, COLS) NAME = new (std::nothrow) MATTYPE[(ROWS)*(COLS)]; NAME ## __rows = (ROWS);   
     #define DELETE_REALMAT(NAME) delete[] NAME; NAME = NULL;
     #define REALMAT_REF(MAT,M,N)  MAT[(N) * MAT ##__rows + (M)]
@@ -73,7 +73,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 
     if (retval.containsError()) return retval;
 
-    size_t sizes[] = {dataZFloat->getSize(0), dataZFloat->getSize(0), dataZFloat->getSize(1), dataZFloat->getSize(1)};
+    int sizes[] = {dataZFloat->getSize(0), dataZFloat->getSize(0), dataZFloat->getSize(1), dataZFloat->getSize(1)};
     ito::DataObject *weightsFloat = weights ? apiCreateFromDataObject(weights,2,TYPEID,sizes,&retval) : NULL;
 
     if (orderX < 0 || orderY < 0)
@@ -91,7 +91,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
         _Tp *Y = NULL;
         _Tp *W = NULL;
 
-        size_t nrOfPoints = 0;
+        int nrOfPoints = 0;
 
         float offsets[] = { (float)dataZ->getAxisOffset(0), (float)dataZ->getAxisOffset(1) };
         float scales[] = { (float)dataZ->getAxisScale(0), (float)dataZ->getAxisScale(1) };
@@ -220,8 +220,8 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 
         //Construct weighted Vandermonde matrix.
         //now X,Y,Z,W have the same type and size [nrOfPoints,1]
-        size_t m = orderY;
-        size_t n = orderX;
+        int m = orderY;
+        int n = orderX;
 
         int vcols = (std::min(m,n)+1)*(2+2*std::max(m,n)-std::min(m,n))/2;
 
@@ -251,34 +251,34 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
         {
 
             //copy weights to first column //V[:,0] = W
-            for (size_t i = 0; i < nrOfPoints; ++i)
+            for (int i = 0; i < nrOfPoints; ++i)
             {
                 REALMAT_REF(V,i,0) = W[i];
                 REALMAT_REF(Vals,i,0) = Z[i]*W[i];
             }
 
-            size_t majorColumn = 0;
-            size_t currentColumn = 0;
+            int majorColumn = 0;
+            int currentColumn = 0;
 
             if (n <= m) // f(x,y) = \sum_{i=0}^n \sum_{j=0}^{m-i} p_{ij} x^i y^j -> coefficients contain p in the order of these sums
             {
-                for (size_t i = 0; i <= n; ++i)
+                for (int i = 0; i <= n; ++i)
                 {
                     //this handles j = 0 (for i = 0 this is already done above)
                     if (i > 0)
                     {
                         currentColumn ++;
-                        for (size_t r = 0; r < nrOfPoints; ++r)
+                        for (int r = 0; r < nrOfPoints; ++r)
                         {
                             REALMAT_REF(V,r,currentColumn) = X[r] * REALMAT_REF(V,r,majorColumn);
                         }
                         majorColumn = currentColumn;
                     }
 
-                    for (size_t j = 1; j <= m-i; ++j)
+                    for (int j = 1; j <= m-i; ++j)
                     {
                         currentColumn ++;
-                        for (size_t r = 0; r < nrOfPoints; ++r)
+                        for (int r = 0; r < nrOfPoints; ++r)
                         {
                             REALMAT_REF(V,r,currentColumn) = Y[r] * REALMAT_REF(V,r,currentColumn-1);
                         }
@@ -287,23 +287,23 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
             }
             else // \sum_{j=0}^m \sum_{i=0}^{n-j} p_{ij} y^j x^i -> coefficients contain p in the order of these sums
             {
-                for (size_t j = 0; j <= m; ++j)
+                for (int j = 0; j <= m; ++j)
                 {
                     //this handles i = 0 (for j = 0 this is already done above)
                     if (j > 0)
                     {
                         currentColumn ++;
-                        for (size_t r = 0; r < nrOfPoints; ++r)
+                        for (int r = 0; r < nrOfPoints; ++r)
                         {
                             REALMAT_REF(V,r,currentColumn) = Y[r] * REALMAT_REF(V,r,majorColumn);
                         }
                         majorColumn = currentColumn;
                     }
 
-                    for (size_t i = 1; i <= n-j; ++i)
+                    for (int i = 1; i <= n-j; ++i)
                     {
                         currentColumn ++;
-                        for (size_t r = 0; r < nrOfPoints; ++r)
+                        for (int r = 0; r < nrOfPoints; ++r)
                         {
                             REALMAT_REF(V,r,currentColumn) = X[r] * REALMAT_REF(V,r,currentColumn-1);
                         }
@@ -598,8 +598,8 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 
         //Construct weighted Vandermonde matrix.
         //now X,Y,Z,W have the same type and size [nrOfPoints,1]
-        size_t m = orderY;
-        size_t n = orderX;
+        int m = orderY;
+        int n = orderX;
 
         int vcols = (std::min(m,n)+1)*(2+2*std::max(m,n)-std::min(m,n))/2;
 
@@ -630,7 +630,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 
         const double *coeff = coefficients.data();
         int ordercolumn = 1;
-        int lp = coefficients.size();
+        int lp = (int)coefficients.size();
 
         //in this implementation, the resulting matrix is handled row by row
 
@@ -660,8 +660,8 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
         //write 1.0 in the first column of Vrow
         Vrow->col(0) = 1.0;
 
-        size_t majorColumn = 0;
-        size_t currentColumn = 0;
+        int majorColumn = 0;
+        int currentColumn = 0;
         cv::Mat temp;
 
         for (int row = 0; row < dataZ->getSize(0); ++row)
@@ -671,7 +671,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 
             if (n <= m) // f(x,y) = \sum_{i=0}^n \sum_{j=0}^{m-i} p_{ij} x^i y^j -> coefficients contain p in the order of these sums
             {
-                for (size_t i = 0; i <= n; ++i)
+                for (int i = 0; i <= n; ++i)
                 {
                     //this handles j = 0 (for i = 0 this is already done above)
                     if (i > 0)
@@ -682,7 +682,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
                         majorColumn = currentColumn;
                     }
 
-                    for (size_t j = 1; j <= m-i; ++j)
+                    for (int j = 1; j <= m-i; ++j)
                     {
                         currentColumn ++;
                         for (int col = 0; col < dataZ->getSize(1); ++col)
@@ -692,7 +692,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
             }
             else // \sum_{j=0}^m \sum_{i=0}^{n-j} p_{ij} y^j x^i -> coefficients contain p in the order of these sums
             {
-                for (size_t j = 0; j <= m; ++j)
+                for (int j = 0; j <= m; ++j)
                 {
                     //this handles i = 0 (for j = 0 this is already done above)
                     if (j > 0)
@@ -703,7 +703,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
                         majorColumn = currentColumn;
                     }
 
-                    for (size_t i = 1; i <= n-j; ++i)
+                    for (int i = 1; i <= n-j; ++i)
                     {
                         currentColumn ++;
                         for (int col = 0; col < dataZ->getSize(1); ++col)

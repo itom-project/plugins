@@ -1331,7 +1331,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
         m_params["hasLocalRemote"].setVal<int>(1.0);
         m_params["hasOnTargetFlag"].setVal<int>(0.0);
-        m_params["ctrlType"].setVal<char*>("E662",strlen("E662"));
+        m_params["ctrlType"].setVal<char*>("E662", (int)strlen("E662"));
         m_hasHardwarePositionLimit = true;
 
         //set remote mode
@@ -1372,12 +1372,12 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
         if (answer.contains("E816"))
         {
-            m_params["ctrlType"].setVal<char*>("E816",strlen("E816"));
+            m_params["ctrlType"].setVal<char*>("E816", (int)strlen("E816"));
             m_params["hasOnTargetFlag"].setVal<int>(1.0);
         }
         else if (answer.contains("E625"))
         {
-            m_params["ctrlType"].setVal<char*>("E625",strlen("E625"));
+            m_params["ctrlType"].setVal<char*>("E625", (int)strlen("E625"));
             m_params["hasOnTargetFlag"].setVal<int>(1.0);
         }
 

@@ -465,7 +465,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
     _Tp* pTempLine = NULL;
     ito::int8* pTempInvLine = NULL;
-    for(ito::uint32 zPlaneCnt = 0; zPlaneCnt < m_pInpObj->calcNumMats(); ++zPlaneCnt /*zPlaneCnt++*/)
+    for(ito::uint32 zPlaneCnt = 0; zPlaneCnt < (ito::uint32)m_pInpObj->calcNumMats(); ++zPlaneCnt /*zPlaneCnt++*/)
     {
         cv::Mat* planeIn = (cv::Mat*)(m_pInpObj->get_mdata()[m_pInpObj->seekMat(zPlaneCnt)]);
         cv::Mat* planeOut = (cv::Mat*)(m_pOutObj->get_mdata()[m_pOutObj->seekMat(zPlaneCnt)]);
@@ -609,7 +609,7 @@ template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
     if(kbuf != NULL)
     {
 #if (USEOMP)
-        for(int i = 0; i < NTHREADS; +i)
+        for(int i = 0; i < NTHREADS; ++i)
         {
             delete kbuf[i];
         }
@@ -1618,7 +1618,7 @@ template<typename _Tp> LowPassFilter<_Tp>::LowPassFilter(  ito::DataObject *in,
     
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
     
-    this->m_colwiseSumBuffer = new ito::float64[roiXSize + m_kernelSizeX - 1];
+    this->m_colwiseSumBuffer = new ito::float64[roiXSize + this->m_kernelSizeX - 1];
 
     this->m_divisor = this->m_bufsize;
 

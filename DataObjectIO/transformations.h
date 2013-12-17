@@ -672,6 +672,7 @@ template<typename _TpSrc, typename _TpDest> ito::RetVal transformScaled(cv::Mat 
 
     if(std::numeric_limits<_TpSrc>::is_exact)
     {
+        //TODO: bitshift might get negativ - at least in compilers point of view
         //int bitShift = (sizeof(_TpSrc) - sizeof(_TpDest)) * 8;
         _TpSrc bitShift = 1 << ((sizeof(_TpSrc) - sizeof(_TpDest)) * 8);
         unsigned char signCorrection = std::numeric_limits<_TpSrc>::is_signed ? 128 : 0;

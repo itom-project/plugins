@@ -520,7 +520,7 @@ ito::RetVal BasicFilters::replaceInfAndNaNParams(QVector<ito::Param> *paramsMand
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("scrImg", ito::ParamBase::DObjPtr, NULL, tr("Input image").toAscii().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr, NULL, tr("Input image").toAscii().data());
         paramsMand->append(param);
         param = ito::Param("replaceImg", ito::ParamBase::DObjPtr, NULL, tr("Image with values which will be used for replacement").toAscii().data());
         paramsMand->append(param);
@@ -538,7 +538,7 @@ ito::RetVal BasicFilters::mergeColorPlanesParams(QVector<ito::Param> *paramsMand
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("scrImg", ito::ParamBase::DObjPtr, NULL, tr("Input image with 3 or 4 uint8 planes").toAscii().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr, NULL, tr("Input image with 3 or 4 uint8 planes").toAscii().data());
         paramsMand->append(param);
         param = ito::Param("destImg", ito::ParamBase::DObjPtr, NULL, tr("Output image with uint32 planes").toAscii().data());
         paramsMand->append(param);
@@ -584,7 +584,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         return ito::RetVal(ito::retError, 0, tr("Error: The primary object must be of type tUInt8").toAscii().data());
     }
 
-    size_t planeSize[2] = {dObjSrc->getSize(1), dObjSrc->getSize(2)};
+    int planeSize[2] = {dObjSrc->getSize(1), dObjSrc->getSize(2)};
     bool check;
 
     if((dObjSrc == dObjDst) || 
@@ -656,14 +656,14 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         ito::uint8* rowPtrA;
         ito::int32* rowPtrDst;
 
-        for( size_t y = 0; y < planeSize[0]; y++)
+        for( int y = 0; y < planeSize[0]; y++)
         {
             rowPtrR = matR->ptr<ito::uint8>(y);
             rowPtrG = matG->ptr<ito::uint8>(y);
             rowPtrB = matB->ptr<ito::uint8>(y);
             rowPtrA = matA->ptr<ito::uint8>(y);
             rowPtrDst = matRes->ptr<ito::int32>(y);
-            for( size_t x = 0; x < planeSize[1]; x++)
+            for( int x = 0; x < planeSize[1]; x++)
             {
                 rowPtrDst[x] =  (ito::int32)rowPtrR[x];
                 rowPtrDst[x] += ((ito::int32)rowPtrG[x]) << 8;
@@ -679,14 +679,14 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         ito::uint8* rowPtrB;
         ito::int32* rowPtrDst;
 
-        for( size_t y = 0; y < planeSize[0]; y++)
+        for( int y = 0; y < planeSize[0]; y++)
         {
             rowPtrR = matR->ptr<ito::uint8>(y);
             rowPtrG = matG->ptr<ito::uint8>(y);
             rowPtrB = matB->ptr<ito::uint8>(y);
             rowPtrDst = matRes->ptr<ito::int32>(y);
 
-            for( size_t x = 0; x < planeSize[1]; x++)
+            for( int x = 0; x < planeSize[1]; x++)
             {
                 rowPtrDst[x] =  (ito::int32)rowPtrR[x];
                 rowPtrDst[x] += ((ito::int32)rowPtrG[x]) << 8;
@@ -702,7 +702,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         ito::uint8* rowPtrA;
         ito::RgbaBase32* rowPtrDst;
 
-        for( size_t y = 0; y < planeSize[0]; y++)
+        for( int y = 0; y < planeSize[0]; y++)
         {
             rowPtrR = matR->ptr<ito::uint8>(y);
             rowPtrG = matG->ptr<ito::uint8>(y);
@@ -710,7 +710,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
             rowPtrA = matA->ptr<ito::uint8>(y);
             rowPtrDst = matRes->ptr<ito::Rgba32>(y);
 
-            for( size_t x = 0; x < planeSize[1]; x++)
+            for( int x = 0; x < planeSize[1]; x++)
             {
                 rowPtrDst[x].a =  (ito::int32)rowPtrA[x];
                 rowPtrDst[x].b =  (ito::int32)rowPtrB[x];
@@ -726,14 +726,14 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         ito::uint8* rowPtrB;
         ito::RgbaBase32* rowPtrDst;
 
-        for( size_t y = 0; y < planeSize[0]; y++)
+        for( int y = 0; y < planeSize[0]; y++)
         {
             rowPtrR = matR->ptr<ito::uint8>(y);
             rowPtrG = matG->ptr<ito::uint8>(y);
             rowPtrB = matB->ptr<ito::uint8>(y);
             rowPtrDst = matRes->ptr<ito::Rgba32>(y);
 
-            for( size_t x = 0; x < planeSize[1]; x++)
+            for( int x = 0; x < planeSize[1]; x++)
             {
                 rowPtrDst[x].b =  (ito::int32)rowPtrB[x];
                 rowPtrDst[x].g =  (ito::int32)rowPtrG[x];
@@ -766,7 +766,7 @@ ito::RetVal BasicFilters::calcMeanOverZParams(QVector<ito::Param> *paramsMand, Q
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("scrImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image with 3 or 4 uint8 planes").toAscii().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image with 3 or 4 uint8 planes").toAscii().data());
         paramsMand->append(param);
         param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image with uint32 planes").toAscii().data());
         paramsMand->append(param);
@@ -1021,7 +1021,7 @@ ito::RetVal BasicFilters::calcObjSliceParams(QVector<ito::Param> *paramsMand, QV
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("scrImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D image or single plane n-D object").toAscii().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D image or single plane n-D object").toAscii().data());
         paramsMand->append(param);
         param = ito::Param("dstSlice", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Slice with output data").toAscii().data());
         paramsMand->append(param);
@@ -1116,7 +1116,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
     pxY0 = pxY0 < 0 ? 0 : pxY0 > (ysize - 1) ? ysize - 1 : pxY0;
     pxY1 = pxY1 < 0 ? 0 : pxY1 > (ysize - 1) ? ysize - 1 : pxY1;
 
-    cv::Mat* scrMat = (cv::Mat*)dObjSrc->get_mdata()[ dObjSrc->seekMat(0) ]; //first plane in ROI
+    cv::Mat* srcMat = (cv::Mat*)dObjSrc->get_mdata()[ dObjSrc->seekMat(0) ]; //first plane in ROI
 
     ito::int32   sampleDir = 0;
     ito::float64 startPhys = 0.0;
@@ -1149,8 +1149,8 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
             matStepSize.resize(sliceXSize);
 
-            matOffset    = scrMat->step[0] * pxY0 + scrMat->step[1] * pxX0;
-            matStepSize.fill(scrMat->step[0], sliceXSize);
+            matOffset    = (int)srcMat->step[0] * pxY0 + (int)srcMat->step[1] * pxX0;
+            matStepSize.fill((int)srcMat->step[0], sliceXSize);
         }
         else
         {
@@ -1162,8 +1162,8 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
             matStepSize.resize(sliceXSize);
 
-            matOffset    = scrMat->step[0] * pxY1 + scrMat->step[1] * pxX0;
-            matStepSize.fill(scrMat->step[0], sliceXSize);
+            matOffset    = (int)srcMat->step[0] * pxY1 + (int)srcMat->step[1] * pxX0;
+            matStepSize.fill((int)srcMat->step[0], sliceXSize);
         }
 
         axisDescription = dObjSrc->getAxisDescription(dims - 2, _unused);
@@ -1188,8 +1188,8 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 
             matStepSize.resize(sliceXSize);
 
-            matOffset = scrMat->step[0] * pxY0 + scrMat->step[1] * pxX0;
-            matStepSize.fill(scrMat->step[1], sliceXSize);
+            matOffset = (int)srcMat->step[0] * pxY0 + (int)srcMat->step[1] * pxX0;
+            matStepSize.fill((int)srcMat->step[1], sliceXSize);
         }
         else
         {
@@ -1201,14 +1201,14 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
             matStepSize.resize(sliceXSize);
 
-            matOffset = scrMat->step[0] * pxY0 + scrMat->step[1] * pxX1; 
-            matStepSize.fill(scrMat->step[1], sliceXSize);
+            matOffset = (int)srcMat->step[0] * pxY0 + (int)srcMat->step[1] * pxX1; 
+            matStepSize.fill((int)srcMat->step[1], sliceXSize);
         }
 
         axisDescription = dObjSrc->getAxisDescription(dims-1,_unused);
         axisUnit = dObjSrc->getAxisUnit(dims-1,_unused);
         if(axisDescription == "") axisDescription = "x-axis";
-                   
+  
         valueDescription = dObjSrc->getValueDescription();
         valueUnit = dObjSrc->getValueUnit();
 
@@ -1242,7 +1242,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 stepSizePhys = 0.0;
             }
 
-            matOffset = scrMat->step[0] * pxY0 + scrMat->step[1] * pxX0; 
+            matOffset = (int)srcMat->step[0] * pxY0 + (int)srcMat->step[1] * pxX0; 
 
             int pdx, pdy, ddx, ddy, es, el;
             if(dx>dy)
@@ -1270,10 +1270,10 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
             matStepSize.resize(sliceXSize);
 
-            for(unsigned int n = 0; n < sliceXSize; n++)
+            for(unsigned int n = 0; n < (unsigned int)sliceXSize; n++)
             {  /* loop */
                 //setPixel(x,y)
-                matStepSize[n] = scrMat->step[0] * y + scrMat->step[1] * x;
+                matStepSize[n] = (int)srcMat->step[0] * y + (int)srcMat->step[1] * x;
 
                 err -= es;
                 if(err < 0)
@@ -1305,7 +1305,6 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
         if(dObjSrc->getAxisUnit(dims-1,_unused) == dObjSrc->getAxisUnit(dims-2,_unused)) axisUnit = dObjSrc->getAxisUnit(dims-1,_unused);
         else axisUnit = "";
 
-                   
         valueDescription = dObjSrc->getValueDescription();
         valueUnit = dObjSrc->getValueUnit();
 
@@ -1353,7 +1352,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tInt8:
             {
                 ito::int8 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::int8>(0);
-                uchar *srcPtr = scrMat->data + matOffset;
+                uchar *srcPtr = srcMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
@@ -1365,7 +1364,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tInt16:
             {
                 ito::int16 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::int16>(0);
-                uchar *srcPtr = scrMat->data + matOffset;
+                uchar *srcPtr = srcMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
@@ -1377,7 +1376,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tInt32:
             {
                 ito::int32 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::int32>(0);
-                uchar *srcPtr = scrMat->data + matOffset;
+                uchar *srcPtr = srcMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
@@ -1389,7 +1388,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tUInt8:
             {
                 ito::uint8 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::uint8>(0);
-                uchar *srcPtr = scrMat->data + matOffset;
+                uchar *srcPtr = srcMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
@@ -1401,7 +1400,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tUInt16:
             {
                 ito::uint16 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::uint16>(0);
-                uchar *srcPtr = scrMat->data + matOffset;
+                uchar *srcPtr = srcMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
@@ -1413,7 +1412,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tFloat32:
             {
                 ito::float32 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::float32>(0);
-                uchar *srcPtr = scrMat->data + matOffset;
+                uchar *srcPtr = srcMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
@@ -1425,7 +1424,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tFloat64:
             {
                 ito::float64 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::float64>(0);
-                uchar *srcPtr = scrMat->data + matOffset;
+                uchar *srcPtr = srcMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
@@ -1437,7 +1436,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tComplex64:
             {
                 ito::complex64 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::complex64>(0);
-                uchar *srcPtr = scrMat->data + matOffset;
+                uchar *srcPtr = srcMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
@@ -1449,7 +1448,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tComplex128:
             {
                 ito::complex128 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::complex128>(0);
-                uchar *srcPtr = scrMat->data + matOffset;
+                uchar *srcPtr = srcMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {
@@ -1461,7 +1460,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             case ito::tRGBA32:
             {
                 ito::RgbaBase32 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::Rgba32>(0);
-                uchar *srcPtr = scrMat->data + matOffset;
+                uchar *srcPtr = srcMat->data + matOffset;
 
                 for(int x = 0; x < sliceXSize; x++)
                 {

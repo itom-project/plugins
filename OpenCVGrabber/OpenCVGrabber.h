@@ -50,10 +50,10 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
 		int m_CCD_ID; /*!< Camera ID */
         bool m_isgrabbing; /*!< Check if acquire was called */
 
-        size_t m_imgChannels; /*!< number of channels of the camera image due to current parameterization */
+        int m_imgChannels; /*!< number of channels of the camera image due to current parameterization */
         int m_imgCols; /*!< cols of the camera image due to current parameterization */
         int m_imgRows; /*!< rows of the camera image due to current parameterization */
-        size_t m_imgBpp; /*!< number of element size of the camera image due to current parameterization */
+        int m_imgBpp; /*!< number of element size of the camera image due to current parameterization */
         bool m_camStatusChecked;
 
         int m_colorMode;

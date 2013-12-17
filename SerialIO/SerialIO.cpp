@@ -761,7 +761,7 @@ const ito::RetVal SerialPort::swrite(const char c) const
     if (m_serParams.endline[0] != 0)
     {
         sprintf(outbuf, "%c%s", c, m_serParams.endline);
-        length += strlen(m_serParams.endline);
+        length += (int)strlen(m_serParams.endline);
     }
 
 #ifdef __linux__
@@ -807,7 +807,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
 
     if (m_serParams.endline[0] != 0)
     {
-        endlinelen = strlen(m_serParams.endline);
+        endlinelen = (int)strlen(m_serParams.endline);
         length += endlinelen;
     }
 
@@ -1430,7 +1430,7 @@ ito::RetVal SerialIO::setVal(const void *data, const int datalength, ItomSharedS
     m_serport.getendline(endline);
     if (m_debugMode)
     {
-        emit serialLog(QByteArray(buf,datalength), QByteArray(endline, strlen(endline)), '>');
+        emit serialLog(QByteArray(buf,datalength), QByteArray(endline, (int)strlen(endline)), '>');
     }
     retval = m_serport.swrite(buf, datalength, m_params["singlechar"].getVal<int>());
 

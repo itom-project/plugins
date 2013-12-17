@@ -1118,7 +1118,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
             ito::uint16 *rowPtr = NULL;
 			ito::uint8 *rowPtr8 = NULL;
 			ito::uint8 *framePtr = (ito::uint8*)frame.pData;
-			size_t frameIdx;
+			int frameIdx;
             cv::Mat *mat;
 
             if (copyExternal)
@@ -1127,11 +1127,11 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 			    mat = (cv::Mat*)externalDataObject->get_mdata()[0];
                 frameIdx = 0;
 			
-			    for (size_t m = 0; m < m_ySize ; m++)
+			    for (int m = 0; m < (int)m_ySize ; m++)
 			    {
 				    rowPtr = mat->ptr<ito::uint16>(m);
 				    rowPtr8 = (ito::uint8*)rowPtr;
-				    for (size_t n = 0; n < m_xSize ; n++)
+				    for (int n = 0; n < (int)m_xSize ; n++)
 				    {
 					    rowPtr8[n * 2 + 1] = framePtr[frameIdx];
 					    rowPtr8[n * 2] = framePtr[frameIdx + 1];
@@ -1149,11 +1149,11 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 			    mat = (cv::Mat*)m_data.get_mdata()[0];
                 frameIdx = 0;
 			
-			    for (size_t m = 0; m < m_ySize ; m++)
+			    for (int m = 0; m < (int)m_ySize ; m++)
 			    {
 				    rowPtr = mat->ptr<ito::uint16>(m);
 				    rowPtr8 = (ito::uint8*)rowPtr;
-				    for (size_t n = 0; n < m_xSize ; n++)
+				    for (int n = 0; n < (int)m_xSize ; n++)
 				    {
 					    rowPtr8[n * 2 + 1] = framePtr[frameIdx];
 					    rowPtr8[n * 2] = framePtr[frameIdx + 1];

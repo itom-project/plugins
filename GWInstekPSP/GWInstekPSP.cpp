@@ -197,7 +197,7 @@ const ito::RetVal GWInstekPSP::WriteToSerial(const char *text)
 
     ito::RetVal retValue = ito::retOk;
 
-    retValue += m_pSer->setVal(text, strlen(text));
+    retValue += m_pSer->setVal(text, (int)strlen(text));
     if (retValue == ito::retError)
     {
         return retValue;

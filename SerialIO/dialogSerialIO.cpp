@@ -227,7 +227,7 @@ dialogSerialIO::~dialogSerialIO()
 ito::RetVal parseOutString(char *buf, int *length)
 {
     ito::RetVal ret = ito::retOk;
-    int len = strlen(buf);
+    int len = (int)strlen(buf);
     char *buf1 = NULL;
     char *buf2 = NULL;
     char *out = NULL;

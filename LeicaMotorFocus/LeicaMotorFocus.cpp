@@ -226,7 +226,7 @@ const ito::RetVal LeicaMotorFocus::LMFWriteCmd(int id, int cmd)
 
 	sprintf(query, "%d %03d", id, cmd);
 
-	retval += m_pSer->setVal(&query[0],strlen(query),0);
+	retval += m_pSer->setVal(&query[0], (int)strlen(query),0);
 
     return retval;
 }
@@ -240,7 +240,7 @@ const ito::RetVal LeicaMotorFocus::LMFWriteCmdArg(int id, int cmd, long arg)
 
 	sprintf(query, "%d %03d %ld", id, cmd, arg);
 
-	retval += m_pSer->setVal(&query[0],strlen(query),0);
+	retval += m_pSer->setVal(&query[0], (int)strlen(query),0);
 
     return retval;
 }

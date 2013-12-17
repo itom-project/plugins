@@ -402,7 +402,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
     {
         int dstDim = dObjDst->getDims();
         int dstType = dObjDst->getType();
-        size_t *sizes = new size_t[dims];
+        int *sizes = new int[dims];
         bool sizeFit = true;
 
         for (int i = 0; i < dims; ++i)
@@ -788,11 +788,11 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
     // Copy the circles into the output dataObject
     if(circles.size() > 0)
     {
-        size_t sizes[2] = {circles.size(), 3};
+        int sizes[2] = {(int)circles.size(), 3};
         *dObjDst = ito::DataObject(2, sizes, ito::tFloat32);
         ito::float32 *rowPtr = NULL;
 
-        for( size_t i = 0; i < circles.size(); i++ )
+        for( int i = 0; i < circles.size(); i++ )
         {
             //	This can be used to draw the circles directly into the input image
             /*	cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
@@ -1280,11 +1280,11 @@ ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *para
 
         if(result)
         {
-            *corners = ito::DataObject(2, corners_.size(), ito::tFloat32);
+            *corners = ito::DataObject(2, (int)corners_.size(), ito::tFloat32);
             ito::float32 *rowPtr1 = (ito::float32*)(corners->rowPtr(0,0));
             ito::float32 *rowPtr2 = (ito::float32*)(corners->rowPtr(0,1));
 
-            for(size_t i = 0 ; i < corners_.size() ; i++)
+            for(int i = 0 ; i < corners_.size() ; i++)
             {
                 rowPtr1[i] = corners_[i].x;
                 rowPtr2[i] = corners_[i].y;
@@ -1336,7 +1336,7 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
         retval += ito::RetVal(ito::retError,0, "Parameters 'image' and 'corners' may not be NULL");
     }
 
-    size_t limits[] = {2,2,0,1000000};
+    int limits[] = {2,2,0,1000000};
     ito::DataObject *corners = apiCreateFromDataObject(rawCorners,2,ito::tFloat32,limits,&retval);
 
     cv::Size winSize;
@@ -1622,7 +1622,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
     {
         int dstDim = dObjDst->getDims();
         int dstType = dObjDst->getType();
-        size_t *sizes = new size_t[dims];
+        int *sizes = new int[dims];
         bool sizeFit = true;
 
         for (int i = 0; i < dims; ++i)

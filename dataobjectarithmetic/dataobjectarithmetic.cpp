@@ -574,7 +574,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
     int x, xSize = test.getSize(test.getDims()-1);
     int y, ySize = test.getSize(test.getDims()-2);
 
-    for (size_t z = 0; z < test.calcNumMats(); z++)
+    for (int z = 0; z < test.calcNumMats(); z++)
     {
         cv::Mat_<unsigned char> * curMat = ((cv::Mat_<unsigned char> *)test.get_mdata()[test.seekMat(z)]);
         unsigned char* dataptr = NULL;
@@ -805,7 +805,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(cv:
     {
         cogsToCalc = inMat->rows;
         pixelToEval =  inMat->cols;  
-        stepEvalInMat = inMat->step1();
+        stepEvalInMat = (ito::uint32)inMat->step1();
         stepAddrInMat = 1;
         //stepOutMat = outCOG->step1();
         stepOutMat = 1;
@@ -816,7 +816,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(cv:
         cogsToCalc = inMat->cols;
         pixelToEval =  inMat->rows;
         stepEvalInMat = 1;
-        stepAddrInMat = inMat->step1();
+        stepAddrInMat = (ito::uint32)inMat->step1();
         stepOutMat = 1;
     }
 
@@ -1025,7 +1025,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
         switch(dObjIN->getType())
         {
             case ito::tInt8:
-                for(ito::uint32 i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32 i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1034,7 +1034,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tUInt8:
-                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1043,7 +1043,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tInt16:
-                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1052,7 +1052,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tUInt16:
-                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1061,7 +1061,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tInt32:
-                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1070,7 +1070,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tFloat32:
-                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1079,7 +1079,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
                 }
             break;
             case ito::tFloat64:
-                for(ito::uint32  i = 0; i < dObjIN->calcNumMats(); i++)
+                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = (cv::Mat*)(dObjIN->get_mdata()[dObjIN->seekMat(i)]);
                     sliceCOG = planeCogOut->rowRange(i,i+1);
@@ -1234,10 +1234,10 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
 {
     std::vector<_Tp> values;
     int numValues = 0;
-    size_t planes = dObj->calcNumMats();
+    int planes = dObj->calcNumMats();
     int dims = dObj->getDims();
-    size_t m = dObj->getSize(dims-2);
-    size_t n = dObj->getSize(dims-1);
+    int m = dObj->getSize(dims-2);
+    int n = dObj->getSize(dims-1);
 
     if (std::numeric_limits<_Tp>::is_integer)
     {
@@ -1247,9 +1247,9 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
         _Tp *rowPtr;
 
         //copies the entire content of the integer data object to the values vector.
-        for (size_t p = 0; p < planes; ++p)
+        for (int p = 0; p < planes; ++p)
         {
-            for (size_t mi = 0; mi < m; ++mi)
+            for (int mi = 0; mi < m; ++mi)
             {
                 rowPtr = (_Tp*)(dObj->rowPtr(p, mi));
                 memcpy(vData, rowPtr, sizeof(_Tp) * n);
@@ -1262,12 +1262,12 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
         values.reserve(planes * m * n);
         _Tp *rowPtr;
 
-        for (size_t p = 0; p < planes; ++p)
+        for (int p = 0; p < planes; ++p)
         {
-            for (size_t mi = 0; mi < m; ++mi)
+            for (int mi = 0; mi < m; ++mi)
             {
                 rowPtr = (_Tp*)(dObj->rowPtr(p, mi));
-                for (size_t ni = 0; ni < n; ++ni)
+                for (int ni = 0; ni < n; ++ni)
                 {
                     if (ito::dObjHelper::isFinite(rowPtr[ni]))
                     {

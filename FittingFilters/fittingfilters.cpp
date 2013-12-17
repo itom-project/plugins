@@ -225,7 +225,7 @@ RetVal FittingFilters::subtractPlane(QVector<ito::ParamBase> *paramsMand, QVecto
     }
     else
     {
-        size_t *sizes = new size_t[ dObjInput->getDims() ];
+        int *sizes = new int[ dObjInput->getDims() ];
         for (int i = 0; i < dObjInput->getDims(); ++i)
         {
             sizes[i] = dObjInput->getSize(i);
@@ -236,11 +236,11 @@ RetVal FittingFilters::subtractPlane(QVector<ito::ParamBase> *paramsMand, QVecto
         *dObjOutput = dObjDst;
     }
 
-    size_t numPlanes = dObjDst.calcNumMats();
+    int numPlanes = dObjDst.calcNumMats();
     cv::Mat *inpPlane = NULL;
     cv::Mat *outputPlane = NULL;
 
-    for (size_t i = 0; i < numPlanes; ++i)
+    for (int i = 0; i < numPlanes; ++i)
     {
         inpPlane = (cv::Mat*)(dObjInput->get_mdata()[ dObjInput->seekMat(i) ]);
         outputPlane = (cv::Mat*)(dObjDst.get_mdata()[ dObjDst.seekMat(i) ]);
@@ -389,7 +389,7 @@ no value is taken from this rectangle. The algorithm returns an error if less va
 
     retval += calcPolyfitWeighted2D(input, orderX, orderY, coefficients, reduceFactor, weights);
 
-    (*paramsOut)[0].setVal<double*>( coefficients.data(),  coefficients.size() );
+    (*paramsOut)[0].setVal<double*>( coefficients.data(),  (int)coefficients.size() );
 
     return retval;
 }
@@ -519,7 +519,7 @@ to parallely compute the approximations for each pixel.";
         int planes = data->getSize(0);
         int m = data->getSize(1);
         int n = data->getSize(2);
-        size_t sizes[] = {planes, planes, m, m, n, n};
+        int sizes[] = {planes, planes, m, m, n, n};
         ito::DataObject *weights = inputWeights ? apiCreateFromDataObject(inputWeights,3,ito::tFloat64,sizes,&retval) : NULL;
 
         if (xValsArrayLen > 0 && xValsArrayLen != planes)
@@ -590,14 +590,14 @@ to parallely compute the approximations for each pixel.";
                 coeffMats[i] = (cv::Mat*)(output->get_mdata()[ output->seekMat(i) ]);
             }
 
-            int dataSteps[] = { dataMats[0]->step[0], dataMats[1]->step[1] };
+            int dataSteps[] = { (int)dataMats[0]->step[0], (int)dataMats[1]->step[1] };
             int weightSteps[] = { 0, 0 };
-            int coeffSteps[] = { coeffMats[0]->step[0], coeffMats[1]->step[1] };
+            int coeffSteps[] = { (int)coeffMats[0]->step[0], (int)coeffMats[1]->step[1] };
 
             if (weights)
             {
-                weightSteps[0] = weightMats[0]->step[0];
-                weightSteps[1] = weightMats[0]->step[1];
+                weightSteps[0] = (int)weightMats[0]->step[0];
+                weightSteps[1] = (int)weightMats[0]->step[1];
             }
 
             omp_set_num_threads( std::min(omp_get_max_threads(),numThreads));
