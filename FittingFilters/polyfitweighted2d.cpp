@@ -228,7 +228,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
         DEF_REALMAT(V)
         DEF_REALMAT(Vals)
 
-        if ((unsigned int)vcols > nrOfPoints)
+        if (vcols > nrOfPoints)
         {
             retval += ito::RetVal(ito::retError,0,"too less points for determination of the polynomial fit");
         }

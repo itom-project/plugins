@@ -792,7 +792,7 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
         *dObjDst = ito::DataObject(2, sizes, ito::tFloat32);
         ito::float32 *rowPtr = NULL;
 
-        for( int i = 0; i < circles.size(); i++ )
+        for( size_t i = 0; i < circles.size(); i++ )
         {
             //	This can be used to draw the circles directly into the input image
             /*	cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
@@ -1284,7 +1284,7 @@ ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *para
             ito::float32 *rowPtr1 = (ito::float32*)(corners->rowPtr(0,0));
             ito::float32 *rowPtr2 = (ito::float32*)(corners->rowPtr(0,1));
 
-            for(int i = 0 ; i < corners_.size() ; i++)
+            for(size_t i = 0 ; i < corners_.size() ; i++)
             {
                 rowPtr1[i] = corners_[i].x;
                 rowPtr2[i] = corners_[i].y;

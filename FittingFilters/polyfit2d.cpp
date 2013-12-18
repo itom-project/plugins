@@ -84,7 +84,7 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
     cv::Mat outputImage = cv::Mat(plane->rows, plane->cols, CV_64FC1);
 
     int  *x,*y;
-    int   xsize,ysize,i, ret;
+    int   xsize,ysize,i;
     struct Koeffizienten koeff;
     double Sigma;
 
