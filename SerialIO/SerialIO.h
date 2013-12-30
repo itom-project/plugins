@@ -65,7 +65,7 @@ class SerialIO : public ito::AddInDataIO //, public DummyGrabberInterface
     Q_OBJECT
 
     protected:
-        ~SerialIO();
+        virtual ~SerialIO();
         SerialIO();
 
     public:
