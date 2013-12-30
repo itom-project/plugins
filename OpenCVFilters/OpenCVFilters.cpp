@@ -113,76 +113,6 @@ OpenCVFilters::~OpenCVFilters()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
-{
-    ito::RetVal retval = ito::retOk;
-    FilterDef *filter = NULL;
-
-    filter = new FilterDef(OpenCVFilters::cvDilate, OpenCVFilters::cvDilateErodeParams, tr(cvDilateDoc));
-    m_filterList.insert("cvDilate", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvErode, OpenCVFilters::cvDilateErodeParams, tr(cvErodeDoc));
-    m_filterList.insert("cvErode", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvMedianBlur, OpenCVFilters::cvMedianBlurParams, tr(cvMedianBlurDoc));
-    m_filterList.insert("cvMedianBlur", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvBlur, OpenCVFilters::cvBlurParams, tr(cvBlurDoc));
-    m_filterList.insert("cvBlur", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFFT2D, OpenCVFilters::cvFFTParams, tr(cvFFT2DDoc));
-    m_filterList.insert("cvFFT2D", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvIFFT2D, OpenCVFilters::cvFFTParams, tr(cvIFFT2DDoc));
-    m_filterList.insert("cvIFFT2D", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFFT1D, OpenCVFilters::cvFFTParams, tr(cvFFT1DDoc));
-    m_filterList.insert("cvFFT1D", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvIFFT1D, OpenCVFilters::cvFFTParams, tr(cvIFFT1DDoc));
-    m_filterList.insert("cvIFFT1D", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvRemoveSpikes, OpenCVFilters::cvRemoveSpikesParams, tr(cvRemoveSpikesDoc));
-    m_filterList.insert("cvRemoveSpikes", filter);
-
-
-
-    /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, tr(cvCalcHistDoc));
-    m_filterList.insert("cvCalcHistogram", filter);*/
-
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-
-    filter = new FilterDef(OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, tr(cvFindCirclesDoc));
-    m_filterList.insert("cvFindCircles", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFindChessboardCorners, OpenCVFilters::cvFindChessboardCornersParams, tr(cvFindChessboardCornersDoc));
-    m_filterList.insert("cvFindChessboardCorners", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvCornerSubPix, OpenCVFilters::cvCornerSubPixParams, tr(cvCornerSubPixDoc));
-    m_filterList.insert("cvCornerSubPix", filter);
-
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-
-    filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, tr(cvFlipUpDownDoc));
-    m_filterList.insert("cvFlipUpDown", filter);
-
-    filter = new FilterDef(OpenCVFilters::cvFlipLeftRight, OpenCVFilters::stdParams2Objects, tr(cvFlipLeftRightDoc));
-    m_filterList.insert("cvFlipLeftRight", filter);
-
-    setInitialized(true); //init method has been finished (independent on retval)
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal OpenCVFilters::close(ItomSharedSemaphore * /*waitCond*/)
-{
-    ito::RetVal retval = ito::retOk;
-
-    return retval;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
    \param[in|out]   paramsOpt   Optinal parameters for the filter function
@@ -1789,3 +1719,71 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
+{
+    ito::RetVal retval = ito::retOk;
+    FilterDef *filter = NULL;
+
+    filter = new FilterDef(OpenCVFilters::cvDilate, OpenCVFilters::cvDilateErodeParams, tr(cvDilateDoc));
+    m_filterList.insert("cvDilate", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvErode, OpenCVFilters::cvDilateErodeParams, tr(cvErodeDoc));
+    m_filterList.insert("cvErode", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvMedianBlur, OpenCVFilters::cvMedianBlurParams, tr(cvMedianBlurDoc));
+    m_filterList.insert("cvMedianBlur", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvBlur, OpenCVFilters::cvBlurParams, tr(cvBlurDoc));
+    m_filterList.insert("cvBlur", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFFT2D, OpenCVFilters::cvFFTParams, tr(cvFFT2DDoc));
+    m_filterList.insert("cvFFT2D", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvIFFT2D, OpenCVFilters::cvFFTParams, tr(cvIFFT2DDoc));
+    m_filterList.insert("cvIFFT2D", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFFT1D, OpenCVFilters::cvFFTParams, tr(cvFFT1DDoc));
+    m_filterList.insert("cvFFT1D", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvIFFT1D, OpenCVFilters::cvFFTParams, tr(cvIFFT1DDoc));
+    m_filterList.insert("cvIFFT1D", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvRemoveSpikes, OpenCVFilters::cvRemoveSpikesParams, tr(cvRemoveSpikesDoc));
+    m_filterList.insert("cvRemoveSpikes", filter);
+
+
+
+    /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, tr(cvCalcHistDoc));
+    m_filterList.insert("cvCalcHistogram", filter);*/
+
+#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+
+    filter = new FilterDef(OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, tr(cvFindCirclesDoc));
+    m_filterList.insert("cvFindCircles", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFindChessboardCorners, OpenCVFilters::cvFindChessboardCornersParams, tr(cvFindChessboardCornersDoc));
+    m_filterList.insert("cvFindChessboardCorners", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvCornerSubPix, OpenCVFilters::cvCornerSubPixParams, tr(cvCornerSubPixDoc));
+    m_filterList.insert("cvCornerSubPix", filter);
+
+#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+
+    filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, tr(cvFlipUpDownDoc));
+    m_filterList.insert("cvFlipUpDown", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFlipLeftRight, OpenCVFilters::stdParams2Objects, tr(cvFlipLeftRightDoc));
+    m_filterList.insert("cvFlipLeftRight", filter);
+
+    setInitialized(true); //init method has been finished (independent on retval)
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::close(ItomSharedSemaphore * /*waitCond*/)
+{
+    ito::RetVal retval = ito::retOk;
+
+    return retval;
+}
