@@ -102,10 +102,6 @@ const ito::RetVal AerotechEnsemble::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 AerotechEnsemble::AerotechEnsemble() : AddInActuator(), m_pAerotechEnsembleWid(NULL), m_pHandle(NULL), m_pHandles(NULL)
 {
-    Q_FLAGS(IntFlag IntFlags);
-    Q_FLAGS(MaskFlag MaskFlags);
-    Q_FLAGS(MCStatusMask MCStatusMasks);
-
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");	// To enable the programm to transmit parameters via signals - slot connections
     qRegisterMetaType<QVector<bool> >("QVector<bool>");
     qRegisterMetaType<QVector<double> >("QVector<double>");
