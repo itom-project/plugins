@@ -468,10 +468,20 @@ ito::RetVal AerotechEnsemble::getParam(QSharedPointer<ito::Param> val, ItomShare
 
     if(!retValue.containsError())
     {
-        //put your switch-case.. for getting the right value here
+        if (key == "speed" && hasIndex)
+        {
+            ito::Param item;
+            retValue += apiGetItemFromParamArray(*it, index, item);
 
-        //finally, save the desired value in the argument val (this is a shared pointer!)
-        *val = it.value();
+            if (retValue.containsError())
+            {
+                *val = item;
+            }
+        }
+        else
+        {
+            *val = it.value();
+        }
     }
 
     if (waitCond)
@@ -521,17 +531,46 @@ ito::RetVal AerotechEnsemble::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 
     if(!retValue.containsError())
     {
-        //if(key == "async")
-        //{
-        //    //check the new value and if ok, assign it to the internal parameter
-        //    retValue += it->copyValueFrom( &(*val) );
-        //}
-        //else if(key == "demoKey")
-        //{
-        //    //check the new value and if ok, assign it to the internal parameter
-        //    retValue += it->copyValueFrom( &(*val) );
-        //}
-        //else
+        if (key == "async")
+        {
+            retValue += it->copyValueFrom( &(*val) );
+            m_async = val->getVal<int>();
+        }
+        else if (key == "speed")
+        {
+            int arrayLength = it->getLen(); //current length of speed array must not be changed
+            if (hasIndex)
+            {
+                if (index < 0 || index >= arrayLength)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "given index is out of boundary");
+                }
+                else if (val->getType() != ito::ParamBase::Double)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "given value must be a double if an index is given.");
+                }
+                else
+                {
+                    it->getVal<double*>()[index] = val->getVal<double>();
+                }
+            }
+            else
+            {
+                if (val->getType() != ito::ParamBase::DoubleArray)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "given value must be a double array");
+                }
+                else if (val->getLen() != arrayLength)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "length of given double array must correspond to number of axes");
+                }
+                else
+                {
+                    retValue += it->copyValueFrom( &(*val) );
+                }
+            }
+        }
+        else
         {
             //all parameters that don't need further checks can simply be assigned
             //to the value in m_params (the rest is already checked above)
