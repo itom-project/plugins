@@ -319,6 +319,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
         if (EnsembleInformationGetName(m_pHandle, name.size(), name.data()))
         {
             m_params["controller"].setVal<char*>(name.data());
+            m_identifier = name;
         }
 
         //communication type
@@ -464,20 +465,7 @@ ito::RetVal AerotechEnsemble::getParam(QSharedPointer<ito::Param> val, ItomShare
 
     if(!retValue.containsError())
     {
-        if (key == "speed" && hasIndex)
-        {
-            ito::Param item;
-            retValue += apiGetItemFromParamArray(*it, index, item);
-
-            if (retValue.containsError())
-            {
-                *val = item;
-            }
-        }
-        else
-        {
-            *val = it.value();
-        }
+        *val = apiGetParam(*it, hasIndex, index, retValue);
     }
 
     if (waitCond)
@@ -519,7 +507,7 @@ ito::RetVal AerotechEnsemble::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 
     if(!retValue.containsError())
     {
-        //here the new parameter is checked whether it's type corresponds or can be cast into the
+        //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
         // meta structure.
         retValue += apiValidateParam(*it, *val, false, true);
