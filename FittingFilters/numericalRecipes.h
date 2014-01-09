@@ -65,25 +65,25 @@ private:
 //    {}
 //
 //    FitSVD(MatDoub_I &xx, VecDoub_I &yy, VecDoub_I &ssig, VecDoub funks(VecDoub_I &), const Doub TOL=1.e-12)
-//	    : 
+//        : 
 //        ndat(yy.size()), 
 //        x(NULL), 
 //        xmd(&xx), 
 //        y(yy), 
 //        sig(ssig),
-//	    funcsmd(funks), 
+//        funcsmd(funks), 
 //        tol(TOL) 
 //    {}
 //
 //    void fit();
 //
-//	VecDoub row(MatDoub_I &a, const Int i) 
+//    VecDoub row(MatDoub_I &a, const Int i) 
 //    {
-//		Int j,n=a.ncols();
-//		VecDoub ans(n);
-//		for (j=0;j<n;j++) ans[j] = a[i][j];
-//		return ans;
-//	}
+//        Int j,n=a.ncols();
+//        VecDoub ans(n);
+//        for (j=0;j<n;j++) ans[j] = a[i][j];
+//        return ans;
+//    }
 //
 //    template<int order> static VecDoub fpoly(const Doub x)
 //    {
@@ -114,7 +114,7 @@ private:
 //    Doub chisq;
 //
 //    MatDoub_I *xmd;
-//	VecDoub (*funcsmd)(VecDoub_I &); 
+//    VecDoub (*funcsmd)(VecDoub_I &); 
 //};
 
 

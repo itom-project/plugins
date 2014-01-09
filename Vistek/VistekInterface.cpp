@@ -69,7 +69,7 @@ ito::RetVal VistekInterface::closeThisInst(ito::AddInBase **addInInst)
 */
 VistekInterface::VistekInterface(QObject *parent)
 {
-	m_autoLoadPolicy = ito::autoLoadNever;
+    m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
 
     m_type = ito::typeDataIO | ito::typeGrabber;
@@ -85,7 +85,7 @@ VistekInterface::VistekInterface(QObject *parent)
 Some files of the SVGigE SDK are shipped within this plugin (currently 1.4.24). Please check the SVS Vistek website for newer versions of the SDK \
 and replace the files if desired. Additionally, it is stated that SVS Vistek does not provide any support for this specific plugin wrapping the \
 official SDK of SVS Vistek.";
-	m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);
 
     m_author = "H. Gilbergs, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -95,12 +95,12 @@ official SDK of SVS Vistek.";
     m_aboutThis = QObject::tr("N.A.");  
     
     m_initParamsMand.clear();
-	m_initParamsOpt.clear();
+    m_initParamsOpt.clear();
 
-	ito::Param p = ito::Param("CameraSerialNo", ito::ParamBase::String | ito::ParamBase::In, "", QObject::tr("Serial Number of the SVS Vistek camera (see camera housing)").toAscii().data());
-	ito::StringMeta *m = new ito::StringMeta(ito::StringMeta::RegExp, "^[0-9]*$");
-	p.setMeta(m, true);
-	m_initParamsOpt << p;
+    ito::Param p = ito::Param("CameraSerialNo", ito::ParamBase::String | ito::ParamBase::In, "", QObject::tr("Serial Number of the SVS Vistek camera (see camera housing)").toAscii().data());
+    ito::StringMeta *m = new ito::StringMeta(ito::StringMeta::RegExp, "^[0-9]*$");
+    p.setMeta(m, true);
+    m_initParamsOpt << p;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

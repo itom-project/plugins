@@ -9,12 +9,12 @@
 #if FITWITHDOUBLEPRECISION == 1 //double -> much more precise for big matrices
     typedef ito::float64 MATTYPE;
     #define TYPEID ito::tFloat64
-	#define CVTYPEID CV_64FC1
+    #define CVTYPEID CV_64FC1
     #define LAPACKE_FCT_NAME(SUFFIX) LAPACKE_d ## SUFFIX
 #else
     typedef ito::float32 MATTYPE;
     #define TYPEID ito::tFloat32 
-	#define CVTYPEID CV_32FC1
+    #define CVTYPEID CV_32FC1
     #define LAPACKE_FCT_NAME(SUFFIX) LAPACKE_s ## SUFFIX
 #endif
 

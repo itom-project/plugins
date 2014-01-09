@@ -71,7 +71,7 @@ This plugin does not have any unusual dependencies.";
     m_description = QObject::tr("Operations and arithmetic calculations of dataObject.");
     m_detaildescription = QObject::tr(docstring);
 
-	m_author            = "W. Lyda, M. Gronle, ITO, University Stuttgart";
+    m_author            = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_license           = QObject::tr("LGPL");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
@@ -901,7 +901,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(cv::Mat 
     ito::int32 x, y;
     ito::float64 val = 0.0, sumva = 0.0, sumXv = 0.0, sumYv = 0.0;
     _Tp *pValue = NULL;
-	
+    
     if(std::numeric_limits<_Tp>::is_exact && lowTreshold == std::numeric_limits<_Tp>::min() && highTreshold == std::numeric_limits<_Tp>::max())
     {
         for(y = 0; y < mat->rows; y++)
@@ -910,9 +910,9 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(cv::Mat 
             for(x = 0; x < mat->cols; x++)
             {
                 val = (ito::float64)pValue[x];
-	            sumva = sumva + val;
-	            sumXv = sumXv + val * x;
-	            sumYv = sumYv + val * y;						
+                sumva = sumva + val;
+                sumXv = sumXv + val * x;
+                sumYv = sumYv + val * y;                        
             }
         }
     }
@@ -926,9 +926,9 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(cv::Mat 
                 if(ito::dObjHelper::isFinite<_Tp>(pValue[x]) && pValue[x] > lowTreshold && pValue[x] < highTreshold)
                 {
                     val = (ito::float64)pValue[x];
-	                sumva = sumva + val;
-	                sumXv = sumXv + val * x;
-	                sumYv = sumYv + val * y;
+                    sumva = sumva + val;
+                    sumXv = sumXv + val * x;
+                    sumYv = sumYv + val * y;
                 }
             }
         }    
@@ -1060,7 +1060,7 @@ RetVal DataObjectArithmetic::centerOfGravity1DimParams(QVector<ito::Param> *para
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(cv::Mat *inMat, cv::Mat *outCOG, cv::Mat *outINT, const _Tp lowTreshold, const ito::float64 dynamicTreshold, const ito::float64 scale, bool alongCols)
-{   	
+{       
     ito::uint32 stepEvalInMat = 1;
     ito::uint32 stepAddrInMat = 1;
     ito::uint32 stepOutMat = 1;
@@ -1153,8 +1153,8 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(cv:
                     if(val > 0.0)
                     {
                         
-	                    sumI = sumI + val;
-	                    sumPxI = sumPxI + val * cogCnt;						
+                        sumI = sumI + val;
+                        sumPxI = sumPxI + val * cogCnt;                        
                     }
                     pInValue = pInValue + stepEvalInMat;
                 }
@@ -1165,8 +1165,8 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(cv:
                 for(cogCnt = 0; cogCnt < cogsToCalc; cogCnt++)
                  {
                     val = (ito::float64)(*pInValue);
-	                sumI = sumI + val;
-	                sumPxI = sumPxI + val * cogCnt;	
+                    sumI = sumI + val;
+                    sumPxI = sumPxI + val * cogCnt;    
                     pInValue = pInValue + stepEvalInMat;
                 }
             }

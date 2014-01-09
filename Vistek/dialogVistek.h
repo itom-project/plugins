@@ -15,14 +15,14 @@ class DialogVistek : public QDialog
     public:
         DialogVistek() { ui.setupUi(this); };
         ~DialogVistek() {};
-		void sendVals(ito::AddInGrabber *receiverGrabber);
+        void sendVals(ito::AddInGrabber *receiverGrabber);
 
     private:
         Ui::dialogVistek ui;
-		QMap<QString, ito::Param> m_params;
+        QMap<QString, ito::Param> m_params;
 
     public slots:
-		void valuesChanged(QMap<QString, ito::Param> params);
+        void valuesChanged(QMap<QString, ito::Param> params);
 };
 
 #endif

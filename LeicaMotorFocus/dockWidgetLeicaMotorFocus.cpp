@@ -8,10 +8,10 @@ DockWidgetLeicaMotorFocus::DockWidgetLeicaMotorFocus(QMap<QString, ito::Param> p
     ui.setupUi(this); 
 
     char* temp = params["name"].getVal<char*>(); //borrowed reference
-	ui.lblName->setText(temp);
-	ui.lblID->setText(QString::number(uniqueID));
+    ui.lblName->setText(temp);
+    ui.lblID->setText(QString::number(uniqueID));
 
-	valuesChanged(params);
+    valuesChanged(params);
     setMotorStatus(false);
 }
 
@@ -33,28 +33,28 @@ void DockWidgetLeicaMotorFocus::setMotorStatus(bool busy)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetLeicaMotorFocus::on_btnUp_clicked()
 {
-	double dpos = ui.spinStepSize->value() / 1e3;
-	emit MoveRelative(0, dpos, 0);
+    double dpos = ui.spinStepSize->value() / 1e3;
+    emit MoveRelative(0, dpos, 0);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetLeicaMotorFocus::on_btnDown_clicked()
 {
-	double dpos = -1 * ui.spinStepSize->value() / 1e3;
-	emit MoveRelative(0, dpos, 0);
+    double dpos = -1 * ui.spinStepSize->value() / 1e3;
+    emit MoveRelative(0, dpos, 0);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetLeicaMotorFocus::on_btnRefresh_clicked()
 {
-	emit MotorTriggerStatusRequest(true, true);
+    emit MotorTriggerStatusRequest(true, true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetLeicaMotorFocus::on_btnStart_clicked()
 {
-	double dpos = ui.doubleSpinBox_tarpos->value();
-	emit MoveAbsolute(0, dpos, 0);
+    double dpos = ui.doubleSpinBox_tarpos->value();
+    emit MoveAbsolute(0, dpos, 0);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

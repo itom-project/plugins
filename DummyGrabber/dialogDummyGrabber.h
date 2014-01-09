@@ -33,7 +33,7 @@ class dialogDummyGrabber : public QDialog
 
     private slots:
         void on_btnResetROI_clicked();
-        void on_applyButton_clicked();	//!< Write the current settings to the internal paramsVals and sent them to the grabber
+        void on_applyButton_clicked();    //!< Write the current settings to the internal paramsVals and sent them to the grabber
 
         void on_spinBox_x0_valueChanged(int value);
         void on_spinBox_x1_valueChanged(int value);

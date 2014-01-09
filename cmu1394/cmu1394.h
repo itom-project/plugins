@@ -17,23 +17,23 @@
 #include "./cmu1394/include/1394Camera.h"
 
 #define MAX1394 5
-#define LIM(a)	(a<0?0:a>4095?4095:a)
+#define LIM(a)    (a<0?0:a>4095?4095:a)
 
 #include <qsharedpointer.h>
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class	CMU1394 
-  *\brief	class to use firewire-Cameras with the generic CMU-Driver
+  *\class    CMU1394 
+  *\brief    class to use firewire-Cameras with the generic CMU-Driver
   *
   *         This class can be used to get firewire cameras running with the generic CMU firewire DLL.
-  *			The gerneric camera driver must be installed.
+  *            The gerneric camera driver must be installed.
   *
-  *	\sa	AddInDataIO, Dummy1394
-  *	\date	11.10.2010
-  *	\author	Wolfram Lyda
-  * \warning	NA
+  *    \sa    AddInDataIO, Dummy1394
+  *    \date    11.10.2010
+  *    \author    Wolfram Lyda
+  * \warning    NA
   *
   */
 class CMU1394 : public ito::AddInGrabber
@@ -41,61 +41,61 @@ class CMU1394 : public ito::AddInGrabber
     Q_OBJECT
 
     protected:
-		//! Destructor
+        //! Destructor
         ~CMU1394();
-		//! Constructor
+        //! Constructor
         CMU1394();
 
     public:
         friend class CMU1394Interface;
-        const ito::RetVal showConfDialog(void);	/*!< Open the config nonmodal dialog to set camera parameters */
+        const ito::RetVal showConfDialog(void);    /*!< Open the config nonmodal dialog to set camera parameters */
 
     protected:
-        ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);	/*! <Wait for acquired picture */
-//        ito::RetVal checkData(void);	/*!< Check if objekt has to be reallocated */
+        ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);    /*! <Wait for acquired picture */
+//        ito::RetVal checkData(void);    /*!< Check if objekt has to be reallocated */
 
     private:
 
         BOOL m_saveParamsOnClose; /*!< Check if the parameters shoudl be saved on close */
-		BOOL m_isgrabbing; /*!< Check if acquire was called */	
+        BOOL m_isgrabbing; /*!< Check if acquire was called */    
 
         int m_iCamNumber;
-	    int m_iFireWire_VideoMode;
-	    int m_iFireWire_VideoRate;
-	    int m_iFireWire_VideoFormat;
+        int m_iFireWire_VideoMode;
+        int m_iFireWire_VideoRate;
+        int m_iFireWire_VideoFormat;
 
         C1394Camera *m_ptheCamera;
-	    C1394CameraControl *m_pC1394gain, *m_pC1394offset, *m_pC1394autoexp;
-	    C1394CameraControlTrigger *m_pC1394trigger;
+        C1394CameraControl *m_pC1394gain, *m_pC1394offset, *m_pC1394autoexp;
+        C1394CameraControlTrigger *m_pC1394trigger;
 
     signals:
-//		void parametersChanged(QMap<QString, ito::Param> params);	/*! Signal send changed or all parameters to listeners */
+//        void parametersChanged(QMap<QString, ito::Param> params);    /*! Signal send changed or all parameters to listeners */
 
     public slots:
         
-		//! returns parameter of m_params with key name.
-		ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
+        //! returns parameter of m_params with key name.
+        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         //! sets parameter of m_params with key name. 
-		ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
-		
-		//! Initialise board, load dll, allocate buffer
-		ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
+        
+        //! Initialise board, load dll, allocate buffer
+        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         //! Free buffer, delete board, unload dll
-		ito::RetVal close(ItomSharedSemaphore *waitCond);
+        ito::RetVal close(ItomSharedSemaphore *waitCond);
 
-		//! Start the camera to enable acquire-commands
+        //! Start the camera to enable acquire-commands
         ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
         //! Stop the camera to disable acquire-commands
-		ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
+        ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
         //! Softwaretrigger for the camera
-		ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
-		//! Calls retrieveData(NULL), than copy the picture to dObj of right type and size
+        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
+        //! Calls retrieveData(NULL), than copy the picture to dObj of right type and size
         ito::RetVal getVal(void *dObj, ItomSharedSemaphore *waitCond);
-		//! Deep copy the camera buffer to dObj. Object must be of right size and type. If liveData is running, a second deep-copy is performed to copy data to the grabber 
+        //! Deep copy the camera buffer to dObj. Object must be of right size and type. If liveData is running, a second deep-copy is performed to copy data to the grabber 
         ito::RetVal copyVal(void *dObj, ItomSharedSemaphore *waitCond);
         
         //! Retrieve new offset and new gain and give them to the camera dll
-		void updateParameters(QMap<QString, ito::ParamBase> params);
+        void updateParameters(QMap<QString, ito::ParamBase> params);
 
     private slots:
 
@@ -103,14 +103,14 @@ class CMU1394 : public ito::AddInGrabber
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class	CMU1394Interface 
+  *\class    CMU1394Interface 
   *
-  *\brief	Interface-Class for CMU1394-Class
+  *\brief    Interface-Class for CMU1394-Class
   *
-  *	\sa	AddInDataIO, CMU1394
-  *	\date	11.10.2010
-  *	\author	Wolfram Lyda
-  * \warning	NA
+  *    \sa    AddInDataIO, CMU1394
+  *    \date    11.10.2010
+  *    \author    Wolfram Lyda
+  * \warning    NA
   *
   */
 class CMU1394Interface : public ito::AddInInterfaceBase
@@ -127,7 +127,7 @@ class CMU1394Interface : public ito::AddInInterfaceBase
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
-		//! auto-increment, static instance counter for all dummy-1394 instances
+        //! auto-increment, static instance counter for all dummy-1394 instances
 
 
     signals:

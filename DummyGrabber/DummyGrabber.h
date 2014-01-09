@@ -97,7 +97,7 @@ class DummyGrabber : public ito::AddInGrabber
         bool m_isgrabbing;
         SimulatedCam myCam;
 
-	signals:
+    signals:
 
     public slots:
         /*ito::RetVal getParam(const char *name, QSharedPointer<char> val, QSharedPointer<int> len, ItomSharedSemaphore *waitCond = NULL);
@@ -118,8 +118,8 @@ class DummyGrabber : public ito::AddInGrabber
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
         //ito::RetVal setVal(const void *dObj, const int length, ItomSharedSemaphore *waitCond);
 
-		//void dataParametersChanged(int sizex, int sizey, int bpp);
-		void GainOffsetPropertiesChanged(double gain, double offset);
+        //void dataParametersChanged(int sizex, int sizey, int bpp);
+        void GainOffsetPropertiesChanged(double gain, double offset);
         void IntegrationPropertiesChanged(double integrationtime);
 
     private slots:

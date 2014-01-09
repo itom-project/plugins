@@ -2,20 +2,20 @@
 
  DockWidgetFileGrabber::DockWidgetFileGrabber(QMap<QString, ito::Param> params, int uniqueID)
  {
-	ui.setupUi(this); 
+    ui.setupUi(this); 
     
     char* temp = params["name"].getVal<char*>(); //borrowed reference
-//	ui.lblName->setText(temp);
-	ui.lblID->setText(QString::number(uniqueID));
+//    ui.lblName->setText(temp);
+    ui.lblID->setText(QString::number(uniqueID));
 
-	valuesChanged(params);
+    valuesChanged(params);
  }
 
  void DockWidgetFileGrabber::valuesChanged(QMap<QString, ito::Param> params)
  {
-	ui.spinBpp->setValue(params["bpp"].getVal<int>());
-	ui.spinWidth->setValue(params["sizex"].getVal<int>());
-	ui.spinHeight->setValue(params["sizey"].getVal<int>());
+    ui.spinBpp->setValue(params["bpp"].getVal<int>());
+    ui.spinWidth->setValue(params["sizex"].getVal<int>());
+    ui.spinHeight->setValue(params["sizey"].getVal<int>());
 
 
     if(!(params["gain"].getFlags() & ito::ParamBase::Readonly))
@@ -54,17 +54,17 @@
 
 void DockWidgetFileGrabber::on_spinBox_gain_valueChanged(int /*d*/)
 {
-	emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
+    emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
 }
 
 void DockWidgetFileGrabber::on_spinBox_offset_valueChanged(int /*d*/)
 {
-	emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
+    emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
 }
 
 void DockWidgetFileGrabber::on_doubleSpinBox_integration_time_valueChanged(double /*d*/)
 {
-	emit IntegrationPropertiesChanged( ui.doubleSpinBox_integration_time->value() / 1000.0);
+    emit IntegrationPropertiesChanged( ui.doubleSpinBox_integration_time->value() / 1000.0);
 }
 
 

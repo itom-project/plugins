@@ -15,9 +15,9 @@ SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages tha
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
 IF(BUILD_SHARED_LIBS)
-	SET(LIBRARY_TYPE SHARED)
+    SET(LIBRARY_TYPE SHARED)
 ELSE(BUILD_SHARED_LIBS)
-	SET(LIBRARY_TYPE STATIC)
+    SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
  
 find_package(Qt4 REQUIRED)
@@ -28,17 +28,17 @@ find_package(VisualLeakDetector QUIET)
 
 FIND_PACKAGE( OpenMP REQUIRED)
 if(OPENMP_FOUND)
-	message(STATUS "OPENMP FOUND")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+    message(STATUS "OPENMP FOUND")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 IF (BUILD_UNICODE)
-	ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
 ADD_DEFINITIONS(-DCMAKE)
 
@@ -51,9 +51,9 @@ SET (QT_USE_QTXML TRUE)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
-	SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ELSE(CMAKE_BUILD_TYPE)
-	SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
@@ -68,7 +68,7 @@ INCLUDE_DIRECTORIES(
 )
 
 LINK_DIRECTORIES(
-	${OpenCV_DIR}/lib
+    ${OpenCV_DIR}/lib
 )
 
 INCLUDE(${QT_USE_FILE})
@@ -78,20 +78,20 @@ set(plugin_HEADERS
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/fittingfilters.h
-	${CMAKE_CURRENT_SOURCE_DIR}/numericalRecipes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/numericalRecipes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
 IF(${LAPACKE_FOUND})
-	SET(plugin_HEADERS ${plugin_HEADERS}
-		${LAPACKE_INCLUDE_DIR}/lapacke.h
-	)
-	
-	INCLUDE_DIRECTORIES(
-		${LAPACKE_INCLUDE_DIR}
-	)
-	
-	ADD_DEFINITIONS(-DLAPACKE -DADD_ -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE )
+    SET(plugin_HEADERS ${plugin_HEADERS}
+        ${LAPACKE_INCLUDE_DIR}/lapacke.h
+    )
+    
+    INCLUDE_DIRECTORIES(
+        ${LAPACKE_INCLUDE_DIR}
+    )
+    
+    ADD_DEFINITIONS(-DLAPACKE -DADD_ -DHAVE_LAPACK_CONFIG_H -DLAPACK_COMPLEX_STRUCTURE )
 ENDIF()
 
 QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
@@ -106,9 +106,9 @@ set(plugin_SOURCES
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.cpp
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp 
     ${CMAKE_CURRENT_SOURCE_DIR}/fittingfilters.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/polyfit2d.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/polyfitweighted2d.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/numericalRecipes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/polyfit2d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/polyfitweighted2d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/numericalRecipes.cpp
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -129,14 +129,14 @@ TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${Q
 
 #handle translations BEGIN STEP 2
 if (UPDATE_TRANSLATIONS)
-	QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-	
-	add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-	add_dependencies(${target_name} _${target_name}_translation)
-	
-	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
+    QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    
+    add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+    add_dependencies(${target_name} _${target_name}_translation)
+    
+    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
 else (UPDATE_TRANSLATIONS)
-	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
+    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
 endif (UPDATE_TRANSLATIONS)
 #handle translations END STEP 2
 
@@ -146,14 +146,14 @@ set(COPY_DESTINATIONS "")
 
 message(STATUS ${LAPACKE_FOUND} ${LAPACKE_RUNTIME_LIBRARIES})
 IF(WIN32)
-	IF(${LAPACKE_FOUND})
-	FOREACH(__LIB ${LAPACKE_RUNTIME_LIBRARIES})
-		POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} __LIB)
-		message(STATUS ${__LIB})
-	ENDFOREACH(__LIB)
-	ENDIF(${LAPACKE_FOUND})
+    IF(${LAPACKE_FOUND})
+    FOREACH(__LIB ${LAPACKE_RUNTIME_LIBRARIES})
+        POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} __LIB)
+        message(STATUS ${__LIB})
+    ENDFOREACH(__LIB)
+    ENDIF(${LAPACKE_FOUND})
 ENDIF(WIN32)
-	
+    
 ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)

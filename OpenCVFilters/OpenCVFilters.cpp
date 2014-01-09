@@ -181,7 +181,7 @@ ito::RetVal OpenCVFilters::makeInputOutputEqual(ito::DataObject * p_input, ito::
 
     ret = checkInputOutputEqual(p_input, p_output, &check);
 
-    if (!ret.containsError() && check)	// okay image has to be changed and no error
+    if (!ret.containsError() && check)    // okay image has to be changed and no error
     {
         if ((p_output == p_input))
         {
@@ -708,7 +708,7 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
     // Declare the output vector to hold the circle coordinates and radii
     cv::vector<cv::Vec3f> circles;
 
-    /*	void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0 )
+    /*    void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0 )
         dp – Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
         param1 – First method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).
         param2 – Second method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.*/
@@ -724,8 +724,8 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
 
         for( size_t i = 0; i < circles.size(); i++ )
         {
-            //	This can be used to draw the circles directly into the input image
-            /*	cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+            //    This can be used to draw the circles directly into the input image
+            /*    cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
                 int radius = cvRound(circles[i][2]);
                 circle( *cvplaneIn, center, radius, 70, 3, 8, 0 );*/
 
@@ -1641,9 +1641,9 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
     {
         try
         {
-			cv::morphologyEx(cvTemp, cvTemp, cv::MORPH_OPEN, cvElement, anchor, 1, cv::BORDER_CONSTANT);
+            cv::morphologyEx(cvTemp, cvTemp, cv::MORPH_OPEN, cvElement, anchor, 1, cv::BORDER_CONSTANT);
             //cv::erode(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
-			//cv::dilate(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
+            //cv::dilate(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
         }
         catch (cv::Exception exc)
         {

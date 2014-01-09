@@ -21,7 +21,7 @@ DockWidgetSerialIO::DockWidgetSerialIO(QMap<QString, ito::Param> params, int uni
     char* temp = params["name"].getVal<char*>(); //char* is borrowed reference, do not delete it
 //    ui.lblName->setText(temp);
     ui.lblID->setText(QString::number(uniqueID));
-	 
+     
     valuesChanged(params);
 }
 
@@ -67,7 +67,7 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
             displayLength = 8;
             displayType = 2;
         }
-		else if (ui.RBDez->isChecked())
+        else if (ui.RBDez->isChecked())
         {
             displayLength = 3;
             displayType = 3;
@@ -87,7 +87,7 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
                     {
                         text1[r1++] = getHexChar(int(uc / 16));
                         text1[r1++] = getHexChar(int(uc % 16));
-						text1[r1++] = ' ';
+                        text1[r1++] = ' ';
                         break;
                     }
                 case 2: //If Binary
@@ -96,15 +96,15 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
                         {
                             text1[r1++] = ((uc >> i) & 1) + 48;
                         }
-						text1[r1++] = ' ';
+                        text1[r1++] = ' ';
                         break;
                     }
-				case 3: //If Dez
+                case 3: //If Dez
                     {
                         text1[r1++] = int(uc / 100) + 48;
                         text1[r1++] = int((uc % 100) / 10) + 48;
                         text1[r1++] = int(uc % 10) + 48;
-						text1[r1++] = ' ';
+                        text1[r1++] = ' ';
                     }
                 default: // If Ascii
                     break;
@@ -152,10 +152,10 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
         }
 
         text1.resize(r1);
-		if (displayType == 0)
-		{
-			text1 = "";
-		}
+        if (displayType == 0)
+        {
+            text1 = "";
+        }
         else if (text1.length() == 0)
         {
             text1 = "---";
@@ -170,10 +170,10 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
         {
             text2 = "---";
         }
-		else if (text2.length() == 0)
-		{
-            text2 = "";		
-		}
+        else if (text2.length() == 0)
+        {
+            text2 = "";        
+        }
         else if (displayType != 0)
         {
             text2 = "| " + text2;
@@ -189,10 +189,10 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
             text3 = " [" + QByteArray(QString::number(data.length()).toAscii().data()) + "]";
         }
 
-		if (!(ui.CheckBox->isChecked() && data.isEmpty() && endline.isEmpty()))
-		{
-			ui.textTransfer->append((QString)InOutChar + " " + text1 + text2 + text3);
-		}
+        if (!(ui.CheckBox->isChecked() && data.isEmpty() && endline.isEmpty()))
+        {
+            ui.textTransfer->append((QString)InOutChar + " " + text1 + text2 + text3);
+        }
     }
  }
 

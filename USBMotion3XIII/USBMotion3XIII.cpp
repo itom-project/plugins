@@ -84,9 +84,9 @@ provided by COPTONIX). \n\
 If you change any parameters like speed or acceleration, set the values and then read the values again, since the currently set values \
 might slightly differ from the desired values due to rounding uncertainties.";
 
-	m_description = QObject::tr("A motor driver for the USB Motion 3x III card, COPTONIX GmbH, www.coptonix.com");
+    m_description = QObject::tr("A motor driver for the USB Motion 3x III card, COPTONIX GmbH, www.coptonix.com");
     m_detaildescription = QObject::tr(docstring);
-	m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
@@ -100,7 +100,7 @@ might slightly differ from the desired values due to rounding uncertainties.";
     m_initParamsOpt.append(ito::Param("axisSteps1", ito::ParamBase::Int, 0, new ito::IntMeta(0,100000), tr("number of full steps per turn of axis 1, 0: axis not connected [default]").toAscii().data()));
     m_initParamsOpt.append(ito::Param("axisSteps2", ito::ParamBase::Int, 0, new ito::IntMeta(0,100000), tr("number of full steps per turn of axis 2, 0: axis not connected [default]").toAscii().data()));
     m_initParamsOpt.append(ito::Param("axisSteps3", ito::ParamBase::Int, 0, new ito::IntMeta(0,100000), tr("number of full steps per turn of axis 3, 0: axis not connected [default]").toAscii().data()));
-	//ito::tParam paramVal = ito::tParam("Number of Axis", ito::ParamBase::Int, 0, 10, 6, "Number of axis for this Motor");
+    //ito::tParam paramVal = ito::tParam("Number of Axis", ito::ParamBase::Int, 0, 10, 6, "Number of axis for this Motor");
     //m_initParamsOpt.append(paramVal);
 
 }
@@ -293,9 +293,9 @@ const ito::RetVal USBMotion3XIII::showConfDialog(void)
     double coilThreshold, coilHigh, coilLow, coilRest;
     RetVal retValue(retOk);
 
-	DialogUSBMotion3XIII *confDialog = new DialogUSBMotion3XIII( getID() );	// Create dialog
-    confDialog->setVals(&m_params);	// Set up dialog parameters
-    if (confDialog->exec())	// Is dialog is endet with exec and not with cancel
+    DialogUSBMotion3XIII *confDialog = new DialogUSBMotion3XIII( getID() );    // Create dialog
+    confDialog->setVals(&m_params);    // Set up dialog parameters
+    if (confDialog->exec())    // Is dialog is endet with exec and not with cancel
     {
         //setParam("async",(double)confDialog->getRunMode(), NULL);
         m_params["async"].setVal<int>( (int)confDialog->getRunMode() );
@@ -311,8 +311,8 @@ const ito::RetVal USBMotion3XIII::showConfDialog(void)
             retValue += setSpeed(i,1 | 2, vMin, vMax);
         }
 
-    }	
-    delete confDialog;	// destroy dialog
+    }    
+    delete confDialog;    // destroy dialog
     return retValue;
 }
 
@@ -324,11 +324,11 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
     Q_FLAGS(MaskFlag MaskFlags);
     Q_FLAGS(MCStatusMask MCStatusMasks);
 
-    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");	// To enable the programm to transmit parameters via signals - slot connections
+    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
     qRegisterMetaType<QVector<bool> >("QVector<bool>");
     qRegisterMetaType<QVector<double> >("QVector<double>");
 
-    //ito::tParam ;	// Set up the parameter list
+    //ito::tParam ;    // Set up the parameter list
     m_params.insert( "name", Param("name", ParamBase::String | ParamBase::Readonly, "USBMotion3XIII", NULL));
     m_params.insert( "connected", Param("connected", ParamBase::Int | ParamBase::Readonly, 0, 1, 0, tr("indicates whether motor driver is connected (1) or not (0)").toAscii().data())); //read-only
     m_params.insert( "serialNumber", Param("serialNumber", ParamBase::String | ParamBase::Readonly, "", tr("serial number for this motor driver").toAscii().data())); //read-only
@@ -379,7 +379,7 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
 
    // // This is for the docking widged
    // //now create dock widget for this plugin
-   USBMotion3XIIIWid = new DockWidgetUSBMotion3XIII(this);	// Create a new non-modal dialog
+   USBMotion3XIIIWid = new DockWidgetUSBMotion3XIII(this);    // Create a new non-modal dialog
 
    //Marc: connect(this, SIGNAL(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)), USBMotion3XIIIWid, SLOT(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)));
    //Marc: connect(this, SIGNAL(targetsChanged(QVector<bool>, QVector<double>)), USBMotion3XIIIWid, SLOT(targetsChanged(QVector<bool>, QVector<double>)));
@@ -389,7 +389,7 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
 
    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-   createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, USBMotion3XIIIWid);	// Give the widget a name ..)
+   createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, USBMotion3XIIIWid);    // Give the widget a name ..)
    
    // till here
     changeStatusTimer(false);
@@ -416,7 +416,7 @@ ito::RetVal USBMotion3XIII::errorCheck(unsigned int driverErrorNumber)
 {
     if (driverErrorNumber != 0)
     {
-		QString errorMsg = RETSTRING( geterrorstring(driverErrorNumber) );
+        QString errorMsg = RETSTRING( geterrorstring(driverErrorNumber) );
         return ito::RetVal(ito::retError, 1, tr("driver error: %1 [%2]").arg(errorMsg, QString::number(driverErrorNumber, 16) ).toAscii().data());
     }
     return ito::retOk;
@@ -579,7 +579,7 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
     RetVal retValue(retOk);
     char *temp = NULL;
 
-	unsigned int errorCode = 0;
+    unsigned int errorCode = 0;
     
     QString serialName = (*paramsMand)[0].getVal<char*>(); //borrowed reference
 
@@ -591,15 +591,15 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
     {
         retValue += ito::RetVal(retError, 1, tr("no motor driver devices are currently connected to this PC").toAscii().data());
     }
-	else
-	{
+    else
+    {
 
 #if defined Q_OS_WIN64
-		/*if(enumdevices() > 1)
-		{
-			retValue += ito::RetVal(retWarning,0,tr("64bit problem: currently only the first connected controller").toAscii().data());
-		}
-		errorCode = opendevicebyindex(0);*/
+        /*if(enumdevices() > 1)
+        {
+            retValue += ito::RetVal(retWarning,0,tr("64bit problem: currently only the first connected controller").toAscii().data());
+        }
+        errorCode = opendevicebyindex(0);*/
         int s = serialName.size();
         wchar_t* wserial = new wchar_t[ s + 1];
         serialName.toWCharArray( wserial );
@@ -608,67 +608,67 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         delete wserial;
         wserial = NULL;
 #elif defined Q_OS_WIN32
-		errorCode = opendevicebyserial( serialName.toAscii().data() );
+        errorCode = opendevicebyserial( serialName.toAscii().data() );
 #endif
-		retValue += errorCheck(errorCode);
-		if(!retValue.containsError())
-		{
-			m_curDeviceIndex = currentdeviceindex();
+        retValue += errorCheck(errorCode);
+        if(!retValue.containsError())
+        {
+            m_curDeviceIndex = currentdeviceindex();
 
-			if (m_curDeviceIndex < 0)
-			{
-				retValue += ito::RetVal(retError, 2, tr("device could not be opened").toAscii().data());
-			}
-			else
-			{
+            if (m_curDeviceIndex < 0)
+            {
+                retValue += ito::RetVal(retError, 2, tr("device could not be opened").toAscii().data());
+            }
+            else
+            {
                 QString str = RETSTRING( getserialnumber(m_curDeviceIndex) );
-				m_params["connected"].setVal<int>(1);
-				m_params["serialNumber"].setVal<char*>( str.toAscii().data() );
+                m_params["connected"].setVal<int>(1);
+                m_params["serialNumber"].setVal<char*>( str.toAscii().data() );
 
-				m_identifier = RETSTRING(getserialnumber(m_curDeviceIndex));
+                m_identifier = RETSTRING(getserialnumber(m_curDeviceIndex));
 
                 str = RETSTRING( getproductversion(m_curDeviceIndex) );
-				m_params["productVersion"].setVal<char*>( str.toAscii().data() );
+                m_params["productVersion"].setVal<char*>( str.toAscii().data() );
                 str = RETSTRING( getvendorname(m_curDeviceIndex) );
-				m_params["vendorName"].setVal<char*>( str.toAscii().data() );
+                m_params["vendorName"].setVal<char*>( str.toAscii().data() );
                 str = RETSTRING( getproductname(m_curDeviceIndex) );
-				m_params["productName"].setVal<char*>( str.toAscii().data() );
+                m_params["productName"].setVal<char*>( str.toAscii().data() );
 
-				/*int test = paramsOpt->value(0).getVal<int>();
-				test = paramsOpt->value(1).getVal<int>();
-				test = paramsOpt->value(2).getVal<int>();*/
-				m_params["axisSteps1"].setVal<int>( paramsOpt->value(0).getVal<int>() );
-				m_params["axisSteps2"].setVal<int>( paramsOpt->value(1).getVal<int>() );
-				m_params["axisSteps3"].setVal<int>( paramsOpt->value(2).getVal<int>() );
+                /*int test = paramsOpt->value(0).getVal<int>();
+                test = paramsOpt->value(1).getVal<int>();
+                test = paramsOpt->value(2).getVal<int>();*/
+                m_params["axisSteps1"].setVal<int>( paramsOpt->value(0).getVal<int>() );
+                m_params["axisSteps2"].setVal<int>( paramsOpt->value(1).getVal<int>() );
+                m_params["axisSteps3"].setVal<int>( paramsOpt->value(2).getVal<int>() );
 
-				if (m_params["axisSteps1"].getVal<int>() > 0) m_availableAxis.append(0);
-				if (m_params["axisSteps2"].getVal<int>() > 0) m_availableAxis.append(1);
-				if (m_params["axisSteps3"].getVal<int>() > 0) m_availableAxis.append(2);
+                if (m_params["axisSteps1"].getVal<int>() > 0) m_availableAxis.append(0);
+                if (m_params["axisSteps2"].getVal<int>() > 0) m_availableAxis.append(1);
+                if (m_params["axisSteps3"].getVal<int>() > 0) m_availableAxis.append(2);
 
-				//if (initparamfromeep( DWTIMEOUT) ) // load values from EEPROM or default values
-				//{
-					retValue += errorCheck(initparamtodefault( DWTIMEOUT ));
-				//}
+                //if (initparamfromeep( DWTIMEOUT) ) // load values from EEPROM or default values
+                //{
+                    retValue += errorCheck(initparamtodefault( DWTIMEOUT ));
+                //}
 
-				unsigned char mcStatus;
+                unsigned char mcStatus;
             
-				retValue += errorCheck(setmode(0, 0x00, mcStatus, DWTIMEOUT));
-				retValue += errorCheck(setmode(1, 0x00, mcStatus, DWTIMEOUT));
-				retValue += errorCheck(setmode(2, 0x00, mcStatus, DWTIMEOUT));
-				retValue += loadDriverSettingsToParams();
+                retValue += errorCheck(setmode(0, 0x00, mcStatus, DWTIMEOUT));
+                retValue += errorCheck(setmode(1, 0x00, mcStatus, DWTIMEOUT));
+                retValue += errorCheck(setmode(2, 0x00, mcStatus, DWTIMEOUT));
+                retValue += loadDriverSettingsToParams();
 
-			}
-		}
-		else
-		{
-			qDebug() << enumdevices() << " devices of type USB Motion 3X III detected at this computer";
-			QString serialNumber;
-			for(unsigned int i = 0 ; i < enumdevices() ; i++)
-			{
-				serialNumber = RETSTRING(getserialnumber(0));
-				qDebug() << "serial " << i << ": " << serialNumber;
-			}
-		}
+            }
+        }
+        else
+        {
+            qDebug() << enumdevices() << " devices of type USB Motion 3X III detected at this computer";
+            QString serialNumber;
+            for(unsigned int i = 0 ; i < enumdevices() ; i++)
+            {
+                serialNumber = RETSTRING(getserialnumber(0));
+                qDebug() << "serial " << i << ": " << serialNumber;
+            }
+        }
     }
 
     if (waitCond)
@@ -677,40 +677,40 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         waitCond->release();
     }
 
-	if(!retValue.containsError())
-	{
+    if(!retValue.containsError())
+    {
 
-		if (USBMotion3XIIIWid)
-		{
-			temp = m_params["name"].getVal<char*>(); //borrowed reference
-			QString name = temp;
-			temp = m_params["serialNumber"].getVal<char*>(); //borrowed reference
-			QString id = temp;
+        if (USBMotion3XIIIWid)
+        {
+            temp = m_params["name"].getVal<char*>(); //borrowed reference
+            QString name = temp;
+            temp = m_params["serialNumber"].getVal<char*>(); //borrowed reference
+            QString id = temp;
 
-			QString axis = "";
-			QVector<bool> available = QVector<bool>() << false << false << false;
-			if (m_availableAxis.contains(0)) 
-			{
-				axis.append("x (0) ");
-				available[0] = true;
-			}
-			if (m_availableAxis.contains(1)) 
-			{
-				axis.append("y (1) ");
-				available[1] = true;
-			}
-			if (m_availableAxis.contains(2)) 
-			{
-				axis.append("z (2) ");
-				available[2] = true;
-			}
+            QString axis = "";
+            QVector<bool> available = QVector<bool>() << false << false << false;
+            if (m_availableAxis.contains(0)) 
+            {
+                axis.append("x (0) ");
+                available[0] = true;
+            }
+            if (m_availableAxis.contains(1)) 
+            {
+                axis.append("y (1) ");
+                available[1] = true;
+            }
+            if (m_availableAxis.contains(2)) 
+            {
+                axis.append("z (2) ");
+                available[2] = true;
+            }
 
 
-			QMetaObject::invokeMethod(USBMotion3XIIIWid, "basicInformationChanged", Q_ARG(QString,name), Q_ARG(QString,id), Q_ARG(QString,axis), Q_ARG(QVector<bool>,available));
-		}
-	}
+            QMetaObject::invokeMethod(USBMotion3XIIIWid, "basicInformationChanged", Q_ARG(QString,name), Q_ARG(QString,id), Q_ARG(QString,axis), Q_ARG(QVector<bool>,available));
+        }
+    }
 
-	setInitialized(true); //init method has been finished (independent on retval)
+    setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
 }
 
@@ -758,7 +758,7 @@ ito::RetVal USBMotion3XIII::close(ItomSharedSemaphore *waitCond)
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-		waitCond->release();        
+        waitCond->release();        
     }
     return retValue;
 }
@@ -1259,7 +1259,7 @@ ito::RetVal USBMotion3XIII::calib(const QVector<int> axis, ItomSharedSemaphore *
     if (waitCond)
     {
         waitCond->returnValue = retValue;
-		waitCond->release();
+        waitCond->release();
         
     }
 
@@ -1536,7 +1536,7 @@ ito::RetVal USBMotion3XIII::setPosAbs(QVector<int> axis, QVector<double> pos, It
         waitCond->release();
     }
 
-	return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1609,7 +1609,7 @@ ito::RetVal USBMotion3XIII::setPosRel(const int axis, const double pos, ItomShar
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal USBMotion3XIII::setPosRel(QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
     int oldTarget[3] = {0, 0, 0};
@@ -1680,7 +1680,7 @@ ito::RetVal USBMotion3XIII::setPosRel(QVector<int> axis, QVector<double> pos, It
         waitCond->release();
     }
 
-	return retValue;
+    return retValue;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 

@@ -8,9 +8,9 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
  DockWidgetPIPiezoCtrl::DockWidgetPIPiezoCtrl(int uniqueID, ito::AddInActuator *actuator) : m_pPlugin(actuator)
  {
-	 ui.setupUi(this); 
+     ui.setupUi(this); 
 
-	 ui.lblID->setText(QString::number(uniqueID));
+     ui.lblID->setText(QString::number(uniqueID));
 
      enableWidget(true);
  }

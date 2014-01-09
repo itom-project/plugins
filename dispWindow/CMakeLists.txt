@@ -15,9 +15,9 @@ SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages tha
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_FIND_PACKAGE_PATH} ${ITOM_FIND_PACKAGE_PATH} ${ITOM_SDK_DIR})
 
 IF(BUILD_SHARED_LIBS)
-	SET(LIBRARY_TYPE SHARED)
+    SET(LIBRARY_TYPE SHARED)
 ELSE(BUILD_SHARED_LIBS)
-	SET(LIBRARY_TYPE STATIC)
+    SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
 find_package(Qt4 REQUIRED)
@@ -38,9 +38,9 @@ IF(GLEW_FOUND)
     ENDIF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DCMAKE)
 
-	IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-		ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-	ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+    IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+        ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
+    ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
     # enable some qt stuff
     SET (QT_USE_QTOPENGL TRUE)
@@ -62,7 +62,7 @@ IF(GLEW_FOUND)
         ${OpenCV_DIR}/include
         ${ITOM_SDK_INCLUDE_DIR}
         ${GLEW_INCLUDE_PATH}
-		${VISUALLEAKDETECTOR_INCLUDE_DIR}
+        ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     )
 
     LINK_DIRECTORIES(
@@ -75,11 +75,11 @@ IF(GLEW_FOUND)
         ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
         ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
         ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-		${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.h
+        ${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogDispWindow.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDispWindow.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dispWindow.h
-		${CMAKE_CURRENT_SOURCE_DIR}/projWindow.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/projWindow.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     )
 
@@ -96,11 +96,11 @@ IF(GLEW_FOUND)
         ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.cpp
         ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.cpp
         ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp
-		${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.cpp
+        ${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogDispWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDispWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dispWindow.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/projWindow.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/projWindow.cpp
     )
 
     #Add version information to the plugIn-dll unter MSVC
@@ -108,29 +108,29 @@ IF(GLEW_FOUND)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)    
     
-	#handle translations BEGIN STEP 1
-	set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
-	set (TRANSLATION_OUTPUT_FILES)
-	set (TRANSLATIONS_FILES)
+    #handle translations BEGIN STEP 1
+    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
+    set (TRANSLATION_OUTPUT_FILES)
+    set (TRANSLATIONS_FILES)
 
-	file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-	#handle translations END STEP 1
+    file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+    #handle translations END STEP 1
 
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
     TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTXML_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES}) # glu32 opengl32)
 
-	#handle translations BEGIN STEP 2
-	if (UPDATE_TRANSLATIONS)
-		QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-		
-		add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-		add_dependencies(${target_name} _${target_name}_translation)
-		
-		QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-	else (UPDATE_TRANSLATIONS)
-		QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-	endif (UPDATE_TRANSLATIONS)
-	#handle translations END STEP 2
+    #handle translations BEGIN STEP 2
+    if (UPDATE_TRANSLATIONS)
+        QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+        
+        add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+        add_dependencies(${target_name} _${target_name}_translation)
+        
+        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
+    else (UPDATE_TRANSLATIONS)
+        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
+    endif (UPDATE_TRANSLATIONS)
+    #handle translations END STEP 2
 
     # COPY SECTION
     set(COPY_SOURCES "")
@@ -141,7 +141,7 @@ IF(GLEW_FOUND)
         POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} GLEW_RUNTIME_LIBRARIES)
     ENDIF(WIN32)
     
-	ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+    ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     
 ELSE(GLEW_FOUND)

@@ -67,7 +67,7 @@ Basic import-filter definition: dst-obj, filename, chanel-specification, ...\n\
 Raw-export functions write/read the data to/from txt-based or binary file formats.";
 
     m_detaildescription = QObject::tr(docstring);
-	m_author            = "W. Lyda, M. Gronle, ITO, University Stuttgart";
+    m_author            = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_license           = QObject::tr("Licensed under LPGL.");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
@@ -164,10 +164,10 @@ ito::RetVal DataObjectIO::close(ItomSharedSemaphore * /*waitCond*/)
 /** saveDataObjectParams method, specifies the parameter list for saveDataObject method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into Image and save it into Hard drive.
+*    and their specifications as required for converting DataObject into Image and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::saveDataObjectParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -178,15 +178,15 @@ ito::RetVal DataObjectIO::saveDataObjectParams(QVector<ito::Param> *paramsMand, 
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("Format",ito::ParamBase::String | ito::ParamBase::In,NULL, tr("Format of the Image according to QImage: ['QImage::Format_Mono', 'QImage::Format_MonoLSB', 'QImage::Format_Indexed8', 'QImage::Format_RGB32', 'QImage::Format_ARGB32'").toAscii().data());
+        param = ito::Param("Format",ito::ParamBase::String | ito::ParamBase::In,NULL, tr("Format of the Image according to QImage: ['QImage::Format_Mono', 'QImage::Format_MonoLSB', 'QImage::Format_Indexed8', 'QImage::Format_RGB32', 'QImage::Format_ARGB32'").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("bitscaling",ito::ParamBase::Int | ito::ParamBase::In,0, 2, 1, tr("Toggle bit-scaling, 0 = off, 1 = autoscale (default), 2 = userdefined ranges").toAscii().data());
+        param = ito::Param("bitscaling",ito::ParamBase::Int | ito::ParamBase::In,0, 2, 1, tr("Toggle bit-scaling, 0 = off, 1 = autoscale (default), 2 = userdefined ranges").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("lowLimit",ito::ParamBase::Double | ito::ParamBase::In,-1*std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("Lowest limit. Will become 0").toAscii().data());
+        param = ito::Param("lowLimit",ito::ParamBase::Double | ito::ParamBase::In,-1*std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("Lowest limit. Will become 0").toAscii().data());
         paramsOpt->append(param);
-	    param = ito::Param("highLimit",ito::ParamBase::Double | ito::ParamBase::In,-1*std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 1.0, tr("Lowest limit. Will become max<bitdepth>").toAscii().data());
+        param = ito::Param("highLimit",ito::ParamBase::Double | ito::ParamBase::In,-1*std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 1.0, tr("Lowest limit. Will become max<bitdepth>").toAscii().data());
         paramsOpt->append(param);
-	    param = ito::Param("Color_Format",ito::ParamBase::String | ito::ParamBase::In, NULL, tr("When DataObject of type float32, their format should be -->Gray<-- or -->RGB<--").toAscii().data());
+        param = ito::Param("Color_Format",ito::ParamBase::String | ito::ParamBase::In, NULL, tr("When DataObject of type float32, their format should be -->Gray<-- or -->RGB<--").toAscii().data());
         paramsOpt->append(param);
 
     }
@@ -199,10 +199,10 @@ ito::RetVal DataObjectIO::saveDataObjectParams(QVector<ito::Param> *paramsMand, 
 /** saveDataObject method, saves the DataObject into Hard drive as Image.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "saveDataObjectParams" function.
-*	It converts passed DataObject into corresponding Image as per given Image Format and stores it to specific location provided on Hard drive.
+*    It converts passed DataObject into corresponding Image as per given Image Format and stores it to specific location provided on Hard drive.
 */
 ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
@@ -212,9 +212,9 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
     ito::DataObject *dObj = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
     char *filename = NULL;
     filename = (*paramsMand)[1].getVal<char*>();
-	QImage image;
+    QImage image;
 
-	std::string imgFormat;
+    std::string imgFormat;
     imgFormat = (*paramsMand)[2].getVal<char*>();
     int toogle = (*paramsMand)[3].getVal<int>();
 
@@ -222,29 +222,29 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
     double lowLimit = (*paramsOpt)[0].getVal<double>();
     double highLimit = (*paramsOpt)[1].getVal<double>();
 
-	char *color_format = NULL;    
-	std::string color_form;
-	if((*paramsOpt)[2].getLen()!=0) 
-	{
-		color_format = (*paramsOpt)[1].getVal<char*>();
-		color_form = color_format;
-	}
+    char *color_format = NULL;    
+    std::string color_form;
+    if((*paramsOpt)[2].getLen()!=0) 
+    {
+        color_format = (*paramsOpt)[1].getVal<char*>();
+        color_form = color_format;
+    }
 
     if(toogle == 2 && (fabs(lowLimit - highLimit) < std::numeric_limits<double>::epsilon() || lowLimit > highLimit))
     {
         ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: lowLimit must be unequal to highLimit and smaller than highLimit").toAscii().data());
     }
 
-  /*  QVariant out1 = QVariant(2.0);	// showing any desired output on itom application.
-	outVals->append(out1);*/
-			
-	QString imgFilename(filename);
+  /*  QVariant out1 = QVariant(2.0);    // showing any desired output on itom application.
+    outVals->append(out1);*/
+            
+    QString imgFilename(filename);
 
-	//Creating an Image in Mono Format
-	if(imgFormat.compare("QImage::Format_Mono") == 0)
-	{
-		if(dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
-		{
+    //Creating an Image in Mono Format
+    if(imgFormat.compare("QImage::Format_Mono") == 0)
+    {
+        if(dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
+        {
             switch(dObj->getType())
             {
                 case ito::tUInt8:
@@ -379,17 +379,17 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 default:
                     ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
             }
-		}
-		else
-		{
-			ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: Only 2D DataObject is supported").toAscii().data());
-		}
-	}
-	//Creating an Image in MonoLSB Format
-	else if(imgFormat.compare("QImage::Format_MonoLSB")==0)
-	{
-		if(dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
-		{
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: Only 2D DataObject is supported").toAscii().data());
+        }
+    }
+    //Creating an Image in MonoLSB Format
+    else if(imgFormat.compare("QImage::Format_MonoLSB")==0)
+    {
+        if(dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
+        {
             if(toogle == 0)
             {
                 highLimit = 255.0;
@@ -537,18 +537,18 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 default:
                     ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
             }
-			
-		}
-		else
-		{
-			ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
-		}
-	}
-	//Creating an Image in Indexed8 Format
-	else if(imgFormat.compare("QImage::Format_Indexed8")==0)
-	{	
-		if(dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
-		{
+            
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
+        }
+    }
+    //Creating an Image in Indexed8 Format
+    else if(imgFormat.compare("QImage::Format_Indexed8")==0)
+    {    
+        if(dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
+        {
             double scaling = 1.0;
             bool doScaling = true;
             if(toogle == 0)
@@ -605,18 +605,18 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 default:
                     ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
             }
-		}
-		else
-		{
-			ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
-		}
-	}
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
+        }
+    }
 
-	//Creating an Image in RGB32 Format
-	else if(imgFormat.compare("QImage::Format_RGB32")==0)
-	{		
-		if(dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
-		{
+    //Creating an Image in RGB32 Format
+    else if(imgFormat.compare("QImage::Format_RGB32")==0)
+    {        
+        if(dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
+        {
             double scaling = 1.0;
             bool doScaling = true;
             if(toogle == 0)
@@ -668,7 +668,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 default:
                     ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
             }
-		}
+        }
         else if((dObj->getType() == ito::tUInt8) && (dObj->getDims() > 2 && dObj->calcNumMats() == 3))   // RGB-Planes
         {
             double scaling = 1.0;
@@ -704,16 +704,16 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                     ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
             }        
         }
-		else
-		{
-			ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
-		}
-	}
-	//Creating an Image in ARGB32 Format
-	else if(imgFormat.compare("QImage::Format_ARGB32")==0)
-	{
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
+        }
+    }
+    //Creating an Image in ARGB32 Format
+    else if(imgFormat.compare("QImage::Format_ARGB32")==0)
+    {
         if(dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
-		{
+        {
             double scaling = 1.0;
             bool doScaling = true;
             if(toogle == 0)
@@ -765,7 +765,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 default:
                     ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
             }
-		}
+        }
         else if((dObj->getType() == ito::tInt8) && (dObj->getDims() > 2 && dObj->calcNumMats() == 4))   // RGBA-Planes
         {
             double scaling = 1.0;
@@ -805,15 +805,15 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
         {
         
         }
-		else
-		{
-			ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
-		}
-	}
-	else
-	{
-	ret += ito::RetVal(ito::retError, 0, tr("Entered Image format is not supported").toAscii().data());
-	}
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
+        }
+    }
+    else
+    {
+    ret += ito::RetVal(ito::retError, 0, tr("Entered Image format is not supported").toAscii().data());
+    }
     return ret;
 }
 
@@ -824,10 +824,10 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
 /** loadDataObjectParams method, specifies the parameter list for loadDataObject method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting the specified Image from its specified location on Hard drive into itom DataObject. 
+*    and their specifications as required for converting the specified Image from its specified location on Hard drive into itom DataObject. 
 */
 ito::RetVal DataObjectIO::loadDataObjectParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -843,7 +843,7 @@ ito::RetVal DataObjectIO::loadDataObjectParams(QVector<ito::Param> *paramsMand, 
         m->addItem("G");
         m->addItem("B");
         m->addItem("RGB");
-	    param = ito::Param("ColorElement", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Color element character: R or G or B or RGB").toAscii().data());
+        param = ito::Param("ColorElement", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Color element character: R or G or B or RGB").toAscii().data());
         param.setMeta(m,true); //takes ownership of m
         paramsOpt->append(param);
     }
@@ -856,76 +856,76 @@ ito::RetVal DataObjectIO::loadDataObjectParams(QVector<ito::Param> *paramsMand, 
 /** loadDataObject method, retrieves the Image data and creates corresponding DataObject.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "loadDataObjectParams" function.
-*	It retrieves the Image data from Image location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
+*    It retrieves the Image data from Image location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
 */
 ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
-	QImage image;
-	QFileInfo fileinfo(filename);
+    QImage image;
+    QFileInfo fileinfo(filename);
 
-	if(!fileinfo.exists())
-	{
-		ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toAscii().data(), filename);
-	}	
-	else if( !image.load(filename) )
-	{
-		ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable image file.").toAscii().data(), filename);
-	}
-	else
-	{
-		ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-		char *colorElement;
-		std::string colorElem;
-		if ((*paramsOpt)[0].getLen()!= 0) 
-		{
-			colorElement = (*paramsOpt)[0].getVal<char*>();
-			colorElem = colorElement;
-		}
-		if (colorElem.compare("RGB") == 0) 
-		{
-			*dObjDst= ito::DataObject(3, image.height() ,image.width(), ito::tUInt8);
-		}
-		else 
-		{
-			*dObjDst = ito::DataObject(image.height(), image.width(), ito::tUInt8);
-		}
-		QImage::Format imgFormat;
-		imgFormat = image.format();
-	
-		if (imgFormat == QImage::Format_Mono)	//Case for Format_Mono and Format_MonoLSB images. Note: All Format_MonoLSB images are detected as Format_Mono images so No special case for Format_MonoLSB. 
-		{										
-			itom::io::transformImagetoData_Mono<ito::uint8>(&image, dObjDst);
-		}
-		else if (imgFormat == QImage::Format_Indexed8)   //Case for Format_Indexed8 images
-		{
-			itom::io::transformImagetoData_Indexed8<ito::uint8>(&image, dObjDst);
-		}
-		else if (imgFormat == QImage::Format_RGB32)     //Case for Format_RGB32 images
-		{
-			if (colorElem.compare("R") == 0) itom::io::transformImagetoData_RGB32<ito::uint8>(&image, dObjDst, colorElement);
-			else if (colorElem.compare("G") == 0) itom::io::transformImagetoData_RGB32<ito::uint8>(&image, dObjDst, colorElement);
-			else if (colorElem.compare("B") == 0) itom::io::transformImagetoData_RGB32<ito::uint8>(&image, dObjDst, colorElement);
-			else if (colorElem.compare("RGB") == 0) itom::io::transformImagetoData_RGB32<ito::uint8>(&image, dObjDst, colorElement);
-			else itom::io::transformImagetoData_RGB32<ito::uint8>(&image, dObjDst);
-		}
-		else if (imgFormat == QImage::Format_ARGB32)     //Case for Format_ARGB32 images
-		{	
-			if (colorElem.compare("R") == 0) itom::io::transformImagetoData_ARGB32<ito::uint8>(&image, dObjDst, colorElement);
-			else if (colorElem.compare("G") == 0) itom::io::transformImagetoData_ARGB32<ito::uint8>(&image, dObjDst, colorElement);
-			else if (colorElem.compare("B") == 0) itom::io::transformImagetoData_ARGB32<ito::uint8>(&image, dObjDst, colorElement);
-			else if (colorElem.compare("RGB") == 0) itom::io::transformImagetoData_ARGB32<ito::uint8>(&image, dObjDst, colorElement);
-			else itom::io::transformImagetoData_ARGB32<ito::uint8>(&image, dObjDst);
-		}
-		else
-		{
-			ret += ito::RetVal(ito::retError, 0, tr("Image does not have supported format").toAscii().data());
-		}
-	}
+    if(!fileinfo.exists())
+    {
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toAscii().data(), filename);
+    }    
+    else if( !image.load(filename) )
+    {
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable image file.").toAscii().data(), filename);
+    }
+    else
+    {
+        ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+        char *colorElement;
+        std::string colorElem;
+        if ((*paramsOpt)[0].getLen()!= 0) 
+        {
+            colorElement = (*paramsOpt)[0].getVal<char*>();
+            colorElem = colorElement;
+        }
+        if (colorElem.compare("RGB") == 0) 
+        {
+            *dObjDst= ito::DataObject(3, image.height() ,image.width(), ito::tUInt8);
+        }
+        else 
+        {
+            *dObjDst = ito::DataObject(image.height(), image.width(), ito::tUInt8);
+        }
+        QImage::Format imgFormat;
+        imgFormat = image.format();
+    
+        if (imgFormat == QImage::Format_Mono)    //Case for Format_Mono and Format_MonoLSB images. Note: All Format_MonoLSB images are detected as Format_Mono images so No special case for Format_MonoLSB. 
+        {                                        
+            itom::io::transformImagetoData_Mono<ito::uint8>(&image, dObjDst);
+        }
+        else if (imgFormat == QImage::Format_Indexed8)   //Case for Format_Indexed8 images
+        {
+            itom::io::transformImagetoData_Indexed8<ito::uint8>(&image, dObjDst);
+        }
+        else if (imgFormat == QImage::Format_RGB32)     //Case for Format_RGB32 images
+        {
+            if (colorElem.compare("R") == 0) itom::io::transformImagetoData_RGB32<ito::uint8>(&image, dObjDst, colorElement);
+            else if (colorElem.compare("G") == 0) itom::io::transformImagetoData_RGB32<ito::uint8>(&image, dObjDst, colorElement);
+            else if (colorElem.compare("B") == 0) itom::io::transformImagetoData_RGB32<ito::uint8>(&image, dObjDst, colorElement);
+            else if (colorElem.compare("RGB") == 0) itom::io::transformImagetoData_RGB32<ito::uint8>(&image, dObjDst, colorElement);
+            else itom::io::transformImagetoData_RGB32<ito::uint8>(&image, dObjDst);
+        }
+        else if (imgFormat == QImage::Format_ARGB32)     //Case for Format_ARGB32 images
+        {    
+            if (colorElem.compare("R") == 0) itom::io::transformImagetoData_ARGB32<ito::uint8>(&image, dObjDst, colorElement);
+            else if (colorElem.compare("G") == 0) itom::io::transformImagetoData_ARGB32<ito::uint8>(&image, dObjDst, colorElement);
+            else if (colorElem.compare("B") == 0) itom::io::transformImagetoData_ARGB32<ito::uint8>(&image, dObjDst, colorElement);
+            else if (colorElem.compare("RGB") == 0) itom::io::transformImagetoData_ARGB32<ito::uint8>(&image, dObjDst, colorElement);
+            else itom::io::transformImagetoData_ARGB32<ito::uint8>(&image, dObjDst);
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, tr("Image does not have supported format").toAscii().data());
+        }
+    }
     return ret;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -934,10 +934,10 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
 /** saveNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into Raw-Text data and save it into Hard drive.
+*    and their specifications as required for converting DataObject into Raw-Text data and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::saveNistSDFParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -948,13 +948,13 @@ ito::RetVal DataObjectIO::saveNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("decimalSigns",ito::ParamBase::Int | ito::ParamBase::In, 0, 12, 3, tr("Number of decimal signs (default: 3).").toAscii().data());
+        param = ito::Param("decimalSigns",ito::ParamBase::Int | ito::ParamBase::In, 0, 12, 3, tr("Number of decimal signs (default: 3).").toAscii().data());
         paramsOpt->append(param);
-	    param = ito::Param("verticalScale",ito::ParamBase::Int | ito::ParamBase::In, -12, 12, -3, tr("Power of 10 for the zValue (Default: -3, micrometer), only for floating point objects.").toAscii().data());
+        param = ito::Param("verticalScale",ito::ParamBase::Int | ito::ParamBase::In, -12, 12, -3, tr("Power of 10 for the zValue (Default: -3, micrometer), only for floating point objects.").toAscii().data());
         paramsOpt->append(param);
-	    param = ito::Param("invalidHandling",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Toggles NaN handling if dataObject is floating-type. 0: Write NaN (Default); 1: Substitut by InvalidValue.").toAscii().data());
+        param = ito::Param("invalidHandling",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Toggles NaN handling if dataObject is floating-type. 0: Write NaN (Default); 1: Substitut by InvalidValue.").toAscii().data());
         paramsOpt->append(param);
-	    param = ito::Param("invalidValue",ito::ParamBase::Double | ito::ParamBase::In, 0.0, -1 * std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), tr("New value for invalid substitution. Default is 0.0").toAscii().data());
+        param = ito::Param("invalidValue",ito::ParamBase::Double | ito::ParamBase::In, 0.0, -1 * std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), tr("New value for invalid substitution. Default is 0.0").toAscii().data());
         paramsOpt->append(param);
 
     }
@@ -967,10 +967,10 @@ ito::RetVal DataObjectIO::saveNistSDFParams(QVector<ito::Param> *paramsMand, QVe
 /** saveNistSDF method, writes the data from a dataObject to an ascii file.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "saveNistSDF" function.
-*	It retrieves the raw-data from the dataObject and writes them as ascii-data to the location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
+*    It retrieves the raw-data from the dataObject and writes them as ascii-data to the location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
 *
 *   see http://physics.nist.gov/VSC/jsp/DataFormat.jsp#a or http://resource.npl.co.uk/softgauges/Help.htm
 */
@@ -978,10 +978,10 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 {
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
-	QFileInfo fileinfo(filename);
+    QFileInfo fileinfo(filename);
     QFile dataOut(filename);
 
-	ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+    ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
 
     ret += ito::dObjHelper::verify2DDataObject(dObjSrc, "dObjectIn", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tUInt32, ito::tFloat32, ito::tFloat64);
 
@@ -993,12 +993,12 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     
     }
     else if( !dataOut.open(QIODevice::WriteOnly) )
-	{
-		ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no writeable file.").toAscii().data(), filename);
-	}
+    {
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no writeable file.").toAscii().data(), filename);
+    }
 
-	if(!ret.containsWarningOrError())
-	{   
+    if(!ret.containsWarningOrError())
+    {   
         QByteArray outLine(100, 0);
         std::string tag;
         double value = 0.0;
@@ -1213,7 +1213,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
         outLine = "*\n";
         dataOut.write(outLine);
 
-	}
+    }
 
     if(dataOut.isOpen())
     {
@@ -1228,7 +1228,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 /** readDataBlock method, read the data-block of a .sdf-nist metrology file and write data to the corresponding dataObject.
 *   @param [in]     inFile      Readonly File
 *   @param [in|out] newObject   The dataObject to be created
-*	@param [in]     zscale      The zscale, will be multiplied with the extracted data
+*    @param [in]     zscale      The zscale, will be multiplied with the extracted data
 *   @param [int]    flags       For later improvements, not used yet
 */
 template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator)
@@ -1334,10 +1334,10 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
 /** loadNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into Raw-Text data and save it into Hard drive.
+*    and their specifications as required for converting DataObject into Raw-Text data and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::loadNistSDFParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1359,16 +1359,16 @@ ito::RetVal DataObjectIO::loadNistSDFParams(QVector<ito::Param> *paramsMand, QVe
 /** loadNistSDF method, retrieves the ascii data and creates corresponding DataObject.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "loadNistSDF" function.
-*	It retrieves the ascii-data from file location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
+*    It retrieves the ascii-data from file location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
 */
 ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
-	QFileInfo fileinfo(filename);
+    QFileInfo fileinfo(filename);
     QFile dataIn(fileinfo.canonicalFilePath());
 
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
@@ -1377,16 +1377,16 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     {
         ret += ito::RetVal::format(ito::retError,0,tr("Dataobject not initialized").toAscii().data(), filename);
     }
-	else if(!fileinfo.exists())
-	{
-		ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toAscii().data(), filename);
-	}	
-	else if( !dataIn.open(QIODevice::ReadOnly) )
-	{
-		ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable file.").toAscii().data(), filename);
-	}
-	else
-	{     
+    else if(!fileinfo.exists())
+    {
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toAscii().data(), filename);
+    }    
+    else if( !dataIn.open(QIODevice::ReadOnly) )
+    {
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable file.").toAscii().data(), filename);
+    }
+    else
+    {     
         ito::float64 zscale(0.0);
         ret += readNistHeader(dataIn, *dObjDst, zscale, 0);
         if(!ret.containsError())
@@ -1423,7 +1423,7 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
             }
             
         }
-	}
+    }
 
     if(dataIn.isOpen())
     {
@@ -1438,7 +1438,7 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 /** readNistHeader method, read the header of a .sdf-nist metrology file and create corresponding dataObject.
 *   @param [in] inFile      Readonly File
 *   @param [out] newObject  The dataObject to be created
-*	@param [out] zscale     The zscale, will be multiplied with the extracted data later
+*    @param [out] zscale     The zscale, will be multiplied with the extracted data later
 *   @param [int] flags      For later improvements, not used yet
 */
 ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObject, double &zscale,const int /*flags*/)
@@ -1482,27 +1482,27 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
         {
             ysize = curLine.mid(curLine.lastIndexOf("=")+1, -1).simplified().toInt();
         }
-        else if(curLine.contains("Xscale")) 	//X-scale. A x-scale value of 1.00 E-6 represents a sample spacing of 1 micrometer, Double, 8-bytes
+        else if(curLine.contains("Xscale"))     //X-scale. A x-scale value of 1.00 E-6 represents a sample spacing of 1 micrometer, Double, 8-bytes
         {
             xscale = curLine.mid(curLine.lastIndexOf("=")+1, -1).simplified().toDouble();
         }
-        else if(curLine.contains("Yscale")) 	//Y-scale. A y-scale value of 1.00 E-6 represents a sample spacing of 1 micrometer, Double, 8-bytes
+        else if(curLine.contains("Yscale"))     //Y-scale. A y-scale value of 1.00 E-6 represents a sample spacing of 1 micrometer, Double, 8-bytes
         {
             yscale = curLine.mid(curLine.lastIndexOf("=")+1, -1).simplified().toDouble();
         }  
-        else if(curLine.contains("Zscale")) 	//Z-scale. A z-scale value of 1.00 E-6 represents a height of 1 micrometer, Double, 8-bytes
+        else if(curLine.contains("Zscale"))     //Z-scale. A z-scale value of 1.00 E-6 represents a height of 1 micrometer, Double, 8-bytes
         {
             zscale = curLine.mid(curLine.lastIndexOf("=")+1, -1).simplified().toDouble();
         }  
-        else if(curLine.contains("Zresolution")) 	//Z- resolution, Double, 8-bytes
+        else if(curLine.contains("Zresolution"))     //Z- resolution, Double, 8-bytes
         {
             zRes = curLine.mid(curLine.lastIndexOf("=")+1, -1).simplified().toDouble();
         }   
-        else if(curLine.contains("Compression")) 	//Compression Type, Unsigned Char, 1-bytes
+        else if(curLine.contains("Compression"))     //Compression Type, Unsigned Char, 1-bytes
         {
             // documentation missing
         } 
-        else if(curLine.contains("DataType")) 	//Data Type (0: unsigned char, 1: unsigned integer, 2: unsigned long, 3: float, 4: signed char, 5: signed integer, 6 signed long, 7: double), Unsigned Char, 1-bytes
+        else if(curLine.contains("DataType"))     //Data Type (0: unsigned char, 1: unsigned integer, 2: unsigned long, 3: float, 4: signed char, 5: signed integer, 6 signed long, 7: double), Unsigned Char, 1-bytes
         {
             dataType = curLine.mid(curLine.lastIndexOf("=")+1, -1).simplified().toInt();
             switch(dataType)
@@ -1583,7 +1583,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
 /** readDataBlock method, read the data-block of a .sdf-nist metrology file and write data to the corresponding dataObject.
 *   @param [in]     inFile      Readonly File
 *   @param [in|out] newObject   The dataObject to be created
-*	@param [in]     zscale      The zscale, will be multiplied with the extracted data
+*    @param [in]     zscale      The zscale, will be multiplied with the extracted data
 *   @param [int]    flags       For later improvements, not used yet
 */
 template<typename _Tp> ito::RetVal DataObjectIO::readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int /*flags*/, const char seperator)
@@ -1682,10 +1682,10 @@ template<typename _Tp> ito::RetVal DataObjectIO::readDataBlock(QFile &inFile, it
 /** saveTiffParams method, specifies the parameter list for saveDataObjectOpenCV as .Tiff images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into Image and save it into Hard drive.
+*    and their specifications as required for converting DataObject into Image and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::saveTiffParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1696,7 +1696,7 @@ ito::RetVal DataObjectIO::saveTiffParams(QVector<ito::Param> *paramsMand, QVecto
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "gray16" , tr("Color palette name [gray, gray16, ...]").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "gray16" , tr("Color palette name [gray, gray16, ...]").toAscii().data());
         paramsMand->append(param);
     }
     return retval;
@@ -1708,10 +1708,10 @@ ito::RetVal DataObjectIO::saveTiffParams(QVector<ito::Param> *paramsMand, QVecto
 /** saveTiff method, saves the DataObject into Hard drive as Image.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "saveTiffParams" function.
-*	Redirected to "saveDataObjectOpenCV"
+*    Redirected to "saveDataObjectOpenCV"
 */
 ito::RetVal DataObjectIO::saveTiff(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -1725,10 +1725,10 @@ ito::RetVal DataObjectIO::saveTiff(QVector<ito::ParamBase> *paramsMand, QVector<
 /** saveJPGParams method, specifies the parameter list for saveDataObjectOpenCV as .jpg and .jpg2000 images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into Image and save it into Hard drive.
+*    and their specifications as required for converting DataObject into Image and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::saveJPGParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1739,10 +1739,10 @@ ito::RetVal DataObjectIO::saveJPGParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor" , tr("Color palette name [gray, gray16, ...]. 'gray16' supported for '.jp2' only").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor" , tr("Color palette name [gray, gray16, ...]. 'gray16' supported for '.jp2' only").toAscii().data());
         paramsMand->append(param);
 
-	    param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 100, 90, tr("Compression rate, 0: high, 100: low").toAscii().data());
+        param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 100, 90, tr("Compression rate, 0: high, 100: low").toAscii().data());
         paramsOpt->append(param);
     }
     return retval;
@@ -1753,10 +1753,10 @@ ito::RetVal DataObjectIO::saveJPGParams(QVector<ito::Param> *paramsMand, QVector
 /** saveJPG method, saves the DataObject into Hard drive as Image.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "saveJPGParams" function.
-*	Redirected to "saveDataObjectOpenCV"
+*    Redirected to "saveDataObjectOpenCV"
 */
 ito::RetVal DataObjectIO::saveJPG(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -1769,10 +1769,10 @@ ito::RetVal DataObjectIO::saveJPG(QVector<ito::ParamBase> *paramsMand, QVector<i
 /** savePNGParams method, specifies the parameter list for saveDataObjectOpenCV as .png images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into Image and save it into Hard drive.
+*    and their specifications as required for converting DataObject into Image and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::savePNGParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1783,12 +1783,12 @@ ito::RetVal DataObjectIO::savePNGParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, gray16, ...].").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, gray16, ...].").toAscii().data());
         paramsMand->append(param);
 
-	    param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 9, tr("Compression rate, 0: high, 9: low").toAscii().data());
+        param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 9, tr("Compression rate, 0: high, 9: low").toAscii().data());
         paramsOpt->append(param);
-	    param = ito::Param("addAlphaChannel",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If enabled and in case of floating point values, invalid will have alpha low else high").toAscii().data());
+        param = ito::Param("addAlphaChannel",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If enabled and in case of floating point values, invalid will have alpha low else high").toAscii().data());
         paramsOpt->append(param);
     }
     return retval;
@@ -1799,10 +1799,10 @@ ito::RetVal DataObjectIO::savePNGParams(QVector<ito::Param> *paramsMand, QVector
 /** savePNG method, saves the DataObject into Hard drive as Image.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "savePNGParams" function.
-*	Redirected to "saveDataObjectOpenCV"
+*    Redirected to "saveDataObjectOpenCV"
 */
 ito::RetVal DataObjectIO::savePNG(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -1815,10 +1815,10 @@ ito::RetVal DataObjectIO::savePNG(QVector<ito::ParamBase> *paramsMand, QVector<i
 /** saveBMPParams method, specifies the parameter list for saveDataObjectOpenCV as .bmp images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into Image and save it into Hard drive.
+*    and their specifications as required for converting DataObject into Image and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::saveBMPParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1829,7 +1829,7 @@ ito::RetVal DataObjectIO::saveBMPParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, ...]").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, ...]").toAscii().data());
         paramsMand->append(param);
     }
     return retval;
@@ -1840,10 +1840,10 @@ ito::RetVal DataObjectIO::saveBMPParams(QVector<ito::Param> *paramsMand, QVector
 /** saveBMP method, saves the DataObject into Hard drive as Image.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "saveBMPParams" function.
-*	Redirected to "saveDataObjectOpenCV"
+*    Redirected to "saveDataObjectOpenCV"
 */
 ito::RetVal DataObjectIO::saveBMP(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -1856,10 +1856,10 @@ ito::RetVal DataObjectIO::saveBMP(QVector<ito::ParamBase> *paramsMand, QVector<i
 /** savePPMParams method, specifies the parameter list for saveDataObjectOpenCV as .ppm, .pgm, .pbm images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into Image and save it into Hard drive.
+*    and their specifications as required for converting DataObject into Image and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::savePPMParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1870,9 +1870,9 @@ ito::RetVal DataObjectIO::savePPMParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, ...]").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, ...]").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toAscii().data());
+        param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toAscii().data());
         paramsOpt->append(param);
     }
     return retval;
@@ -1883,10 +1883,10 @@ ito::RetVal DataObjectIO::savePPMParams(QVector<ito::Param> *paramsMand, QVector
 /** savePPM method, saves the DataObject into Hard drive as Image.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "savePPMParams" function.
-*	Redirected to "saveDataObjectOpenCV"
+*    Redirected to "saveDataObjectOpenCV"
 */
 ito::RetVal DataObjectIO::savePPM(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -1900,10 +1900,10 @@ ito::RetVal DataObjectIO::savePPM(QVector<ito::ParamBase> *paramsMand, QVector<i
 /** savePGMParams method, specifies the parameter list for saveDataObjectOpenCV as .ppm, .pgm, .pbm images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into Image and save it into Hard drive.
+*    and their specifications as required for converting DataObject into Image and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::savePGMParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1914,9 +1914,9 @@ ito::RetVal DataObjectIO::savePGMParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "gray16", tr("Color palette name [gray, gray16]").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "gray16", tr("Color palette name [gray, gray16]").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toAscii().data());
+        param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toAscii().data());
         paramsOpt->append(param);
     }
     return retval;
@@ -1927,10 +1927,10 @@ ito::RetVal DataObjectIO::savePGMParams(QVector<ito::Param> *paramsMand, QVector
 /** savePGM method, saves the DataObject into Hard drive as Image.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "savePPMParams" function.
-*	Redirected to "saveDataObjectOpenCV"
+*    Redirected to "saveDataObjectOpenCV"
 */
 ito::RetVal DataObjectIO::savePGM(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -1944,10 +1944,10 @@ ito::RetVal DataObjectIO::savePGM(QVector<ito::ParamBase> *paramsMand, QVector<i
 /** savePPMParams method, specifies the parameter list for saveDataObjectOpenCV as .ras, .su images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into Image and save it into Hard drive.
+*    and their specifications as required for converting DataObject into Image and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::saveRASParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1958,7 +1958,7 @@ ito::RetVal DataObjectIO::saveRASParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
         paramsMand->append(param);
-	    param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, ...]").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, ...]").toAscii().data());
         paramsMand->append(param);
     }
     return retval;
@@ -1969,10 +1969,10 @@ ito::RetVal DataObjectIO::saveRASParams(QVector<ito::Param> *paramsMand, QVector
 /** saveRAS method, saves the DataObject into Hard drive as Image.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "saveRASParams" function.
-*	Redirected to "saveDataObjectOpenCV"
+*    Redirected to "saveDataObjectOpenCV"
 */
 ito::RetVal DataObjectIO::saveRAS(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -1986,10 +1986,10 @@ ito::RetVal DataObjectIO::saveRAS(QVector<ito::ParamBase> *paramsMand, QVector<i
 /** saveDataObjectOpenCV method, saves the DataObject into Hard drive as Image using openCV.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "save-Format-Params" function.
-*	It converts passed DataObject into corresponding Image as per given Image Format and stores it to specific location provided on Hard drive.
+*    It converts passed DataObject into corresponding Image as per given Image Format and stores it to specific location provided on Hard drive.
 */
 ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/, const unsigned char imageFormat)
 {
@@ -2187,8 +2187,8 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
             return ito::RetVal(ito::retError, 0, tr("Image Format not valid.").toAscii().data());
     }
 
-	//Creating an Image in Mono Format
-	if(imgPalette.compare("gray") == 0)
+    //Creating an Image in Mono Format
+    if(imgPalette.compare("gray") == 0)
     {
         scrData = (cv::Mat *)(dObj->get_mdata()[dObj->seekMat(0)]);
         saveMat.create(scrData->rows, scrData->cols, CV_8U);
@@ -2224,7 +2224,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
         }
     }
     else if(imgPalette.compare("gray16") == 0 )
-	{
+    {
         if(gray16Supported)
         {
             scrData = (cv::Mat *)(dObj->get_mdata()[dObj->seekMat(0)]);
@@ -2357,10 +2357,10 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
             return ito::RetVal(ito::retError, 0, tr("Image format does not support color values.").toAscii().data());
         }
     }
-	else
-	{
-	    ret += ito::RetVal(ito::retError, 0, tr("Entered Image format is not supported").toAscii().data());
-	}
+    else
+    {
+        ret += ito::RetVal(ito::retError, 0, tr("Entered Image format is not supported").toAscii().data());
+    }
 
     if(!ret.containsError())
     {
@@ -2386,10 +2386,10 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
 /** loadImageParams method, specifies the parameter list for loadImage method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting the specified Image from its specified location on Hard drive into itom DataObject. 
+*    and their specifications as required for converting the specified Image from its specified location on Hard drive into itom DataObject. 
 */
 ito::RetVal DataObjectIO::loadImageParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -2409,7 +2409,7 @@ ito::RetVal DataObjectIO::loadImageParams(QVector<ito::Param> *paramsMand, QVect
         m->addItem("RGB");
         m->addItem("ARGB");
         m->addItem("GRAY");
-	    param = ito::Param("ColorElement", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Color element character: asIs (default) | alpha | R | G | B | RGB | ARGB | GRAY").toAscii().data());
+        param = ito::Param("ColorElement", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Color element character: asIs (default) | alpha | R | G | B | RGB | ARGB | GRAY").toAscii().data());
         param.setMeta(m,true); //takes ownership of m
         paramsOpt->append(param);
     }
@@ -2422,10 +2422,10 @@ ito::RetVal DataObjectIO::loadImageParams(QVector<ito::Param> *paramsMand, QVect
 /** loadDataObject method, retrieves the Image data and creates corresponding DataObject.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "loadDataObjectParams" function.
-*	It retrieves the Image data from Image location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
+*    It retrieves the Image data from Image location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
 */
 ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
@@ -2434,7 +2434,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
     char *colorElement = NULL;
     colorElement = (*paramsOpt)[0].getVal<char*>();
 
-	ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
 
     if(dObjDst == NULL)
     {
@@ -2479,15 +2479,15 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
         flags *= -1;        
     }
 
-	cv::Mat image;
+    cv::Mat image;
     QFileInfo fileinfo(filename);
 
-	if(!fileinfo.exists())
-	{
-		ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toAscii().data(), filename);
-	}	
-	else
-	{       
+    if(!fileinfo.exists())
+    {
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toAscii().data(), filename);
+    }    
+    else
+    {       
         try 
         {
             image = cv::imread(filename, flags);
@@ -2496,10 +2496,10 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
         {
             ret += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
         }
-	}
+    }
 
     if(!ret.containsError())
-	{
+    {
         int imageType = 0;
 
         switch(image.type())
@@ -2677,7 +2677,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                 return ito::RetVal(ito::retError,0,tr("Color channel not supported for extraction!").toAscii().data());
             }
         }
-	}
+    }
 
     if(!ret.containsError())
     {
@@ -2692,10 +2692,10 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
 /** loadDataObject method, retrieves xml-compatible raw data and creates corresponding DataObject.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "loadItomIDOParams" function.
-*	It retrieves the xml-compatible raw data from file location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
+*    It retrieves the xml-compatible raw data from file location passed as parameter from Hard drive and loads a corresponding Itom DataObject.
 */
 ito::RetVal DataObjectIO::loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
 {
@@ -2726,10 +2726,10 @@ ito::RetVal DataObjectIO::loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
 /** loadItomIDOParams method, specifies the parameter list for loadItomIDO method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for reading a xml-compatible binary and converting into DataObject from Hard drive.
+*    and their specifications as required for reading a xml-compatible binary and converting into DataObject from Hard drive.
 */
 ito::RetVal DataObjectIO::loadItomIDOParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -2749,10 +2749,10 @@ ito::RetVal DataObjectIO::loadItomIDOParams(QVector<ito::Param> *paramsMand, QVe
 /** saveItomIDO method, saves the DataObject into Hard drive as xml-compatible raw file using QT XML-Parser.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function accepts parameters from itom Python application according to specification provided by "saveItomIDOParams" function.
-*	It converts passed DataObject into xml-compatible data and stores it to specific location provided on Hard drive.
+*    It converts passed DataObject into xml-compatible data and stores it to specific location provided on Hard drive.
 */
 ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
@@ -2781,10 +2781,10 @@ ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
 /** saveItomIDOParams method, specifies the parameter list for saveItomIDO method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
-*	@param [out] outVals   optional output parameters
+*    @param [out] outVals   optional output parameters
 *
 *   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
-*	and their specifications as required for converting DataObject into the itom native xml-compatible binary and save it into Hard drive.
+*    and their specifications as required for converting DataObject into the itom native xml-compatible binary and save it into Hard drive.
 */
 ito::RetVal DataObjectIO::saveItomIDOParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {

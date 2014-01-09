@@ -16,11 +16,11 @@ class dialogGWInstekPSP : public QDialog
 
     private:
         Ui::dialogGWInstekPSP ui;
-		void *m_dataIO;
+        void *m_dataIO;
 
     public:
         dialogGWInstekPSP(void *dataIO);
-		~dialogGWInstekPSP() {};
+        ~dialogGWInstekPSP() {};
         int setVals(QMap<QString, ito::Param> *paramVals);
         int getVals(QMap<QString, ito::Param> *paramVals);
 

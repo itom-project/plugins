@@ -20,17 +20,17 @@ class DockWidgetVistek : public QWidget
     private:
         Ui::DockWidgetVistek ui;
 
-	signals:
-		void dataPropertiesChanged(int sizex, int sizey, int bpp);
-		void gainPropertiesChanged(double gain);
-		void exposurePropertiesChanged(double gain);
+    signals:
+        void dataPropertiesChanged(int sizex, int sizey, int bpp);
+        void gainPropertiesChanged(double gain);
+        void exposurePropertiesChanged(double gain);
 
-	public slots:
-		void valuesChanged(QMap<QString, ito::Param> params);
+    public slots:
+        void valuesChanged(QMap<QString, ito::Param> params);
 
     private slots:
-		void on_gainSpinBox_editingFinished();
-		void on_exposureSpinBox_editingFinished();
+        void on_gainSpinBox_editingFinished();
+        void on_exposureSpinBox_editingFinished();
 };
 
 #endif

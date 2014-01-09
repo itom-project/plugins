@@ -52,7 +52,7 @@ int dialogDispWindow::setVals(QMap<QString, ito::Param> *params, const int numIm
 
     ui.label_imgend->setText(QVariant(numImages - 1).toString());
 //    ui.slider_image->setMaximum(numImages - 1);
-//	ui.slider_image->setValue((*params)["numimg"].getVal<int>());
+//    ui.slider_image->setValue((*params)["numimg"].getVal<int>());
 
     ui.horizontalSlider->setMinimum(0);
     ui.horizontalSlider->setMaximum(numImages - 1);
@@ -69,16 +69,16 @@ int dialogDispWindow::getVals(QMap<QString, ito::Param> *params)
     qvar = ui.spinBox_x0->value();
     (*params)["x0"].setVal<int>(qvar.toInt());
     
-	qvar = ui.spinBox_y0->value();
+    qvar = ui.spinBox_y0->value();
     (*params)["y0"].setVal<int>(qvar.toInt());
     
-	qvar = ui.spinBox_xsize->value();
+    qvar = ui.spinBox_xsize->value();
     (*params)["xsize"].setVal<int>(qvar.toInt());
 
-	qvar = ui.spinBox_ysize->value();
+    qvar = ui.spinBox_ysize->value();
     (*params)["ysize"].setVal<int>(qvar.toInt());
 
-	qvar = ui.spinBox_period->value();
+    qvar = ui.spinBox_period->value();
     (*params)["period"].setVal<int>(qvar.toInt());
 
     switch(ui.comboBox_phaseshifts->currentIndex())
@@ -89,7 +89,7 @@ int dialogDispWindow::getVals(QMap<QString, ito::Param> *params)
 
         default:
         case 1:
-			(*params)["phaseshift"].setVal<int>(4); 
+            (*params)["phaseshift"].setVal<int>(4); 
         break;
 
         case 2:
@@ -102,9 +102,9 @@ int dialogDispWindow::getVals(QMap<QString, ito::Param> *params)
     }
 
     (*params)["color"].setVal<int>(ui.comboBox_color->currentIndex());
-	(*params)["orientation"].setVal<int>(ui.comboBox_orientation->currentIndex());
+    (*params)["orientation"].setVal<int>(ui.comboBox_orientation->currentIndex());
     (*params)["gamma"].setVal<int>(ui.checkBox_gamma->isChecked());
-//	(*params)["numimg"].setVal<int>(ui.slider_image->value());
+//    (*params)["numimg"].setVal<int>(ui.slider_image->value());
     (*params)["numimg"].setVal<int>(ui.horizontalSlider->value());
 
     return 0;

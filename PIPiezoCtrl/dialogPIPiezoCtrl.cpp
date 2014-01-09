@@ -11,7 +11,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogPIPiezoCtrl::DialogPIPiezoCtrl(ito::AddInActuator *motor) : m_pPIPiezo(motor)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
 
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);

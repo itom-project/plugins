@@ -18,7 +18,7 @@
 Q_DECLARE_METATYPE(ito::DataObject)
 
 int FireGrabber::m_numberOfInstances = 0;  // initialization
-	
+    
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabberInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -47,8 +47,8 @@ ito::RetVal FireGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 FireGrabberInterface::FireGrabberInterface()
 {
-	m_type = ito::typeDataIO | ito::typeGrabber;
-	setObjectName("FireGrabber"); 
+    m_type = ito::typeDataIO | ito::typeGrabber;
+    setObjectName("FireGrabber"); 
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char* docstring = \
@@ -58,7 +58,7 @@ firewire. \n\
 This plugin can only be loaded and used once the AVT FirePackage driver has been correctly installed on your computer. For more information about AVT FirePackage and their \
 license browse to http://www.alliedvisiontec.com. This plugin was mainly tested with the cameras AVT Malin, Guppy and Pike. Not all parameters are supported by this plugin.";
 
-	m_description = QObject::tr("Fire Package Capture (Firewire)");
+    m_description = QObject::tr("Fire Package Capture (Firewire)");
     m_detaildescription = QObject::tr(docstring);
     m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -73,7 +73,7 @@ license browse to http://www.alliedvisiontec.com. This plugin was mainly tested 
 
     m_initParamsOpt.append(ito::Param("cameraID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("specific number of the camera, don't use with cameraNumber (0 = unused)").toAscii().data()));
     m_initParamsOpt.append(ito::Param("vendorID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("number of the vendor (e.g. Allied: vendorID=673537), don't use with cameraNumber (0 = unused)").toAscii().data()));
-	m_initParamsOpt.append(ito::Param("cameraNumber", ito::ParamBase::Int | ito::ParamBase::In, 0, 25, 0, tr("number of order of plugging the cameras (0 = parameter not used)").toAscii().data()));
+    m_initParamsOpt.append(ito::Param("cameraNumber", ito::ParamBase::Int | ito::ParamBase::In, 0, 25, 0, tr("number of order of plugging the cameras (0 = parameter not used)").toAscii().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -110,7 +110,7 @@ const ito::RetVal FireGrabber::showConfDialog(void)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 FireGrabber::FireGrabber() : 
-	AddInGrabber()
+    AddInGrabber()
 {
    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "FireGrabber", NULL);
    m_params.insert(paramVal.getName(), paramVal);
@@ -180,91 +180,91 @@ FireGrabber::~FireGrabber()
 
 ito::RetVal FireGrabber::AlliedChkError(int errornumber)
 {
-	ito::RetVal retValue = ito::retOk;
-	int i;
+    ito::RetVal retValue = ito::retOk;
+    int i;
 
-	struct error
-	{
-		int value;
-		const char* text;
-	} 
+    struct error
+    {
+        int value;
+        const char* text;
+    } 
 
-	static const errors[] =
-	{	/* All Errormassages are taken from the Fire Grab-Manual. */ 	
-		{ FCE_NOERROR          /*   0  */,   "No Error"},
-		{ HALER_NOCARD            /* 1  */,  "Card is not present"},
-		{ HALER_NONTDEVICE        /* 2  */,  "No logical Device"},
-		{ HALER_NOMEM             /* 3  */,  "Not enough memory"},
-		{ HALER_MODE              /* 4  */,  "Not allowed in this mode"},
-		{ HALER_TIMEOUT           /* 5  */,  "Timeout"},
-		{ HALER_ALREADYSTARTED    /* 6  */,  "Something is started"},
-		{ HALER_NOTSTARTED        /* 7  */,  "Not started"},
-		{ HALER_BUSY              /* 8  */,  "Busy at the moment"},
-		{ HALER_NORESOURCES       /* 9  */,  "No resources available"},
-		{ HALER_NODATA           /* 10  */,  "No data available"},
-		{ HALER_NOACK            /* 11  */,  "Didn't get acknowledge"},
-		{ HALER_NOIRQ            /* 12  */,  "Interruptinstallerror"},
-		{ HALER_NOBUSRESET       /* 13  */,  "Error waiting for busreset"},
-		{ HALER_NOLICENSE        /* 14  */,  "No license"},
-		{ HALER_RCODEOTHER       /* 15  */,  "RCode not RCODE_COMPLETE"},
-		{ HALER_PENDING          /* 16  */,  "Something still pending"},
-		{ HALER_INPARMS          /* 17  */,  "Input parameter range"},
-		{ HALER_CHIPVERSION      /* 18  */,  "Unrecognized chipversion"},
-		{ HALER_HARDWARE         /* 19  */,  "Hardware error"},
-		{ HALER_NOTIMPLEMENTED   /* 20  */,  "Not implemented"},
-		{ HALER_CANCELLED        /* 21  */,  "Cancelled"},
-		{ HALER_NOTLOCKED        /* 22  */,  "Memory is not locked"},
-		{ HALER_GENERATIONCNT    /* 23  */,  "Bus reset in between"},
-		{ HALER_NOISOMANAGER     /* 24  */,  "No IsoManager present"},
-		{ HALER_NOBUSMANAGER     /* 25  */,  "No BusManager present"},
-		{ HALER_UNEXPECTED       /* 26  */,  "Unexpected value"},
-		{ HALER_REMOVED          /* 27  */,  "Target was removed"},
-		{ HALER_NOBUSRESOURCES   /* 28  */,  "No ISO resources available"},
-		{ HALER_DMAHALTED        /* 29  */,  "DMA halted"},
-		{ FCE_ALREADYOPENED      /* 1001*/,  "Something already opened"},
-		{ FCE_NOTOPENED          /* 1002*/,  "Need open before"},
-		{ FCE_NODETAILS          /* 1003*/,  "No details"},
-		{ FCE_DRVNOTINSTALLED    /* 1004*/,  "Driver not installed"},
-		{ FCE_MISSINGBUFFERS     /* 1005*/,  "Don't have buffers"},
-		{ FCE_INPARMS            /* 1006*/,  "Parameter error"},
-		{ FCE_CREATEDEVICE       /* 1007*/,  "Error creating WinDevice"},
-		{ FCE_WINERROR           /* 1008*/,  "Internal Windows error"},
-		{ FCE_IOCTL              /* 1009*/,  "Error DevIoCtl"},
-		{ FCE_DRVRETURNLENGTH    /* 1010*/,  "Wrong length return data"},
-		{ FCE_INVALIDHANDLE      /* 1011*/,  "Wrong handle"},
-		{ FCE_NOTIMPLEMENTED     /* 1012*/,  "Function not implemented"},
-		{ FCE_DRVRUNNING         /* 1013*/,  "Driver runs already"},
-		{ FCE_STARTERROR         /* 1014*/,  "Couldn't start"},
-		{ FCE_INSTALLERROR       /* 1015*/,  "Installation error"},
-		{ FCE_DRVVERSION         /* 1016*/,  "Driver has wrong version"},
-		{ FCE_NODEADDRESS        /* 1017*/,  "Wrong nodeaddress"},
-		{ FCE_PARTIAL            /* 1018*/,  "Partial info. copied"},
-		{ FCE_NOMEM              /* 1019*/,  "No memory"},
-		{ FCE_NOTAVAILABLE       /* 1020*/,  "Requested function not available"},
-		{ FCE_NOTCONNECTED       /* 1021*/,  "Not connected to target"},
-		{ FCE_ADJUSTED           /* 1022*/,  "A pararmeter had to be adjusted"},
-	};
+    static const errors[] =
+    {    /* All Errormassages are taken from the Fire Grab-Manual. */     
+        { FCE_NOERROR          /*   0  */,   "No Error"},
+        { HALER_NOCARD            /* 1  */,  "Card is not present"},
+        { HALER_NONTDEVICE        /* 2  */,  "No logical Device"},
+        { HALER_NOMEM             /* 3  */,  "Not enough memory"},
+        { HALER_MODE              /* 4  */,  "Not allowed in this mode"},
+        { HALER_TIMEOUT           /* 5  */,  "Timeout"},
+        { HALER_ALREADYSTARTED    /* 6  */,  "Something is started"},
+        { HALER_NOTSTARTED        /* 7  */,  "Not started"},
+        { HALER_BUSY              /* 8  */,  "Busy at the moment"},
+        { HALER_NORESOURCES       /* 9  */,  "No resources available"},
+        { HALER_NODATA           /* 10  */,  "No data available"},
+        { HALER_NOACK            /* 11  */,  "Didn't get acknowledge"},
+        { HALER_NOIRQ            /* 12  */,  "Interruptinstallerror"},
+        { HALER_NOBUSRESET       /* 13  */,  "Error waiting for busreset"},
+        { HALER_NOLICENSE        /* 14  */,  "No license"},
+        { HALER_RCODEOTHER       /* 15  */,  "RCode not RCODE_COMPLETE"},
+        { HALER_PENDING          /* 16  */,  "Something still pending"},
+        { HALER_INPARMS          /* 17  */,  "Input parameter range"},
+        { HALER_CHIPVERSION      /* 18  */,  "Unrecognized chipversion"},
+        { HALER_HARDWARE         /* 19  */,  "Hardware error"},
+        { HALER_NOTIMPLEMENTED   /* 20  */,  "Not implemented"},
+        { HALER_CANCELLED        /* 21  */,  "Cancelled"},
+        { HALER_NOTLOCKED        /* 22  */,  "Memory is not locked"},
+        { HALER_GENERATIONCNT    /* 23  */,  "Bus reset in between"},
+        { HALER_NOISOMANAGER     /* 24  */,  "No IsoManager present"},
+        { HALER_NOBUSMANAGER     /* 25  */,  "No BusManager present"},
+        { HALER_UNEXPECTED       /* 26  */,  "Unexpected value"},
+        { HALER_REMOVED          /* 27  */,  "Target was removed"},
+        { HALER_NOBUSRESOURCES   /* 28  */,  "No ISO resources available"},
+        { HALER_DMAHALTED        /* 29  */,  "DMA halted"},
+        { FCE_ALREADYOPENED      /* 1001*/,  "Something already opened"},
+        { FCE_NOTOPENED          /* 1002*/,  "Need open before"},
+        { FCE_NODETAILS          /* 1003*/,  "No details"},
+        { FCE_DRVNOTINSTALLED    /* 1004*/,  "Driver not installed"},
+        { FCE_MISSINGBUFFERS     /* 1005*/,  "Don't have buffers"},
+        { FCE_INPARMS            /* 1006*/,  "Parameter error"},
+        { FCE_CREATEDEVICE       /* 1007*/,  "Error creating WinDevice"},
+        { FCE_WINERROR           /* 1008*/,  "Internal Windows error"},
+        { FCE_IOCTL              /* 1009*/,  "Error DevIoCtl"},
+        { FCE_DRVRETURNLENGTH    /* 1010*/,  "Wrong length return data"},
+        { FCE_INVALIDHANDLE      /* 1011*/,  "Wrong handle"},
+        { FCE_NOTIMPLEMENTED     /* 1012*/,  "Function not implemented"},
+        { FCE_DRVRUNNING         /* 1013*/,  "Driver runs already"},
+        { FCE_STARTERROR         /* 1014*/,  "Couldn't start"},
+        { FCE_INSTALLERROR       /* 1015*/,  "Installation error"},
+        { FCE_DRVVERSION         /* 1016*/,  "Driver has wrong version"},
+        { FCE_NODEADDRESS        /* 1017*/,  "Wrong nodeaddress"},
+        { FCE_PARTIAL            /* 1018*/,  "Partial info. copied"},
+        { FCE_NOMEM              /* 1019*/,  "No memory"},
+        { FCE_NOTAVAILABLE       /* 1020*/,  "Requested function not available"},
+        { FCE_NOTCONNECTED       /* 1021*/,  "Not connected to target"},
+        { FCE_ADJUSTED           /* 1022*/,  "A pararmeter had to be adjusted"},
+    };
 
     if (errornumber > 0)
     {
         bool found = false;
 
-	    for (i = 0; i < sizeof(errors) / sizeof(errors[0]); i++)
-	    {
-		    if (errors[i].value == errornumber)
-		    {
-			    retValue += ito::RetVal::format(ito::retError, 0, tr(&errors[i].text[0]).toAscii().data());
-			    found = true;
-		    }
-	    }
+        for (i = 0; i < sizeof(errors) / sizeof(errors[0]); i++)
+        {
+            if (errors[i].value == errornumber)
+            {
+                retValue += ito::RetVal::format(ito::retError, 0, tr(&errors[i].text[0]).toAscii().data());
+                found = true;
+            }
+        }
 
         if (!found)
         {
             retValue += ito::RetVal(ito::retError, 0, tr("Unknown Error Code").toAscii().data());
         }
     }
-    	
-	return retValue;
+        
+    return retValue;
 }
 
 
@@ -358,10 +358,10 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     if(!retValue.containsError())
     {
         if ((!key.compare("x1") || !key.compare("y1") || !key.compare("x0") || !key.compare("y0")))
-	    {
+        {
             if (m_isgrabbing == true)
             {
-		        retValue += ito::RetVal(ito::retError, 0, tr("camera is grabbing, stop camera first").toAscii().data());		
+                retValue += ito::RetVal(ito::retError, 0, tr("camera is grabbing, stop camera first").toAscii().data());        
             }
             else
             {
@@ -371,65 +371,65 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 int y1temp = key.compare("y1") == 0 ? val->getVal<int>() : m_params["y1"].getVal<int>();
                 retValue += adjustROI(x0temp, x1temp, y0temp, y1temp);
             }
-	    }
+        }
         else
         {
             if (!key.compare("integration_time"))
-		    {
-			    unsigned long dblVal = (unsigned long)(exposureSecToShutter(val->getVal<double>()));
-			    Result = Camera.SetParameter(FGP_SHUTTER, dblVal);
+            {
+                unsigned long dblVal = (unsigned long)(exposureSecToShutter(val->getVal<double>()));
+                Result = Camera.SetParameter(FGP_SHUTTER, dblVal);
                 retValue += AlliedChkError(Result);
-		    }
-		    else if (!key.compare("bpp"))
-		    {
-			    Result = Camera.GetParameter(FGP_XSIZE, &m_xSize);
-			    Result = Camera.GetParameter(FGP_YSIZE, &m_ySize);
+            }
+            else if (!key.compare("bpp"))
+            {
+                Result = Camera.GetParameter(FGP_XSIZE, &m_xSize);
+                Result = Camera.GetParameter(FGP_YSIZE, &m_ySize);
 
-			    if (it->getVal<int>() == 8)
-			    {
-				    Result = Camera.SetParameter(FGP_IMAGEFORMAT, MAKEIMAGEFORMAT(RES_SCALABLE, CM_Y8, 0));
-			    }
-			    else if (it->getVal<int>() == 16)
-			    {
-				    Result = Camera.SetParameter(FGP_IMAGEFORMAT, MAKEIMAGEFORMAT(RES_SCALABLE, CM_Y16, 0));
-			    }
-			    else
-			    {
-				    retValue += ito::RetVal(ito::retError, 0, tr("only 8 and 16 bit are implemented").toAscii().data());
-			    }
+                if (it->getVal<int>() == 8)
+                {
+                    Result = Camera.SetParameter(FGP_IMAGEFORMAT, MAKEIMAGEFORMAT(RES_SCALABLE, CM_Y8, 0));
+                }
+                else if (it->getVal<int>() == 16)
+                {
+                    Result = Camera.SetParameter(FGP_IMAGEFORMAT, MAKEIMAGEFORMAT(RES_SCALABLE, CM_Y16, 0));
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("only 8 and 16 bit are implemented").toAscii().data());
+                }
 
                 retValue += AlliedChkError(Result);
 
-			    if (!retValue.containsError())
-			    {
-				    Result = Camera.SetParameter(FGP_XSIZE, m_xSize);
-				    Result = Camera.SetParameter(FGP_YSIZE, m_ySize);
+                if (!retValue.containsError())
+                {
+                    Result = Camera.SetParameter(FGP_XSIZE, m_xSize);
+                    Result = Camera.SetParameter(FGP_YSIZE, m_ySize);
                     retValue += AlliedChkError(Result);
-			    }
-		    }
-		    else if (!key.compare("gain"))
-		    {
+                }
+            }
+            else if (!key.compare("gain"))
+            {
                 FGPINFO valInfo = m_camProperties["gain"];
                 unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
                 retValue += AlliedChkError(Camera.SetParameter(FGP_GAIN, valnew));
-		    }
+            }
             else if (!key.compare("brightness"))
-		    {
+            {
                 FGPINFO valInfo = m_camProperties["brightness"];
                 unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
                 retValue += AlliedChkError(Camera.SetParameter(FGP_BRIGHTNESS, valnew));
-		    }
+            }
             else if (!key.compare("sharpness"))
-		    {
+            {
                 FGPINFO valInfo = m_camProperties["sharpness"];
                 unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
                 retValue += AlliedChkError(Camera.SetParameter(FGP_SHARPNESS, valnew));
-		    }
+            }
             else if (!key.compare("gamma"))
-		    {
+            {
                 retValue += AlliedChkError(Camera.SetParameter(FGP_GAMMA, it->getVal<int>()));
-		    }
-		    
+            }
+            
             if (!retValue.containsError())
             {
                 retValue += it->copyValueFrom( &(*val) );
@@ -534,10 +534,10 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
                 m_params["sizey"].setVal<int>(ySizeInfo.IsValue);
 
                 FGPINFO packsize;
-		        retval += AlliedChkError(Camera.GetParameterInfo(FGP_PACKETSIZE, &packsize));
-		        double fps = packsize.IsValue * 8000.0 / static_cast<double>(xSizeInfo.IsValue * ySizeInfo.IsValue);
-		        double ftime = 1.0 / fps;
-		        m_params["frame_time"].setVal<double>(ftime);
+                retval += AlliedChkError(Camera.GetParameterInfo(FGP_PACKETSIZE, &packsize));
+                double fps = packsize.IsValue * 8000.0 / static_cast<double>(xSizeInfo.IsValue * ySizeInfo.IsValue);
+                double ftime = 1.0 / fps;
+                m_params["frame_time"].setVal<double>(ftime);
             }
 
         }
@@ -549,130 +549,130 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue(ito::retOk);
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
     UINT32 Result = 0;
     
-	//Allied: vendorID = 673537
-	//Allied Pike: cameraID = 269109919 (specific!!!)
-	//Allied Marlin: cameraID = 235356461 (specific!!!)
-	
-	// get the optional parameters "cameraID" and "vendorID"
-	int camID = NULL;
-	int venID = NULL;
-	int plugNR = NULL;
-	int nodeNR = NULL;
-	int tempID = NULL;
+    //Allied: vendorID = 673537
+    //Allied Pike: cameraID = 269109919 (specific!!!)
+    //Allied Marlin: cameraID = 235356461 (specific!!!)
+    
+    // get the optional parameters "cameraID" and "vendorID"
+    int camID = NULL;
+    int venID = NULL;
+    int plugNR = NULL;
+    int nodeNR = NULL;
+    int tempID = NULL;
     camID = paramsOpt->value(0).getVal<int>();
-	venID = paramsOpt->value(1).getVal<int>();
-	plugNR = paramsOpt->value(2).getVal<int>();
-	int connected = false;
+    venID = paramsOpt->value(1).getVal<int>();
+    plugNR = paramsOpt->value(2).getVal<int>();
+    int connected = false;
     UINT32 NodeCnt;
     FGNODEINFO NodeInfo[25];
-	
-	if ((camID != 0 || venID != 0) && plugNR != 0)
-	{
-		camID = 0;
-		venID = 0;
-		retValue += ito::RetVal(ito::retWarning, 0, tr("too much input parameters, plugin number is used").toAscii().data());
-	}
+    
+    if ((camID != 0 || venID != 0) && plugNR != 0)
+    {
+        camID = 0;
+        venID = 0;
+        retValue += ito::RetVal(ito::retWarning, 0, tr("too much input parameters, plugin number is used").toAscii().data());
+    }
 
-	FireGrabber::m_numberOfInstances++;
+    FireGrabber::m_numberOfInstances++;
 
-	if (FireGrabber::m_numberOfInstances == 1) // we are the first user, open DLL
-	{
-		retValue += AlliedChkError(FGInitModule(NULL));
-	}
+    if (FireGrabber::m_numberOfInstances == 1) // we are the first user, open DLL
+    {
+        retValue += AlliedChkError(FGInitModule(NULL));
+    }
 
-	Result = FGGetNodeList(NodeInfo, 25, &NodeCnt);  // Get list of connected nodes
-	
-	if (plugNR != 0)
-	{
-		Result = Camera.Connect(&NodeInfo[plugNR - 1].Guid);
-		if(Result == 0)
-		{
-			connected = true;
-		}
-		nodeNR = plugNR - 1;
-	}
-	else
-	{
-	    // determine if camID and venID define the demanded camera clearly
-	    if (NodeCnt >= 2)
-	    {
-		    for (unsigned long i = 0; i <= NodeCnt - 2; i++)
-		    {
-			    for (unsigned long j = i; j <= NodeCnt - 2; j++)
-			    {
-				    if (camID != 0 && venID == 0 && (NodeInfo[i].Guid.Low == NodeInfo[j + 1].Guid.Low))
-				    {
-					    retValue += ito::RetVal(ito::retWarning, 0, tr("same cameraID for more than one camera, connected the first plugged and free camera").toAscii().data());
-				    }
-				    if (camID == 0 && venID != 0 && (NodeInfo[i].Guid.High == NodeInfo[j + 1].Guid.High))
-				    {
-					    retValue += ito::RetVal(ito::retWarning, 0, tr("same vendorID for more than one camera, connected the first plugged and free camera").toAscii().data());
-				    }
-			    }
-		    }
-	    }
-	
-	    // find the right port of demanded camera and connect it
-	    for (unsigned long i = 0; i <= NodeCnt-1; i++)
-	    {
-		    if (camID == NodeInfo[i].Guid.Low && venID == NodeInfo[i].Guid.High)	//camID and venID given
-		    {
-				    Result = Camera.Connect(&NodeInfo[i].Guid);		// Connect with node i
-					if(Result == 0)
-					{
-						connected = true;
-					}
-				    nodeNR = i;
-				    break;
-		    }
-		    else if (camID == NodeInfo[i].Guid.Low && NodeInfo[i].Busy == 0 && venID == 0)	//only camID given
-		    {
-				    Result = Camera.Connect(&NodeInfo[i].Guid);
-					if(Result == 0)
-					{
-						connected = true;
-					}
-				    nodeNR = i;
-				    break;
-		    }
-		    else if (camID == 0 && venID == NodeInfo[i].Guid.High && NodeInfo[i].Busy == 0)	//only venID given
-		    {
-				    Result = Camera.Connect(&NodeInfo[i].Guid);
-					if(Result == 0)
-					{
-						connected = true;
-					}
-				    nodeNR = i;
-				    break;
-		    }
-		    else if (camID == 0 && venID == 0 && NodeInfo[i].Busy == 0) //no camID and venID given, connect the first plugged and free camera to its node
-		    {
-				    Result = Camera.Connect(&NodeInfo[i].Guid);   // Connect with node i
-					if(Result == 0)
-					{
-						connected = true;
-					}
-				    nodeNR = i;
-				    break;
-		    }
-	    }
-	}
+    Result = FGGetNodeList(NodeInfo, 25, &NodeCnt);  // Get list of connected nodes
+    
+    if (plugNR != 0)
+    {
+        Result = Camera.Connect(&NodeInfo[plugNR - 1].Guid);
+        if(Result == 0)
+        {
+            connected = true;
+        }
+        nodeNR = plugNR - 1;
+    }
+    else
+    {
+        // determine if camID and venID define the demanded camera clearly
+        if (NodeCnt >= 2)
+        {
+            for (unsigned long i = 0; i <= NodeCnt - 2; i++)
+            {
+                for (unsigned long j = i; j <= NodeCnt - 2; j++)
+                {
+                    if (camID != 0 && venID == 0 && (NodeInfo[i].Guid.Low == NodeInfo[j + 1].Guid.Low))
+                    {
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("same cameraID for more than one camera, connected the first plugged and free camera").toAscii().data());
+                    }
+                    if (camID == 0 && venID != 0 && (NodeInfo[i].Guid.High == NodeInfo[j + 1].Guid.High))
+                    {
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("same vendorID for more than one camera, connected the first plugged and free camera").toAscii().data());
+                    }
+                }
+            }
+        }
+    
+        // find the right port of demanded camera and connect it
+        for (unsigned long i = 0; i <= NodeCnt-1; i++)
+        {
+            if (camID == NodeInfo[i].Guid.Low && venID == NodeInfo[i].Guid.High)    //camID and venID given
+            {
+                    Result = Camera.Connect(&NodeInfo[i].Guid);        // Connect with node i
+                    if(Result == 0)
+                    {
+                        connected = true;
+                    }
+                    nodeNR = i;
+                    break;
+            }
+            else if (camID == NodeInfo[i].Guid.Low && NodeInfo[i].Busy == 0 && venID == 0)    //only camID given
+            {
+                    Result = Camera.Connect(&NodeInfo[i].Guid);
+                    if(Result == 0)
+                    {
+                        connected = true;
+                    }
+                    nodeNR = i;
+                    break;
+            }
+            else if (camID == 0 && venID == NodeInfo[i].Guid.High && NodeInfo[i].Busy == 0)    //only venID given
+            {
+                    Result = Camera.Connect(&NodeInfo[i].Guid);
+                    if(Result == 0)
+                    {
+                        connected = true;
+                    }
+                    nodeNR = i;
+                    break;
+            }
+            else if (camID == 0 && venID == 0 && NodeInfo[i].Busy == 0) //no camID and venID given, connect the first plugged and free camera to its node
+            {
+                    Result = Camera.Connect(&NodeInfo[i].Guid);   // Connect with node i
+                    if(Result == 0)
+                    {
+                        connected = true;
+                    }
+                    nodeNR = i;
+                    break;
+            }
+        }
+    }
 
-	// Set camera to scalable mode and max size
-	if (Result == 0 && connected)
-	{
+    // Set camera to scalable mode and max size
+    if (Result == 0 && connected)
+    {
         //check available parameters
         FGPINFO info, xInfo, yInfo;
         double val;
 
         tempID = NodeInfo[nodeNR].Guid.High;
-		m_params["vendorID"].setVal(tempID);
-		tempID = NodeInfo[nodeNR].Guid.Low;
-		m_params["cameraID"].setVal(tempID);
+        m_params["vendorID"].setVal(tempID);
+        tempID = NodeInfo[nodeNR].Guid.Low;
+        m_params["cameraID"].setVal(tempID);
         
         char *vendorName = new char[512];
         vendorName[511] = '\0'; //zero-terminate it for security reason
@@ -853,51 +853,51 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
         Result = Camera.SetParameter(FGP_IMAGEFORMAT, MAKEIMAGEFORMAT(RES_SCALABLE, CM_Y8, 0));
 
-		Result = Camera.GetParameterInfo(FGP_XSIZE, &xInfo);
-		Result = Camera.GetParameterInfo(FGP_YSIZE, &yInfo);
+        Result = Camera.GetParameterInfo(FGP_XSIZE, &xInfo);
+        Result = Camera.GetParameterInfo(FGP_YSIZE, &yInfo);
 
-		Result = Camera.SetParameter(FGP_XPOSITION, 0);
-		Result = Camera.SetParameter(FGP_YPOSITION, 0);
-		Result = Camera.SetParameter(FGP_XSIZE, xInfo.MaxValue);
-		Result = Camera.SetParameter(FGP_YSIZE, yInfo.MaxValue);
+        Result = Camera.SetParameter(FGP_XPOSITION, 0);
+        Result = Camera.SetParameter(FGP_YPOSITION, 0);
+        Result = Camera.SetParameter(FGP_XSIZE, xInfo.MaxValue);
+        Result = Camera.SetParameter(FGP_YSIZE, yInfo.MaxValue);
 
-		m_params["sizex"].setVal<double>(xInfo.MaxValue);
-		m_params["sizey"].setVal<double>(yInfo.MaxValue);
-		m_params["x1"].setVal<double>(xInfo.MaxValue - 1);
-		m_params["y1"].setVal<double>(yInfo.MaxValue - 1);
+        m_params["sizex"].setVal<double>(xInfo.MaxValue);
+        m_params["sizey"].setVal<double>(yInfo.MaxValue);
+        m_params["x1"].setVal<double>(xInfo.MaxValue - 1);
+        m_params["y1"].setVal<double>(yInfo.MaxValue - 1);
 
-		// Obtain data geometry
-		Result = Camera.GetParameterInfo(FGP_XSIZE, &xInfo);
-		Result = Camera.GetParameterInfo(FGP_YSIZE, &yInfo);
-	
-		static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax(xInfo.MaxValue);
-		static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax(yInfo.MaxValue);
-		static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMin(xInfo.MinValue);
-		static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMin(yInfo.MinValue);
-		static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax(xInfo.MaxValue - 1);
-		static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax(yInfo.MaxValue - 1);
-		static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMax(xInfo.MaxValue - 1);
-		static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMax(yInfo.MaxValue - 1);
+        // Obtain data geometry
+        Result = Camera.GetParameterInfo(FGP_XSIZE, &xInfo);
+        Result = Camera.GetParameterInfo(FGP_YSIZE, &yInfo);
+    
+        static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax(xInfo.MaxValue);
+        static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax(yInfo.MaxValue);
+        static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMin(xInfo.MinValue);
+        static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMin(yInfo.MinValue);
+        static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax(xInfo.MaxValue - 1);
+        static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax(yInfo.MaxValue - 1);
+        static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMax(xInfo.MaxValue - 1);
+        static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMax(yInfo.MaxValue - 1);
 
         FGPINFO packsize;
-		retValue += AlliedChkError(Camera.GetParameterInfo(FGP_PACKETSIZE, &packsize));
-		double fps = packsize.IsValue * 8000.0 / static_cast<double>(xInfo.IsValue * yInfo.IsValue);
-		double ftime = 1.0 / fps;
-		m_params["frame_time"].setVal<double>(ftime);
-	}
+        retValue += AlliedChkError(Camera.GetParameterInfo(FGP_PACKETSIZE, &packsize));
+        double fps = packsize.IsValue * 8000.0 / static_cast<double>(xInfo.IsValue * yInfo.IsValue);
+        double ftime = 1.0 / fps;
+        m_params["frame_time"].setVal<double>(ftime);
+    }
 
-	if (Result != 0)
-	{
-		retValue = AlliedChkError(Result);
-	}
-	else if(connected == false)
-	{
-		retValue += ito::RetVal(ito::retError,0, tr("no camera has been connected").toAscii().data());
-	}
-	
-	m_isgrabbing = false;
+    if (Result != 0)
+    {
+        retValue = AlliedChkError(Result);
+    }
+    else if(connected == false)
+    {
+        retValue += ito::RetVal(ito::retError,0, tr("no camera has been connected").toAscii().data());
+    }
+    
+    m_isgrabbing = false;
 
-	retValue += checkData(); 
+    retValue += checkData(); 
 
     if (waitCond)
     {
@@ -913,29 +913,29 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::close(ItomSharedSemaphore *waitCond)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-	
+    
     if (grabberStartedCount() > 0)
     {
-		Camera.CloseCapture();
+        Camera.CloseCapture();
     }
 
-	Camera.Disconnect();						// Disconnect camera
+    Camera.Disconnect();                        // Disconnect camera
 
-	FireGrabber::m_numberOfInstances--;
-	if (FireGrabber::m_numberOfInstances < 1) //we are the last user, close DLL
-	{
-		FGExitModule();							// Exit module
-	}
+    FireGrabber::m_numberOfInstances--;
+    if (FireGrabber::m_numberOfInstances < 1) //we are the last user, close DLL
+    {
+        FGExitModule();                            // Exit module
+    }
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-	
-	return retValue;
+    
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -967,7 +967,7 @@ int FireGrabber::exposureSecToShutter(double exposure)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     UINT32 Result = 0;
 
@@ -980,19 +980,19 @@ ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
 
         if (!retValue.containsError())
         {
-		    // Start DMA logic
-		    retValue += AlliedChkError(Camera.OpenCapture());
-	
-		    if (!retValue.containsError())
-		    {
+            // Start DMA logic
+            retValue += AlliedChkError(Camera.OpenCapture());
+    
+            if (!retValue.containsError())
+            {
                 // Start image device
-	            retValue += AlliedChkError(Camera.StartDevice());
+                retValue += AlliedChkError(Camera.StartDevice());
                 retValue += AlliedChkError(Camera.DiscardFrames());
-		    }
+            }
         }
     }
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1003,16 +1003,16 @@ ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
     decGrabberStarted();
     if (grabberStartedCount() == 0)
     {
         // Start image device
-	    retValue += AlliedChkError(Camera.StopDevice());
+        retValue += AlliedChkError(Camera.StopDevice());
 
-		retValue += AlliedChkError(Camera.CloseCapture());
+        retValue += AlliedChkError(Camera.CloseCapture());
     }
     else if (grabberStartedCount() < 0)
     {
@@ -1020,7 +1020,7 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
         setGrabberStarted(0);
     }
 
-	m_isgrabbing = false;
+    m_isgrabbing = false;
 
     if (waitCond)
     {
@@ -1028,9 +1028,9 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->release();
     }
 
-	//Result = Camera.StopDevice();	// Stop the device
+    //Result = Camera.StopDevice();    // Stop the device
 
-	return ito::retOk;
+    return ito::retOk;
 }
          
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1042,7 +1042,7 @@ ito::RetVal FireGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCon
     retValue += AlliedChkError(Camera.DiscardFrames());
     retValue += AlliedChkError(Camera.PutFrame(NULL));
 
-	m_isgrabbing = true;
+    m_isgrabbing = true;
 
 
     if (waitCond)
@@ -1050,7 +1050,7 @@ ito::RetVal FireGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCon
         waitCond->returnValue = retValue;
         waitCond->release();  
     }
-	return retValue;
+    return retValue;
 }
 
 
@@ -1062,148 +1062,148 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue(ito::retOk);
     UINT32 Result = 0;
-	
-	bool RetCode = false;
+    
+    bool RetCode = false;
     FGFRAME frame;
 
-	int curxsize = m_params["sizex"].getVal<int>();
-	int curysize = m_params["sizey"].getVal<int>();
-	int x0 = m_params["x0"].getVal<int>();
-	int y0 = m_params["y0"].getVal<int>();
-	int maxxsize = (int)m_params["sizex"].getMax();
-	int maxysize = (int)m_params["sizey"].getMax();
+    int curxsize = m_params["sizex"].getVal<int>();
+    int curysize = m_params["sizey"].getVal<int>();
+    int x0 = m_params["x0"].getVal<int>();
+    int y0 = m_params["y0"].getVal<int>();
+    int maxxsize = (int)m_params["sizex"].getMax();
+    int maxysize = (int)m_params["sizey"].getMax();
     bool resizeRequired = (x0 > 0 || y0 > 0);
 
-	int type = 0;
+    int type = 0;
 
-	bool copyExternal = false;
-	bool hasLiveList = false;
+    bool copyExternal = false;
+    bool hasLiveList = false;
 
-	if (externalDataObject)
-	{
-		copyExternal = true;
-	}
+    if (externalDataObject)
+    {
+        copyExternal = true;
+    }
 
-	if (m_autoGrabbingListeners.size() > 0)
-	{
-		hasLiveList = true;
-	}
+    if (m_autoGrabbingListeners.size() > 0)
+    {
+        hasLiveList = true;
+    }
 
     //obtain frame from camera
-	Result = Camera.GetFrame(&frame);
-	if (Result != 0)
-	{
-		retValue += AlliedChkError(Result);
-	}
+    Result = Camera.GetFrame(&frame);
+    if (Result != 0)
+    {
+        retValue += AlliedChkError(Result);
+    }
 
-	if (frame.Flags & FGF_INVALID)
-	{
-		retValue += ito::RetVal(ito::retError, 0, "Framebuffer of FireWire-DLL invalid during retrieveImage");
-	}
+    if (frame.Flags & FGF_INVALID)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "Framebuffer of FireWire-DLL invalid during retrieveImage");
+    }
 
-	retValue += AlliedChkError(Camera.GetParameter(FGP_XSIZE, &m_xSize));
-	retValue += AlliedChkError(Camera.GetParameter(FGP_YSIZE, &m_ySize));
-	
-	if (!retValue.containsError())
-	{
+    retValue += AlliedChkError(Camera.GetParameter(FGP_XSIZE, &m_xSize));
+    retValue += AlliedChkError(Camera.GetParameter(FGP_YSIZE, &m_ySize));
+    
+    if (!retValue.containsError())
+    {
         //copy frame.pData to m_data or externalDataObject
 
-		if (m_params["bpp"].getVal<int>() == 8 )
-		{
-			if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)frame.pData, m_xSize, m_ySize);
-			if (!copyExternal || hasLiveList) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)frame.pData, m_xSize, m_ySize);
-		}
-		else if (m_params["bpp"].getVal<int>() == 16)
-		{
+        if (m_params["bpp"].getVal<int>() == 8 )
+        {
+            if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)frame.pData, m_xSize, m_ySize);
+            if (!copyExternal || hasLiveList) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)frame.pData, m_xSize, m_ySize);
+        }
+        else if (m_params["bpp"].getVal<int>() == 16)
+        {
             ito::uint16 *rowPtr = NULL;
-			ito::uint8 *rowPtr8 = NULL;
-			ito::uint8 *framePtr = (ito::uint8*)frame.pData;
-			int frameIdx;
+            ito::uint8 *rowPtr8 = NULL;
+            ito::uint8 *framePtr = (ito::uint8*)frame.pData;
+            int frameIdx;
             cv::Mat *mat;
 
             if (copyExternal)
             {
-			    //with respect to the byte-order of the camera-channel (big-endian) it must be swapped to little-endian für itom
-			    mat = (cv::Mat*)externalDataObject->get_mdata()[0];
+                //with respect to the byte-order of the camera-channel (big-endian) it must be swapped to little-endian für itom
+                mat = (cv::Mat*)externalDataObject->get_mdata()[0];
                 frameIdx = 0;
-			
-			    for (int m = 0; m < (int)m_ySize ; m++)
-			    {
-				    rowPtr = mat->ptr<ito::uint16>(m);
-				    rowPtr8 = (ito::uint8*)rowPtr;
-				    for (int n = 0; n < (int)m_xSize ; n++)
-				    {
-					    rowPtr8[n * 2 + 1] = framePtr[frameIdx];
-					    rowPtr8[n * 2] = framePtr[frameIdx + 1];
-					    frameIdx += 2;
+            
+                for (int m = 0; m < (int)m_ySize ; m++)
+                {
+                    rowPtr = mat->ptr<ito::uint16>(m);
+                    rowPtr8 = (ito::uint8*)rowPtr;
+                    for (int n = 0; n < (int)m_xSize ; n++)
+                    {
+                        rowPtr8[n * 2 + 1] = framePtr[frameIdx];
+                        rowPtr8[n * 2] = framePtr[frameIdx + 1];
+                        frameIdx += 2;
 
-					    /*rowPtr8[n*2+1] = framePtr[frameIdx++];
-					    rowPtr8[n*2] = framePtr[frameIdx++];*/
-				    }
-			    }
+                        /*rowPtr8[n*2+1] = framePtr[frameIdx++];
+                        rowPtr8[n*2] = framePtr[frameIdx++];*/
+                    }
+                }
             }
             
             if (!copyExternal || hasLiveList)
             {
                 //with respect to the byte-order of the camera-channel (big-endian) it must be swapped to little-endian für itom
-			    mat = (cv::Mat*)m_data.get_mdata()[0];
+                mat = (cv::Mat*)m_data.get_mdata()[0];
                 frameIdx = 0;
-			
-			    for (int m = 0; m < (int)m_ySize ; m++)
-			    {
-				    rowPtr = mat->ptr<ito::uint16>(m);
-				    rowPtr8 = (ito::uint8*)rowPtr;
-				    for (int n = 0; n < (int)m_xSize ; n++)
-				    {
-					    rowPtr8[n * 2 + 1] = framePtr[frameIdx];
-					    rowPtr8[n * 2] = framePtr[frameIdx + 1];
-					    frameIdx += 2;
+            
+                for (int m = 0; m < (int)m_ySize ; m++)
+                {
+                    rowPtr = mat->ptr<ito::uint16>(m);
+                    rowPtr8 = (ito::uint8*)rowPtr;
+                    for (int n = 0; n < (int)m_xSize ; n++)
+                    {
+                        rowPtr8[n * 2 + 1] = framePtr[frameIdx];
+                        rowPtr8[n * 2] = framePtr[frameIdx + 1];
+                        frameIdx += 2;
 
-					    /*rowPtr8[n*2+1] = framePtr[frameIdx++];
-					    rowPtr8[n*2] = framePtr[frameIdx++];*/
-				    }
-			    }
+                        /*rowPtr8[n*2+1] = framePtr[frameIdx++];
+                        rowPtr8[n*2] = framePtr[frameIdx++];*/
+                    }
+                }
             }
-		}
-	}
+        }
+    }
 
     //returns the frame back to standby queue of camera. PutFrame(NULL) in acquire then puts it to DMA queue, where camera can put new images in.
     retValue += AlliedChkError(Camera.PutFrame(&frame));
 
-	//retValue += AlliedChkError(Camera.StopDevice());	// Stop the device
+    //retValue += AlliedChkError(Camera.StopDevice());    // Stop the device
 
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
-	retValue += retrieveData();
+    retValue += retrieveData();
 
-		if (!retValue.containsError())
-	{
+        if (!retValue.containsError())
+    {
 
-		if (dObj == NULL)
-		{
-			retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toAscii().data());
-		}
-		else
-		{
-			retValue += sendDataToListeners(0);
+        if (dObj == NULL)
+        {
+            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toAscii().data());
+        }
+        else
+        {
+            retValue += sendDataToListeners(0);
 
-			(*dObj) = this->m_data;
-		}
+            (*dObj) = this->m_data;
+        }
 
-	}
+    }
 
 
-	if (waitCond) 
+    if (waitCond) 
     {
         waitCond->returnValue = retValue;
-		waitCond->release();
+        waitCond->release();
     }
 
     return retValue;
@@ -1224,12 +1224,12 @@ ito::RetVal FireGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 */
 ito::RetVal FireGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
     if (!dObj)
-	{
+    {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
     }
     else
@@ -1238,19 +1238,19 @@ ito::RetVal FireGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
 
     if (!retValue.containsError())
-	{
+    {
         retValue += retrieveData(dObj);  
     }
 
     if (!retValue.containsError())
-	{
+    {
         sendDataToListeners(0); //don't wait for live image, since user should get the image as fast as possible.
     }
 
     if (waitCond) 
     {
         waitCond->returnValue = retValue;
-		waitCond->release();
+        waitCond->release();
     }
 
     return retValue;

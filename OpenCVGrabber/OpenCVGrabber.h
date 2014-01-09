@@ -12,42 +12,42 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class	OpenCVGrabber 
-  *\brief	class to use a the standard grabber from OpenCV as an ITOM-Addin. Child of AddIn - Library (DLL) - Interface
+  *\class    OpenCVGrabber 
+  *\brief    class to use a the standard grabber from OpenCV as an ITOM-Addin. Child of AddIn - Library (DLL) - Interface
   *
   *
-  *	\sa	AddInDataIO, DummyGrabber
-  *	\date	Oct.2011
-  *	\author	Wolfram Lyda
-  * \warning	NA
+  *    \sa    AddInDataIO, DummyGrabber
+  *    \date    Oct.2011
+  *    \author    Wolfram Lyda
+  * \warning    NA
   *
   */
 
-#define	FCC(ch4) ((((DWORD)(ch4) & 0xFF) << 24) | (((DWORD)(ch4) & 0xFF00) << 8) | (((DWORD)(ch4) & 0xFF0000) >> 8) |(((DWORD)(ch4) & 0xFF000000) >> 24))
+#define    FCC(ch4) ((((DWORD)(ch4) & 0xFF) << 24) | (((DWORD)(ch4) & 0xFF00) << 8) | (((DWORD)(ch4) & 0xFF0000) >> 8) |(((DWORD)(ch4) & 0xFF000000) >> 24))
 
 class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
 {
     Q_OBJECT
 
     protected:
-		//! Destructor
+        //! Destructor
         ~OpenCVGrabber();
-		//! Constructor
+        //! Constructor
         OpenCVGrabber();
- //       ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);	/*!< Check if objekt has to be reallocated */
-		ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
+ //       ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);    /*!< Check if objekt has to be reallocated */
+        ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
 
 
     public:
         friend class OpenCVGrabberInterface;
-        const ito::RetVal showConfDialog(void);	//! Open the config nonmodal dialog to set camera parameters 
+        const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
 
-        cv::VideoCapture *m_pCam;	/*!< Handle to the openCV-Cam-Class */
+        cv::VideoCapture *m_pCam;    /*!< Handle to the openCV-Cam-Class */
 
-		int m_CCD_ID; /*!< Camera ID */
+        int m_CCD_ID; /*!< Camera ID */
         bool m_isgrabbing; /*!< Check if acquire was called */
 
         int m_imgChannels; /*!< number of channels of the camera image due to current parameterization */
@@ -58,11 +58,11 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
 
         int m_colorMode;
 
-        cv::Mat m_pDataMatBuffer;	/*!< OpenCV DataFile to retrieve datas, this image is already filled after acquire command */
+        cv::Mat m_pDataMatBuffer;    /*!< OpenCV DataFile to retrieve datas, this image is already filled after acquire command */
 
         cv::Mat m_alphaChannel; /* simple uint8, 1-channel image with 255 values filled in case of colorMode. This is the alpha plane */
 
-		ito::RetVal checkCameraAbilities(); /*!< Funktion to check and set aviable data types */
+        ito::RetVal checkCameraAbilities(); /*!< Funktion to check and set aviable data types */
 
         enum tColorMode
         {
@@ -76,28 +76,28 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
 
     public slots:
         //!< Get Camera-Parameter
-		ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
+        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
         //!< Set Camera-Parameter
-		ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
+        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
         //!< Initialise board, load dll, allocate buffer
-		ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         //!< Free buffer, delete board, unload dll
-		ito::RetVal close(ItomSharedSemaphore *waitCond);
+        ito::RetVal close(ItomSharedSemaphore *waitCond);
 
-		//!< Start the camera to enable acquire-commands
+        //!< Start the camera to enable acquire-commands
         ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
         //!< Stop the camera to disable acquire-commands
-		ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
+        ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
         //!< Softwaretrigger for the camera
-		ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
-		//!< Wait for acquired picture, copy the picture to dObj of right type and size
+        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
+        //!< Wait for acquired picture, copy the picture to dObj of right type and size
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
-		void updateParameters(QMap<QString, ito::ParamBase> params);
+        void updateParameters(QMap<QString, ito::ParamBase> params);
 
     private slots:
 
@@ -105,14 +105,14 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class	OpenCVGrabberInterface 
+  *\class    OpenCVGrabberInterface 
   *
-  *\brief	Interface-Class for OpenCVGrabber-Class
+  *\brief    Interface-Class for OpenCVGrabber-Class
   *
-  *	\sa	AddInDataIO, OpenCVGrabber
-  *	\date	11.10.2010
-  *	\author	Wolfram Lyda
-  * \warning	NA
+  *    \sa    AddInDataIO, OpenCVGrabber
+  *    \date    11.10.2010
+  *    \author    Wolfram Lyda
+  * \warning    NA
   *
   */
 class OpenCVGrabberInterface : public ito::AddInInterfaceBase

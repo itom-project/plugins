@@ -76,18 +76,18 @@ class FittingFilters : public ito::AddInAlgo
 
     private:
         struct Koeffizienten {
-		     int    gradX;
-		     int    gradY;
-		     int    sizeX;
-		     int    sizeY;
-		     double *b;
-		     double *alphaX;
-		     double *betaX;
-		     double *gammaX;
-		     double *alphaY;
-		     double *betaY;
-		     double *gammaY;
-		};
+             int    gradX;
+             int    gradY;
+             int    sizeX;
+             int    sizeY;
+             double *b;
+             double *alphaX;
+             double *betaX;
+             double *gammaX;
+             double *alphaY;
+             double *betaY;
+             double *gammaY;
+        };
 
         static ito::RetVal polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *dblFittedData, int gradX, int gradY, int sizeX, int sizeY, double *sigma, struct Koeffizienten *koeff, bool fillNaNValues = false);
         static ito::RetVal calcKoeff(int anzahl,int PolyGrad, double *Alpha, double *Beta, double *Gamma);

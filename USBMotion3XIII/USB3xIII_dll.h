@@ -4,7 +4,7 @@
 #define USB3xIII_DLL_H
 //---------------------------------------------------------------------------
 //------ Common Constants - NULL ------
-//#ifdef	NULL
+//#ifdef    NULL
 //#  undef NULL
 //#endif
 //#ifndef __cplusplus
@@ -21,17 +21,17 @@
 
 
 #if defined Q_OS_WIN64
-	//in 64bit, char* returns a 2byte character (respectively).
-	//therefore the methods are forwarded to wchar_t. In 64bit it is necessary to set /Zc:wchar_t- compiler flag
-	/*Original message (10.04.2013): 
-		Sehr geehrter Herr Gronle,
+    //in 64bit, char* returns a 2byte character (respectively).
+    //therefore the methods are forwarded to wchar_t. In 64bit it is necessary to set /Zc:wchar_t- compiler flag
+    /*Original message (10.04.2013): 
+        Sehr geehrter Herr Gronle,
 
-		die 64Bit-DLL wurde mit Delphi XE2/64Bit geschrieben.
-		Daher hat der Typ Char 2Bytes.
+        die 64Bit-DLL wurde mit Delphi XE2/64Bit geschrieben.
+        Daher hat der Typ Char 2Bytes.
 
-		Mit freundlichen Grüßen,
-		Yasar Channaa
-	*/
+        Mit freundlichen Grüßen,
+        Yasar Channaa
+    */
     typedef unsigned int (__stdcall* LPINITUSBMC)(wchar_t*);
     typedef wchar_t* (__stdcall* LPGETPRODUCTVERSION)(int);
     typedef wchar_t* (__stdcall* LPGETVENDORNAME)(int);

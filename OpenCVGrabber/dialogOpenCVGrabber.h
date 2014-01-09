@@ -14,7 +14,7 @@ class DialogOpenCVGrabber : public QDialog
     Q_OBJECT
 
     public:
-        DialogOpenCVGrabber(ito::AddInGrabber *grabber, bool colorCam, int camWidth, int camHeight);	//!< Constructor
+        DialogOpenCVGrabber(ito::AddInGrabber *grabber, bool colorCam, int camWidth, int camHeight);    //!< Constructor
         ~DialogOpenCVGrabber() {};//! Destructor
         int sendVals(void);
 
@@ -35,9 +35,9 @@ class DialogOpenCVGrabber : public QDialog
 
     private slots:
         
-        void on_applyButton_clicked();	//!< Write the current settings to the internal paramsVals and sent them to the grabber
+        void on_applyButton_clicked();    //!< Write the current settings to the internal paramsVals and sent them to the grabber
 
-        void on_btnSetFullROI_clicked();	//!< Set x and y-sizes to maximum valid value
+        void on_btnSetFullROI_clicked();    //!< Set x and y-sizes to maximum valid value
 
         void on_spinX0_valueChanged(int value);
         void on_spinX1_valueChanged(int value);

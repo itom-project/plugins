@@ -36,14 +36,14 @@ class FireGrabberInterface : public ito::AddInInterfaceBase
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class	FireGrabber 
-  *\brief	class to use a the standard grabber from Allied Fire Grab Packet as an itom-Addin.
+  *\class    FireGrabber 
+  *\brief    class to use a the standard grabber from Allied Fire Grab Packet as an itom-Addin.
   *
   *
-  *	\sa	AddInDataIO, FireGrabber
-  *	\date	Jun.2012
-  *	\author	Alexander Bielke
-  * \warning	NA
+  *    \sa    AddInDataIO, FireGrabber
+  *    \date    Jun.2012
+  *    \author    Alexander Bielke
+  * \warning    NA
   *
   */
 
@@ -52,21 +52,21 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
     Q_OBJECT
 
     protected:
-		//! Destructor
+        //! Destructor
         ~FireGrabber();
-		//! Constructor
+        //! Constructor
         FireGrabber();
-		ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
+        ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
 
 
     public:
         friend class FireGrabberInterface;
 
-        const ito::RetVal showConfDialog(void);	//! Open the config nonmodal dialog to set camera parameters 
-		int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
-		
+        const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
+        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
+        
     private:
-		CFGCamera  Camera;
+        CFGCamera  Camera;
 
         struct ExposureParameters
         {
@@ -78,12 +78,12 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
 
         ExposureParameters m_exposureParams;
 
-		unsigned long  m_xSize, m_ySize;
+        unsigned long  m_xSize, m_ySize;
         
         bool m_isgrabbing; /*!< Check if acquire was called */
         //bool saturation_on; /*!< Check if saturation is controlled manually */
 
-		ito::RetVal AlliedChkError(int errornumber); /*!< Map Allied-Error-Number to ITOM-Errortype and Message */
+        ito::RetVal AlliedChkError(int errornumber); /*!< Map Allied-Error-Number to ITOM-Errortype and Message */
 
         ito::RetVal adjustROI(int x0, int x1, int y0, int y1);
 
@@ -96,32 +96,32 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
 
     public slots:
         //!< Get Camera-Parameter
-		ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
+        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
         //!< Set Camera-Parameter
-		ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
+        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
         //!< Initialise board, load dll, allocate buffer
-		ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         //!< Free buffer, delete board, unload dll
-		ito::RetVal close(ItomSharedSemaphore *waitCond);
+        ito::RetVal close(ItomSharedSemaphore *waitCond);
 
-		//!< Start the camera to enable acquire-commands
+        //!< Start the camera to enable acquire-commands
         ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
         //!< Stop the camera to disable acquire-commands
-		ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
+        ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
         //!< Softwaretrigger for the camera
-		ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
-		//!< Wait for acquired picture, copy the picture to dObj of right type and size
+        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
+        //!< Wait for acquired picture, copy the picture to dObj of right type and size
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
-		void GainOffsetPropertiesChanged(double gain, double offset);
+        void GainOffsetPropertiesChanged(double gain, double offset);
         void IntegrationPropertiesChanged(double integrationtime);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
 
-		 
+         
 };
 
 

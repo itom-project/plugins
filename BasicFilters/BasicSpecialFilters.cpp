@@ -506,7 +506,7 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
         dObjDst->addToProtocol(std::string(msg.toAscii().data()));
     }
 
-	/*QVariant nrOfRepl(nrOfReplacements);
+    /*QVariant nrOfRepl(nrOfReplacements);
     outVals->append(nrOfRepl);*/
 
     (*paramsOut)[0].setVal<int>(nrOfReplacements);

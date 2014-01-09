@@ -26,7 +26,7 @@ class PrjWindow : public QGLWidget
         int getPhaseShift(void)  {return m_phaShift;};
         int getNumGrayImages(void);
         int getCurImg(void) { return m_imgNum; }
-		int getOrientationClearedCurImg(void);
+        int getOrientationClearedCurImg(void);
         int getGrayBitsVert(void) { return m_grayBitsVert; }
         int getGrayBitsHoriz(void) { return m_grayBitsHoriz; }
         unsigned char ** getCosPtrVert(void) { return m_cosImgsVert; };
@@ -113,7 +113,7 @@ class PrjWindow : public QGLWidget
 
         ito::RetVal showImageNum(const int num);
 
-		ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = NULL);
 
     private slots:
 

@@ -23,8 +23,8 @@ class FileGrabberInterface : public ito::AddInInterfaceBase
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);  /*!< closes any specific instance of FileGrabber, given by *addInInst */
 
-		//! auto-increment, static instance counter for all File-grabber instances
-		static int m_instCounter;
+        //! auto-increment, static instance counter for all File-grabber instances
+        static int m_instCounter;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ class FileGrabber : public ito::AddInGrabber
 
         template<typename _Tp> inline ito::RetVal transferDataFromStack(const int current_image, const bool hasListeners, const bool copyExternal, ito::DataObject *externalDataObject);
 
-	signals:
+    signals:
 
     public slots:
         /*ito::RetVal getParam(const char *name, QSharedPointer<char> val, QSharedPointer<int> len, ItomSharedSemaphore *waitCond = NULL);
@@ -77,8 +77,8 @@ class FileGrabber : public ito::AddInGrabber
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
         //ito::RetVal setVal(const void *dObj, const int length, ItomSharedSemaphore *waitCond);
 
-		//void dataParametersChanged(int sizex, int sizey, int bpp);
-		void GainOffsetPropertiesChanged(double gain, double offset);
+        //void dataParametersChanged(int sizex, int sizey, int bpp);
+        void GainOffsetPropertiesChanged(double gain, double offset);
         void IntegrationPropertiesChanged(double integrationtime);
 
     private slots:

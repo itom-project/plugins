@@ -534,14 +534,14 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 /*!
     \detail This function sets the parameters of this serial port
 
-    \param[in] baud		    Baudrate in bits / s
-    \param[in] endline		Endline character
-    \param[in] bits		    Number of bits in line before stopbits
-    \param[in] stopbits		Number of stop bits after every n bits
-    \param[in] parity		Toggle parity check options
-    \param[in] flow 		Flow control bitmask
-    \param[in] singlechar	Write every character seperated or complete buffer at once
-    \param[in] timeout		Time to wait until timeout in [ms]
+    \param[in] baud            Baudrate in bits / s
+    \param[in] endline        Endline character
+    \param[in] bits            Number of bits in line before stopbits
+    \param[in] stopbits        Number of stop bits after every n bits
+    \param[in] parity        Toggle parity check options
+    \param[in] flow         Flow control bitmask
+    \param[in] singlechar    Write every character seperated or complete buffer at once
+    \param[in] timeout        Time to wait until timeout in [ms]
 
     \return retOk
 */
@@ -564,15 +564,15 @@ const ito::RetVal SerialPort::setparams(const int baud, const char* endline, con
 /*!
     \detail This function opens the serial port
 
-    \param[in] port		    Number of serial port
-    \param[in] baud		    Baudrate in bits / s
-    \param[in] endline		Endline character
-    \param[in] bits		    Number of bits in line before stopbits
-    \param[in] stopbits		Number of stop bits after every n bits
-    \param[in] parity		Toggle parity check options
-    \param[in] flow 		Flow control bitmask
-    \param[in] singlechar	Write every character seperated or complete buffer at once
-    \param[in] timeout		Time to wait until timeout in [ms]
+    \param[in] port            Number of serial port
+    \param[in] baud            Baudrate in bits / s
+    \param[in] endline        Endline character
+    \param[in] bits            Number of bits in line before stopbits
+    \param[in] stopbits        Number of stop bits after every n bits
+    \param[in] parity        Toggle parity check options
+    \param[in] flow         Flow control bitmask
+    \param[in] singlechar    Write every character seperated or complete buffer at once
+    \param[in] timeout        Time to wait until timeout in [ms]
 
     \return retOk
 */
@@ -702,7 +702,7 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int singlechar)
     }
     *len = readable;
 //    if (!ret)
-//		return ito::RetVal(ito::retError, 0, QObjcet::tr("error reading from com port"));
+//        return ito::RetVal(ito::retError, 0, QObjcet::tr("error reading from com port"));
 
 #else
     DWORD numread = 0;
@@ -745,7 +745,7 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int singlechar)
         *buf = 0;
     }
 
-//		return ERRORFROMWIN(GetLastError());
+//        return ERRORFROMWIN(GetLastError());
 
 #endif
     return ito::retOk;
@@ -888,7 +888,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
 /*!
     \detail This function clears the input or output buffer of the serial port
 
-    \param[in] port		    Number of buffer type (0 - input, 1 - output)
+    \param[in] port            Number of buffer type (0 - input, 1 - output)
 
     \return retOk
 */
@@ -1184,7 +1184,7 @@ ito::RetVal SerialIO::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
             int singlechar = 0;
             int timeout = 0;
 
-            if (paramIt->getFlags() & ito::ParamBase::Readonly)	//check read-only
+            if (paramIt->getFlags() & ito::ParamBase::Readonly)    //check read-only
             {
                 retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
                 goto end;

@@ -32,9 +32,9 @@ class dialogFileGrabber : public QDialog
         void valuesChanged(QMap<QString, ito::Param> params);
 
     private slots:
-        void on_pushButton_setSizeXMax_clicked();	//!< Set x-size to maximum valid value
-        void on_pushButton_setSizeYMax_clicked();	//!< Set y-sizes to maximum valid value
-        void on_applyButton_clicked();	//!< Write the current settings to the internal paramsVals and sent them to the grabber
+        void on_pushButton_setSizeXMax_clicked();    //!< Set x-size to maximum valid value
+        void on_pushButton_setSizeYMax_clicked();    //!< Set y-sizes to maximum valid value
+        void on_applyButton_clicked();    //!< Write the current settings to the internal paramsVals and sent them to the grabber
 
         void on_spinBox_x0_valueChanged(int value);
         void on_spinBox_x1_valueChanged(int value);

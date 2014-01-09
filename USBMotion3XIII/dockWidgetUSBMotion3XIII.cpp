@@ -1,11 +1,11 @@
 /**\file dockWidgetDummyMotor.cpp
 * \brief In this file the functions of the non modal dialog for the DummyMotor are specified
 *
-*	This file defines the functions of the DockWidgetDummyMotor-Class defined in the file "dockWidgetDummyMotor.h"
+*    This file defines the functions of the DockWidgetDummyMotor-Class defined in the file "dockWidgetDummyMotor.h"
 * 
 *\sa dockWidgetDummyMotor, DummyMotor
 *\author Wolfram Lyda
-*\date	Oct2011
+*\date    Oct2011
 */
 
 #include "dockWidgetUSBMotion3XIII.h"
@@ -13,8 +13,8 @@
 
 /** @detail The constructor by the constructor of the DummyMotor during initialisation of the DummyMotor-Instance.
 *
-*\param[in] params		m_params-Variable containg the parameters of the DummyMotor
-*\param[in] uniqueID	The unique Id of the DummyMotor-Instance connected to this dialog
+*\param[in] params        m_params-Variable containg the parameters of the DummyMotor
+*\param[in] uniqueID    The unique Id of the DummyMotor-Instance connected to this dialog
 *
 *\sa DummyMotor
 */

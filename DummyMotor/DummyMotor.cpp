@@ -1,12 +1,12 @@
 /* *\file DummyMotor.cpp
 * \brief In this file the functions for the classes of the DummyMotor and its Interface are defined
 *
-*	The Dummymotor is a virtual device to test positining function and to give developers a template for the implementation of actuators and their GUI 
-*	This functions are based on the DummyMotor.cpp which was implemented into the ITO M and ITO M++ measurement programm at ITO, university stuttgart.
+*    The Dummymotor is a virtual device to test positining function and to give developers a template for the implementation of actuators and their GUI 
+*    This functions are based on the DummyMotor.cpp which was implemented into the ITO M and ITO M++ measurement programm at ITO, university stuttgart.
 *
 *\sa DummyMotorInterface, DummyMotor, DummyMotor.h
 *\author ITO
-*\date	Oct2011
+*\date    Oct2011
 */
 
 #include "DummyMotor.h"
@@ -81,7 +81,7 @@ expired.";
     m_license = QObject::tr("Licensed under LPGL.");
     m_aboutThis = tr("N.A.");       
     
-	ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 6, new ito::IntMeta(0,10), tr("Number of axis for this motor").toAscii().data());
+    ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 6, new ito::IntMeta(0,10), tr("Number of axis for this motor").toAscii().data());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("motorName", ito::ParamBase::String, "DummyMotor", tr("Name for this dummyMotor").toAscii().data());
@@ -105,13 +105,13 @@ Q_EXPORT_PLUGIN2(DummyMotorInterface, DummyMotorInterface)
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal DummyMotor::showConfDialog(void)
 {
-	dialogDummyMotor *confDialog = new dialogDummyMotor(qobject_cast<ito::AddInActuator*>(this), m_numaxis);	// Create dialog
-    confDialog->setVals(&m_params);	// Set up dialog parameters
-    if (confDialog->exec())	// Is dialog is endet with exec and not with cancel
+    dialogDummyMotor *confDialog = new dialogDummyMotor(qobject_cast<ito::AddInActuator*>(this), m_numaxis);    // Create dialog
+    confDialog->setVals(&m_params);    // Set up dialog parameters
+    if (confDialog->exec())    // Is dialog is endet with exec and not with cancel
     {
-        confDialog->getVals(&m_params);	// get parameters from dialog
-    }	
-    delete confDialog;	// destray dialog
+        confDialog->getVals(&m_params);    // get parameters from dialog
+    }    
+    delete confDialog;    // destray dialog
     return ito::retOk;
 }
 
@@ -122,7 +122,7 @@ DummyMotor::DummyMotor() :
     m_scale(1),
     m_distance(0)
 {
-    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");	// To enable the programm to transmit parameters via signals - slot connections
+    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
 
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("AxisNumber", ito::ParamBase::Int, 0, new ito::IntMeta(0,10), tr("Axis number to plot").toAscii().data());
@@ -134,7 +134,7 @@ DummyMotor::DummyMotor() :
 
     //end register exec functions
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyMotor", NULL);	// Set up the parameter list
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyMotor", NULL);    // Set up the parameter list
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 10, 1, tr("Number of Axis attached to this stage").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -156,11 +156,11 @@ DummyMotor::DummyMotor() :
 
     // This is for the docking widged
     //now create dock widget for this plugin
-   DockWidgetDummyMotor *dummyMotorWid = new DockWidgetDummyMotor(m_params, getID(), this);	// Create a new non-modal dialog
+   DockWidgetDummyMotor *dummyMotorWid = new DockWidgetDummyMotor(m_params, getID(), this);    // Create a new non-modal dialog
 
    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-   createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dummyMotorWid);	// Give the widget a name ..)
+   createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dummyMotorWid);    // Give the widget a name ..)
 
    connect(dummyMotorWid, SIGNAL(MoveRelative(const int,const double,ItomSharedSemaphore*)), this, SLOT(setPosRel(const int,const double,ItomSharedSemaphore*)));
    connect(dummyMotorWid, SIGNAL(MoveAbsolute(QVector<int>, QVector<double>,ItomSharedSemaphore*)), this, SLOT(setPosAbs(QVector<int>,QVector<double>,ItomSharedSemaphore *)));
@@ -274,8 +274,8 @@ ito::RetVal DummyMotor::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-	m_numaxis =  (*paramsOpt)[0].getVal<int>(); // Get the number of axis
-	m_params["numaxis"].setVal<int>(m_numaxis);
+    m_numaxis =  (*paramsOpt)[0].getVal<int>(); // Get the number of axis
+    m_params["numaxis"].setVal<int>(m_numaxis);
 
     int oldLength = m_currentPos.size();
     m_currentPos.resize(m_numaxis);
@@ -294,10 +294,10 @@ ito::RetVal DummyMotor::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
         waitCond->release();
     }
 
-	if (!retValue.containsWarningOrError())
-	{	
-		emit parametersChanged(m_params);
-	}
+    if (!retValue.containsWarningOrError())
+    {    
+        emit parametersChanged(m_params);
+    }
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
@@ -412,11 +412,11 @@ ito::RetVal DummyMotor::calib(const QVector<int> axis, ItomSharedSemaphore *wait
         retValue += waitForDone(5000, axis); //should drop into timeout
         retValue = ito::retOk;
 
-	    foreach(const int& i, axis)
-	    {
-		    m_currentPos[i] = 0.0;
+        foreach(const int& i, axis)
+        {
+            m_currentPos[i] = 0.0;
             setStatus(m_currentStatus[i], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
-	    }
+        }
 
         if (waitCond)
         {
@@ -621,12 +621,12 @@ ito::RetVal DummyMotor::setPosAbs(const QVector<int> axis, QVector<double> pos, 
                 else
                 {
 
-			        // REMOVE THIS IF COPIED! THIS IS JUST NEEDED FOR THE WAIT-FUNCTION
-			        if (abs(m_currentPos[axis[naxis]] - pos[naxis])  > m_distance)
-			        {
-				        m_distance = abs(m_currentPos[axis[naxis]] - pos[naxis]);
-			        }
-			        // REMOVE TILL HERE
+                    // REMOVE THIS IF COPIED! THIS IS JUST NEEDED FOR THE WAIT-FUNCTION
+                    if (abs(m_currentPos[axis[naxis]] - pos[naxis])  > m_distance)
+                    {
+                        m_distance = abs(m_currentPos[axis[naxis]] - pos[naxis]);
+                    }
+                    // REMOVE TILL HERE
 
                     m_currentPos[axis[naxis]] = pos[naxis];
                     m_targetPos[axis[naxis]] = pos[naxis];
@@ -643,8 +643,8 @@ ito::RetVal DummyMotor::setPosAbs(const QVector<int> axis, QVector<double> pos, 
             }
 
             //calc time
-	        double cur_speed = m_params["speed"].getVal<double>(); //mm/s 
-	        if (cur_speed==0) cur_speed = 0.01;
+            double cur_speed = m_params["speed"].getVal<double>(); //mm/s 
+            if (cur_speed==0) cur_speed = 0.01;
             double durationMS = (m_distance / cur_speed) * 1000;
 
             ito::RetVal temp = waitForDone(durationMS, axis); //drops into timeout
@@ -718,10 +718,10 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
                 else
                 {
 
-			        // REMOVE THIS IF COPIED! THIS IS JUST NEEDED FOR THE WAIT-FUNCTION
-			        if (abs(pos[naxis] * m_scale) > m_distance)
-				        m_distance = abs(pos[naxis]);
-			        // REMOVE TILL HERE
+                    // REMOVE THIS IF COPIED! THIS IS JUST NEEDED FOR THE WAIT-FUNCTION
+                    if (abs(pos[naxis] * m_scale) > m_distance)
+                        m_distance = abs(pos[naxis]);
+                    // REMOVE TILL HERE
 
                     m_currentPos[axis[naxis]] += pos[naxis]; //mm
                     m_targetPos[axis[naxis]] = m_currentPos[axis[naxis]];
@@ -731,15 +731,15 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
 
             sendTargetUpdate();
 
-	        if (m_async && waitCond)
+            if (m_async && waitCond)
             {
                 waitCond->returnValue = retValue;
                 waitCond->release();
             }
 
             //calc time
-	        double cur_speed = m_params["speed"].getVal<double>(); //mm/s  * m_scale;
-	        if (cur_speed==0) cur_speed = 0.01;
+            double cur_speed = m_params["speed"].getVal<double>(); //mm/s  * m_scale;
+            if (cur_speed==0) cur_speed = 0.01;
             double durationMS = (m_distance / cur_speed)*1000;
 
             ito::RetVal temp = waitForDone(durationMS,axis); //drops into timeout
@@ -765,7 +765,7 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
 //---------------------------------------------------------------------------------------------------------------------------------- 
 ito::RetVal DummyMotor::RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos)
 {
-	ito::RetVal retval(ito::retOk);
+    ito::RetVal retval(ito::retOk);
 
     //in real motor, call getStatus and getPos here
 
@@ -775,7 +775,7 @@ ito::RetVal DummyMotor::RequestStatusAndPosition(bool sendActPosition, bool send
         sendTargetUpdate();
     }
 
-	return retval;
+    return retval;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 

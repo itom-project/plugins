@@ -19,7 +19,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-	\detail creates new instance of GWInstekPSPInterface and returns the instance-pointer
+    \detail creates new instance of GWInstekPSPInterface and returns the instance-pointer
     \param [in,out] addInInst is a double pointer of type ito::AddInBase. The newly created GWInstekPSPInterface-instance is stored in *addInInst
     \return retOk
     \sa GWInstekPSP
@@ -38,7 +38,7 @@ ito::RetVal GWInstekPSPInterface::getAddInInst(ito::AddInBase **addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-	\detail Closes an instance of of GWInstekPSPInterface. This instance is given by parameter addInInst.
+    \detail Closes an instance of of GWInstekPSPInterface. This instance is given by parameter addInInst.
     \param [in] double pointer to the instance which should be deleted.
     \return retOk
     \sa GWInstekPSP
@@ -58,7 +58,7 @@ ito::RetVal GWInstekPSPInterface::closeThisInst(ito::AddInBase **addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
-	with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 GWInstekPSPInterface::GWInstekPSPInterface()
 {
@@ -72,7 +72,7 @@ GWInstekPSPInterface::GWInstekPSPInterface()
 "This itom-plugin allows communicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. \
 Therefore an opened connected via the serial port (using the plugin 'SerialIO') is required. You need to give a valid handle to this \
 instance when initializing this plugin.";
-	m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);
     m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -104,7 +104,7 @@ Q_EXPORT_PLUGIN2(GWInstekPSPInterface, GWInstekPSPInterface)
 //! 
 /*!
     \detail This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
-	creates new instance of dialogGWInstekPSP, calls the method setVals of dialogGWInstekPSP, starts the execution loop and if the dialog
+    creates new instance of dialogGWInstekPSP, calls the method setVals of dialogGWInstekPSP, starts the execution loop and if the dialog
     is closed, reads the new parameter set and deletes the dialog.
 
     \return retOk
@@ -245,7 +245,7 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
 
     ito::Param paramVal("name", ito::ParamBase::String, "GWInstekPSP", NULL);
     m_params.insert(paramVal.getName(), paramVal);
-	
+    
     paramVal = ito::Param("status", ito::ParamBase::String | ito::ParamBase::Readonly, m_status, tr("Current status string of controller").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("voltage", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Ouput voltage; the unit: V").toAscii().data());
@@ -350,38 +350,38 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
         if (paramIt != m_params.end())
         {
-			if (paramIt->getFlags() & ito::ParamBase::Readonly)	//check read-only
+            if (paramIt->getFlags() & ito::ParamBase::Readonly)    //check read-only
             {
                 retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
                 goto end;
             }
-			else if (val->isNumeric() && paramIt->isNumeric())
-			{
-				double curval = val->getVal<double>();
-				if (curval > paramIt->getMax())
-				{
-				    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+            else if (val->isNumeric() && paramIt->isNumeric())
+            {
+                double curval = val->getVal<double>();
+                if (curval > paramIt->getMax())
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
                     goto end;
-				}
-				else if(curval < paramIt->getMin())
-				{
-				    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
-                    goto end;
-				}
-				else 
-				{
-				    paramIt.value().setVal<double>(curval);
                 }
-			}
-			else if (paramIt->getType() == val->getType())
-			{
-				retValue += paramIt.value().copyValueFrom( &(*val) );
-			}
-			else
-			{
-				retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
-				goto end;
-			}
+                else if(curval < paramIt->getMin())
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                    goto end;
+                }
+                else 
+                {
+                    paramIt.value().setVal<double>(curval);
+                }
+            }
+            else if (paramIt->getType() == val->getType())
+            {
+                retValue += paramIt.value().copyValueFrom( &(*val) );
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
+                goto end;
+            }
 
             if (key == "voltage") 
             {
@@ -423,7 +423,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             }
             else
             {
-				goto end;
+                goto end;
             }
             retValue += WriteToSerial(text);
 
@@ -456,7 +456,7 @@ end:
     \param [in] paramsMand is a pointer to the vector of mandatory tParams.
     \param [in] paramsOpt is a pointer to the vector of optional tParams.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-	\todo check if (*paramsMand)[0] is a serial port
+    \todo check if (*paramsMand)[0] is a serial port
     \return retOk
 */
 ito::RetVal GWInstekPSP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)

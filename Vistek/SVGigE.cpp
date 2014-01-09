@@ -73,14 +73,14 @@ typedef
     Func_Camera_getPixelClock,
     Func_Camera_isCameraFeature,
     Func_Camera_readXMLFile,
-	  Func_Camera_getSensorTemperature,
+      Func_Camera_getSensorTemperature,
 
     // 4 - Stream: Channel creation and control
     Func_StreamingChannel_create,
     Func_StreamingChannel_delete,
     Func_StreamingChannel_setChannelTimeout,
     Func_StreamingChannel_getChannelTimeout,
-		Func_StreamingChannel_setReadoutTransfer,
+        Func_StreamingChannel_setReadoutTransfer,
     Func_StreamingChannel_getReadoutTransfer,
 
     // 5 - Stream: Channel statistics
@@ -91,7 +91,7 @@ typedef
 
     // 6 - Stream: Channel info
     Func_StreamingChannel_getPixelType,
-		Func_StreamingChannel_getBufferData,
+        Func_StreamingChannel_getBufferData,
     Func_StreamingChannel_getBufferSize,
     Func_StreamingChannel_getImagePitch,
     Func_StreamingChannel_getImageSizeX,
@@ -130,7 +130,7 @@ typedef
     // 11 - Stream: Image statistics
     Func_Image_getImageID,
     Func_Image_getTimestamp,
-		Func_Image_getTransferTime,
+        Func_Image_getTransferTime,
     Func_Image_getPacketCount,
     Func_Image_getPacketResend,
 
@@ -201,31 +201,31 @@ typedef
     Func_Camera_softwareTriggerIDEnable,
     Func_Camera_setTriggerPolarity,
     Func_Camera_getTriggerPolarity,
-	  Func_Camera_setPivMode,
-	  Func_Camera_getPivMode,
-	  Func_Camera_getDebouncerDuration,
-  	Func_Camera_setDebouncerDuration,
-	  Func_Camera_getPrescalerDevisor,
-	  Func_Camera_setPrescalerDevisor,
-	  Func_Camera_loadSequenceParameters,
-	  Func_Camera_startSequencer,
+      Func_Camera_setPivMode,
+      Func_Camera_getPivMode,
+      Func_Camera_getDebouncerDuration,
+      Func_Camera_setDebouncerDuration,
+      Func_Camera_getPrescalerDevisor,
+      Func_Camera_setPrescalerDevisor,
+      Func_Camera_loadSequenceParameters,
+      Func_Camera_startSequencer,
 
 
     // 18 - Controlling camera: Strobe
     Func_Camera_setStrobePolarity,
-  	Func_Camera_setStrobePolarityExtended,
+      Func_Camera_setStrobePolarityExtended,
     Func_Camera_getStrobePolarity,
-	  Func_Camera_getStrobePolarityExtended,
+      Func_Camera_getStrobePolarityExtended,
     Func_Camera_setStrobePosition,
-	  Func_Camera_setStrobePositionExtended,
+      Func_Camera_setStrobePositionExtended,
     Func_Camera_getStrobePosition,
-	  Func_Camera_getStrobePositionExtended,
+      Func_Camera_getStrobePositionExtended,
     Func_Camera_getStrobePositionMax,
     Func_Camera_getStrobePositionIncrement,
     Func_Camera_setStrobeDuration,
     Func_Camera_setStrobeDurationExtended,
     Func_Camera_getStrobeDuration,
-	  Func_Camera_getStrobeDurationExtended,
+      Func_Camera_getStrobeDurationExtended,
     Func_Camera_getStrobeDurationMax,
     Func_Camera_getStrobeDurationIncrement,
 
@@ -238,7 +238,7 @@ typedef
     Func_Camera_getAutoTapBalanceMode,
     Func_Camera_setTapUserSettings,
     Func_Camera_getTapUserSettings,
-	  Func_Camera_setTapGain,
+      Func_Camera_setTapGain,
     Func_Camera_getTapGain,
 
 
@@ -312,7 +312,7 @@ typedef
     Func_Camera_writeEEPROM,
     Func_Camera_readEEPROM,
     Func_Camera_restoreFactoryDefaults,
-	  Func_Camera_loadSettingsFromXml,  
+      Func_Camera_loadSettingsFromXml,  
     Func_Camera_SaveSettingsToXml,
 
     // 27 - General functions
@@ -326,25 +326,25 @@ typedef
     Func_Camera_registerForLogMessages,
 
     // 99 - Deprecated functions
-    Func_Camera_startAcquisitionCycle,		//2009-05-05: DEPRECATED, please use Camera_softwareTrigger()
-    Func_Camera_setTapCalibration,				//2009-03-10: DEPRECATED, please use Camera_setTapBalance()
-    Func_Camera_getTapCalibration,				//2009-03-10: DEPRECATED, please use Camera_getTapBalance()
-    Func_Camera_setLUTMode,								//2009-02-19: re-implemented for backward compatibility
-    Func_Camera_getLUTMode,								//2009-02-19: re-implemented for backward compatibility
-    Func_Camera_createLUTwhiteBalance,		//2006-12-20: re-implemented by Camera_setWhiteBalance()         
-    Func_Camera_stampTimestamp,						//2008: removed, please use Camera_getTimestampCounter()
-    Func_Camera_getTimestamp,							//2008: removed, please use Camera_getTimestampCounter() 
-    Func_Image_getDebugInfo,							//2010: forwarding debug values, for internal use 
-    Func_Camera_setTapBalance,						//2011-08-19: deprecated, please use Camera_setTapUserSettings()
-    Func_Camera_getTapBalance,						//2011-08-19: deprecated, please use Camera_getTapUserSettings()
+    Func_Camera_startAcquisitionCycle,        //2009-05-05: DEPRECATED, please use Camera_softwareTrigger()
+    Func_Camera_setTapCalibration,                //2009-03-10: DEPRECATED, please use Camera_setTapBalance()
+    Func_Camera_getTapCalibration,                //2009-03-10: DEPRECATED, please use Camera_getTapBalance()
+    Func_Camera_setLUTMode,                                //2009-02-19: re-implemented for backward compatibility
+    Func_Camera_getLUTMode,                                //2009-02-19: re-implemented for backward compatibility
+    Func_Camera_createLUTwhiteBalance,        //2006-12-20: re-implemented by Camera_setWhiteBalance()         
+    Func_Camera_stampTimestamp,                        //2008: removed, please use Camera_getTimestampCounter()
+    Func_Camera_getTimestamp,                            //2008: removed, please use Camera_getTimestampCounter() 
+    Func_Image_getDebugInfo,                            //2010: forwarding debug values, for internal use 
+    Func_Camera_setTapBalance,                        //2011-08-19: deprecated, please use Camera_setTapUserSettings()
+    Func_Camera_getTapBalance,                        //2011-08-19: deprecated, please use Camera_getTapUserSettings()
 
-		// 00 - Consistency check
-		//
-		// The following function will be used to
-		// check whether consistency of a loaded 
-		// function table is OK.
-		//
-		Func_isVersionCompliantDLL_consistency_check,
+        // 00 - Consistency check
+        //
+        // The following function will be used to
+        // check whether consistency of a loaded 
+        // function table is OK.
+        //
+        Func_isVersionCompliantDLL_consistency_check,
   }                                                   
   SVGigE_FUNCTION;                                    
 
@@ -361,7 +361,7 @@ GigEFunc[] =
 {
   // 0 - GigE DLL (implicitly called)
   NULL, Func_isVersionCompliantDLL,                     "isVersionCompliantDLL",
-	NULL, Func_isDriverAvailable,                         "isDriverAvailable",
+    NULL, Func_isDriverAvailable,                         "isDriverAvailable",
 
   // 1 - Camera: Discovery and bookkeeping
   NULL, Func_CameraContainer_create,                    "CameraContainer_create",
@@ -418,12 +418,12 @@ GigEFunc[] =
 
   // 7 - Stream: Transfer parameters
   NULL, Func_Camera_evaluateMaximalPacketSize,          "Camera_evaluateMaximalPacketSize",
-	NULL, Func_Camera_setStreamingPacketSize,							"Camera_setStreamingPacketSize",
+    NULL, Func_Camera_setStreamingPacketSize,                            "Camera_setStreamingPacketSize",
   NULL, Func_Camera_setInterPacketDelay,                "Camera_setInterPacketDelay",
   NULL, Func_Camera_getInterPacketDelay,                "Camera_getInterPacketDelay",
-	NULL, Func_Camera_setMulticastMode,     							"Camera_setMulticastMode",
-	NULL, Func_Camera_getMulticastMode,     							"Camera_getMulticastMode",
-	NULL, Func_Camera_getMulticastGroup,     							"Camera_getMulticastGroup",
+    NULL, Func_Camera_setMulticastMode,                                 "Camera_setMulticastMode",
+    NULL, Func_Camera_getMulticastMode,                                 "Camera_getMulticastMode",
+    NULL, Func_Camera_getMulticastGroup,                                 "Camera_getMulticastGroup",
 
   // 8 - Stream: Image access
   NULL, Func_Image_getDataPointer,                      "Image_getDataPointer",
@@ -524,9 +524,9 @@ GigEFunc[] =
   NULL, Func_Camera_getPivMode,                         "Camera_getPivMode",
   NULL, Func_Camera_setDebouncerDuration,               "Camera_setDebouncerDuration",
   NULL, Func_Camera_getDebouncerDuration,               "Camera_getDebouncerDuration",
-  NULL,	Func_Camera_setPrescalerDevisor,                "Camera_setPrescalerDevisor",
-  NULL,	Func_Camera_getPrescalerDevisor,                "Camera_getPrescalerDevisor",
-  NULL,	Func_Camera_loadSequenceParameters,             "Camera_loadSequenceParameters",
+  NULL,    Func_Camera_setPrescalerDevisor,                "Camera_setPrescalerDevisor",
+  NULL,    Func_Camera_getPrescalerDevisor,                "Camera_getPrescalerDevisor",
+  NULL,    Func_Camera_loadSequenceParameters,             "Camera_loadSequenceParameters",
   NULL, Func_Camera_startSequencer,                     "Camera_startSequencer",
 
   // 18 - Controlling camera: Strobe
@@ -651,16 +651,16 @@ GigEFunc[] =
   NULL, Func_Camera_createLUTwhiteBalance,              "Camera_createLUTwhiteBalance",
   NULL, Func_Camera_stampTimestamp,                     "Camera_stampTimestamp",
   NULL, Func_Camera_getTimestamp,                       "Camera_getTimestamp",
-	NULL, Func_Image_getDebugInfo,                        "Image_getDebugInfo",
+    NULL, Func_Image_getDebugInfo,                        "Image_getDebugInfo",
   NULL, Func_Camera_setTapBalance,                      "Camera_setTapBalance",
   NULL, Func_Camera_getTapBalance,                      "Camera_getTapBalance",
 
-	// 00 - Consistency check
-	//
-	// The following function pointer will be used to
-	// check whether consistency of the whole function
-	// table is OK.
-	//
+    // 00 - Consistency check
+    //
+    // The following function pointer will be used to
+    // check whether consistency of the whole function
+    // table is OK.
+    //
   NULL, Func_isVersionCompliantDLL_consistency_check,   "isVersionCompliantDLL",
 };
 
@@ -839,8 +839,8 @@ typedef SVGigE_RETURN
 
 typedef SVGigE_RETURN
 (*TFunc_StreamingChannel_getBufferData)(StreamingChannel_handle hStreamingChannel,
-																			  unsigned int BufferIndex,	
-																				unsigned char **BufferData);
+                                                                              unsigned int BufferIndex,    
+                                                                                unsigned char **BufferData);
 
 typedef SVGigE_RETURN
 (*TFunc_StreamingChannel_getBufferSize)(StreamingChannel_handle hStreamingChannel,
@@ -950,13 +950,13 @@ typedef GVSP_PIXEL_TYPE
 typedef int
 (*TFunc_Image_getImageSize)(Image_handle hImage);
 
-typedef	int
+typedef    int
 (*TFunc_Image_getPitch)(Image_handle hImage);
 
 typedef int
 (*TFunc_Image_getSizeX)(Image_handle hImage);
 
-typedef	int
+typedef    int
 (*TFunc_Image_getSizeY)(Image_handle hImage);
 
 //-----------------------------------------------------------------------------------------
@@ -1162,11 +1162,11 @@ typedef SVGigE_RETURN
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_setAutoGainEnabled)(Camera_handle Camera,
-														       bool isAutoGainEnabled);
+                                                               bool isAutoGainEnabled);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_getAutoGainEnabled)(Camera_handle Camera,
-														       bool *isAutoGainEnabled);
+                                                               bool *isAutoGainEnabled);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_setAutoGainBrightness)(Camera_handle Camera,
@@ -1383,23 +1383,23 @@ typedef SVGigE_RETURN
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_setTapUserSettings)(Camera_handle hCamera,
-																	 float TapUserGain,
-																	 float TapUserOffset);
+                                                                     float TapUserGain,
+                                                                     float TapUserOffset);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_getTapUserSettings)(Camera_handle hCamera,
-																	 float *TapUserGain,
-																	 float *TapUserOffset);
+                                                                     float *TapUserGain,
+                                                                     float *TapUserOffset);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_setTapGain)(Camera_handle hCamera,
-													 float TapGain,
- 													 SVGIGE_TAP_SELECT TapSelect);
+                                                     float TapGain,
+                                                      SVGIGE_TAP_SELECT TapSelect);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_getTapGain)(Camera_handle hCamera,
-													 float *TapGain,
-													 SVGIGE_TAP_SELECT TapSelect);
+                                                     float *TapGain,
+                                                     SVGIGE_TAP_SELECT TapSelect);
 
 //-----------------------------------------------------------------------------------------
 // 20 - Controlling camera: Image parameter
@@ -1510,21 +1510,21 @@ typedef SVGigE_RETURN
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_setGammaCorrection)(Camera_handle hCamera,
-  													       float GammaCorrection);
+                                                             float GammaCorrection);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_setGammaCorrectionExt)(Camera_handle hCamera,
-  													          float GammaCorrection,
+                                                                float GammaCorrection,
                                       float DigitalGain,
                                       float DigitalOffset);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_setLowpassFilter)(Camera_handle hCamera,
-  													     LOWPASS_FILTER LowpassFilter);
+                                                           LOWPASS_FILTER LowpassFilter);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_getLowpassFilter)(Camera_handle hCamera,
-  													     LOWPASS_FILTER *ProgrammedLowpassFilter);
+                                                           LOWPASS_FILTER *ProgrammedLowpassFilter);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_setLookupTableMode)(Camera_handle hCamera,
@@ -1546,20 +1546,20 @@ typedef SVGigE_RETURN
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_startImageCorrection)(Camera_handle hCamera,
-																		 IMAGE_CORRECTION_STEP ImageCorrectionStep);
+                                                                         IMAGE_CORRECTION_STEP ImageCorrectionStep);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_isIdleImageCorrection)(Camera_handle hCamera,
-																		  IMAGE_CORRECTION_STEP *ProgrammedImageCorrectionStep,
-			 															  bool *isIdle);
+                                                                          IMAGE_CORRECTION_STEP *ProgrammedImageCorrectionStep,
+                                                                           bool *isIdle);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_setImageCorrection)(Camera_handle hCamera,
-																	 IMAGE_CORRECTION_MODE ImageCorrectionMode);
+                                                                     IMAGE_CORRECTION_MODE ImageCorrectionMode);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_getImageCorrection)(Camera_handle hCamera,
-																	 IMAGE_CORRECTION_MODE *ProgrammedImageCorrectionMode);
+                                                                     IMAGE_CORRECTION_MODE *ProgrammedImageCorrectionMode);
 
 //-----------------------------------------------------------------------------------------
 // 22 - Special control: IOMux configuration
@@ -1773,7 +1773,7 @@ typedef SVGigE_RETURN
 
 typedef unsigned
 (*TFunc_Image_getDebugInfo)(Image_handle hImage,
-														int Index);
+                                                        int Index);
 
 typedef SVGigE_RETURN
 (*TFunc_Camera_setTapBalance)(Camera_handle hCamera,
@@ -1802,10 +1802,10 @@ bool isLoadedGigEDLL()
       return false;
   }
 
-	// Check if size of function table matches the number of imported functions
-	int FunctionCount = sizeof(GigEFunc) / sizeof(struct _GigEFunc);
-	if( FunctionCount != Func_isVersionCompliantDLL_consistency_check + 1 )
-		return false;
+    // Check if size of function table matches the number of imported functions
+    int FunctionCount = sizeof(GigEFunc) / sizeof(struct _GigEFunc);
+    if( FunctionCount != Func_isVersionCompliantDLL_consistency_check + 1 )
+        return false;
 
   // Obtain CameraContainer procedure addresses
   bool function_loaded = true;
@@ -1841,10 +1841,10 @@ isVersionCompliantDLL(SVGigE_VERSION *DllVersion,
   }
 
   // Pass through function call to DLL
-	//
-	// 2011-08-22/EKantz: check consistency of the whole function pointer 
-	//                    table by calling the last function in that table.
-	//
+    //
+    // 2011-08-22/EKantz: check consistency of the whole function pointer 
+    //                    table by calling the last function in that table.
+    //
   return ((TFunc_isVersionCompliantDLL)
   GigEFunc[Func_isVersionCompliantDLL_consistency_check].function_pointer)(DllVersion, ExpectedVersion);
 }
@@ -1907,7 +1907,7 @@ CameraContainer_delete(CameraContainerClient_handle hCameraContainer)
   FreeLibrary(GigEDLL);
   GigEDLL = NULL;
 
-	return Ret; 
+    return Ret; 
 }
 
 SVGigE_RETURN
@@ -2364,7 +2364,7 @@ StreamingChannel_getPixelType(StreamingChannel_handle hStreamingChannel,
 
 SVGigE_RETURN
 StreamingChannel_getBufferData(StreamingChannel_handle hStreamingChannel,
-															 unsigned int BufferIndex,	
+                                                             unsigned int BufferIndex,    
                                unsigned char **BufferData)
 {
   // Check DLL availability
@@ -3296,7 +3296,7 @@ Camera_getOffsetMax(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_setAutoGainEnabled(Camera_handle hCamera,
-													bool isAutoGainEnabled)
+                                                    bool isAutoGainEnabled)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -3309,7 +3309,7 @@ Camera_setAutoGainEnabled(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_getAutoGainEnabled(Camera_handle hCamera,
-														bool *isAutoGainEnabled)
+                                                        bool *isAutoGainEnabled)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -3662,7 +3662,7 @@ SVGigE_RETURN
 SVGigE_RETURN
 Camera_startSequencer(Camera_handle hCamera)
 {
-	// Check DLL availability
+    // Check DLL availability
   if( NULL == GigEDLL )
     return SVGigE_DLL_NOT_LOADED;
 
@@ -3972,8 +3972,8 @@ Camera_getAutoTapBalanceMode(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_setTapUserSettings(Camera_handle hCamera,
-													float TapUserGain,
-													float TapUserOffset)
+                                                    float TapUserGain,
+                                                    float TapUserOffset)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -3986,8 +3986,8 @@ Camera_setTapUserSettings(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_getTapUserSettings(Camera_handle hCamera,
-													float *TapUserGain,
-													float *TapUserOffset)
+                                                    float *TapUserGain,
+                                                    float *TapUserOffset)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -4000,8 +4000,8 @@ Camera_getTapUserSettings(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_setTapGain(Camera_handle hCamera,
-									float TapGain,
-									SVGIGE_TAP_SELECT Tap)
+                                    float TapGain,
+                                    SVGIGE_TAP_SELECT Tap)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -4014,8 +4014,8 @@ Camera_setTapGain(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_getTapGain(Camera_handle hCamera,
-									float *TapGain, 
-									SVGIGE_TAP_SELECT Tap)
+                                    float *TapGain, 
+                                    SVGIGE_TAP_SELECT Tap)
 {
 // Check DLL availability
   if( NULL == GigEDLL )
@@ -4333,7 +4333,7 @@ Camera_getWhiteBalanceMax(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_setGammaCorrection(Camera_handle hCamera,
-  										    float GammaCorrection)
+                                              float GammaCorrection)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -4346,7 +4346,7 @@ Camera_setGammaCorrection(Camera_handle hCamera,
 
 SVGigE_RETURN
 Camera_setGammaCorrectionExt(Camera_handle hCamera,
-  													 float GammaCorrection,
+                                                       float GammaCorrection,
                              float DigitalGain,
                              float DigitalOffset)
 {
@@ -4454,8 +4454,8 @@ Camera_startImageCorrection(Camera_handle hCamera,
 
 __usrdllexport__ SVGigE_RETURN
 Camera_isIdleImageCorrection(Camera_handle hCamera,
-														 IMAGE_CORRECTION_STEP *ProgrammedImageCorrectionStep,
-			 											 bool *isIdle)
+                                                         IMAGE_CORRECTION_STEP *ProgrammedImageCorrectionStep,
+                                                          bool *isIdle)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -4468,7 +4468,7 @@ Camera_isIdleImageCorrection(Camera_handle hCamera,
 
 __usrdllexport__ SVGigE_RETURN
 Camera_setImageCorrection(Camera_handle hCamera,
-													IMAGE_CORRECTION_MODE ImageCorrectionMode)
+                                                    IMAGE_CORRECTION_MODE ImageCorrectionMode)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -4481,7 +4481,7 @@ Camera_setImageCorrection(Camera_handle hCamera,
 
 __usrdllexport__ SVGigE_RETURN
 Camera_getImageCorrection(Camera_handle hCamera,
-													IMAGE_CORRECTION_MODE *ProgrammedImageCorrectionMode)
+                                                    IMAGE_CORRECTION_MODE *ProgrammedImageCorrectionMode)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5075,7 +5075,7 @@ Camera_getTimestamp(Camera_handle hCamera,
 
 unsigned
 Image_getDebugInfo(Image_handle hImage,
-														int Index)
+                                                        int Index)
 {
   // Check DLL availability
   if( NULL == GigEDLL )
@@ -5155,17 +5155,17 @@ ClearBorders(unsigned char *rgb, int sx, int sy, int w)
     i = 3 * sx * w - 1;
     j = 3 * sx * sy - 1;
     while (i >= 0) {
-	rgb[i--] = 0;
-	rgb[j--] = 0;
+    rgb[i--] = 0;
+    rgb[j--] = 0;
     }
     i = sx * (sy - 1) * 3 - 1 + w * 3;
     while (i > sx) {
-	j = 6 * w;
-	while (j > 0) {
-	    rgb[i--] = 0;
-	    j--;
-	}
-	i -= (sx - 2 * w) * 3;
+    j = 6 * w;
+    while (j > 0) {
+        rgb[i--] = 0;
+        j--;
+    }
+    i -= (sx - 2 * w) * 3;
     }
 }
 
@@ -5178,18 +5178,18 @@ ClearBorders_uint16(uint16_t * rgb, int sx, int sy, int w)
     i = 3 * sx * w - 1;
     j = 3 * sx * sy - 1;
     while (i >= 0) {
-	rgb[i--] = 0;
-	rgb[j--] = 0;
+    rgb[i--] = 0;
+    rgb[j--] = 0;
     }
 
     i = sx * (sy - 1) * 3 - 1 + w * 3;
     while (i > sx) {
-	j = 6 * w;
-	while (j > 0) {
-	    rgb[i--] = 0;
-	    j--;
-	}
-	i -= (sx - 2 * w) * 3;
+    j = 6 * w;
+    while (j > 0) {
+        rgb[i--] = 0;
+        j--;
+    }
+    i -= (sx - 2 * w) * 3;
     }
 
 }
@@ -5214,21 +5214,21 @@ dc1394_bayer_NearestNeighbor(const unsigned char *bayer, unsigned char *rgb, int
     int width = sx;
     int height = sy;
     int blue = tile == DC1394_COLOR_FILTER_BGGR
-	|| tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
+    || tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
     int start_with_green = tile == DC1394_COLOR_FILTER_GBRG
-	|| tile == DC1394_COLOR_FILTER_GRBG;
+    || tile == DC1394_COLOR_FILTER_GRBG;
     int i, imax, iinc;
 
     /* add black border */
     imax = sx * sy * 3;
     for (i = sx * (sy - 1) * 3; i < imax; i++) {
-	rgb[i] = 0;
+    rgb[i] = 0;
     }
     iinc = (sx - 1) * 3;
     for (i = (sx - 1) * 3; i < imax; i += iinc) {
-	rgb[i++] = 0;
-	rgb[i++] = 0;
-	rgb[i++] = 0;
+    rgb[i++] = 0;
+    rgb[i++] = 0;
+    rgb[i++] = 0;
     }
 
     rgb += 1;
@@ -5237,7 +5237,7 @@ dc1394_bayer_NearestNeighbor(const unsigned char *bayer, unsigned char *rgb, int
 
     for (; height--; bayer += bayerStep, rgb += rgbStep) {
       //int t0, t1;
-	const unsigned char *bayerEnd = bayer + width;
+    const unsigned char *bayerEnd = bayer + width;
 
         if (start_with_green) {
             rgb[-blue] = bayer[1];
@@ -5277,11 +5277,11 @@ dc1394_bayer_NearestNeighbor(const unsigned char *bayer, unsigned char *rgb, int
             rgb += 3;
         }
 
-	bayer -= width;
-	rgb -= width * 3;
+    bayer -= width;
+    rgb -= width * 3;
 
-	blue = -blue;
-	start_with_green = !start_with_green;
+    blue = -blue;
+    start_with_green = !start_with_green;
     }
 }
 
@@ -5306,9 +5306,9 @@ dc1394_bayer_Bilinear(const unsigned char *bayer, unsigned char *rgb, int sx, in
        int start_with_green = tile == CV_BayerGB2BGR || tile == CV_BayerGR2BGR;
      */
     int blue = tile == DC1394_COLOR_FILTER_BGGR
-	|| tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
+    || tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
     int start_with_green = tile == DC1394_COLOR_FILTER_GBRG
-	|| tile == DC1394_COLOR_FILTER_GRBG;
+    || tile == DC1394_COLOR_FILTER_GRBG;
 
     ClearBorders(rgb, sx, sy, 1);
     rgb += rgbStep + 3 + 1;
@@ -5316,77 +5316,77 @@ dc1394_bayer_Bilinear(const unsigned char *bayer, unsigned char *rgb, int sx, in
     width -= 2;
 
     for (; height--; bayer += bayerStep, rgb += rgbStep) {
-	int t0, t1;
-	const unsigned char *bayerEnd = bayer + width;
+    int t0, t1;
+    const unsigned char *bayerEnd = bayer + width;
 
-	if (start_with_green) {
-	    /* OpenCV has a bug in the next line, which was
-	       t0 = (bayer[0] + bayer[bayerStep * 2] + 1) >> 1; */
-	    t0 = (bayer[1] + bayer[bayerStep * 2 + 1] + 1) >> 1;
-	    t1 = (bayer[bayerStep] + bayer[bayerStep + 2] + 1) >> 1;
-	    rgb[-blue] = (unsigned char) t0;
-	    rgb[0] = bayer[bayerStep + 1];
-	    rgb[blue] = (unsigned char) t1;
-	    bayer++;
-	    rgb += 3;
-	}
+    if (start_with_green) {
+        /* OpenCV has a bug in the next line, which was
+           t0 = (bayer[0] + bayer[bayerStep * 2] + 1) >> 1; */
+        t0 = (bayer[1] + bayer[bayerStep * 2 + 1] + 1) >> 1;
+        t1 = (bayer[bayerStep] + bayer[bayerStep + 2] + 1) >> 1;
+        rgb[-blue] = (unsigned char) t0;
+        rgb[0] = bayer[bayerStep + 1];
+        rgb[blue] = (unsigned char) t1;
+        bayer++;
+        rgb += 3;
+    }
 
-	if (blue > 0) {
-	    for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
-		t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
-		      bayer[bayerStep * 2 + 2] + 2) >> 2;
-		t1 = (bayer[1] + bayer[bayerStep] +
-		      bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
-		      2) >> 2;
-		rgb[-1] = (unsigned char) t0;
-		rgb[0] = (unsigned char) t1;
-		rgb[1] = bayer[bayerStep + 1];
+    if (blue > 0) {
+        for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
+        t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
+              bayer[bayerStep * 2 + 2] + 2) >> 2;
+        t1 = (bayer[1] + bayer[bayerStep] +
+              bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
+              2) >> 2;
+        rgb[-1] = (unsigned char) t0;
+        rgb[0] = (unsigned char) t1;
+        rgb[1] = bayer[bayerStep + 1];
 
-		t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) >> 1;
-		t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] +
-		      1) >> 1;
-		rgb[2] = (unsigned char) t0;
-		rgb[3] = bayer[bayerStep + 2];
-		rgb[4] = (unsigned char) t1;
-	    }
-	} else {
-	    for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
-		t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
-		      bayer[bayerStep * 2 + 2] + 2) >> 2;
-		t1 = (bayer[1] + bayer[bayerStep] +
-		      bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
-		      2) >> 2;
-		rgb[1] = (unsigned char) t0;
-		rgb[0] = (unsigned char) t1;
-		rgb[-1] = bayer[bayerStep + 1];
+        t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) >> 1;
+        t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] +
+              1) >> 1;
+        rgb[2] = (unsigned char) t0;
+        rgb[3] = bayer[bayerStep + 2];
+        rgb[4] = (unsigned char) t1;
+        }
+    } else {
+        for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
+        t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
+              bayer[bayerStep * 2 + 2] + 2) >> 2;
+        t1 = (bayer[1] + bayer[bayerStep] +
+              bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
+              2) >> 2;
+        rgb[1] = (unsigned char) t0;
+        rgb[0] = (unsigned char) t1;
+        rgb[-1] = bayer[bayerStep + 1];
 
-		t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) >> 1;
-		t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] +
-		      1) >> 1;
-		rgb[4] = (unsigned char) t0;
-		rgb[3] = bayer[bayerStep + 2];
-		rgb[2] = (unsigned char) t1;
-	    }
-	}
+        t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) >> 1;
+        t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] +
+              1) >> 1;
+        rgb[4] = (unsigned char) t0;
+        rgb[3] = bayer[bayerStep + 2];
+        rgb[2] = (unsigned char) t1;
+        }
+    }
 
-	if (bayer < bayerEnd) {
-	    t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
-		  bayer[bayerStep * 2 + 2] + 2) >> 2;
-	    t1 = (bayer[1] + bayer[bayerStep] +
-		  bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
-		  2) >> 2;
-	    rgb[-blue] = (unsigned char) t0;
-	    rgb[0] = (unsigned char) t1;
-	    rgb[blue] = bayer[bayerStep + 1];
-	    bayer++;
-	    rgb += 3;
-	}
+    if (bayer < bayerEnd) {
+        t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
+          bayer[bayerStep * 2 + 2] + 2) >> 2;
+        t1 = (bayer[1] + bayer[bayerStep] +
+          bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
+          2) >> 2;
+        rgb[-blue] = (unsigned char) t0;
+        rgb[0] = (unsigned char) t1;
+        rgb[blue] = bayer[bayerStep + 1];
+        bayer++;
+        rgb += 3;
+    }
 
-	bayer -= width;
-	rgb -= width * 3;
+    bayer -= width;
+    rgb -= width * 3;
 
-	blue = -blue;
-	start_with_green = !start_with_green;
+    blue = -blue;
+    start_with_green = !start_with_green;
     }
 }
 
@@ -5401,9 +5401,9 @@ dc1394_bayer_HQLinear(const unsigned char *bayer, unsigned char *rgb, int sx, in
     int width = sx;
     int height = sy;
     int blue = tile == DC1394_COLOR_FILTER_BGGR
-	|| tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
+    || tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
     int start_with_green = tile == DC1394_COLOR_FILTER_GBRG
-	|| tile == DC1394_COLOR_FILTER_GRBG;
+    || tile == DC1394_COLOR_FILTER_GRBG;
 
     ClearBorders(rgb, sx, sy, 2);
     rgb += 2 * rgbStep + 6 + 1;
@@ -5414,173 +5414,173 @@ dc1394_bayer_HQLinear(const unsigned char *bayer, unsigned char *rgb, int sx, in
     blue = -blue;
 
     for (; height--; bayer += bayerStep, rgb += rgbStep) {
-	int t0, t1;
-	const unsigned char *bayerEnd = bayer + width;
-	const int bayerStep2 = bayerStep * 2;
-	const int bayerStep3 = bayerStep * 3;
-	const int bayerStep4 = bayerStep * 4;
+    int t0, t1;
+    const unsigned char *bayerEnd = bayer + width;
+    const int bayerStep2 = bayerStep * 2;
+    const int bayerStep3 = bayerStep * 3;
+    const int bayerStep4 = bayerStep * 4;
 
-	if (start_with_green) {
-	    /* at green pixel */
-	    rgb[0] = bayer[bayerStep2 + 2];
-	    t0 = rgb[0] * 5
-		+ ((bayer[bayerStep + 2] + bayer[bayerStep3 + 2]) << 2)
-		- bayer[2]
-		- bayer[bayerStep + 1]
-		- bayer[bayerStep + 3]
-		- bayer[bayerStep3 + 1]
-		- bayer[bayerStep3 + 3]
-		- bayer[bayerStep4 + 2]
-		+ ((bayer[bayerStep2] + bayer[bayerStep2 + 4] + 1) >> 1);
-	    t1 = rgb[0] * 5 +
-		((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 3]) << 2)
-		- bayer[bayerStep2]
-		- bayer[bayerStep + 1]
-		- bayer[bayerStep + 3]
-		- bayer[bayerStep3 + 1]
-		- bayer[bayerStep3 + 3]
-		- bayer[bayerStep2 + 4]
-		+ ((bayer[2] + bayer[bayerStep4 + 2] + 1) >> 1);
-	    t0 = (t0 + 4) >> 3;
-	    CLIP(t0, rgb[-blue]);
-	    t1 = (t1 + 4) >> 3;
-	    CLIP(t1, rgb[blue]);
-	    bayer++;
-	    rgb += 3;
-	}
+    if (start_with_green) {
+        /* at green pixel */
+        rgb[0] = bayer[bayerStep2 + 2];
+        t0 = rgb[0] * 5
+        + ((bayer[bayerStep + 2] + bayer[bayerStep3 + 2]) << 2)
+        - bayer[2]
+        - bayer[bayerStep + 1]
+        - bayer[bayerStep + 3]
+        - bayer[bayerStep3 + 1]
+        - bayer[bayerStep3 + 3]
+        - bayer[bayerStep4 + 2]
+        + ((bayer[bayerStep2] + bayer[bayerStep2 + 4] + 1) >> 1);
+        t1 = rgb[0] * 5 +
+        ((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 3]) << 2)
+        - bayer[bayerStep2]
+        - bayer[bayerStep + 1]
+        - bayer[bayerStep + 3]
+        - bayer[bayerStep3 + 1]
+        - bayer[bayerStep3 + 3]
+        - bayer[bayerStep2 + 4]
+        + ((bayer[2] + bayer[bayerStep4 + 2] + 1) >> 1);
+        t0 = (t0 + 4) >> 3;
+        CLIP(t0, rgb[-blue]);
+        t1 = (t1 + 4) >> 3;
+        CLIP(t1, rgb[blue]);
+        bayer++;
+        rgb += 3;
+    }
 
-	if (blue > 0) {
-	    for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
-		/* B at B */
-		rgb[1] = bayer[bayerStep2 + 2];
-		/* R at B */
-		t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
-		       bayer[bayerStep3 + 1] + bayer[bayerStep3 + 3]) << 1)
-		    -
-		    (((bayer[2] + bayer[bayerStep2] +
-		       bayer[bayerStep2 + 4] + bayer[bayerStep4 +
-						     2]) * 3 + 1) >> 1)
-		    + rgb[1] * 6;
-		/* G at B */
-		t1 = ((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
-		       bayer[bayerStep2 + 3] + bayer[bayerStep3 + 2]) << 1)
-		    - (bayer[2] + bayer[bayerStep2] +
-		       bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
-		    + (rgb[1] << 2);
-		t0 = (t0 + 4) >> 3;
-		CLIP(t0, rgb[-1]);
-		t1 = (t1 + 4) >> 3;
-		CLIP(t1, rgb[0]);
-		/* at green pixel */
-		rgb[3] = bayer[bayerStep2 + 3];
-		t0 = rgb[3] * 5
-		    + ((bayer[bayerStep + 3] + bayer[bayerStep3 + 3]) << 2)
-		    - bayer[3]
-		    - bayer[bayerStep + 2]
-		    - bayer[bayerStep + 4]
-		    - bayer[bayerStep3 + 2]
-		    - bayer[bayerStep3 + 4]
-		    - bayer[bayerStep4 + 3]
-		    +
-		    ((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 5] +
-		      1) >> 1);
-		t1 = rgb[3] * 5 +
-		    ((bayer[bayerStep2 + 2] + bayer[bayerStep2 + 4]) << 2)
-		    - bayer[bayerStep2 + 1]
-		    - bayer[bayerStep + 2]
-		    - bayer[bayerStep + 4]
-		    - bayer[bayerStep3 + 2]
-		    - bayer[bayerStep3 + 4]
-		    - bayer[bayerStep2 + 5]
-		    + ((bayer[3] + bayer[bayerStep4 + 3] + 1) >> 1);
-		t0 = (t0 + 4) >> 3;
-		CLIP(t0, rgb[2]);
-		t1 = (t1 + 4) >> 3;
-		CLIP(t1, rgb[4]);
-	    }
-	} else {
-	    for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
-		/* R at R */
-		rgb[-1] = bayer[bayerStep2 + 2];
-		/* B at R */
-		t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
-		       bayer[bayerStep3 + 1] + bayer[bayerStep3 + 3]) << 1)
-		    -
-		    (((bayer[2] + bayer[bayerStep2] +
-		       bayer[bayerStep2 + 4] + bayer[bayerStep4 +
-						     2]) * 3 + 1) >> 1)
-		    + rgb[-1] * 6;
-		/* G at R */
-		t1 = ((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
-		       bayer[bayerStep2 + 3] + bayer[bayerStep * 3 +
-						     2]) << 1)
-		    - (bayer[2] + bayer[bayerStep2] +
-		       bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
-		    + (rgb[-1] << 2);
-		t0 = (t0 + 4) >> 3;
-		CLIP(t0, rgb[1]);
-		t1 = (t1 + 4) >> 3;
-		CLIP(t1, rgb[0]);
+    if (blue > 0) {
+        for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
+        /* B at B */
+        rgb[1] = bayer[bayerStep2 + 2];
+        /* R at B */
+        t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
+               bayer[bayerStep3 + 1] + bayer[bayerStep3 + 3]) << 1)
+            -
+            (((bayer[2] + bayer[bayerStep2] +
+               bayer[bayerStep2 + 4] + bayer[bayerStep4 +
+                             2]) * 3 + 1) >> 1)
+            + rgb[1] * 6;
+        /* G at B */
+        t1 = ((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
+               bayer[bayerStep2 + 3] + bayer[bayerStep3 + 2]) << 1)
+            - (bayer[2] + bayer[bayerStep2] +
+               bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
+            + (rgb[1] << 2);
+        t0 = (t0 + 4) >> 3;
+        CLIP(t0, rgb[-1]);
+        t1 = (t1 + 4) >> 3;
+        CLIP(t1, rgb[0]);
+        /* at green pixel */
+        rgb[3] = bayer[bayerStep2 + 3];
+        t0 = rgb[3] * 5
+            + ((bayer[bayerStep + 3] + bayer[bayerStep3 + 3]) << 2)
+            - bayer[3]
+            - bayer[bayerStep + 2]
+            - bayer[bayerStep + 4]
+            - bayer[bayerStep3 + 2]
+            - bayer[bayerStep3 + 4]
+            - bayer[bayerStep4 + 3]
+            +
+            ((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 5] +
+              1) >> 1);
+        t1 = rgb[3] * 5 +
+            ((bayer[bayerStep2 + 2] + bayer[bayerStep2 + 4]) << 2)
+            - bayer[bayerStep2 + 1]
+            - bayer[bayerStep + 2]
+            - bayer[bayerStep + 4]
+            - bayer[bayerStep3 + 2]
+            - bayer[bayerStep3 + 4]
+            - bayer[bayerStep2 + 5]
+            + ((bayer[3] + bayer[bayerStep4 + 3] + 1) >> 1);
+        t0 = (t0 + 4) >> 3;
+        CLIP(t0, rgb[2]);
+        t1 = (t1 + 4) >> 3;
+        CLIP(t1, rgb[4]);
+        }
+    } else {
+        for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
+        /* R at R */
+        rgb[-1] = bayer[bayerStep2 + 2];
+        /* B at R */
+        t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
+               bayer[bayerStep3 + 1] + bayer[bayerStep3 + 3]) << 1)
+            -
+            (((bayer[2] + bayer[bayerStep2] +
+               bayer[bayerStep2 + 4] + bayer[bayerStep4 +
+                             2]) * 3 + 1) >> 1)
+            + rgb[-1] * 6;
+        /* G at R */
+        t1 = ((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
+               bayer[bayerStep2 + 3] + bayer[bayerStep * 3 +
+                             2]) << 1)
+            - (bayer[2] + bayer[bayerStep2] +
+               bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
+            + (rgb[-1] << 2);
+        t0 = (t0 + 4) >> 3;
+        CLIP(t0, rgb[1]);
+        t1 = (t1 + 4) >> 3;
+        CLIP(t1, rgb[0]);
 
-		/* at green pixel */
-		rgb[3] = bayer[bayerStep2 + 3];
-		t0 = rgb[3] * 5
-		    + ((bayer[bayerStep + 3] + bayer[bayerStep3 + 3]) << 2)
-		    - bayer[3]
-		    - bayer[bayerStep + 2]
-		    - bayer[bayerStep + 4]
-		    - bayer[bayerStep3 + 2]
-		    - bayer[bayerStep3 + 4]
-		    - bayer[bayerStep4 + 3]
-		    +
-		    ((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 5] +
-		      1) >> 1);
-		t1 = rgb[3] * 5 +
-		    ((bayer[bayerStep2 + 2] + bayer[bayerStep2 + 4]) << 2)
-		    - bayer[bayerStep2 + 1]
-		    - bayer[bayerStep + 2]
-		    - bayer[bayerStep + 4]
-		    - bayer[bayerStep3 + 2]
-		    - bayer[bayerStep3 + 4]
-		    - bayer[bayerStep2 + 5]
-		    + ((bayer[3] + bayer[bayerStep4 + 3] + 1) >> 1);
-		t0 = (t0 + 4) >> 3;
-		CLIP(t0, rgb[4]);
-		t1 = (t1 + 4) >> 3;
-		CLIP(t1, rgb[2]);
-	    }
-	}
+        /* at green pixel */
+        rgb[3] = bayer[bayerStep2 + 3];
+        t0 = rgb[3] * 5
+            + ((bayer[bayerStep + 3] + bayer[bayerStep3 + 3]) << 2)
+            - bayer[3]
+            - bayer[bayerStep + 2]
+            - bayer[bayerStep + 4]
+            - bayer[bayerStep3 + 2]
+            - bayer[bayerStep3 + 4]
+            - bayer[bayerStep4 + 3]
+            +
+            ((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 5] +
+              1) >> 1);
+        t1 = rgb[3] * 5 +
+            ((bayer[bayerStep2 + 2] + bayer[bayerStep2 + 4]) << 2)
+            - bayer[bayerStep2 + 1]
+            - bayer[bayerStep + 2]
+            - bayer[bayerStep + 4]
+            - bayer[bayerStep3 + 2]
+            - bayer[bayerStep3 + 4]
+            - bayer[bayerStep2 + 5]
+            + ((bayer[3] + bayer[bayerStep4 + 3] + 1) >> 1);
+        t0 = (t0 + 4) >> 3;
+        CLIP(t0, rgb[4]);
+        t1 = (t1 + 4) >> 3;
+        CLIP(t1, rgb[2]);
+        }
+    }
 
-	if (bayer < bayerEnd) {
-	    /* B at B */
-	    rgb[blue] = bayer[bayerStep2 + 2];
-	    /* R at B */
-	    t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
-		   bayer[bayerStep3 + 1] + bayer[bayerStep3 + 3]) << 1)
-		-
-		(((bayer[2] + bayer[bayerStep2] +
-		   bayer[bayerStep2 + 4] + bayer[bayerStep4 +
-						 2]) * 3 + 1) >> 1)
-		+ rgb[blue] * 6;
-	    /* G at B */
-	    t1 = (((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
-		    bayer[bayerStep2 + 3] + bayer[bayerStep3 + 2])) << 1)
-		- (bayer[2] + bayer[bayerStep2] +
-		   bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
-		+ (rgb[blue] << 2);
-	    t0 = (t0 + 4) >> 3;
-	    CLIP(t0, rgb[-blue]);
-	    t1 = (t1 + 4) >> 3;
-	    CLIP(t1, rgb[0]);
-	    bayer++;
-	    rgb += 3;
-	}
+    if (bayer < bayerEnd) {
+        /* B at B */
+        rgb[blue] = bayer[bayerStep2 + 2];
+        /* R at B */
+        t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
+           bayer[bayerStep3 + 1] + bayer[bayerStep3 + 3]) << 1)
+        -
+        (((bayer[2] + bayer[bayerStep2] +
+           bayer[bayerStep2 + 4] + bayer[bayerStep4 +
+                         2]) * 3 + 1) >> 1)
+        + rgb[blue] * 6;
+        /* G at B */
+        t1 = (((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
+            bayer[bayerStep2 + 3] + bayer[bayerStep3 + 2])) << 1)
+        - (bayer[2] + bayer[bayerStep2] +
+           bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
+        + (rgb[blue] << 2);
+        t0 = (t0 + 4) >> 3;
+        CLIP(t0, rgb[-blue]);
+        t1 = (t1 + 4) >> 3;
+        CLIP(t1, rgb[0]);
+        bayer++;
+        rgb += 3;
+    }
 
-	bayer -= width;
-	rgb -= width * 3;
+    bayer -= width;
+    rgb -= width * 3;
 
-	blue = -blue;
-	start_with_green = !start_with_green;
+    blue = -blue;
+    start_with_green = !start_with_green;
     }
 }
 
@@ -5601,282 +5601,282 @@ dc1394_bayer_EdgeSense(const unsigned char *bayer, unsigned char *rgb, int sx, i
     switch (tile) {
     case DC1394_COLOR_FILTER_GRBG:
     case DC1394_COLOR_FILTER_BGGR:
-	outR = &rgb[0];
-	outG = &rgb[1];
-	outB = &rgb[2];
-	break;
+    outR = &rgb[0];
+    outG = &rgb[1];
+    outB = &rgb[2];
+    break;
     case DC1394_COLOR_FILTER_GBRG:
     case DC1394_COLOR_FILTER_RGGB:
-	outR = &rgb[2];
-	outG = &rgb[1];
-	outB = &rgb[0];
-	break;
+    outR = &rgb[2];
+    outG = &rgb[1];
+    outB = &rgb[0];
+    break;
     default:
- //	fprintf(stderr, "Bad bayer pattern ID: %d\n", tile);
- //	return;
-	break;
+ //    fprintf(stderr, "Bad bayer pattern ID: %d\n", tile);
+ //    return;
+    break;
     }
 
     switch (tile) {
-    case DC1394_COLOR_FILTER_GRBG:	//---------------------------------------------------------
+    case DC1394_COLOR_FILTER_GRBG:    //---------------------------------------------------------
     case DC1394_COLOR_FILTER_GBRG:
-	// copy original RGB data to output images
+    // copy original RGB data to output images
       for (i = 0; i < sy*sx; i += (sx<<1)) {
-	for (j = 0; j < sx; j += 2) {
-	  outG[(i + j) * 3] = bayer[i + j];
-	  outG[(i + sx + (j + 1)) * 3] = bayer[i + sx + (j + 1)];
-	  outR[(i + j + 1) * 3] = bayer[i + j + 1];
-	  outB[(i + sx + j) * 3] = bayer[i + sx + j];
-	}
+    for (j = 0; j < sx; j += 2) {
+      outG[(i + j) * 3] = bayer[i + j];
+      outG[(i + sx + (j + 1)) * 3] = bayer[i + sx + (j + 1)];
+      outR[(i + j + 1) * 3] = bayer[i + j + 1];
+      outB[(i + sx + j) * 3] = bayer[i + sx + j];
+    }
       }
       // process GREEN channel
       for (i = 3*sx; i < (sy - 2)*sx; i += (sx<<1)) {
-	for (j = 2; j < sx - 3; j += 2) {
-	  dh = abs(((outB[(i + j - 2) * 3] +
-		     outB[(i + j + 2) * 3]) >> 1) -
-		   outB[(i + j) * 3]);
-	  dv = abs(((outB[(i - (sx<<1) + j) * 3] +
-		     outB[(i + (sx<<1) + j) * 3]) >> 1)  -
-		   outB[(i + j) * 3]);
-	  if (dh < dv)
-	    tmp = (outG[(i + j - 1) * 3] +
-		   outG[(i + j + 1) * 3]) >> 1;
-	  else {
-	    if (dh > dv)
-	      tmp = (outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 1;
-	    else
-	      tmp = (outG[(i + j - 1) * 3] +
-		     outG[(i + j + 1) * 3] +
-		     outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 2;
-	  }
-	  CLIP(tmp, outG[(i + j) * 3]);
-	}
+    for (j = 2; j < sx - 3; j += 2) {
+      dh = abs(((outB[(i + j - 2) * 3] +
+             outB[(i + j + 2) * 3]) >> 1) -
+           outB[(i + j) * 3]);
+      dv = abs(((outB[(i - (sx<<1) + j) * 3] +
+             outB[(i + (sx<<1) + j) * 3]) >> 1)  -
+           outB[(i + j) * 3]);
+      if (dh < dv)
+        tmp = (outG[(i + j - 1) * 3] +
+           outG[(i + j + 1) * 3]) >> 1;
+      else {
+        if (dh > dv)
+          tmp = (outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 1;
+        else
+          tmp = (outG[(i + j - 1) * 3] +
+             outG[(i + j + 1) * 3] +
+             outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 2;
       }
-	
+      CLIP(tmp, outG[(i + j) * 3]);
+    }
+      }
+    
       for (i = 2*sx; i < (sy - 3)*sx; i += (sx<<1)) {
-	for (j = 3; j < sx - 2; j += 2) {
-	  dh = abs(((outR[(i + j - 2) * 3] +
-		     outR[(i + j + 2) * 3]) >>1 ) -
-		   outR[(i + j) * 3]);
-	  dv = abs(((outR[(i - (sx<<1) + j) * 3] +
-		     outR[(i + (sx<<1) + j) * 3]) >>1 ) -
-		   outR[(i + j) * 3]);
-	  if (dh < dv)
-	    tmp = (outG[(i + j - 1) * 3] +
-		   outG[(i + j + 1) * 3]) >> 1;
-	  else {
-	    if (dh > dv)
-	      tmp = (outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 1;
-	    else
-	      tmp = (outG[(i + j - 1) * 3] +
-		     outG[(i + j + 1) * 3] +
-		     outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 2;
-	  }
-	  CLIP(tmp, outG[(i + j) * 3]);
-	}
+    for (j = 3; j < sx - 2; j += 2) {
+      dh = abs(((outR[(i + j - 2) * 3] +
+             outR[(i + j + 2) * 3]) >>1 ) -
+           outR[(i + j) * 3]);
+      dv = abs(((outR[(i - (sx<<1) + j) * 3] +
+             outR[(i + (sx<<1) + j) * 3]) >>1 ) -
+           outR[(i + j) * 3]);
+      if (dh < dv)
+        tmp = (outG[(i + j - 1) * 3] +
+           outG[(i + j + 1) * 3]) >> 1;
+      else {
+        if (dh > dv)
+          tmp = (outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 1;
+        else
+          tmp = (outG[(i + j - 1) * 3] +
+             outG[(i + j + 1) * 3] +
+             outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 2;
+      }
+      CLIP(tmp, outG[(i + j) * 3]);
+    }
       }
       // process RED channel
       for (i = 0; i < (sy - 1)*sx; i += (sx<<1)) {
-	for (j = 2; j < sx - 1; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i + j - 1) * 3] -
-		outG[(i + j - 1) * 3] +
-		outR[(i + j + 1) * 3] -
-		outG[(i + j + 1) * 3]) >> 1);
-	  CLIP(tmp, outR[(i + j) * 3]);
-	}
+    for (j = 2; j < sx - 1; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i + j - 1) * 3] -
+        outG[(i + j - 1) * 3] +
+        outR[(i + j + 1) * 3] -
+        outG[(i + j + 1) * 3]) >> 1);
+      CLIP(tmp, outR[(i + j) * 3]);
+    }
       }
       for (i = sx; i < (sy - 2)*sx; i += (sx<<1)) {
-	for (j = 1; j < sx; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i - sx + j) * 3] -
-		outG[(i - sx + j) * 3] +
-		outR[(i + sx + j) * 3] -
-		outG[(i + sx + j) * 3]) >> 1);
-	  CLIP(tmp, outR[(i + j) * 3]);
-	}
-	for (j = 2; j < sx - 1; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i - sx + j - 1) * 3] -
-		outG[(i - sx + j - 1) * 3] +
-		outR[(i - sx + j + 1) * 3] -
-		outG[(i - sx + j + 1) * 3] +
-		outR[(i + sx + j - 1) * 3] -
-		outG[(i + sx + j - 1) * 3] +
-		outR[(i + sx + j + 1) * 3] -
-		outG[(i + sx + j + 1) * 3]) >> 2);
-	  CLIP(tmp, outR[(i + j) * 3]);
-	}
+    for (j = 1; j < sx; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i - sx + j) * 3] -
+        outG[(i - sx + j) * 3] +
+        outR[(i + sx + j) * 3] -
+        outG[(i + sx + j) * 3]) >> 1);
+      CLIP(tmp, outR[(i + j) * 3]);
+    }
+    for (j = 2; j < sx - 1; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i - sx + j - 1) * 3] -
+        outG[(i - sx + j - 1) * 3] +
+        outR[(i - sx + j + 1) * 3] -
+        outG[(i - sx + j + 1) * 3] +
+        outR[(i + sx + j - 1) * 3] -
+        outG[(i + sx + j - 1) * 3] +
+        outR[(i + sx + j + 1) * 3] -
+        outG[(i + sx + j + 1) * 3]) >> 2);
+      CLIP(tmp, outR[(i + j) * 3]);
+    }
       }
 
       // process BLUE channel
       for (i = sx; i < sy*sx; i += (sx<<1)) {
-	for (j = 1; j < sx - 2; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i + j - 1) * 3] -
-		outG[(i + j - 1) * 3] +
-		outB[(i + j + 1) * 3] -
-		outG[(i + j + 1) * 3]) >> 1);
-	  CLIP(tmp, outB[(i + j) * 3]);
-	}
+    for (j = 1; j < sx - 2; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i + j - 1) * 3] -
+        outG[(i + j - 1) * 3] +
+        outB[(i + j + 1) * 3] -
+        outG[(i + j + 1) * 3]) >> 1);
+      CLIP(tmp, outB[(i + j) * 3]);
+    }
       }
       for (i = 2*sx; i < (sy - 1)*sx; i += (sx<<1)) {
-	for (j = 0; j < sx - 1; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i - sx + j) * 3] -
-		outG[(i - sx + j) * 3] +
-		outB[(i + sx + j) * 3] -
-		outG[(i + sx + j) * 3]) >> 1);
-	  CLIP(tmp, outB[(i + j) * 3]);
-	}
-	for (j = 1; j < sx - 2; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i - sx + j - 1) * 3] -
-		outG[(i - sx + j - 1) * 3] +
-		outB[(i - sx + j + 1) * 3] -
-		outG[(i - sx + j + 1) * 3] +
-		outB[(i + sx + j - 1) * 3] -
-		outG[(i + sx + j - 1) * 3] +
-		outB[(i + sx + j + 1) * 3] -
-		outG[(i + sx + j + 1) * 3]) >> 2);
-	  CLIP(tmp, outB[(i + j) * 3]);
-	}
+    for (j = 0; j < sx - 1; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i - sx + j) * 3] -
+        outG[(i - sx + j) * 3] +
+        outB[(i + sx + j) * 3] -
+        outG[(i + sx + j) * 3]) >> 1);
+      CLIP(tmp, outB[(i + j) * 3]);
+    }
+    for (j = 1; j < sx - 2; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i - sx + j - 1) * 3] -
+        outG[(i - sx + j - 1) * 3] +
+        outB[(i - sx + j + 1) * 3] -
+        outG[(i - sx + j + 1) * 3] +
+        outB[(i + sx + j - 1) * 3] -
+        outG[(i + sx + j - 1) * 3] +
+        outB[(i + sx + j + 1) * 3] -
+        outG[(i + sx + j + 1) * 3]) >> 2);
+      CLIP(tmp, outB[(i + j) * 3]);
+    }
       }
       break;
 
-    case DC1394_COLOR_FILTER_BGGR:	//---------------------------------------------------------
+    case DC1394_COLOR_FILTER_BGGR:    //---------------------------------------------------------
     case DC1394_COLOR_FILTER_RGGB:
-	// copy original RGB data to output images
+    // copy original RGB data to output images
       for (i = 0; i < sy*sx; i += (sx<<1)) {
-	for (j = 0; j < sx; j += 2) {
-	  outB[(i + j) * 3] = bayer[i + j];
-	  outR[(i + sx + (j + 1)) * 3] = bayer[i + sx + (j + 1)];
-	  outG[(i + j + 1) * 3] = bayer[i + j + 1];
-	  outG[(i + sx + j) * 3] = bayer[i + sx + j];
-	}
+    for (j = 0; j < sx; j += 2) {
+      outB[(i + j) * 3] = bayer[i + j];
+      outR[(i + sx + (j + 1)) * 3] = bayer[i + sx + (j + 1)];
+      outG[(i + j + 1) * 3] = bayer[i + j + 1];
+      outG[(i + sx + j) * 3] = bayer[i + sx + j];
+    }
       }
       // process GREEN channel
       for (i = 2*sx; i < (sy - 2)*sx; i += (sx<<1)) {
-	for (j = 2; j < sx - 3; j += 2) {
-	  dh = abs(((outB[(i + j - 2) * 3] +
-		    outB[(i + j + 2) * 3]) >> 1) -
-		   outB[(i + j) * 3]);
-	  dv = abs(((outB[(i - (sx<<1) + j) * 3] +
-		    outB[(i + (sx<<1) + j) * 3]) >> 1) -
-		   outB[(i + j) * 3]);
-	  if (dh < dv)
-	    tmp = (outG[(i + j - 1) * 3] +
-		   outG[(i + j + 1) * 3]) >> 1;
-	  else {
-	    if (dh > dv)
-	      tmp = (outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 1;
-	    else
-	      tmp = (outG[(i + j - 1) * 3] +
-		     outG[(i + j + 1) * 3] +
-		     outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 2;
-	  }
-	  CLIP(tmp, outG[(i + j) * 3]);
-	}
+    for (j = 2; j < sx - 3; j += 2) {
+      dh = abs(((outB[(i + j - 2) * 3] +
+            outB[(i + j + 2) * 3]) >> 1) -
+           outB[(i + j) * 3]);
+      dv = abs(((outB[(i - (sx<<1) + j) * 3] +
+            outB[(i + (sx<<1) + j) * 3]) >> 1) -
+           outB[(i + j) * 3]);
+      if (dh < dv)
+        tmp = (outG[(i + j - 1) * 3] +
+           outG[(i + j + 1) * 3]) >> 1;
+      else {
+        if (dh > dv)
+          tmp = (outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 1;
+        else
+          tmp = (outG[(i + j - 1) * 3] +
+             outG[(i + j + 1) * 3] +
+             outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 2;
+      }
+      CLIP(tmp, outG[(i + j) * 3]);
+    }
       }
       for (i = 3*sx; i < (sy - 3)*sx; i += (sx<<1)) {
-	for (j = 3; j < sx - 2; j += 2) {
-	  dh = abs(((outR[(i + j - 2) * 3] +
-		    outR[(i + j + 2) * 3]) >> 1) -
-		   outR[(i + j) * 3]);
-	  dv = abs(((outR[(i - (sx<<1) + j) * 3] +
-		    outR[(i + (sx<<1) + j) * 3]) >> 1) -
-		   outR[(i + j) * 3]);
-	  if (dh < dv)
-	    tmp = (outG[(i + j - 1) * 3] +
-		   outG[(i + j + 1) * 3]) >>1;
-	  else {
-	    if (dh > dv)
-	      tmp = (outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >>1;
-	    else
-	      tmp = (outG[(i + j - 1) * 3] +
-		     outG[(i + j + 1) * 3] +
-		     outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >>2;
-	  }
-	  CLIP(tmp, outG[(i + j) * 3]);
-	}
+    for (j = 3; j < sx - 2; j += 2) {
+      dh = abs(((outR[(i + j - 2) * 3] +
+            outR[(i + j + 2) * 3]) >> 1) -
+           outR[(i + j) * 3]);
+      dv = abs(((outR[(i - (sx<<1) + j) * 3] +
+            outR[(i + (sx<<1) + j) * 3]) >> 1) -
+           outR[(i + j) * 3]);
+      if (dh < dv)
+        tmp = (outG[(i + j - 1) * 3] +
+           outG[(i + j + 1) * 3]) >>1;
+      else {
+        if (dh > dv)
+          tmp = (outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >>1;
+        else
+          tmp = (outG[(i + j - 1) * 3] +
+             outG[(i + j + 1) * 3] +
+             outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >>2;
+      }
+      CLIP(tmp, outG[(i + j) * 3]);
+    }
       }
       // process RED channel
-      for (i = sx; i < (sy - 1)*sx; i += (sx<<1)) {	// G-points (1/2)
-	for (j = 2; j < sx - 1; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i + j - 1) * 3] -
-		outG[(i + j - 1) * 3] +
-		outR[(i + j + 1) * 3] -
-		outG[(i + j + 1) * 3]) >>1);
-	  CLIP(tmp, outR[(i + j) * 3]);
-	}
+      for (i = sx; i < (sy - 1)*sx; i += (sx<<1)) {    // G-points (1/2)
+    for (j = 2; j < sx - 1; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i + j - 1) * 3] -
+        outG[(i + j - 1) * 3] +
+        outR[(i + j + 1) * 3] -
+        outG[(i + j + 1) * 3]) >>1);
+      CLIP(tmp, outR[(i + j) * 3]);
+    }
       }
       for (i = 2*sx; i < (sy - 2)*sx; i += (sx<<1)) {
-	for (j = 1; j < sx; j += 2) {	// G-points (2/2)
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i - sx + j) * 3] -
-		outG[(i - sx + j) * 3] +
-		outR[(i + sx + j) * 3] -
-		outG[(i + sx + j) * 3]) >> 1);
-	  CLIP(tmp, outR[(i + j) * 3]);
-	}
-	for (j = 2; j < sx - 1; j += 2) {	// B-points
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i - sx + j - 1) * 3] -
-		outG[(i - sx + j - 1) * 3] +
-		outR[(i - sx + j + 1) * 3] -
-		outG[(i - sx + j + 1) * 3] +
-		outR[(i + sx + j - 1) * 3] -
-		outG[(i + sx + j - 1) * 3] +
-		outR[(i + sx + j + 1) * 3] -
-		outG[(i + sx + j + 1) * 3]) >> 2);
-	  CLIP(tmp, outR[(i + j) * 3]);
-	}
+    for (j = 1; j < sx; j += 2) {    // G-points (2/2)
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i - sx + j) * 3] -
+        outG[(i - sx + j) * 3] +
+        outR[(i + sx + j) * 3] -
+        outG[(i + sx + j) * 3]) >> 1);
+      CLIP(tmp, outR[(i + j) * 3]);
+    }
+    for (j = 2; j < sx - 1; j += 2) {    // B-points
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i - sx + j - 1) * 3] -
+        outG[(i - sx + j - 1) * 3] +
+        outR[(i - sx + j + 1) * 3] -
+        outG[(i - sx + j + 1) * 3] +
+        outR[(i + sx + j - 1) * 3] -
+        outG[(i + sx + j - 1) * 3] +
+        outR[(i + sx + j + 1) * 3] -
+        outG[(i + sx + j + 1) * 3]) >> 2);
+      CLIP(tmp, outR[(i + j) * 3]);
+    }
       }
       
       // process BLUE channel
       for (i = 0; i < sy*sx; i += (sx<<1)) {
-	for (j = 1; j < sx - 2; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i + j - 1) * 3] -
-		outG[(i + j - 1) * 3] +
-		outB[(i + j + 1) * 3] -
-		outG[(i + j + 1) * 3]) >> 1);
-	  CLIP(tmp, outB[(i + j) * 3]);
-	}
+    for (j = 1; j < sx - 2; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i + j - 1) * 3] -
+        outG[(i + j - 1) * 3] +
+        outB[(i + j + 1) * 3] -
+        outG[(i + j + 1) * 3]) >> 1);
+      CLIP(tmp, outB[(i + j) * 3]);
+    }
       }
       for (i = sx; i < (sy - 1)*sx; i += (sx<<1)) {
-	for (j = 0; j < sx - 1; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i - sx + j) * 3] -
-		outG[(i - sx + j) * 3] +
-		outB[(i + sx + j) * 3] -
-		outG[(i + sx + j) * 3]) >> 1);
-	  CLIP(tmp, outB[(i + j) * 3]);
-	}
-	for (j = 1; j < sx - 2; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i - sx + j - 1) * 3] -
-		outG[(i - sx + j - 1) * 3] +
-		outB[(i - sx + j + 1) * 3] -
-		outG[(i - sx + j + 1) * 3] +
-		outB[(i + sx + j - 1) * 3] -
-		outG[(i + sx + j - 1) * 3] +
-		outB[(i + sx + j + 1) * 3] -
-		outG[(i + sx + j + 1) * 3]) >> 2);
-	  CLIP(tmp, outB[(i + j) * 3]);
-	}
+    for (j = 0; j < sx - 1; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i - sx + j) * 3] -
+        outG[(i - sx + j) * 3] +
+        outB[(i + sx + j) * 3] -
+        outG[(i + sx + j) * 3]) >> 1);
+      CLIP(tmp, outB[(i + j) * 3]);
+    }
+    for (j = 1; j < sx - 2; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i - sx + j - 1) * 3] -
+        outG[(i - sx + j - 1) * 3] +
+        outB[(i - sx + j + 1) * 3] -
+        outG[(i - sx + j + 1) * 3] +
+        outB[(i + sx + j - 1) * 3] -
+        outG[(i + sx + j - 1) * 3] +
+        outB[(i + sx + j + 1) * 3] -
+        outG[(i + sx + j + 1) * 3]) >> 2);
+      CLIP(tmp, outB[(i + j) * 3]);
+    }
       }
       break;
-    default:			//---------------------------------------------------------
+    default:            //---------------------------------------------------------
 //      fprintf(stderr, "Bad bayer pattern ID: %d\n", tile);
 //      return;
       break;
@@ -5899,55 +5899,55 @@ dc1394_bayer_Downsample(const unsigned char *bayer, unsigned char *rgb, int sx, 
     switch (tile) {
     case DC1394_COLOR_FILTER_GRBG:
     case DC1394_COLOR_FILTER_BGGR:
-	outR = &rgb[0];
-	outG = &rgb[1];
-	outB = &rgb[2];
-	break;
+    outR = &rgb[0];
+    outG = &rgb[1];
+    outB = &rgb[2];
+    break;
     case DC1394_COLOR_FILTER_GBRG:
     case DC1394_COLOR_FILTER_RGGB:
-	outR = &rgb[2];
-	outG = &rgb[1];
-	outB = &rgb[0];
-	break;
+    outR = &rgb[2];
+    outG = &rgb[1];
+    outB = &rgb[0];
+    break;
     default:
-//	fprintf(stderr, "Bad Bayer pattern ID: %d\n", tile);
-//	return;
-	break;
+//    fprintf(stderr, "Bad Bayer pattern ID: %d\n", tile);
+//    return;
+    break;
     }
 
     switch (tile) {
-    case DC1394_COLOR_FILTER_GRBG:	//---------------------------------------------------------
+    case DC1394_COLOR_FILTER_GRBG:    //---------------------------------------------------------
     case DC1394_COLOR_FILTER_GBRG:
-	for (i = 0; i < sy*sx; i += (sx<<1)) {
-	    for (j = 0; j < sx; j += 2) {
-		tmp =
-		    ((bayer[i + j] + bayer[i + sx + j + 1]) >> 1);
-		CLIP(tmp, outG[((i >> 2) + (j >> 1)) * 3]);
-		tmp = bayer[i + sx + j + 1];
-		CLIP(tmp, outR[((i >> 2) + (j >> 1)) * 3]);
-		tmp = bayer[i + sx + j];
-		CLIP(tmp, outB[((i >> 2) + (j >> 1)) * 3]);
-	    }
-	}
-	break;
-    case DC1394_COLOR_FILTER_BGGR:	//---------------------------------------------------------
+    for (i = 0; i < sy*sx; i += (sx<<1)) {
+        for (j = 0; j < sx; j += 2) {
+        tmp =
+            ((bayer[i + j] + bayer[i + sx + j + 1]) >> 1);
+        CLIP(tmp, outG[((i >> 2) + (j >> 1)) * 3]);
+        tmp = bayer[i + sx + j + 1];
+        CLIP(tmp, outR[((i >> 2) + (j >> 1)) * 3]);
+        tmp = bayer[i + sx + j];
+        CLIP(tmp, outB[((i >> 2) + (j >> 1)) * 3]);
+        }
+    }
+    break;
+    case DC1394_COLOR_FILTER_BGGR:    //---------------------------------------------------------
     case DC1394_COLOR_FILTER_RGGB:
-	for (i = 0; i < sy*sx; i += (sx<<1)) {
-	    for (j = 0; j < sx; j += 2) {
-		tmp =
-		    ((bayer[i + sx + j] + bayer[i + j + 1]) >> 1);
-		CLIP(tmp, outG[((i >> 2) + (j >> 1)) * 3]);
-		tmp = bayer[i + sx + j + 1];
-		CLIP(tmp, outR[((i >> 2) + (j >> 1)) * 3]);
-		tmp = bayer[i + j];
-		CLIP(tmp, outB[((i >> 2) + (j >> 1)) * 3]);
-	    }
-	}
-	break;
-    default:			//---------------------------------------------------------
-//	fprintf(stderr, "Bad Bayer pattern ID: %d\n", tile);
-//	return;
-	break;
+    for (i = 0; i < sy*sx; i += (sx<<1)) {
+        for (j = 0; j < sx; j += 2) {
+        tmp =
+            ((bayer[i + sx + j] + bayer[i + j + 1]) >> 1);
+        CLIP(tmp, outG[((i >> 2) + (j >> 1)) * 3]);
+        tmp = bayer[i + sx + j + 1];
+        CLIP(tmp, outR[((i >> 2) + (j >> 1)) * 3]);
+        tmp = bayer[i + j];
+        CLIP(tmp, outB[((i >> 2) + (j >> 1)) * 3]);
+        }
+    }
+    break;
+    default:            //---------------------------------------------------------
+//    fprintf(stderr, "Bad Bayer pattern ID: %d\n", tile);
+//    return;
+    break;
     }
 
 }
@@ -6042,21 +6042,21 @@ dc1394_bayer_NearestNeighbor_uint16(const uint16_t *bayer, uint16_t *rgb, int sx
     int width = sx;
     int height = sy;
     int blue = tile == DC1394_COLOR_FILTER_BGGR
-	|| tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
+    || tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
     int start_with_green = tile == DC1394_COLOR_FILTER_GBRG
-	|| tile == DC1394_COLOR_FILTER_GRBG;
+    || tile == DC1394_COLOR_FILTER_GRBG;
     int i, iinc, imax;
 
     /* add black border */
     imax = sx * sy * 3;
     for (i = sx * (sy - 1) * 3; i < imax; i++) {
-	rgb[i] = 0;
+    rgb[i] = 0;
     }
     iinc = (sx - 1) * 3;
     for (i = (sx - 1) * 3; i < imax; i += iinc) {
-	rgb[i++] = 0;
-	rgb[i++] = 0;
-	rgb[i++] = 0;
+    rgb[i++] = 0;
+    rgb[i++] = 0;
+    rgb[i++] = 0;
     }
 
     rgb += 1;
@@ -6065,7 +6065,7 @@ dc1394_bayer_NearestNeighbor_uint16(const uint16_t *bayer, uint16_t *rgb, int sx
 
     for (; height--; bayer += bayerStep, rgb += rgbStep) {
       //int t0, t1;
-	const uint16_t *bayerEnd = bayer + width;
+    const uint16_t *bayerEnd = bayer + width;
 
         if (start_with_green) {
             rgb[-blue] = bayer[1];
@@ -6105,11 +6105,11 @@ dc1394_bayer_NearestNeighbor_uint16(const uint16_t *bayer, uint16_t *rgb, int sx
             rgb += 3;
         }
 
-	bayer -= width;
-	rgb -= width * 3;
+    bayer -= width;
+    rgb -= width * 3;
 
-	blue = -blue;
-	start_with_green = !start_with_green;
+    blue = -blue;
+    start_with_green = !start_with_green;
     }
 }
 /* OpenCV's Bayer decoding */
@@ -6121,86 +6121,86 @@ dc1394_bayer_Bilinear_uint16(const uint16_t *bayer, uint16_t *rgb, int sx, int s
     int width = sx;
     int height = sy;
     int blue = tile == DC1394_COLOR_FILTER_BGGR
-	|| tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
+    || tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
     int start_with_green = tile == DC1394_COLOR_FILTER_GBRG
-	|| tile == DC1394_COLOR_FILTER_GRBG;
+    || tile == DC1394_COLOR_FILTER_GRBG;
 
     rgb += rgbStep + 3 + 1;
     height -= 2;
     width -= 2;
 
     for (; height--; bayer += bayerStep, rgb += rgbStep) {
-	int t0, t1;
-	const uint16_t *bayerEnd = bayer + width;
+    int t0, t1;
+    const uint16_t *bayerEnd = bayer + width;
 
-	if (start_with_green) {
-	    /* OpenCV has a bug in the next line, which was
-	       t0 = (bayer[0] + bayer[bayerStep * 2] + 1) >> 1; */
-	    t0 = (bayer[1] + bayer[bayerStep * 2 + 1] + 1) >> 1;
-	    t1 = (bayer[bayerStep] + bayer[bayerStep + 2] + 1) >> 1;
-	    rgb[-blue] = (uint16_t) t0;
-	    rgb[0] = bayer[bayerStep + 1];
-	    rgb[blue] = (uint16_t) t1;
-	    bayer++;
-	    rgb += 3;
-	}
+    if (start_with_green) {
+        /* OpenCV has a bug in the next line, which was
+           t0 = (bayer[0] + bayer[bayerStep * 2] + 1) >> 1; */
+        t0 = (bayer[1] + bayer[bayerStep * 2 + 1] + 1) >> 1;
+        t1 = (bayer[bayerStep] + bayer[bayerStep + 2] + 1) >> 1;
+        rgb[-blue] = (uint16_t) t0;
+        rgb[0] = bayer[bayerStep + 1];
+        rgb[blue] = (uint16_t) t1;
+        bayer++;
+        rgb += 3;
+    }
 
-	if (blue > 0) {
-	    for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
-		t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
-		      bayer[bayerStep * 2 + 2] + 2) >> 2;
-		t1 = (bayer[1] + bayer[bayerStep] +
-		      bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
-		      2) >> 2;
-		rgb[-1] = (uint16_t) t0;
-		rgb[0] = (uint16_t) t1;
-		rgb[1] = bayer[bayerStep + 1];
+    if (blue > 0) {
+        for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
+        t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
+              bayer[bayerStep * 2 + 2] + 2) >> 2;
+        t1 = (bayer[1] + bayer[bayerStep] +
+              bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
+              2) >> 2;
+        rgb[-1] = (uint16_t) t0;
+        rgb[0] = (uint16_t) t1;
+        rgb[1] = bayer[bayerStep + 1];
 
-		t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) >> 1;
-		t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] +
-		      1) >> 1;
-		rgb[2] = (uint16_t) t0;
-		rgb[3] = bayer[bayerStep + 2];
-		rgb[4] = (uint16_t) t1;
-	    }
-	} else {
-	    for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
-		t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
-		      bayer[bayerStep * 2 + 2] + 2) >> 2;
-		t1 = (bayer[1] + bayer[bayerStep] +
-		      bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
-		      2) >> 2;
-		rgb[1] = (uint16_t) t0;
-		rgb[0] = (uint16_t) t1;
-		rgb[-1] = bayer[bayerStep + 1];
+        t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) >> 1;
+        t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] +
+              1) >> 1;
+        rgb[2] = (uint16_t) t0;
+        rgb[3] = bayer[bayerStep + 2];
+        rgb[4] = (uint16_t) t1;
+        }
+    } else {
+        for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
+        t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
+              bayer[bayerStep * 2 + 2] + 2) >> 2;
+        t1 = (bayer[1] + bayer[bayerStep] +
+              bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
+              2) >> 2;
+        rgb[1] = (uint16_t) t0;
+        rgb[0] = (uint16_t) t1;
+        rgb[-1] = bayer[bayerStep + 1];
 
-		t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) >> 1;
-		t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] +
-		      1) >> 1;
-		rgb[4] = (uint16_t) t0;
-		rgb[3] = bayer[bayerStep + 2];
-		rgb[2] = (uint16_t) t1;
-	    }
-	}
+        t0 = (bayer[2] + bayer[bayerStep * 2 + 2] + 1) >> 1;
+        t1 = (bayer[bayerStep + 1] + bayer[bayerStep + 3] +
+              1) >> 1;
+        rgb[4] = (uint16_t) t0;
+        rgb[3] = bayer[bayerStep + 2];
+        rgb[2] = (uint16_t) t1;
+        }
+    }
 
-	if (bayer < bayerEnd) {
-	    t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
-		  bayer[bayerStep * 2 + 2] + 2) >> 2;
-	    t1 = (bayer[1] + bayer[bayerStep] +
-		  bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
-		  2) >> 2;
-	    rgb[-blue] = (uint16_t) t0;
-	    rgb[0] = (uint16_t) t1;
-	    rgb[blue] = bayer[bayerStep + 1];
-	    bayer++;
-	    rgb += 3;
-	}
+    if (bayer < bayerEnd) {
+        t0 = (bayer[0] + bayer[2] + bayer[bayerStep * 2] +
+          bayer[bayerStep * 2 + 2] + 2) >> 2;
+        t1 = (bayer[1] + bayer[bayerStep] +
+          bayer[bayerStep + 2] + bayer[bayerStep * 2 + 1] +
+          2) >> 2;
+        rgb[-blue] = (uint16_t) t0;
+        rgb[0] = (uint16_t) t1;
+        rgb[blue] = bayer[bayerStep + 1];
+        bayer++;
+        rgb += 3;
+    }
 
-	bayer -= width;
-	rgb -= width * 3;
+    bayer -= width;
+    rgb -= width * 3;
 
-	blue = -blue;
-	start_with_green = !start_with_green;
+    blue = -blue;
+    start_with_green = !start_with_green;
     }
 }
 
@@ -6227,9 +6227,9 @@ dc1394_bayer_HQLinear_uint16(const uint16_t *bayer, uint16_t *rgb, int sx, int s
        int start_with_green = tile == CV_BayerGB2BGR || tile == CV_BayerGR2BGR;
      */
     int blue = tile == DC1394_COLOR_FILTER_BGGR
-	|| tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
+    || tile == DC1394_COLOR_FILTER_GBRG ? -1 : 1;
     int start_with_green = tile == DC1394_COLOR_FILTER_GBRG
-	|| tile == DC1394_COLOR_FILTER_GRBG;
+    || tile == DC1394_COLOR_FILTER_GRBG;
 
     ClearBorders_uint16(rgb, sx, sy, 2);
     rgb += 2 * rgbStep + 6 + 1;
@@ -6240,174 +6240,174 @@ dc1394_bayer_HQLinear_uint16(const uint16_t *bayer, uint16_t *rgb, int sx, int s
     blue = -blue;
 
     for (; height--; bayer += bayerStep, rgb += rgbStep) {
-	int t0, t1;
-	const uint16_t *bayerEnd = bayer + width;
-	const int bayerStep2 = bayerStep * 2;
-	const int bayerStep3 = bayerStep * 3;
-	const int bayerStep4 = bayerStep * 4;
+    int t0, t1;
+    const uint16_t *bayerEnd = bayer + width;
+    const int bayerStep2 = bayerStep * 2;
+    const int bayerStep3 = bayerStep * 3;
+    const int bayerStep4 = bayerStep * 4;
 
-	if (start_with_green) {
-	    /* at green pixel */
-	    rgb[0] = bayer[bayerStep2 + 2];
-	    t0 = rgb[0] * 5
-		+ ((bayer[bayerStep + 2] + bayer[bayerStep3 + 2]) << 2)
-		- bayer[2]
-		- bayer[bayerStep + 1]
-		- bayer[bayerStep + 3]
-		- bayer[bayerStep3 + 1]
-		- bayer[bayerStep3 + 3]
-		- bayer[bayerStep4 + 2]
-		+ ((bayer[bayerStep2] + bayer[bayerStep2 + 4] + 1) >> 1);
-	    t1 = rgb[0] * 5 +
-		((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 3]) << 2)
-		- bayer[bayerStep2]
-		- bayer[bayerStep + 1]
-		- bayer[bayerStep + 3]
-		- bayer[bayerStep3 + 1]
-		- bayer[bayerStep3 + 3]
-		- bayer[bayerStep2 + 4]
-		+ ((bayer[2] + bayer[bayerStep4 + 2] + 1) >> 1);
-	    t0 = (t0 + 4) >> 3;
-	    CLIP16(t0, rgb[-blue], bits);
-	    t1 = (t1 + 4) >> 3;
-	    CLIP16(t1, rgb[blue], bits);
-	    bayer++;
-	    rgb += 3;
-	}
+    if (start_with_green) {
+        /* at green pixel */
+        rgb[0] = bayer[bayerStep2 + 2];
+        t0 = rgb[0] * 5
+        + ((bayer[bayerStep + 2] + bayer[bayerStep3 + 2]) << 2)
+        - bayer[2]
+        - bayer[bayerStep + 1]
+        - bayer[bayerStep + 3]
+        - bayer[bayerStep3 + 1]
+        - bayer[bayerStep3 + 3]
+        - bayer[bayerStep4 + 2]
+        + ((bayer[bayerStep2] + bayer[bayerStep2 + 4] + 1) >> 1);
+        t1 = rgb[0] * 5 +
+        ((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 3]) << 2)
+        - bayer[bayerStep2]
+        - bayer[bayerStep + 1]
+        - bayer[bayerStep + 3]
+        - bayer[bayerStep3 + 1]
+        - bayer[bayerStep3 + 3]
+        - bayer[bayerStep2 + 4]
+        + ((bayer[2] + bayer[bayerStep4 + 2] + 1) >> 1);
+        t0 = (t0 + 4) >> 3;
+        CLIP16(t0, rgb[-blue], bits);
+        t1 = (t1 + 4) >> 3;
+        CLIP16(t1, rgb[blue], bits);
+        bayer++;
+        rgb += 3;
+    }
 
-	if (blue > 0) {
-	    for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
-		/* B at B */
-		rgb[1] = bayer[bayerStep2 + 2];
-		/* R at B */
-		t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
-		       bayer[bayerStep3 + 1] + bayer[bayerStep3 + 3]) << 1)
-		    -
-		    (((bayer[2] + bayer[bayerStep2] +
-		       bayer[bayerStep2 + 4] + bayer[bayerStep4 +
-						     2]) * 3 + 1) >> 1)
-		    + rgb[1] * 6;
-		/* G at B */
-		t1 = ((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
-		       bayer[bayerStep2 + 3] + bayer[bayerStep * 3 +
-						     2]) << 1)
-		    - (bayer[2] + bayer[bayerStep2] +
-		       bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
-		    + (rgb[1] << 2);
-		t0 = (t0 + 4) >> 3;
-		CLIP16(t0, rgb[-1], bits);
-		t1 = (t1 + 4) >> 3;
-		CLIP16(t1, rgb[0], bits);
-		/* at green pixel */
-		rgb[3] = bayer[bayerStep2 + 3];
-		t0 = rgb[3] * 5
-		    + ((bayer[bayerStep + 3] + bayer[bayerStep3 + 3]) << 2)
-		    - bayer[3]
-		    - bayer[bayerStep + 2]
-		    - bayer[bayerStep + 4]
-		    - bayer[bayerStep3 + 2]
-		    - bayer[bayerStep3 + 4]
-		    - bayer[bayerStep4 + 3]
-		    +
-		    ((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 5] +
-		      1) >> 1);
-		t1 = rgb[3] * 5 +
-		    ((bayer[bayerStep2 + 2] + bayer[bayerStep2 + 4]) << 2)
-		    - bayer[bayerStep2 + 1]
-		    - bayer[bayerStep + 2]
-		    - bayer[bayerStep + 4]
-		    - bayer[bayerStep3 + 2]
-		    - bayer[bayerStep3 + 4]
-		    - bayer[bayerStep2 + 5]
-		    + ((bayer[3] + bayer[bayerStep4 + 3] + 1) >> 1);
-		t0 = (t0 + 4) >> 3;
-		CLIP16(t0, rgb[2], bits);
-		t1 = (t1 + 4) >> 3;
-		CLIP16(t1, rgb[4], bits);
-	    }
-	} else {
-	    for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
-		/* R at R */
-		rgb[-1] = bayer[bayerStep2 + 2];
-		/* B at R */
-		t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
-		       bayer[bayerStep * 3 + 1] + bayer[bayerStep3 +
-							3]) << 1)
-		    -
-		    (((bayer[2] + bayer[bayerStep2] +
-		       bayer[bayerStep2 + 4] + bayer[bayerStep4 +
-						     2]) * 3 + 1) >> 1)
-		    + rgb[-1] * 6;
-		/* G at R */
-		t1 = ((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
-		       bayer[bayerStep2 + 3] + bayer[bayerStep3 + 2]) << 1)
-		    - (bayer[2] + bayer[bayerStep2] +
-		       bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
-		    + (rgb[-1] << 2);
-		t0 = (t0 + 4) >> 3;
-		CLIP16(t0, rgb[1], bits);
-		t1 = (t1 + 4) >> 3;
-		CLIP16(t1, rgb[0], bits);
+    if (blue > 0) {
+        for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
+        /* B at B */
+        rgb[1] = bayer[bayerStep2 + 2];
+        /* R at B */
+        t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
+               bayer[bayerStep3 + 1] + bayer[bayerStep3 + 3]) << 1)
+            -
+            (((bayer[2] + bayer[bayerStep2] +
+               bayer[bayerStep2 + 4] + bayer[bayerStep4 +
+                             2]) * 3 + 1) >> 1)
+            + rgb[1] * 6;
+        /* G at B */
+        t1 = ((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
+               bayer[bayerStep2 + 3] + bayer[bayerStep * 3 +
+                             2]) << 1)
+            - (bayer[2] + bayer[bayerStep2] +
+               bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
+            + (rgb[1] << 2);
+        t0 = (t0 + 4) >> 3;
+        CLIP16(t0, rgb[-1], bits);
+        t1 = (t1 + 4) >> 3;
+        CLIP16(t1, rgb[0], bits);
+        /* at green pixel */
+        rgb[3] = bayer[bayerStep2 + 3];
+        t0 = rgb[3] * 5
+            + ((bayer[bayerStep + 3] + bayer[bayerStep3 + 3]) << 2)
+            - bayer[3]
+            - bayer[bayerStep + 2]
+            - bayer[bayerStep + 4]
+            - bayer[bayerStep3 + 2]
+            - bayer[bayerStep3 + 4]
+            - bayer[bayerStep4 + 3]
+            +
+            ((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 5] +
+              1) >> 1);
+        t1 = rgb[3] * 5 +
+            ((bayer[bayerStep2 + 2] + bayer[bayerStep2 + 4]) << 2)
+            - bayer[bayerStep2 + 1]
+            - bayer[bayerStep + 2]
+            - bayer[bayerStep + 4]
+            - bayer[bayerStep3 + 2]
+            - bayer[bayerStep3 + 4]
+            - bayer[bayerStep2 + 5]
+            + ((bayer[3] + bayer[bayerStep4 + 3] + 1) >> 1);
+        t0 = (t0 + 4) >> 3;
+        CLIP16(t0, rgb[2], bits);
+        t1 = (t1 + 4) >> 3;
+        CLIP16(t1, rgb[4], bits);
+        }
+    } else {
+        for (; bayer <= bayerEnd - 2; bayer += 2, rgb += 6) {
+        /* R at R */
+        rgb[-1] = bayer[bayerStep2 + 2];
+        /* B at R */
+        t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
+               bayer[bayerStep * 3 + 1] + bayer[bayerStep3 +
+                            3]) << 1)
+            -
+            (((bayer[2] + bayer[bayerStep2] +
+               bayer[bayerStep2 + 4] + bayer[bayerStep4 +
+                             2]) * 3 + 1) >> 1)
+            + rgb[-1] * 6;
+        /* G at R */
+        t1 = ((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
+               bayer[bayerStep2 + 3] + bayer[bayerStep3 + 2]) << 1)
+            - (bayer[2] + bayer[bayerStep2] +
+               bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
+            + (rgb[-1] << 2);
+        t0 = (t0 + 4) >> 3;
+        CLIP16(t0, rgb[1], bits);
+        t1 = (t1 + 4) >> 3;
+        CLIP16(t1, rgb[0], bits);
 
-		/* at green pixel */
-		rgb[3] = bayer[bayerStep2 + 3];
-		t0 = rgb[3] * 5
-		    + ((bayer[bayerStep + 3] + bayer[bayerStep3 + 3]) << 2)
-		    - bayer[3]
-		    - bayer[bayerStep + 2]
-		    - bayer[bayerStep + 4]
-		    - bayer[bayerStep3 + 2]
-		    - bayer[bayerStep3 + 4]
-		    - bayer[bayerStep4 + 3]
-		    +
-		    ((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 5] +
-		      1) >> 1);
-		t1 = rgb[3] * 5 +
-		    ((bayer[bayerStep2 + 2] + bayer[bayerStep2 + 4]) << 2)
-		    - bayer[bayerStep2 + 1]
-		    - bayer[bayerStep + 2]
-		    - bayer[bayerStep + 4]
-		    - bayer[bayerStep3 + 2]
-		    - bayer[bayerStep3 + 4]
-		    - bayer[bayerStep2 + 5]
-		    + ((bayer[3] + bayer[bayerStep4 + 3] + 1) >> 1);
-		t0 = (t0 + 4) >> 3;
-		CLIP16(t0, rgb[4], bits);
-		t1 = (t1 + 4) >> 3;
-		CLIP16(t1, rgb[2], bits);
-	    }
-	}
+        /* at green pixel */
+        rgb[3] = bayer[bayerStep2 + 3];
+        t0 = rgb[3] * 5
+            + ((bayer[bayerStep + 3] + bayer[bayerStep3 + 3]) << 2)
+            - bayer[3]
+            - bayer[bayerStep + 2]
+            - bayer[bayerStep + 4]
+            - bayer[bayerStep3 + 2]
+            - bayer[bayerStep3 + 4]
+            - bayer[bayerStep4 + 3]
+            +
+            ((bayer[bayerStep2 + 1] + bayer[bayerStep2 + 5] +
+              1) >> 1);
+        t1 = rgb[3] * 5 +
+            ((bayer[bayerStep2 + 2] + bayer[bayerStep2 + 4]) << 2)
+            - bayer[bayerStep2 + 1]
+            - bayer[bayerStep + 2]
+            - bayer[bayerStep + 4]
+            - bayer[bayerStep3 + 2]
+            - bayer[bayerStep3 + 4]
+            - bayer[bayerStep2 + 5]
+            + ((bayer[3] + bayer[bayerStep4 + 3] + 1) >> 1);
+        t0 = (t0 + 4) >> 3;
+        CLIP16(t0, rgb[4], bits);
+        t1 = (t1 + 4) >> 3;
+        CLIP16(t1, rgb[2], bits);
+        }
+    }
 
-	if (bayer < bayerEnd) {
-	    /* B at B */
-	    rgb[blue] = bayer[bayerStep2 + 2];
-	    /* R at B */
-	    t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
-		   bayer[bayerStep3 + 1] + bayer[bayerStep3 + 3]) << 1)
-		-
-		(((bayer[2] + bayer[bayerStep2] +
-		   bayer[bayerStep2 + 4] + bayer[bayerStep4 +
-						 2]) * 3 + 1) >> 1)
-		+ rgb[blue] * 6;
-	    /* G at B */
-	    t1 = (((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
-		    bayer[bayerStep2 + 3] + bayer[bayerStep3 + 2])) << 1)
-		- (bayer[2] + bayer[bayerStep2] +
-		   bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
-		+ (rgb[blue] << 2);
-	    t0 = (t0 + 4) >> 3;
-	    CLIP16(t0, rgb[-blue], bits);
-	    t1 = (t1 + 4) >> 3;
-	    CLIP16(t1, rgb[0], bits);
-	    bayer++;
-	    rgb += 3;
-	}
+    if (bayer < bayerEnd) {
+        /* B at B */
+        rgb[blue] = bayer[bayerStep2 + 2];
+        /* R at B */
+        t0 = ((bayer[bayerStep + 1] + bayer[bayerStep + 3] +
+           bayer[bayerStep3 + 1] + bayer[bayerStep3 + 3]) << 1)
+        -
+        (((bayer[2] + bayer[bayerStep2] +
+           bayer[bayerStep2 + 4] + bayer[bayerStep4 +
+                         2]) * 3 + 1) >> 1)
+        + rgb[blue] * 6;
+        /* G at B */
+        t1 = (((bayer[bayerStep + 2] + bayer[bayerStep2 + 1] +
+            bayer[bayerStep2 + 3] + bayer[bayerStep3 + 2])) << 1)
+        - (bayer[2] + bayer[bayerStep2] +
+           bayer[bayerStep2 + 4] + bayer[bayerStep4 + 2])
+        + (rgb[blue] << 2);
+        t0 = (t0 + 4) >> 3;
+        CLIP16(t0, rgb[-blue], bits);
+        t1 = (t1 + 4) >> 3;
+        CLIP16(t1, rgb[0], bits);
+        bayer++;
+        rgb += 3;
+    }
 
-	bayer -= width;
-	rgb -= width * 3;
+    bayer -= width;
+    rgb -= width * 3;
 
-	blue = -blue;
-	start_with_green = !start_with_green;
+    blue = -blue;
+    start_with_green = !start_with_green;
     }
 }
 
@@ -6424,282 +6424,282 @@ dc1394_bayer_EdgeSense_uint16(const uint16_t *bayer, uint16_t *rgb, int sx, int 
     switch (tile) {
     case DC1394_COLOR_FILTER_GRBG:
     case DC1394_COLOR_FILTER_BGGR:
-	outR = &rgb[0];
-	outG = &rgb[1];
-	outB = &rgb[2];
-	break;
+    outR = &rgb[0];
+    outG = &rgb[1];
+    outB = &rgb[2];
+    break;
     case DC1394_COLOR_FILTER_GBRG:
     case DC1394_COLOR_FILTER_RGGB:
-	outR = &rgb[2];
-	outG = &rgb[1];
-	outB = &rgb[0];
-	break;
+    outR = &rgb[2];
+    outG = &rgb[1];
+    outB = &rgb[0];
+    break;
     default:
-//	fprintf(stderr, "Bad bayer pattern ID: %d\n", tile);
-//	return;
-	break;
+//    fprintf(stderr, "Bad bayer pattern ID: %d\n", tile);
+//    return;
+    break;
     }
 
     switch (tile) {
-    case DC1394_COLOR_FILTER_GRBG:	//---------------------------------------------------------
+    case DC1394_COLOR_FILTER_GRBG:    //---------------------------------------------------------
     case DC1394_COLOR_FILTER_GBRG:
-	// copy original RGB data to output images
+    // copy original RGB data to output images
       for (i = 0; i < sy*sx; i += (sx<<1)) {
-	for (j = 0; j < sx; j += 2) {
-	  outG[(i + j) * 3] = bayer[i + j];
-	  outG[(i + sx + (j + 1)) * 3] = bayer[i + sx + (j + 1)];
-	  outR[(i + j + 1) * 3] = bayer[i + j + 1];
-	  outB[(i + sx + j) * 3] = bayer[i + sx + j];
-	}
+    for (j = 0; j < sx; j += 2) {
+      outG[(i + j) * 3] = bayer[i + j];
+      outG[(i + sx + (j + 1)) * 3] = bayer[i + sx + (j + 1)];
+      outR[(i + j + 1) * 3] = bayer[i + j + 1];
+      outB[(i + sx + j) * 3] = bayer[i + sx + j];
+    }
       }
       // process GREEN channel
       for (i = 3*sx; i < (sy - 2)*sx; i += (sx<<1)) {
-	for (j = 2; j < sx - 3; j += 2) {
-	  dh = abs(((outB[(i + j - 2) * 3] +
-		     outB[(i + j + 2) * 3]) >> 1) -
-		   outB[(i + j) * 3]);
-	  dv = abs(((outB[(i - (sx<<1) + j) * 3] +
-		     outB[(i + (sx<<1) + j) * 3]) >> 1)  -
-		   outB[(i + j) * 3]);
-	  if (dh < dv)
-	    tmp = (outG[(i + j - 1) * 3] +
-		   outG[(i + j + 1) * 3]) >> 1;
-	  else {
-	    if (dh > dv)
-	      tmp = (outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 1;
-	    else
-	      tmp = (outG[(i + j - 1) * 3] +
-		     outG[(i + j + 1) * 3] +
-		     outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 2;
-	  }
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 2; j < sx - 3; j += 2) {
+      dh = abs(((outB[(i + j - 2) * 3] +
+             outB[(i + j + 2) * 3]) >> 1) -
+           outB[(i + j) * 3]);
+      dv = abs(((outB[(i - (sx<<1) + j) * 3] +
+             outB[(i + (sx<<1) + j) * 3]) >> 1)  -
+           outB[(i + j) * 3]);
+      if (dh < dv)
+        tmp = (outG[(i + j - 1) * 3] +
+           outG[(i + j + 1) * 3]) >> 1;
+      else {
+        if (dh > dv)
+          tmp = (outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 1;
+        else
+          tmp = (outG[(i + j - 1) * 3] +
+             outG[(i + j + 1) * 3] +
+             outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 2;
       }
-	
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
+      }
+    
       for (i = 2*sx; i < (sy - 3)*sx; i += (sx<<1)) {
-	for (j = 3; j < sx - 2; j += 2) {
-	  dh = abs(((outR[(i + j - 2) * 3] +
-		     outR[(i + j + 2) * 3]) >>1 ) -
-		   outR[(i + j) * 3]);
-	  dv = abs(((outR[(i - (sx<<1) + j) * 3] +
-		     outR[(i + (sx<<1) + j) * 3]) >>1 ) -
-		   outR[(i + j) * 3]);
-	  if (dh < dv)
-	    tmp = (outG[(i + j - 1) * 3] +
-		   outG[(i + j + 1) * 3]) >> 1;
-	  else {
-	    if (dh > dv)
-	      tmp = (outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 1;
-	    else
-	      tmp = (outG[(i + j - 1) * 3] +
-		     outG[(i + j + 1) * 3] +
-		     outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 2;
-	  }
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 3; j < sx - 2; j += 2) {
+      dh = abs(((outR[(i + j - 2) * 3] +
+             outR[(i + j + 2) * 3]) >>1 ) -
+           outR[(i + j) * 3]);
+      dv = abs(((outR[(i - (sx<<1) + j) * 3] +
+             outR[(i + (sx<<1) + j) * 3]) >>1 ) -
+           outR[(i + j) * 3]);
+      if (dh < dv)
+        tmp = (outG[(i + j - 1) * 3] +
+           outG[(i + j + 1) * 3]) >> 1;
+      else {
+        if (dh > dv)
+          tmp = (outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 1;
+        else
+          tmp = (outG[(i + j - 1) * 3] +
+             outG[(i + j + 1) * 3] +
+             outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 2;
+      }
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
       // process RED channel
       for (i = 0; i < (sy - 1)*sx; i += (sx<<1)) {
-	for (j = 2; j < sx - 1; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i + j - 1) * 3] -
-		outG[(i + j - 1) * 3] +
-		outR[(i + j + 1) * 3] -
-		outG[(i + j + 1) * 3]) >> 1);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 2; j < sx - 1; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i + j - 1) * 3] -
+        outG[(i + j - 1) * 3] +
+        outR[(i + j + 1) * 3] -
+        outG[(i + j + 1) * 3]) >> 1);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
       for (i = sx; i < (sy - 2)*sx; i += (sx<<1)) {
-	for (j = 1; j < sx; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i - sx + j) * 3] -
-		outG[(i - sx + j) * 3] +
-		outR[(i + sx + j) * 3] -
-		outG[(i + sx + j) * 3]) >> 1);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
-	for (j = 2; j < sx - 1; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i - sx + j - 1) * 3] -
-		outG[(i - sx + j - 1) * 3] +
-		outR[(i - sx + j + 1) * 3] -
-		outG[(i - sx + j + 1) * 3] +
-		outR[(i + sx + j - 1) * 3] -
-		outG[(i + sx + j - 1) * 3] +
-		outR[(i + sx + j + 1) * 3] -
-		outG[(i + sx + j + 1) * 3]) >> 2);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 1; j < sx; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i - sx + j) * 3] -
+        outG[(i - sx + j) * 3] +
+        outR[(i + sx + j) * 3] -
+        outG[(i + sx + j) * 3]) >> 1);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
+    for (j = 2; j < sx - 1; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i - sx + j - 1) * 3] -
+        outG[(i - sx + j - 1) * 3] +
+        outR[(i - sx + j + 1) * 3] -
+        outG[(i - sx + j + 1) * 3] +
+        outR[(i + sx + j - 1) * 3] -
+        outG[(i + sx + j - 1) * 3] +
+        outR[(i + sx + j + 1) * 3] -
+        outG[(i + sx + j + 1) * 3]) >> 2);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
 
       // process BLUE channel
       for (i = sx; i < sy*sx; i += (sx<<1)) {
-	for (j = 1; j < sx - 2; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i + j - 1) * 3] -
-		outG[(i + j - 1) * 3] +
-		outB[(i + j + 1) * 3] -
-		outG[(i + j + 1) * 3]) >> 1);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 1; j < sx - 2; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i + j - 1) * 3] -
+        outG[(i + j - 1) * 3] +
+        outB[(i + j + 1) * 3] -
+        outG[(i + j + 1) * 3]) >> 1);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
       for (i = 2*sx; i < (sy - 1)*sx; i += (sx<<1)) {
-	for (j = 0; j < sx - 1; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i - sx + j) * 3] -
-		outG[(i - sx + j) * 3] +
-		outB[(i + sx + j) * 3] -
-		outG[(i + sx + j) * 3]) >> 1);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
-	for (j = 1; j < sx - 2; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i - sx + j - 1) * 3] -
-		outG[(i - sx + j - 1) * 3] +
-		outB[(i - sx + j + 1) * 3] -
-		outG[(i - sx + j + 1) * 3] +
-		outB[(i + sx + j - 1) * 3] -
-		outG[(i + sx + j - 1) * 3] +
-		outB[(i + sx + j + 1) * 3] -
-		outG[(i + sx + j + 1) * 3]) >> 2);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 0; j < sx - 1; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i - sx + j) * 3] -
+        outG[(i - sx + j) * 3] +
+        outB[(i + sx + j) * 3] -
+        outG[(i + sx + j) * 3]) >> 1);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
+    for (j = 1; j < sx - 2; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i - sx + j - 1) * 3] -
+        outG[(i - sx + j - 1) * 3] +
+        outB[(i - sx + j + 1) * 3] -
+        outG[(i - sx + j + 1) * 3] +
+        outB[(i + sx + j - 1) * 3] -
+        outG[(i + sx + j - 1) * 3] +
+        outB[(i + sx + j + 1) * 3] -
+        outG[(i + sx + j + 1) * 3]) >> 2);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
       break;
 
-    case DC1394_COLOR_FILTER_BGGR:	//---------------------------------------------------------
+    case DC1394_COLOR_FILTER_BGGR:    //---------------------------------------------------------
     case DC1394_COLOR_FILTER_RGGB:
-	// copy original RGB data to output images
+    // copy original RGB data to output images
       for (i = 0; i < sy*sx; i += (sx<<1)) {
-	for (j = 0; j < sx; j += 2) {
-	  outB[(i + j) * 3] = bayer[i + j];
-	  outR[(i + sx + (j + 1)) * 3] = bayer[i + sx + (j + 1)];
-	  outG[(i + j + 1) * 3] = bayer[i + j + 1];
-	  outG[(i + sx + j) * 3] = bayer[i + sx + j];
-	}
+    for (j = 0; j < sx; j += 2) {
+      outB[(i + j) * 3] = bayer[i + j];
+      outR[(i + sx + (j + 1)) * 3] = bayer[i + sx + (j + 1)];
+      outG[(i + j + 1) * 3] = bayer[i + j + 1];
+      outG[(i + sx + j) * 3] = bayer[i + sx + j];
+    }
       }
       // process GREEN channel
       for (i = 2*sx; i < (sy - 2)*sx; i += (sx<<1)) {
-	for (j = 2; j < sx - 3; j += 2) {
-	  dh = abs(((outB[(i + j - 2) * 3] +
-		    outB[(i + j + 2) * 3]) >> 1) -
-		   outB[(i + j) * 3]);
-	  dv = abs(((outB[(i - (sx<<1) + j) * 3] +
-		    outB[(i + (sx<<1) + j) * 3]) >> 1) -
-		   outB[(i + j) * 3]);
-	  if (dh < dv)
-	    tmp = (outG[(i + j - 1) * 3] +
-		   outG[(i + j + 1) * 3]) >> 1;
-	  else {
-	    if (dh > dv)
-	      tmp = (outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 1;
-	    else
-	      tmp = (outG[(i + j - 1) * 3] +
-		     outG[(i + j + 1) * 3] +
-		     outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >> 2;
-	  }
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 2; j < sx - 3; j += 2) {
+      dh = abs(((outB[(i + j - 2) * 3] +
+            outB[(i + j + 2) * 3]) >> 1) -
+           outB[(i + j) * 3]);
+      dv = abs(((outB[(i - (sx<<1) + j) * 3] +
+            outB[(i + (sx<<1) + j) * 3]) >> 1) -
+           outB[(i + j) * 3]);
+      if (dh < dv)
+        tmp = (outG[(i + j - 1) * 3] +
+           outG[(i + j + 1) * 3]) >> 1;
+      else {
+        if (dh > dv)
+          tmp = (outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 1;
+        else
+          tmp = (outG[(i + j - 1) * 3] +
+             outG[(i + j + 1) * 3] +
+             outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >> 2;
+      }
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
       for (i = 3*sx; i < (sy - 3)*sx; i += (sx<<1)) {
-	for (j = 3; j < sx - 2; j += 2) {
-	  dh = abs(((outR[(i + j - 2) * 3] +
-		    outR[(i + j + 2) * 3]) >> 1) -
-		   outR[(i + j) * 3]);
-	  dv = abs(((outR[(i - (sx<<1) + j) * 3] +
-		    outR[(i + (sx<<1) + j) * 3]) >> 1) -
-		   outR[(i + j) * 3]);
-	  if (dh < dv)
-	    tmp = (outG[(i + j - 1) * 3] +
-		   outG[(i + j + 1) * 3]) >>1;
-	  else {
-	    if (dh > dv)
-	      tmp = (outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >>1;
-	    else
-	      tmp = (outG[(i + j - 1) * 3] +
-		     outG[(i + j + 1) * 3] +
-		     outG[(i - sx + j) * 3] +
-		     outG[(i + sx + j) * 3]) >>2;
-	  }
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 3; j < sx - 2; j += 2) {
+      dh = abs(((outR[(i + j - 2) * 3] +
+            outR[(i + j + 2) * 3]) >> 1) -
+           outR[(i + j) * 3]);
+      dv = abs(((outR[(i - (sx<<1) + j) * 3] +
+            outR[(i + (sx<<1) + j) * 3]) >> 1) -
+           outR[(i + j) * 3]);
+      if (dh < dv)
+        tmp = (outG[(i + j - 1) * 3] +
+           outG[(i + j + 1) * 3]) >>1;
+      else {
+        if (dh > dv)
+          tmp = (outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >>1;
+        else
+          tmp = (outG[(i + j - 1) * 3] +
+             outG[(i + j + 1) * 3] +
+             outG[(i - sx + j) * 3] +
+             outG[(i + sx + j) * 3]) >>2;
+      }
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
       // process RED channel
-      for (i = sx; i < (sy - 1)*sx; i += (sx<<1)) {	// G-points (1/2)
-	for (j = 2; j < sx - 1; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i + j - 1) * 3] -
-		outG[(i + j - 1) * 3] +
-		outR[(i + j + 1) * 3] -
-		outG[(i + j + 1) * 3]) >>1);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+      for (i = sx; i < (sy - 1)*sx; i += (sx<<1)) {    // G-points (1/2)
+    for (j = 2; j < sx - 1; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i + j - 1) * 3] -
+        outG[(i + j - 1) * 3] +
+        outR[(i + j + 1) * 3] -
+        outG[(i + j + 1) * 3]) >>1);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
       for (i = 2*sx; i < (sy - 2)*sx; i += (sx<<1)) {
-	for (j = 1; j < sx; j += 2) {	// G-points (2/2)
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i - sx + j) * 3] -
-		outG[(i - sx + j) * 3] +
-		outR[(i + sx + j) * 3] -
-		outG[(i + sx + j) * 3]) >> 1);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
-	for (j = 2; j < sx - 1; j += 2) {	// B-points
-	  tmp = outG[(i + j) * 3] +
-	      ((outR[(i - sx + j - 1) * 3] -
-		outG[(i - sx + j - 1) * 3] +
-		outR[(i - sx + j + 1) * 3] -
-		outG[(i - sx + j + 1) * 3] +
-		outR[(i + sx + j - 1) * 3] -
-		outG[(i + sx + j - 1) * 3] +
-		outR[(i + sx + j + 1) * 3] -
-		outG[(i + sx + j + 1) * 3]) >> 2);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 1; j < sx; j += 2) {    // G-points (2/2)
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i - sx + j) * 3] -
+        outG[(i - sx + j) * 3] +
+        outR[(i + sx + j) * 3] -
+        outG[(i + sx + j) * 3]) >> 1);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
+    for (j = 2; j < sx - 1; j += 2) {    // B-points
+      tmp = outG[(i + j) * 3] +
+          ((outR[(i - sx + j - 1) * 3] -
+        outG[(i - sx + j - 1) * 3] +
+        outR[(i - sx + j + 1) * 3] -
+        outG[(i - sx + j + 1) * 3] +
+        outR[(i + sx + j - 1) * 3] -
+        outG[(i + sx + j - 1) * 3] +
+        outR[(i + sx + j + 1) * 3] -
+        outG[(i + sx + j + 1) * 3]) >> 2);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
       
       // process BLUE channel
       for (i = 0; i < sy*sx; i += (sx<<1)) {
-	for (j = 1; j < sx - 2; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i + j - 1) * 3] -
-		outG[(i + j - 1) * 3] +
-		outB[(i + j + 1) * 3] -
-		outG[(i + j + 1) * 3]) >> 1);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 1; j < sx - 2; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i + j - 1) * 3] -
+        outG[(i + j - 1) * 3] +
+        outB[(i + j + 1) * 3] -
+        outG[(i + j + 1) * 3]) >> 1);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
       for (i = sx; i < (sy - 1)*sx; i += (sx<<1)) {
-	for (j = 0; j < sx - 1; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i - sx + j) * 3] -
-		outG[(i - sx + j) * 3] +
-		outB[(i + sx + j) * 3] -
-		outG[(i + sx + j) * 3]) >> 1);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
-	for (j = 1; j < sx - 2; j += 2) {
-	  tmp = outG[(i + j) * 3] +
-	      ((outB[(i - sx + j - 1) * 3] -
-		outG[(i - sx + j - 1) * 3] +
-		outB[(i - sx + j + 1) * 3] -
-		outG[(i - sx + j + 1) * 3] +
-		outB[(i + sx + j - 1) * 3] -
-		outG[(i + sx + j - 1) * 3] +
-		outB[(i + sx + j + 1) * 3] -
-		outG[(i + sx + j + 1) * 3]) >> 2);
-	  CLIP16(tmp, outR[(i + j) * 3], bits);
-	}
+    for (j = 0; j < sx - 1; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i - sx + j) * 3] -
+        outG[(i - sx + j) * 3] +
+        outB[(i + sx + j) * 3] -
+        outG[(i + sx + j) * 3]) >> 1);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
+    for (j = 1; j < sx - 2; j += 2) {
+      tmp = outG[(i + j) * 3] +
+          ((outB[(i - sx + j - 1) * 3] -
+        outG[(i - sx + j - 1) * 3] +
+        outB[(i - sx + j + 1) * 3] -
+        outG[(i - sx + j + 1) * 3] +
+        outB[(i + sx + j - 1) * 3] -
+        outG[(i + sx + j - 1) * 3] +
+        outB[(i + sx + j + 1) * 3] -
+        outG[(i + sx + j + 1) * 3]) >> 2);
+      CLIP16(tmp, outR[(i + j) * 3], bits);
+    }
       }
       break;
-    default:			//---------------------------------------------------------
+    default:            //---------------------------------------------------------
 //      fprintf(stderr, "Bad bayer pattern ID: %d\n", tile);
 //      return;
       break;
@@ -6722,55 +6722,55 @@ dc1394_bayer_Downsample_uint16(const uint16_t *bayer, uint16_t *rgb, int sx, int
     switch (tile) {
     case DC1394_COLOR_FILTER_GRBG:
     case DC1394_COLOR_FILTER_BGGR:
-	outR = &rgb[0];
-	outG = &rgb[1];
-	outB = &rgb[2];
-	break;
+    outR = &rgb[0];
+    outG = &rgb[1];
+    outB = &rgb[2];
+    break;
     case DC1394_COLOR_FILTER_GBRG:
     case DC1394_COLOR_FILTER_RGGB:
-	outR = &rgb[2];
-	outG = &rgb[1];
-	outB = &rgb[0];
-	break;
+    outR = &rgb[2];
+    outG = &rgb[1];
+    outB = &rgb[0];
+    break;
     default:
-//	fprintf(stderr, "Bad Bayer pattern ID: %d\n", tile);
-//	return;
-	break;
+//    fprintf(stderr, "Bad Bayer pattern ID: %d\n", tile);
+//    return;
+    break;
     }
 
     switch (tile) {
-    case DC1394_COLOR_FILTER_GRBG:	//---------------------------------------------------------
+    case DC1394_COLOR_FILTER_GRBG:    //---------------------------------------------------------
     case DC1394_COLOR_FILTER_GBRG:
-	for (i = 0; i < sy*sx; i += (sx<<1)) {
-	    for (j = 0; j < sx; j += 2) {
-		tmp =
-		    ((bayer[i + j] + bayer[i + sx + j + 1]) >> 1);
-		CLIP16(tmp, outG[((i >> 2) + (j >> 1)) * 3], bits);
-		tmp = bayer[i + sx + j + 1];
-		CLIP16(tmp, outR[((i >> 2) + (j >> 1)) * 3], bits);
-		tmp = bayer[i + sx + j];
-		CLIP16(tmp, outB[((i >> 2) + (j >> 1)) * 3], bits);
-	    }
-	}
-	break;
-    case DC1394_COLOR_FILTER_BGGR:	//---------------------------------------------------------
+    for (i = 0; i < sy*sx; i += (sx<<1)) {
+        for (j = 0; j < sx; j += 2) {
+        tmp =
+            ((bayer[i + j] + bayer[i + sx + j + 1]) >> 1);
+        CLIP16(tmp, outG[((i >> 2) + (j >> 1)) * 3], bits);
+        tmp = bayer[i + sx + j + 1];
+        CLIP16(tmp, outR[((i >> 2) + (j >> 1)) * 3], bits);
+        tmp = bayer[i + sx + j];
+        CLIP16(tmp, outB[((i >> 2) + (j >> 1)) * 3], bits);
+        }
+    }
+    break;
+    case DC1394_COLOR_FILTER_BGGR:    //---------------------------------------------------------
     case DC1394_COLOR_FILTER_RGGB:
-	for (i = 0; i < sy*sx; i += (sx<<1)) {
-	    for (j = 0; j < sx; j += 2) {
-		tmp =
-		    ((bayer[i + sx + j] + bayer[i + j + 1]) >> 1);
-		CLIP16(tmp, outG[((i >> 2) + (j >> 1)) * 3], bits);
-		tmp = bayer[i + sx + j + 1];
-		CLIP16(tmp, outR[((i >> 2) + (j >> 1)) * 3], bits);
-		tmp = bayer[i + j];
-		CLIP16(tmp, outB[((i >> 2) + (j >> 1)) * 3], bits);
-	    }
-	}
-	break;
-    default:			//---------------------------------------------------------
-//	fprintf(stderr, "Bad Bayer pattern ID: %d\n", tile);
-//	return;
-	break;
+    for (i = 0; i < sy*sx; i += (sx<<1)) {
+        for (j = 0; j < sx; j += 2) {
+        tmp =
+            ((bayer[i + sx + j] + bayer[i + j + 1]) >> 1);
+        CLIP16(tmp, outG[((i >> 2) + (j >> 1)) * 3], bits);
+        tmp = bayer[i + sx + j + 1];
+        CLIP16(tmp, outR[((i >> 2) + (j >> 1)) * 3], bits);
+        tmp = bayer[i + j];
+        CLIP16(tmp, outB[((i >> 2) + (j >> 1)) * 3], bits);
+        }
+    }
+    break;
+    default:            //---------------------------------------------------------
+//    fprintf(stderr, "Bad Bayer pattern ID: %d\n", tile);
+//    return;
+    break;
     }
 
 }
@@ -6786,151 +6786,151 @@ void dc1394_bayer_Simple_uint16(const uint16_t *bayer, uint16_t *rgb, int sx, in
     switch (tile) {
     case DC1394_COLOR_FILTER_GRBG:
     case DC1394_COLOR_FILTER_BGGR:
-//	outR = &rgb[0];
-//	outG = &rgb[1];
-//	outB = &rgb[2];
-	break;
+//    outR = &rgb[0];
+//    outG = &rgb[1];
+//    outB = &rgb[2];
+    break;
     case DC1394_COLOR_FILTER_GBRG:
     case DC1394_COLOR_FILTER_RGGB:
-//	outR = &rgb[2];
-//	outG = &rgb[1];
-//	outB = &rgb[0];
-	break;
+//    outR = &rgb[2];
+//    outG = &rgb[1];
+//    outB = &rgb[0];
+    break;
     default:
-//	fprintf(stderr, "Bad bayer pattern ID: %d\n", tile);
-//	return;
-	break;
+//    fprintf(stderr, "Bad bayer pattern ID: %d\n", tile);
+//    return;
+    break;
     }
 
     switch (tile) {
     case DC1394_COLOR_FILTER_GRBG:
     case DC1394_COLOR_FILTER_BGGR:
-	outR = &rgb[0];
-	outG = &rgb[1];
-	outB = &rgb[2];
-	break;
+    outR = &rgb[0];
+    outG = &rgb[1];
+    outB = &rgb[2];
+    break;
     case DC1394_COLOR_FILTER_GBRG:
     case DC1394_COLOR_FILTER_RGGB:
-	outR = &rgb[2];
-	outG = &rgb[1];
-	outB = &rgb[0];
-	break;
+    outR = &rgb[2];
+    outG = &rgb[1];
+    outB = &rgb[0];
+    break;
     default:
-	outR = NULL;
-	outG = NULL;
-	outB = NULL;
-	break;
+    outR = NULL;
+    outG = NULL;
+    outB = NULL;
+    break;
     }
 
     switch (tile) {
-    case DC1394_COLOR_FILTER_GRBG:	//---------------------------------------------------------
+    case DC1394_COLOR_FILTER_GRBG:    //---------------------------------------------------------
     case DC1394_COLOR_FILTER_GBRG:
-	for (i = 0; i < sy - 1; i += 2) {
-	    for (j = 0; j < sx - 1; j += 2) {
-		base = i * sx + j;
-		tmp = ((bayer[base] + bayer[base + sx + 1]) >> 1);
-		CLIP16(tmp, outG[base * 3], bits);
-		tmp = bayer[base + 1];
-		CLIP16(tmp, outR[base * 3], bits);
-		tmp = bayer[base + sx];
-		CLIP16(tmp, outB[base * 3], bits);
-	    }
-	}
-	for (i = 0; i < sy - 1; i += 2) {
-	    for (j = 1; j < sx - 1; j += 2) {
-		base = i * sx + j;
-		tmp = ((bayer[base + 1] + bayer[base + sx]) >> 1);
-		CLIP16(tmp, outG[(base) * 3], bits);
-		tmp = bayer[base];
-		CLIP16(tmp, outR[(base) * 3], bits);
-		tmp = bayer[base + 1 + sx];
-		CLIP16(tmp, outB[(base) * 3], bits);
-	    }
-	}
-	for (i = 1; i < sy - 1; i += 2) {
-	    for (j = 0; j < sx - 1; j += 2) {
-		base = i * sx + j;
-		tmp = ((bayer[base + sx] + bayer[base + 1]) >> 1);
-		CLIP16(tmp, outG[base * 3], bits);
-		tmp = bayer[base + sx + 1];
-		CLIP16(tmp, outR[base * 3], bits);
-		tmp = bayer[base];
-		CLIP16(tmp, outB[base * 3], bits);
-	    }
-	}
-	for (i = 1; i < sy - 1; i += 2) {
-	    for (j = 1; j < sx - 1; j += 2) {
-		base = i * sx + j;
-		tmp = ((bayer[base] + bayer[base + 1 + sx]) >> 1);
-		CLIP16(tmp, outG[(base) * 3], bits);
-		tmp = bayer[base + sx];
-		CLIP16(tmp, outR[(base) * 3], bits);
-		tmp = bayer[base + 1];
-		CLIP16(tmp, outB[(base) * 3], bits);
-	    }
-	}
-	break;
-    case DC1394_COLOR_FILTER_BGGR:	//---------------------------------------------------------
+    for (i = 0; i < sy - 1; i += 2) {
+        for (j = 0; j < sx - 1; j += 2) {
+        base = i * sx + j;
+        tmp = ((bayer[base] + bayer[base + sx + 1]) >> 1);
+        CLIP16(tmp, outG[base * 3], bits);
+        tmp = bayer[base + 1];
+        CLIP16(tmp, outR[base * 3], bits);
+        tmp = bayer[base + sx];
+        CLIP16(tmp, outB[base * 3], bits);
+        }
+    }
+    for (i = 0; i < sy - 1; i += 2) {
+        for (j = 1; j < sx - 1; j += 2) {
+        base = i * sx + j;
+        tmp = ((bayer[base + 1] + bayer[base + sx]) >> 1);
+        CLIP16(tmp, outG[(base) * 3], bits);
+        tmp = bayer[base];
+        CLIP16(tmp, outR[(base) * 3], bits);
+        tmp = bayer[base + 1 + sx];
+        CLIP16(tmp, outB[(base) * 3], bits);
+        }
+    }
+    for (i = 1; i < sy - 1; i += 2) {
+        for (j = 0; j < sx - 1; j += 2) {
+        base = i * sx + j;
+        tmp = ((bayer[base + sx] + bayer[base + 1]) >> 1);
+        CLIP16(tmp, outG[base * 3], bits);
+        tmp = bayer[base + sx + 1];
+        CLIP16(tmp, outR[base * 3], bits);
+        tmp = bayer[base];
+        CLIP16(tmp, outB[base * 3], bits);
+        }
+    }
+    for (i = 1; i < sy - 1; i += 2) {
+        for (j = 1; j < sx - 1; j += 2) {
+        base = i * sx + j;
+        tmp = ((bayer[base] + bayer[base + 1 + sx]) >> 1);
+        CLIP16(tmp, outG[(base) * 3], bits);
+        tmp = bayer[base + sx];
+        CLIP16(tmp, outR[(base) * 3], bits);
+        tmp = bayer[base + 1];
+        CLIP16(tmp, outB[(base) * 3], bits);
+        }
+    }
+    break;
+    case DC1394_COLOR_FILTER_BGGR:    //---------------------------------------------------------
     case DC1394_COLOR_FILTER_RGGB:
-	for (i = 0; i < sy - 1; i += 2) {
-	    for (j = 0; j < sx - 1; j += 2) {
-		base = i * sx + j;
-		tmp = ((bayer[base + sx] + bayer[base + 1]) >> 1);
-		CLIP16(tmp, outG[base * 3], bits);
-		tmp = bayer[base + sx + 1];
-		CLIP16(tmp, outR[base * 3], bits);
-		tmp = bayer[base];
-		CLIP16(tmp, outB[base * 3], bits);
-	    }
-	}
-	for (i = 1; i < sy - 1; i += 2) {
-	    for (j = 0; j < sx - 1; j += 2) {
-		base = i * sx + j;
-		tmp = ((bayer[base] + bayer[base + 1 + sx]) >> 1);
-		CLIP16(tmp, outG[(base) * 3], bits);
-		tmp = bayer[base + 1];
-		CLIP16(tmp, outR[(base) * 3], bits);
-		tmp = bayer[base + sx];
-		CLIP16(tmp, outB[(base) * 3], bits);
-	    }
-	}
-	for (i = 0; i < sy - 1; i += 2) {
-	    for (j = 1; j < sx - 1; j += 2) {
-		base = i * sx + j;
-		tmp = ((bayer[base] + bayer[base + sx + 1]) >> 1);
-		CLIP16(tmp, outG[base * 3], bits);
-		tmp = bayer[base + sx];
-		CLIP16(tmp, outR[base * 3], bits);
-		tmp = bayer[base + 1];
-		CLIP16(tmp, outB[base * 3], bits);
-	    }
-	}
-	for (i = 1; i < sy - 1; i += 2) {
-	    for (j = 1; j < sx - 1; j += 2) {
-		base = i * sx + j;
-		tmp = ((bayer[base + 1] + bayer[base + sx]) >> 1);
-		CLIP16(tmp, outG[(base) * 3], bits);
-		tmp = bayer[base];
-		CLIP16(tmp, outR[(base) * 3], bits);
-		tmp = bayer[base + 1 + sx];
-		CLIP16(tmp, outB[(base) * 3], bits);
-	    }
-	}
-	break;
-    default:			//---------------------------------------------------------
-//	fprintf(stderr, "Bad bayer pattern ID: %d\n", tile);
-//	return;
-	break;
+    for (i = 0; i < sy - 1; i += 2) {
+        for (j = 0; j < sx - 1; j += 2) {
+        base = i * sx + j;
+        tmp = ((bayer[base + sx] + bayer[base + 1]) >> 1);
+        CLIP16(tmp, outG[base * 3], bits);
+        tmp = bayer[base + sx + 1];
+        CLIP16(tmp, outR[base * 3], bits);
+        tmp = bayer[base];
+        CLIP16(tmp, outB[base * 3], bits);
+        }
+    }
+    for (i = 1; i < sy - 1; i += 2) {
+        for (j = 0; j < sx - 1; j += 2) {
+        base = i * sx + j;
+        tmp = ((bayer[base] + bayer[base + 1 + sx]) >> 1);
+        CLIP16(tmp, outG[(base) * 3], bits);
+        tmp = bayer[base + 1];
+        CLIP16(tmp, outR[(base) * 3], bits);
+        tmp = bayer[base + sx];
+        CLIP16(tmp, outB[(base) * 3], bits);
+        }
+    }
+    for (i = 0; i < sy - 1; i += 2) {
+        for (j = 1; j < sx - 1; j += 2) {
+        base = i * sx + j;
+        tmp = ((bayer[base] + bayer[base + sx + 1]) >> 1);
+        CLIP16(tmp, outG[base * 3], bits);
+        tmp = bayer[base + sx];
+        CLIP16(tmp, outR[base * 3], bits);
+        tmp = bayer[base + 1];
+        CLIP16(tmp, outB[base * 3], bits);
+        }
+    }
+    for (i = 1; i < sy - 1; i += 2) {
+        for (j = 1; j < sx - 1; j += 2) {
+        base = i * sx + j;
+        tmp = ((bayer[base + 1] + bayer[base + sx]) >> 1);
+        CLIP16(tmp, outG[(base) * 3], bits);
+        tmp = bayer[base];
+        CLIP16(tmp, outR[(base) * 3], bits);
+        tmp = bayer[base + 1 + sx];
+        CLIP16(tmp, outB[(base) * 3], bits);
+        }
+    }
+    break;
+    default:            //---------------------------------------------------------
+//    fprintf(stderr, "Bad bayer pattern ID: %d\n", tile);
+//    return;
+    break;
     }
 
     /* add black border */
     for (i = sx * (sy - 1) * 3; i < sx * sy * 3; i++) {
-	rgb[i] = 0;
+    rgb[i] = 0;
     }
     for (i = (sx - 1) * 3; i < sx * sy * 3; i += (sx - 1) * 3) {
-	rgb[i++] = 0;
-	rgb[i++] = 0;
-	rgb[i++] = 0;
+    rgb[i++] = 0;
+    rgb[i++] = 0;
+    rgb[i++] = 0;
     }
 }
 

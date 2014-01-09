@@ -683,13 +683,13 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 
     ito::RetVal retVal(ito::retOk,0,"");
 
-    int sizeX = (*paramsOpt)[0].getVal<int>();	// is the first parameter in the opt-List, corresponding to the gabber width
+    int sizeX = (*paramsOpt)[0].getVal<int>();    // is the first parameter in the opt-List, corresponding to the gabber width
     if (sizeX % 4 != 0)
     {
         retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber: SizeX must be a dividable of 4").toAscii().data());
     }
 
-    int sizeY = (*paramsOpt)[1].getVal<int>();	// is the second parameter in the opt-List, corresponding to the gabber heigth
+    int sizeY = (*paramsOpt)[1].getVal<int>();    // is the second parameter in the opt-List, corresponding to the gabber heigth
     if (sizeY == 1)
     {
         static_cast<ito::IntMeta*>(m_params["binning"].getMeta())->setMax(401);
@@ -699,7 +699,7 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
         retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber: SizeY must be a dividable of 4").toAscii().data());
     }
 
-    int bpp = (*paramsOpt)[2].getVal<int>();	// is the third parameter in the opt-List, corresponding to the gabber bit depth per pixel
+    int bpp = (*paramsOpt)[2].getVal<int>();    // is the third parameter in the opt-List, corresponding to the gabber bit depth per pixel
     m_params["bpp"].setVal<int>(bpp);
 
     m_params["sizex"].setVal<int>(sizeX);
@@ -970,7 +970,7 @@ ito::RetVal DummyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     }
 
     if (!retValue.containsError())
-	{
+    {
         retValue += retrieveData(dObj);  
     }
 

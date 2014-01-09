@@ -5,7 +5,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogLeicaMotorFocus::DialogLeicaMotorFocus(QObject *pluginInstance) : m_pluginInstance(pluginInstance), m_unappliedChanges(false)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
     enableDialog(true);
 };
 
@@ -17,7 +17,7 @@ void DialogLeicaMotorFocus::enableDialog(bool enabled)
     ui.groupOrigin->setEnabled(enabled);
     ui.cmdOk->setEnabled(enabled);
     ui.cmdCancel->setEnabled(enabled);
-	QCoreApplication::processEvents();
+    QCoreApplication::processEvents();
 }
 
 
@@ -26,7 +26,7 @@ void DialogLeicaMotorFocus::parametersChanged(QMap<QString, ito::Param> params)
 {
     const char* info = NULL;
     double dtemp = 0.0;
-	int itemp = 0;
+    int itemp = 0;
 
     setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
     // added by itobiege, Mar. 2013, but not tested!
@@ -49,10 +49,10 @@ void DialogLeicaMotorFocus::parametersChanged(QMap<QString, ito::Param> params)
 
     dtemp = (params["speed"]).getVal<double>();   
     ui.spinBoxSpeed->setValue(dtemp);
-	dtemp = (params["speed"]).getMax(); 
-	ui.spinBoxSpeed->setMaximum(dtemp);
-	dtemp = (params["speed"]).getMin(); 
-	ui.spinBoxSpeed->setMinimum(dtemp);
+    dtemp = (params["speed"]).getMax(); 
+    ui.spinBoxSpeed->setMaximum(dtemp);
+    dtemp = (params["speed"]).getMin(); 
+    ui.spinBoxSpeed->setMinimum(dtemp);
     info = params["speed"].getInfo();
     if(info)
     {
@@ -61,10 +61,10 @@ void DialogLeicaMotorFocus::parametersChanged(QMap<QString, ito::Param> params)
 
     itemp = (params["ratio"]).getVal<int>();   
     ui.spinBoxRatio->setValue(itemp);
-	itemp = (params["ratio"]).getMax(); 
-	ui.spinBoxRatio->setMaximum(itemp);
-	itemp = (params["ratio"]).getMin(); 
-	ui.spinBoxRatio->setMinimum(itemp);
+    itemp = (params["ratio"]).getMax(); 
+    ui.spinBoxRatio->setMaximum(itemp);
+    itemp = (params["ratio"]).getMin(); 
+    ui.spinBoxRatio->setMinimum(itemp);
     info = params["ratio"].getInfo();
     if(info)
     {
@@ -98,43 +98,43 @@ void DialogLeicaMotorFocus::on_cmdHoming_clicked()
 
     if(m_pluginInstance && !retval.containsError())
     {
-	    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
         enableDialog(false);
-	    QMetaObject::invokeMethod(m_pluginInstance,"calib",Q_ARG(int,0),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+        QMetaObject::invokeMethod(m_pluginInstance,"calib",Q_ARG(int,0),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
-	    if(!locker.getSemaphore()->wait(30000))
+        if(!locker.getSemaphore()->wait(30000))
         {
             QMessageBox::critical( this, tr("error"), tr("timeout when homing"));
         }
-		else
-		{
-			QString msg, text;
-			ito::RetVal retval = locker.getSemaphore()->returnValue;
+        else
+        {
+            QString msg, text;
+            ito::RetVal retval = locker.getSemaphore()->returnValue;
 
-			if(retval.containsWarningOrError())
-			{
-				if(retval.errorMessage())
-				{
-					msg = retval.errorMessage();
-				}
-				else
-				{
-					msg = tr("unknown");
-				}
-			}
+            if(retval.containsWarningOrError())
+            {
+                if(retval.errorMessage())
+                {
+                    msg = retval.errorMessage();
+                }
+                else
+                {
+                    msg = tr("unknown");
+                }
+            }
 
-			if(retval.containsError())
-			{
-				text = tr("While homing, an error occurred (%1)").arg(msg);
-				QMessageBox::critical(this,tr("error when homing"),text);
-			}
-			else if(retval.containsWarning())
-			{
-				text = tr("While homing, a warning occurred (%1)").arg(msg);
-				QMessageBox::warning(this,tr("warning when homing"),text);
-			}
-		}
+            if(retval.containsError())
+            {
+                text = tr("While homing, an error occurred (%1)").arg(msg);
+                QMessageBox::critical(this,tr("error when homing"),text);
+            }
+            else if(retval.containsWarning())
+            {
+                text = tr("While homing, a warning occurred (%1)").arg(msg);
+                QMessageBox::warning(this,tr("warning when homing"),text);
+            }
+        }
 
         enableDialog(true);
     }
@@ -145,43 +145,43 @@ void DialogLeicaMotorFocus::on_cmdOrigin_clicked()
 {
     if(m_pluginInstance)
     {
-	    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
         enableDialog(false);
-	    QMetaObject::invokeMethod(m_pluginInstance,"setOrigin",Q_ARG(int,0),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+        QMetaObject::invokeMethod(m_pluginInstance,"setOrigin",Q_ARG(int,0),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
-	    if(!locker.getSemaphore()->wait(5000))
+        if(!locker.getSemaphore()->wait(5000))
         {
             QMessageBox::critical( this, tr("error"), tr("timeout when setting origin"));
         }
-		else
-		{
-			QString msg, text;
-			ito::RetVal retval = locker.getSemaphore()->returnValue;
+        else
+        {
+            QString msg, text;
+            ito::RetVal retval = locker.getSemaphore()->returnValue;
 
-			if(retval.containsWarningOrError())
-			{
-				if(retval.errorMessage())
-				{
-					msg = retval.errorMessage();
-				}
-				else
-				{
-					msg = tr("unknown");
-				}
-			}
+            if(retval.containsWarningOrError())
+            {
+                if(retval.errorMessage())
+                {
+                    msg = retval.errorMessage();
+                }
+                else
+                {
+                    msg = tr("unknown");
+                }
+            }
 
-			if(retval.containsError())
-			{
-				text = tr("While setting to origin, an error occurred (%1)").arg(msg);
-				QMessageBox::critical(this,tr("error when setting to origin"),text);
-			}
-			else if(retval.containsWarning())
-			{
-				text = tr("While setting to origin, a warning occurred (%1)").arg(msg);
-				QMessageBox::warning(this,tr("warning when setting to origin"),text);
-			}
-		}
+            if(retval.containsError())
+            {
+                text = tr("While setting to origin, an error occurred (%1)").arg(msg);
+                QMessageBox::critical(this,tr("error when setting to origin"),text);
+            }
+            else if(retval.containsWarning())
+            {
+                text = tr("While setting to origin, a warning occurred (%1)").arg(msg);
+                QMessageBox::warning(this,tr("warning when setting to origin"),text);
+            }
+        }
 
         enableDialog(true);
     }
@@ -249,39 +249,39 @@ ito::RetVal DialogLeicaMotorFocus::applyParameters()
 //---------------------------------------------------------------------------------------------------------------------
 void DialogLeicaMotorFocus::on_cmdOk_clicked()
 {
-	ito::RetVal retval;
-	
+    ito::RetVal retval;
+    
 
-	if(m_unappliedChanges)
+    if(m_unappliedChanges)
     {
-		retval += applyParameters();
+        retval += applyParameters();
 
-		QString msg, text;
+        QString msg, text;
 
-		if(retval.containsWarningOrError())
-		{
-			if(retval.errorMessage())
-			{
-				msg = retval.errorMessage();
-			}
-			else
-			{
-				msg = tr("unknown");
-			}
-		}
+        if(retval.containsWarningOrError())
+        {
+            if(retval.errorMessage())
+            {
+                msg = retval.errorMessage();
+            }
+            else
+            {
+                msg = tr("unknown");
+            }
+        }
 
-		if(retval.containsError())
-		{
-			text = tr("While applying the parameters, an error occurred (%1)").arg(msg);
-			QMessageBox::critical(this,tr("error when applying parameters"),text);
-			return;
-		}
-		else if(retval.containsWarning())
-		{
-			text = tr("While applying the parameters, a warning occurred (%1)").arg(msg);
-			QMessageBox::warning(this,tr("warning when applying parameters"),text);
-		}
+        if(retval.containsError())
+        {
+            text = tr("While applying the parameters, an error occurred (%1)").arg(msg);
+            QMessageBox::critical(this,tr("error when applying parameters"),text);
+            return;
+        }
+        else if(retval.containsWarning())
+        {
+            text = tr("While applying the parameters, a warning occurred (%1)").arg(msg);
+            QMessageBox::warning(this,tr("warning when applying parameters"),text);
+        }
     }
 
-	this->accept();
+    this->accept();
 }

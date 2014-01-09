@@ -18,8 +18,8 @@ void DockWidgetGWInstekPSP::valuesChanged(QMap<QString, ito::Param> params)
 {
     QMap<QString, ito::Param>::const_iterator paramIt1, paramIt2;
 
-    paramIt1 = params.constFind("voltage");	// To check if this parameter exist
-    paramIt2 = params.constFind("voltage_limit");	// To check if this parameter exist
+    paramIt1 = params.constFind("voltage");    // To check if this parameter exist
+    paramIt2 = params.constFind("voltage_limit");    // To check if this parameter exist
     if (paramIt1 != params.constEnd() && paramIt2 != params.constEnd())
     {
         ui.dbVoltage->setMaximum(params["voltage_limit"].getVal<double>());
@@ -29,8 +29,8 @@ void DockWidgetGWInstekPSP::valuesChanged(QMap<QString, ito::Param> params)
         ui.dbVoltageLimit->setValue(params["voltage_limit"].getVal<double>());
     }
 
-    paramIt1 = params.constFind("current");	// To check if this parameter exist
-    paramIt2 = params.constFind("current_limit");	// To check if this parameter exist
+    paramIt1 = params.constFind("current");    // To check if this parameter exist
+    paramIt2 = params.constFind("current_limit");    // To check if this parameter exist
     if (paramIt1 != params.constEnd() && paramIt2 != params.constEnd())
     {
         ui.dbCurrent->setMaximum(params["current_limit"].getVal<double>());
@@ -40,8 +40,8 @@ void DockWidgetGWInstekPSP::valuesChanged(QMap<QString, ito::Param> params)
         ui.dbCurrentLimit->setValue(params["current_limit"].getVal<double>());
     }
 
-    paramIt1 = params.constFind("load");	// To check if this parameter exist
-    paramIt2 = params.constFind("load_limit");	// To check if this parameter exist
+    paramIt1 = params.constFind("load");    // To check if this parameter exist
+    paramIt2 = params.constFind("load_limit");    // To check if this parameter exist
     if (paramIt1 != params.constEnd() && paramIt2 != params.constEnd())
     {
         ui.dbLoad->setMaximum(params["load_limit"].getVal<double>());

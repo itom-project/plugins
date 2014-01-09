@@ -36,10 +36,10 @@ class DockWidgetDispWindow : public QWidget
         int m_curNumGrayCodes;
         bool m_numimgChangeInProgress;
 
-	signals:
+    signals:
 
-	public slots:
-		void valuesChanged(QMap<QString, ito::Param> params);
+    public slots:
+        void valuesChanged(QMap<QString, ito::Param> params);
         
     private slots:
         void on_comboBox_currentIndexChanged(int index);

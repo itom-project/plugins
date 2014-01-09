@@ -22,12 +22,12 @@ class DockWidgetSerialIO : public QWidget
     private:
         Ui::DockWidgetSerialIO ui;
 
-	signals:
+    signals:
 
-	public slots:
-		void valuesChanged(QMap<QString, ito::Param> params);
+    public slots:
+        void valuesChanged(QMap<QString, ito::Param> params);
 //        void uniqueIDChanged(const int uniqueID);
-		void serialLog(QByteArray data, QByteArray endline, const char InOutChar);
+        void serialLog(QByteArray data, QByteArray endline, const char InOutChar);
 
     private slots:
         void on_ClrButton_clicked();

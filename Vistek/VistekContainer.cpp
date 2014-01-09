@@ -16,141 +16,141 @@
 
 /*static*/ VistekContainer * VistekContainer::getInstance(void)
 {
-	static VistekContainerSingleton w;
-	if (VistekContainer::m_pVistekContainer == NULL)
-	{
-		#pragma omp critical
-		{
-			if (VistekContainer::m_pVistekContainer == NULL)
-			{
-				VistekContainer::m_pVistekContainer = new VistekContainer();
-			}
-		}
-	}
-	return VistekContainer::m_pVistekContainer;
+    static VistekContainerSingleton w;
+    if (VistekContainer::m_pVistekContainer == NULL)
+    {
+        #pragma omp critical
+        {
+            if (VistekContainer::m_pVistekContainer == NULL)
+            {
+                VistekContainer::m_pVistekContainer = new VistekContainer();
+            }
+        }
+    }
+    return VistekContainer::m_pVistekContainer;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Initializes the camera container, if it is not initialized
 /*!
     If the camera container is not initialized, this is done here. Additionally the SDK dll for the Vistek will be loaded and version-checked.
-	The connected cameras are dicovered. Some of their parameters are read from the cams.
+    The connected cameras are dicovered. Some of their parameters are read from the cams.
 */
 ito::RetVal VistekContainer::initCameraContainer()
 {
-	QMutexLocker locker(&m_mutex);
-	if(m_initialized == false)
-	{
-		if( m_camClient != SVGigE_NO_CLIENT) // Check if container client handle already exists
-		{
-			std::cout << "Handle already existing." << std::endl;
-			return ito::retOk;
-		}
-		else
-		{
-			// Get the path to the plugin directory
-			QDir dllDir = QCoreApplication::applicationDirPath();
-			if( !dllDir.cd("plugins/Vistek") )
-			{
-				dllDir.cdUp();
-				dllDir.cd("plugins/Vistek");
-			}
-			QString dllDir2 = QDir::cleanPath(dllDir.filePath(""));
+    QMutexLocker locker(&m_mutex);
+    if(m_initialized == false)
+    {
+        if( m_camClient != SVGigE_NO_CLIENT) // Check if container client handle already exists
+        {
+            std::cout << "Handle already existing." << std::endl;
+            return ito::retOk;
+        }
+        else
+        {
+            // Get the path to the plugin directory
+            QDir dllDir = QCoreApplication::applicationDirPath();
+            if( !dllDir.cd("plugins/Vistek") )
+            {
+                dllDir.cdUp();
+                dllDir.cd("plugins/Vistek");
+            }
+            QString dllDir2 = QDir::cleanPath(dllDir.filePath(""));
 
-			// Add the plugin path to the path environment variable
-			char *oldpath = getenv("path");
-			char *newpath = (char*)malloc(strlen(oldpath) + dllDir2.size() + 10);
-			newpath[0] = 0;
-			strcat(newpath, "path=");
-			strcat(newpath, dllDir2.toAscii().data());
-			strcat(newpath, ";");
-			strcat(newpath, oldpath);
-			_putenv(newpath);
-			free(newpath);
+            // Add the plugin path to the path environment variable
+            char *oldpath = getenv("path");
+            char *newpath = (char*)malloc(strlen(oldpath) + dllDir2.size() + 10);
+            newpath[0] = 0;
+            strcat(newpath, "path=");
+            strcat(newpath, dllDir2.toAscii().data());
+            strcat(newpath, ";");
+            strcat(newpath, oldpath);
+            _putenv(newpath);
+            free(newpath);
 
-			// Force the loading of the dll
-			isLoadedGigEDLL();
+            // Force the loading of the dll
+            isLoadedGigEDLL();
 
-			// Check if the version of the dll is the same as the version of the sdk files
-			SVGigE_VERSION expectedVersion;
-			expectedVersion.MajorVersion = SVGigE_VERSION_MAJOR;
-			expectedVersion.MinorVersion = SVGigE_VERSION_MINOR;
-			expectedVersion.DriverVersion = SVGigE_VERSION_DRIVER;
-			expectedVersion.BuildVersion = SVGigE_VERSION_BUILD;
-			SVGigE_VERSION dllVersion;
-			SVGigE_RETURN dllVersionCheck;
-			dllVersionCheck = isVersionCompliantDLL(&dllVersion, &expectedVersion);
-			if(dllVersionCheck!=SVGigE_SUCCESS)
-			{
-				return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch.").toAscii().data());
-			}
+            // Check if the version of the dll is the same as the version of the sdk files
+            SVGigE_VERSION expectedVersion;
+            expectedVersion.MajorVersion = SVGigE_VERSION_MAJOR;
+            expectedVersion.MinorVersion = SVGigE_VERSION_MINOR;
+            expectedVersion.DriverVersion = SVGigE_VERSION_DRIVER;
+            expectedVersion.BuildVersion = SVGigE_VERSION_BUILD;
+            SVGigE_VERSION dllVersion;
+            SVGigE_RETURN dllVersionCheck;
+            dllVersionCheck = isVersionCompliantDLL(&dllVersion, &expectedVersion);
+            if(dllVersionCheck!=SVGigE_SUCCESS)
+            {
+                return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch.").toAscii().data());
+            }
 
-			// Create container Handle
-			std::cout << "Trying to connect via FilterDriver ... " << std::endl;
-			m_camClient = CameraContainer_create(SVGigETL_TypeFilter);
-			if(m_camClient == SVGigE_NO_CLIENT)
-			{
-				std::cout << "connecting failed.\n" << std::endl;
-				std::cout << "Trying to connect via winsock ... " << std::endl;
-				m_camClient = CameraContainer_create(SVGigETL_TypeWinsock);
-				if(m_camClient == SVGigE_NO_CLIENT)
-				{
-					return ito::RetVal(ito::retError, 0, tr("Connecting via winsock failed.").toAscii().data());
-				}
-			}
-			std::cout << "done!\n" << std::endl;
-		}
+            // Create container Handle
+            std::cout << "Trying to connect via FilterDriver ... " << std::endl;
+            m_camClient = CameraContainer_create(SVGigETL_TypeFilter);
+            if(m_camClient == SVGigE_NO_CLIENT)
+            {
+                std::cout << "connecting failed.\n" << std::endl;
+                std::cout << "Trying to connect via winsock ... " << std::endl;
+                m_camClient = CameraContainer_create(SVGigETL_TypeWinsock);
+                if(m_camClient == SVGigE_NO_CLIENT)
+                {
+                    return ito::RetVal(ito::retError, 0, tr("Connecting via winsock failed.").toAscii().data());
+                }
+            }
+            std::cout << "done!\n" << std::endl;
+        }
 
-		// Discover cameras
-		std::cout << "Trying to discover cameras ... " << std::endl;
-		if( SVGigE_SUCCESS != CameraContainer_discovery(m_camClient) )
-		{
-			return ito::RetVal(ito::retError, 0, tr("Camera discovery failed.").toAscii().data());
-		}
-		
-		// Get the number of connected cams
-		int CamCounter = 0;
-		Camera_handle TempCam;
-		std::cout << "Counting cameras ... " << std::endl;
-		int numberOfCameras = CameraContainer_getNumberOfCameras(m_camClient);
-		if( 0 == numberOfCameras )
-		{
-			return ito::RetVal(ito::retError, 0, tr("No cameras detected.").toAscii().data());
-		}
-		std::cout << numberOfCameras << " camera(s) detected!\n" << std::endl;
+        // Discover cameras
+        std::cout << "Trying to discover cameras ... " << std::endl;
+        if( SVGigE_SUCCESS != CameraContainer_discovery(m_camClient) )
+        {
+            return ito::RetVal(ito::retError, 0, tr("Camera discovery failed.").toAscii().data());
+        }
+        
+        // Get the number of connected cams
+        int CamCounter = 0;
+        Camera_handle TempCam;
+        std::cout << "Counting cameras ... " << std::endl;
+        int numberOfCameras = CameraContainer_getNumberOfCameras(m_camClient);
+        if( 0 == numberOfCameras )
+        {
+            return ito::RetVal(ito::retError, 0, tr("No cameras detected.").toAscii().data());
+        }
+        std::cout << numberOfCameras << " camera(s) detected!\n" << std::endl;
 
-		// Read all the relevant info from each cam
-		std::cout << "Fetching camera data:\n" << std::endl;
-		m_cameras.clear();
-		for (CamCounter = 0; CamCounter < numberOfCameras; CamCounter++)
-		{
-			TempCam = CameraContainer_getCamera(m_camClient, CamCounter);
-			VistekCam cam;
-			int TempSize = 0;
+        // Read all the relevant info from each cam
+        std::cout << "Fetching camera data:\n" << std::endl;
+        m_cameras.clear();
+        for (CamCounter = 0; CamCounter < numberOfCameras; CamCounter++)
+        {
+            TempCam = CameraContainer_getCamera(m_camClient, CamCounter);
+            VistekCam cam;
+            int TempSize = 0;
 
-			cam.camModel =			Camera_getModelName(TempCam);
-			cam.camSerialNo =		Camera_getSerialNumber(TempCam);
-			cam.camVersion =		Camera_getDeviceVersion(TempCam);
-			cam.camIP =				Camera_getIPAddress(TempCam);
-			cam.camManufacturer =	Camera_getManufacturerName(TempCam);
-			// Doesn't work here. Maybe a Camera_openConnection(Cam, 30) is needed before...
-			/*Camera_getSizeX(TempCam, &TempSize);
-			cam.sensorPixelsX = TempSize;
-			Camera_getSizeY(TempCam, &TempSize);
-			cam.sensorPixelsY = TempSize;*/
-			cam.started = false;
+            cam.camModel =            Camera_getModelName(TempCam);
+            cam.camSerialNo =        Camera_getSerialNumber(TempCam);
+            cam.camVersion =        Camera_getDeviceVersion(TempCam);
+            cam.camIP =                Camera_getIPAddress(TempCam);
+            cam.camManufacturer =    Camera_getManufacturerName(TempCam);
+            // Doesn't work here. Maybe a Camera_openConnection(Cam, 30) is needed before...
+            /*Camera_getSizeX(TempCam, &TempSize);
+            cam.sensorPixelsX = TempSize;
+            Camera_getSizeY(TempCam, &TempSize);
+            cam.sensorPixelsY = TempSize;*/
+            cam.started = false;
 
-			std::cout << "Camera SN: " << cam.camSerialNo.toAscii().data() << " found at IP " << cam.camIP.toAscii().data() << "\n" <<std::endl;
-			Camera_closeConnection(TempCam);
-			m_cameras << cam;
-		}
+            std::cout << "Camera SN: " << cam.camSerialNo.toAscii().data() << " found at IP " << cam.camIP.toAscii().data() << "\n" <<std::endl;
+            Camera_closeConnection(TempCam);
+            m_cameras << cam;
+        }
 
-		std::cout << "done!\n" << std::endl;
+        std::cout << "done!\n" << std::endl;
 
-		m_initialized = true;
-	}
+        m_initialized = true;
+    }
 
-	return ito::retOk;
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -160,9 +160,9 @@ ito::RetVal VistekContainer::initCameraContainer()
     \sa getInstance
 */
 VistekContainer::VistekContainer(void) :
-	m_initialized(false)
+    m_initialized(false)
 {
-	m_camClient = SVGigE_NO_CLIENT;
+    m_camClient = SVGigE_NO_CLIENT;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -178,22 +178,22 @@ VistekContainer::~VistekContainer(void)
 //! Tries to find the next free camera.
 /*!
     If the no camera is marked as free -1 is returned as camera number.
-	\return int CameraNumber
+    \return int CameraNumber
 */
 const int VistekContainer::getNextFreeCam()
 {
-	QMutexLocker locker(&m_mutex);
-	for(int i=0;i<m_cameras.size();i++)
-	{
-		if(m_cameras[i].started == false)
-		{
-			std::cout << "Camera " << i << " selected (first free camera)\n" <<std::endl;
-			m_cameras[i].started = true;
-			return i;
-		}
-	}
-	std::cout << "No free camera found\n" <<std::endl;
-	return -1;
+    QMutexLocker locker(&m_mutex);
+    for(int i=0;i<m_cameras.size();i++)
+    {
+        if(m_cameras[i].started == false)
+        {
+            std::cout << "Camera " << i << " selected (first free camera)\n" <<std::endl;
+            m_cameras[i].started = true;
+            return i;
+        }
+    }
+    std::cout << "No free camera found\n" <<std::endl;
+    return -1;
 }
 
 
@@ -201,64 +201,64 @@ const int VistekContainer::getNextFreeCam()
 //! Tries to find the camera requested by the SN string.
 /*!
     If the requested camera is not found -1 is returned as camera number.
-	\param [in] camSerialNo QString containing the serial number of the desired camera.
-	\return int CameraNumber
+    \param [in] camSerialNo QString containing the serial number of the desired camera.
+    \return int CameraNumber
 */
 const int VistekContainer::getCameraBySN(const QString &camSerialNo)
 {
-	QMutexLocker locker(&m_mutex);
-	for(int i=0;i<m_cameras.size();i++)
-	{
-		if(m_cameras[i].camSerialNo == camSerialNo)
-		{
-			if(m_cameras[i].started == false)
-			{
-				std::cout << "Camera " << i << " selected by SN: " << camSerialNo.toAscii().data() << "\n" <<std::endl;
-				m_cameras[i].started = true;
-				return i;
-			}
-			else
-			{
-				std::cout << "Camera " << i << " selected by SN: " << camSerialNo.toAscii().data() << " is busy, looking for alternatives...\n" <<std::endl;
-				return -1;
-			}
-		}
-	}
-	std::cout << "SN: " << camSerialNo.toAscii().data() << " not found\n" <<std::endl;
-	return -1;
+    QMutexLocker locker(&m_mutex);
+    for(int i=0;i<m_cameras.size();i++)
+    {
+        if(m_cameras[i].camSerialNo == camSerialNo)
+        {
+            if(m_cameras[i].started == false)
+            {
+                std::cout << "Camera " << i << " selected by SN: " << camSerialNo.toAscii().data() << "\n" <<std::endl;
+                m_cameras[i].started = true;
+                return i;
+            }
+            else
+            {
+                std::cout << "Camera " << i << " selected by SN: " << camSerialNo.toAscii().data() << " is busy, looking for alternatives...\n" <<std::endl;
+                return -1;
+            }
+        }
+    }
+    std::cout << "SN: " << camSerialNo.toAscii().data() << " not found\n" <<std::endl;
+    return -1;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Resets the started flag of camera CamNo.
 /*!
     If the requested camera is not found -1 is returned as camera number.
-	\param [in] CamNo is the number of the camera to mark as free.
+    \param [in] CamNo is the number of the camera to mark as free.
 */
 void VistekContainer::freeCameraStatus(const int CamNo)
 {
-	QMutexLocker locker(&m_mutex);
-	if (0 <= CamNo && CamNo < m_cameras.size())
-		m_cameras[CamNo].started = false;
+    QMutexLocker locker(&m_mutex);
+    if (0 <= CamNo && CamNo < m_cameras.size())
+        m_cameras[CamNo].started = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Getter function that returns the camera container handle.
 /*!
-	\return CameraContainerClient_handle
+    \return CameraContainerClient_handle
 */
 CameraContainerClient_handle VistekContainer::getCameraContainerHandle()
 {
-	QMutexLocker locker(&m_mutex);
-	return m_camClient;
+    QMutexLocker locker(&m_mutex);
+    return m_camClient;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Getter function that returns the camera info struct of camera CamNo.
 /*!
-	\param [in] CamNo is the number of the camera.
-	\return VistekCam
+    \param [in] CamNo is the number of the camera.
+    \return VistekCam
 */
 VistekCam VistekContainer::getCamInfo(int CamNo)
 {
-	return m_cameras[CamNo];
+    return m_cameras[CamNo];
 }

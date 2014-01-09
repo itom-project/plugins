@@ -64,7 +64,7 @@ class BasicFilters : public ito::AddInAlgo
 
     public:
         friend class BasicFiltersInterface;
-		 
+         
         // Defined in BasicFilters.cpp
         static ito::RetVal stdParams2Objects(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                     /**< Get the standard IO-Parameters for filters with two objects */
                   
@@ -78,7 +78,7 @@ class BasicFilters : public ito::AddInAlgo
 
         static ito::RetVal replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal replaceInfAndNaNParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
-		
+        
         static ito::RetVal flaten3Dto2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< Combine 3 dataObjects by highest contrast of modulation maps */
         static ito::RetVal swapByteOrder(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);    /** Simply swap current byte order */
 
@@ -90,7 +90,7 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);        /**< Combine 3 object planes to a single uint32 object*/        
         
         static ito::RetVal calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);       /**< Interpolate 1D-slice from 2D-Object */
-        static ito::RetVal calcObjSliceParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);				/**< Get the IO-parameters to interpolate 1D-slice from 2D-Object */
+        static ito::RetVal calcObjSliceParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                /**< Get the IO-parameters to interpolate 1D-slice from 2D-Object */
 
         // Defined in BasicGenericFilters.cpp
         static ito::RetVal genericStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);

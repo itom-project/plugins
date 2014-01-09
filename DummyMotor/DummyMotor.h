@@ -6,13 +6,13 @@
 * 
 *\sa DummyMotorInterface, DummyMotor
 *\author Wolfram Lyda
-*\date	Oct2011
+*\date    Oct2011
 */
 
 #include "common/addInInterface.h"
 
-#include "dialogDummyMotor.h"	//! This is the configuration dialog
-#include "dockWidgetDummyMotor.h"	//! This is the controll dialog
+#include "dialogDummyMotor.h"    //! This is the configuration dialog
+#include "dockWidgetDummyMotor.h"    //! This is the controll dialog
 
 #include <qsharedpointer.h>
 #include <qmetatype.h>
@@ -33,7 +33,7 @@ class DummyMotorInterface : public ito::AddInInterfaceBase
     public:
         DummyMotorInterface(QObject *parent = 0);
         ~DummyMotorInterface();
-        ito::RetVal getAddInInst(ito::AddInBase **addInInst);	//!< Creates a new DummyMotor and gives it a unique identification
+        ito::RetVal getAddInInst(ito::AddInBase **addInInst);    //!< Creates a new DummyMotor and gives it a unique identification
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
@@ -58,23 +58,23 @@ class DummyMotor : public ito::AddInActuator
 
     public:
         friend class DummyMotorInterface;
-        const ito::RetVal showConfDialog(void);	//!< This calls the modal Configuration Dialog
+        const ito::RetVal showConfDialog(void);    //!< This calls the modal Configuration Dialog
         int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
 
     protected:
-        ~DummyMotor() {}	//! Destructor
-        DummyMotor();	//!< Constructur
+        ~DummyMotor() {}    //! Destructor
+        DummyMotor();    //!< Constructur
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
 
     private:
-        int m_numaxis;	//!< Number of axis currently aviable at this stage
-		int m_async;	//!< variable to set up async and sync positioning --> Syncrone means programm do not return until positioning was done.
-		int m_scale;	// Its something to round from ITO mm into stepwith of the corresponding system
-		
-		// Cut here
-		double m_distance;	//! Just to enable the WaitForAnswer to wait according to the Speed
-		// till here
+        int m_numaxis;    //!< Number of axis currently aviable at this stage
+        int m_async;    //!< variable to set up async and sync positioning --> Syncrone means programm do not return until positioning was done.
+        int m_scale;    // Its something to round from ITO mm into stepwith of the corresponding system
+        
+        // Cut here
+        double m_distance;    //! Just to enable the WaitForAnswer to wait according to the Speed
+        // till here
 
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
@@ -97,7 +97,7 @@ class DummyMotor : public ito::AddInActuator
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);
 
 
-		ito::RetVal RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos);	//!< Slot to trigger a Status and position request
+        ito::RetVal RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos);    //!< Slot to trigger a Status and position request
 
         ito::RetVal startJoyStickMovement(QVector<int> axis, QVector<double> vel);
 

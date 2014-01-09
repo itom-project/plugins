@@ -944,7 +944,7 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
 
         /*if (std::abs(sw2) <
         MatDoub aa(2,2);
-	    VecDoub b(2);
+        VecDoub b(2);
         aa[0][0] = sw2;
         aa[0][1] = sw2x;
         aa[1][0] = sw2x;
@@ -952,7 +952,7 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
         b[0] = sw2y;
         b[1] = sw2xy;*/
         /*SVD svd(aa);
-	    svd.solve(b,p,-1.);*/
+        svd.solve(b,p,-1.);*/
 
         
     }

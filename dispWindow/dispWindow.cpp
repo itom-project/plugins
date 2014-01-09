@@ -38,13 +38,13 @@ ito::RetVal DispWindowInterface::closeThisInst(ito::AddInBase **addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** addIn interface constructor
-*	
-*	The DispWindow plugin provides a window for displaying cosine fringes and graycode images. The window is
-*	topmost, frameless and uses openGL for the actual painting. The avaiable parameters are:
-*		- x0, y0: window position
-*		- xsize, ysize: window size
-*		- period: cosine period in pixels (must be divideable by two and the number of phase shifts
-*		- phaseshift: the number of phase shifts
+*    
+*    The DispWindow plugin provides a window for displaying cosine fringes and graycode images. The window is
+*    topmost, frameless and uses openGL for the actual painting. The avaiable parameters are:
+*        - x0, y0: window position
+*        - xsize, ysize: window size
+*        - period: cosine period in pixels (must be divideable by two and the number of phase shifts
+*        - phaseshift: the number of phase shifts
 */
 DispWindowInterface::DispWindowInterface()
 {
@@ -105,7 +105,7 @@ Q_EXPORT_PLUGIN2(DispWindowInterface, DispWindowInterface)
 //----------------------------------------------------------------------------------------------------------------------------------
 /** constructor of the DispWindow class
 *
-*	the openGL window is opened here, based on a qgl widget.
+*    the openGL window is opened here, based on a qgl widget.
 */
 DispWindow::DispWindow()
 {
@@ -153,7 +153,7 @@ DispWindow::DispWindow()
     }
 
 
-    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");	// To enable the programm to transmit parameters via signals - slot connections
+    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
 
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("meanGrayValues", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("mean grey values from intensity calibration").toAscii().data());
@@ -161,8 +161,8 @@ DispWindow::DispWindow()
     QVector<ito::Param> pOut = QVector<ito::Param>();
     registerExecFunc("calcLut", pMand, pOpt, pOut, tr("Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter 'lut')"));
 
-	pMand = QVector<ito::Param>() << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("absolute filename of the file where the grabbing image should be saved").toAscii().data());
-	registerExecFunc("grabFramebuffer", pMand, pOpt, pOut, tr("grab the current OpenGL frame as image and saves it to the given filename. The image format is guessed from the suffix of the filename (default QImage formats supported)"));
+    pMand = QVector<ito::Param>() << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("absolute filename of the file where the grabbing image should be saved").toAscii().data());
+    registerExecFunc("grabFramebuffer", pMand, pOpt, pOut, tr("grab the current OpenGL frame as image and saves it to the given filename. The image format is guessed from the suffix of the filename (default QImage formats supported)"));
 
     pMand.clear();
     pOpt.clear();
@@ -277,8 +277,8 @@ DispWindow::DispWindow()
  //   //version = glGetString(GL_EXTENSIONS);
  //   //std::cerr << version << "\n";
 
-    //glClear(GL_COLOR_BUFFER_BIT);	//clear screen buffer
-    //glClearColor(0.0f, 0.0f, 1.0f, 0.0f);	//black background
+    //glClear(GL_COLOR_BUFFER_BIT);    //clear screen buffer
+    //glClearColor(0.0f, 0.0f, 1.0f, 0.0f);    //black background
 
  //   m_pWindow->doneCurrent();
 
@@ -872,22 +872,22 @@ ito::RetVal DispWindow::execFunc(const QString funcName, QSharedPointer<QVector<
             }
         }
     }
-	else if (funcName == "grabFramebuffer")
-	{
-		QString filename = paramsMand->at(0).getVal<char*>();
+    else if (funcName == "grabFramebuffer")
+    {
+        QString filename = paramsMand->at(0).getVal<char*>();
 
-		ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(m_pWindow, "grabFramebuffer", Q_ARG(QString, filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-		if(locker.getSemaphore()->wait(5000))
-		{
-			retValue += locker.getSemaphore()->returnValue;
-		}
-		else
-		{
-			retValue += ito::RetVal(ito::retError,0,"timeout while grabbing current OpenGL frame");
-		}
-	}
+        if(locker.getSemaphore()->wait(5000))
+        {
+            retValue += locker.getSemaphore()->returnValue;
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retError,0,"timeout while grabbing current OpenGL frame");
+        }
+    }
     else
     {
         retValue += ito::RetVal::format(ito::retError, 0, tr("function name '%s' does not exist").toAscii().data(), funcName.toAscii().data());

@@ -15,9 +15,9 @@ SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages tha
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
 IF(BUILD_SHARED_LIBS)
-	SET(LIBRARY_TYPE SHARED)
+    SET(LIBRARY_TYPE SHARED)
 ELSE(BUILD_SHARED_LIBS)
-	SET(LIBRARY_TYPE STATIC)
+    SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
 find_package(Qt4 REQUIRED)
@@ -29,7 +29,7 @@ include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 IF (BUILD_UNICODE)
-	ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
 ADD_DEFINITIONS(-DCMAKE)
 
@@ -42,9 +42,9 @@ SET (QT_USE_QTXML TRUE)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
-	SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ELSE(CMAKE_BUILD_TYPE)
-	SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
@@ -53,7 +53,7 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${QT_QTCORE_INCLUDE_DIR}
-	${OpenCV_DIR}/include
+    ${OpenCV_DIR}/include
     ${ITOM_SDK_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
@@ -84,8 +84,8 @@ set(plugin_SOURCES
     ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.cpp
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.cpp
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/OpenCVFilters.cpp	
-	
+    ${CMAKE_CURRENT_SOURCE_DIR}/OpenCVFilters.cpp    
+    
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -106,14 +106,14 @@ TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${Q
 
 #handle translations BEGIN STEP 2
 if (UPDATE_TRANSLATIONS)
-	QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-	
-	add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-	add_dependencies(${target_name} _${target_name}_translation)
-	
-	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
+    QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    
+    add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+    add_dependencies(${target_name} _${target_name}_translation)
+    
+    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
 else (UPDATE_TRANSLATIONS)
-	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
+    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
 endif (UPDATE_TRANSLATIONS)
 #handle translations END STEP 2
 

@@ -1,19 +1,19 @@
 /**\file dockWidgetDummyMotor.cpp
 * \brief In this file the functions of the non modal dialog for the DummyMotor are specified
 *
-*	This file defines the functions of the DockWidgetDummyMotor-Class defined in the file "dockWidgetDummyMotor.h"
+*    This file defines the functions of the DockWidgetDummyMotor-Class defined in the file "dockWidgetDummyMotor.h"
 * 
 *\sa dockWidgetDummyMotor, DummyMotor
 *\author Wolfram Lyda
-*\date	Oct2011
+*\date    Oct2011
 */
 
 #include "dockWidgetDummyMotor.h"
 
 /** @detail The constructor by the constructor of the DummyMotor during initialisation of the DummyMotor-Instance.
 *
-*\param[in] params		m_params-Variable containg the parameters of the DummyMotor
-*\param[in] uniqueID	The unique Id of the DummyMotor-Instance connected to this dialog
+*\param[in] params        m_params-Variable containg the parameters of the DummyMotor
+*\param[in] uniqueID    The unique Id of the DummyMotor-Instance connected to this dialog
 *
 *\sa DummyMotor
 */
@@ -37,7 +37,7 @@ DockWidgetDummyMotor::DockWidgetDummyMotor(QMap<QString, ito::Param> params, int
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 /** @detail This Slot checks the axis-numbers and enables the corresponding GUI-elements
 *
-*\param[in] params		m_params-Variable containg the parameters of the DummyMotor
+*\param[in] params        m_params-Variable containg the parameters of the DummyMotor
 *
 */
 void  DockWidgetDummyMotor::CheckAxisNums(QMap<QString, ito::Param> params)
@@ -79,7 +79,7 @@ void  DockWidgetDummyMotor::CheckAxisNums(QMap<QString, ito::Param> params)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 /** @detail This Slot checks all parameters, currently only calling CheckAxisNums
 *
-*\param[in] params		m_params-Variable containg the parameters of the DummyMotor
+*\param[in] params        m_params-Variable containg the parameters of the DummyMotor
 *
 */
 void DockWidgetDummyMotor::valuesChanged(QMap<QString, ito::Param> params)
@@ -284,33 +284,33 @@ void DockWidgetDummyMotor::on_pushButton_start_clicked()
 
     if (ui.checkBox_enablex->isChecked() == 1)
     {
-	    axis << 0;
-	    dpos << ui.doubleSpinBox_tarpos_x->value();
+        axis << 0;
+        dpos << ui.doubleSpinBox_tarpos_x->value();
     }
     if (ui.checkBox_enabley->isChecked() == 1)
     {
-	    axis << 1;
-	    dpos << ui.doubleSpinBox_tarpos_y->value();
+        axis << 1;
+        dpos << ui.doubleSpinBox_tarpos_y->value();
     }
     if (ui.checkBox_enablez->isChecked() == 1)
     {
-	    axis << 2;
-	    dpos << ui.doubleSpinBox_tarpos_z->value();
+        axis << 2;
+        dpos << ui.doubleSpinBox_tarpos_z->value();
     }
     if (ui.checkBox_enablea->isChecked() == 1)
     {
-	    axis << 3;
-	    dpos << ui.doubleSpinBox_tarpos_a->value();
+        axis << 3;
+        dpos << ui.doubleSpinBox_tarpos_a->value();
     }
     if (ui.checkBox_enableb->isChecked() == 1)
     {
-	    axis << 4;
-	    dpos << ui.doubleSpinBox_tarpos_b->value();
+        axis << 4;
+        dpos << ui.doubleSpinBox_tarpos_b->value();
     }
     if (ui.checkBox_enablec->isChecked() == 1)
     {
-	    axis << 5;
-	    dpos << ui.doubleSpinBox_tarpos_c->value();
+        axis << 5;
+        dpos << ui.doubleSpinBox_tarpos_c->value();
     }
 
     emit MoveAbsolute(axis, dpos, 0);

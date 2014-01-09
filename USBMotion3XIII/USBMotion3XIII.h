@@ -3,8 +3,8 @@
 
 #include "common/addInInterface.h"
 
-#include "dialogUSBMotion3XIII.h"	//! This is the configuration dialog
-#include "dockWidgetUSBMotion3XIII.h"	//! This is the controll dialog
+#include "dialogUSBMotion3XIII.h"    //! This is the configuration dialog
+#include "dockWidgetUSBMotion3XIII.h"    //! This is the controll dialog
 
 #include <qsharedpointer.h>
 #include <qmetatype.h>
@@ -24,7 +24,7 @@ class USBMotion3XIIIInterface : public ito::AddInInterfaceBase
     public:
         USBMotion3XIIIInterface(QObject *parent = 0);
         ~USBMotion3XIIIInterface();
-        ito::RetVal getAddInInst(ito::AddInBase **addInInst);	//!< Creates a new DummyMotor and gives him a unique identification
+        ito::RetVal getAddInInst(ito::AddInBase **addInInst);    //!< Creates a new DummyMotor and gives him a unique identification
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
@@ -43,14 +43,14 @@ class USBMotion3XIII : public ito::AddInActuator
     Q_OBJECT
 
     protected:
-        ~USBMotion3XIII();	//! Destructor
-        USBMotion3XIII();	//!< Constructur
+        ~USBMotion3XIII();    //! Destructor
+        USBMotion3XIII();    //!< Constructur
 
         void timerEvent( QTimerEvent *event );
 
     public:
         friend class USBMotion3XIIIInterface;
-        const ito::RetVal showConfDialog(void);	//!< This calls the modal Configuration Dialog
+        const ito::RetVal showConfDialog(void);    //!< This calls the modal Configuration Dialog
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
@@ -77,7 +77,7 @@ class USBMotion3XIII : public ito::AddInActuator
 
         DockWidgetUSBMotion3XIII *USBMotion3XIIIWid;
 
-		int m_async;	//!< variable to set up async and sync positioning --> Synchrone means program do not return until positioning was done.
+        int m_async;    //!< variable to set up async and sync positioning --> Synchrone means program do not return until positioning was done.
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
 

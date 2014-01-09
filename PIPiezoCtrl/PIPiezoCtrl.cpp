@@ -16,7 +16,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-	\detail creates new instance of PIPiezoCtrlInterface and returns the instance-pointer
+    \detail creates new instance of PIPiezoCtrlInterface and returns the instance-pointer
     \param [in,out] addInInst is a double pointer of type ito::AddInBase. The newly created PIPiezoCtrlInterface-instance is stored in *addInInst
     \return retOk
     \sa PIPiezoCtrl
@@ -34,7 +34,7 @@ ito::RetVal PIPiezoCtrlInterface::getAddInInst(ito::AddInBase **addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-	\detail Closes an instance of of PIPiezoCtrlInterface. This instance is given by parameter addInInst.
+    \detail Closes an instance of of PIPiezoCtrlInterface. This instance is given by parameter addInInst.
     \param [in] double pointer to the instance which should be deleted.
     \return retOk
     \sa PIPiezoCtrl
@@ -53,7 +53,7 @@ ito::RetVal PIPiezoCtrlInterface::closeThisInst(ito::AddInBase **addInInst)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
-	with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
 */
 PIPiezoCtrlInterface::PIPiezoCtrlInterface()
 {
@@ -72,7 +72,7 @@ The parameters of the serial port (besides port number) are set automatically du
 \n\
 WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding \
 PI controller. Therefore don't mix stages and controllers but only use the original, calibrated combination.";
-	m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);
 
     m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -85,8 +85,8 @@ PI controller. Therefore don't mix stages and controllers but only use the origi
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
-	paramVal = ito::Param("keepSerialConfig", ito::ParamBase::Int, 0, 1, 0, tr("If 1 the current configuration of the given serial port is kept, else 0 [default].").toAscii().data());
-	m_initParamsOpt.append(paramVal);
+    paramVal = ito::Param("keepSerialConfig", ito::ParamBase::Int, 0, 1, 0, tr("If 1 the current configuration of the given serial port is kept, else 0 [default].").toAscii().data());
+    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ Q_EXPORT_PLUGIN2(PIPiezoCtrlInterface, PIPiezoCtrlInterface)
 //! 
 /*!
     \detail This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
-	creates new instance of dialogPIPiezoCtrl, calls the method setVals of dialogPIPiezoCtrl, starts the execution loop and if the dialog
+    creates new instance of dialogPIPiezoCtrl, calls the method setVals of dialogPIPiezoCtrl, starts the execution loop and if the dialog
     is closed, reads the new parameter set and deletes the dialog.
 
     \return retOk
@@ -124,7 +124,7 @@ const ito::RetVal PIPiezoCtrl::showConfDialog(void)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
-	with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the PIPiezoCtrl::init. The widged window is created at this position.
+    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt) by the PIPiezoCtrl::init. The widged window is created at this position.
 */
 PIPiezoCtrl::PIPiezoCtrl() :
     AddInActuator(),
@@ -137,8 +137,8 @@ PIPiezoCtrl::PIPiezoCtrl() :
 {
     ito::Param paramVal("name", ito::ParamBase::String, "PIPiezoCtrl", NULL);
     m_params.insert(paramVal.getName(), paramVal);
-	
-	m_scale = 1e3; // PI is programmed in µm, this evil Programm sents in mm
+    
+    m_scale = 1e3; // PI is programmed in µm, this evil Programm sents in mm
     m_async = 0;
     m_delayProp = 0.5; //s
     m_delayOffset = 0.02; //s
@@ -196,11 +196,11 @@ PIPiezoCtrl::PIPiezoCtrl() :
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail It is used to set the parameter of type int/double with key "name" stored in m_params and the corresponding member variabels. 
-			This function is defined by the actuator class and overwritten at this position.
+            This function is defined by the actuator class and overwritten at this position.
 
-	\param[in] *name		Name of parameter
-	\param[out] val			New parameter value as double
-	\param[in/out] *waitCond	Waitcondition between this thread and the callers tread
+    \param[in] *name        Name of parameter
+    \param[out] val            New parameter value as double
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
 
     \return retOk
 */
@@ -255,9 +255,9 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
         case E662Family:
             retValue += PISendQuestionWithAnswerString("SYST:DEV:CONT?", answerString, 400);
             break;
-		case E625Family:
-			retValue += ito::RetVal(ito::retError, 3, tr("this device has no local/remote switch").toAscii().data());
-			break;
+        case E625Family:
+            retValue += ito::RetVal(ito::retError, 3, tr("this device has no local/remote switch").toAscii().data());
+            break;
         default:
             retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toAscii().data());
             break;
@@ -288,8 +288,8 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
             retValue += PISendQuestionWithAnswerDouble("SOUR:POS:LIM:LOW?", answerDouble, 400);
             m_params["posLimitLow"].setVal<double>(answerDouble/1000.0);
             break;
-		case E625Family:
-			break;
+        case E625Family:
+            break;
 
         default:
             retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toAscii().data());
@@ -313,8 +313,8 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
             retValue += PISendQuestionWithAnswerDouble("SOUR:POS:LIM:HIGH?", answerDouble, 400);
             m_params["posLimitHigh"].setVal<double>(answerDouble/1000.0);
             break;
-		case E625Family:
-			break;
+        case E625Family:
+            break;
         default:
             retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toAscii().data());
             break;
@@ -350,13 +350,13 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail It is used to set the parameter of type char* with key "name" stored in m_params and the corresponding member variabels. 
-			This function is defined by the actuator class and overwritten at this position.
-			If the "ctrl-type" is set, PIPiezoCtrl::PISwitchType is executed.
+            This function is defined by the actuator class and overwritten at this position.
+            If the "ctrl-type" is set, PIPiezoCtrl::PISwitchType is executed.
 
-	\param[in] *name		Name of parameter
-	\param[in] *val			String with parameter
-	\param[in] len			Length of the string
-	\param[in/out] *waitCond	Waitcondition between this thread and the callers tread
+    \param[in] *name        Name of parameter
+    \param[in] *val            String with parameter
+    \param[in] len            Length of the string
+    \param[in/out] *waitCond    Waitcondition between this thread and the callers tread
 
     \return retOk
 */
@@ -414,20 +414,20 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
                 goto end;
             }
-			else if (val->isNumeric() && paramIt->isNumeric())
-			{
-				double curval = val->getVal<double>();
-				if (curval > paramIt->getMax())
-				{
-				    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+            else if (val->isNumeric() && paramIt->isNumeric())
+            {
+                double curval = val->getVal<double>();
+                if (curval > paramIt->getMax())
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
                     goto end;
-				}
-				else if (curval < paramIt->getMin())
-				{
-				    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                }
+                else if (curval < paramIt->getMin())
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
                     goto end;
-				}
-				else if (paramName == "local")
+                }
+                else if (paramName == "local")
                 {
                     if (m_params["hasLocalRemote"].getVal<int>() > 0)
                     {
@@ -497,19 +497,19 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                     m_useOnTarget = m_params["fastMode"].getVal<int>() > 2 ? false : true;
                 }
                 else
-				{
-				    paramIt.value().setVal<double>(curval);
-				}
-			}
+                {
+                    paramIt.value().setVal<double>(curval);
+                }
+            }
             else if (paramIt->getType() == val->getType())
-			{
-				retValue += paramIt.value().copyValueFrom(&(*val));
-			}
-			else
-			{
-				retValue += ito::RetVal(ito::retError, 0, tr("Given parameter and m_param do not have the same type").toAscii().data());
-				goto end;
-			}
+            {
+                retValue += paramIt.value().copyValueFrom(&(*val));
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("Given parameter and m_param do not have the same type").toAscii().data());
+                goto end;
+            }
         }
         else
         {
@@ -536,7 +536,7 @@ end:
     \param [in] paramsMand is a pointer to the vector of mandatory tParams.
     \param [in] paramsOpt is a pointer to the vector of optional tParams.
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-	\todo check if (*paramsMand)[0] is a serial port
+    \todo check if (*paramsMand)[0] is a serial port
     \return retOk
 */
 ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, ItomSharedSemaphore *waitCond)
@@ -544,7 +544,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
-	int keepSerialConfig = paramsOpt->at(0).getVal<int>(); //0: PIIdentifyAndInitializeSystem will overwrite the parameters of the serial device [default], else: let it like it is!
+    int keepSerialConfig = paramsOpt->at(0).getVal<int>(); //0: PIIdentifyAndInitializeSystem will overwrite the parameters of the serial device [default], else: let it like it is!
 
 //    m_pSer = qobject_cast<ito::AddInDataIO*>(reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>()));
 //    if (m_pSer)
@@ -588,7 +588,7 @@ ito::RetVal PIPiezoCtrl::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
-	retval += PISetOperationMode(true); //reset to local mode
+    retval += PISetOperationMode(true); //reset to local mode
 
     if (waitCond)
     {
@@ -601,7 +601,7 @@ ito::RetVal PIPiezoCtrl::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail This function executes a calibration routine for one axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
-	\param [in] axis	Number of axis to calibrate
+    \param [in] axis    Number of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk
     \sa ItomSharedSemaphore
@@ -614,14 +614,14 @@ ito::RetVal PIPiezoCtrl::calib(const int axis, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail This function executes a calibration routine for a set of axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
-	\param [in] axis	Vector this numbers of axis to calibrate
+    \param [in] axis    Vector this numbers of axis to calibrate
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk
     \sa ItomSharedSemaphore
 */
 ito::RetVal PIPiezoCtrl::calib(const QVector<int> /*axis*/, ItomSharedSemaphore *waitCond)
 {
-	ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("not implemented").toAscii().data());
+    ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("not implemented").toAscii().data());
 
     if (waitCond)
     {
@@ -634,7 +634,7 @@ ito::RetVal PIPiezoCtrl::calib(const QVector<int> /*axis*/, ItomSharedSemaphore 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail This function sets the zero position of a single axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
-	\param [in] axis	numbers of axis to set to zero
+    \param [in] axis    numbers of axis to set to zero
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk
     \sa ItomSharedSemaphore
@@ -647,7 +647,7 @@ ito::RetVal PIPiezoCtrl::setOrigin(const int axis, ItomSharedSemaphore * /*waitC
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail This function sets the zero position of various axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
 
-	\param [in] axis	Vector with numbers of axis to set to zero
+    \param [in] axis    Vector with numbers of axis to set to zero
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk
     \sa ItomSharedSemaphore
@@ -667,10 +667,10 @@ ito::RetVal PIPiezoCtrl::setOrigin(QVector<int> /*axis*/, ItomSharedSemaphore *w
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail This function gets the status of the device. The PIStatus function is called internally.
 
-	\param [out] status		Status of System. 0: okay, 1: error
+    \param [out] status        Status of System. 0: okay, 1: error
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk
-	\todo define the status value
+    \todo define the status value
 */
 ito::RetVal PIPiezoCtrl::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
 {
@@ -689,8 +689,8 @@ ito::RetVal PIPiezoCtrl::getStatus(QSharedPointer<QVector<int> > status, ItomSha
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Get the Position of a single axis spezified by axis. The value in device independet in mm.
 
-	\param [in] axis		Axisnumber
-	\param [out] pos		Current position in mm
+    \param [in] axis        Axisnumber
+    \param [out] pos        Current position in mm
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk
 */
@@ -698,19 +698,19 @@ ito::RetVal PIPiezoCtrl::getPos(const int axis, QSharedPointer<double> pos, Itom
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     double axpos = 0.0;
-	
+    
     ito::RetVal retval = ito::retOk;
 
-	if (axis != 0)
-	{
+    if (axis != 0)
+    {
         retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toAscii().data());
     }
     else
-	{
+    {
         retval += this->PISendQuestionWithAnswerDouble(m_PosQust, axpos, 200);
-		*pos = (double)axpos / 1000;
+        *pos = (double)axpos / 1000;
         m_currentPos[0] = *pos;
-	}
+    }
 
     if (waitCond)
     {
@@ -722,27 +722,27 @@ ito::RetVal PIPiezoCtrl::getPos(const int axis, QSharedPointer<double> pos, Itom
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Get the Position of a set of axis spezified by "axis". The value in device independet in mm. 
-			In this case if more than one axis is specified this function returns an error.
+            In this case if more than one axis is specified this function returns an error.
 
-	\param [in] axis		Vector with axis numbers
-	\param [out] pos		Current positions in mm
+    \param [in] axis        Vector with axis numbers
+    \param [out] pos        Current positions in mm
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk
 */
 ito::RetVal PIPiezoCtrl::getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retval = ito::retOk;
-	QSharedPointer<double> sharedpos = QSharedPointer<double>(new double);
+    ito::RetVal retval = ito::retOk;
+    QSharedPointer<double> sharedpos = QSharedPointer<double>(new double);
 
-	if ((axis.size() == 1) && (axis.value(0) == 0))
-	{
-		retval +=getPos(axis.value(0),sharedpos,0);
-		(*pos)[0] = *sharedpos;
+    if ((axis.size() == 1) && (axis.value(0) == 0))
+    {
+        retval +=getPos(axis.value(0),sharedpos,0);
+        (*pos)[0] = *sharedpos;
         m_currentPos[0] = *sharedpos;
-	}
-	else
-	{
+    }
+    else
+    {
         retval +=ito::RetVal(ito::retError, 0, tr("Error. Too many Axis / wrong Axis").toAscii().data());
     }
     if (waitCond)
@@ -756,31 +756,31 @@ ito::RetVal PIPiezoCtrl::getPos(const QVector<int> axis, QSharedPointer<QVector<
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
-			This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
+            This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
-	\param [in] axis	axis number
-	\param [in] pos		absolute target position in mm
+    \param [in] axis    axis number
+    \param [in] pos        absolute target position in mm
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-	\sa PISetPos
+    \sa PISetPos
     \return retOk
 */
 ito::RetVal PIPiezoCtrl::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retval = ito::retOk;
-	double target_posMM = pos;
+    double target_posMM = pos;
     retval = PISetPos(axis, target_posMM, false, waitCond);
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
-			If the size of the vector is more then 1 element, this function returns an error.
-			This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
+            If the size of the vector is more then 1 element, this function returns an error.
+            This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
-	\param [in] axis	1 Element Vector with axis numbers
-	\param [in] pos		1 Element Vector with absolute positions in mm
+    \param [in] axis    1 Element Vector with axis numbers
+    \param [in] pos        1 Element Vector with absolute positions in mm
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-	\sa PISetPos
+    \sa PISetPos
     \return retOk
 */
 ito::RetVal PIPiezoCtrl::setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
@@ -788,32 +788,32 @@ ito::RetVal PIPiezoCtrl::setPosAbs(const QVector<int> axis, QVector<double> pos,
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
 
-	if (axis.size() > 1)
-	{
-		retval += ito::RetVal(ito::retError, 0, tr("Too many axis. This is currently a single axis device").toAscii().data());
+    if (axis.size() > 1)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Too many axis. This is currently a single axis device").toAscii().data());
 
         if (waitCond)
         {
             waitCond->returnValue = retval;
             waitCond->release();
         }
-	}
-	else
-	{
-		retval += setPosAbs(axis[0], pos[0], waitCond);
-	}
+    }
+    else
+    {
+        retval += setPosAbs(axis[0], pos[0], waitCond);
+    }
 
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Set the relativ position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
-			This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
+            This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
-	\param [in] axis	axis number
-	\param [in] pos		relative target position in mm
+    \param [in] axis    axis number
+    \param [in] pos        relative target position in mm
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-	\sa PISetPos
+    \sa PISetPos
     \return retOk
 */
 ito::RetVal PIPiezoCtrl::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
@@ -827,62 +827,62 @@ ito::RetVal PIPiezoCtrl::setPosRel(const int axis, const double pos, ItomSharedS
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Set the absolute position of a number of axis spezified by "axis" to the position "pos" . The value in device independet in mm.
-			If the size of the vector is more then 1 element, this function returns an error.
-			This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
+            If the size of the vector is more then 1 element, this function returns an error.
+            This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
 
-	\param [in] axis	1 Element Vector with axis numbers
-	\param [in] pos		1 Element Vector with relative positions in mm
+    \param [in] axis    1 Element Vector with axis numbers
+    \param [in] pos        1 Element Vector with relative positions in mm
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-	\sa PISetPos
+    \sa PISetPos
     \return retOk
 */
 ito::RetVal PIPiezoCtrl::setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
-	
-	if (axis.size() > 1)
-	{
-		retval += ito::RetVal(ito::retError, 0, tr("Too many axis. This is currently a single axis device.").toAscii().data());
+    
+    if (axis.size() > 1)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Too many axis. This is currently a single axis device.").toAscii().data());
         if (waitCond)
         {
             waitCond->returnValue = retval;
             waitCond->release();
         }
-	}
-	else
-	{
-		retval += setPosRel(axis[0], pos[0], waitCond);
-	}
+    }
+    else
+    {
+        retval += setPosRel(axis[0], pos[0], waitCond);
+    }
     
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
-			It sends the current postion and the status to the world.
+            It sends the current postion and the status to the world.
 
-	\sa PISetPos
+    \sa PISetPos
     \return retOk
 */
 ito::RetVal PIPiezoCtrl::RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos)
 {
     ito::RetVal retval(ito::retOk);
 
-	QSharedPointer<double> sharedpos = QSharedPointer<double>(new double);
-	*sharedpos = 0.0;
+    QSharedPointer<double> sharedpos = QSharedPointer<double>(new double);
+    *sharedpos = 0.0;
 
-	retval += PICheckStatus();
+    retval += PICheckStatus();
 
     if (sendActPosition)
     {
-	    retval += getPos(0,sharedpos,0);
-		m_currentPos[0] = *sharedpos;
+        retval += getPos(0,sharedpos,0);
+        m_currentPos[0] = *sharedpos;
 
-		if (std::abs(*sharedpos-m_targetPos[0]) > 0.01)
-		{
-			m_targetPos[0] = *sharedpos;
-		}
-		
+        if (std::abs(*sharedpos-m_targetPos[0]) > 0.01)
+        {
+            m_targetPos[0] = *sharedpos;
+        }
+        
         sendStatusUpdate(false);
     }
     else
@@ -895,7 +895,7 @@ ito::RetVal PIPiezoCtrl::RequestStatusAndPosition(bool sendActPosition, bool sen
         sendTargetUpdate();
     }
 
-	return retval;
+    return retval;
 
 }
 
@@ -1045,7 +1045,7 @@ ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutM
                 }
             }
 
-			//qDebug() << "readString. done: "<<done<<", tempResult: "<<result;
+            //qDebug() << "readString. done: "<<done<<", tempResult: "<<result;
 
             if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
             {
@@ -1165,24 +1165,24 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
 
 ito::RetVal PIPiezoCtrl::PISendCommand(QByteArray command)
 {
-	ito::RetVal retVal = m_pSer->setVal(command.data(), command.length(), NULL);
-	if (m_delayAfterSendCommandMS > 0)
-	{
-		QMutex mutex;
-		mutex.lock();
-		QWaitCondition waitCondition;
-		waitCondition.wait(&mutex,m_delayAfterSendCommandMS);
-		mutex.unlock();
-	}
-	return retVal;
+    ito::RetVal retVal = m_pSer->setVal(command.data(), command.length(), NULL);
+    if (m_delayAfterSendCommandMS > 0)
+    {
+        QMutex mutex;
+        mutex.lock();
+        QWaitCondition waitCondition;
+        waitCondition.wait(&mutex,m_delayAfterSendCommandMS);
+        mutex.unlock();
+    }
+    return retVal;
 }
 
 /*!
     \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string. 
-			If string is invalid, val is not set and error-message is reported
-	\param[in] *buf		Answer-String
-	\param[out] val		double Value
-	\sa PIPiezoCtrl::PIGetDouble
+            If string is invalid, val is not set and error-message is reported
+    \param[in] *buf        Answer-String
+    \param[out] val        double Value
+    \sa PIPiezoCtrl::PIGetDouble
     \return retOk
 */
 ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(QByteArray questionCommand, double &answer, int timeoutMS)
@@ -1212,10 +1212,10 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(QByteArray questionComma
 
 /*!
     \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string. 
-			If string is invalid, val is not set and error-message is reported
-	\param[out] *buf		Answer-String
-	\param[in] bufsize		Number of signs to read
-	\param[out] readsigns	Number of read signs
+            If string is invalid, val is not set and error-message is reported
+    \param[out] *buf        Answer-String
+    \param[in] bufsize        Number of signs to read
+    \param[out] readsigns    Number of read signs
     \return retOk
 */
 ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerString(QByteArray questionCommand, QByteArray &answer, int timeoutMS)
@@ -1262,39 +1262,39 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 //    retval += PIDummyRead();
 
     //set serial settings
-	if (keepSerialConfig == 0)
-	{
-		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud",ito::ParamBase::Int,9600)),NULL);
-		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits",ito::ParamBase::Int,8)),NULL);
-		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity",ito::ParamBase::Double,0.0)),NULL);
-		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",ito::ParamBase::Int,1)),NULL);
-		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,108)),NULL);
-		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\n")),NULL);
-	}
+    if (keepSerialConfig == 0)
+    {
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud",ito::ParamBase::Int,9600)),NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits",ito::ParamBase::Int,8)),NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity",ito::ParamBase::Double,0.0)),NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",ito::ParamBase::Int,1)),NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,108)),NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\n")),NULL);
+    }
 
     //1. try to read *idn? in order to indentify device
     retval += PISendQuestionWithAnswerString("*idn?", answer, 1500);
     if (retval.containsError() || answer.length() < 5)
     {
-		//clear error-queue
-		PIGetLastErrors(lastErrors);
-		lastErrors.clear();
-		m_delayAfterSendCommandMS = 2; //small delay after sendCommands (else sometimes the controller didn't not understand the commands)
-		retval = ito::retOk;
-	}
+        //clear error-queue
+        PIGetLastErrors(lastErrors);
+        lastErrors.clear();
+        m_delayAfterSendCommandMS = 2; //small delay after sendCommands (else sometimes the controller didn't not understand the commands)
+        retval = ito::retOk;
+    }
 
     //2. try to read *idn? in order to indentify device
     retval += PISendQuestionWithAnswerString("*idn?", answer, 1500);
     if (retval.containsError() || answer.length() < 5)
     {
         retval = ito::retOk;
-		if (keepSerialConfig == 0)
-		{
-			//try to set baudrate to 115200
-			retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 115200)), NULL);
-			retval += PISendQuestionWithAnswerString("*idn?", answer, 1500);
-		}
-		m_delayAfterSendCommandMS = 5; //small delay after sendCommands (else sometimes the controller didn't not understand the commands)
+        if (keepSerialConfig == 0)
+        {
+            //try to set baudrate to 115200
+            retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 115200)), NULL);
+            retval += PISendQuestionWithAnswerString("*idn?", answer, 1500);
+        }
+        m_delayAfterSendCommandMS = 5; //small delay after sendCommands (else sometimes the controller didn't not understand the commands)
     }
 
     if (retval.containsError() || answer.length() < 5)
@@ -1302,20 +1302,20 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         retval = ito::RetVal(ito::retError, 0, tr("could not identify controller. No answer for command *idn?").toAscii().data());
         return retval;
     }
-	else
-	{
-		QSharedPointer<ito::Param> param(new ito::Param("port"));
-		retval += m_pSer->getParam(param, NULL);
-		if (retval.containsError() || param->getVal<int>() < 1)
-		{
-			retval = ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toAscii().data());
-			return retval;
-		}
-		else
-		{
-			m_params["comPort"].setVal<int>(param->getVal<int>()); 
-		}
-	}
+    else
+    {
+        QSharedPointer<ito::Param> param(new ito::Param("port"));
+        retval += m_pSer->getParam(param, NULL);
+        if (retval.containsError() || param->getVal<int>() < 1)
+        {
+            retval = ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toAscii().data());
+            return retval;
+        }
+        else
+        {
+            m_params["comPort"].setVal<int>(param->getVal<int>()); 
+        }
+    }
 
     //clear error-queue
     PIGetLastErrors(lastErrors);
@@ -1382,8 +1382,8 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         }
 
         m_AbsPosCmd = "MOV A";
-		m_RelPosCmd = "MVR A";
-		m_PosQust = "POS? A";
+        m_RelPosCmd = "MVR A";
+        m_PosQust = "POS? A";
 
         m_params["hasLocalRemote"].setVal<int>(0.0);
         m_hasHardwarePositionLimit = false;
@@ -1444,24 +1444,24 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm. 
-			If the axisnumber is not 0, this function returns an error.
+            If the axisnumber is not 0, this function returns an error.
 
-	\param [in] axis		axis number
-	\param [in] dpos		target position in mm
+    \param [in] axis        axis number
+    \param [in] dpos        target position in mm
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk
 */
 ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond)
 {
-    double dpos_temp = posMM * 1e3;	// Round value by m_scale
-	ito::RetVal retval = ito::retOk;
+    double dpos_temp = posMM * 1e3;    // Round value by m_scale
+    ito::RetVal retval = ito::retOk;
     bool released = false;
     bool outOfRange = false;
     int delayTimeMS = 0;
     QByteArray cmdTotal;
 
-	if (axis != 0)
-	{
+    if (axis != 0)
+    {
         retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toAscii().data());
 
         if (waitCond && !released)
@@ -1472,8 +1472,8 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
         }
     }
     else
-	{
-		retval += PIDummyRead();
+    {
+        retval += PIDummyRead();
 
         delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + abs(posMM) * m_delayProp /*in seconds/mm*/ * 1000.0;
 
@@ -1515,7 +1515,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
 
             sendTargetUpdate();
             retval += PISendCommand(cmdTotal);
-			retval += PIDummyRead();
+            retval += PIDummyRead();
         }
 
         QVector< QPair<int, QByteArray> > lastErrors;
@@ -1526,13 +1526,13 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
             retval += convertPIErrorsToRetVal(lastErrors);
         }
 
-		if (retval.containsError() && retval.errorCode() == PI_READTIMEOUT)
-		{
-			retval = ito::RetVal(ito::retOk);
-			retval += PIDummyRead();
-			retval += PIGetLastErrors(lastErrors);
-			retval += convertPIErrorsToRetVal(lastErrors);
-		}
+        if (retval.containsError() && retval.errorCode() == PI_READTIMEOUT)
+        {
+            retval = ito::RetVal(ito::retOk);
+            retval += PIDummyRead();
+            retval += PIGetLastErrors(lastErrors);
+            retval += convertPIErrorsToRetVal(lastErrors);
+        }
         
         if (!retval.containsError())
         {
@@ -1567,7 +1567,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
                 released = true;
             }
         }
-	}
+    }
     return retval;
 }
 
@@ -1579,7 +1579,7 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
     QWaitCondition waitCondition;
     bool atTarget = false;
     double answerDbl;
-	int timeoutMS_ = timeoutMS;
+    int timeoutMS_ = timeoutMS;
     QSharedPointer<double> actPos = QSharedPointer<double>(new double);
 
     if (m_params["hasOnTargetFlag"].getVal<int>() > 0.0 && m_useOnTarget)

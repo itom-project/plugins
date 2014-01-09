@@ -24,7 +24,7 @@ class DialogPIPiezoCtrl : public QDialog
 
     public:
         DialogPIPiezoCtrl(ito::AddInActuator *motor);
-		~DialogPIPiezoCtrl() {};
+        ~DialogPIPiezoCtrl() {};
 
     private:
         void enableDialog(bool enabled);

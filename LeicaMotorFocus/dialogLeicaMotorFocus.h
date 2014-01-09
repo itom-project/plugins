@@ -14,7 +14,7 @@ class DialogLeicaMotorFocus : public QDialog
 
     private:
         Ui::dialogLeicaMotorFocus ui;
-		QObject *m_pluginInstance;
+        QObject *m_pluginInstance;
 
         bool m_unappliedChanges;
 
@@ -22,7 +22,7 @@ class DialogLeicaMotorFocus : public QDialog
 
     public:
         DialogLeicaMotorFocus(QObject *pluginInstance);
-		~DialogLeicaMotorFocus() {};
+        ~DialogLeicaMotorFocus() {};
 
         ito::RetVal applyParameters();
 
@@ -39,7 +39,7 @@ class DialogLeicaMotorFocus : public QDialog
         void on_checkInvertAxis_stateChanged(int) { m_unappliedChanges = true; }
         void on_radioRefUpper_toggled(bool) { m_unappliedChanges = true; }
         void on_radioRefLower_toggled(bool) { m_unappliedChanges = true; }
-		void on_cmdOk_clicked();
+        void on_cmdOk_clicked();
 
 
 

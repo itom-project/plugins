@@ -10,23 +10,23 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class	GWInstekPSP 
-  *\brief	This class can be used to communicate with PSP-405, PSP-603 and PSP-2010
+  *\class    GWInstekPSP 
+  *\brief    This class can be used to communicate with PSP-405, PSP-603 and PSP-2010
   *
   *         This class can be used to work with PSP-405, PSP-603 and PSP-2010.
-  *			This system needs a serial port which following settings:
-  *			baud = 2400
-  *			bits = 8
-  *			parity = 0
-  *			stopbits = 1
-  *			flow = 16 (dtr = enabled)
-  *			endline = "\r"
+  *            This system needs a serial port which following settings:
+  *            baud = 2400
+  *            bits = 8
+  *            parity = 0
+  *            stopbits = 1
+  *            flow = 16 (dtr = enabled)
+  *            endline = "\r"
   *
   * \todo write driver
-  *	\sa	SerialIO, AddInActuator, DummyMotor, dialogGWInstekPSP, DockWidgetGWInstekPSP
-  *	\date	25.11.2011
-  *	\author	Heiko Bieger
-  * \warning	NA
+  *    \sa    SerialIO, AddInActuator, DummyMotor, dialogGWInstekPSP, DockWidgetGWInstekPSP
+  *    \date    25.11.2011
+  *    \author    Heiko Bieger
+  * \warning    NA
   *
   */
 class GWInstekPSP : public ito::AddInDataIO 
@@ -40,12 +40,12 @@ class GWInstekPSP : public ito::AddInDataIO
     public:
         friend class GWInstekPSPInterface;
         friend class dialogGWInstekPSP;
-		const ito::RetVal showConfDialog(void);	/*!<shows the configuration dialog*/
+        const ito::RetVal showConfDialog(void);    /*!<shows the configuration dialog*/
         int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
 
     private:
         ito::AddInDataIO *m_pSer;
-		char m_status[38];		//! Contains status string [Vvv.vvAa.aaaWwww.wUuuIi.iiPpppFffffff]
+        char m_status[38];        //! Contains status string [Vvv.vvAa.aaaWwww.wUuuIi.iiPpppFffffff]
 //                                                          0000000000111111111122222222223333333
 //                                                          0123456789012345678901234567890123456
 
@@ -71,14 +71,14 @@ class GWInstekPSP : public ito::AddInDataIO
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class	GWInstekPSPInterface 
+  *\class    GWInstekPSPInterface 
   *
-  *\brief	Interface-Class for GWInstekPSPInterface-Class
+  *\brief    Interface-Class for GWInstekPSPInterface-Class
   *
-  *	\sa	AddInActuator, GWInstekPSP
-  *	\date	11.10.2010
-  *	\author	Wolfram Lyda
-  * \warning	NA
+  *    \sa    AddInActuator, GWInstekPSP
+  *    \date    11.10.2010
+  *    \author    Wolfram Lyda
+  * \warning    NA
   *
   */
 class GWInstekPSPInterface : public ito::AddInInterfaceBase

@@ -2,13 +2,13 @@
 
  DockWidgetCMU1394::DockWidgetCMU1394(QMap<QString, ito::Param> params, int uniqueID) :updating(0)
  {
-	ui.setupUi(this); 
+    ui.setupUi(this); 
     
     char* temp = params["name"].getVal<char*>(); //borrowed reference
-//	ui.lblName->setText(temp);
-	ui.lblID->setText(QString::number(uniqueID));
+//    ui.lblName->setText(temp);
+    ui.lblID->setText(QString::number(uniqueID));
 
-	valuesChanged(params);
+    valuesChanged(params);
  }
 
  void DockWidgetCMU1394::valuesChanged(QMap<QString, ito::Param> params)
@@ -26,7 +26,7 @@
     if (!updating)
     {
         updating = 1;
-	    ui.doubleSpinBoxOffset->setValue(offset);
+        ui.doubleSpinBoxOffset->setValue(offset);
         ui.doubleSpinBoxGain->setValue(gain);
 
         ui.horizontalSliderGain->setValue((int)(gain*100+0.5));
@@ -84,7 +84,7 @@ void DockWidgetCMU1394::on_horizontalSliderGain_valueChanged(int Value)
     {
         updating = 1;
         ui.doubleSpinBoxGain->setValue(gain);
-	    emit changeParameters(paramsVals);
+        emit changeParameters(paramsVals);
         updating = 0;
     }
 }

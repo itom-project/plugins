@@ -29,13 +29,13 @@ class DockWidgetLeicaMotorFocus : public QWidget
 
         void setMotorStatus(bool busy);
 
-	signals:
-		void MoveRelative(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-		void MoveAbsolute(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-		void MotorTriggerStatusRequest(bool sendActPosition, bool sendTargetPos);
+    signals:
+        void MoveRelative(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
+        void MoveAbsolute(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
+        void MotorTriggerStatusRequest(bool sendActPosition, bool sendTargetPos);
 
-	public slots:
-		void valuesChanged(QMap<QString, ito::Param> params);
+    public slots:
+        void valuesChanged(QMap<QString, ito::Param> params);
 
         void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition); //!< slot to receive information about status and position changes.
         void targetChanged(QVector<double> targetPositions);

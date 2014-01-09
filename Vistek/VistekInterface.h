@@ -22,8 +22,8 @@ class VistekInterface : public ito::AddInInterfaceBase
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
 
-		//! auto-increment, static instance counter for all dummy-grabber instances
-		static int m_instCounter;
+        //! auto-increment, static instance counter for all dummy-grabber instances
+        static int m_instCounter;
 };
 
 #endif // VISTEKINTERFACE_H

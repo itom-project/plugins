@@ -6,12 +6,12 @@
 
 void DialogVistek::valuesChanged(QMap<QString, ito::Param> params)
 {
-	m_params = params;
+    m_params = params;
 
     setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
     // added by itobiege, Mar. 2013, but not tested!
 
-	//adapt values of ui-elements to values given in params.
+    //adapt values of ui-elements to values given in params.
 }
 
 void DialogVistek::sendVals(ito::AddInGrabber *receiverGrabber)

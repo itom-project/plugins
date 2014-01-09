@@ -21,12 +21,12 @@
 
     const GLint POSITION = 0;
     GLsizei const ElementCount = 4;
-	
-	//! fragment and vertex shaders for gl v2 and gl v3
-	//! the fragment shader multiplies input vertices with the transformation matrix MVP, the
-	//! fragment shader calculates the texture pixel (and color) for each pixel. In addition a 
-	//! gamma correction can be applied using a simple lookup vektor (lutarr)
-	
+    
+    //! fragment and vertex shaders for gl v2 and gl v3
+    //! the fragment shader multiplies input vertices with the transformation matrix MVP, the
+    //! fragment shader calculates the texture pixel (and color) for each pixel. In addition a 
+    //! gamma correction can be applied using a simple lookup vektor (lutarr)
+    
     const char *VERTEX_SHADER_SOURCE = "  \
     #version 110                    \n\
                                     \
@@ -36,7 +36,7 @@
                                     \
     void main()                     \
     {                               \
-        gl_Position = MVP * vec4(position.xy, 0.0, 1.0);	\
+        gl_Position = MVP * vec4(position.xy, 0.0, 1.0);    \
         TexCoord = position.zw;     \
     }                               \
     ";
@@ -49,8 +49,8 @@
     out vec2 TexCoord;              \
                                     \
     void main()                     \
-    {	                            \
-        gl_Position = MVP * vec4(position.xy, 0.0, 1.0);	\
+    {                                \
+        gl_Position = MVP * vec4(position.xy, 0.0, 1.0);    \
         TexCoord = position.zw;     \
     }                               \
     ";
@@ -84,12 +84,12 @@
     uniform sampler2D texture;          \
     uniform int gamma;                  \
     uniform mat4 color;                 \
-    in vec2 TexCoord;					\
+    in vec2 TexCoord;                    \
     uniform vec3 lutarr[256];           \
-    out vec4 FragColor;					\
+    out vec4 FragColor;                    \
                                         \
-    void main()	                        \
-    {	                                \
+    void main()                            \
+    {                                    \
         if (gamma == 0)                 \
         {                               \
             FragColor = color * texture2D(texture, TexCoord); \
@@ -97,7 +97,7 @@
         else                            \
         {                               \
             int col = int(texture2D(texture, TexCoord).r * 255.0);  \
-            FragColor = color * vec4(lutarr[col], 1.0);				\
+            FragColor = color * vec4(lutarr[col], 1.0);                \
         }                               \
     }                                   \
     ";
@@ -105,15 +105,15 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 /** initialize openGL (below version two - i.e. using static pipelines)
-*	@param [in]	width	window width
-*	@param [in] height	window height
-*	@return		zero for no error, openGL error code otherwise
+*    @param [in]    width    window width
+*    @param [in] height    window height
+*    @return        zero for no error, openGL error code otherwise
 */
 int initOGL2(const int width, const int height)
 {
     int ret = 0;
 
-    glMatrixMode(GL_PROJECTION);					//Projektionsmatrix wählen
+    glMatrixMode(GL_PROJECTION);                    //Projektionsmatrix wählen
     glLoadIdentity();
     gluOrtho2D(0, width, 0, height);
 
@@ -140,7 +140,7 @@ int initOGL2(const int width, const int height)
         pab[(int)i] = i / 255.0;// * (cosGraycode.color & 4) / 4.0;
     }
 
-//	glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &glval);
+//    glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &glval);
 
     glPixelMapfv(GL_PIXEL_MAP_I_TO_G, 256, pag);
     glPixelMapfv(GL_PIXEL_MAP_I_TO_R, 256, par);
@@ -171,19 +171,19 @@ int initOGL2(const int width, const int height)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** initialize openGL (above version two - i.e. using vertex and fragment shaders)
-*	@param [in]		glVer		openGL version
-*	@param [out] 	ProgramName		reference to shader program on the gpu
-*	@param [out]	UniformMVP		reference to transformation matrix on the gpu
-*	@param [out] 	UniformLut		reference to lookup table memory on the gpu
-*	@param [out] 	UniformGamma 	reference to gamma flag (gpu)
-*	@param [out]	UniformTexture 	reference to texture buffer (gpu)
-*	@param [out]	ArrayBufferName reference to array buffer (gpu)
-*	@param [out]	ElementBufferName reference to element buffer (array buffer alignment) (gpu) 
-*	@return		zero for no error, openGL error code otherwise
+*    @param [in]        glVer        openGL version
+*    @param [out]     ProgramName        reference to shader program on the gpu
+*    @param [out]    UniformMVP        reference to transformation matrix on the gpu
+*    @param [out]     UniformLut        reference to lookup table memory on the gpu
+*    @param [out]     UniformGamma     reference to gamma flag (gpu)
+*    @param [out]    UniformTexture     reference to texture buffer (gpu)
+*    @param [out]    ArrayBufferName reference to array buffer (gpu)
+*    @param [out]    ElementBufferName reference to element buffer (array buffer alignment) (gpu) 
+*    @return        zero for no error, openGL error code otherwise
 *
-*	the function tries to compile the vertex and fragment shader code and to link the shader program. Afterwards
-*	the variable positions for the parameters needed by the frag and vert shader are determined and returned.
-*	The lut and the transformation are preloaded with standard values (linear lut and unity matrix).
+*    the function tries to compile the vertex and fragment shader code and to link the shader program. Afterwards
+*    the variable positions for the parameters needed by the frag and vert shader are determined and returned.
+*    The lut and the transformation are preloaded with standard values (linear lut and unity matrix).
 */
 int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &UniformLut, GLint &UniformGamma,
         GLint &UniformTexture, GLint &UniformColor, GLuint &ArrayBufferName, GLuint &ElementBufferName)
@@ -349,17 +349,17 @@ int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &Uni
     GLsizei const VertexCount = 4;
     GLsizeiptr PositionSize = VertexCount * 4 * sizeof(GLfloat);
     GLfloat PositionData[VertexCount*2][2] = {
-        {-1.0f,-1.0f},	//Vertex
-        {0.0f, 1.0},	//Texture
+        {-1.0f,-1.0f},    //Vertex
+        {0.0f, 1.0},    //Texture
 
-        {1.0f,-1.0f},	//V
-        {1.0f, 1.0f},	//T
+        {1.0f,-1.0f},    //V
+        {1.0f, 1.0f},    //T
 
-        {1.0f, 1.0f},	//V
-        {1.0f, 0.0f},	//T
+        {1.0f, 1.0f},    //V
+        {1.0f, 0.0f},    //T
 
-        {-1.0f, 1.0f},	//V
-        {0.0f, 0.0f}	//T
+        {-1.0f, 1.0f},    //V
+        {0.0f, 0.0f}    //T
     };
 
     //!> create vertex buffer on device
@@ -465,7 +465,7 @@ PrjWindow::PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &f
         }
     }
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	//Screen und Tiefenpuffer leeren
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);    //Screen und Tiefenpuffer leeren
 
     if ((ret = glGetError()))
     {
@@ -519,7 +519,7 @@ void PrjWindow::paintGL()
     makeCurrent();
 
     // Set the display viewport
-//	glViewport(0, 0, width, height);
+//    glViewport(0, 0, width, height);
 //    ret = glGetError();
 
     if (m_imgNum == -1)
@@ -569,8 +569,8 @@ void PrjWindow::paintGL()
     }
     else
     {
-//        glClearColor(0.0f, 0.0f, 1.0f, 0.0f);	//black background
-//        glClear(GL_COLOR_BUFFER_BIT);	//clear screen buffer
+//        glClearColor(0.0f, 0.0f, 1.0f, 0.0f);    //black background
+//        glClear(GL_COLOR_BUFFER_BIT);    //clear screen buffer
 
         //!> Bind shader program
         glUseProgram(ProgramName);
@@ -1793,7 +1793,7 @@ ito::RetVal PrjWindow::setGamma(const int gamma)
             pab[(int)i] = m_lut[i] / 255.0;
         }
 
-    //	glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &glval);
+    //    glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &glval);
 
         glPixelMapfv(GL_PIXEL_MAP_I_TO_G, 256, pag);
         glPixelMapfv(GL_PIXEL_MAP_I_TO_R, 256, par);
@@ -1959,14 +1959,14 @@ ito::RetVal PrjWindow::showImageNum(const int num)
 //----------------------------------------------------------------------------------------------------------------------------------
 int PrjWindow::getOrientationClearedCurImg(void)
 {
-	if (m_orientation <= 0)
+    if (m_orientation <= 0)
     {
-		return m_imgNum;
+        return m_imgNum;
         
     }
     else
     {
-		return ( m_imgNum - (m_phaShift + m_grayBitsVert + 2) );
+        return ( m_imgNum - (m_phaShift + m_grayBitsVert + 2) );
     }
 }
 
@@ -2112,27 +2112,27 @@ ito::RetVal PrjWindow::configProjectionFull(int xpos, int sizex, int ypos, int s
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
-	ito::RetVal retval;
-	QFileInfo finfo(filename);
-	QDir filepath(finfo.canonicalPath());
-	
-	if (filepath.exists() == false)
-	{
-		retval += ito::RetVal::format(ito::retError,0,"folder '%s' does not exist", finfo.canonicalPath().toAscii().data());
-	}
-	else
-	{
-		paintGL();
-		QImage shot = grabFrameBuffer(false);
-		bool ok = shot.save(filepath.absoluteFilePath( finfo.fileName() ) );
+    ito::RetVal retval;
+    QFileInfo finfo(filename);
+    QDir filepath(finfo.canonicalPath());
+    
+    if (filepath.exists() == false)
+    {
+        retval += ito::RetVal::format(ito::retError,0,"folder '%s' does not exist", finfo.canonicalPath().toAscii().data());
+    }
+    else
+    {
+        paintGL();
+        QImage shot = grabFrameBuffer(false);
+        bool ok = shot.save(filepath.absoluteFilePath( finfo.fileName() ) );
 
-		if (!ok)
-		{
-			retval += ito::RetVal(ito::retError,0,"error while saving grabbed framebuffer");
-		}
-	}
+        if (!ok)
+        {
+            retval += ito::RetVal(ito::retError,0,"error while saving grabbed framebuffer");
+        }
+    }
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();

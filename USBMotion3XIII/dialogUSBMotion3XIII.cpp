@@ -1,11 +1,11 @@
 /**\file dialogDummyMotor.cpp
 * \brief In this file the functions of the modal dialog for the DummyMotor are specified
 *
-*	This file defines the functions of the dialogDummyMotor-Class defined in the file "dialogDummyMotor.h"
+*    This file defines the functions of the dialogDummyMotor-Class defined in the file "dialogDummyMotor.h"
 * 
 *\sa dialogDummyMotor, DummyMotor
 *\author Wolfram Lyda
-*\date	Oct2011
+*\date    Oct2011
 */
 
 #include "dialogUSBMotion3XIII.h"
@@ -14,14 +14,14 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @detail This function changes the values of the different GUI-elements according to the input paramVals
 *
-*\param[in] motor	A handle to the motor attached to this dialog
+*\param[in] motor    A handle to the motor attached to this dialog
 *\param[in] axisnums The number of axis this attached motor offer
 *
 *\sa DummyMotor
 */
 DialogUSBMotion3XIII::DialogUSBMotion3XIII(int uniqueID)
 {
-	ui.setupUi(this);
+    ui.setupUi(this);
 
     ui.lblID->setText(QString::number(uniqueID));
 };
@@ -29,7 +29,7 @@ DialogUSBMotion3XIII::DialogUSBMotion3XIII(int uniqueID)
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @detail This function changes the values of the different GUI-elements according to the input paramVals
 *
-*\param[in] paramVals	Parameterlist with Motorparamters (m_params)
+*\param[in] paramVals    Parameterlist with Motorparamters (m_params)
 *\warning If the Keywords (parameters) "speed" and "accel" do not exist in the Parameterlist and the find is not used , this will crash!!
 *\sa DummyMotor
 */
