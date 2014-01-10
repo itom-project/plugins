@@ -69,6 +69,9 @@ class AerotechEnsemble : public ito::AddInActuator
 
         QStringList m_axisNames;
 
+    signals:
+        void dockWidgetAerotechEnsembleInit(QMap<QString, ito::Param> params, QStringList m_axisNames);
+
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
@@ -89,7 +92,7 @@ class AerotechEnsemble : public ito::AddInActuator
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
 
     private slots:
-        void dockWidgetVisibilityChanged( bool visible );
+        void dockWidgetVisibilityChanged(bool visible);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

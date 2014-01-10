@@ -2,9 +2,71 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="de">
 <context>
+    <name>AerotechEnsemble</name>
+    <message>
+        <location filename="../aerotechEnsemble.cpp" line="+115"/>
+        <source>asynchronous move (1), synchronous (0) [default]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>speed of every axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+371"/>
+        <source>any axis is moving. Parameters cannot be set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+92"/>
+        <source>not supported yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>motor is running. Further action is not possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+68"/>
+        <source>axis index is out of bound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>at least one axis index is out of bound</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <location line="+88"/>
+        <source>Any motor axis is moving. The motor is locked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+106"/>
+        <source>interrupt occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>timeout occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AerotechEnsembleInterface</name>
+    <message>
+        <location line="-896"/>
+        <source>list of axes IDs that are enabled (0..9). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DialogUSBMotion3XIII</name>
     <message>
-        <location filename="../dialogUSBMotion3XIII.ui"/>
+        <location filename="../dialogAerotechEnsemble.ui"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -278,16 +340,11 @@
         <source>Properties for third motor</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../dialogUSBMotion3XIII.cpp" line="+42"/>
-        <source>Configuration Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>DockWidgetUSBMotion3XIII</name>
+    <name>DockWidgetAerotechEnsemble</name>
     <message>
-        <location filename="../dockWidgetUSBMotion3XIII.ui"/>
+        <location filename="../dockWidgetAerotechEnsemble.ui"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
@@ -410,13 +467,13 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../USBMotion3XIII.cpp" line="+98"/>
-        <source>A motor driver for the USB Motion 3x III card, COPTONIX GmbH, www.coptonix.com</source>
+        <location filename="../aerotechEnsemble.cpp" line="-12"/>
+        <source>Plugin for the Ensemble-controller of Aerotech</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>Licensed under LGPL</source>
+        <source>Licensed under LGPL, The Aerotech Ensemble library belongs to Aerotech under their specific license.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -426,429 +483,9 @@
     </message>
 </context>
 <context>
-    <name>USBMotion3XIII</name>
-    <message>
-        <location line="+239"/>
-        <source>indicates whether motor driver is connected (1) or not (0)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>serial number for this motor driver</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>product version for this motor driver</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>vendor name for this motor driver</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>product name for this motor driver</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>asynchronous move (1), synchronous (0) [default]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>number of full steps per turn of motor 1, 0: motor not connected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>minimal speed in degree per second of motor 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>maximal speed in degree per second of motor 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>maximal acceleration in degree/s^2 of motor 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coil current if acceleration is higher than coilCurrentThreshold1 [12.5%, 25%, ... 87.5%, 100%]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coil current if acceleration is lower than coilCurrentThreshold1 [12.5%, 25%, ... 87.5%, 100%]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coil current if motor 1 is in rest [12.5%, 25%, ... 87.5%, 100%]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <location line="+11"/>
-        <location line="+11"/>
-        <source>threshold acceleration for distinction between coilCurrentHigh and coilCurrentLow</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-21"/>
-        <source>determine if motor 1 is enabled (1) or disabled (0). If disabled, this motor is manually moveable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>micro steps for motor 1 [1,2,4,8,16,32,64]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>number of full steps per turn of motor 2, 0: motor not connected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>minimal speed in degree per second of motor 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>maximal speed in degree per second of motor 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>maximal acceleration in degree/s^2 of motor 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coil current if acceleration is higher than coilCurrentThreshold2 [12.5%, 25%, ... 87.5%, 100%]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coil current if acceleration is lower than coilCurrentThreshold2 [12.5%, 25%, ... 87.5%, 100%]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coil current if motor 2 is in rest [12.5%, 25%, ... 87.5%, 100%]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>determine if motor 2 is enabled (1) or disabled (0). If disabled, this motor is manually moveable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>micro steps for motor 2 [1,2,4,8,16,32,64]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>number of full steps per turn of motor 3, 0: motor not connected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>minimal speed in degree per second of motor 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>maximal speed in degree per second of motor 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>maximal acceleration in degree/s^2 of motor 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coil current if acceleration is higher than coilCurrentThreshold3 [12.5%, 25%, ... 87.5%, 100%]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coil current if acceleration is lower than coilCurrentThreshold3 [12.5%, 25%, ... 87.5%, 100%]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coil current if motor 3 is in rest [12.5%, 25%, ... 87.5%, 100%]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>determine if motor 3 is enabled (1) or disabled (0). If disabled, this motor is manually moveable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>micro steps for motor 3 [1,2,4,8,16,32,64]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+33"/>
-        <source>DLL USB3xIII.dll not loaded</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>motor driver not connected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>driver error: %1 [%2]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+168"/>
-        <source>DLL USB3xIII.dll (USB3xIII64.dll for 64bit) not loaded</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>no motor driver devices are currently connected to this PC</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+28"/>
-        <source>device could not be opened</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+133"/>
-        <source>device could not be closed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <location line="+108"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-82"/>
-        <source>Motor is moving. Parameters cannot be set.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>name of given parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>this parameter is only readable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>async parameter needs value 0 or 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+52"/>
-        <source>given parameter and m_param do not have the same type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <location line="+53"/>
-        <location line="+102"/>
-        <location line="+86"/>
-        <location line="+48"/>
-        <source>this axis is not available (axisSteps = 0)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-276"/>
-        <source>micro-steps must have one of these values: [1,2,4,8,16,32,64]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+36"/>
-        <location line="+102"/>
-        <location line="+86"/>
-        <location line="+48"/>
-        <source>axis must be 1,2,3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-216"/>
-        <source>coilCurrentHigh is lower than the minimal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coilCurrentHigh is bigger than the maximal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>coilCurrentLow is lower than the minimal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coilCurrentLow is bigger than the maximal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>coilCurrentRest is lower than the minimal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coilCurrentRest is bigger than the maximal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>coilCurrentThreshold is lower than the minimal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>coilCurrentThreshold is bigger than the maximal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+68"/>
-        <source>vMax is lower than the minimal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>vMax is bigger than the maximal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>vMin is lower than the minimal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>vMin is bigger than the maximal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+50"/>
-        <source>aMax is lower than the minimal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>aMax is bigger than the maximal allowed value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>enabled flag must be 0 or 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>calibration not possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <location line="+27"/>
-        <location line="+133"/>
-        <location line="+68"/>
-        <location line="+67"/>
-        <location line="+74"/>
-        <source>motor is running. Further action is not possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-329"/>
-        <location line="+68"/>
-        <location line="+56"/>
-        <location line="+72"/>
-        <location line="+63"/>
-        <location line="+80"/>
-        <location line="+81"/>
-        <source>axis not available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-321"/>
-        <source>at least one axis not available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <location line="+72"/>
-        <location line="+63"/>
-        <location line="+80"/>
-        <source>axis not enabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>USBMotion3XIIIInterface</name>
-    <message>
-        <location line="-1540"/>
-        <source>serial number or string of the device to open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>number of full steps per turn of axis 1, 0: axis not connected [default]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>number of full steps per turn of axis 2, 0: axis not connected [default]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>number of full steps per turn of axis 3, 0: axis not connected [default]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>%1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+107"/>
-        <source>error while loading DLL &apos;USB3xIII.dll&apos;: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>DLL could not be unloaded</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -866,7 +503,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -884,7 +521,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>
