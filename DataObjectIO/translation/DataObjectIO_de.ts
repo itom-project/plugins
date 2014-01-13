@@ -16,12 +16,7 @@
         <translation type="obsolete">Läd 1D und 2D Datenobjekte aus gängigen Bildformaten (bmp, png, jpg, pgm...)</translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="+118"/>
-        <source>loads 1D and 2D dataObject from aNist-Format (sdf)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-12"/>
+        <location filename="../DataObjectIO.cpp" line="+107"/>
         <source>saves 1D and 2D dataObject to image formats via QImage (*.xbm *.xpm)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -52,13 +47,18 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>saves 1D and 2D dataObject to aNist-Format (sdf)</source>
+        <source>saves 1D and 2D dataObject to the ascii surface data file format (sdf), version aNIST-1.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+3"/>
-        <source>ASCII (*.sdf)</source>
+        <source>ASCII Surface Data File (*.sdf)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>loads an ascii-based surface data file to a 1D or 2D data object (sdf), version aNIST-1.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -132,6 +132,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+3"/>
+        <source>saveObject or only its header as xml-compatible file (ido, idh)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <location line="+3"/>
+        <source>Raw-XML (*.ido *.idh)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>loadOject or its header from an xml-compatible file (ido, idh) into a dataObject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+31"/>
         <location line="+770"/>
         <source>2D-DataObject of anytype or 3-planes DataObject of uint8</source>
@@ -140,18 +156,19 @@
     <message>
         <location line="-768"/>
         <location line="+770"/>
-        <location line="+746"/>
+        <location line="+748"/>
         <location line="+43"/>
         <location line="+44"/>
         <location line="+46"/>
         <location line="+41"/>
         <location line="+44"/>
         <location line="+44"/>
+        <location line="+837"/>
         <source>Destination filename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1776"/>
+        <location line="-2615"/>
         <source>Format of the Image according to QImage: [&apos;QImage::Format_Mono&apos;, &apos;QImage::Format_MonoLSB&apos;, &apos;QImage::Format_Indexed8&apos;, &apos;QImage::Format_RGB32&apos;, &apos;QImage::Format_ARGB32&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -206,38 +223,40 @@
     </message>
     <message>
         <location line="+5"/>
-        <location line="+1534"/>
+        <location line="+1547"/>
         <source>Entered Image format is not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1512"/>
-        <location line="+508"/>
-        <location line="+1041"/>
+        <location line="-1525"/>
+        <location line="+510"/>
+        <location line="+1052"/>
+        <location line="+340"/>
         <source>Empty dataObjet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1547"/>
-        <location line="+508"/>
-        <location line="+1041"/>
+        <location line="-1900"/>
+        <location line="+510"/>
+        <location line="+1052"/>
+        <location line="+340"/>
         <source>Source file name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1542"/>
+        <location line="-1895"/>
         <source>Color element character: R or G or B or RGB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+27"/>
-        <location line="+507"/>
-        <location line="+1094"/>
+        <location line="+509"/>
+        <location line="+1105"/>
         <source>The file &apos;%s&apos; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1597"/>
+        <location line="-1610"/>
         <source>The file &apos;%s&apos; is no readable image file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -267,7 +286,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+40"/>
         <source>The file &apos;%s&apos; is no writeable file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -351,7 +370,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+6"/>
+        <source>The given dataObject must have exactly one plane</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Complex data types not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
         <source>Filename not valid.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -415,28 +444,46 @@
     </message>
     <message>
         <location line="+29"/>
+        <location line="+268"/>
+        <location line="+60"/>
         <source>Destination dataObject is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="-248"/>
+        <location line="+31"/>
+        <location line="+22"/>
+        <source>Color import is currently not managed. Wait for next itom version (approx end of 2014).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-50"/>
+        <location line="+80"/>
+        <source>Color format of the file is currently not compatible with itom. Wait for next itom version.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+190"/>
+        <source>Any type of dataObject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+5"/>
-        <source>Color import is currently not managed. Wait for next itom version (approx end of 2013).</source>
+        <source>If 0 the complete dataObject is saved (data + metadata), else the filter saves only metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Color format of the file is currently not compatible with itom. Wait for next itom version (approx end of 2013).</source>
+        <location line="+2"/>
+        <source>If 0 the metaData is saved as clear text, else double tags are saved as binary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
-        <location line="+73"/>
+        <location line="-124"/>
         <source>Color channel not supported for extraction!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1157"/>
+        <location line="-1218"/>
         <source>The file &apos;%s&apos; did not contain &apos;aNIST-1.0&apos;-header.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -444,7 +491,7 @@
 <context>
     <name>DataObjectIOInterface</name>
     <message>
-        <location line="-1376"/>
+        <location line="-1384"/>
         <source>Fill in about dialog content</source>
         <translation type="unfinished"></translation>
     </message>
@@ -472,11 +519,304 @@
         <source>Licensed under LPGL.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../../../build/itom/SDK/include/common/sharedFunctionsQt.cpp" line="+67"/>
+        <source>Tried to scale unscaleable unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>No unit specified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+142"/>
+        <source>Pluginname undefined. No xml file loaded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>ParamList not inialized properly</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+241"/>
+        <location line="+210"/>
+        <source>Can&apos;t open xml file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+71"/>
+        <source>%1
+Autosave parameter %2 not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>XML-Import warnings:
+Autosave parameter %1 not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>%1
+Obsolete parameter %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>XML-Import warnings:
+Obsolete parameter %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>%1
+Parameter %2 not autosave</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>XML-Import warnings:
+Parameter %1 not autosave</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>%1
+Parameter not loadable %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>XML-Import warnings:
+Parameter not loadable %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1
+Type conflict for %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>XML-Import warnings:
+Type conflict for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+77"/>
+        <source>Save object failed: type not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+295"/>
+        <source>Save object failed: invalid object handle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Save object failed: object seems empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Save object failed: file not writeable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+93"/>
+        <location line="+29"/>
+        <source>Load object warning: Metadata &quot; %1 &quot; for %2 missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Load object failed: Number of dims smaller 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Not enough memory to alloc sizes vector</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Load object failed: dimension size missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Load object failed: dimX not specified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Load object failed: dimY not specified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+75"/>
+        <source>Load object failed: type not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Load object failed: Error during allocating memory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>Load object failed: file corrupted at metaData (v1.0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Load object warning: file has invalid metaData for v1.0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Load object warning: DoubleExportType for v1.0 invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Load object warning: DoubleExportType for v1.0 missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Load object warning: MetaData for %1 missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Load object warning: MetaData for dimX missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Load object warning: MetaData for dimY missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Load object warning: MetaData for values missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Load object warning: MetaData import for Rotation Matrix failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Load object failed: file corrupted at tagSpace (v1.0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Load object failed: tag space not at expected position. Got %1 instead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Load object failed: tags Space invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <location line="+6"/>
+        <source>Load object warning: invalid tagType found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Load object warning: tagsSpace invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>Load object failed: dataSpace missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Load object failed: dataSpace not at expected position. Got %1 instead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Load object warning: dataSpace and dataObject are not equal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Load object warning: dataSpace attributes corrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Load object warning: dataSpace for a plane corrupted. Got %1 instead of %2 bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Load object failed: dataStream ended before finished reading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Load object failed: invalid object handle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Load object failed: file not readable or does not exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Load object failed: file seems corrupt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Load object failed: wrong xml version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Load object failed: wrong document encoding</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Load object failed: unexpected file ending</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Load object failed: file is no itomDataObjectFile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Load object failed: illegal format version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Load object failed: object header not valied</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -494,7 +834,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -512,7 +852,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

@@ -4,63 +4,68 @@
 <context>
     <name>AerotechEnsemble</name>
     <message>
-        <location filename="../aerotechEnsemble.cpp" line="+115"/>
+        <location filename="../aerotechEnsemble.cpp" line="+119"/>
         <source>asynchronous move (1), synchronous (0) [default]</source>
-        <translation type="unfinished"></translation>
+        <translation>Asynchrone Fahrt (1), synchrone Fahrt (0) [Voreinstellung]</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>speed of every axis</source>
-        <translation type="unfinished"></translation>
+        <translation>Geschwindigkeit jeder Achse</translation>
     </message>
     <message>
-        <location line="+371"/>
+        <location line="+423"/>
         <source>any axis is moving. Parameters cannot be set</source>
-        <translation type="unfinished"></translation>
+        <translation>Eine Achse verfährt gerade. Die Einstellungen konnten nicht geändert werden</translation>
     </message>
     <message>
         <location line="+92"/>
         <source>not supported yet</source>
-        <translation type="unfinished"></translation>
+        <translation>Momentan nicht unterstützt</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>motor is running. Further action is not possible</source>
-        <translation type="unfinished"></translation>
+        <translation>Motor läuft gerade. Ausführung nicht möglich</translation>
     </message>
     <message>
         <location line="+68"/>
         <source>axis index is out of bound</source>
-        <translation type="unfinished"></translation>
+        <translation>Achsenindex liegt außerhalb des zulässigen Bereichs</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>at least one axis index is out of bound</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein Achsenindex liegt außerhalb des zulässigen Bereichs</translation>
     </message>
     <message>
         <location line="+30"/>
         <location line="+88"/>
         <source>Any motor axis is moving. The motor is locked.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein Motor verfährt gerade. Der Motor ist geblockt.</translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+9"/>
+        <source>Aerotech Ensemble Handle is NULL</source>
+        <translation>Aerotech Ensemble-Handle ist NULL</translation>
+    </message>
+    <message>
+        <location line="+97"/>
         <source>interrupt occurred</source>
-        <translation type="unfinished"></translation>
+        <translation>Unterbrechung aufgetreten</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>timeout occurred</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeitüberschreitung aufgetreten</translation>
     </message>
 </context>
 <context>
     <name>AerotechEnsembleInterface</name>
     <message>
-        <location line="-896"/>
+        <location line="-952"/>
         <source>list of axes IDs that are enabled (0..9). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste der aktiven Achsen-IDs (0..9). Die erste ID entspricht dem Index 0, die zweite ID Index 1,... [Voreinstellung: Leere Liste, alle möglichen Achsen werden verbunden]</translation>
     </message>
 </context>
 <context>
@@ -163,7 +168,7 @@
     <message>
         <location/>
         <source>General Information</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Allgemeine Informationen</translation>
     </message>
     <message>
         <location/>
@@ -346,122 +351,94 @@
     <message>
         <location filename="../dockWidgetAerotechEnsemble.ui"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
         <source>General Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Allgemeine Informationen</translation>
     </message>
     <message>
         <location/>
         <source>ID:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
         <source>[ID]</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
         <source>Axis:</source>
-        <translation type="unfinished"></translation>
+        <translation>Achsen:</translation>
     </message>
     <message>
         <location/>
         <source>[Axis]</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
         <source>Relative Positioning</source>
-        <translation type="unfinished"></translation>
+        <translation>Relative Positionierung</translation>
     </message>
     <message>
         <location/>
         <source>Step Size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message utf8="true">
-        <location/>
-        <source> °</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>axis 1 +</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>axis 2 +</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>axis 3 +</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>axis 1 -</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>axis 2 -</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>axis 3 -</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Absolut Positioning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>axis 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>axis 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>axis 3</source>
-        <translation type="unfinished"></translation>
+        <translation>Schrittweite</translation>
     </message>
     <message>
         <location/>
         <source>Actual</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuell</translation>
     </message>
     <message>
         <location/>
         <source>Target</source>
-        <translation type="unfinished"></translation>
+        <translation>Ziel</translation>
     </message>
     <message>
         <location/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Abbruch</translation>
+    </message>
+    <message>
+        <location/>
+        <location filename="../dockWidgetAerotechEnsemble.cpp" line="+104"/>
+        <location line="+13"/>
+        <source>mm</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Positioning</source>
+        <translation>Positionierung</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Name 1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>+</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>-</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Refresh</source>
+        <translation>Aktualisierung</translation>
     </message>
 </context>
 <context>
@@ -469,17 +446,17 @@
     <message>
         <location filename="../aerotechEnsemble.cpp" line="-12"/>
         <source>Plugin for the Ensemble-controller of Aerotech</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugin des Ensemble-Controllers von Aerotech</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Licensed under LGPL, The Aerotech Ensemble library belongs to Aerotech under their specific license.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>N.A.</source>
-        <translation type="unfinished"></translation>
+        <translation>K.A.</translation>
     </message>
 </context>
 <context>
@@ -528,7 +505,7 @@
     <message>
         <location line="+29"/>
         <source>Toolbox</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+147"/>

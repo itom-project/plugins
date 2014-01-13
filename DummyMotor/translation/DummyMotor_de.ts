@@ -327,7 +327,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
+        <location filename="../../../../build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
         <source>parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
@@ -361,7 +361,7 @@
     <message>
         <location line="-118"/>
         <location line="+125"/>
-        <source>the parameter name &apos;%1&apos; in invald</source>
+        <source>the parameter name &apos;%1&apos; is invald</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -497,7 +497,7 @@
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -515,7 +515,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -533,7 +533,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

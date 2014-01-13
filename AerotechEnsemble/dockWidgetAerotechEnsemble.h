@@ -15,6 +15,7 @@
 #include <qmap.h>
 #include <qstring.h>
 #include <qvector.h>
+#include <qsignalmapper.h>
 
 namespace ito //Forward-Declaration
 {
@@ -33,69 +34,45 @@ class DockWidgetAerotechEnsemble : public QWidget
         Ui::DockWidgetAerotechEnsemble ui;    //! Handle to the dialog
         ito::AddInActuator *m_actuator;
 
-//        int m_numaxis;                    //! Number of axis
+        int m_numaxis;                    //! Number of axis
         void CheckAxisNums(QMap<QString, ito::Param> params);    //! This functions checks all axis after parameters has changed and blocks unspecified axis
         //ito::AddInActuator *m_pMyPlugin;    //! Handle to the attached motor to enable / disable connections
 //        bool m_isVisible;
 
         void enableWidget(bool enabled);
-        void setAxisVisible(int numaxis);
 //        void visibleWidget();
 
-        /*QVector<QCheckBox*> m_pWidgetEnabled;
+        bool m_initialized;
+
+        QVector<QCheckBox*> m_pWidgetEnabled;
         QVector<QDoubleSpinBox*> m_pWidgetActual;
         QVector<QDoubleSpinBox*> m_pWidgetTarget;
         QVector<QPushButton*> m_pWidgetPosInc;
-        QVector<QPushButton*> m_pWidgetPosDe;*/
+        QVector<QPushButton*> m_pWidgetPosDec;
+
+        QSignalMapper *m_pSignalMapperEnabled;
+        QSignalMapper *m_pSignalPosInc;
+        QSignalMapper *m_pSignalPosDec;
 
     signals:
         void MoveRelative(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);    //!< This signal is connected to SetPosRel
-//        void setAbsTargetDegree(double target1, double target2, double target3);
-//        void setRelTargetDegree(unsigned int axisNo, double relStepDegree);
-        void MotorTriggerStatusRequest(bool sendActPosition, bool sendTargetPos);    //!< This signal is connected to RequestStatusAndPosition
         void MoveAbsolute(QVector<int> axis,  QVector<double> pos, ItomSharedSemaphore *waitCond = NULL); //!< This signal is connected to SetPosAbs
+        void MotorTriggerStatusRequest(bool sendActPosition, bool sendTargetPos);    //!< This signal is connected to RequestStatusAndPosition
 
     public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);    //!< Slot to recive the valuesChanged signal
         void init(QMap<QString, ito::Param> params, QStringList axisNames);
-//        void basicInformationChanged(QString name, QString id, QString axis, QVector<bool> available);
+        void valuesChanged(QMap<QString, ito::Param> params);    //!< Slot to recive the valuesChanged signal
         void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition); //!< slot to receive information about status and position changes.
         void targetChanged(QVector<double> targetPositions);
 
     private slots:
-        void on_cb0_Name_clicked();        //!< This button disables the current GUI-Elements for the specified axis
-        void on_cb1_Name_clicked();        //!< This button disables the current GUI-Elements for the specified axis
-        void on_cb2_Name_clicked();        //!< This button disables the current GUI-Elements for the specified axis
-        void on_cb3_Name_clicked();        //!< This button disables the current GUI-Elements for the specified axis
-        void on_cb4_Name_clicked();        //!< This button disables the current GUI-Elements for the specified axis
-        void on_cb5_Name_clicked();        //!< This button disables the current GUI-Elements for the specified axis
-        void on_cb6_Name_clicked();        //!< This button disables the current GUI-Elements for the specified axis
-        void on_cb7_Name_clicked();        //!< This button disables the current GUI-Elements for the specified axis
-        void on_cb8_Name_clicked();        //!< This button disables the current GUI-Elements for the specified axis
-        void on_cb9_Name_clicked();        //!< This button disables the current GUI-Elements for the specified axis
-        void on_pb0_Add_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb0_Sub_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb1_Add_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb1_Sub_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb2_Add_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb2_Sub_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb3_Add_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb3_Sub_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb4_Add_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb4_Sub_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb5_Add_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb5_Sub_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb6_Add_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb6_Sub_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb7_Add_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb7_Sub_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb8_Add_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb8_Sub_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb9_Add_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
-        void on_pb9_Sub_clicked();         //!< If the Botton is clicked a MoveRelative()-Signal is emitted
         void on_pb_Start_clicked();
         void on_pb_Stop_clicked();
         void on_pb_Refresh_clicked();
+
+        void checkEnabledClicked(const int &index);  //!< This button disables the current GUI-Elements for the specified axis
+        void posIncrementClicked(const int &index);  //!< If the Botton is clicked a MoveRelative()-Signal is emitted
+        void posDecrementClicked(const int &index);  //!< If the Botton is clicked a MoveRelative()-Signal is emitted
 };
 
 #endif

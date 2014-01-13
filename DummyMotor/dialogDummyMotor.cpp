@@ -21,7 +21,7 @@
 */
 dialogDummyMotor::dialogDummyMotor(ito::AddInActuator *motor, int axisnums) : m_pDummyMotor(motor), m_numaxis(axisnums)
 {
-    memset(m_enable,0,10*sizeof(int));
+    memset(m_enable, 0, 10 * sizeof(int));
     ui.setupUi(this);
 };
 

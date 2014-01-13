@@ -155,7 +155,7 @@
         <translation>Puffer löschen war nicht erfolgreich</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+68"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -320,12 +320,12 @@ Es wird in unterschiedlichen Plugins zur Kommunikation benutzt (z. B. &apos;MFUC
 Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisierung sind betriebssystemabhängig.</translation>
     </message>
     <message>
-        <location line="-71"/>
+        <location line="-81"/>
         <source>itom-plugin for a serial port communication</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+25"/>
         <source>The number of the serial port, starting with 1</source>
         <translation>Die Nummer des Ports der seriellen Schnittstelle beginnt mit 1</translation>
     </message>
@@ -346,13 +346,21 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     </message>
     <message>
         <location line="+2"/>
-        <source>Toggle parity check</source>
-        <translation>Schalter Paritätsprüfung</translation>
+        <source>Parity: 0 -&gt; no parity, 1 -&gt; odd parity, 2 -&gt; even parity</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
+        <source>Bitmask for flow control (see docstring for more information)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle parity check</source>
+        <translation type="obsolete">Schalter Paritätsprüfung</translation>
+    </message>
+    <message>
         <source>Bitmask for flow control</source>
-        <translation>Bitmaske für Flusskontrolle</translation>
+        <translation type="obsolete">Bitmaske für Flusskontrolle</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -793,7 +801,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
@@ -811,7 +819,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Uninitialisierte Vektoren für Pflichtparameter!</translation>
     </message>
@@ -829,7 +837,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation>Funktion &quot;Execution&quot; in diesem Plugin nicht verwendet</translation>
     </message>

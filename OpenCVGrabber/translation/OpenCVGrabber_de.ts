@@ -4,82 +4,87 @@
 <context>
     <name>OpenCVGrabber</name>
     <message>
-        <location filename="../OpenCVGrabber.cpp" line="+321"/>
-        <source>x-start for software ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>y-start for software ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>ROI-Size in x</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>ROI-Size in y</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location filename="../OpenCVGrabber.cpp" line="+329"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Integrationtime of CCD [s]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>brightness [0..1]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>contrast [0..1]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>saturation [0..1]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>hue [0..1]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Gain [0..1]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>selected color channel (all available (0, default), R (1), G (2), B (3)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>no conversion (0), RGB-&gt;Grayscale (1, default). If the camera image only has one channel or channel&gt;0, this parameter is ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+154"/>
+        <location line="+250"/>
         <source>Camera (%i) could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-106"/>
+        <location line="-172"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+234"/>
+        <location line="-91"/>
+        <source>first pixel index in ROI (x-direction)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>first pixel index in ROI (y-direction)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>last pixel index in ROI (x-direction)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>last pixel index in ROI (y-direction)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>width of ROI (x-direction)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>height of ROI (y-direction)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Integrationtime of CCD [s], does not exist for all cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>brightness [0..1], does not exist for all cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>contrast [0..1], does not exist for all cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>saturation [0..1], does not exist for all cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>hue [0..1], does not exist for all cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Gain [0..1], does not exist for all cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>color mode of camera (auto|color|red|green|blue|gray, default: auto -&gt; color or gray)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+394"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -99,7 +104,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+14"/>
         <source>Error: no data grabbed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -124,27 +129,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
-        <source>unknown conversion code.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+26"/>
+        <location line="+48"/>
         <source>Error while converting data format. Unsupported format.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+52"/>
+        <location line="+56"/>
         <source>unknown color, conversion... combination in retrieveImage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+18"/>
         <source>current camera status is undefined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+45"/>
+        <source>A camera with a bitdepth &gt; 8 cannot be operated in color mode.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -154,7 +159,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+63"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
@@ -162,20 +167,25 @@
 <context>
     <name>OpenCVGrabberInterface</name>
     <message>
-        <location line="-751"/>
+        <location line="-886"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>color mode of camera (auto|color|red|green|blue|gray, default: auto -&gt; color or gray)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-20"/>
-        <source>OpenCV Video Capture (USB-Cams, Firewire CMU1384 (if compiled in OpenCV)...)</source>
+        <location line="-25"/>
+        <source>OpenCV Video Capture (USB-Cams, Firewire CMU1394...)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+17"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -189,47 +199,12 @@
     <name>dialogOpenCVGrabber</name>
     <message>
         <location filename="../dialogOpenCVGrabber.ui"/>
-        <source>Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>Buffer Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location/>
-        <source>Bit pro pixel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Bit shift</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Integration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>IR-Mode (Gain)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Integrationtime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -254,11 +229,6 @@
     </message>
     <message>
         <location/>
-        <source>Set X Max</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>Y0</source>
         <translation type="unfinished"></translation>
     </message>
@@ -269,59 +239,59 @@
     </message>
     <message>
         <location/>
-        <source>Set Y Max</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Buffer options</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>8</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>12</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Binning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogOpenCVGrabber.cpp" line="+26"/>
-        <source>Configuration Dialog</source>
+        <location/>
+        <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogOpenCVGrabber.ui"/>
-        <source>OK</source>
+        <location/>
+        <source>Configuration OpenCV Grabber</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Bit per Pixel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Set Full ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Y1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>X1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Color Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Integration Time</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -339,7 +309,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -357,7 +327,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>
@@ -419,7 +389,7 @@
 <context>
     <name>ito::AddInGrabber</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
         <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
         <translation type="unfinished"></translation>

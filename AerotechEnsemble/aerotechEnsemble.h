@@ -40,8 +40,8 @@ class AerotechEnsemble : public ito::AddInActuator
     Q_OBJECT
 
     protected:
-        ~AerotechEnsemble();	//! Destructor
         AerotechEnsemble();	//!< Constructur
+        ~AerotechEnsemble();	//! Destructor
 
         //void timerEvent( QTimerEvent *event );
 
@@ -66,6 +66,7 @@ class AerotechEnsemble : public ito::AddInActuator
 		EnsembleHandle m_pHandle;
 		EnsembleHandle *m_pHandles;
 		QVector<int> m_enabledAxes;
+        QVector<int> m_allAxesVector;
 
         QStringList m_axisNames;
 
@@ -90,6 +91,9 @@ class AerotechEnsemble : public ito::AddInActuator
         ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
+
+        //! Emits status and position if triggered. Used form the dockingwidget
+        ito::RetVal RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);

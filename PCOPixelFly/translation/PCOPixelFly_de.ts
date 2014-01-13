@@ -87,7 +87,7 @@
 <context>
     <name>PCOPixelFly</name>
     <message>
-        <location filename="../PCOPixelFly.cpp" line="+140"/>
+        <location filename="../PCOPixelFly.cpp" line="+155"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -710,7 +710,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
+        <location filename="../../../../build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
         <source>parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
@@ -737,30 +737,30 @@
     </message>
     <message>
         <location line="+78"/>
-        <location line="+123"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-116"/>
-        <location line="+123"/>
-        <source>the parameter name &apos;%1&apos; in invald</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-99"/>
-        <source>array index of parameter out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
         <location line="+125"/>
-        <source>given index of parameter name ignored since parameter is no array type</source>
+        <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-118"/>
         <location line="+125"/>
+        <source>the parameter name &apos;%1&apos; is invald</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-101"/>
+        <source>array index of parameter out of bounds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+127"/>
+        <source>given index of parameter name ignored since parameter is no array type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-120"/>
+        <location line="+127"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -775,7 +775,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/sharedFunctionsQt.cpp" line="+67"/>
+        <location filename="../../../../build/itom/SDK/include/common/sharedFunctionsQt.cpp" line="+67"/>
         <source>Tried to scale unscaleable unit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -790,19 +790,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>ParamList not inialized properly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
-        <location line="+125"/>
-        <location line="+193"/>
+        <location line="+241"/>
+        <location line="+210"/>
         <source>Can&apos;t open xml file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+71"/>
         <source>%1
 Autosave parameter %2 not found</source>
         <translation type="unfinished"></translation>
@@ -862,7 +861,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+77"/>
         <source>Save object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
@@ -913,7 +912,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+75"/>
         <source>Load object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1069,13 +1068,23 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../PCOPixelFly.cpp" line="-1708"/>
+        <location filename="../PCOPixelFly.cpp" line="-1723"/>
+        <source>PCO Pixelfly cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>Developed for Windows only. Tested with PixelFlyQE.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>LGPL with ITO itom-exception / copyright of the external DLLs belongs to PCO</source>
+        <location line="+5"/>
+        <source>LGPL / the contained camera SDK belongs to PCO - Computer Optics GmbH</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1250,7 +1259,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1268,7 +1277,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1286,7 +1295,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1348,7 +1357,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInGrabber</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
         <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
         <translation type="unfinished"></translation>

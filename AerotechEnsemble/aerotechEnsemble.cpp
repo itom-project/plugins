@@ -99,7 +99,11 @@ const ito::RetVal AerotechEnsemble::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AerotechEnsemble::AerotechEnsemble() : AddInActuator(), m_pAerotechEnsembleWid(NULL), m_pHandle(NULL), m_pHandles(NULL)
+AerotechEnsemble::AerotechEnsemble() :
+    AddInActuator(),
+    m_pAerotechEnsembleWid(NULL),
+    m_pHandle(NULL),
+    m_pHandles(NULL)
 {
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
     qRegisterMetaType<QVector<bool> >("QVector<bool>");
@@ -299,6 +303,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
     for (int i = 0; i < axesLength; ++i)
     {
         axesIDs.append(axes[i]);
+        m_allAxesVector << i;
     }
 
     AXISMASK axisMask;
@@ -352,16 +357,61 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
             {
                 axesLength = 0;
                 axisMask = availableMask;
-                if (axisMask & AXISMASK_0)  { axesLength++; axesIDs.append(AXISINDEX_0); }
-                if (axisMask & AXISMASK_1)  { axesLength++; axesIDs.append(AXISINDEX_1); }
-                if (axisMask & AXISMASK_2)  { axesLength++; axesIDs.append(AXISINDEX_2); }
-                if (axisMask & AXISMASK_3)  { axesLength++; axesIDs.append(AXISINDEX_3); }
-                if (axisMask & AXISMASK_4)  { axesLength++; axesIDs.append(AXISINDEX_4); }
-                if (axisMask & AXISMASK_5)  { axesLength++; axesIDs.append(AXISINDEX_5); }
-                if (axisMask & AXISMASK_6)  { axesLength++; axesIDs.append(AXISINDEX_6); }
-                if (axisMask & AXISMASK_7)  { axesLength++; axesIDs.append(AXISINDEX_7); }
-                if (axisMask & AXISMASK_8)  { axesLength++; axesIDs.append(AXISINDEX_8); }
-                if (axisMask & AXISMASK_9)  { axesLength++; axesIDs.append(AXISINDEX_9); }
+                if (axisMask & AXISMASK_0)
+                {
+                    axesLength++;
+                    axesIDs.append(AXISINDEX_0);
+                }
+                if (axisMask & AXISMASK_1)
+                {
+                    axesLength++;
+                    axesIDs.append(AXISINDEX_1);
+                }
+                if (axisMask & AXISMASK_2)
+                {
+                    axesLength++;
+                    axesIDs.append(AXISINDEX_2);
+                }
+                if (axisMask & AXISMASK_3)
+                {
+                    axesLength++;
+                    axesIDs.append(AXISINDEX_3);
+                }
+                if (axisMask & AXISMASK_4)
+                {
+                    axesLength++;
+                    axesIDs.append(AXISINDEX_4);
+                }
+                if (axisMask & AXISMASK_5)
+                {
+                    axesLength++;
+                    axesIDs.append(AXISINDEX_5);
+                }
+                if (axisMask & AXISMASK_6)
+                {
+                    axesLength++;
+                    axesIDs.append(AXISINDEX_6);
+                }
+                if (axisMask & AXISMASK_7)
+                {
+                    axesLength++;
+                    axesIDs.append(AXISINDEX_7);
+                }
+                if (axisMask & AXISMASK_8)
+                {
+                    axesLength++;
+                    axesIDs.append(AXISINDEX_8);
+                }
+                if (axisMask & AXISMASK_9)
+                {
+                    axesLength++;
+                    axesIDs.append(AXISINDEX_9);
+                }
+            }
+
+            for (int i = 0; i < axesLength; ++i)
+            {
+                m_allAxesVector << i;
             }
 
             QByteArray name(256, '\0');
@@ -1055,6 +1105,29 @@ ito::RetVal AerotechEnsemble::doUpdatePosAndState(const QVector<int> &axes)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
+ito::RetVal AerotechEnsemble::RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos)
+{
+    ito::RetVal retValue(ito::retOk);
+    retValue += doUpdatePosAndState(m_allAxesVector);
+
+    if (sendActPosition)
+    {
+        sendStatusUpdate(false);
+    }
+    else
+    {
+        sendStatusUpdate(true);
+    }
+
+    if (sendTargetPos)
+    {
+        sendTargetUpdate();
+    }
+
+    return retValue;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------- 
 void AerotechEnsemble::dockWidgetVisibilityChanged(bool visible)
 {
     if (m_pAerotechEnsembleWid)
@@ -1063,7 +1136,7 @@ void AerotechEnsemble::dockWidgetVisibilityChanged(bool visible)
         {
             QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
             QObject::connect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
-//            RequestStatusAndPosition(true,true);
+            RequestStatusAndPosition(true, true);
         }
         else
         {

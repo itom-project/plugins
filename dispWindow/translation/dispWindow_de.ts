@@ -4,17 +4,12 @@
 <context>
     <name>DispWindow</name>
     <message>
-        <location filename="../dispWindow.cpp" line="+147"/>
+        <location filename="../dispWindow.cpp" line="+159"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Calcutate Lookup-Table for the Grayvalue to Intensity Calibration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
+        <location line="+17"/>
         <source>Cosine period</source>
         <translation type="unfinished"></translation>
     </message>
@@ -34,32 +29,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>X0 of window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Y0 of window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>X size of window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Y size of window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Numner of current image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+18"/>
         <source>Number of different images: Phaseshift + GrayCode + 2</source>
         <translation type="unfinished">Anzahl der unterschiedlichen Bilder: Phasenschiebung + Grauwert + 2</translation>
     </message>
@@ -74,43 +44,57 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+100"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+28"/>
-        <location line="+147"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-125"/>
-        <source>name of given parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
+        <location line="+209"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>Number of Gray-Code images is readonly!</source>
+        <location line="-259"/>
+        <source>Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter &apos;lut&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+122"/>
-        <source>paramsMand-Vector not initialized!!</source>
+        <location line="+2"/>
+        <source>absolute filename of the file where the grabbing image should be saved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>paramsOpt-Vector not initialized or to small!</source>
+        <location line="+1"/>
+        <source>grab the current OpenGL frame as image and saves it to the given filename. The image format is guessed from the suffix of the filename (default QImage formats supported)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+128"/>
+        <location line="+23"/>
+        <source>x0 position of display window [px]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>y0 position of display window [px]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>width of window [px]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>height of window [px]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Number of current image (phase images, dark image, bright image, graycode images)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+339"/>
+        <source>mandatory or optional parameters vector not initialized!!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+127"/>
         <source>wrong z-size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -144,7 +128,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+88"/>
+        <location line="+104"/>
         <source>function name &apos;%s&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -152,52 +136,52 @@
 <context>
     <name>DispWindowInterface</name>
     <message>
-        <location line="-786"/>
+        <location line="-828"/>
         <source>Window for SLM/LCD-Applications</source>
         <translation type="unfinished">Fenster für SLM/LCD-Anwendungen</translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>LGPL with ITO itom-exception</source>
+        <location line="+6"/>
+        <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
+        <source>x0 position of window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>y0 position of window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>height of window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>width of window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>cosine period in pixel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>number of total phase shifts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-12"/>
         <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>X0 of window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Y0 of window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>X size of window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Y size of window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Cosine period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Count of phase shifts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
+        <location line="+20"/>
         <source>Lookup table</source>
         <translation type="unfinished"></translation>
     </message>
@@ -274,7 +258,7 @@
 <context>
     <name>PrjWindow</name>
     <message>
-        <location filename="../projWindow.cpp" line="+1498"/>
+        <location filename="../projWindow.cpp" line="+1501"/>
         <source>insufficient gray values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -282,7 +266,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
+        <location filename="../../../../build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
         <source>parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
@@ -309,30 +293,30 @@
     </message>
     <message>
         <location line="+78"/>
-        <location line="+123"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-116"/>
-        <location line="+123"/>
-        <source>the parameter name &apos;%1&apos; in invald</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-99"/>
-        <source>array index of parameter out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
         <location line="+125"/>
-        <source>given index of parameter name ignored since parameter is no array type</source>
+        <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-118"/>
         <location line="+125"/>
+        <source>the parameter name &apos;%1&apos; is invald</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-101"/>
+        <source>array index of parameter out of bounds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+127"/>
+        <source>given index of parameter name ignored since parameter is no array type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-120"/>
+        <location line="+127"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -503,7 +487,7 @@
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -521,7 +505,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -539,7 +523,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

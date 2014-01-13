@@ -5,56 +5,53 @@
     <name>DataObjectArithmetic</name>
     <message>
         <location filename="../dataobjectarithmetic.cpp" line="+105"/>
-        <source>returns the maximum value of the given dataObject within its ROI.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
+        <location line="+12"/>
         <location line="+3"/>
-        <source>returns the minimum value of the given dataObject within its ROI.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>returns the arithmetic mean value of the given dataObject within its ROI.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>returns the center of gravity in x and y.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>returns the center of gravity along columns or lines.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.
-The optinal flag to toggles if (flag==0) the deviation is calculated by 1/(n-1)*sqrt(sum(x-xm)^2)
-or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>returns true if both objects are equal, else returns false</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <location line="+178"/>
-        <location line="+554"/>
-        <location line="+159"/>
+        <location line="+13"/>
+        <location line="+203"/>
+        <location line="+153"/>
+        <location line="+388"/>
+        <location line="+168"/>
         <source>source image data object for operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-889"/>
+        <location line="-938"/>
+        <location line="+16"/>
+        <location line="+14"/>
         <source>result of calculation. This param can be int or double</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="-2"/>
+        <location line="+203"/>
+        <location line="+155"/>
+        <source>Ignore invalid-Values for floating point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-355"/>
+        <location line="+205"/>
+        <location line="+4"/>
+        <source>Index of the plane, which contains the result.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-208"/>
+        <location line="+205"/>
+        <location line="+4"/>
+        <source>Pixelindex in y-direction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-208"/>
+        <location line="+205"/>
+        <location line="+4"/>
+        <source>Pixelindex in x-direction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-199"/>
         <source>1. source image data object for operation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -69,39 +66,22 @@ or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+50"/>
-        <location line="+50"/>
-        <location line="+67"/>
-        <location line="+62"/>
+        <location line="+19"/>
+        <location line="+82"/>
+        <location line="+106"/>
+        <location line="+100"/>
         <source>Error: source image is NUL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-224"/>
-        <location line="+50"/>
-        <location line="+50"/>
-        <location line="+74"/>
-        <location line="+55"/>
-        <source>source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-199"/>
-        <location line="+50"/>
-        <location line="+50"/>
-        <location line="+74"/>
-        <location line="+93"/>
+        <location line="-232"/>
+        <location line="+83"/>
+        <location line="+119"/>
         <source>data type not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-153"/>
-        <source>Toggles the calculation mode of standard deviation according</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+64"/>
         <source>mean result</source>
         <translation type="unfinished"></translation>
     </message>
@@ -111,47 +91,61 @@ or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>Error: flag must be [0..1]</source>
+        <location line="-318"/>
+        <location line="+82"/>
+        <location line="+106"/>
+        <location line="+100"/>
+        <location line="+60"/>
+        <source>Error, object dimensions must be unequal zero</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+66"/>
-        <source>Source image is empty or has less than 2 dimensions</source>
+        <location line="-187"/>
+        <source>Switch complex handling, 0:abs-Value, 1:imaginary-Value, 2:real-Value, 3: argument-Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Minimal value, this parameter be int or double</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Search axis is not inside object dimensions</source>
+        <source>Maximum value, this parameter. This param can be int or double</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>Error: output object is NUL</source>
+        <location line="+145"/>
+        <source>Toggles the calculation mode of standard deviation over N or N-1 elements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+398"/>
-        <location line="+6"/>
-        <location line="+123"/>
-        <location line="+235"/>
+        <location line="+24"/>
+        <location line="+109"/>
+        <location line="+7"/>
+        <location line="+327"/>
+        <location line="+247"/>
         <source>Error: source image is NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-308"/>
-        <location line="+163"/>
+        <location line="-342"/>
+        <source>type not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <location line="+172"/>
         <source>Ingnore values lower than lowTreshold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-161"/>
-        <location line="+163"/>
+        <location line="-170"/>
         <source>Ingnore values above highTreshold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-160"/>
+        <location line="+3"/>
         <source>y-Coordinate of COG (index)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -171,24 +165,24 @@ or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+69"/>
-        <location line="+235"/>
+        <location line="+75"/>
+        <location line="+247"/>
         <source>Error: source image is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-217"/>
+        <location line="-229"/>
         <source>Error: source image must not have multiple planes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+34"/>
-        <location line="+337"/>
+        <location line="+349"/>
         <source>Unknown type or type not implemented for phase shifting evaluation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-307"/>
+        <location line="-316"/>
         <source>destination image data object for operation, will contain evaluated COG</source>
         <translation type="unfinished"></translation>
     </message>
@@ -198,12 +192,17 @@ or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+4"/>
+        <source>Dynamic treshold, e.g. half maximum</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Evaluate along Columns</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+159"/>
         <source>Error: destination COG image is NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -221,28 +220,98 @@ or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)</source>
 <context>
     <name>DataObjectArithmeticInterface</name>
     <message>
-        <location line="-1152"/>
+        <location line="-1174"/>
         <source>plugin-instance cannot be converted to class DataObjectArithmetic. Close operation failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Arithmetic algorithms filters.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="+13"/>
+        <location line="-8"/>
         <source>Operations and arithmetic calculations of dataObject.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>LGPL with ITO itom-exception</source>
+        <location line="+4"/>
+        <source>LGPL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../../build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
+        <source>parameter vector is not initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>mandatory parameter vector is not initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>optional parameter vector is not initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>output parameter vector is not initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <location line="+21"/>
+        <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+78"/>
+        <location line="+125"/>
+        <source>name of requested parameter is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-118"/>
+        <location line="+125"/>
+        <source>the parameter name &apos;%1&apos; is invald</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-101"/>
+        <source>array index of parameter out of bounds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+127"/>
+        <source>given index of parameter name ignored since parameter is no array type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-120"/>
+        <location line="+127"/>
+        <source>parameter not found in m_params.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <source>array index out of bounds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+55"/>
+        <source>invalid parameter name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -260,7 +329,7 @@ or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -278,7 +347,7 @@ or (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)</source>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

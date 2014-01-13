@@ -535,7 +535,7 @@
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
@@ -553,7 +553,7 @@
         <translation>Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
@@ -571,7 +571,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation>Die Funktion &apos;execution&apos; wurde in diesem Plugin nicht bentzt</translation>
     </message>
@@ -633,7 +633,7 @@
 <context>
     <name>ito::AddInGrabber</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
         <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
         <translation type="unfinished"></translation>

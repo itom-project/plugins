@@ -10,6 +10,7 @@
 
 #include "dockWidgetDummyMotor.h"
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 /** @detail The constructor by the constructor of the DummyMotor during initialisation of the DummyMotor-Instance.
 *
 *\param[in] params        m_params-Variable containg the parameters of the DummyMotor
@@ -17,7 +18,6 @@
 *
 *\sa DummyMotor
 */
-//-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetDummyMotor::DockWidgetDummyMotor(QMap<QString, ito::Param> params, int uniqueID, ito::AddInActuator * myPlugin) :
     m_pMyPlugin(myPlugin),
     m_isVisible(false),

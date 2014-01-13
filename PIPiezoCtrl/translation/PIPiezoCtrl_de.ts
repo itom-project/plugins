@@ -235,7 +235,7 @@
 <context>
     <name>PIPiezoCtrl</name>
     <message>
-        <location filename="../PIPiezoCtrl.cpp" line="+148"/>
+        <location filename="../PIPiezoCtrl.cpp" line="+151"/>
         <source>Current type of controller, e.g. E-662, E-665, ...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -377,7 +377,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+51"/>
         <source>Doesn&apos;t fit to interface DataIO!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -389,12 +389,12 @@
     </message>
     <message>
         <location line="+49"/>
-        <location line="+753"/>
+        <location line="+759"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-713"/>
+        <location line="-719"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -410,12 +410,12 @@
     </message>
     <message>
         <location line="+67"/>
-        <location line="+501"/>
+        <location line="+507"/>
         <source>controller device unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-392"/>
+        <location line="-398"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -541,7 +541,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+95"/>
         <source>could not identify controller. No answer for command *idn?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -564,15 +564,20 @@
 <context>
     <name>PIPiezoCtrlInterface</name>
     <message>
-        <location line="-1409"/>
+        <location line="-1420"/>
         <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>If 1 the current configuration of the given serial port is kept, else 0 [default].</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-21"/>
+        <location line="-25"/>
         <source>PI Piezos E662, E-816, E-621, E-625, E665</source>
         <translation type="unfinished"></translation>
     </message>
@@ -590,7 +595,7 @@
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -608,7 +613,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -626,7 +631,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

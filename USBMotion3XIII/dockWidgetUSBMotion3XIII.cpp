@@ -11,6 +11,7 @@
 #include "dockWidgetUSBMotion3XIII.h"
 #include "common/addInInterface.h"
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 /** @detail The constructor by the constructor of the DummyMotor during initialisation of the DummyMotor-Instance.
 *
 *\param[in] params        m_params-Variable containg the parameters of the DummyMotor
@@ -18,13 +19,13 @@
 *
 *\sa DummyMotor
 */
-//-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetUSBMotion3XIII::DockWidgetUSBMotion3XIII(ito::AddInActuator *actuator) : m_actuator(actuator)
 {
     ui.setupUi(this); 
     enableWidget(true);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::basicInformationChanged(QString name, QString id, QString axis, QVector<bool> available)
 {
 //    ui.lblName->setText(name);
@@ -51,68 +52,87 @@ void DockWidgetUSBMotion3XIII::basicInformationChanged(QString name, QString id,
     ui.btn_relMinus3->setVisible(available[2]);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::on_btnStartAbsolute_clicked()
 {
-    emit setAbsTargetDegree( ui.doubleSpinBox_tarpos_x->value(), ui.doubleSpinBox_tarpos_y->value(), ui.doubleSpinBox_tarpos_z->value() );
+    emit setAbsTargetDegree(ui.doubleSpinBox_tarpos_x->value(), ui.doubleSpinBox_tarpos_y->value(), ui.doubleSpinBox_tarpos_z->value());
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::on_btn_relPlus1_clicked()
 {
     double stepDeg = ui.spinStepSize->value();
     emit setRelTargetDegree(0, stepDeg);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::on_btn_relMinus1_clicked()
 {
     double stepDeg = ui.spinStepSize->value();
     emit setRelTargetDegree(0, -stepDeg);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::on_btn_relPlus2_clicked()
 {
     double stepDeg = ui.spinStepSize->value();
     emit setRelTargetDegree(1, stepDeg);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::on_btn_relMinus2_clicked()
 {
     double stepDeg = ui.spinStepSize->value();
     emit setRelTargetDegree(1, -stepDeg);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::on_btn_relPlus3_clicked()
 {
     double stepDeg = ui.spinStepSize->value();
     emit setRelTargetDegree(2, stepDeg);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::on_btn_relMinus3_clicked()
 {
     double stepDeg = ui.spinStepSize->value();
     emit setRelTargetDegree(2, -stepDeg);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::on_btnStop_clicked()
 {
-    if(m_actuator) m_actuator->setInterrupt();
+    if (m_actuator) m_actuator->setInterrupt();
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::targetChanged(QVector<double> targetPositions)
 {
-    int i=targetPositions.size();
-    if(i>=0) ui.doubleSpinBox_tarpos_x->setValue(targetPositions[0]);
-    if(i>=1) ui.doubleSpinBox_tarpos_y->setValue(targetPositions[1]);
-    if(i>=2) ui.doubleSpinBox_tarpos_z->setValue(targetPositions[2]);
+    int i = targetPositions.size();
+
+    if (i >= 0)
+    {
+        ui.doubleSpinBox_tarpos_x->setValue(targetPositions[0]);
+    }
+    if (i >= 1)
+    {
+        ui.doubleSpinBox_tarpos_y->setValue(targetPositions[1]);
+    }
+    if (i >= 2)
+    {
+        ui.doubleSpinBox_tarpos_z->setValue(targetPositions[2]);
+    }
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::actuatorStatusChanged(QVector<int> status, QVector<double> actPosition)
 {
-
     ui.doubleSpinBox_tarpos_x->setEnabled(status[0] & ito::actuatorEnabled);
     ui.doubleSpinBox_tarpos_y->setEnabled(status[1] & ito::actuatorEnabled);
     ui.doubleSpinBox_tarpos_z->setEnabled(status[2] & ito::actuatorEnabled);
 
-    if(actPosition.size() > 0)
+    if (actPosition.size() > 0)
     {
         ui.doubleSpinBox_actpos_x->setValue(actPosition[0]);
         ui.doubleSpinBox_actpos_y->setValue(actPosition[1]);
@@ -122,18 +142,18 @@ void DockWidgetUSBMotion3XIII::actuatorStatusChanged(QVector<int> status, QVecto
     bool running = false;
     QString style;
 
-    for(int i=0;i<status.size();i++)
+    for (int i = 0; i < status.size(); i++)
     {
-        if(status[i] & ito::actuatorMoving)
+        if (status[i] & ito::actuatorMoving)
         {
             style = "background-color: yellow";
             running = true;
         }
-        else if(status[i] & ito::actuatorInterrupted)
+        else if (status[i] & ito::actuatorInterrupted)
         {
             style = "background-color: red";
         }
-        else if(status[i] & ito::actuatorTimeout)
+        else if (status[i] & ito::actuatorTimeout)
         {
             style = "background-color: #FFA3FD";
         }
@@ -159,6 +179,7 @@ void DockWidgetUSBMotion3XIII::actuatorStatusChanged(QVector<int> status, QVecto
      enableWidget(!running);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::enableWidget(bool enabled)
 {
     ui.btn_relPlus1->setEnabled(enabled);

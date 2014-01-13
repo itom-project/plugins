@@ -16,7 +16,7 @@
         <translation type="obsolete">Fittet eine Ebene im 2D-Datenobjekt und subtrahiert diese Ebene vom Datenobjekt -&gt; dies ist eine Kombination von &apos;fitPlane&apos; und &apos;subtractPlane&apos;</translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="+959"/>
+        <location filename="../fittingfilters.cpp" line="+978"/>
         <source>fits 2D-polynomial in 2D-dataObject and returns a double-DataObject with the fitted surface as well as an error value sigma</source>
         <translation>Fittet ein 2D-Polynom n-ter Ordnung in ein 2D-Datenobjekt und gibt ein &apos;Double&apos;-Datenobjekt mit den gefitteten Daten und der mittleren Abweichung (sigma-Wert) zurück</translation>
     </message>
@@ -26,7 +26,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-854"/>
+        <location filename="../fittingfilters.cpp" line="-866"/>
         <location line="+75"/>
         <location line="+109"/>
         <location filename="../polyfit2d.cpp" line="+7"/>
@@ -106,12 +106,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../polyfit2d.cpp" line="+43"/>
+        <location line="+170"/>
+        <source>Generated object via polyVal with order X = %1, Y = %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+218"/>
+        <source>Caluclated polynomical coeffs along z-direction with order Z = %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../polyfit2d.cpp" line="+42"/>
         <source>2D polynomical fit with order x = %1 and y = %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-84"/>
+        <location line="-83"/>
         <source>destination data object with fitted values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -136,7 +146,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+151"/>
         <source>2:  gradX und gradY =0, Funktion abgebrochen</source>
         <translation type="unfinished"></translation>
     </message>
@@ -169,7 +179,7 @@
 <context>
     <name>FittingFiltersInterface</name>
     <message>
-        <location filename="../fittingfilters.cpp" line="-225"/>
+        <location filename="../fittingfilters.cpp" line="-620"/>
         <source>plugin-instance cannot be converted to class FittingFilters. Close operation failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -177,17 +187,16 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="+13"/>
         <source>Filter-Plugin for fitting-methods.</source>
-        <translation>Filter-Plugin für Fitting-Methoden.</translation>
+        <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Please fill in detailed description</source>
+        <location line="+20"/>
+        <source>Plugin with fitting algorithms.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>licensed under LPGL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -200,7 +209,7 @@
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -218,7 +227,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -236,7 +245,7 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>

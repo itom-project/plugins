@@ -321,7 +321,7 @@ time out!</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/sharedFunctionsQt.cpp" line="+67"/>
+        <location filename="../../../../build/itom/SDK/include/common/sharedFunctionsQt.cpp" line="+67"/>
         <source>Tried to scale unscaleable unit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -341,14 +341,13 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
-        <location line="+223"/>
-        <location line="+193"/>
+        <location line="+241"/>
+        <location line="+210"/>
         <source>Can&apos;t open xml file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+71"/>
         <source>%1
 Autosave parameter %2 not found</source>
         <translation type="unfinished"></translation>
@@ -408,7 +407,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+77"/>
         <source>Save object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
@@ -459,7 +458,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+75"/>
         <source>Load object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
@@ -621,7 +620,7 @@ Type conflict for %1</source>
     </message>
     <message>
         <location line="+13"/>
-        <source>itom-plugin under LGPL / CMU1384 driver under LGPL</source>
+        <source>itom-plugin under LGPL / CMU1394 driver under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -721,7 +720,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -739,7 +738,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -757,7 +756,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>
@@ -819,7 +818,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInGrabber</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
         <location line="+15"/>
         <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
         <translation type="unfinished"></translation>
