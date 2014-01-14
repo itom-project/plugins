@@ -10,7 +10,6 @@
 
 using namespace ito;
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechEnsembleInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -172,11 +171,11 @@ ito::RetVal AerotechEnsemble::checkError(bool ensembleReturnValue)
         char errorString[1024];
         if (EnsembleGetLastErrorString(errorString, 1024))
         {
-            return ito::RetVal::format(ito::retError, 0, "Ensemble error %i: %s", EnsembleGetLastError(), errorString);
+            return ito::RetVal::format(ito::retError, 0, tr("Ensemble error %i: %s").toAscii().data(), EnsembleGetLastError(), errorString);
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, "Unknown ensemble error since the error message was too long");
+            return ito::RetVal(ito::retError, 0, tr("Unknown ensemble error since the error message was too long").toAscii().data());
         }
     }
 }
@@ -222,7 +221,7 @@ ito::RetVal AerotechEnsemble::getAxisMask(const int *axes, const int numAxes, AX
             mask = mask | AXISMASK_9;
             break;
         default:
-            retValue += ito::RetVal::format(ito::retError, 0, "The axis number %i is not supported. Allowed range [0, 9]", axes[i]);
+            retValue += ito::RetVal::format(ito::retError, 0, tr("The axis number %i is not supported. Allowed range [0, 9]").toAscii().data(), axes[i]);
             break;
         }
     }
@@ -240,7 +239,7 @@ ito::RetVal AerotechEnsemble::getAxisMask2(const QVector<int> &axesIndices, AXIS
     {
         if (index < 0 || index >= m_enabledAxes.size())
         {
-            retValue += ito::RetVal::format(ito::retError, 0, "axis index %i is out of boundary [0, %i]", index, m_enabledAxes.size()-1);
+            retValue += ito::RetVal::format(ito::retError, 0, tr("axis index %i is out of boundary [0, %i]").toAscii().data(), index, m_enabledAxes.size()-1);
         }
         else
         {
@@ -277,7 +276,7 @@ ito::RetVal AerotechEnsemble::getAxisMask2(const QVector<int> &axesIndices, AXIS
                 mask = mask | AXISMASK_9;
                 break;
             default:
-                retValue += ito::RetVal::format(ito::retError, 0, "The axis number %i is not supported. Allowed range [0, 9]", m_enabledAxes[index]);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("The axis number %i is not supported. Allowed range [0, 9]").toAscii().data(), m_enabledAxes[index]);
                 break;
             }
         }
@@ -316,7 +315,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
 
         if (handleCount > 1)
         {
-            retValue += ito::RetVal(ito::retError, 0, "Please make sure that only one controller is configured and connected");
+            retValue += ito::RetVal(ito::retError, 0, tr("Please make sure that only one controller is configured and connected").toAscii().data());
         }
     }
     
@@ -423,7 +422,7 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
 
             if ((availableMask | axisMask) != availableMask)
             {
-                retValue += ito::RetVal::format(ito::retError, 0, "Not all desired axes are connected to the controller (desired: %i, available: %i)", axisMask, availableMask);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("Not all desired axes are connected to the controller (desired: %i, available: %i)").toAscii().data(), axisMask, availableMask);
             }
 
             if (!retValue.containsError())
@@ -576,11 +575,11 @@ ito::RetVal AerotechEnsemble::setParam(QSharedPointer<ito::ParamBase> val, ItomS
             {
                 if (index < 0 || index >= arrayLength)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, "given index is out of boundary");
+                    retValue += ito::RetVal(ito::retError, 0, tr("given index is out of boundary").toAscii().data());
                 }
                 else if (val->getType() != ito::ParamBase::Double)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, "given value must be a double if an index is given.");
+                    retValue += ito::RetVal(ito::retError, 0, tr("given value must be a double if an index is given.").toAscii().data());
                 }
                 else
                 {
@@ -591,11 +590,11 @@ ito::RetVal AerotechEnsemble::setParam(QSharedPointer<ito::ParamBase> val, ItomS
             {
                 if (val->getType() != ito::ParamBase::DoubleArray)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, "given value must be a double array");
+                    retValue += ito::RetVal(ito::retError, 0, tr("given value must be a double array").toAscii().data());
                 }
                 else if (val->getLen() != arrayLength)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, "length of given double array must correspond to number of axes");
+                    retValue += ito::RetVal(ito::retError, 0, tr("length of given double array must correspond to number of axes").toAscii().data());
                 }
                 else
                 {
@@ -635,18 +634,84 @@ ito::RetVal AerotechEnsemble::calib(const int axis, ItomSharedSemaphore *waitCon
 ito::RetVal AerotechEnsemble::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
+    ito::RetVal retValue(ito::retOk);
 
-    retValue += ito::RetVal(ito::retError, 0, tr("not supported yet").toAscii().data());
-
-    if (waitCond)
+    if (isMotorMoving())
     {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-        
+        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toAscii().data());
+        if (waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+        }
+    }
+    else if (m_pHandle == NULL)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("Aerotech Ensemble Handle is NULL").toAscii().data());
+    }
+    else
+    {
+        AXISMASK mask;
+        retValue += getAxisMask2(axis, mask);
+
+        if (retValue.containsError())
+        {
+            if (waitCond)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+            }
+        }
+        else
+        {
+            setStatus(axis, ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendStatusUpdate();
+            
+            //starts a small worker thread with a timer that regularily calls doAliveTimer to trigger the alive thread such that itom do not run into
+            //a timeout if the homing needs lots of time
+            QThread *awakeThread = new QThread(this);
+            QTimer* timer = new QTimer(NULL); // _not_ this!
+            timer->setInterval(500);
+            timer->moveToThread(awakeThread);
+            // Use a direct connection to make sure that doIt() is called from m_thread.
+            connect(timer, SIGNAL(timeout()), SLOT(doAliveTimer()), Qt::DirectConnection);
+            // Make sure the timer gets started from m_thread.
+            QObject::connect(awakeThread, SIGNAL(started()), timer, SLOT(start()));
+            awakeThread->start();
+    
+            if (axis.size() > 0) 
+            {
+                retValue += checkError(EnsembleMotionHome(m_pHandle, mask));
+            }
+
+            awakeThread->quit();
+            awakeThread->wait();
+            timer->deleteLater();
+            delete awakeThread;
+            awakeThread = NULL;
+
+            sendTargetUpdate();
+            
+            replaceStatus(axis, ito::actuatorMoving, ito::actuatorAtTarget); 
+            doUpdatePosAndState(axis);
+
+            sendStatusUpdate();
+
+            if (waitCond)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+            }
+        }
     }
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AerotechEnsemble::doAliveTimer()
+{
+    setAlive();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -671,7 +736,7 @@ ito::RetVal AerotechEnsemble::setOrigin(QVector<int> axis, ItomSharedSemaphore *
         {
             if (m_enabledAxes.contains(axisId) == false)
             {
-                retValue += ito::RetVal::format(ito::retError, 0, "axis %i is not enabled", axisId);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("axis %i is not enabled").toAscii().data(), axisId);
             }
         }
 
@@ -798,7 +863,7 @@ ito::RetVal AerotechEnsemble::setPosAbs(QVector<int> axis, QVector<double> pos, 
     }
     else if (m_pHandle == NULL)
     {
-        retValue += ito::RetVal(ito::retError, 0, "Aerotech Ensemble Handle is NULL");
+        retValue += ito::RetVal(ito::retError, 0, tr("Aerotech Ensemble Handle is NULL").toAscii().data());
     }
     else
     {

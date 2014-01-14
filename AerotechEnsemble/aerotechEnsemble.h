@@ -97,6 +97,7 @@ class AerotechEnsemble : public ito::AddInActuator
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
+        void doAliveTimer();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
