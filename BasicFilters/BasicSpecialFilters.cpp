@@ -579,7 +579,9 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         toogleByteOrder -= 2;
     }
 
-    if(dObjSrc->getType() != ito::tUInt8 && dObjSrc->getDims() != 3 && (numMats != 3 || numMats != 4))
+//    if(dObjSrc->getType() != ito::tUInt8 && dObjSrc->getDims() != 3 && (numMats != 3 || numMats != 4))
+	// TODO: malformed if statement changed || to && is this what was intended?
+    if(dObjSrc->getType() != ito::tUInt8 && dObjSrc->getDims() != 3 && (numMats != 3 && numMats != 4))
     {
         return ito::RetVal(ito::retError, 0, tr("Error: The primary object must be of type tUInt8").toAscii().data());
     }

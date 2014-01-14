@@ -877,7 +877,7 @@ ito::RetVal PrjWindow::cosineInit()
             }
         }
     }
-    delete phaseVals;
+    delete[] phaseVals;
 
     //!> filling of the "images"
     if ((tempimg = (unsigned char*)calloc(width * height, sizeof(unsigned char))) == 0)
@@ -1577,7 +1577,7 @@ ito::RetVal PrjWindow::setLUT(QVector<unsigned char> *lut)
 ito::RetVal PrjWindow::setColor(const int col)
 {
     ito::RetVal retval = ito::retOk;
-    int ret = 0;
+//    int ret = 0;
 
     if (m_glVer <= QGLFormat::OpenGL_Version_2_0 /*32*/)
     {
@@ -1607,14 +1607,14 @@ ito::RetVal PrjWindow::setColor(const int col)
 
         makeCurrent();
         glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &glval);
-        ret = glGetError();
+//        ret = glGetError();
 
         glPixelMapfv(GL_PIXEL_MAP_I_TO_G, 256, pag);
-        ret = glGetError();
+//        ret = glGetError();
         glPixelMapfv(GL_PIXEL_MAP_I_TO_R, 256, par);
-        ret = glGetError();
+//        ret = glGetError();
         glPixelMapfv(GL_PIXEL_MAP_I_TO_B, 256, pab);
-        ret = glGetError();
+//        ret = glGetError();
 
         free(par);
         free(pag);

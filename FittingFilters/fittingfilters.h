@@ -99,7 +99,7 @@ class FittingFilters : public ito::AddInAlgo
         template<typename _Tp> static ito::RetVal subtractPlaneTemplate(cv::Mat *inputMatrix, cv::Mat *destMatrix, double A, double B, double C);
 
         static ito::RetVal calcPolyfitWeighted2D(const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, double reduceFactor = -1.0, const ito::DataObject *weights = NULL);
-        static ito::RetVal calcPolyval2D(ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> coefficients);
+        static ito::RetVal calcPolyval2D(ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> &coefficients);
 
         static void linearRegression(VecDoub_I &x, VecDoub_I &y, VecDoub_I &w, VecDoub_O &p, Doub& residual);
         

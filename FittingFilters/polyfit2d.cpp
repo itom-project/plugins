@@ -458,7 +458,7 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
     double   *P, *S, *Q;
 
     // *** Berechnung der P[i][j] nach (11.10)  *****************************
-    P = S = Q = NULL;
+    //P = S = Q = NULL;
     P= (double *)calloc((PolyGrad+1)*(PolyGrad+1), sizeof(double));
     S= (double *)calloc((PolyGrad+1)*(PolyGrad+1), sizeof(double));
     Q= (double *)calloc((PolyGrad+1)*(PolyGrad+1), sizeof(double));   // Initialisieren der Matrix Q

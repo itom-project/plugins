@@ -477,7 +477,6 @@ ito::RetVal PCOPixelFly::libraryVersionNumber(const QByteArray &fileName, QStrin
         wchar_t *pszFilePath = new wchar_t[ fileName.size() + 2];
         int size = fileName.toWCharArray(pszFilePath);
         pszFilePath[size] = '\0';
-        delete[] pszFilePath;
     #else
         char *pszFilePath = qstrdup( fileName.data() );
     #endif

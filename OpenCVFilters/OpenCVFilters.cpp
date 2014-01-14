@@ -236,7 +236,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
     ito::DataObject *dObjSrc = (*paramsMand)[0].getVal<ito::DataObject*>();
     ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
 
-    if (!dObjSrc | !dObjDst)
+    if (!dObjSrc || !dObjDst)
     {
         return ito::RetVal(ito::retError,0,tr("source and destination object must not be NULL").toAscii().data());
     }
@@ -368,7 +368,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 cv::erode(*cvMatIn, *cvMatOut, cvElement, anchor, iterations, borderType);
             }
-            catch (cv::Exception exc)
+            catch (cv::Exception &exc)
             {
                 retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
                 break;
@@ -385,7 +385,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 cv::dilate(*cvMatIn, *cvMatOut, cvElement, anchor, iterations, borderType);
             }
-            catch (cv::Exception exc)
+            catch (cv::Exception &exc)
             {
                 retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
                 break;
@@ -589,7 +589,7 @@ ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<i
             cvMatIn = ((cv::Mat *)dObjImages->get_mdata()[dObjImages->seekMat(z)]);
             cv::blur(*cvMatIn, cvMatOut[z], kernelsizes, anchor, borderType);
         }
-        catch (cv::Exception exc)
+        catch (cv::Exception &exc)
         {
             retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
             goto end;
@@ -964,7 +964,7 @@ ito::RetVal OpenCVFilters::cvMedianBlur(QVector<ito::ParamBase> *paramsMand, QVe
             cvMatIn = ((cv::Mat *)dObjImages->get_mdata()[dObjImages->seekMat(z)]);
             cv::medianBlur(*cvMatIn, cvMatOut[z], kernelsize);
         }
-        catch (cv::Exception exc)
+        catch (cv::Exception &exc)
         {
             retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
             goto end;
@@ -1443,7 +1443,7 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
             {
                 cv::flip(*cvMatIn, *cvMatOut, colsIfTrue ? 1 : 0);
             }
-            catch (cv::Exception exc)
+            catch (cv::Exception &exc)
             {
                 retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
                 break;
@@ -1645,7 +1645,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
             //cv::erode(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
             //cv::dilate(cvTemp, cvTemp, cvElement, anchor, 1, cv::BORDER_CONSTANT);
         }
-        catch (cv::Exception exc)
+        catch (cv::Exception &exc)
         {
             retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
         }

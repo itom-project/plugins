@@ -371,7 +371,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
                 //this is the faster implementation: first qr, then solve (see numpy linalg.qr)
                 _Tp *tau = new _Tp[ lmn ];
                 memset(tau, 0, sizeof(_Tp) * lmn);
-                lwork = 1;
+//                lwork = 1;
                 _Tp *work = new _Tp[1];
                 work[0] = 0;
 
@@ -557,7 +557,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 
 
 //-------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal FittingFilters::calcPolyval2D(ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> coefficients)
+/*static*/ ito::RetVal FittingFilters::calcPolyval2D(ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> &coefficients)
 {
     ito::RetVal retval;
 

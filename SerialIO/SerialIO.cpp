@@ -824,6 +824,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
 #ifdef __linux__
     if (m_dev == 0)
     {
+		free(outbuf);
         return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toAscii().data());
     }
 
@@ -834,6 +835,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
             // maybe error here it maybe was &outbuf???
             if (write(m_dev, outbuf + n, 1) != 1)
             {
+				free(outbuf);
                 return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
             }
         }
@@ -844,12 +846,14 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
         int a;
         if ((a = write(m_dev, outbuf, length)) != length)
         {
+			free(outbuf);
             return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
         }
     }
 #else
     if (!m_dev || INVALID_HANDLE_VALUE == m_dev)
     {
+		free(outbuf);
         return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toAscii().data());
     }
 
@@ -861,10 +865,12 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
         {
             if (!WriteFile(m_dev, outbuf + n, 1, &bytesWritten, NULL))
             {
+				free(outbuf);
                 return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
             }
             if (bytesWritten != 1)
             {
+				free(outbuf);
                 return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
             }
         }
@@ -873,14 +879,17 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
     {
         if (!WriteFile(m_dev, outbuf, length, &bytesWritten, NULL))
         {
+			free(outbuf);
             return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
         }
         if (bytesWritten != length)
         {
+			free(outbuf);
             return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
         }
     }
 #endif
+	free(outbuf);
     return ito::retOk;
 }
 
@@ -1362,7 +1371,6 @@ ito::RetVal SerialIO::startDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retval;
         waitCond->release();
         waitCond->deleteSemaphore();
-        waitCond = NULL;
     }
     return retval;
 }
@@ -1377,7 +1385,6 @@ ito::RetVal SerialIO::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retval;
         waitCond->release();
         waitCond->deleteSemaphore();
-        waitCond = NULL;
     }
     return retval;
 }
@@ -1392,7 +1399,6 @@ ito::RetVal SerialIO::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCo
         waitCond->returnValue = retval;
         waitCond->release();
         waitCond->deleteSemaphore();
-        waitCond = NULL;
     }
     return retval;
 }

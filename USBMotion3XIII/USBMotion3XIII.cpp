@@ -605,7 +605,7 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         serialName.toWCharArray( wserial );
         wserial[s] = 0;
         errorCode = opendevicebyserial( wserial );
-        delete wserial;
+        delete[] wserial;
         wserial = NULL;
 #elif defined Q_OS_WIN32
         errorCode = opendevicebyserial( serialName.toAscii().data() );

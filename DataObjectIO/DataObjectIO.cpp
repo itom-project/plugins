@@ -1562,7 +1562,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
         for(unsigned int i = 0; i < metaData.size(); i++)
         {
             newObject.setTag((*it).first, (*it).second);
-            it++;
+            ++it;
         }
 
         zscale *= zRes;

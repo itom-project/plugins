@@ -364,7 +364,6 @@ ito::RetVal DummyMotor::execFunc(const QString funcName, QSharedPointer<QVector<
         waitCond->returnValue = retValue;
         waitCond->release();
         waitCond->deleteSemaphore();
-        waitCond = NULL;
     }
 
     return retValue;
