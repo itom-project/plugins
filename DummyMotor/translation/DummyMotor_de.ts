@@ -327,7 +327,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
         <source>parameter vector is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
@@ -436,32 +436,32 @@
     <message>
         <location/>
         <source>Enable B</source>
-        <translation type="unfinished">B Aktiv</translation>
+        <translation>B Aktiv</translation>
     </message>
     <message>
         <location/>
         <source>Enable Y</source>
-        <translation type="unfinished">Y Aktiv</translation>
+        <translation>Y Aktiv</translation>
     </message>
     <message>
         <location/>
         <source>Enable C</source>
-        <translation type="unfinished">C Aktiv</translation>
+        <translation>C Aktiv</translation>
     </message>
     <message>
         <location/>
         <source>Enable Z</source>
-        <translation type="unfinished">Z Aktiv</translation>
+        <translation>Z Aktiv</translation>
     </message>
     <message>
         <location/>
         <source>Enable X</source>
-        <translation type="unfinished">X Aktiv</translation>
+        <translation>X Aktiv</translation>
     </message>
     <message>
         <location/>
         <source>Enable A</source>
-        <translation type="unfinished">A Aktiv</translation>
+        <translation>A Aktiv</translation>
     </message>
     <message>
         <location/>
@@ -486,18 +486,18 @@
     <message>
         <location filename="../dialogDummyMotor.ui"/>
         <source>Properties</source>
-        <translation type="unfinished">Eigenschaften</translation>
+        <translation>Eigenschaften</translation>
     </message>
     <message>
         <location/>
         <source>Axis</source>
-        <translation type="unfinished"></translation>
+        <translation>Achsen</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -515,7 +515,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+986"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -533,14 +533,14 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Toolbox</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+147"/>
