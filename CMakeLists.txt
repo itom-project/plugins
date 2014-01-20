@@ -9,7 +9,7 @@ SET(ITOM_DIR "" CACHE PATH "base path to itom")
 
 # AerotechEnsemble
 IF (WIN32)
-    OPTION(PLUGIN_aerotechEnsemble "Build with this plugin." OFF)
+    OPTION(PLUGIN_aerotechEnsemble "Build with this plugin." ON)
     if (PLUGIN_aerotechEnsemble)
             ADD_SUBDIRECTORY(AerotechEnsemble)
     endif (PLUGIN_aerotechEnsemble)
