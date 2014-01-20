@@ -46,13 +46,14 @@ class AerotechEnsemble : public ito::AddInActuator
         //void timerEvent( QTimerEvent *event );
 
 		ito::RetVal checkError(bool ensembleReturnValue);
+        ito::RetVal axisFaultToRetVal(int axisFault, int axisID);
 		ito::RetVal getAxisMask(const int *axes, const int numAxes, AXISMASK &mask);
         ito::RetVal getAxisMask2(const QVector<int> &axesIndices, AXISMASK &mask);
 
     public:
         friend class AerotechEnsembleInterface;
         const ito::RetVal showConfDialog(void);	//!< This calls the modal Configuration Dialog
-        //int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
+        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
 		int m_async;	//!< variable to set up async and sync positioning --> Synchrone means program do not return until positioning was done.

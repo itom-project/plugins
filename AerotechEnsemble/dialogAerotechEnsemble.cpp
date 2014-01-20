@@ -1,244 +1,165 @@
-///**\file dialogDummyMotor.cpp
-//* \brief In this file the functions of the modal dialog for the DummyMotor are specified
-//*
-//*	This file defines the functions of the dialogDummyMotor-Class defined in the file "dialogDummyMotor.h"
-//* 
-//*\sa dialogDummyMotor, DummyMotor
-//*\author Wolfram Lyda
-//*\date	Oct2011
-//*/
-//
-//#include "dialogAerotechEnsemble.h"
-//#include <qmetaobject.h>
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-///** @detail This function changes the values of the different GUI-elements according to the input paramVals
-//*
-//*\param[in] motor	A handle to the motor attached to this dialog
-//*\param[in] axisnums The number of axis this attached motor offer
-//*
-//*\sa DummyMotor
-//*/
-//DialogAerotechEnsemble::DialogAerotechEnsemble(int uniqueID)
-//{
-//	ui.setupUi(this);
-//
-//    ui.lblID->setText(QString::number(uniqueID));
-//};
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-///** @detail This function changes the values of the different GUI-elements according to the input paramVals
-//*
-//*\param[in] paramVals	Parameterlist with Motorparamters (m_params)
-//*\warning If the Keywords (parameters) "speed" and "accel" do not exist in the Parameterlist and the find is not used , this will crash!!
-//*\sa DummyMotor
-//*/
-//int DialogAerotechEnsemble::setVals(QMap<QString, ito::Param> *paramVals)
-//{
-//    int steps;
-//    int microSteps;
-//    char *temp = NULL;
-//
-//    setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-//    // added by itobiege, Mar. 2013, but not tested!
-//
-//    temp = (*paramVals)["name"].getVal<char*>(); //borrowed reference
-//    ui.lblName->setText( temp );
-//
-//    if( (*paramVals)["connected"].getVal<int>() )
-//    {
-//        ui.lblConnected->setText( "connected" );
-//        ui.tab_motor1->setEnabled(true);
-//        ui.tab_motor2->setEnabled(true);
-//        ui.tab_motor3->setEnabled(true);
-//        ui.groupRunMode->setEnabled(true);
-//        ui.tabProperties->setCurrentWidget( ui.tab_general );
-//    }
-//    else
-//    {
-//        ui.lblConnected->setText( "disconnected" );
-//        ui.tab_motor1->setEnabled(false);
-//        ui.tab_motor2->setEnabled(false);
-//        ui.tab_motor3->setEnabled(false);
-//        ui.groupRunMode->setEnabled(false);
-//        ui.tabProperties->setCurrentWidget( ui.tab_general );
-//    }
-//
-//    temp = (*paramVals)["serialNumber"].getVal<char*>();
-//    ui.lblSerialNumber->setText( temp );
-//    temp = (*paramVals)["productVersion"].getVal<char*>();
-//    ui.lblProductVersion->setText( temp );
-//    temp = (*paramVals)["vendorName"].getVal<char*>(); //borrowed reference
-//    ui.lblVendorName->setText( temp );
-//    temp = (*paramVals)["productName"].getVal<char*>(); //borrowed reference
-//    ui.lblProductName->setText( temp );
-//
-//    ui.comboRunMode->setCurrentIndex( (*paramVals)["async"].getVal<int>() > 0 ? 1 : 0 );
-//
-//    //Motor 1
-//    steps = (*paramVals)["axisSteps1"].getVal<int>();
-//
-//    ui.lblM1AxisSteps->setText( QString::number(steps) );
-//    ui.lblM1Available->setText( steps <= 0 ? "No" : "Yes" );
-//    ui.checkM1Enabled->setChecked( (*paramVals)["axisEnabled1"].getVal<int>() );
-//    microSteps = (*paramVals)["microSteps1"].getVal<int>();
-//
-//    for(int i=0;i<7;i++)
-//    {
-//        if( (1 << i) == microSteps)
-//        {
-//            ui.comboM1MicroSteps->setCurrentIndex( i );
-//            break;
-//        }
-//    }
-//
-//    ui.spinM1AMax->setMaximum( (*paramVals)["aMax1"].getMax() );
-//    ui.spinM1AMax->setMinimum( (*paramVals)["aMax1"].getMin() );
-//    ui.spinM1AMax->setValue( (*paramVals)["aMax1"].getVal<double>() );
-//    ui.spinM1VMax->setMaximum( (*paramVals)["vMax1"].getMax() );
-//    ui.spinM1VMax->setMinimum( (*paramVals)["vMax1"].getMin() );
-//    ui.spinM1VMax->setValue( (*paramVals)["vMax1"].getVal<double>() );
-//    ui.spinM1VMin->setMaximum( (*paramVals)["vMin1"].getMax() );
-//    ui.spinM1VMin->setMinimum( (*paramVals)["vMin1"].getMin() );
-//    ui.spinM1VMin->setValue( (*paramVals)["vMin1"].getVal<double>() );
-//    ui.spinM1CoilThreshold->setMaximum( (*paramVals)["coilCurrentThreshold1"].getMax() );
-//    ui.spinM1CoilThreshold->setMinimum( (*paramVals)["coilCurrentThreshold1"].getMin() );
-//    ui.spinM1CoilThreshold->setValue( (*paramVals)["coilCurrentThreshold1"].getVal<double>() );
-//
-//    ui.comboM1CoilHigh->setCurrentIndex( coilCurrentIndex( (*paramVals)["coilCurrentHigh1"].getVal<double>() ));
-//    ui.comboM1CoilLow->setCurrentIndex( coilCurrentIndex( (*paramVals)["coilCurrentLow1"].getVal<double>() ));
-//    ui.comboM1CoilRest->setCurrentIndex( coilCurrentIndex( (*paramVals)["coilCurrentRest1"].getVal<double>() ));
-//
-//    ui.groupM1CoilCurrent->setEnabled( steps > 0);
-//    ui.groupM1Info->setEnabled( steps > 0);
-//    ui.groupM1VelAcc->setEnabled( steps > 0);
-//
-//    //Motor 2
-//    steps = (*paramVals)["axisSteps2"].getVal<int>();
-//
-//    ui.lblM2AxisSteps->setText( QString::number(steps) );
-//    ui.lblM2Available->setText( steps <= 0 ? "No" : "Yes" );
-//    ui.checkM2Enabled->setChecked( (*paramVals)["axisEnabled2"].getVal<int>() );
-//    microSteps = (*paramVals)["microSteps2"].getVal<int>();
-//
-//    for(int i=0;i<7;i++)
-//    {
-//        if( (2 << i) == microSteps)
-//        {
-//            ui.comboM2MicroSteps->setCurrentIndex( i );
-//            break;
-//        }
-//    }
-//
-//    ui.spinM2AMax->setMaximum( (*paramVals)["aMax2"].getMax() );
-//    ui.spinM2AMax->setMinimum( (*paramVals)["aMax2"].getMin() );
-//    ui.spinM2AMax->setValue( (*paramVals)["aMax2"].getVal<double>() );
-//    ui.spinM2VMax->setMaximum( (*paramVals)["vMax2"].getMax() );
-//    ui.spinM2VMax->setMinimum( (*paramVals)["vMax2"].getMin() );
-//    ui.spinM2VMax->setValue( (*paramVals)["vMax2"].getVal<double>() );
-//    ui.spinM2VMin->setMaximum( (*paramVals)["vMin2"].getMax() );
-//    ui.spinM2VMin->setMinimum( (*paramVals)["vMin2"].getMin() );
-//    ui.spinM2VMin->setValue( (*paramVals)["vMin2"].getVal<double>() );
-//    ui.spinM2CoilThreshold->setMaximum( (*paramVals)["coilCurrentThreshold2"].getMax() );
-//    ui.spinM2CoilThreshold->setMinimum( (*paramVals)["coilCurrentThreshold2"].getMin() );
-//    ui.spinM2CoilThreshold->setValue( (*paramVals)["coilCurrentThreshold2"].getVal<double>() );
-//
-//    ui.comboM2CoilHigh->setCurrentIndex( coilCurrentIndex( (*paramVals)["coilCurrentHigh2"].getVal<double>() ));
-//    ui.comboM2CoilLow->setCurrentIndex( coilCurrentIndex( (*paramVals)["coilCurrentLow2"].getVal<double>() ));
-//    ui.comboM2CoilRest->setCurrentIndex( coilCurrentIndex( (*paramVals)["coilCurrentRest2"].getVal<double>() ));
-//
-//    ui.groupM2CoilCurrent->setEnabled( steps > 0);
-//    ui.groupM2Info->setEnabled( steps > 0);
-//    ui.groupM2VelAcc->setEnabled( steps > 0);
-//
-//    //Motor 3
-//    steps = (*paramVals)["axisSteps3"].getVal<int>();
-//
-//    ui.lblM3AxisSteps->setText( QString::number(steps) );
-//    ui.lblM3Available->setText( steps <= 0 ? "No" : "Yes" );
-//    ui.checkM3Enabled->setChecked( (*paramVals)["axisEnabled3"].getVal<int>() );
-//    microSteps = (*paramVals)["microSteps3"].getVal<int>();
-//
-//    for(int i=0;i<7;i++)
-//    {
-//        if( (3 << i) == microSteps)
-//        {
-//            ui.comboM3MicroSteps->setCurrentIndex( i );
-//            break;
-//        }
-//    }
-//
-//    ui.spinM3AMax->setMaximum( (*paramVals)["aMax3"].getMax() );
-//    ui.spinM3AMax->setMinimum( (*paramVals)["aMax3"].getMin() );
-//    ui.spinM3AMax->setValue( (*paramVals)["aMax3"].getVal<double>() );
-//    ui.spinM3VMax->setMaximum( (*paramVals)["vMax3"].getMax() );
-//    ui.spinM3VMax->setMinimum( (*paramVals)["vMax3"].getMin() );
-//    ui.spinM3VMax->setValue( (*paramVals)["vMax3"].getVal<double>() );
-//    ui.spinM3VMin->setMaximum( (*paramVals)["vMin3"].getMax() );
-//    ui.spinM3VMin->setMinimum( (*paramVals)["vMin3"].getMin() );
-//    ui.spinM3VMin->setValue( (*paramVals)["vMin3"].getVal<double>() );
-//    ui.spinM3CoilThreshold->setMaximum( (*paramVals)["coilCurrentThreshold3"].getMax() );
-//    ui.spinM3CoilThreshold->setMinimum( (*paramVals)["coilCurrentThreshold3"].getMin() );
-//    ui.spinM3CoilThreshold->setValue( (*paramVals)["coilCurrentThreshold3"].getVal<double>() );
-//
-//    ui.comboM3CoilHigh->setCurrentIndex( coilCurrentIndex( (*paramVals)["coilCurrentHigh3"].getVal<double>() ));
-//    ui.comboM3CoilLow->setCurrentIndex( coilCurrentIndex( (*paramVals)["coilCurrentLow3"].getVal<double>() ));
-//    ui.comboM3CoilRest->setCurrentIndex( coilCurrentIndex( (*paramVals)["coilCurrentRest3"].getVal<double>() ));
-//
-//    ui.groupM3CoilCurrent->setEnabled( steps > 0);
-//    ui.groupM3Info->setEnabled( steps > 0);
-//    ui.groupM3VelAcc->setEnabled( steps > 0);
-//
-//    return 0;
-//}
-//
-//int DialogAerotechEnsemble::getRunMode() //0: synchronous, 1: async
-//{
-//    return ui.comboRunMode->currentIndex() == 0 ? 0 : 1;
-//}
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-//void DialogAerotechEnsemble::getAxisValues( int axis, int &enabled, int &microSteps, double &vMin, double &vMax, double &aMax, double &coilThreshold, double &coilHigh, double &coilLow, double &coilRest)
-//{
-//    switch(axis)
-//    {
-//    case 1:
-//        enabled = ui.checkM1Enabled->isChecked() ? 1 : 0;
-//        microSteps = ui.comboM1MicroSteps->currentText().toInt();
-//        vMin = ui.spinM1VMin->value();
-//        vMax = ui.spinM1VMax->value();
-//        aMax = ui.spinM1AMax->value();
-//        coilThreshold = ui.spinM1CoilThreshold->value();
-//        coilHigh = ui.comboM1CoilHigh->currentText().remove("%").toDouble();
-//        coilLow = ui.comboM1CoilLow->currentText().remove("%").toDouble();
-//        coilRest = ui.comboM1CoilRest->currentText().remove("%").toDouble();
-//        break;
-//
-//    case 2:
-//        enabled = ui.checkM2Enabled->isChecked() ? 1 : 0;
-//        microSteps = ui.comboM2MicroSteps->currentText().toInt();
-//        vMin = ui.spinM2VMin->value();
-//        vMax = ui.spinM2VMax->value();
-//        aMax = ui.spinM2AMax->value();
-//        coilThreshold = ui.spinM2CoilThreshold->value();
-//        coilHigh = ui.comboM2CoilHigh->currentText().remove("%").toDouble();
-//        coilLow = ui.comboM2CoilLow->currentText().remove("%").toDouble();
-//        coilRest = ui.comboM2CoilRest->currentText().remove("%").toDouble();
-//        break;
-//
-//    case 3:
-//        enabled = ui.checkM3Enabled->isChecked() ? 1 : 0;
-//        microSteps = ui.comboM3MicroSteps->currentText().toInt();
-//        vMin = ui.spinM3VMin->value();
-//        vMax = ui.spinM3VMax->value();
-//        aMax = ui.spinM3AMax->value();
-//        coilThreshold = ui.spinM3CoilThreshold->value();
-//        coilHigh = ui.comboM3CoilHigh->currentText().remove("%").toDouble();
-//        coilLow = ui.comboM3CoilLow->currentText().remove("%").toDouble();
-//        coilRest = ui.comboM3CoilRest->currentText().remove("%").toDouble();
-//        break;
-//
-//    }
-//}
-//
-////---------------------------------------------------------------------------------------------------------------------------
+/**\file dialogAerotechEnsemble.cpp
+* \brief In this file the functions of the modal dialog for the AerotechEnsemble are specified
+*
+*    This file defines the functions of the dialogAerotechEnsemble-Class defined in the file "dialogAerotechEnsemble.h"
+* 
+*\sa dialogAerotechEnsemble, AerotechEnsemble
+*\author Marc Gronle, Heiko Bieger
+*\date    Jan2014
+*/
+
+#include "dialogAerotechEnsemble.h"
+#include <qmetaobject.h>
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** @detail This function changes the values of the different GUI-elements according to the input paramVals
+*
+*\param[in] motor     A handle to the motor attached to this dialog
+*\param[in] axisNames Names of axis this attached motor offer
+*
+*\sa AerotechEnsemble
+*/
+dialogAerotechEnsemble::dialogAerotechEnsemble(ito::AddInActuator *motor, QStringList axisNames) :
+    m_pAerotechEnsemble(motor),
+    m_numaxis(axisNames.count())
+{
+    ui.setupUi(this);
+
+    QDoubleSpinBox* diaSpeed;
+    QLabel* diaSpeedLabel;
+    QCheckBox* diaEnabled;
+    for (int i = 0; i < m_numaxis; ++i)
+    {
+        diaSpeedLabel = new QLabel(ui.groupProperties);
+        diaSpeedLabel->setText(tr("Speed") + " " + axisNames[i]);
+        m_pDialogSpeedLabel.append(diaSpeedLabel);
+        ui.gridLayout->addWidget(diaSpeedLabel, i + 1, 0, 1, 1);
+
+        diaSpeed = new QDoubleSpinBox(ui.groupProperties);
+//        diaSpeed->setEnabled(false);
+        QSizePolicy sizePolicy6(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy6.setHorizontalStretch(0);
+        sizePolicy6.setVerticalStretch(0);
+        sizePolicy6.setHeightForWidth(diaSpeed->sizePolicy().hasHeightForWidth());
+        diaSpeed->setSizePolicy(sizePolicy6);
+        diaSpeed->setMinimumSize(QSize(0, 0));
+        diaSpeed->setMaximumSize(QSize(16777215, 16777215));
+        diaSpeed->setDecimals(6);
+        diaSpeed->setSingleStep(0.001);
+        diaSpeed->setSuffix(" " + tr("mm/s"));
+        m_pDialogSpeed.append(diaSpeed);
+        ui.gridLayout->addWidget(diaSpeed, i + 1, 1, 1, 1);
+
+        diaEnabled = new QCheckBox(ui.groupAxis);
+        diaEnabled->setChecked(true);
+        diaEnabled->setText(tr("Enable") + " " + axisNames[i]);
+        m_pDialogEnabled.append(diaEnabled);
+        ui.gridLayout_2->addWidget(diaEnabled, (i / 2) + 1, (i % 2), 1, 1);
+    }
+
+    delete ui.labelSpeed;
+    ui.labelSpeed = NULL;
+    delete ui.doubleSpinBox_Speed;
+    ui.doubleSpinBox_Speed = NULL;
+    delete ui.checkBox_EnableA;
+    ui.checkBox_EnableA = NULL;
+    delete ui.checkBox_EnableX;
+    ui.checkBox_EnableX = NULL;
+
+    int newHeight = (2 * 29 * m_numaxis) + 102;
+    setMinimumHeight(newHeight);
+    setMaximumHeight(newHeight);
+
+    ui.groupProperties->setMinimumHeight((29 * m_numaxis) + 26);
+    ui.groupAxis->setMinimumHeight((29 * m_numaxis) + 52);
+    ui.groupAxis->setGeometry(10, (29 * m_numaxis) + 41, 211, ui.groupAxis->minimumHeight());
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** @detail This function changes the values of the different GUI-elements according to the input paramVals
+*
+*\param[in] paramVals    Parameterlist with Motorparamters (m_params)
+*\warning If the Keywords (parameters) "speed" and "accel" do not exist in the Parameterlist and the find is not used , this will crash!!
+*\sa AerotechEnsemble
+*/
+int dialogAerotechEnsemble::setVals(QMap<QString, ito::Param> *paramVals)
+{
+    setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+
+    QMap<QString, ito::Param>::const_iterator paramIt = (*paramVals).constFind("speed");    // To check if this parameter exists
+    if (paramIt != ((*paramVals).constEnd()))
+    {
+        double *paramSpeed = ((*paramVals)["speed"].getVal<double*>()); //mm/s
+
+        for (int i = 0; i < m_numaxis; i++)
+        {
+            m_pDialogSpeed[i]->setValue(paramSpeed[i]);
+            m_pDialogSpeed[i]->setMinimum(0);
+            m_pDialogSpeed[i]->setMaximum(1000);
+        }
+    }
+    else
+    {
+        for (int i = 0; i < m_numaxis; i++)
+        {
+            m_pDialogSpeed[i]->setEnabled(false);
+        }
+    }
+
+    return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int dialogAerotechEnsemble::getVals(QMap<QString, ito::Param> * /*paramVals*/)
+{
+    if (m_numaxis > 0 && m_pDialogSpeed[0]->isEnabled())    //If true than the getVal found the parameters during construction
+    {
+        double *speedArray = new double[m_numaxis];
+        for (int i = 0; i < m_numaxis; i++)
+        {
+            speedArray[i] = m_pDialogSpeed[i]->value();
+        }
+
+        QSharedPointer<ito::ParamBase> val(new ito::ParamBase("speed", ito::ParamBase::DoubleArray, m_numaxis, speedArray));
+        delete speedArray;
+
+        m_pAerotechEnsemble->setParam(val);
+    }
+
+    return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void dialogAerotechEnsemble::on_pushButtonCalib_clicked()
+{
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    int i = 0;
+    QVector<int> axis;
+    
+    for (i = 0; i < m_numaxis; i++)
+    {
+        if (m_pDialogEnabled[i]->isChecked())
+        {
+            axis << i;
+        }
+    }
+
+    ui.cancelButton->setEnabled(false);
+    ui.okButton->setEnabled(false);
+
+    QMetaObject::invokeMethod(m_pAerotechEnsemble, "calib", Q_ARG(QVector<int>, axis), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    if (locker.getSemaphore()->waitAndProcessEvents(60000))
+    {
+        QMessageBox::information(this, tr("Calibration (Homing)"), tr("Homing successfully executed."));
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Calibration (Homing)"), tr("Timeout while calibrating axes."));
+    }
+
+    ui.cancelButton->setEnabled(true);
+    ui.okButton->setEnabled(true);
+    
+
+}

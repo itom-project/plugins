@@ -54,9 +54,12 @@ class DockWidgetAerotechEnsemble : public QWidget
         QSignalMapper *m_pSignalPosInc;
         QSignalMapper *m_pSignalPosDec;
 
+        void DockWidgetAerotechEnsemble::MoveRelative(const int &axis, const double dpos);
+        void Move(const QVector<int> axis, const QVector<double> dpos, const char* func);
+
     signals:
-        void MoveRelative(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);    //!< This signal is connected to SetPosRel
-        void MoveAbsolute(QVector<int> axis,  QVector<double> pos, ItomSharedSemaphore *waitCond = NULL); //!< This signal is connected to SetPosAbs
+//        void MoveRelative(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);    //!< This signal is connected to SetPosRel
+//        void MoveAbsolute(QVector<int> axis,  QVector<double> pos, ItomSharedSemaphore *waitCond = NULL); //!< This signal is connected to SetPosAbs
         void MotorTriggerStatusRequest(bool sendActPosition, bool sendTargetPos);    //!< This signal is connected to RequestStatusAndPosition
 
     public slots:

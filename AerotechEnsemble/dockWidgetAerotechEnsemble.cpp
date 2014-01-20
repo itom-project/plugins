@@ -152,7 +152,7 @@ void DockWidgetAerotechEnsemble::init(QMap<QString, ito::Param> params, QStringL
 
     m_initialized = true;
 
-    setMinimumHeight(77 + (29 * m_numaxis) + 107);
+    setMinimumHeight((29 * m_numaxis) + 184);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -196,18 +196,26 @@ void DockWidgetAerotechEnsemble::actuatorStatusChanged(QVector<int> status, QVec
         {
             style = "background-color: yellow";
             running = true;
+            m_pWidgetPosInc[i]->setEnabled(false);
+            m_pWidgetPosDec[i]->setEnabled(false);
         }
         else if (status[i] & ito::actuatorInterrupted)
         {
             style = "background-color: red";
+            m_pWidgetPosInc[i]->setEnabled(true);
+            m_pWidgetPosDec[i]->setEnabled(true);
         }
         else if (status[i] & ito::actuatorTimeout)
         {
             style = "background-color: #FFA3FD";
+            m_pWidgetPosInc[i]->setEnabled(true);
+            m_pWidgetPosDec[i]->setEnabled(true);
         }
         else
         {
             style = "background-color: ";
+            m_pWidgetPosInc[i]->setEnabled(true);
+            m_pWidgetPosDec[i]->setEnabled(true);
         }
 
         m_pWidgetActual[i]->setStyleSheet(style);
@@ -230,6 +238,70 @@ void DockWidgetAerotechEnsemble::checkEnabledClicked(const int &index)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
+/*void DockWidgetAerotechEnsemble::MoveRelative(const int &index, const double dpos)
+{
+    ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+    QMetaObject::invokeMethod(m_actuator, "setPosRel", Q_ARG(int, index), Q_ARG(double, dpos), Q_ARG(ItomSharedSemaphore*, waitCond));
+
+    if (waitCond->waitAndProcessEvents(60000)) //no timeout
+    {
+        if (waitCond->returnValue.containsWarningOrError())
+        {
+            QMessageBox msgBox(this);
+            if (waitCond->returnValue.errorMessage() != NULL)
+            {
+                QString errStr = waitCond->returnValue.errorMessage();
+                msgBox.setText(errStr);
+            }
+            else
+            {
+                msgBox.setText(tr("unknown error or warning when moving any axis"));
+            }
+            msgBox.exec();
+        }
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Timeout"), tr("timeout when moving any axis"));
+    }
+
+    waitCond->release();
+    waitCond->deleteSemaphore();
+}*/
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetAerotechEnsemble::Move(const QVector<int> axis, const QVector<double> dpos, const char* func)
+{
+    ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+    QMetaObject::invokeMethod(m_actuator, func, Q_ARG(QVector<int>, axis), Q_ARG(QVector<double>, dpos), Q_ARG(ItomSharedSemaphore*, waitCond));
+
+    if (waitCond->waitAndProcessEvents(60000)) //no timeout
+    {
+        if (waitCond->returnValue.containsWarningOrError())
+        {
+            QMessageBox msgBox(this);
+            if (waitCond->returnValue.errorMessage() != NULL)
+            {
+                QString errStr = waitCond->returnValue.errorMessage();
+                msgBox.setText(errStr);
+            }
+            else
+            {
+                msgBox.setText(tr("unknown error or warning when moving any axis"));
+            }
+            msgBox.exec();
+        }
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Timeout"), tr("timeout when moving any axis"));
+    }
+
+    waitCond->release();
+    waitCond->deleteSemaphore();
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetAerotechEnsemble::posIncrementClicked(const int &index)
 {
     if (!m_initialized)
@@ -237,8 +309,9 @@ void DockWidgetAerotechEnsemble::posIncrementClicked(const int &index)
         return;
     }
 
-    double dpos = ui.dsb_StepSize->value();// / 1e3;
-    emit MoveRelative(index, dpos, 0);
+    double dpos = ui.dsb_StepSize->value();
+//    MoveRelative(index, dpos);
+    Move(QVector<int>(1, index), QVector<double>(1, dpos), "setPosRel");
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -249,8 +322,9 @@ void DockWidgetAerotechEnsemble::posDecrementClicked(const int &index)
         return;
     }
 
-    double dpos = ui.dsb_StepSize->value();// / -1e3;
-    emit MoveRelative(index, dpos, 0);
+    double dpos = -ui.dsb_StepSize->value();
+//    MoveRelative(index, dpos);
+    Move(QVector<int>(1, index), QVector<double>(1, dpos), "setPosRel");
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -285,7 +359,8 @@ void DockWidgetAerotechEnsemble::on_pb_Start_clicked()
         }
     }
 
-    emit MoveAbsolute(axis, dpos, 0);
+//    emit MoveAbsolute(axis, dpos, 0);
+    Move(axis, dpos, "setPosAbs");
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

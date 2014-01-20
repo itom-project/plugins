@@ -91,8 +91,15 @@ Q_EXPORT_PLUGIN2(AerotechEnsembleInterface, AerotechEnsembleInterface)
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal AerotechEnsemble::showConfDialog(void)
 {
-
     RetVal retValue(retOk);
+
+    dialogAerotechEnsemble *confDialog = new dialogAerotechEnsemble(qobject_cast<ito::AddInActuator*>(this), m_axisNames);    // Create dialog
+    confDialog->setVals(&m_params);    // Set up dialog parameters
+    if (confDialog->exec())    // Is dialog is endet with exec and not with cancel
+    {
+        confDialog->getVals(&m_params);    // get parameters from dialog
+    }    
+    delete confDialog;    // destray dialog
 
     return retValue;
 }
@@ -146,8 +153,8 @@ AerotechEnsemble::AerotechEnsemble() :
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_pAerotechEnsembleWid);    // Give the widget a name ..)
    
-    connect(m_pAerotechEnsembleWid, SIGNAL(MoveRelative(const int,const double ,ItomSharedSemaphore*)), this, SLOT(setPosRel(const int,const double, ItomSharedSemaphore*)));
-    connect(m_pAerotechEnsembleWid, SIGNAL(MoveAbsolute(QVector<int>, QVector<double>, ItomSharedSemaphore*)), this, SLOT(setPosAbs(QVector<int>, QVector<double>, ItomSharedSemaphore*)));
+//    connect(m_pAerotechEnsembleWid, SIGNAL(MoveRelative(const int,const double ,ItomSharedSemaphore*)), this, SLOT(setPosRel(const int,const double, ItomSharedSemaphore*)));
+//    connect(m_pAerotechEnsembleWid, SIGNAL(MoveAbsolute(QVector<int>, QVector<double>, ItomSharedSemaphore*)), this, SLOT(setPosAbs(QVector<int>, QVector<double>, ItomSharedSemaphore*)));
     connect(m_pAerotechEnsembleWid, SIGNAL(MotorTriggerStatusRequest(bool,bool)), this, SLOT(RequestStatusAndPosition(bool, bool)));
     connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), m_pAerotechEnsembleWid, SLOT(valuesChanged(QMap<QString, ito::Param>)));
     connect(this, SIGNAL(dockWidgetAerotechEnsembleInit(QMap<QString, ito::Param>, QStringList)), m_pAerotechEnsembleWid, SLOT(init(QMap<QString, ito::Param>, QStringList)));
@@ -299,6 +306,9 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
     int axesLength = paramsOpt->at(0).getLen();
     QVector<int> axesIDs;
 
+    // Clear the world
+//    retValue += checkError(EnsembleMotionFaultAck(m_pHandle, (AXISMASK_0 | AXISMASK_1 | AXISMASK_2 | AXISMASK_3 | AXISMASK_4 | AXISMASK_5 | AXISMASK_6 | AXISMASK_7 | AXISMASK_8 | AXISMASK_9)));
+
     for (int i = 0; i < axesLength; ++i)
     {
         axesIDs.append(axes[i]);
@@ -427,7 +437,21 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
 
             if (!retValue.containsError())
             {
-                retValue += checkError(EnsembleMotionEnable(m_pHandle, axisMask));
+                ito::RetVal retValueTemp = checkError(EnsembleMotionEnable(m_pHandle, axisMask));
+
+                if (retValueTemp.containsError())
+                {
+                    retValue += checkError(EnsembleMotionFaultAck(m_pHandle, axisMask));
+
+                    if (!retValue.containsError())
+                    {
+                        retValue += checkError(EnsembleMotionEnable(m_pHandle, axisMask));
+                    }
+                }
+                else
+                {
+                    retValue += retValueTemp;
+                }
             }
         }
     }
@@ -447,7 +471,17 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
             _axes[i] = i;
         }
 
-        retValue += doUpdatePosAndState(_axes);
+        ito::RetVal retValTemp =  doUpdatePosAndState(_axes);
+        if (retValTemp.containsError())
+        {
+            retValue += checkError(EnsembleMotionFaultAck(m_pHandle, axisMask));
+            retValue +=  doUpdatePosAndState(_axes);
+        }
+        else
+        {
+            retValue += retValTemp;
+        }
+
         m_targetPos = m_currentPos;
 
         sendStatusUpdate();
@@ -679,7 +713,7 @@ ito::RetVal AerotechEnsemble::calib(const QVector<int> axis, ItomSharedSemaphore
             QObject::connect(awakeThread, SIGNAL(started()), timer, SLOT(start()));
             awakeThread->start();
     
-            if (axis.size() > 0) 
+            if (axis.size() > 0)
             {
                 retValue += checkError(EnsembleMotionHome(m_pHandle, mask));
             }
@@ -1070,7 +1104,7 @@ ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int
         }
 
         bool bMove = false;
-        doUpdatePosAndState(_axis);
+        retVal += doUpdatePosAndState(_axis);
 
         for (int i = 0; i < _axis.size(); i++) 
         {
@@ -1158,6 +1192,16 @@ ito::RetVal AerotechEnsemble::doUpdatePosAndState(const QVector<int> &axes)
                 }
 
                 DWORD AxisFault = (DWORD)(pDouble[2]);
+
+                if (AxisFault != 0)
+                {
+                    retval += axisFaultToRetVal(AxisFault, axis);
+
+                    if (retval.containsError()) //any error in moving, positioning...
+                    {
+                        setStatus(m_currentStatus[axis], ito::actuatorInterrupted, ito::actSwitchesMask | ito::actStatusMask);
+                    }
+                }
             }
             else
             {
@@ -1166,6 +1210,83 @@ ito::RetVal AerotechEnsemble::doUpdatePosAndState(const QVector<int> &axes)
         }
     }
 
+    return retval;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------- 
+ito::RetVal AerotechEnsemble::axisFaultToRetVal(int axisFault, int axisID)
+{
+    ito::RetVal retval;
+    switch (axisFault)
+    {
+    case 0:
+        break;
+    case AXISFAULT_PositionErrorFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The absolute value of the difference between the position command and the position feedback exceeded the threshold specified by the PositionErrorThreshold parameter.").toAscii().data());
+        break;
+    case AXISFAULT_OverCurrentFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The average motor current exceeded the threshold specified by the AverageCurrentThreshold and AverageCurrentTime parameters.").toAscii().data());
+        break;
+    case AXISFAULT_CwEndOfTravelLimitFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The axis encountered the clockwise (positive) end-of-travel limit switch.").toAscii().data());
+        break;
+    case AXISFAULT_CcwEndOfTravelLimitFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The axis encountered the counter-clockwise (negative) end-of-travel limit switch.").toAscii().data());
+        break;
+    case AXISFAULT_CwSoftwareLimitFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The axis was commanded to move beyond the position specified by the SoftwareLimitHigh parameter.").toAscii().data());
+        break;
+    case AXISFAULT_CcwSoftwareLimitFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The axis was commanded to move beyond the position specified by the SoftwareLimitLow parameter.").toAscii().data());
+        break;
+    case AXISFAULT_AmplifierFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The amplifier for this axis exceeded its maximum current rating or experienced an internal error.").toAscii().data());
+        break;
+    case AXISFAULT_PositionFeedbackFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The drive detected a problem with the feedback device specified by the PositionFeedbackType and PositionFeedbackChannel parameters.").toAscii().data());
+        break;
+    case AXISFAULT_VelocityFeedbackFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The drive detected a problem with the feedback device specified by the VelocityFeedbackType and VelocityFeedbackChannel parameters.").toAscii().data());
+        break;
+    case AXISFAULT_HallSensorFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The drive detected an invalid state (all high or all low) for the Hall-effect sensor inputs on this axis.").toAscii().data());
+        break;
+    case AXISFAULT_MaxVelocityCommandFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The commanded velocity is more than the velocity command threshold. Before the axis is homed, this threshold is specified by the VelocityCommandThresholdBeforeHome parameter. After the axis is homed, this threshold is specified by the VelocityCommandThreshold parameter.").toAscii().data());
+        break;
+    case AXISFAULT_EmergencyStopFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The emergency stop sense input, specified by the ESTOPFaultInput parameter, was triggered.").toAscii().data());
+        break;
+    case AXISFAULT_VelocityErrorFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The absolute value of the difference between the velocity command and the velocity feedback exceeded the threshold specified by the VelocityErrorThreshold parameter.").toAscii().data());
+        break;
+    case AXISFAULT_ExternalFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The external fault input, specified by the ExternalFaultAnalogInput or ExternalFaultDigitalInput parameters, was triggered.").toAscii().data());
+        break;
+    case AXISFAULT_MotorTemperatureFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The motor thermistor input was triggered, which indicates that the motor exceeded its maximum recommended operating temperature.").toAscii().data());
+        break;
+    case AXISFAULT_AmplifierTemperatureFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The amplifier exceeded its maximum recommended operating temperature.").toAscii().data());
+        break;
+    case AXISFAULT_EncoderFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The encoder fault input on the motor feedback connector was triggered.").toAscii().data());
+        break;
+    case AXISFAULT_CommunicationLostFault:
+        retval += ito::RetVal(ito::retError, 0, tr("One or more of the drives on the network lost communications with the controller.").toAscii().data());
+        break;
+    case AXISFAULT_FeedbackScalingFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The difference between the position feedback and the scaled (adjusted by GainKv) velocity feedback exceeds the threshold specified by the PositionErrorThreshold parameter.").toAscii().data());
+        break;
+    case AXISFAULT_MarkerSearchFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The distance that the axis moved while searching for the marker exceeded the threshold specified by the MarkerSearchThreshold parameter in axis %1 (%2).").arg(axisID).arg(m_axisNames[axisID]).toAscii().data());
+        break;
+/*    case AXISFAULT_VoltageClampFault:
+        retval += ito::RetVal(ito::retError, 0, tr("The commanded voltage output exceeded the low or high PiezoVoltageClamp parameter.").toAscii().data());
+        break;*/
+    default:
+        retval += ito::RetVal::RetVal(ito::retError, 0, tr("Unknown axisFault value: %1 in axis %2 (%3)").arg(axisFault).arg(axisID).arg(m_axisNames[axisID]).toAscii().data());
+    }
     return retval;
 }
 
