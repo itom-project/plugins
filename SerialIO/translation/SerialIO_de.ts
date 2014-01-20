@@ -157,12 +157,12 @@
     <message>
         <location line="+68"/>
         <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>N.A.</source>
-        <translation type="unfinished"></translation>
+        <translation>K.A.</translation>
     </message>
     <message>
         <source>Serialport-Interface</source>
@@ -322,7 +322,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="-81"/>
         <source>itom-plugin for a serial port communication</source>
-        <translation type="unfinished"></translation>
+        <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -347,12 +347,12 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="+2"/>
         <source>Parity: 0 -&gt; no parity, 1 -&gt; odd parity, 2 -&gt; even parity</source>
-        <translation type="unfinished"></translation>
+        <translation>Paritätsprüfung: 0 -&gt; keine Parität, 1 -&gt; ODD Parität, 2 -&gt; Parität</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Bitmask for flow control (see docstring for more information)</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitmaske für Flusskontrolle (für nähere Informationen siehe Docstring)</translation>
     </message>
     <message>
         <source>Toggle parity check</source>
@@ -388,7 +388,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location filename="../dialogSerialIO.cpp" line="+211"/>
         <source>Configuration Dialog</source>
-        <translation></translation>
+        <translation>Konfigurationsdialog</translation>
     </message>
     <message>
         <location line="+142"/>
