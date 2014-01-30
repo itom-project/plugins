@@ -82,7 +82,13 @@ ito::RetVal VistekContainer::initCameraContainer()
             dllVersionCheck = isVersionCompliantDLL(&dllVersion, &expectedVersion);
             if(dllVersionCheck!=SVGigE_SUCCESS)
             {
-                return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch.").toAscii().data());
+				QString gotVersion = QString("%1.%2.%3.%4").arg( dllVersion.MajorVersion).arg(dllVersion.MinorVersion).arg(dllVersion.DriverVersion).arg(dllVersion.BuildVersion);
+				QString expectedVersion = QString("%1.%2.%3.%4").arg( dllVersion.MajorVersion).arg(dllVersion.MinorVersion).arg(dllVersion.DriverVersion).arg(dllVersion.BuildVersion);
+#ifdef _WIN64                 
+				return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch, got: %1, expected: %2 (64bit).").arg(gotVersion).arg(expectedVersion).toAscii().data());
+#else
+				return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch, got: %1, expected: %2.").arg(gotVersion).arg(expectedVersion).toAscii().data());
+#endif
             }
 
             // Create container Handle
