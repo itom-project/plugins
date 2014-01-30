@@ -10,9 +10,10 @@
 #include <qsharedpointer.h>
 #include <QTimerEvent>
 #include <qmutex.h>
+#include <qatomic.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class Vistek : public ito::AddInGrabber //, public VistekInterface
+class Vistek : public ito::AddInGrabber
 {
     Q_OBJECT
 
@@ -28,28 +29,55 @@ class Vistek : public ito::AddInGrabber //, public VistekInterface
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
+        struct Features
+        {
+            bool adjustExposureTime;
+            bool adjustGain;
+            bool adjustBinning;
+            bool has8bit;
+            bool has10bit;
+            bool has12bit;
+            bool has16bit;
+        };
+
+        Features m_features;
+
+        struct AcquiredImage
+        {
+            int/*QAtomicInt*/ status; // maps to SVGigE_SIGNAL_TYPE
+            int sizex;
+            int sizey;
+            int dataID;
+            int packetCount;
+            double transferTime;
+            double timestamp;
+            GVSP_PIXEL_TYPE pixelType;
+            QVector<ito::uint8> buffer;
+        };
+
+        AcquiredImage m_acquiredImage;
+
         // Variables that are filled during the data callback
-        void * ImageData;
-        int SizeX, SizeY, DataID, PacketCount, TriggerViolationCount;
+        int TriggerViolationCount;
         double Timestamp, TimeSinceLastFrame, TransferTime;
         double MessageTimestampStartOfTransfer, MessageTimestampLastStartOfTransfer, MessageTimestampFrameCompleted, MessageTimestampEndOfExposure;
-        GVSP_PIXEL_TYPE PixelType;
-        StreamingChannel_handle StreamingChannel;
-        Event_handle EventID;
-        bool FrameCompletedFlag;
+        StreamingChannel_handle m_streamingChannel;
+        Event_handle m_eventID;
 
     private:
+
+        ito::RetVal checkError(const char *prependStr, SVGigE_RETURN returnCode);
+
         VistekContainer *m_pVistekContainer;
-        Camera_handle Cam;
-        int NumberOfCameras;
-        int BufferCount;
+        Camera_handle m_cam;
         double TimestampTickFrequency;
-        BINNING_MODE BinningMode;
+        BINNING_MODE m_binningMode;
+
+        
 
         // Utility functions to control the camera
         ito::RetVal initCamera(int CameraNumber);
-        ito::RetVal updateStreamingChannel();
-        ito::RetVal registerCallbacks();
+        ito::RetVal startStreamAndRegisterCallbacks();
 
     signals:
         void parametersChanged(QMap<QString, ito::Param> params);
@@ -67,9 +95,6 @@ class Vistek : public ito::AddInGrabber //, public VistekInterface
         ito::RetVal getVal(void *dObj, ItomSharedSemaphore *waitCond);
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
-        void dataParametersChanged(int sizex, int sizey, int bpp);
-        void gainPropertiesChanged(double gain);
-        void exposurePropertiesChanged(double gain);
         void updateTimestamp();
 
     private slots:
@@ -79,8 +104,8 @@ class Vistek : public ito::AddInGrabber //, public VistekInterface
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Callback function for Vistek
-SVGigE_RETURN __stdcall DataCallback(Image_handle Data, void* Context);
-SVGigE_RETURN __stdcall MessageCallback(Event_handle EventID, void* Context);
+SVGigE_RETURN __stdcall DataCallback(Image_handle data, void* context);
+SVGigE_RETURN __stdcall MessageCallback(Event_handle eventID, void* context);
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #endif // VISTEK_H

@@ -49,6 +49,8 @@ class VistekContainer : QObject
         VistekContainer(VistekContainer  &/*copyConstr*/) {}
         ~VistekContainer(void);
 
+        ito::RetVal checkError(const char *prependStr, SVGigE_RETURN returnCode);
+
         static VistekContainer *m_pVistekContainer;
 
         //!< singleton nach: http://www.oop-trainer.de/Themen/Singleton.html

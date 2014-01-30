@@ -38,7 +38,11 @@
 */
 ito::RetVal VistekContainer::initCameraContainer()
 {
+    ito::RetVal retval;
+    SVGigE_RETURN svsReturn;
+
     QMutexLocker locker(&m_mutex);
+
     if(m_initialized == false)
     {
         if( m_camClient != SVGigE_NO_CLIENT) // Check if container client handle already exists
@@ -78,9 +82,10 @@ ito::RetVal VistekContainer::initCameraContainer()
             expectedVersion.DriverVersion = SVGigE_VERSION_DRIVER;
             expectedVersion.BuildVersion = SVGigE_VERSION_BUILD;
             SVGigE_VERSION dllVersion;
-            SVGigE_RETURN dllVersionCheck;
-            dllVersionCheck = isVersionCompliantDLL(&dllVersion, &expectedVersion);
-            if(dllVersionCheck!=SVGigE_SUCCESS)
+            
+            svsReturn = isVersionCompliantDLL(&dllVersion, &expectedVersion);
+
+            if(svsReturn == SVGigE_DLL_VERSION_MISMATCH)
             {
 				QString gotVersion = QString("%1.%2.%3.%4").arg( dllVersion.MajorVersion).arg(dllVersion.MinorVersion).arg(dllVersion.DriverVersion).arg(dllVersion.BuildVersion);
 				QString expectedVersion = QString("%1.%2.%3.%4").arg( dllVersion.MajorVersion).arg(dllVersion.MinorVersion).arg(dllVersion.DriverVersion).arg(dllVersion.BuildVersion);
@@ -90,68 +95,79 @@ ito::RetVal VistekContainer::initCameraContainer()
 				return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch, got: %1, expected: %2.").arg(gotVersion).arg(expectedVersion).toAscii().data());
 #endif
             }
-
-            // Create container Handle
-            std::cout << "Trying to connect via FilterDriver ... " << std::endl;
-            m_camClient = CameraContainer_create(SVGigETL_TypeFilter);
-            if(m_camClient == SVGigE_NO_CLIENT)
+            else
             {
-                std::cout << "connecting failed.\n" << std::endl;
-                std::cout << "Trying to connect via winsock ... " << std::endl;
-                m_camClient = CameraContainer_create(SVGigETL_TypeWinsock);
+                retval += checkError("Check Vistek DLL", svsReturn);
+            }
+
+            if (!retval.containsError())
+            {
+                // Create container Handle
+                std::cout << "Trying to connect via FilterDriver ... " << std::endl;
+                m_camClient = CameraContainer_create(SVGigETL_TypeFilter);
                 if(m_camClient == SVGigE_NO_CLIENT)
                 {
-                    return ito::RetVal(ito::retError, 0, tr("Connecting via winsock failed.").toAscii().data());
+                    std::cout << "connecting failed.\n" << std::endl;
+                    std::cout << "Trying to connect via winsock ... " << std::endl;
+                    m_camClient = CameraContainer_create(SVGigETL_TypeWinsock);
+                    if(m_camClient == SVGigE_NO_CLIENT)
+                    {
+                        return ito::RetVal(ito::retError, 0, tr("Connecting via winsock failed.").toAscii().data());
+                    }
                 }
+                std::cout << "done!\n" << std::endl;
             }
-            std::cout << "done!\n" << std::endl;
         }
 
-        // Discover cameras
-        std::cout << "Trying to discover cameras ... " << std::endl;
-        if( SVGigE_SUCCESS != CameraContainer_discovery(m_camClient) )
+        if (!retval.containsError())
         {
-            return ito::RetVal(ito::retError, 0, tr("Camera discovery failed.").toAscii().data());
+            // Discover cameras
+            std::cout << "Trying to discover cameras ... " << std::endl;
+            svsReturn = CameraContainer_discovery(m_camClient);
+            retval += checkError("Camera discovery failed", svsReturn);
+
+            if (!retval.containsError())
+            {
+                // Get the number of connected cams
+                int CamCounter = 0;
+                Camera_handle TempCam;
+                std::cout << "Counting cameras ... " << std::endl;
+                int numberOfCameras = CameraContainer_getNumberOfCameras(m_camClient);
+                if( 0 == numberOfCameras )
+                {
+                    return ito::RetVal(ito::retError, 0, tr("No cameras detected.").toAscii().data());
+                }
+                std::cout << numberOfCameras << " camera(s) detected!\n" << std::endl;
+
+                // Read all the relevant info from each cam
+                std::cout << "Fetching camera data:\n" << std::endl;
+                m_cameras.clear();
+                for (CamCounter = 0; CamCounter < numberOfCameras; CamCounter++)
+                {
+                    TempCam = CameraContainer_getCamera(m_camClient, CamCounter);
+                    VistekCam cam;
+                    int TempSize = 0;
+
+                    cam.camModel =            Camera_getModelName(TempCam);
+                    cam.camSerialNo =        Camera_getSerialNumber(TempCam);
+                    cam.camVersion =        Camera_getDeviceVersion(TempCam);
+                    cam.camIP =                Camera_getIPAddress(TempCam);
+                    cam.camManufacturer =    Camera_getManufacturerName(TempCam);
+                    // Doesn't work here. Maybe a Camera_openConnection(m_cam, 30) is needed before...
+                    /*Camera_getSizeX(TempCam, &TempSize);
+                    cam.sensorPixelsX = TempSize;
+                    Camera_getSizeY(TempCam, &TempSize);
+                    cam.sensorPixelsY = TempSize;*/
+                    cam.started = false;
+
+                    std::cout << "Camera SN: " << cam.camSerialNo.toAscii().data() << " found at IP " << cam.camIP.toAscii().data() << "\n" <<std::endl;
+                    Camera_closeConnection(TempCam);
+                    m_cameras << cam;
+                }
+
+                std::cout << "done!\n" << std::endl;
+            }
         }
-        
-        // Get the number of connected cams
-        int CamCounter = 0;
-        Camera_handle TempCam;
-        std::cout << "Counting cameras ... " << std::endl;
-        int numberOfCameras = CameraContainer_getNumberOfCameras(m_camClient);
-        if( 0 == numberOfCameras )
-        {
-            return ito::RetVal(ito::retError, 0, tr("No cameras detected.").toAscii().data());
-        }
-        std::cout << numberOfCameras << " camera(s) detected!\n" << std::endl;
-
-        // Read all the relevant info from each cam
-        std::cout << "Fetching camera data:\n" << std::endl;
-        m_cameras.clear();
-        for (CamCounter = 0; CamCounter < numberOfCameras; CamCounter++)
-        {
-            TempCam = CameraContainer_getCamera(m_camClient, CamCounter);
-            VistekCam cam;
-            int TempSize = 0;
-
-            cam.camModel =            Camera_getModelName(TempCam);
-            cam.camSerialNo =        Camera_getSerialNumber(TempCam);
-            cam.camVersion =        Camera_getDeviceVersion(TempCam);
-            cam.camIP =                Camera_getIPAddress(TempCam);
-            cam.camManufacturer =    Camera_getManufacturerName(TempCam);
-            // Doesn't work here. Maybe a Camera_openConnection(Cam, 30) is needed before...
-            /*Camera_getSizeX(TempCam, &TempSize);
-            cam.sensorPixelsX = TempSize;
-            Camera_getSizeY(TempCam, &TempSize);
-            cam.sensorPixelsY = TempSize;*/
-            cam.started = false;
-
-            std::cout << "Camera SN: " << cam.camSerialNo.toAscii().data() << " found at IP " << cam.camIP.toAscii().data() << "\n" <<std::endl;
-            Camera_closeConnection(TempCam);
-            m_cameras << cam;
-        }
-
-        std::cout << "done!\n" << std::endl;
 
         m_initialized = true;
     }
@@ -178,6 +194,36 @@ VistekContainer::VistekContainer(void) :
 */
 VistekContainer::~VistekContainer(void)
 {
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! Error conversion between SVGigE_RETURN and ito::RetVal
+/*!
+    Returns retOk if returnCode is SVGigE_SUCCESS, else retError with appropriate error message
+    \return ito::RetVal
+*/
+ito::RetVal VistekContainer::checkError(const char *prependStr, SVGigE_RETURN returnCode)
+{
+    ito::RetVal retval;
+    if (returnCode != SVGigE_SUCCESS)
+    {
+        const char *str = prependStr;
+        if (prependStr == NULL)
+        {
+            str = "";
+        }
+
+        char *msg = Error_getMessage(returnCode);
+        if (msg)
+        {
+            retval += ito::RetVal::format(ito::retError,returnCode, "%s: Vistek DLL error %i '%s' occurred", str, returnCode, msg);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,returnCode, "%s: unknown Vistek DLL error %i occurred", str, returnCode);
+        }
+    }
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
