@@ -77,8 +77,12 @@ Vistek::Vistek(QObject *parent) :
     m_cam(SVGigE_NO_CAMERA),
     TriggerViolationCount(0),
     m_streamingChannel(SVGigE_NO_STREAMING_CHANNEL),
-    m_eventID(SVGigE_NO_EVENT)
+    m_eventID(SVGigE_NO_EVENT),
+    m_gainIncrement(0.1),
+    m_exposureIncrement(0.001)
 {
+    qRegisterMetaType<Vistek::Features>("Vistek::Features");
+
     m_acquiredImage.status = asNoImageAcquired;
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "Vistek", NULL);
@@ -101,6 +105,8 @@ Vistek::Vistek(QObject *parent) :
     paramVal = ito::Param("exposure", ito::ParamBase::Double, 0.00001, 2.0, 0.0, tr("Exposure time in [s]").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 18.0, 0.0, tr("Gain [0..18 dB]").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Offset [0.0..1.0]").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("binning", ito::ParamBase::Int, 0, 5, 0, tr("Binning mode (OFF = 0 [default], HORIZONTAL = 1, VERTICAL = 2,  2x2 = 3, 3x3 = 4, 4x4 = 5").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -237,6 +243,11 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             // Camera_setGain expects a value between 0 and 18 in dB
             retValue += checkError("set gain", Camera_setGain(m_cam, val->getVal<double>()));
         }
+        else if (!key.compare("offset"))
+        {
+            // Camera_setOffset expects a value between 0..255 mapped from 0.0 .. 1.0
+            retValue += checkError("set offset", Camera_setOffset(m_cam, val->getVal<double>() * 255));
+        }
         else if(!key.compare("binning"))
         {
             BINNING_MODE mode;
@@ -321,9 +332,20 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
 
             if (!retValue.containsError())
             {
+                if(grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
+                {
+                    retValue += checkError("stop camera", Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP));
+                }
+                retValue += Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP);
                 retValue += stopStreamAndDeleteCallbacks();
                 retValue += checkError("set pixel depth",Camera_setPixelDepth(m_cam, depth));
                 retValue += startStreamAndRegisterCallbacks();
+
+                if(grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
+                {
+                    retValue += checkError("restart camera 1", Camera_setAcquisitionMode(m_cam, ACQUISITION_MODE_SOFTWARE_TRIGGER));
+                    retValue += checkError("restart camera 2", Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_START));
+                }
             }      
         }
 
@@ -595,7 +617,7 @@ ito::RetVal Vistek::stopDevice(ItomSharedSemaphore *waitCond)
         //*********************************************
         if( m_cam != SVGigE_NO_CAMERA)
         {
-            retValue += Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP);
+            retValue += checkError("stop camera",Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP));
         }
         //*********************************************
     }
@@ -753,6 +775,14 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
         else if (m_acquiredImage.status == asTimeout)
         {
             retValue += ito::RetVal(ito::retError,0,"timeout while retrieving image");
+        }
+        else if (m_acquiredImage.status == asOtherError)
+        {
+            retValue += ito::RetVal(ito::retError,0,"error while retrieving the image");
+        }
+        else if (m_acquiredImage.status == asConnectionLost)
+        {
+            retValue += ito::RetVal(ito::retError,0,"connection to camera lost");
         }
         else
         {
@@ -942,6 +972,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
         m_features.adjustExposureTime = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_EXPOSURE_TIME);
         m_features.adjustGain = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_GAIN);
         m_features.adjustBinning = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_BINNING);
+        m_features.adjustOffset = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_ADCOFFSET);
         m_features.has8bit = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_COLORDEPTH_8BPP);
         m_features.has10bit = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_COLORDEPTH_10BPP);
         m_features.has12bit = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_COLORDEPTH_12BPP);
@@ -962,6 +993,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
         //obtain gain value
         Camera_getGainMax(m_cam, &valMax);
         Camera_getGain(m_cam, &val);
+        Camera_getGainIncrement(m_cam, &m_gainIncrement);
         ito::DoubleMeta *dm = (ito::DoubleMeta*)(m_params["gain"].getMeta());
         dm->setMin(0.0);
         dm->setMax(valMax);
@@ -971,9 +1003,23 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
             m_params["gain"].setFlags(ito::ParamBase::Readonly);
         }
 
+        //obtain offset value
+        Camera_getOffset(m_cam, &val);
+        Camera_getOffsetMax(m_cam, &valMax);
+        dm = (ito::DoubleMeta*)(m_params["offset"].getMeta());
+        dm->setMin(0.0);
+        dm->setMax(valMax);
+        m_params["offset"].setVal<double>(val);
+        if (m_features.adjustOffset == false)
+        {
+            m_params["offset"].setFlags(ito::ParamBase::Readonly);
+        }
+
         //obtain exposure value
         Camera_getExposureTimeRange(m_cam, &valMin, &valMax);
         Camera_getExposureTime(m_cam, &val);
+        Camera_getExposureTimeIncrement(m_cam, &m_exposureIncrement);
+        m_exposureIncrement /= 1.e6;
         dm = (ito::DoubleMeta*)(m_params["exposure"].getMeta());
         dm->setMin(valMin / 1.e6);
         dm->setMax(valMax / 1.e6);
@@ -992,6 +1038,12 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
         std::cout << "done!\n" << std::endl;
 
         retval += startStreamAndRegisterCallbacks();
+
+        DockWidgetVistek *dw = qobject_cast<DockWidgetVistek*>(getDockWidget()->widget());
+        if (dw)
+        {
+            QMetaObject::invokeMethod(dw, "propertiesChanged", Q_ARG(float,m_gainIncrement), Q_ARG(float,m_exposureIncrement), Q_ARG(Vistek::Features,m_features) );
+        }
     }
 
     return retval;
@@ -1212,16 +1264,18 @@ void Vistek::dockWidgetVisibilityChanged(bool visible)
         if (visible)
         {
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            connect(dw, SIGNAL(ExposurePropertyChanged(double,double,double)), this, SLOT(ExposurePropertyChanged(double,double,double)));
-            connect(dw, SIGNAL(GainPropertyChanged(double,double,double)), this, SLOT(GainPropertyChanged(double,double,double)));
+            connect(dw, SIGNAL(ExposurePropertyChanged(double)), this, SLOT(ExposurePropertyChanged(double)));
+            connect(dw, SIGNAL(GainPropertyChanged(double)), this, SLOT(GainPropertyChanged(double)));
+            connect(dw, SIGNAL(OffsetPropertyChanged(double)), this, SLOT(OffsetPropertyChanged(double)));
 
             emit parametersChanged(m_params);
         }
         else
         {
             disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            disconnect(dw, SIGNAL(ExposurePropertyChanged(double,double,double)), this, SLOT(ExposurePropertyChanged(double,double,double)));
-            disconnect(dw, SIGNAL(GainPropertyChanged(double,double,double)), this, SLOT(GainPropertyChanged(double,double,double)));
+            disconnect(dw, SIGNAL(ExposurePropertyChanged(double)), this, SLOT(ExposurePropertyChanged(double)));
+            disconnect(dw, SIGNAL(GainPropertyChanged(double)), this, SLOT(GainPropertyChanged(double)));
+            disconnect(dw, SIGNAL(OffsetPropertyChanged(double)), this, SLOT(OffsetPropertyChanged(double)));
         }
     }
 }
@@ -1238,13 +1292,11 @@ void Vistek::GainPropertyChanged(double gain)
     setParam( QSharedPointer<ito::ParamBase>( new ito::ParamBase("gain", ito::ParamBase::Double, gain )));
 }
 
-
-
-
-
-
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
+void Vistek::OffsetPropertyChanged(double offset)
+{
+    setParam( QSharedPointer<ito::ParamBase>( new ito::ParamBase("offset", ito::ParamBase::Double, offset )));
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1252,18 +1304,32 @@ SVGigE_RETURN __stdcall DataCallback(Image_handle data, void* context)
 {
     // Check for valid context
     Vistek *v = reinterpret_cast<Vistek*>(context);
-    if(v == NULL || data == NULL)
+
+    if (v == NULL)
     {
+        return SVGigE_INVALID_PARAMETERS;
+    }
+
+    if(Image_getDataPointer(data) == NULL)
+    {
+        if (Image_getSignalType(data) == SVGigE_SIGNAL_CAMERA_CONNECTION_LOST)
+        {
+            v->m_acquiredImage.status = Vistek::asConnectionLost;
+        }
+        else
+        {
+            v->m_acquiredImage.status = Vistek::asOtherError;
+        }
         v->m_acquiredImage.sizex = -1;
         v->m_acquiredImage.sizey = -1;
-        return SVGigE_ERROR;
+        return SVGigE_SUCCESS;
     }
 
     if (v->m_acquiredImage.status == Vistek::asNoImageAcquired || v->m_acquiredImage.status == Vistek::asTimeout)
     {
         //nobody is waiting for an image -> kill it
         Image_release(data);
-        return SVGigE_ERROR;
+        return SVGigE_IMAGE_SKIPPED_IN_CALLBACK;
     }
     else
     {

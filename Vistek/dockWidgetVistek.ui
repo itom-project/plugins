@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>256</width>
-    <height>289</height>
+    <height>332</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -284,6 +284,26 @@
        <widget class="QDoubleSpinBox" name="gainSpinBox">
         <property name="suffix">
          <string> dB</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="offsetSpinBox">
+        <property name="suffix">
+         <string/>
+        </property>
+        <property name="maximum">
+         <double>1.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Offset:</string>
         </property>
        </widget>
       </item>

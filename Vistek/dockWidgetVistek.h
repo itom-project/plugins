@@ -9,6 +9,8 @@
 #include "ui_dockWidgetVistek.h"
 #include "common/sharedStructures.h"
 
+#include "Vistek.h"
+
 class DockWidgetVistek : public QWidget
 {
     Q_OBJECT
@@ -21,16 +23,21 @@ class DockWidgetVistek : public QWidget
         Ui::DockWidgetVistek ui;
         bool m_inEditing;
 
+        float m_exposureStep;
+
     signals:
         void GainPropertyChanged(double gain);
+        void OffsetPropertyChanged(double gain);
         void ExposurePropertyChanged(double gain);
 
     public slots:
         void valuesChanged(QMap<QString, ito::Param> params);
+        void propertiesChanged(float gainIncrement, float exposureIncrement, Vistek::Features features);
 
     private slots:
-        void on_exposureSpinBox_editingFinished();
-        void on_gainSpinBox_editingFinished();
+        void on_exposureSpinBox_valueChanged(double val);
+        void on_gainSpinBox_valueChanged(double val);
+        void on_offsetSpinBox_valueChanged(double val);
 };
 
 #endif

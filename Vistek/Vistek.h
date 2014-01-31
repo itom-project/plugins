@@ -28,13 +28,14 @@ class Vistek : public ito::AddInGrabber
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
-        enum AcquisitionStatus { asNoImageAcquired, asWaitingForTransfer, asImageReady, asTimeout };
+        enum AcquisitionStatus { asNoImageAcquired, asWaitingForTransfer, asImageReady, asTimeout, asConnectionLost, asOtherError };
 
         struct Features
         {
             bool adjustExposureTime;
             bool adjustGain;
             bool adjustBinning;
+            bool adjustOffset;
             bool has8bit;
             bool has10bit;
             bool has12bit;
@@ -76,15 +77,14 @@ class Vistek : public ito::AddInGrabber
         double TimestampTickFrequency;
         BINNING_MODE m_binningMode;
 
+        float m_gainIncrement;
+        float m_exposureIncrement;
         
 
         // Utility functions to control the camera
         ito::RetVal initCamera(int CameraNumber);
         ito::RetVal startStreamAndRegisterCallbacks();
         ito::RetVal stopStreamAndDeleteCallbacks();
-
-    signals:
-        void parametersChanged(QMap<QString, ito::Param> params);
 
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
@@ -104,6 +104,7 @@ class Vistek : public ito::AddInGrabber
     private slots:
         void ExposurePropertyChanged(double exposure);
         void GainPropertyChanged(double gain);
+        void OffsetPropertyChanged(double offset);
 
         void dockWidgetVisibilityChanged(bool visible);
 
