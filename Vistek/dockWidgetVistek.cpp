@@ -57,10 +57,10 @@
 
 void DockWidgetVistek::on_exposureSpinBox_editingFinished()
 {
-    emit GainOffsetExposurePropertiesChanged( ui.gainSpinBox->value(), 0.0, ui.exposureSpinBox->value() );
+    emit ExposurePropertyChanged( ui.exposureSpinBox->value() );
 }
 
 void DockWidgetVistek::on_gainSpinBox_editingFinished()
 {
-    emit GainOffsetExposurePropertiesChanged( ui.gainSpinBox->value(), 0.0, ui.exposureSpinBox->value() );
+    emit GainPropertyChanged( ui.gainSpinBox->value() );
 }

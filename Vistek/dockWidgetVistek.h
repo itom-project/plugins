@@ -22,7 +22,8 @@ class DockWidgetVistek : public QWidget
         bool m_inEditing;
 
     signals:
-        void GainOffsetExposurePropertiesChanged(double gain, double offset, double exposure);
+        void GainPropertyChanged(double gain);
+        void ExposurePropertyChanged(double gain);
 
     public slots:
         void valuesChanged(QMap<QString, ito::Param> params);

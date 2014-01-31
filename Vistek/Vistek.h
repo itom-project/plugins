@@ -102,7 +102,8 @@ class Vistek : public ito::AddInGrabber
         void updateTimestamp();
 
     private slots:
-        void GainOffsetExposurePropertiesChanged(double gain, double offset, double exposure);
+        void ExposurePropertyChanged(double exposure);
+        void GainPropertyChanged(double gain);
 
         void dockWidgetVisibilityChanged(bool visible);
 

@@ -81,7 +81,7 @@ Vistek::Vistek(QObject *parent) :
 {
     m_acquiredImage.status = asNoImageAcquired;
 
-    ito::Param paramVal("name", ito::ParamBase::String, "Vistek", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "Vistek", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
     // Camera specific information
@@ -116,6 +116,9 @@ Vistek::Vistek(QObject *parent) :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("streamingPacketSize", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 16000, 1500, tr("Used streaming packet size (in bytes, more than 1500 usually only possible if you enable jumbo-frames at your network adapter)").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("logLevel", ito::ParamBase::Int, 0, 7, 0, tr("Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera communication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
@@ -220,7 +223,11 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
     if(!retValue.containsError())
     {
         bool set = false;
-        if(!key.compare("exposure"))
+        if (!key.compare("logLevel"))
+        {
+            retValue += checkError("set log level",Camera_registerForLogMessages(m_cam,val->getVal<int>(),"Vistek_SVGigE.log",NULL));
+        }
+        else if(!key.compare("exposure"))
         {
             // Camera_setExposureTime expects µs, so multiply by 10^6
             retValue += checkError("set exposure time",Camera_setExposureTime(m_cam, val->getVal<double>()*1.e6));
@@ -930,6 +937,8 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
         retval += checkError("",Camera_setAcquisitionMode(m_cam, ACQUISITION_MODE_NO_ACQUISITION));
         retval += checkError("",Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP));
 
+        Camera_registerForLogMessages(m_cam,m_params["logLevel"].getVal<int>(),"Vistek_SVGigE.log",NULL);
+
         m_features.adjustExposureTime = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_EXPOSURE_TIME);
         m_features.adjustGain = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_GAIN);
         m_features.adjustBinning = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_BINNING);
@@ -1203,32 +1212,31 @@ void Vistek::dockWidgetVisibilityChanged(bool visible)
         if (visible)
         {
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            connect(dw, SIGNAL(GainOffsetExposurePropertiesChanged(double,double,double)), this, SLOT(GainOffsetExposurePropertiesChanged(double,double,double)));
+            connect(dw, SIGNAL(ExposurePropertyChanged(double,double,double)), this, SLOT(ExposurePropertyChanged(double,double,double)));
+            connect(dw, SIGNAL(GainPropertyChanged(double,double,double)), this, SLOT(GainPropertyChanged(double,double,double)));
 
             emit parametersChanged(m_params);
         }
         else
         {
             disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            disconnect(dw, SIGNAL(GainOffsetExposurePropertiesChanged(double,double,double)), this, SLOT(GainOffsetExposurePropertiesChanged(double,double,double)));
+            disconnect(dw, SIGNAL(ExposurePropertyChanged(double,double,double)), this, SLOT(ExposurePropertyChanged(double,double,double)));
+            disconnect(dw, SIGNAL(GainPropertyChanged(double,double,double)), this, SLOT(GainPropertyChanged(double,double,double)));
         }
     }
 }
 
-void Vistek::GainOffsetExposurePropertiesChanged(double gain, double /*offset*/, double exposure)
+//----------------------------------------------------------------------------------------------------------------------------------
+void Vistek::ExposurePropertyChanged(double exposure)
 {
-    ito::RetVal retValue;
-        
-    // Camera_setExposureTime expects µs, so multiply by 10^6
-    retValue += checkError("set exposure time",Camera_setExposureTime(m_cam, exposure*1.e6));
-        
-    // Camera_setGain expects a value between 0 and 18 in dB
-    retValue += checkError("set gain", Camera_setGain(m_cam, gain));
-
-    emit parametersChanged(m_params);
+    setParam( QSharedPointer<ito::ParamBase>( new ito::ParamBase("exposure", ito::ParamBase::Double, exposure )));
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
+void Vistek::GainPropertyChanged(double gain)
+{
+    setParam( QSharedPointer<ito::ParamBase>( new ito::ParamBase("gain", ito::ParamBase::Double, gain )));
+}
 
 
 
@@ -1323,7 +1331,7 @@ SVGigE_RETURN __stdcall MessageCallback(Event_handle eventID, void* context)
     if( SVGigE_SUCCESS != Stream_getMessage(v->m_streamingChannel,eventID,&MessageID,&MessageType) )
         return SVGigE_ERROR;
 
-    qDebug() << "message:" << MessageType;
+    //qDebug() << "message:" << MessageType;
 
     // Get Message timestamp
     if(MessageType == SVGigE_SIGNAL_START_OF_TRANSFER)
