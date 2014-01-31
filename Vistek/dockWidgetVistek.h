@@ -32,7 +32,7 @@ class DockWidgetVistek : public QWidget
 
     public slots:
         void valuesChanged(QMap<QString, ito::Param> params);
-        void propertiesChanged(float gainIncrement, float exposureIncrement, Vistek::Features features);
+        void propertiesChanged(float gainIncrement, float exposureIncrement, VistekFeatures features);
 
     private slots:
         void on_exposureSpinBox_valueChanged(double val);

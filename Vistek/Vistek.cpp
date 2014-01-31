@@ -2,6 +2,8 @@
 #include "VistekInterface.h"
 #include "VistekContainer.h"
 
+#include "dialogVistek.h"
+
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
 
@@ -43,14 +45,14 @@ const ito::RetVal Vistek::showConfDialog(void)
 {
     ito::RetVal retValue(ito::retOk);
 
-    DialogVistek *confDialog = new DialogVistek();
+    DialogVistek *confDialog = new DialogVistek(this, &m_features);
     connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
     QMetaObject::invokeMethod(this, "sendParameterRequest");
 
     if (confDialog->exec())
     {
         disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-        confDialog->sendVals(this);
+        confDialog->sendParameters();
     }
     else
     {
@@ -78,10 +80,10 @@ Vistek::Vistek(QObject *parent) :
     TriggerViolationCount(0),
     m_streamingChannel(SVGigE_NO_STREAMING_CHANNEL),
     m_eventID(SVGigE_NO_EVENT),
-    m_gainIncrement(0.1),
-    m_exposureIncrement(0.001)
+    m_gainIncrement(0.1f),
+    m_exposureIncrement(0.001f)
 {
-    qRegisterMetaType<Vistek::Features>("Vistek::Features");
+    qRegisterMetaType<VistekFeatures>("VistekFeatures");
 
     m_acquiredImage.status = asNoImageAcquired;
 
@@ -282,11 +284,21 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             if (!retValue.containsError() && mode != currentMode)
             {
                 m_binningMode = mode;
-                // Set new binning mode if neccessary. On failure set curval to 101, as the camera might not accept the new binning.
-                // The API has no function to check if a binning mode is valid other than failing to set it...
+
+                if(grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
+                {
+                    retValue += checkError("stop camera", Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP));
+                }
+
                 retValue += stopStreamAndDeleteCallbacks();
                 retValue += checkError("set binning",Camera_setBinningMode(m_cam, mode));
                 retValue += startStreamAndRegisterCallbacks();
+
+                if(grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
+                {
+                    retValue += checkError("restart camera 1", Camera_setAcquisitionMode(m_cam, ACQUISITION_MODE_SOFTWARE_TRIGGER));
+                    retValue += checkError("restart camera 2", Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_START));
+                }
                 
                 set = true;
             }      
@@ -336,7 +348,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                 {
                     retValue += checkError("stop camera", Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP));
                 }
-                retValue += Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP);
+
                 retValue += stopStreamAndDeleteCallbacks();
                 retValue += checkError("set pixel depth",Camera_setPixelDepth(m_cam, depth));
                 retValue += startStreamAndRegisterCallbacks();
@@ -392,6 +404,8 @@ ito::RetVal Vistek::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
     m_params["cameraSerialNo"].setVal<char*>( paramsOpt->at(0).getVal<char*>() );
 
     m_params["streamingPacketSize"].setVal<int>( paramsOpt->at(1).getVal<int>() );
+
+    m_numBuf = paramsOpt->at(2).getVal<int>();
 
     m_pVistekContainer = VistekContainer::getInstance();
     ReturnValue += m_pVistekContainer->initCameraContainer();
@@ -663,8 +677,8 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     }
     else
     {
-        bool b;
-        SVGigE_RETURN ret2 = StreamingChannel_getReadoutTransfer(m_streamingChannel, &b);
+        /*bool b;
+        SVGigE_RETURN ret2 = StreamingChannel_getReadoutTransfer(m_streamingChannel, &b);*/
         m_acquiredImage.status = asWaitingForTransfer; //start acquisition
         SVGigE_RETURN ret = Camera_softwareTrigger(m_cam);
         if (ret != SVGigE_SUCCESS)
@@ -1042,7 +1056,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
         DockWidgetVistek *dw = qobject_cast<DockWidgetVistek*>(getDockWidget()->widget());
         if (dw)
         {
-            QMetaObject::invokeMethod(dw, "propertiesChanged", Q_ARG(float,m_gainIncrement), Q_ARG(float,m_exposureIncrement), Q_ARG(Vistek::Features,m_features) );
+            QMetaObject::invokeMethod(dw, "propertiesChanged", Q_ARG(float,m_gainIncrement), Q_ARG(float,m_exposureIncrement), Q_ARG(VistekFeatures,m_features) );
         }
     }
 
@@ -1173,12 +1187,20 @@ ito::RetVal Vistek::startStreamAndRegisterCallbacks()
     {
         // Register data callback
         std::cout << "Registering data callback ..." << std::endl;
-        SVGigERet = StreamingChannel_create (&m_streamingChannel,                                // a streaming channel handle will be returned
-                                    m_pVistekContainer->getCameraContainerHandle(),                 // a valid camera container client handle
-                                    m_cam,                                                          // a valid camera handle
-                                    300,                                                              // buffer count 0 => 3 buffers (big buffer is necessary in order to avoid huge timeouts)
-                                    &DataCallback,                                                  // callback function pointer where datas are delivered to
-                                    this);                                                          // current class pointer will be passed through as context
+
+        try
+        {
+            SVGigERet = StreamingChannel_create (&m_streamingChannel,                                // a streaming channel handle will be returned
+                                        m_pVistekContainer->getCameraContainerHandle(),                 // a valid camera container client handle
+                                        m_cam,                                                          // a valid camera handle
+                                        m_numBuf,                                                              // buffer count 0 => 3 buffers (big buffer is necessary in order to avoid huge timeouts)
+                                        &DataCallback,                                                  // callback function pointer where datas are delivered to
+                                        this);                                                          // current class pointer will be passed through as context
+        }
+        catch(std::bad_alloc &ba)
+        {
+            retval += ito::RetVal::format(ito::retError,0,"memory allocation error when creating stream with %i buffers. Retry and use less buffers",m_numBuf);
+        }
 
         // Check if data callback registration was successful
         retval += checkError("Streaming channel creation failed", SVGigERet);

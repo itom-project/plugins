@@ -124,7 +124,7 @@ void DockWidgetVistek::on_offsetSpinBox_valueChanged(double val)
     }
 }
 
-void DockWidgetVistek::propertiesChanged(float gainIncrement, float exposureIncrement, Vistek::Features features)
+void DockWidgetVistek::propertiesChanged(float gainIncrement, float exposureIncrement, VistekFeatures features)
 {
     ui.gainSpinBox->setEnabled(features.adjustGain);
     ui.offsetSpinBox->setEnabled(features.adjustOffset);

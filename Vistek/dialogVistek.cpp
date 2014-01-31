@@ -1,247 +1,231 @@
 #include "dialogVistek.h"
 
-#include <qmetaobject.h>
+#include "Vistek.h"
 
+DialogVistek::DialogVistek(Vistek *grabber, const VistekFeatures *features)
+    : m_Grabber(grabber), 
+    m_currentBinning(-1),
+    m_currentBpp(-1),
+    m_currentOffset(-1),
+    m_currentGain(-1.0),
+    m_currentExposure(-1.0)
+{ 
+    m_features = new VistekFeatures(*features);
+    ui.setupUi(this); 
+};
 
-
-void DialogVistek::valuesChanged(QMap<QString, ito::Param> params)
+DialogVistek::~DialogVistek()
 {
-    m_params = params;
-
-    setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-    // added by itobiege, Mar. 2013, but not tested!
-
-    //adapt values of ui-elements to values given in params.
+    delete m_features;
+    m_features = NULL;
 }
 
-void DialogVistek::sendVals(ito::AddInGrabber *receiverGrabber)
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogVistek::valuesChanged(QMap<QString, ito::Param> params)
 {
-    QVector<QSharedPointer<ito::ParamBase> > outVector;
+    setWindowTitle(QString(params["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-    //if(ui.spinBox_gain->isEnabled())
-    //{
-    //    double dval = ui.spinBox_gain->value()/100.0;
-    //    if(m_params["gain"].getVal<double>() !=  dval)
-    //    {
-    //        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
-    //    }
-    //}
+    //file information
 
-    //if(ui.spinBox_offset->isEnabled())
-    //{
-    //    double dval = ui.spinBox_offset->value()/100.0;
-    //    if(m_params["offset"].getVal<double>() !=  dval)
-    //    {
-    //        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, dval)));
-    //    }
-    //}
-
-    //if(ui.doubleSpinBox_integration_time->isEnabled())
-    //{
-    //    double dval = ui.doubleSpinBox_integration_time->value()/1000.0;
-    //    if(m_params["integration_time"].getVal<double>() !=  dval)
-    //    {
-    //        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
-    //    }
-    //}
-
-    //if(ui.doubleSpinBox_frame_time->isEnabled())
-    //{
-    //    double dval = ui.doubleSpinBox_frame_time->value()/1000.0;
-    //    if(m_params["frame_time"].getVal<double>() !=  dval)
-    //    {
-    //        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("frame_time", ito::ParamBase::Double, dval)));
-    //    }
-    //}
-
-    if(receiverGrabber)   // Grabber exists
+    if (params.contains("cameraModel"))
     {
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(receiverGrabber, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, outVector), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        ui.lblModel->setText( params["cameraModel"].getVal<char*>() );
+    }
+        
+    if (params.contains("cameraSerialNo"))
+    {
+        ui.lblSerialNo->setText( params["cameraSerialNo"].getVal<char*>() );
+    }
 
-        while (!locker.getSemaphore()->wait(5000))
+    if (params.contains("cameraIP"))
+    {
+        ui.lblCameraIP->setText( params["cameraIP"].getVal<char*>() );
+    }
+
+    if (params.contains("cameraManufacturer"))
+    {
+        ui.lblManufacturer->setText( params["cameraManufacturer"].getVal<char*>() );
+    }
+
+    if (params.contains("sizex"))
+    {
+        ui.lblWidth->setText( QString("%1").arg( params["sizex"].getVal<int>()));
+    }
+
+    if (params.contains("sizey"))
+    {
+        ui.lblHeight->setText( QString("%1").arg( params["sizey"].getVal<int>()));
+    }
+
+    ui.combo_bpp->clear();
+    ui.combo_bpp->setEnabled(false);
+
+    if (m_features->has8bit)
+    {
+        ui.combo_bpp->setEnabled(true);
+        ui.combo_bpp->addItem("8bit",8);
+    }
+    if (m_features->has10bit)
+    {
+        ui.combo_bpp->setEnabled(true);
+        ui.combo_bpp->addItem("10bit",10);
+    }
+    if (m_features->has12bit)
+    {
+        ui.combo_bpp->setEnabled(true);
+        ui.combo_bpp->addItem("12bit",12);
+    }
+    if (m_features->has16bit)
+    {
+        ui.combo_bpp->setEnabled(true);
+        ui.combo_bpp->addItem("16bit",16);
+    }
+
+    if (params.contains("bpp"))
+    {
+        m_currentBpp = params["bpp"].getVal<int>();
+        for (int i = 0; i < ui.combo_bpp->count(); ++i)
         {
-            if (!receiverGrabber->isAlive())
+            if (ui.combo_bpp->itemData(i).toInt() == m_currentBpp)
             {
+                ui.combo_bpp->setCurrentIndex(i);
                 break;
             }
         }
     }
+
+    ui.combo_binning->setEnabled( m_features->adjustBinning );
+    if (params.contains("binning"))
+    {
+        m_currentBinning = params["binning"].getVal<int>();
+        ui.combo_binning->setCurrentIndex( m_currentBinning );
+    }
+
+    
+    ui.doubleSpinBox_integration_time->setEnabled( m_features->adjustExposureTime );
+    if (params.contains("exposure"))
+    {
+        m_currentExposure = params["exposure"].getVal<double>()  * 1000.0; //ms
+        ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["exposure"].getMeta());
+
+        ui.doubleSpinBox_integration_time->setMinimum( dm->getMin() * 1000.0 );
+        ui.doubleSpinBox_integration_time->setMaximum( dm->getMax() * 1000.0 );
+        ui.doubleSpinBox_integration_time->setSingleStep( (dm->getMax() - dm->getMin()) * 10.0);
+        ui.doubleSpinBox_integration_time->setValue( m_currentExposure );
+    }
+
+    ui.spinBox_gain->setEnabled( m_features->adjustGain );
+    if (params.contains("gain"))
+    {
+        m_currentGain = params["gain"].getVal<double>();
+
+        ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["gain"].getMeta());
+
+        ui.spinBox_gain->setMinimum( dm->getMin() );
+        ui.spinBox_gain->setMaximum( dm->getMax() );
+        ui.spinBox_gain->setSingleStep( (dm->getMax() - dm->getMin())/100.0);
+        ui.spinBox_gain->setValue( m_currentGain );
+    }
+
+    ui.spinBox_offset->setEnabled( m_features->adjustOffset );
+    ui.horizontalSlider_offset->setEnabled(m_features->adjustOffset);
+    if (params.contains("offset")) //already from 0.0 to 1.0 (in vistek driver this is 0..255)
+    {
+        m_currentOffset = (int)(params["offset"].getVal<double>() * 100);
+        ui.spinBox_offset->setValue( m_currentOffset );
+    }
 }
 
-////----------------------------------------------------------------------------------------------------------------------------------
-//int DialogVistek::setVals(QMap<QString, ito::Param> *paramVals)
-//{
-//    QVariant qvar;
-//    int bpp = 8;
-//    int mode = 0;
-//
-//    qvar = ((*paramVals)["sizex"]).getVal<double>();
-//    ui.edit_sizex->setText(qvar.toString());
-//    qvar = ((*paramVals)["sizey"]).getVal<double>();
-//    ui.edit_sizey->setText(qvar.toString());
-//    qvar = ((*paramVals)["gain"]).getVal<double>();
-//    ui.edit_gain->setText(qvar.toString());
-//    qvar = ((*paramVals)["offset"]).getVal<double>();
-//    ui.edit_offset->setText(qvar.toString());
-//
-//    bpp = ((*paramVals)["bpp"]).getVal<int>();
-//    switch (bpp)
-//    {
-//        case 8:
-//            ui.combo_bpp->setCurrentIndex(0);
-//        break;
-//        case 10:
-//            ui.combo_bpp->setCurrentIndex(1);
-//        break;
-//        case 12:
-//            ui.combo_bpp->setCurrentIndex(2);
-//        break;
-//        case 14:
-//            ui.combo_bpp->setCurrentIndex(3);
-//        break;
-//        case 16:
-//            ui.combo_bpp->setCurrentIndex(4);
-//        break;
-//        case 24:
-//            ui.combo_bpp->setCurrentIndex(5);
-//        break;
-//        case 32:
-//            ui.combo_bpp->setCurrentIndex(6);
-//        break;
-//    }
-//
-//    qvar = ((*paramVals)["wli_frames"]).getVal<double>();
-//    ui.edit_wli_frames->setText(qvar.toString());
-//    qvar = ((*paramVals)["wli_noise"]).getVal<double>();
-//    ui.edit_wli_noise->setText(qvar.toString());
-//    qvar = ((*paramVals)["wli_amplitude"]).getVal<double>();
-//    ui.edit_wli_amplitude->setText(qvar.toString());
-//    qvar = ((*paramVals)["wli_offset"]).getVal<double>();
-//    ui.edit_wli_offset->setText(qvar.toString());
-//    qvar = ((*paramVals)["wli_phi"]).getVal<double>();
-//    ui.edit_wli_phi0->setText(qvar.toString());
-//    qvar = ((*paramVals)["wli_stepsperlambda"]).getVal<double>();
-//    ui.edit_wli_steps->setText(qvar.toString());
-//    qvar = ((*paramVals)["wli_width"]).getVal<double>();
-//    ui.edit_wli_width->setText(qvar.toString());
-//    qvar = ((*paramVals)["wli_r"]).getVal<double>();
-//    ui.edit_wli_featwidth->setText(qvar.toString());
-//    qvar = ((*paramVals)["wli_h"]).getVal<double>();
-//    ui.edit_wli_featheight->setText(qvar.toString());
-//    mode = ((*paramVals)["wli_mode"]).getVal<int>();
-//    ui.combo_wli_mode->setCurrentIndex(mode);
-//
-//    qvar = ((*paramVals)["conf_frames"]).getVal<double>();
-//    ui.edit_conf_frames->setText(qvar.toString());
-//    qvar = ((*paramVals)["conf_noise"]).getVal<double>();
-//    ui.edit_conf_noise->setText(qvar.toString());
-//    qvar = ((*paramVals)["conf_amplitude"]).getVal<double>();
-//    ui.edit_conf_amplitude->setText(qvar.toString());
-//    qvar = ((*paramVals)["conf_offset"]).getVal<double>();
-//    ui.edit_conf_offset->setText(qvar.toString());
-//    qvar = ((*paramVals)["conf_zoffset"]).getVal<double>();
-//    ui.edit_conf_zoffset->setText(qvar.toString());
-//    qvar = ((*paramVals)["conf_muhperstep"]).getVal<double>();
-//    ui.edit_conf_musteps->setText(qvar.toString());
-//    qvar = ((*paramVals)["conf_fwhm"]).getVal<double>();
-//    ui.edit_conf_fwhm->setText(qvar.toString());
-//    qvar = ((*paramVals)["conf_r"]).getVal<double>();
-//    ui.edit_conf_featwidth->setText(qvar.toString());
-//    qvar = ((*paramVals)["conf_h"]).getVal<double>();
-//    ui.edit_conf_featheight->setText(qvar.toString());
-//    mode = ((*paramVals)["conf_mode"]).getVal<int>();
-//    ui.combo_conf_mode->setCurrentIndex(mode);
-//
-//    return 0;
-//}
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-//int DialogVistek::getVals(QMap<QString, ito::Param> *paramVals)
-//{
-//    QVariant qvar;
-//    //int bpp = 8;
-//    int mode = 0;
-//
-//    qvar = ui.edit_sizex->text();
-//    ((*paramVals)["sizex"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_sizey->text();
-//    ((*paramVals)["sizey"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_gain->text();
-//    ((*paramVals)["gain"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_offset->text();
-//    ((*paramVals)["offset"]).setVal<double>(qvar.toDouble());
-//
-//    qvar = ui.combo_bpp->currentIndex();
-//    switch (qvar.toInt())
-//    {
-//        case 0:
-//            ((*paramVals)["bpp"]).setVal<double>(8);
-//        break;
-//        case 1:
-//            ((*paramVals)["bpp"]).setVal<double>(10);
-//        break;
-//        case 2:
-//            ((*paramVals)["bpp"]).setVal<double>(12);
-//        break;
-//        case 3:
-//            ((*paramVals)["bpp"]).setVal<double>(14);
-//        break;
-//        case 4:
-//            ((*paramVals)["bpp"]).setVal<double>(16);
-//        break;
-//        case 5:
-//            ((*paramVals)["bpp"]).setVal<double>(24);
-//        break;
-//        case 6:
-//            ((*paramVals)["bpp"]).setVal<double>(32);
-//        break;
-//    }
-//
-//    qvar = ui.edit_wli_frames->text();
-//    ((*paramVals)["wli_frames"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_wli_noise->text();
-//    ((*paramVals)["wli_noise"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_wli_amplitude->text();
-//    ((*paramVals)["wli_amplitude"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_wli_offset->text();
-//    ((*paramVals)["wli_offset"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_wli_phi0->text();
-//    ((*paramVals)["wli_phi"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_wli_steps->text();
-//    ((*paramVals)["wli_stepsperlambda"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_wli_width->text();
-//    ((*paramVals)["wli_width"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_wli_featwidth->text();
-//    ((*paramVals)["wli_r"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_wli_featheight->text();
-//    ((*paramVals)["wli_h"]).setVal<double>(qvar.toDouble());
-//    mode = ui.combo_wli_mode->currentIndex();
-//    ((*paramVals)["wli_mode"]).setVal<int>(mode);
-//
-//    qvar = ui.edit_conf_frames->text();
-//    ((*paramVals)["conf_frames"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_conf_noise->text();
-//    ((*paramVals)["conf_noise"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_conf_amplitude->text();
-//    ((*paramVals)["conf_amplitude"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_conf_offset->text();
-//    ((*paramVals)["conf_offset"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_conf_zoffset->text();
-//    ((*paramVals)["conf_zoffset"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_conf_musteps->text();
-//    ((*paramVals)["conf_muhperstep"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_conf_fwhm->text();
-//    ((*paramVals)["conf_fwhm"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_conf_featwidth->text();
-//    ((*paramVals)["conf_r"]).setVal<double>(qvar.toDouble());
-//    qvar = ui.edit_conf_featheight->text();
-//    ((*paramVals)["conf_h"]).setVal<double>(qvar.toDouble());
-//    mode = ui.combo_conf_mode->currentIndex();
-//    ((*paramVals)["conf_mode"]).setVal<int>(mode);
-//
-//
-//    return 0;
-//}
+//----------------------------------------------------------------------------------------------------------------------------------
+int DialogVistek::sendParameters(void)
+{
+    
+
+    QVector<QSharedPointer<ito::ParamBase> > outVector;
+
+    //binning
+    if (m_features->adjustBinning && ui.combo_binning->currentIndex() != m_currentBinning && ui.combo_binning->currentIndex() >= 0)
+    {
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, ui.combo_binning->currentIndex())));
+    }
+
+    //bpp
+    if (ui.combo_bpp->count() > 0 && ui.combo_bpp->itemData( ui.combo_bpp->currentIndex() ).toInt() != m_currentBpp)
+    {
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, ui.combo_bpp->itemData( ui.combo_bpp->currentIndex() ).toInt())));
+    }
+
+    //offset
+    if (m_features->adjustOffset && ui.spinBox_offset->value() != m_currentOffset)
+    {
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, ui.spinBox_offset->value() / 100.0)));
+    }
+
+    //gain
+    if (m_features->adjustGain && qAbs(ui.spinBox_gain->value() - m_currentGain) > 0.0001)
+    {
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, ui.spinBox_gain->value())));
+    }
+
+    //exposure
+    if (m_features->adjustExposureTime && qAbs(ui.doubleSpinBox_integration_time->value() - m_currentExposure) > 0.0001)
+    {
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("exposure", ito::ParamBase::Double, ui.doubleSpinBox_integration_time->value() / 1000.0)));
+    }
+
+    if(m_Grabber)   // Grabber exists
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        bool alive = true;
+        QMetaObject::invokeMethod(m_Grabber, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, outVector), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        while (!locker.getSemaphore()->wait(5000))
+        {
+            if (!m_Grabber->isAlive())
+            {
+                alive = false;
+                break;
+            }
+        }
+
+        if (!alive)
+        {
+            QMessageBox msgBox;
+            msgBox.setText("Error while setting parameters");
+            msgBox.setInformativeText("The plugin does not react any more.");
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.exec();
+        }
+        else
+        {
+            ito::RetVal retval = locker.getSemaphore()->returnValue;
+
+            if(retval.containsError())
+            {
+                QString msg = "<unknown error>";
+                if (retval.errorMessage()) msg = retval.errorMessage();
+                QMessageBox::critical(this,tr("error"),tr("Error while setting parameters (%1)").arg(msg));
+            }
+            else if(retval.containsWarning())
+            {
+                QString msg = "<unknown warning>";
+                if (retval.errorMessage()) msg = retval.errorMessage();
+                QMessageBox::warning(this,tr("warning"),tr("Warning while setting parameters (%1)").arg(msg));
+            }
+        }
+    }
+    return 0;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/**
+ * \detail If the applyButton is clicked, the bpp and the binning of the attached camera is changed!
+ *  Changes of parameters lead to a reload of all camera parameters. Other unapplied values are lost!
+*/
+void DialogVistek::on_applyButton_clicked()
+{
+    sendParameters();
+}
+

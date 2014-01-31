@@ -2,7 +2,7 @@
 #define VISTEK_H
 
 #include "common/addInGrabber.h"
-#include "dialogVistek.h"
+
 #include "SVGigE.h"
 #include "VistekInterface.h"
 #include "VistekContainer.h"
@@ -10,6 +10,19 @@
 #include <qsharedpointer.h>
 #include <QTimerEvent>
 #include <qmutex.h>
+
+class VistekFeatures
+{
+public:
+    bool adjustExposureTime;
+    bool adjustGain;
+    bool adjustBinning;
+    bool adjustOffset;
+    bool has8bit;
+    bool has10bit;
+    bool has12bit;
+    bool has16bit;
+};
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class Vistek : public ito::AddInGrabber
@@ -30,19 +43,7 @@ class Vistek : public ito::AddInGrabber
 
         enum AcquisitionStatus { asNoImageAcquired, asWaitingForTransfer, asImageReady, asTimeout, asConnectionLost, asOtherError };
 
-        struct Features
-        {
-            bool adjustExposureTime;
-            bool adjustGain;
-            bool adjustBinning;
-            bool adjustOffset;
-            bool has8bit;
-            bool has10bit;
-            bool has12bit;
-            bool has16bit;
-        };
-
-        Features m_features;
+        VistekFeatures m_features;
 
         struct AcquiredImage
         {
@@ -79,6 +80,7 @@ class Vistek : public ito::AddInGrabber
 
         float m_gainIncrement;
         float m_exposureIncrement;
+        int m_numBuf;
         
 
         // Utility functions to control the camera
