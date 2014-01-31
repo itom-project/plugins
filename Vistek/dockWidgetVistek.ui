@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>224</width>
-    <height>284</height>
+    <width>256</width>
+    <height>289</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -20,65 +20,6 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="margin">
-    <number>3</number>
-   </property>
-   <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>37</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>General Information</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="spacing">
-       <number>6</number>
-      </property>
-      <property name="leftMargin">
-       <number>8</number>
-      </property>
-      <property name="topMargin">
-       <number>1</number>
-      </property>
-      <property name="rightMargin">
-       <number>8</number>
-      </property>
-      <property name="bottomMargin">
-       <number>6</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>ID:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lblID">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>[ID]</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="sizePolicy">
@@ -219,21 +160,6 @@
       <string>Image Properties</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>8</number>
-      </property>
-      <property name="topMargin">
-       <number>1</number>
-      </property>
-      <property name="rightMargin">
-       <number>8</number>
-      </property>
-      <property name="bottomMargin">
-       <number>8</number>
-      </property>
-      <property name="spacing">
-       <number>6</number>
-      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_3">
         <property name="sizePolicy">
@@ -249,11 +175,18 @@
          </size>
         </property>
         <property name="text">
-         <string>Width [px]:</string>
+         <string>Width:</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
+       <widget class="QLabel" name="lblWidth">
+        <property name="text">
+         <string>-</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
        <widget class="QLabel" name="label_4">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -268,22 +201,42 @@
          </size>
         </property>
         <property name="text">
-         <string>Height [px]:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLCDNumber" name="WidthLCD">
-        <property name="lineWidth">
-         <number>1</number>
-        </property>
-        <property name="segmentStyle">
-         <enum>QLCDNumber::Filled</enum>
+         <string>Height:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLCDNumber" name="HeightLCD"/>
+       <widget class="QLabel" name="lblHeight">
+        <property name="text">
+         <string>-</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>13</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Bit-Depth:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="lblBitDepth">
+        <property name="text">
+         <string>-</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -294,34 +247,18 @@
       <string>Camera Properties</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <property name="leftMargin">
-       <number>8</number>
-      </property>
-      <property name="topMargin">
-       <number>1</number>
-      </property>
-      <property name="rightMargin">
-       <number>8</number>
-      </property>
-      <property name="bottomMargin">
-       <number>8</number>
-      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Exposure (s):</string>
+         <string>Exposure:</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>Gain (dB):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
        <widget class="QDoubleSpinBox" name="exposureSpinBox">
+        <property name="suffix">
+         <string> s</string>
+        </property>
         <property name="decimals">
          <number>5</number>
         </property>
@@ -336,8 +273,19 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Gain:</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="gainSpinBox"/>
+       <widget class="QDoubleSpinBox" name="gainSpinBox">
+        <property name="suffix">
+         <string> dB</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

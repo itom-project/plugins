@@ -10,7 +10,6 @@
 #include <qsharedpointer.h>
 #include <QTimerEvent>
 #include <qmutex.h>
-#include <qatomic.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class Vistek : public ito::AddInGrabber
@@ -29,6 +28,8 @@ class Vistek : public ito::AddInGrabber
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
+        enum AcquisitionStatus { asNoImageAcquired, asWaitingForTransfer, asImageReady, asTimeout };
+
         struct Features
         {
             bool adjustExposureTime;
@@ -44,7 +45,7 @@ class Vistek : public ito::AddInGrabber
 
         struct AcquiredImage
         {
-            int/*QAtomicInt*/ status; // maps to SVGigE_SIGNAL_TYPE
+            AcquisitionStatus status;
             int sizex;
             int sizey;
             int dataID;
@@ -57,10 +58,12 @@ class Vistek : public ito::AddInGrabber
 
         AcquiredImage m_acquiredImage;
 
+        
+
         // Variables that are filled during the data callback
         int TriggerViolationCount;
         double Timestamp, TimeSinceLastFrame, TransferTime;
-        double MessageTimestampStartOfTransfer, MessageTimestampLastStartOfTransfer, MessageTimestampFrameCompleted, MessageTimestampEndOfExposure;
+        double MessageTimestampStartOfTransfer, MessageTimestampLastStartOfTransfer/*, MessageTimestampFrameCompleted, MessageTimestampEndOfExposure*/;
         StreamingChannel_handle m_streamingChannel;
         Event_handle m_eventID;
 
@@ -78,6 +81,7 @@ class Vistek : public ito::AddInGrabber
         // Utility functions to control the camera
         ito::RetVal initCamera(int CameraNumber);
         ito::RetVal startStreamAndRegisterCallbacks();
+        ito::RetVal stopStreamAndDeleteCallbacks();
 
     signals:
         void parametersChanged(QMap<QString, ito::Param> params);
@@ -98,6 +102,9 @@ class Vistek : public ito::AddInGrabber
         void updateTimestamp();
 
     private slots:
+        void GainOffsetExposurePropertiesChanged(double gain, double offset, double exposure);
+
+        void dockWidgetVisibilityChanged(bool visible);
 
 };
 

@@ -14,23 +14,22 @@ class DockWidgetVistek : public QWidget
     Q_OBJECT
 
     public:
-        DockWidgetVistek(QMap<QString, ito::Param> params, int uniqueID);
+        DockWidgetVistek();
         ~DockWidgetVistek() {};
 
     private:
         Ui::DockWidgetVistek ui;
+        bool m_inEditing;
 
     signals:
-        void dataPropertiesChanged(int sizex, int sizey, int bpp);
-        void gainPropertiesChanged(double gain);
-        void exposurePropertiesChanged(double gain);
+        void GainOffsetExposurePropertiesChanged(double gain, double offset, double exposure);
 
     public slots:
         void valuesChanged(QMap<QString, ito::Param> params);
 
     private slots:
-        void on_gainSpinBox_editingFinished();
         void on_exposureSpinBox_editingFinished();
+        void on_gainSpinBox_editingFinished();
 };
 
 #endif
