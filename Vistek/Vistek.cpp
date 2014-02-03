@@ -1342,7 +1342,7 @@ SVGigE_RETURN __stdcall DataCallback(Image_handle data, void* context)
         v->m_acquiredImage.transferTime = Image_getTransferTime(data);
         v->m_acquiredImage.packetCount = Image_getPacketCount(data);
 
-        size_t elems = v->m_acquiredImage.sizex * v->m_acquiredImage.sizey;
+        int elems = v->m_acquiredImage.sizex * v->m_acquiredImage.sizey;
         
         if (v->m_acquiredImage.pixelType == GVSP_PIX_MONO8)
         {
