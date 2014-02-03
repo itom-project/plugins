@@ -437,13 +437,6 @@ ito::RetVal Vistek::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
             m_identifier = TempCam.camSerialNo;
 
             ReturnValue += initCamera(camNum);
-
-            /*if (!ReturnValue.containsError())
-            {
-                setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("exposure",m_params["exposure"].getType(), 0.06)));
-                setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", m_params["gain"].getType(), 0.0)));
-                setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", m_params["binning"].getType(), 101)));
-            }*/
         }
         else
         {
@@ -693,21 +686,6 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-
-    /*if (retValue == ito::retOk)
-    {
-        while(!FrameCompletedFlag)
-        {
-            if (timeout > 2000)
-            {
-                std::cout<<"timeout\n";
-                break;
-            }
-            Sleep(1);
-            timeout++;
-        }
-        FrameCompletedFlag = false;
-    }*/
 
     return retValue;
 }
