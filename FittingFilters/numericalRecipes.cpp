@@ -1,3 +1,5 @@
+/* licence TODO */
+
 #include "numericalRecipes.h"
 
 #include <qnumeric.h>

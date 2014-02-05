@@ -1,3 +1,5 @@
+/* licence TODO */
+
 #ifndef NUMERICALRECIPES_H
 #define NUMERICALRECIPES_H
 

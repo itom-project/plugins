@@ -1,3 +1,5 @@
+/* licence TODO */
+
 #ifndef _NR3_H_
 #define _NR3_H_
 
