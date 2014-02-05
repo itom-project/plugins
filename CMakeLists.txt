@@ -144,3 +144,9 @@ IF (WIN32)
         ADD_SUBDIRECTORY(Vistek)
     endif (PLUGIN_Vistek)
 ENDIF (WIN32)
+
+# FFTW-Wrapper
+OPTION(PLUGIN_FFTWFilters "Build with this plugin." ON)
+if (PLUGIN_FFTWFilters)
+    ADD_SUBDIRECTORY(FFTWfilters)
+endif (PLUGIN_FFTWFilters)
