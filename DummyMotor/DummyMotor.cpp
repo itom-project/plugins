@@ -637,7 +637,7 @@ ito::RetVal DummyMotor::setPosAbs(const QVector<int> axis, QVector<double> pos, 
             {
                 if ((axis[naxis] >= m_numaxis) || (axis[naxis] >= 10))
                 {
-                    retValue = ito::retError;
+                    retValue += ito::RetVal(ito::retError, 0, tr("Axis is out of range.").toAscii().data());
                 }
                 else
                 {
@@ -734,7 +734,7 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
             {
                 if ((axis[naxis] >= m_numaxis) || (axis[naxis] >= 10))
                 {
-                    retValue = ito::retError;
+                    retValue += ito::RetVal(ito::retError, 0, tr("Axis is out of range.").toAscii().data());
                 }
                 else
                 {
@@ -874,7 +874,7 @@ ito::RetVal DummyMotor::startJoyStickMovement(QVector<int> axis, QVector<double>
     if(axis.size() != vel.size())
     {
         //qDebug()<< "Theoretically error with the \"Spass-Stecken\"\n";
-        return ito::retError;
+        return ito::RetVal(ito::retError, 0, tr("Axis and velocity vector differ in size.").toAscii().data());
     }
     if(axis.size() == 1)
     {
@@ -890,7 +890,7 @@ ito::RetVal DummyMotor::startJoyStickMovement(QVector<int> axis, QVector<double>
     else
     {
         //qDebug() << "Theoretically error with the \"Spass-Stecken\"\n";
-        return ito::retError;
+        return ito::RetVal(ito::retError, 0, tr("Joystick movement failed somehow.").toAscii().data());
     }
 
     return ito::retOk;

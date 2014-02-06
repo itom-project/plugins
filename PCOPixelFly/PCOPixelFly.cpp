@@ -1531,7 +1531,8 @@ ito::RetVal PCOPixelFly::startDevice(ItomSharedSemaphore *waitCond)
     }
     else
     {
-        retValue = ito::retError;
+        return ito::RetVal(ito::retError, 0, tr("Tried to axis camera out of allowed camera range (0..0).").toAscii().data());
+        //retValue = ito::retError;
     }
     if (waitCond)
     {
@@ -1597,7 +1598,8 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
         }
         else
         {
-            retValue = ito::retError;
+            return ito::RetVal(ito::retError, 0, tr("Tried to axis camera out of allowed camera range (0..0).").toAscii().data());
+            //retValue = ito::retError;
         }
     }
     if(grabberStartedCount() < 0)

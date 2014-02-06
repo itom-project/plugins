@@ -290,7 +290,8 @@ ito::RetVal parseOutString(char *buf, int *length)
             if ((*buf2 != ')') || (atoi(charbuf) > 255))    // char token not closed correctly or number to big -> end with error
             {
                 free(out);
-                return ito::retError;
+                return ito::RetVal(ito::retError, 0, QObject::tr("Char token not closed correctly or number to big.").toAscii().data());
+                //return ito::retError;
             }
 
             *outbuf = atoi(charbuf);
@@ -302,7 +303,7 @@ ito::RetVal parseOutString(char *buf, int *length)
         else
         {
             free(out);
-            return ito::retError;
+            return ito::RetVal(ito::retError, 0, QObject::tr("Undefined error.").toAscii().data());
         }
     }
     *length = outbuf - out + len - (buf1 - buf);

@@ -1309,7 +1309,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     // mandatory parameters
     if (paramsMand == NULL)
     {
-        retval = ito::retError;
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("Mandatory paramers are NULL").toAscii().data());
         goto end;
     }
 
@@ -1328,7 +1328,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     // optional parameters
     if (paramsOpt == NULL)
     {
-        retval = ito::retError;
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("Optinal paramers are NULL").toAscii().data());
         goto end;
     }
 

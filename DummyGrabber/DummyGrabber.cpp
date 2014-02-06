@@ -821,7 +821,7 @@ ito::RetVal DummyGrabber::startDevice(ItomSharedSemaphore *waitCond)
         int ret = myCam.prepareCamera();
         if (ret)
         {
-            retValue += ito::retError;
+            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera preparation.").toAscii().data());
         }
     }
 
@@ -856,7 +856,7 @@ ito::RetVal DummyGrabber::stopDevice(ItomSharedSemaphore *waitCond)
         int ret = myCam.stopCamera();
         if (ret)
         {
-            retValue += ito::retError;
+            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera stop command.").toAscii().data());
         }
 
     }
@@ -904,7 +904,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
         int ret = myCam.acquireImage();
         if (ret)
         {
-            retValue += ito::retError;
+            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera acquisition.").toAscii().data());
         }
 
     }

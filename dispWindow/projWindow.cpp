@@ -824,19 +824,19 @@ ito::RetVal PrjWindow::cosineInit()
     if ((phasedummy = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == NULL)
     {
         std::cerr << "error out of memory (cosine init 1)\n";
-        retval = ito::retError;
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 1)").toAscii().data());
         goto end;
     }
     if ((m_cosImgsVert = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == NULL)
     {
         std::cerr << "error out of memory (cosine init 2)\n";
-        retval = ito::retError;
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 2)").toAscii().data());
         goto end;
     }
     if ((m_cosImgsHoriz = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == NULL)
     {
         std::cerr << "error out of memory (cosine init 3)\n";
-        retval = ito::retError;
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 3)").toAscii().data());
         goto end;
     }
 
@@ -845,19 +845,22 @@ ito::RetVal PrjWindow::cosineInit()
         if((phasedummy[i] = (unsigned char*)malloc(m_period * sizeof(*phasedummy[i]))) == NULL)
         {
             std::cerr << "error out of memory (cosine init 4)\n";
-            retval = ito::retError;
+            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 4)").toAscii().data());
             goto end;
         }
         if((m_cosImgsVert[i] = (unsigned char*)malloc(width * height)) == NULL)
         {
             std::cerr << "error out of memory (cosine init 5)\n";
-            retval = ito::retError;
+            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 5)").toAscii().data());
+
+
             goto end;
         }
         if((m_cosImgsHoriz[i] = (unsigned char*)malloc(width * height)) == NULL)
         {
+
             std::cerr << "error out of memory (cosine init 6)\n";
-            retval = ito::retError;
+            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 6)").toAscii().data());
             goto end;
         }
     }
@@ -905,7 +908,7 @@ ito::RetVal PrjWindow::cosineInit()
     if ((tempimg = (unsigned char*)calloc(width * height, sizeof(unsigned char))) == 0)
     {
         std::cerr << "error out of memory (cosine init 7)\n";
-        retval = ito::retError;
+        retval = ito::RetVal(ito::retError, ret, tr("error out of memory (cosine init 7)").toAscii().data());
         goto end;
     }
 
@@ -913,7 +916,7 @@ ito::RetVal PrjWindow::cosineInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error gen texture (cosine init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("error gen texture (cosine init)").toAscii().data());
         goto end;
     }
 
@@ -921,7 +924,7 @@ ito::RetVal PrjWindow::cosineInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error gen texture (graycode / cosine init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("error gen texture (graycode / cosine init)").toAscii().data());
         goto end;
     }
 
