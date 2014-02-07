@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "PIPiezoCtrl.h"
 #include "pluginVersion.h"
 //#ifdef __linux__
@@ -113,7 +116,7 @@ PI controller. Therefore don't mix stages and controllers but only use the origi
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class PIPiezoCtrlInterface with the name PIPiezoCtrlInterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2(PIPiezoCtrlInterface, PIPiezoCtrlInterface)
+Q_EXPORT_PLUGIN2_ITOM(PIPiezoCtrlInterface, PIPiezoCtrlInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

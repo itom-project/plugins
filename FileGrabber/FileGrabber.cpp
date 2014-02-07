@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "FileGrabber.h"
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
@@ -163,7 +166,7 @@ FileGrabberInterface::~FileGrabberInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class FileGrabberInterface with the name FileGrabberinterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2(FileGrabberinterface, FileGrabberInterface)
+Q_EXPORT_PLUGIN2_ITOM(FileGrabberinterface, FileGrabberInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

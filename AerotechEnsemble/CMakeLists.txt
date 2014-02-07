@@ -15,9 +15,9 @@ SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages tha
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
 IF(BUILD_SHARED_LIBS)
-	SET(LIBRARY_TYPE SHARED)
+    SET(LIBRARY_TYPE SHARED)
 ELSE(BUILD_SHARED_LIBS)
-	SET(LIBRARY_TYPE STATIC)
+    SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
 find_package(ITOM_SDK REQUIRED)
@@ -27,10 +27,11 @@ find_package(VisualLeakDetector QUIET)
 
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
-ADD_DEFINITIONS(${QT_DEFINITIONS})
 IF (BUILD_UNICODE)
-	ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
+
+ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DCMAKE)
 
 IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
@@ -42,9 +43,9 @@ ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
-	SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ELSE(CMAKE_BUILD_TYPE)
-	SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
@@ -52,7 +53,7 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/CLibrary/Include
+    ${CMAKE_CURRENT_SOURCE_DIR}/CLibrary/Include
     ${QT_QTCORE_INCLUDE_DIR}
     #${OpenCV_DIR}/include
     ${ITOM_SDK_INCLUDE_DIR}
@@ -60,18 +61,18 @@ INCLUDE_DIRECTORIES(
 )
 
 IF (BUILD_TARGET64)
-	SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CLibrary/Lib64)
-	SET(BINARY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CLibrary/Bin64)
-	SET(LIB_NAME EnsembleC64)
+    SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CLibrary/Lib64)
+    SET(BINARY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CLibrary/Bin64)
+    SET(LIB_NAME EnsembleC64)
 ELSE (BUILD_TARGET64)
-	SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CLibrary/Lib)
-	SET(BINARY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CLibrary/Bin)
-	SET(LIB_NAME EnsembleC)
+    SET(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CLibrary/Lib)
+    SET(BINARY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CLibrary/Bin)
+    SET(LIB_NAME EnsembleC)
 ENDIF (BUILD_TARGET64)
 
 LINK_DIRECTORIES(
     #${OpenCV_DIR}/lib
-	${LIB_PATH}
+    ${LIB_PATH}
 )
 
 
@@ -83,8 +84,8 @@ set(plugin_HEADERS
     ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/aerotechEnsemble.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechEnsemble.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechEnsemble.h
-	${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechEnsemble.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
 QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
@@ -101,12 +102,9 @@ set(plugin_rcc
 )
 
 set(plugin_SOURCES 
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.cpp
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.cpp
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/aerotechEnsemble.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAerotechEnsemble.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechEnsemble.cpp    
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogAerotechEnsemble.cpp    
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -123,22 +121,22 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 #handle translations END STEP 1
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${LIB_NAME})
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${LIB_NAME})
 
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	set_target_properties(${target_name} PROPERTIES COMPILE_FLAGS "/Zc:wchar_t-")
+    set_target_properties(${target_name} PROPERTIES COMPILE_FLAGS "/Zc:wchar_t-")
 ENDIF()
 
 #handle translations BEGIN STEP 2
 if (UPDATE_TRANSLATIONS)
-	QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-	
-	add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-	add_dependencies(${target_name} _${target_name}_translation)
-	
-	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
+    QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    
+    add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+    add_dependencies(${target_name} _${target_name}_translation)
+    
+    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
 else (UPDATE_TRANSLATIONS)
-	QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
+    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
 endif (UPDATE_TRANSLATIONS)
 #handle translations END STEP 2
 

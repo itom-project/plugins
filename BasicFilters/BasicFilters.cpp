@@ -27,6 +27,9 @@
    \date 12.2011
 */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "BasicFilters.h"
 #include <QtCore/QtPlugin>
 #include "pluginVersion.h"
@@ -112,7 +115,7 @@ BasicFiltersInterface::~BasicFiltersInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(BasicFiltersInterface, BasicFiltersInterface)
+Q_EXPORT_PLUGIN2_ITOM(BasicFiltersInterface, BasicFiltersInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

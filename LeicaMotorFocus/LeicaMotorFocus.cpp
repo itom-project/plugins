@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "LeicaMotorFocus.h"
 #include "pluginVersion.h"
 
@@ -156,7 +159,7 @@ LeicaMotorFocusInterface::~LeicaMotorFocusInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(LeicaMotorFocusInterface, LeicaMotorFocusInterface)
+Q_EXPORT_PLUGIN2_ITOM(LeicaMotorFocusInterface, LeicaMotorFocusInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

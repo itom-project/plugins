@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "AerotechEnsemble.h"
 #include "pluginVersion.h"
 #include <math.h>
@@ -28,6 +31,7 @@
 #include <QtCore/QtPlugin>
 #include <qmutex.h>
 #include <qwaitcondition.h>
+
 
 
 using namespace ito;
@@ -106,7 +110,7 @@ AerotechEnsembleInterface::~AerotechEnsembleInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(AerotechEnsembleInterface, AerotechEnsembleInterface)
+Q_EXPORT_PLUGIN2_ITOM(AerotechEnsembleInterface, AerotechEnsembleInterface)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------

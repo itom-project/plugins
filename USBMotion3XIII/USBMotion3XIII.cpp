@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "USBMotion3XIII.h"
 #include "pluginVersion.h"
 #include <math.h>
@@ -302,7 +305,7 @@ ito::RetVal USBMotion3XIIIInterface::unloadDLL()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(USBMotion3XIIIInterface, USBMotion3XIIIInterface)
+Q_EXPORT_PLUGIN2_ITOM(USBMotion3XIIIInterface, USBMotion3XIIIInterface)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------

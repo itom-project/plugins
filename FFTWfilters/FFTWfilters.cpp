@@ -27,6 +27,9 @@
    \date 12.2011
 */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "FFTWfilters.h"
 
 #include "DataObject/dataObjectFuncs.h"
@@ -123,7 +126,7 @@ FFTWFiltersInterface::~FFTWFiltersInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(FFTWFiltersInterface, FFTWFiltersInterface)
+Q_EXPORT_PLUGIN2_ITOM(FFTWFiltersInterface, FFTWFiltersInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -88,9 +88,9 @@ set(plugin_rcc
 )
 
 set(plugin_SOURCES 
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.cpp
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.cpp
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp
+
+
+
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogUSBMotion3XIII.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetUSBMotion3XIII.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/USBMotion3XIII.cpp
@@ -111,7 +111,7 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 #handle translations END STEP 1
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
 
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set_target_properties(${target_name} PROPERTIES COMPILE_FLAGS "/Zc:wchar_t-")

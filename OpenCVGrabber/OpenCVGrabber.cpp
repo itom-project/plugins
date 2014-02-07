@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "OpenCVGrabber.h"
 #include "pluginVersion.h"
 #include "opencv2/core/types_c.h"
@@ -303,7 +306,7 @@ OpenCVGrabberInterface::~OpenCVGrabberInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(OpenCVGrabberinterface, OpenCVGrabberInterface)
+Q_EXPORT_PLUGIN2_ITOM(OpenCVGrabberinterface, OpenCVGrabberInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

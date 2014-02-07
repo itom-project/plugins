@@ -31,6 +31,9 @@
 *\date    Oct2011
 */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "DummyMotor.h"
 
 #include <math.h>
@@ -120,7 +123,7 @@ DummyMotorInterface::~DummyMotorInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(DummyMotorInterface, DummyMotorInterface)
+Q_EXPORT_PLUGIN2_ITOM(DummyMotorInterface, DummyMotorInterface)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------

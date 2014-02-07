@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "dataobjectarithmetic.h"
 
 #include <QtCore/QtPlugin>
@@ -110,7 +113,7 @@ DataObjectArithmeticInterface::~DataObjectArithmeticInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(DataObjectArithmeticInterface, DataObjectArithmeticInterface)
+Q_EXPORT_PLUGIN2_ITOM(DataObjectArithmeticInterface, DataObjectArithmeticInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -204,48 +207,25 @@ ito::RetVal DataObjectArithmetic::minValue(QVector<ito::ParamBase> *paramsMand, 
 // new Version using the SDK-minValueHelper
     ito::float64 result = 0.0;
     ito::uint32 location[3] = {0,0,0};
-    bool toogleInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
+    bool ignoreInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
+
+    retval += ito::dObjHelper::minValue(dObj, result, location, ignoreInf);
 
     switch( dObj->getType() )
     {
     case tUInt8:
-        retval += ito::dObjHelper::minValueFunc<ito::uint8>(dObj, result, location, false);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
-        break;
     case tInt8:
-        retval += ito::dObjHelper::minValueFunc<ito::int8>(dObj, result, location, false);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
-        break;
     case tUInt16:
-        retval += ito::dObjHelper::minValueFunc<ito::uint16>(dObj, result, location, false);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
-        break;
     case tInt16:
-        retval += ito::dObjHelper::minValueFunc<ito::int16>(dObj, result, location, false);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
-        break;
     case tUInt32:
-        retval += ito::dObjHelper::minValueFunc<ito::uint32>(dObj, result, location, false);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
-        break;
     case tInt32:
-        retval += ito::dObjHelper::minValueFunc<ito::int32>(dObj, result, location, false);
+        ignoreInf = false;
         (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
         break;
     case tFloat32:
-        retval += ito::dObjHelper::minValueFunc<ito::float32>(dObj, result, location, toogleInf);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Double | ParamBase::Out, static_cast<double>(result));
-        break;
     case tFloat64:
-        retval += ito::dObjHelper::minValueFunc<ito::float64>(dObj, result, location, toogleInf);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Double | ParamBase::Out, static_cast<double>(result));
-        break;
     case tComplex64:
-        retval += ito::dObjHelper::minValueFunc<ito::complex64>(dObj, result, location, toogleInf);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Double | ParamBase::Out, static_cast<double>(result));
-        break;
     case tComplex128:
-        retval += ito::dObjHelper::minValueFunc<ito::complex128>(dObj, result, location, toogleInf);
         (*paramsOut)[0] = ParamBase("result",ParamBase::Double | ParamBase::Out, static_cast<double>(result));
         break;
     default:
@@ -287,48 +267,25 @@ ito::RetVal DataObjectArithmetic::maxValue(QVector<ito::ParamBase> *paramsMand, 
     ito::float64 result = 0.0;
     ito::uint32 location[3] = {0,0,0};
 
-    bool toogleInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
+    bool ignoreInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
+
+    retval += ito::dObjHelper::maxValue(dObj, result, location, ignoreInf);
 
     switch( dObj->getType() )
     {
     case tUInt8:
-        retval += ito::dObjHelper::maxValueFunc<ito::uint8>(dObj, result, location, false);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
-        break;
     case tInt8:
-        retval += ito::dObjHelper::maxValueFunc<ito::int8>(dObj, result, location, false);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
-        break;
     case tUInt16:
-        retval += ito::dObjHelper::maxValueFunc<ito::uint16>(dObj, result, location, false);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
-        break;
     case tInt16:
-        retval += ito::dObjHelper::maxValueFunc<ito::int16>(dObj, result, location, false);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
-        break;
     case tUInt32:
-        retval += ito::dObjHelper::maxValueFunc<ito::uint32>(dObj, result, location, false);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
-        break;
     case tInt32:
-        retval += ito::dObjHelper::maxValueFunc<ito::int32>(dObj, result, location, false);
+        ignoreInf = false;
         (*paramsOut)[0] = ParamBase("result",ParamBase::Int | ParamBase::Out, static_cast<int>(result));
         break;
     case tFloat32:
-        retval += ito::dObjHelper::maxValueFunc<ito::float32>(dObj, result, location, toogleInf);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Double | ParamBase::Out, static_cast<double>(result));
-        break;
     case tFloat64:
-        retval += ito::dObjHelper::maxValueFunc<ito::float64>(dObj, result, location, toogleInf);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Double | ParamBase::Out, static_cast<double>(result));
-        break;
     case tComplex64:
-        retval += ito::dObjHelper::maxValueFunc<ito::complex64>(dObj, result, location, toogleInf);
-        (*paramsOut)[0] = ParamBase("result",ParamBase::Double | ParamBase::Out, static_cast<double>(result));
-        break;
     case tComplex128:
-        retval += ito::dObjHelper::maxValueFunc<ito::complex128>(dObj, result, location, toogleInf);
         (*paramsOut)[0] = ParamBase("result",ParamBase::Double | ParamBase::Out, static_cast<double>(result));
         break;
     default:
@@ -394,59 +351,27 @@ ito::RetVal DataObjectArithmetic::minMaxValue(QVector<ito::ParamBase> *paramsMan
     ito::uint32 locationMin[3] = {0,0,0};
     ito::uint32 locationMax[3] = {0,0,0};
 
-    bool toogleInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
+    bool ignoreInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
     int cmplxState = (*paramsOpt)[1].getVal<int>();
-    
+
+    retval += ito::dObjHelper::minMaxValue(dObj, minVal, locationMin, maxVal, locationMax, ignoreInf, cmplxState);
 
     switch( dObj->getType() )
     {
     case tUInt8:
-        retval += ito::dObjHelper::minMaxValueFunc<ito::uint8>(dObj, minVal, locationMin, maxVal, locationMax, false, cmplxState);
-        (*paramsOut)[0] = ParamBase("minimum",ParamBase::Int | ParamBase::Out, static_cast<int>(minVal));
-        (*paramsOut)[4] = ParamBase("maximum",ParamBase::Int | ParamBase::Out, static_cast<int>(maxVal));
-        break;
     case tInt8:
-        retval += ito::dObjHelper::minMaxValueFunc<ito::int8>(dObj, minVal, locationMin, maxVal, locationMax, false, cmplxState);
-        (*paramsOut)[0] = ParamBase("minimum",ParamBase::Int | ParamBase::Out, static_cast<int>(minVal));
-        (*paramsOut)[4] = ParamBase("maximum",ParamBase::Int | ParamBase::Out, static_cast<int>(maxVal));
-        break;
     case tUInt16:
-        retval += ito::dObjHelper::minMaxValueFunc<ito::uint16>(dObj, minVal, locationMin, maxVal, locationMax, false, cmplxState);
-        (*paramsOut)[0] = ParamBase("minimum",ParamBase::Int | ParamBase::Out, static_cast<int>(minVal));
-        (*paramsOut)[4] = ParamBase("maximum",ParamBase::Int | ParamBase::Out, static_cast<int>(maxVal));
-        break;
     case tInt16:
-        retval += ito::dObjHelper::minMaxValueFunc<ito::int16>(dObj, minVal, locationMin, maxVal, locationMax, false, cmplxState);
-        (*paramsOut)[0] = ParamBase("minimum",ParamBase::Int | ParamBase::Out, static_cast<int>(minVal));
-        (*paramsOut)[4] = ParamBase("maximum",ParamBase::Int | ParamBase::Out, static_cast<int>(maxVal));
-        break;
     case tUInt32:
-        retval += ito::dObjHelper::minMaxValueFunc<ito::uint32>(dObj, minVal, locationMin, maxVal, locationMax, false, cmplxState);
-        (*paramsOut)[0] = ParamBase("minimum",ParamBase::Int | ParamBase::Out, static_cast<int>(minVal));
-        (*paramsOut)[4] = ParamBase("maximum",ParamBase::Int | ParamBase::Out, static_cast<int>(maxVal));
-        break;
     case tInt32:
-        retval += ito::dObjHelper::minMaxValueFunc<ito::int32>(dObj, minVal, locationMin, maxVal, locationMax, false, cmplxState);
+        ignoreInf = false;
         (*paramsOut)[0] = ParamBase("minimum",ParamBase::Int | ParamBase::Out, static_cast<int>(minVal));
         (*paramsOut)[4] = ParamBase("maximum",ParamBase::Int | ParamBase::Out, static_cast<int>(maxVal));
         break;
     case tFloat32:
-        retval += ito::dObjHelper::minMaxValueFunc<ito::float32>(dObj, minVal, locationMin, maxVal, locationMax, toogleInf, cmplxState);
-        (*paramsOut)[0] = ParamBase("minimum",ParamBase::Double | ParamBase::Out, static_cast<double>(minVal));
-        (*paramsOut)[4] = ParamBase("maximum",ParamBase::Double | ParamBase::Out, static_cast<double>(maxVal));
-        break;
     case tFloat64:
-        retval += ito::dObjHelper::minMaxValueFunc<ito::float64>(dObj, minVal, locationMin, maxVal, locationMax, toogleInf, cmplxState);
-        (*paramsOut)[0] = ParamBase("minimum",ParamBase::Double | ParamBase::Out, static_cast<double>(minVal));
-        (*paramsOut)[4] = ParamBase("maximum",ParamBase::Double | ParamBase::Out, static_cast<double>(maxVal));
-        break;
     case tComplex64:
-        retval += ito::dObjHelper::minMaxValueFunc<ito::complex64>(dObj, minVal, locationMin, maxVal, locationMax, toogleInf, cmplxState);
-        (*paramsOut)[0] = ParamBase("minimum",ParamBase::Double | ParamBase::Out, static_cast<double>(minVal));
-        (*paramsOut)[4] = ParamBase("maximum",ParamBase::Double | ParamBase::Out, static_cast<double>(maxVal));
-        break;
     case tComplex128:
-        retval += ito::dObjHelper::minMaxValueFunc<ito::complex128>(dObj, minVal, locationMin, maxVal, locationMax, toogleInf, cmplxState);
         (*paramsOut)[0] = ParamBase("minimum",ParamBase::Double | ParamBase::Out, static_cast<double>(minVal));
         (*paramsOut)[4] = ParamBase("maximum",ParamBase::Double | ParamBase::Out, static_cast<double>(maxVal));
         break;

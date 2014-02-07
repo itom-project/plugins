@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "PCOPixelFly.h"
 #include "pluginVersion.h"
 #include "common/sharedFunctionsQt.h"
@@ -124,7 +127,7 @@ PCOPixelFlyInterface::~PCOPixelFlyInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(PCOPixelFlyinterface, PCOPixelFlyInterface)
+Q_EXPORT_PLUGIN2_ITOM(PCOPixelFlyinterface, PCOPixelFlyInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

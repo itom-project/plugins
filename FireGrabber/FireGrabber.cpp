@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "FireGrabber.h"
 
 //#include "stdafx.h"
@@ -106,7 +109,7 @@ FireGrabberInterface::~FireGrabberInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(FireGrabberinterface, FireGrabberInterface)
+Q_EXPORT_PLUGIN2_ITOM(FireGrabberinterface, FireGrabberInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

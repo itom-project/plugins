@@ -30,6 +30,9 @@
 #     6     9
 */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "SerialIO.h"
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
@@ -1064,7 +1067,7 @@ SerialIOInterface::~SerialIOInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(SerialIOinterface, SerialIOInterface)
+Q_EXPORT_PLUGIN2_ITOM(SerialIOinterface, SerialIOInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

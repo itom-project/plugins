@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "dispWindow.h"
 
 #include "common/helperCommon.h"
@@ -122,7 +125,7 @@ DispWindowInterface::~DispWindowInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(DispWindowInterface, DispWindowInterface)
+Q_EXPORT_PLUGIN2_ITOM(DispWindowInterface, DispWindowInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** constructor of the DispWindow class

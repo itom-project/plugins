@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "DataObjectIO.h"
 
 #include "transformations.h"
@@ -112,7 +115,7 @@ DataObjectIOInterface::~DataObjectIOInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(DataObjectIOInterface, DataObjectIOInterface)
+Q_EXPORT_PLUGIN2_ITOM(DataObjectIOInterface, DataObjectIOInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1022,7 +1025,8 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     if(!ret.containsWarningOrError())
     {   
         QByteArray outLine(100, 0);
-        std::string tag;
+        ito::ByteArray tag;
+        std::string unitStr;
         double value = 0.0;
         bool dummyBool;
         bool isLine = (dObjSrc->getSize(0) == 1 || dObjSrc->getSize(1) == 1) ? true : false;
@@ -1061,31 +1065,31 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
         dataOut.write(outLine);
 
         double xScale = dObjSrc->getAxisScale(1);
-        tag = dObjSrc->getAxisUnit(1, dummyBool);
-        if(tag == "mm")
+        unitStr = dObjSrc->getAxisUnit(1, dummyBool);
+        if(unitStr == "mm")
         {
             xScale *= 1/1000.0;
         }
-        else if(tag == "µm")
+        else if(unitStr == "µm")
         {
             xScale *= 1/1000000.0;
         }
-        else if(tag == "km")
+        else if(unitStr == "km")
         {
             xScale *= 1000.0;
         }
 
         double yScale = dObjSrc->getAxisScale(0);
-        tag = dObjSrc->getAxisUnit(0, dummyBool);
-        if(tag == "mm")
+        unitStr = dObjSrc->getAxisUnit(0, dummyBool);
+        if(unitStr == "mm")
         {
             yScale *= 1/1000.0;
         }
-        else if(tag == "µm")
+        else if(unitStr == "µm")
         {
             yScale *= 1/1000000.0;
         }
-        else if(tag == "km")
+        else if(unitStr == "km")
         {
             yScale *= 1000.0;
         }
@@ -1140,16 +1144,16 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
             zScale *= verticalScale;
         }
 
-        tag = dObjSrc->getValueUnit();
-        if(dObjSrc->getValueUnit() == "mm")
+        unitStr = dObjSrc->getValueUnit();
+        if(unitStr == "mm")
         {
             zScale *= 1/1000.0;
         }
-        else if(dObjSrc->getValueUnit() == "µm")
+        else if(unitStr == "µm")
         {
             zScale *= 1/1000000.0;
         }
-        else if(dObjSrc->getValueUnit() == "km")
+        else if(unitStr == "km")
         {
             zScale *= 1000;
         }

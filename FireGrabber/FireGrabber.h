@@ -42,6 +42,7 @@ class FireGrabberInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
         Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this FireGrabberInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
+        ITOM_API
 
     public:
         FireGrabberInterface();                    /*!< Constructor */

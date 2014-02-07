@@ -93,10 +93,10 @@ IF(GLEW_FOUND)
     QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
 
     set(plugin_SOURCES 
-        ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.cpp
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.cpp
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.cpp
-        ${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.cpp
+    
+    
+    
+    
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogDispWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDispWindow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dispWindow.cpp
@@ -117,7 +117,7 @@ IF(GLEW_FOUND)
     #handle translations END STEP 1
 
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTXML_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES}) # glu32 opengl32)
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTXML_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES}) # glu32 opengl32)
 
     #handle translations BEGIN STEP 2
     if (UPDATE_TRANSLATIONS)

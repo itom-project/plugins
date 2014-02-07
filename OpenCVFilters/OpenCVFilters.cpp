@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include <math.h>
 #include "OpenCVFilters.h"
 
@@ -115,7 +118,7 @@ OpenCVFiltersInterface::~OpenCVFiltersInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(OpenCVFilter, OpenCVFiltersInterface)
+Q_EXPORT_PLUGIN2_ITOM(OpenCVFilter, OpenCVFiltersInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

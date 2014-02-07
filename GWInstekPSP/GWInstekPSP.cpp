@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "GWInstekPSP.h"
 
 #ifdef __linux__
@@ -119,7 +122,7 @@ GWInstekPSPInterface::~GWInstekPSPInterface()
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class GWInstekPSPInterface with the name GWInstekPSPInterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2(GWInstekPSPInterface, GWInstekPSPInterface)
+Q_EXPORT_PLUGIN2_ITOM(GWInstekPSPInterface, GWInstekPSPInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

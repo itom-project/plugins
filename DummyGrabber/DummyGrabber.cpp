@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "DummyGrabber.h"
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
@@ -388,6 +391,8 @@ please also check the plugin 'emulationGrabber'";
     m_initParamsOpt.append(param);
 }
 
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 /*!
@@ -401,7 +406,7 @@ DummyGrabberInterface::~DummyGrabberInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class DummyGrabberInterface with the name DummyGrabberinterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2(DummyGrabberinterface, DummyGrabberInterface)
+Q_EXPORT_PLUGIN2_ITOM(DummyGrabberinterface, DummyGrabberInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

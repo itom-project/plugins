@@ -20,6 +20,9 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+
 #include "fittingfilters.h"
 
 #include <omp.h>
@@ -104,7 +107,7 @@ FittingFiltersInterface::~FittingFiltersInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(FittingFiltersInterface, FittingFiltersInterface)
+Q_EXPORT_PLUGIN2_ITOM(FittingFiltersInterface, FittingFiltersInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
