@@ -166,7 +166,7 @@ FileGrabberInterface::~FileGrabberInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class FileGrabberInterface with the name FileGrabberinterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2_ITOM(FileGrabberinterface, FileGrabberInterface)
+Q_EXPORT_PLUGIN2(FileGrabberinterface, FileGrabberInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

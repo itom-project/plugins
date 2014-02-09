@@ -110,7 +110,7 @@ AerotechEnsembleInterface::~AerotechEnsembleInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2_ITOM(AerotechEnsembleInterface, AerotechEnsembleInterface)
+Q_EXPORT_PLUGIN2(AerotechEnsembleInterface, AerotechEnsembleInterface)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------

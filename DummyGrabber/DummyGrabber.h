@@ -34,7 +34,7 @@ class DummyGrabberInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
     Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this DummyGrabberInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
-    ITOM_API
+    PLUGIN_ITOM_API
 
     public:
         DummyGrabberInterface();                    /*!< Constructor */

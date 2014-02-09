@@ -123,7 +123,7 @@ DummyMotorInterface::~DummyMotorInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2_ITOM(DummyMotorInterface, DummyMotorInterface)
+Q_EXPORT_PLUGIN2(DummyMotorInterface, DummyMotorInterface)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------

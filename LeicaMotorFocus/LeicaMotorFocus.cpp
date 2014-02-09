@@ -159,7 +159,7 @@ LeicaMotorFocusInterface::~LeicaMotorFocusInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2_ITOM(LeicaMotorFocusInterface, LeicaMotorFocusInterface)
+Q_EXPORT_PLUGIN2(LeicaMotorFocusInterface, LeicaMotorFocusInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

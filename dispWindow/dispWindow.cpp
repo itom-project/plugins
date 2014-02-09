@@ -125,7 +125,7 @@ DispWindowInterface::~DispWindowInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2_ITOM(DispWindowInterface, DispWindowInterface)
+Q_EXPORT_PLUGIN2(DispWindowInterface, DispWindowInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** constructor of the DispWindow class

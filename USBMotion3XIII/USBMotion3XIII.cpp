@@ -305,7 +305,7 @@ ito::RetVal USBMotion3XIIIInterface::unloadDLL()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2_ITOM(USBMotion3XIIIInterface, USBMotion3XIIIInterface)
+Q_EXPORT_PLUGIN2(USBMotion3XIIIInterface, USBMotion3XIIIInterface)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------

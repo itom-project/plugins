@@ -113,7 +113,7 @@ DataObjectArithmeticInterface::~DataObjectArithmeticInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2_ITOM(DataObjectArithmeticInterface, DataObjectArithmeticInterface)
+Q_EXPORT_PLUGIN2(DataObjectArithmeticInterface, DataObjectArithmeticInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------

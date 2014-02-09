@@ -406,7 +406,7 @@ DummyGrabberInterface::~DummyGrabberInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class DummyGrabberInterface with the name DummyGrabberinterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2_ITOM(DummyGrabberinterface, DummyGrabberInterface)
+Q_EXPORT_PLUGIN2(DummyGrabberinterface, DummyGrabberInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
