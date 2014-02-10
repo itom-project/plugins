@@ -1,6 +1,8 @@
 /* ********************************************************************
     Plugin "QCam" for itom software
-    URL: ???
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -17,6 +19,8 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
+#define ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
 
 #include "QCam.h"
 #include "dockWidgetQCam.h"
@@ -88,7 +92,7 @@ QCamInterface::~QCamInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2_ITOM(QCaminterface, QCamInterface)
+Q_EXPORT_PLUGIN2(QCaminterface, QCamInterface)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------

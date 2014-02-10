@@ -1,6 +1,8 @@
 /* ********************************************************************
     Plugin "QCam" for itom software
-    URL: ???
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -41,7 +43,7 @@ class QCamInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
         Q_INTERFACES(ito::AddInInterfaceBase)
-        ITOM_API
+        PLUGIN_ITOM_API
 
     protected:
 
