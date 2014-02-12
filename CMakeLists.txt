@@ -150,3 +150,9 @@ OPTION(PLUGIN_FFTWFilters "Build with this plugin." ON)
 if (PLUGIN_FFTWFilters)
     ADD_SUBDIRECTORY(FFTWfilters)
 endif (PLUGIN_FFTWFilters)
+
+# XIMEA
+OPTION(PLUGIN_XIMEA "Build with this plugin." ON)
+if (PLUGIN_XIMEA)
+    ADD_SUBDIRECTORY(XIMEA)
+endif (PLUGIN_XIMEA)
