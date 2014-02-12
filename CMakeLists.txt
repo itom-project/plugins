@@ -111,6 +111,14 @@ IF (WIN32)
   endif (PLUGIN_PCOPixelFly)
 ENDIF (WIN32)
 
+# PGRFlyCapture
+IF (WIN32)
+    OPTION(PLUGIN_PGRFlyCapture "Build with this plugin." ON)
+    if (PLUGIN_PGRFlyCapture)
+            ADD_SUBDIRECTORY(PGRFlyCapture)
+    endif (PLUGIN_PGRFlyCapture)
+ENDIF (WIN32)
+
 # PIPiezoCtrl
 OPTION(PLUGIN_PIPiezoCtrl "Build with this plugin." ON)
 if (PLUGIN_PIPiezoCtrl)
