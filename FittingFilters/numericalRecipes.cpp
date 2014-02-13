@@ -461,8 +461,8 @@ void FitSVDSimple::fit(VecDoub_I &x, VecDoub_I &y, VecDoub_I &weights, VecDoub_O
 
     if (ndat_real < ma) //too few input values
     {
-        for (i=0;i<ma;i++) p[i] = std::numeric_limits<double>::signaling_NaN();
-        chisq = std::numeric_limits<double>::signaling_NaN();
+        for (i=0;i<ma;i++) p[i] = std::numeric_limits<double>::quiet_NaN();
+        chisq = std::numeric_limits<double>::quiet_NaN();
         return;
     }
 

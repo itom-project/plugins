@@ -856,7 +856,7 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
             }
             else
             {
-                rowDest[j] = std::numeric_limits<_Tp>::signaling_NaN();
+                rowDest[j] = std::numeric_limits<_Tp>::quiet_NaN();
             }
         }
     }
@@ -930,9 +930,9 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
 
     if (n<2 || std::abs(sw2) < std::numeric_limits<double>::epsilon())
     {
-        p[0] = std::numeric_limits<double>::signaling_NaN();
-        p[1] = std::numeric_limits<double>::signaling_NaN();
-        residual = std::numeric_limits<double>::signaling_NaN();
+        p[0] = std::numeric_limits<double>::quiet_NaN();
+        p[1] = std::numeric_limits<double>::quiet_NaN();
+        residual = std::numeric_limits<double>::quiet_NaN();
     }
     else
     {
@@ -962,9 +962,9 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
         }
         else
         {
-            p[0] = std::numeric_limits<double>::signaling_NaN();
-            p[1] = std::numeric_limits<double>::signaling_NaN();
-            residual = std::numeric_limits<double>::signaling_NaN();
+            p[0] = std::numeric_limits<double>::quiet_NaN();
+            p[1] = std::numeric_limits<double>::quiet_NaN();
+            residual = std::numeric_limits<double>::quiet_NaN();
         }
 
         /*if (std::abs(sw2) <

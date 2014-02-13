@@ -850,7 +850,7 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***srcP
                     }
                     else
                     {
-                        linePtr[x] = std::numeric_limits<_TypeDst>::signaling_NaN();
+                        linePtr[x] = std::numeric_limits<_TypeDst>::quiet_NaN();
                     }
                 
                 }
@@ -877,7 +877,7 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***srcP
                     }
                     else
                     {
-                        linePtr[x] = std::numeric_limits<_TypeDst>::signaling_NaN();
+                        linePtr[x] = std::numeric_limits<_TypeDst>::quiet_NaN();
                     }
                 
                 }

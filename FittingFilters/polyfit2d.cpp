@@ -203,7 +203,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     const float64 *lineBuf = NULL;
     float64 *lineBufOutput = NULL;
     double inf = std::numeric_limits<double>::infinity();
-    double nan =std::numeric_limits<double>::signaling_NaN();
+    double nan =std::numeric_limits<double>::quiet_NaN();
     
 
 

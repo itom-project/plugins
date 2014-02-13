@@ -828,10 +828,10 @@ RetVal DataObjectArithmetic::centerOfGravityParams(QVector<ito::Param> *paramsMa
         param = Param("highTreshold", ito::ParamBase::Double, -1*std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), 0.0, tr("Ingnore values above highTreshold").toAscii().data());
         paramsOpt->append(param);
 
-        paramsOut->append( ito::Param("cYI", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::signaling_NaN(), NULL, tr("y-Coordinate of COG (index)").toAscii().data()));
-        paramsOut->append( ito::Param("cXI", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::signaling_NaN(), NULL, tr("x-Coordinate of COG (index)").toAscii().data()));
-        paramsOut->append( ito::Param("cY", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::signaling_NaN(), NULL, tr("y-Coordinate of COG (unit)").toAscii().data()));
-        paramsOut->append( ito::Param("cX", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::signaling_NaN(), NULL, tr("x-Coordinate of COG (unit)").toAscii().data()));
+        paramsOut->append( ito::Param("cYI", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("y-Coordinate of COG (index)").toAscii().data()));
+        paramsOut->append( ito::Param("cXI", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("x-Coordinate of COG (index)").toAscii().data()));
+        paramsOut->append( ito::Param("cY", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("y-Coordinate of COG (unit)").toAscii().data()));
+        paramsOut->append( ito::Param("cX", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("x-Coordinate of COG (unit)").toAscii().data()));
     }
 
     return retval;
@@ -888,8 +888,8 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(cv::Mat 
     }
     else
     {
-        xCOG = std::numeric_limits<ito::float64>::signaling_NaN();
-        yCOG = std::numeric_limits<ito::float64>::signaling_NaN();
+        xCOG = std::numeric_limits<ito::float64>::quiet_NaN();
+        yCOG = std::numeric_limits<ito::float64>::quiet_NaN();
     }
 
     return ito::retOk;
@@ -909,10 +909,10 @@ ito::RetVal DataObjectArithmetic::centerOfGravity(QVector<ito::ParamBase> *param
         return ito::RetVal(ito::retError, 0, tr("Error: source image is not initialized").toAscii().data());    
     }
 
-    ito::float64 cx = std::numeric_limits<ito::float64>::signaling_NaN();
-    ito::float64 cy = std::numeric_limits<ito::float64>::signaling_NaN();
-    ito::float64 cxPhys = std::numeric_limits<ito::float64>::signaling_NaN();
-    ito::float64 cyPhys = std::numeric_limits<ito::float64>::signaling_NaN();
+    ito::float64 cx = std::numeric_limits<ito::float64>::quiet_NaN();
+    ito::float64 cy = std::numeric_limits<ito::float64>::quiet_NaN();
+    ito::float64 cxPhys = std::numeric_limits<ito::float64>::quiet_NaN();
+    ito::float64 cyPhys = std::numeric_limits<ito::float64>::quiet_NaN();
 
     ito::float64 lowTresHold = (*paramsOpt)[0].getVal<ito::float64>();
     ito::float64 highTresHold = (*paramsOpt)[1].getVal<ito::float64>();
@@ -1125,7 +1125,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(cv:
         }
         else
         {
-            *pDstValue = std::numeric_limits<ito::float64>::signaling_NaN();
+            *pDstValue = std::numeric_limits<ito::float64>::quiet_NaN();
         }
     
     }
@@ -1405,7 +1405,7 @@ const char *DataObjectArithmetic::getPercentageThresholdDoc = "analyzes all valu
 {
     ito::DataObject *data = paramsMand->at(0).getVal<ito::DataObject*>();
     double percentage = paramsMand->at(1).getVal<double>();
-    double threshold = std::numeric_limits<double>::signaling_NaN();
+    double threshold = std::numeric_limits<double>::quiet_NaN();
     ito::RetVal retval;
 
     if (!data)
@@ -1500,12 +1500,12 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
 
     if(numValues == 0 && (planes*m*n) > 0)
     {
-        value = std::numeric_limits<double>::signaling_NaN();
+        value = std::numeric_limits<double>::quiet_NaN();
         return ito::RetVal(ito::retWarning,0,"no valid values encountered");
     }
     else if(numValues == 0)
     {
-        value = std::numeric_limits<double>::signaling_NaN();
+        value = std::numeric_limits<double>::quiet_NaN();
         return ito::retOk;
     }
         

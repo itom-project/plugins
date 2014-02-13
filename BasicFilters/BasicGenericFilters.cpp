@@ -427,7 +427,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 {
     ito::RetVal err = ito::retOk;
 
-    ito::float64 invalid = std::numeric_limits<ito::float64>::signaling_NaN();
+    ito::float64 invalid = std::numeric_limits<ito::float64>::quiet_NaN();
 
     if(std::numeric_limits<_Tp>::is_exact) replaceNaN = true;
 
