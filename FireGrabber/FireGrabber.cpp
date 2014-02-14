@@ -533,10 +533,37 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
             else
             {
                 resizeResult = Camera.SetParameter(FGP_RESIZE, 1); //may return 4 (HALER_MODE) (not allowed in this mode, since this is only necessary if camera is running)
-                retval += AlliedChkError(Camera.SetParameter(FGP_XPOSITION, x0));
+
+				unsigned long result;
+
+				result = Camera.SetParameter(FGP_XPOSITION, x0); //might raise a FCE_ADJUSTED error
+				if (result == FCE_ADJUSTED)
+				{
+					retval += AlliedChkError(Camera.SetParameter(FGP_XSIZE, sizex));
+					retval += AlliedChkError(Camera.SetParameter(FGP_XPOSITION, x0));
+				}
+				else
+				{
+					retval += AlliedChkError(result);
+					retval += AlliedChkError(Camera.SetParameter(FGP_XSIZE, sizex));
+				}
+
+				result = Camera.SetParameter(FGP_YPOSITION, y0); //might raise a FCE_ADJUSTED error
+				if (result == FCE_ADJUSTED)
+				{
+					retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));
+					retval += AlliedChkError(Camera.SetParameter(FGP_YPOSITION, y0));
+				}
+				else
+				{
+					retval += AlliedChkError(result);
+					retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));
+				}
+
+                /*retval += AlliedChkError(Camera.SetParameter(FGP_XPOSITION, x0));
                 retval += AlliedChkError(Camera.SetParameter(FGP_XSIZE, sizex));
                 retval += AlliedChkError(Camera.SetParameter(FGP_YPOSITION, y0));
-                retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));
+                retval += AlliedChkError(Camera.SetParameter(FGP_YSIZE, sizey));*/
 
                 if (resizeResult != HALER_MODE)
                 {
