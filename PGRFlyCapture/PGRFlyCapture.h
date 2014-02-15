@@ -83,6 +83,7 @@ class PGRFlyCapture : public ito::AddInGrabber
         double m_offsetMin;
 
         double m_acquireTime;    /*!< Timestamp for acquire in seconds relative to cpu ticks */
+		double m_last_acquireTime;
        
         bool m_isInFormat7;
 

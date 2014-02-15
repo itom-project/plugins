@@ -296,6 +296,9 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("camFirmwareBuildTime", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Built time of the firmware used in the attachted camera").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+	paramVal = ito::Param("timestamp", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 10000000.0, 0.0, tr("Time in ms since last image (end of exposure)").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     //now create dock widget for this plugin
     DockWidgetPGRFlyCapture *dw = new DockWidgetPGRFlyCapture(m_params, getID());
     connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
@@ -1633,7 +1636,9 @@ ito::RetVal PGRFlyCapture::acquire(const int trigger, ItomSharedSemaphore *waitC
     }
     else
     {
+		m_last_acquireTime = m_acquireTime;
         m_acquireTime = (double)(cv::getTickCount())/cv::getTickFrequency();
+		m_params["timestamp"].setVal<double>((m_acquireTime-m_last_acquireTime)*1000);
         FlyCapture2::Error retError;
         this->m_isgrabbing = true;
         if(m_RunSoftwareSync)
