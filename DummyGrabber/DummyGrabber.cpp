@@ -381,13 +381,13 @@ please also check the plugin 'emulationGrabber'";
     
     m_initParamsMand.clear();
 
-    ito::Param param("maxXSize", ito::ParamBase::Int, 640, new ito::IntMeta(1, 4096), tr("Maximum x size of image").toAscii().data());
+    ito::Param param("maxXSize", ito::ParamBase::Int, 640, new ito::IntMeta(1, 4096), tr("Maximum x size of image").toLatin1().data());
     m_initParamsOpt.append(param);
 
-    param = ito::Param("maxYSize", ito::ParamBase::Int, 480, new ito::IntMeta(1, 4096), tr("Maximum y size of image").toAscii().data());
+    param = ito::Param("maxYSize", ito::ParamBase::Int, 480, new ito::IntMeta(1, 4096), tr("Maximum y size of image").toLatin1().data());
     m_initParamsOpt.append(param);
 
-    param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(1, 32), tr("Bits per Pixel, usually 8-16bit grayvalues").toAscii().data());
+    param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(1, 32), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
     m_initParamsOpt.append(param);
 }
 
@@ -406,7 +406,9 @@ DummyGrabberInterface::~DummyGrabberInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class DummyGrabberInterface with the name DummyGrabberinterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2(DummyGrabberinterface, DummyGrabberInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(DummyGrabberinterface, DummyGrabberInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -464,37 +466,37 @@ DummyGrabber::DummyGrabber() :
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyGrabber", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.005, 100.0, 12.5, tr("Integrationtime of CCD [s]").toAscii().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.005, 100.0, 12.5, tr("Integrationtime of CCD [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.05, 150.0, 33.333333, tr("Time between two frames").toAscii().data());
+    paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.05, 150.0, 33.333333, tr("Time between two frames").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("Virtual gain").toAscii().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("Virtual gain").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Virtual offset").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("Binning of different pixel").toAscii().data());
+    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Virtual offset").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("size in x (cols) [px]").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("size in y (rows) [px]").toAscii().data());
+    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("Binning of different pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("first pixel in x (cols) within ROI [zero-based, <= x1]").toAscii().data());
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("size in x (cols) [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("first pixel in y (rows) within ROI [zero-based, <= y1]").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("last pixel in x (cols) within ROI [zero-based, >= x0]").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("last pixel in y (rows) within ROI [zero-based, >= y0]").toAscii().data());
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("size in y (rows) [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 64, 8, tr("bitdepth of images").toAscii().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("first pixel in x (cols) within ROI [zero-based, <= x1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("first pixel in y (rows) within ROI [zero-based, <= y1]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("time_out", ito::ParamBase::Double, 0.1, 60.0, 60.0, tr("Timeout for acquiring images [s]").toAscii().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("last pixel in x (cols) within ROI [zero-based, >= x0]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("last pixel in y (rows) within ROI [zero-based, >= y0]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 64, 8, tr("bitdepth of images").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("time_out", ito::ParamBase::Double, 0.1, 60.0, 60.0, tr("Timeout for acquiring images [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
@@ -625,26 +627,26 @@ ito::RetVal DummyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 
             if (newbinX > maxbinX)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("New value in X is larger than maximal value, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("New value in X is larger than maximal value, input ignored").toLatin1().data());
             }
             else if (newbinY > maxbinY)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is larger than maximal value, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is larger than maximal value, input ignored").toLatin1().data());
             }
             else if (newbinX < minbinX)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("New value in X is smaller than parameter range, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("New value in X is smaller than parameter range, input ignored").toLatin1().data());
             }
             else if (newbinY < minbinY)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is smaller than parameter range, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is smaller than parameter range, input ignored").toLatin1().data());
             }
             else
             {
                 ret = myCam.setBinning(newbinX, newbinY);
                 if (ret)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("Set binning failed").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("Set binning failed").toLatin1().data());
                 }
                 ret = myCam.getBinning(newbinX, newbinY);
                 it->setVal<int>(newbinX*100+newbinY);
@@ -713,7 +715,7 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     int sizeX = (*paramsOpt)[0].getVal<int>();    // is the first parameter in the opt-List, corresponding to the gabber width
     if (sizeX % 4 != 0)
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber: SizeX must be a dividable of 4").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber: SizeX must be a dividable of 4").toLatin1().data());
     }
 
     int sizeY = (*paramsOpt)[1].getVal<int>();    // is the second parameter in the opt-List, corresponding to the gabber heigth
@@ -723,7 +725,7 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     }
     else if (sizeY % 4 != 0)
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber: SizeY must be a dividable of 4").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber: SizeY must be a dividable of 4").toLatin1().data());
     }
 
     int bpp = (*paramsOpt)[2].getVal<int>();    // is the third parameter in the opt-List, corresponding to the gabber bit depth per pixel
@@ -744,7 +746,7 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     int ret = myCam.initCamera(sizeX, sizeY, bpp);
     if (ret)
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber").toLatin1().data());
     }
 
     if (!retVal.containsError())
@@ -826,7 +828,7 @@ ito::RetVal DummyGrabber::startDevice(ItomSharedSemaphore *waitCond)
         int ret = myCam.prepareCamera();
         if (ret)
         {
-            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera preparation.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera preparation.").toLatin1().data());
         }
     }
 
@@ -861,13 +863,13 @@ ito::RetVal DummyGrabber::stopDevice(ItomSharedSemaphore *waitCond)
         int ret = myCam.stopCamera();
         if (ret)
         {
-            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera stop command.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera stop command.").toLatin1().data());
         }
 
     }
     else if (grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retWarning, 1001, tr("StopDevice of DummyGrabber can not be executed, since camera has not been started.").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 1001, tr("StopDevice of DummyGrabber can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -901,7 +903,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
 
     if (grabberStartedCount() <= 0)
     {
-        retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of DummyGrabber can not be executed, since camera has not been started.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of DummyGrabber can not be executed, since camera has not been started.").toLatin1().data());
     }
     else
     {
@@ -909,7 +911,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
         int ret = myCam.acquireImage();
         if (ret)
         {
-            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera acquisition.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera acquisition.").toLatin1().data());
         }
 
     }
@@ -949,7 +951,7 @@ ito::RetVal DummyGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     {
         if (dObj == NULL)
         {
-            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toLatin1().data());
         }
         else
         {
@@ -989,7 +991,7 @@ ito::RetVal DummyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if (!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
     else
     {
@@ -1065,12 +1067,12 @@ ito::RetVal DummyGrabber::updateCamParams(void)
     int ret = myCam.setFrameTime(intTime);
     if (ret)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Set integrationtime failed").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Set integrationtime failed").toLatin1().data());
     }
     ret = myCam.setOffsetGain(gain, offset);
     if (ret)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Set offset and gain failed").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Set offset and gain failed").toLatin1().data());
     }
 
     return retValue;
@@ -1111,19 +1113,19 @@ ito::RetVal DummyGrabber::retrieveData(ito::DataObject *externalDataObject)
     {
         if (ret == SimulatedCam::missingAcquire)
         {
-            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber can not be executed, since acquire was called.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber can not be executed, since acquire was called.").toLatin1().data());
         }
         else if (ret == SimulatedCam::missingStart)
         {
-            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber can not be executed, since camera has not been started.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber can not be executed, since camera has not been started.").toLatin1().data());
         }
         else if (ret == SimulatedCam::missingBuffer)
         {
-            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber can not be executed, since no buffer allocated.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber can not be executed, since no buffer allocated.").toLatin1().data());
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed.").toLatin1().data());
         }
     }
     else
@@ -1134,7 +1136,7 @@ ito::RetVal DummyGrabber::retrieveData(ito::DataObject *externalDataObject)
             ito::uint8 *cbuf=(ito::uint8*)myCam.getImageBuffer();
             if (cbuf == NULL)
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since retrived NULL-Pointer.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since retrived NULL-Pointer.").toLatin1().data());
             }
             else if (curxsize == maxxsize)
             {
@@ -1153,7 +1155,7 @@ ito::RetVal DummyGrabber::retrieveData(ito::DataObject *externalDataObject)
             ito::uint16 *cbuf=(ito::uint16*)myCam.getImageBuffer();
             if (cbuf == NULL)
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since retrived NULL-Pointer.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since retrived NULL-Pointer.").toLatin1().data());
             }
             else if (curxsize == maxxsize)
             {
@@ -1172,7 +1174,7 @@ ito::RetVal DummyGrabber::retrieveData(ito::DataObject *externalDataObject)
             ito::int32 *cbuf=(ito::int32*)myCam.getImageBuffer();
             if (cbuf == NULL)
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since retrived NULL-Pointer.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since retrived NULL-Pointer.").toLatin1().data());
             }
             else if (curxsize == maxxsize)
             {
@@ -1188,7 +1190,7 @@ ito::RetVal DummyGrabber::retrieveData(ito::DataObject *externalDataObject)
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since undefined bitdepth.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since undefined bitdepth.").toLatin1().data());
         }
         this->m_isgrabbing = false;
     }
