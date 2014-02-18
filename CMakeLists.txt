@@ -24,16 +24,16 @@ SET(ITOM_DIR "" CACHE PATH "base path to itom")
 #ENDIF (WIN32)
 
 # dataobjectarithmetic
-#OPTION(PLUGIN_dataobjectarithmetic "Build with this plugin." ON)
-#if (PLUGIN_dataobjectarithmetic)
-#    ADD_SUBDIRECTORY(dataobjectarithmetic)
-#endif (PLUGIN_dataobjectarithmetic)
+OPTION(PLUGIN_dataobjectarithmetic "Build with this plugin." ON)
+if (PLUGIN_dataobjectarithmetic)
+    ADD_SUBDIRECTORY(dataobjectarithmetic)
+endif (PLUGIN_dataobjectarithmetic)
 
 # DataObjectIO
-#OPTION(PLUGIN_DataObjectIO "Build with this plugin." ON)
-#if (PLUGIN_DataObjectIO)
-#    ADD_SUBDIRECTORY(DataObjectIO)
-#endif (PLUGIN_DataObjectIO)
+OPTION(PLUGIN_DataObjectIO "Build with this plugin." ON)
+if (PLUGIN_DataObjectIO)
+    ADD_SUBDIRECTORY(DataObjectIO)
+endif (PLUGIN_DataObjectIO)
 
 # dispWindow
 #OPTION(PLUGIN_dispWindow "Build with this plugin." ON)
@@ -48,22 +48,22 @@ if (PLUGIN_DummyGrabber)
 endif (PLUGIN_DummyGrabber)
 
 # DummyMotor
-#OPTION(PLUGIN_DummyMotor "Build with this plugin." ON)
-#if (PLUGIN_DummyMotor)
-#    ADD_SUBDIRECTORY(DummyMotor)
-#endif (PLUGIN_DummyMotor)
+OPTION(PLUGIN_DummyMotor "Build with this plugin." ON)
+if (PLUGIN_DummyMotor)
+    ADD_SUBDIRECTORY(DummyMotor)
+endif (PLUGIN_DummyMotor)
 
 # FileGrabber
-#OPTION(PLUGIN_FileGrabber "Build with this plugin." ON)
-#if (PLUGIN_FileGrabber)
-#    ADD_SUBDIRECTORY(FileGrabber)
-#endif (PLUGIN_FileGrabber)
+OPTION(PLUGIN_FileGrabber "Build with this plugin." ON)
+if (PLUGIN_FileGrabber)
+    ADD_SUBDIRECTORY(FileGrabber)
+endif (PLUGIN_FileGrabber)
 
 # FittingFilters
-#OPTION(PLUGIN_FittingFilters "Build with this plugin." ON)
-#if (PLUGIN_FittingFilters)
-#    ADD_SUBDIRECTORY(FittingFilters)
-#endif (PLUGIN_FittingFilters)
+OPTION(PLUGIN_FittingFilters "Build with this plugin." ON)
+if (PLUGIN_FittingFilters)
+    ADD_SUBDIRECTORY(FittingFilters)
+endif (PLUGIN_FittingFilters)
 
 # FireGrabber
 #IF (WIN32)
@@ -80,10 +80,10 @@ endif (PLUGIN_DummyGrabber)
 #endif (PLUGIN_GWInstekPSP)
 
 # BasicFilters
-#OPTION(PLUGIN_BasicFilters "Build with this plugin." ON)
-#if (PLUGIN_BasicFilters)
-#    ADD_SUBDIRECTORY(BasicFilters)
-#endif (PLUGIN_BasicFilters)
+OPTION(PLUGIN_BasicFilters "Build with this plugin." ON)
+if (PLUGIN_BasicFilters)
+    ADD_SUBDIRECTORY(BasicFilters)
+endif (PLUGIN_BasicFilters)
 
 # LeicaMotorFocus
 #OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." ON)
@@ -92,10 +92,10 @@ endif (PLUGIN_DummyGrabber)
 #endif (PLUGIN_LeicaMotorFocus)
 
 # OpenCVFilters
-#OPTION(PLUGIN_OpenCVFilters "Build with this plugin." ON)
-#if (PLUGIN_OpenCVFilters)
-#    ADD_SUBDIRECTORY(OpenCVFilters)
-#endif (PLUGIN_OpenCVFilters)
+OPTION(PLUGIN_OpenCVFilters "Build with this plugin." ON)
+if (PLUGIN_OpenCVFilters)
+    ADD_SUBDIRECTORY(OpenCVFilters)
+endif (PLUGIN_OpenCVFilters)
 
 # OpenCVGrabber
 #OPTION(PLUGIN_OpenCVGrabber "Build with this plugin." ON)
@@ -132,10 +132,10 @@ endif (PLUGIN_DummyGrabber)
 #endif (PLUGIN_QCam)
 
 # SerialIO
-#OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
-#if (PLUGIN_SerialIO)
-#    ADD_SUBDIRECTORY(SerialIO)
-#endif (PLUGIN_SerialIO)
+OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
+if (PLUGIN_SerialIO)
+    ADD_SUBDIRECTORY(SerialIO)
+endif (PLUGIN_SerialIO)
 
 # USBMotion3XIII
 #IF (WIN32)

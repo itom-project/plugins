@@ -106,10 +106,10 @@ expired.";
     m_license = QObject::tr("Licensed under LPGL.");
     m_aboutThis = tr("N.A.");       
     
-    ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 6, new ito::IntMeta(0,10), tr("Number of axis for this motor").toAscii().data());
+    ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 6, new ito::IntMeta(0,10), tr("Number of axis for this motor").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("motorName", ito::ParamBase::String, "DummyMotor", tr("Name for this dummyMotor").toAscii().data());
+    paramVal = ito::Param("motorName", ito::ParamBase::String, "DummyMotor", tr("Name for this dummyMotor").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     return;
@@ -123,8 +123,9 @@ DummyMotorInterface::~DummyMotorInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(DummyMotorInterface, DummyMotorInterface)
-
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(DummyMotorInterface, DummyMotorInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -150,8 +151,8 @@ DummyMotor::DummyMotor() :
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
 
     //register exec functions
-    QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("AxisNumber", ito::ParamBase::Int, 0, new ito::IntMeta(0,10), tr("Axis number to plot").toAscii().data());
-    QVector<ito::Param> pOpt = QVector<ito::Param>() << ito::Param("AddName", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("Add motor name").toAscii().data());
+    QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("AxisNumber", ito::ParamBase::Int, 0, new ito::IntMeta(0,10), tr("Axis number to plot").toLatin1().data());
+    QVector<ito::Param> pOpt = QVector<ito::Param>() << ito::Param("AddName", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("Add motor name").toLatin1().data());
     QVector<ito::Param> pOut = QVector<ito::Param>();
     registerExecFunc("dummyExecFunction", pMand, pOpt, pOut, tr("Print the current positions of the specified axis to the consol"));
     pMand.clear();
@@ -161,18 +162,18 @@ DummyMotor::DummyMotor() :
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyMotor", NULL);    // Set up the parameter list
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 10, 1, tr("Number of Axis attached to this stage").toAscii().data());
+    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 10, 1, tr("Number of Axis attached to this stage").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     m_numaxis = paramVal.getVal<int>();
 
-    paramVal = ito::Param("speed", ito::ParamBase::Double, 0.1, 100000.0, 1.0, tr("Speed of the axis between 0.1 and 100000 mm/s").toAscii().data());
+    paramVal = ito::Param("speed", ito::ParamBase::Double, 0.1, 100000.0, 1.0, tr("Speed of the axis between 0.1 and 100000 mm/s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("accel", ito::ParamBase::Double, 1.0, 10.0, 1.0, tr("Acceleration in mm/s^2, currently not implemented").toAscii().data());
+    paramVal = ito::Param("accel", ito::ParamBase::Double, 1.0, 10.0, 1.0, tr("Acceleration in mm/s^2, currently not implemented").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, 1, tr("Toggles if motor has to wait until end of movement (0:sync) or not (1:async)").toAscii().data());
+    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, 1, tr("Toggles if motor has to wait until end of movement (0:sync) or not (1:async)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    /*paramVal = ito::Param("array", ito::ParamBase::IntArray, NULL, tr("test").toAscii().data());
+    /*paramVal = ito::Param("array", ito::ParamBase::IntArray, NULL, tr("test").toLatin1().data());
     paramVal.setMeta( new ito::IntMeta(0,5),true);
     m_params.insert(paramVal.getName(), paramVal);*/
 
@@ -246,7 +247,7 @@ ito::RetVal DummyMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         
     if(isMotorMoving()) //this if-case is for actuators only.
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toLatin1().data());
     }
         
     if(!retValue.containsError())
@@ -361,7 +362,7 @@ ito::RetVal DummyMotor::execFunc(const QString funcName, QSharedPointer<QVector<
 
             if ((axis >= m_numaxis) || (axis >= 10) || axis < 0)
             {
-                retValue = ito::RetVal(ito::retError, 1, tr("axis index is out of bound").toAscii().data());
+                retValue = ito::RetVal(ito::retError, 1, tr("axis index is out of bound").toLatin1().data());
             }
             else
             {               
@@ -381,7 +382,7 @@ ito::RetVal DummyMotor::execFunc(const QString funcName, QSharedPointer<QVector<
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("function name '%1' does not exist").arg(funcName.toAscii().data()).toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("function name '%1' does not exist").arg(funcName.toLatin1().data()).toLatin1().data());
     }
 
     if (waitCond)
@@ -419,7 +420,7 @@ ito::RetVal DummyMotor::calib(const QVector<int> axis, ItomSharedSemaphore *wait
 
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toLatin1().data());
 
         if (waitCond)
         {
@@ -478,7 +479,7 @@ ito::RetVal DummyMotor::setOrigin(const QVector<int> axis, ItomSharedSemaphore *
 
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is already moving").toLatin1().data());
 
         if (waitCond)
         {
@@ -492,7 +493,7 @@ ito::RetVal DummyMotor::setOrigin(const QVector<int> axis, ItomSharedSemaphore *
         {
             if ((axis[naxis] >= m_numaxis) || (axis[naxis] >= 10))
             {
-                retValue = ito::RetVal(ito::retError, 0, tr("axis number exceeds number of axis").toAscii().data());
+                retValue = ito::RetVal(ito::retError, 0, tr("axis number exceeds number of axis").toLatin1().data());
             }
             else
             {
@@ -539,7 +540,7 @@ ito::RetVal DummyMotor::getPos(const int axis, QSharedPointer<double> pos, ItomS
 
     if ((axis >= m_numaxis) || (axis >= 10) || axis < 0)
     {
-        retValue = ito::RetVal(ito::retError, 1, tr("axis index is out of bound").toAscii().data());
+        retValue = ito::RetVal(ito::retError, 1, tr("axis index is out of bound").toLatin1().data());
     }
     else
     {
@@ -566,7 +567,7 @@ ito::RetVal DummyMotor::getPos(const QVector<int> axis, QSharedPointer<QVector<d
     {
         if ((axis[naxis] >= m_numaxis) || (axis[naxis] >= 10) || axis[naxis] < 0)
         {
-            retValue = ito::RetVal(ito::retError, 1, tr("at least one axis index is out of bound").toAscii().data());
+            retValue = ito::RetVal(ito::retError, 1, tr("at least one axis index is out of bound").toLatin1().data());
         }
         else
         {
@@ -603,7 +604,7 @@ ito::RetVal DummyMotor::setPosAbs(const QVector<int> axis, QVector<double> pos, 
 
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retValue;
@@ -617,7 +618,7 @@ ito::RetVal DummyMotor::setPosAbs(const QVector<int> axis, QVector<double> pos, 
         {
             if (i < 0 || i >= m_numaxis)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("axis number is out of boundary").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("axis number is out of boundary").toLatin1().data());
             }
         }
 
@@ -640,7 +641,7 @@ ito::RetVal DummyMotor::setPosAbs(const QVector<int> axis, QVector<double> pos, 
             {
                 if ((axis[naxis] >= m_numaxis) || (axis[naxis] >= 10))
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("Axis is out of range.").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("Axis is out of range.").toLatin1().data());
                 }
                 else
                 {
@@ -700,7 +701,7 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
     
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retValue;
@@ -714,7 +715,7 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
         {
             if (i < 0 || i >= m_numaxis)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("axis number is out of boundary").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("axis number is out of boundary").toLatin1().data());
             }
         }
 
@@ -737,7 +738,7 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
             {
                 if ((axis[naxis] >= m_numaxis) || (axis[naxis] >= 10))
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("Axis is out of range.").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("Axis is out of range.").toLatin1().data());
                 }
                 else
                 {
@@ -844,7 +845,7 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
         if (!done && isInterrupted())
         {
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
-            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toAscii().data());
+            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
             done = true;
             return retVal;
         }
@@ -866,7 +867,7 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
     if (timeout)
     {
         replaceStatus(_axis, ito::actuatorMoving, ito::actuatorAtTarget); //this is special for dummymotor, since timeout is a normal behaviour. Usually you should set the following status: ito::actuatorTimeout);
-        retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toLatin1().data());
     }
 
     return retVal;
@@ -877,7 +878,7 @@ ito::RetVal DummyMotor::startJoyStickMovement(QVector<int> axis, QVector<double>
     if(axis.size() != vel.size())
     {
         //qDebug()<< "Theoretically error with the \"Spass-Stecken\"\n";
-        return ito::RetVal(ito::retError, 0, tr("Axis and velocity vector differ in size.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Axis and velocity vector differ in size.").toLatin1().data());
     }
     if(axis.size() == 1)
     {
@@ -893,7 +894,7 @@ ito::RetVal DummyMotor::startJoyStickMovement(QVector<int> axis, QVector<double>
     else
     {
         //qDebug() << "Theoretically error with the \"Spass-Stecken\"\n";
-        return ito::RetVal(ito::retError, 0, tr("Joystick movement failed somehow.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Joystick movement failed somehow.").toLatin1().data());
     }
 
     return ito::retOk;

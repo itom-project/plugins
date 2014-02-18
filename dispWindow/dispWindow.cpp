@@ -30,6 +30,7 @@
 #include <string.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
+#include <qdesktopwidget.h>
 
 #if linux
     #include <unistd.h>
@@ -96,17 +97,17 @@ require this library.";
     m_license = tr("LGPL");
     m_aboutThis = tr("N.A.");
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int, -4096, 4096, 0, tr("x0 position of window").toAscii().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int, -4096, 4096, 0, tr("x0 position of window").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, -4096, 4096, 0, tr("y0 position of window").toAscii().data());
+    paramVal = ito::Param("y0", ito::ParamBase::Int, -4096, 4096, 0, tr("y0 position of window").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("xsize", ito::ParamBase::Int, 3, 4096, 3, tr("height of window").toAscii().data());
+    paramVal = ito::Param("xsize", ito::ParamBase::Int, 3, 4096, 3, tr("height of window").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("ysize", ito::ParamBase::Int, 3, 4096, 3, tr("width of window").toAscii().data());
+    paramVal = ito::Param("ysize", ito::ParamBase::Int, 3, 4096, 3, tr("width of window").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("period", ito::ParamBase::Int, 3, 2048, 12, tr("cosine period in pixel").toAscii().data());
+    paramVal = ito::Param("period", ito::ParamBase::Int, 3, 2048, 12, tr("cosine period in pixel").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("phaseshift", ito::ParamBase::Int, 3, 8, 4, tr("number of total phase shifts").toAscii().data());
+    paramVal = ito::Param("phaseshift", ito::ParamBase::Int, 3, 8, 4, tr("number of total phase shifts").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     unsigned char * lutVals = (unsigned char*)malloc(256 * sizeof(unsigned char));
@@ -114,7 +115,7 @@ require this library.";
     {
         lutVals[n] = n;
     }
-    paramVal = ito::Param("lut", ito::ParamBase::CharArray, 256, reinterpret_cast<char*>(lutVals), tr("Lookup table").toAscii().data());
+    paramVal = ito::Param("lut", ito::ParamBase::CharArray, 256, reinterpret_cast<char*>(lutVals), tr("Lookup table").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     free(lutVals);
 }
@@ -125,7 +126,9 @@ DispWindowInterface::~DispWindowInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(DispWindowInterface, DispWindowInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(DispWindowInterface, DispWindowInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** constructor of the DispWindow class
@@ -181,12 +184,12 @@ DispWindow::DispWindow()
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
 
     //register exec functions
-    QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("meanGrayValues", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("mean grey values from intensity calibration").toAscii().data());
+    QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("meanGrayValues", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("mean grey values from intensity calibration").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>();
     QVector<ito::Param> pOut = QVector<ito::Param>();
     registerExecFunc("calcLut", pMand, pOpt, pOut, tr("Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter 'lut')"));
 
-    pMand = QVector<ito::Param>() << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("absolute filename of the file where the grabbing image should be saved").toAscii().data());
+    pMand = QVector<ito::Param>() << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("absolute filename of the file where the grabbing image should be saved").toLatin1().data());
     registerExecFunc("grabFramebuffer", pMand, pOpt, pOut, tr("grab the current OpenGL frame as image and saves it to the given filename. The image format is guessed from the suffix of the filename (default QImage formats supported)"));
 
     pMand.clear();
@@ -198,43 +201,43 @@ DispWindow::DispWindow()
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DispWindow", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("period", ito::ParamBase::Int, 3, 2048, 12, tr("Cosine period").toAscii().data());
+    paramVal = ito::Param("period", ito::ParamBase::Int, 3, 2048, 12, tr("Cosine period").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("phaseshift", ito::ParamBase::Int, 3, 8, 4, tr("Count of phase shifts").toAscii().data());
+    paramVal = ito::Param("phaseshift", ito::ParamBase::Int, 3, 8, 4, tr("Count of phase shifts").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("color", ito::ParamBase::Int, 0, 3, 3, tr("0: Red, 1: Green, 2: Blue, 3: White").toAscii().data());
+    paramVal = ito::Param("color", ito::ParamBase::Int, 0, 3, 3, tr("0: Red, 1: Green, 2: Blue, 3: White").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("orientation", ito::ParamBase::Int, 0, 1, 0, tr("0: vertical, 1: horizontal; default: vertical").toAscii().data());
+    paramVal = ito::Param("orientation", ito::ParamBase::Int, 0, 1, 0, tr("0: vertical, 1: horizontal; default: vertical").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int, minx0, maxx0, defx0, tr("x0 position of display window [px]").toAscii().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int, minx0, maxx0, defx0, tr("x0 position of display window [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("y0", ito::ParamBase::Int, miny0, maxy0, defy0, tr("y0 position of display window [px]").toAscii().data());
+    paramVal = ito::Param("y0", ito::ParamBase::Int, miny0, maxy0, defy0, tr("y0 position of display window [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("xsize", ito::ParamBase::Int, 3, maxwidth, defwidth, tr("width of window [px]").toAscii().data());
+    paramVal = ito::Param("xsize", ito::ParamBase::Int, 3, maxwidth, defwidth, tr("width of window [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("ysize", ito::ParamBase::Int, 3, maxheight, defheight, tr("height of window [px]").toAscii().data());
+    paramVal = ito::Param("ysize", ito::ParamBase::Int, 3, maxheight, defheight, tr("height of window [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("numimg", ito::ParamBase::Int, -1, 100, 0, tr("Number of current image (phase images, dark image, bright image, graycode images)").toAscii().data());
+    paramVal = ito::Param("numimg", ito::ParamBase::Int, -1, 100, 0, tr("Number of current image (phase images, dark image, bright image, graycode images)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("numgraybits", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 80, 0, tr("Number of different images: Phaseshift + GrayCode + 2").toAscii().data());
+    paramVal = ito::Param("numgraybits", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 80, 0, tr("Number of different images: Phaseshift + GrayCode + 2").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("gamma", ito::ParamBase::Int, 0, 1, 0, tr("0: disable, 1: enable; default disable").toAscii().data());
+    paramVal = ito::Param("gamma", ito::ParamBase::Int, 0, 1, 0, tr("0: disable, 1: enable; default disable").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("gammaCol", ito::ParamBase::Int, 0, 255, 127, NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table").toAscii().data());
+    paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //set QGLFormat
@@ -443,7 +446,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             {
                 if ((*val).getLen() != 256)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("lut has wrong size, 256 values required!").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("lut has wrong size, 256 values required!").toLatin1().data());
                 }
                 else
                 {
@@ -561,7 +564,7 @@ ito::RetVal DispWindow::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     // mandatory and optional parameters
     if (paramsMand == NULL || paramsOpt == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("mandatory or optional parameters vector not initialized!!").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("mandatory or optional parameters vector not initialized!!").toLatin1().data());
     }
 
     if (!retval.containsError())
@@ -688,22 +691,22 @@ ito::RetVal DispWindow::getVal(void *data, ItomSharedSemaphore *waitCond)
 
     if (dObj->getDims() > 2)
     {
-        retval = ito::RetVal(ito::retError, 0, tr("wrong z-size").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, tr("wrong z-size").toLatin1().data());
         goto end;
     }
     if ((width = m_params["xsize"].getVal<int>()) != (int)dObj->getSize(dObj->getDims() - 1))
     {
-        retval = ito::RetVal(ito::retError, 0, tr("wrong x-size").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, tr("wrong x-size").toLatin1().data());
         goto end;
     }
     if ((height = m_params["ysize"].getVal<int>()) != (int)dObj->getSize(dObj->getDims() - 2))
     {
-        retval = ito::RetVal(ito::retError, 0, tr("wrong y-size").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, tr("wrong y-size").toLatin1().data());
         goto end;
     }
     if (dObj->getType() != ito::tUInt8)
     {
-        retval = ito::RetVal(ito::retError, 0, tr("wrong data type (uint8) required").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, tr("wrong data type (uint8) required").toLatin1().data());
         goto end;
     }
 
@@ -718,7 +721,7 @@ ito::RetVal DispWindow::getVal(void *data, ItomSharedSemaphore *waitCond)
             imgSrc = m_pWindow->getCosPtrVert();
             if ((imgSrc == NULL) || (imgSrc[img] == NULL))
             {
-                retval = ito::RetVal(ito::retError, 0, tr("cosine image uninitialized").toAscii().data());
+                retval = ito::RetVal(ito::retError, 0, tr("cosine image uninitialized").toLatin1().data());
                 goto end;
             }
             if (cvMat->isContinuous())
@@ -740,7 +743,7 @@ ito::RetVal DispWindow::getVal(void *data, ItomSharedSemaphore *waitCond)
             imgSrc = m_pWindow->getGrayPtrVert();
             if ((imgSrc == NULL) || (imgSrc[img - phaShift] == NULL))
             {
-                retval = ito::RetVal(ito::retError, 0, tr("cosine image uninitialized").toAscii().data());
+                retval = ito::RetVal(ito::retError, 0, tr("cosine image uninitialized").toLatin1().data());
                 goto end;
             }
             if (cvMat->isContinuous())
@@ -759,7 +762,7 @@ ito::RetVal DispWindow::getVal(void *data, ItomSharedSemaphore *waitCond)
         }
         else
         {
-            retval = ito::RetVal(ito::retError, 0, tr("wrong image number - internal error").toAscii().data());
+            retval = ito::RetVal(ito::retError, 0, tr("wrong image number - internal error").toLatin1().data());
             goto end;
         }
     }
@@ -770,7 +773,7 @@ ito::RetVal DispWindow::getVal(void *data, ItomSharedSemaphore *waitCond)
             imgSrc = m_pWindow->getCosPtrHoriz();
             if ((imgSrc == NULL) || (imgSrc[img] == NULL))
             {
-                retval = ito::RetVal(ito::retError, 0, tr("cosine image uninitialized").toAscii().data());
+                retval = ito::RetVal(ito::retError, 0, tr("cosine image uninitialized").toLatin1().data());
                 goto end;
             }
             if (cvMat->isContinuous())
@@ -792,7 +795,7 @@ ito::RetVal DispWindow::getVal(void *data, ItomSharedSemaphore *waitCond)
             imgSrc = m_pWindow->getGrayPtrHoriz();
             if ((imgSrc == NULL) || (imgSrc[img - phaShift] == NULL))
             {
-                retval = ito::RetVal(ito::retError, 0, tr("cosine image uninitialized").toAscii().data());
+                retval = ito::RetVal(ito::retError, 0, tr("cosine image uninitialized").toLatin1().data());
                 goto end;
             }
             if (cvMat->isContinuous())
@@ -811,7 +814,7 @@ ito::RetVal DispWindow::getVal(void *data, ItomSharedSemaphore *waitCond)
         }
         else
         {
-            retval = ito::RetVal(ito::retError, 0, tr("wrong image number - internal error").toAscii().data());
+            retval = ito::RetVal(ito::retError, 0, tr("wrong image number - internal error").toLatin1().data());
             goto end;
         }
     }
@@ -915,7 +918,7 @@ ito::RetVal DispWindow::execFunc(const QString funcName, QSharedPointer<QVector<
     }
     else
     {
-        retValue += ito::RetVal::format(ito::retError, 0, tr("function name '%s' does not exist").toAscii().data(), funcName.toAscii().data());
+        retValue += ito::RetVal::format(ito::retError, 0, tr("function name '%s' does not exist").toLatin1().data(), funcName.toLatin1().data());
     }
 
     if (waitCond)

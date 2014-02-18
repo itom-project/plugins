@@ -188,22 +188,22 @@ ito::RetVal BasicFilters::flaten3Dto2D(QVector<ito::ParamBase> *paramsMand, QVec
 
     if (!dObjSrc)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
     }
 
     if (!dObjDst)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
 
     if (dObjSrc->getDims()  != 3 )
     { 
-        return ito::RetVal(ito::retError, 0, tr("Error: Input image must be 3D").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: Input image must be 3D").toLatin1().data());
     }
 
     if (dObjSrc->getSize(1) != 1 && dObjSrc->getSize(2) != 1) 
     { 
-        return ito::RetVal(ito::retError, 0, tr("Error: one dimension of input image must be equal to 1").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: one dimension of input image must be equal to 1").toLatin1().data());
     }
     else if(dObjSrc->getSize(1) != 1)
     {
@@ -290,7 +290,7 @@ ito::RetVal BasicFilters::flaten3Dto2D(QVector<ito::ParamBase> *paramsMand, QVec
             else copyCols<ito::float32>(dObjSrc, &tempObj);
         break;
         default:
-            return ito::RetVal(ito::retError, 0, tr("Unknown type or type not implemented").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("Unknown type or type not implemented").toLatin1().data());
     }
 
     *dObjDst = tempObj;
@@ -302,7 +302,7 @@ ito::RetVal BasicFilters::flaten3Dto2D(QVector<ito::ParamBase> *paramsMand, QVec
 //        _snprintf(prot, 80, "Flattened object from 3d to 2d");
 //        dObjDst->addToProtocol(std::string(prot));
         QString msg = tr("Flattened object from 3d to 2d");
-        dObjDst->addToProtocol(std::string(msg.toAscii().data()));
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
 
@@ -332,17 +332,17 @@ ito::RetVal BasicFilters::swapByteOrder(QVector<ito::ParamBase> *paramsMand, QVe
 
     if (!dObjSrc)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
     }
 
     if (!dObjDst)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
 
     if (dObjSrc->getDims()  != 2 )
     { 
-        return ito::RetVal(ito::retError, 0, tr("Error: Input image must be 2D").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: Input image must be 2D").toLatin1().data());
     }
 
     if((retval += ito::dObjHelper::verifyDataObjectType(dObjSrc, "dObjSrc", 3, ito::tInt32, ito::tUInt16, ito::tInt16)).containsError())
@@ -380,7 +380,7 @@ ito::RetVal BasicFilters::swapByteOrder(QVector<ito::ParamBase> *paramsMand, QVe
             swapBits<ito::uint16>(dObjSrc, dObjDst);
         break;
         default:
-            return ito::RetVal(ito::retError, 0, tr("Unknown type or type not implemented").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("Unknown type or type not implemented").toLatin1().data());
     }
 
     if(!retval.containsError())
@@ -390,7 +390,7 @@ ito::RetVal BasicFilters::swapByteOrder(QVector<ito::ParamBase> *paramsMand, QVe
 //        _snprintf(prot, 80, "Flattened object from 3d to 2d");
 //        dObjDst->addToProtocol(std::string(prot));
         QString msg = tr("Swap byte order");
-        dObjDst->addToProtocol(std::string(msg.toAscii().data()));
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
     return retval;
@@ -407,27 +407,27 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
 
     if (!dObjSrc)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
     }
 
     if (!dObjReplace)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: replace image ptr empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: replace image ptr empty").toLatin1().data());
     }
 
     if (!dObjDst)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
 
     if(!ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjReplace))
     {
-        return ito::RetVal(ito::retError, 0, tr("source and replace image must have the same type and size").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("source and replace image must have the same type and size").toLatin1().data());
     }
 
     if(dObjSrc->getType() != ito::tFloat32 && dObjSrc->getType() != ito::tFloat64)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: this filter is only usable for float or double matrices").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: this filter is only usable for float or double matrices").toLatin1().data());
     }
 
     if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
@@ -525,7 +525,7 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
 //        _snprintf(prot, 80, "replace NaN and infinity values");
 //        dObjDst->addToProtocol(std::string(prot));
         QString msg = tr("replace NaN and infinity values");
-        dObjDst->addToProtocol(std::string(msg.toAscii().data()));
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
     /*QVariant nrOfRepl(nrOfReplacements);
@@ -542,14 +542,14 @@ ito::RetVal BasicFilters::replaceInfAndNaNParams(QVector<ito::Param> *paramsMand
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr, NULL, tr("Input image").toAscii().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr, NULL, tr("Input image").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("replaceImg", ito::ParamBase::DObjPtr, NULL, tr("Image with values which will be used for replacement").toAscii().data());
+        param = ito::Param("replaceImg", ito::ParamBase::DObjPtr, NULL, tr("Image with values which will be used for replacement").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr, NULL, tr("Output image").toAscii().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr, NULL, tr("Output image").toLatin1().data());
         paramsMand->append(param);
 
-        paramsOut->append( ito::Param("nrOfReplacements", ito::ParamBase::Int | ito::ParamBase::Out, 0, NULL, tr("number of replacments").toAscii().data()));
+        paramsOut->append( ito::Param("nrOfReplacements", ito::ParamBase::Int | ito::ParamBase::Out, 0, NULL, tr("number of replacments").toLatin1().data()));
     }
 
     return retval;
@@ -560,12 +560,12 @@ ito::RetVal BasicFilters::mergeColorPlanesParams(QVector<ito::Param> *paramsMand
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr, NULL, tr("Input image with 3 or 4 uint8 planes").toAscii().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr, NULL, tr("Input image with 3 or 4 uint8 planes").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr, NULL, tr("Output image with uint32 planes").toAscii().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr, NULL, tr("Output image with uint32 planes").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("toogleByteOrder", ito::ParamBase::Int, 0, 3, 0, tr("Switch between RGBA = 0, BGRA = 1, ARGB = 2, ABGR = 3").toAscii().data());
+        param = ito::Param("toogleByteOrder", ito::ParamBase::Int, 0, 3, 0, tr("Switch between RGBA = 0, BGRA = 1, ARGB = 2, ABGR = 3").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -586,12 +586,12 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
 
     if (!dObjSrc)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
     }
 
     if (!dObjDst)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: replace image ptr empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: replace image ptr empty").toLatin1().data());
     }
 
     int numMats = dObjSrc->calcNumMats();
@@ -605,7 +605,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
 	// TODO: malformed if statement changed || to && is this what was intended?
     if(dObjSrc->getType() != ito::tUInt8 && dObjSrc->getDims() != 3 && (numMats != 3 && numMats != 4))
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: The primary object must be of type tUInt8").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: The primary object must be of type tUInt8").toLatin1().data());
     }
 
     int planeSize[2] = {dObjSrc->getSize(1), dObjSrc->getSize(2)};
@@ -777,7 +777,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
 //        _snprintf(prot, 80, "replace NaN and infinity values");
 //        dObjDst->addToProtocol(std::string(prot));
         QString msg = tr("Merged from multiplane color object");
-        dObjDst->addToProtocol(std::string(msg.toAscii().data()));
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
     return retval;
@@ -790,12 +790,12 @@ ito::RetVal BasicFilters::calcMeanOverZParams(QVector<ito::Param> *paramsMand, Q
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image with 3 or 4 uint8 planes").toAscii().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image with 3 or 4 uint8 planes").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image with uint32 planes").toAscii().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image with uint32 planes").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("ignoreInf", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Ignore invalid-Values for floating point").toAscii().data());
+        param = ito::Param("ignoreInf", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Ignore invalid-Values for floating point").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -910,7 +910,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
 
     if (!dObjSrc)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: sourceImageStack is Null-Pointer").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: sourceImageStack is Null-Pointer").toLatin1().data());
     }
     
     bool toogleInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
@@ -926,7 +926,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
 
     if(dObjDst == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("destinationPlane is a uninitialized dataObject!").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("destinationPlane is a uninitialized dataObject!").toLatin1().data());
     }
     else if(!retval.containsError())
     {
@@ -1014,7 +1014,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
         }
         break;
         default:
-            return ito::RetVal(ito::retError, 0, tr("Unknown type or type not implemented").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("Unknown type or type not implemented").toLatin1().data());
     }
 
     if(!retval.containsError())
@@ -1022,7 +1022,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
         dObjSrc->copyTagMapTo(destPlane);
         ito::dObjHelper::dObjCopyLastNAxisTags(*dObjSrc, destPlane, 2, true, true);
         QString msg = tr("Calculated mean value in z-Direction from 3D-Object");
-        destPlane.addToProtocol(std::string(msg.toAscii().data()));
+        destPlane.addToProtocol(std::string(msg.toLatin1().data()));
     }
 
     if(overWrite)
@@ -1045,21 +1045,21 @@ ito::RetVal BasicFilters::calcObjSliceParams(QVector<ito::Param> *paramsMand, QV
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D image or single plane n-D object").toAscii().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D image or single plane n-D object").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("dstSlice", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Slice with output data").toAscii().data());
+        param = ito::Param("dstSlice", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Slice with output data").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("x0", ito::ParamBase::Double, -std::numeric_limits<ito::float32>::max(), std::numeric_limits<ito::float32>::max(), 0.0, tr("x0-coordinate for slice").toAscii().data());
+        param = ito::Param("x0", ito::ParamBase::Double, -std::numeric_limits<ito::float32>::max(), std::numeric_limits<ito::float32>::max(), 0.0, tr("x0-coordinate for slice").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("y0", ito::ParamBase::Double, -std::numeric_limits<ito::float32>::max(), std::numeric_limits<ito::float32>::max(), 1.0, tr("y0-coordinate for slice").toAscii().data());
+        param = ito::Param("y0", ito::ParamBase::Double, -std::numeric_limits<ito::float32>::max(), std::numeric_limits<ito::float32>::max(), 1.0, tr("y0-coordinate for slice").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("x1", ito::ParamBase::Double, -std::numeric_limits<ito::float32>::max(), std::numeric_limits<ito::float32>::max(), 0.0, tr("x1-coordinate for slice").toAscii().data());
+        param = ito::Param("x1", ito::ParamBase::Double, -std::numeric_limits<ito::float32>::max(), std::numeric_limits<ito::float32>::max(), 0.0, tr("x1-coordinate for slice").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("y1", ito::ParamBase::Double, -std::numeric_limits<ito::float32>::max(), std::numeric_limits<ito::float32>::max(), 1.0, tr("y1-coordinate for slice").toAscii().data());
+        param = ito::Param("y1", ito::ParamBase::Double, -std::numeric_limits<ito::float32>::max(), std::numeric_limits<ito::float32>::max(), 1.0, tr("y1-coordinate for slice").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("interpolation mode", ito::ParamBase::Int, 0, 0, 0, tr("0: Bresenham or Nearest, 1: weighted").toAscii().data());
+        param = ito::Param("interpolation mode", ito::ParamBase::Int, 0, 0, 0, tr("0: Bresenham or Nearest, 1: weighted").toLatin1().data());
         paramsOpt->append(param);
-        //param = ito::Param("numer of pixel", ito::ParamBase::Int, 0, 65366, 0, tr("Number of pixels for output image").toAscii().data());
+        //param = ito::Param("numer of pixel", ito::ParamBase::Int, 0, 65366, 0, tr("Number of pixels for output image").toLatin1().data());
         //paramsOpt->append(param);
     }
 
@@ -1083,24 +1083,24 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
     if (!dObjSrc)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is Null-Pointer").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is Null-Pointer").toLatin1().data());
     }
 
     if (!dObjDst)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is Null-Pointer").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is Null-Pointer").toLatin1().data());
     }
    
     ito::int32 dims = dObjSrc->getDims();
 
     if(dims < 2)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: sourceImage must have at least 2 dimensions").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: sourceImage must have at least 2 dimensions").toLatin1().data());
     }
 
     if(dObjSrc->calcNumMats() > 1)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: sourceImage must not have more than 1 plane").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: sourceImage must not have more than 1 plane").toLatin1().data());
     }
   
 
@@ -1336,7 +1336,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
     if(sliceXSize < 1 && !retval.containsError())
     {
-        retval += ito::RetVal(ito::retError, 0, tr("slice has not defined size").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("slice has not defined size").toLatin1().data());
     }
 
     bool needNewObj = false;
@@ -1494,13 +1494,13 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             }
             break;
             default:
-                retval += ito::RetVal(ito::retError, 0, tr("datatype not supported").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, tr("datatype not supported").toLatin1().data());
                 break;
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("matrix step vector for matrix is empty").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("matrix step vector for matrix is empty").toLatin1().data());
     }
 
     if(!retval.containsError())
@@ -1511,7 +1511,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             *dObjDst = tempObj;
         }
         QString msg = tr("Cut 1D slice out of 2D-data from [ %2, %3] to [ %4, %5]").arg(physX0).arg(physY0).arg(physX1).arg(physY1);
-        dObjDst->addToProtocol(std::string(msg.toAscii().data()));
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
         dObjDst->setAxisDescription(1, axisDescription);
         dObjDst->setAxisUnit(1, axisUnit);
 

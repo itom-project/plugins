@@ -115,7 +115,9 @@ DataObjectIOInterface::~DataObjectIOInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(DataObjectIOInterface, DataObjectIOInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(DataObjectIOInterface, DataObjectIOInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -199,19 +201,19 @@ ito::RetVal DataObjectIO::saveDataObjectParams(QVector<ito::Param> *paramsMand, 
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype or 3-planes DataObject of uint8").toAscii().data());
+        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype or 3-planes DataObject of uint8").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("Format",ito::ParamBase::String | ito::ParamBase::In,NULL, tr("Format of the Image according to QImage: ['QImage::Format_Mono', 'QImage::Format_MonoLSB', 'QImage::Format_Indexed8', 'QImage::Format_RGB32', 'QImage::Format_ARGB32'").toAscii().data());
+        param = ito::Param("Format",ito::ParamBase::String | ito::ParamBase::In,NULL, tr("Format of the Image according to QImage: ['QImage::Format_Mono', 'QImage::Format_MonoLSB', 'QImage::Format_Indexed8', 'QImage::Format_RGB32', 'QImage::Format_ARGB32'").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("bitscaling",ito::ParamBase::Int | ito::ParamBase::In,0, 2, 1, tr("Toggle bit-scaling, 0 = off, 1 = autoscale (default), 2 = userdefined ranges").toAscii().data());
+        param = ito::Param("bitscaling",ito::ParamBase::Int | ito::ParamBase::In,0, 2, 1, tr("Toggle bit-scaling, 0 = off, 1 = autoscale (default), 2 = userdefined ranges").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("lowLimit",ito::ParamBase::Double | ito::ParamBase::In,-1*std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("Lowest limit. Will become 0").toAscii().data());
+        param = ito::Param("lowLimit",ito::ParamBase::Double | ito::ParamBase::In,-1*std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("Lowest limit. Will become 0").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("highLimit",ito::ParamBase::Double | ito::ParamBase::In,-1*std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 1.0, tr("Lowest limit. Will become max<bitdepth>").toAscii().data());
+        param = ito::Param("highLimit",ito::ParamBase::Double | ito::ParamBase::In,-1*std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 1.0, tr("Lowest limit. Will become max<bitdepth>").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("Color_Format",ito::ParamBase::String | ito::ParamBase::In, NULL, tr("When DataObject of type float32, their format should be -->Gray<-- or -->RGB<--").toAscii().data());
+        param = ito::Param("Color_Format",ito::ParamBase::String | ito::ParamBase::In, NULL, tr("When DataObject of type float32, their format should be -->Gray<-- or -->RGB<--").toLatin1().data());
         paramsOpt->append(param);
 
     }
@@ -257,7 +259,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
 
     if(toogle == 2 && (fabs(lowLimit - highLimit) < std::numeric_limits<double>::epsilon() || lowLimit > highLimit))
     {
-        ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: lowLimit must be unequal to highLimit and smaller than highLimit").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: lowLimit must be unequal to highLimit and smaller than highLimit").toLatin1().data());
     }
 
   /*  QVariant out1 = QVariant(2.0);    // showing any desired output on itom application.
@@ -402,12 +404,12 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                     }
                 break;
                 default:
-                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
+                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toLatin1().data());
             }
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: Only 2D DataObject is supported").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: Only 2D DataObject is supported").toLatin1().data());
         }
     }
     //Creating an Image in MonoLSB Format
@@ -560,13 +562,13 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                     }
                 break;
                 default:
-                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
+                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toLatin1().data());
             }
             
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toLatin1().data());
         }
     }
     //Creating an Image in Indexed8 Format
@@ -628,12 +630,12 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                     itom::io::transformDatatoImage_Indexed8<ito::float64>(&image, dObj, imgFilename, lowLimit, scaling, doScaling, colorMap);
                 break;
                 default:
-                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
+                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toLatin1().data());
             }
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toLatin1().data());
         }
     }
 
@@ -691,7 +693,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                     itom::io::transformDatatoImage_RGB32<ito::float64>(&image, dObj, imgFilename, lowLimit, scaling, doScaling, false);
                 break;
                 default:
-                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
+                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toLatin1().data());
             }
         }
         else if((dObj->getType() == ito::tUInt8) && (dObj->getDims() > 2 && dObj->calcNumMats() == 3))   // RGB-Planes
@@ -726,12 +728,12 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                     itom::io::transformDatatoImage_RGB32<ito::float64>(&image, dObj, imgFilename, lowLimit, scaling, doScaling, true);
                 break;
                 default:
-                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
+                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toLatin1().data());
             }        
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toLatin1().data());
         }
     }
     //Creating an Image in ARGB32 Format
@@ -788,7 +790,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                     itom::io::transformDatatoImage_ARGB32<ito::float64>(&image, dObj, imgFilename, lowLimit, scaling, doScaling, false);
                 break;
                 default:
-                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
+                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toLatin1().data());
             }
         }
         else if((dObj->getType() == ito::tInt8) && (dObj->getDims() > 2 && dObj->calcNumMats() == 4))   // RGBA-Planes
@@ -823,7 +825,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                     itom::io::transformDatatoImage_ARGB32<ito::float64>(&image, dObj, imgFilename, lowLimit, scaling, doScaling, true);
                 break;
                 default:
-                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toAscii().data());
+                    ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toLatin1().data());
             }        
         }
         else if((dObj->getType() == ito::tInt8) && (dObj->getDims() > 2 && dObj->calcNumMats() == 3))   // RGB-Planes
@@ -832,12 +834,12 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, tr("Only 2D DataObject is supported").toLatin1().data());
         }
     }
     else
     {
-    ret += ito::RetVal(ito::retError, 0, tr("Entered Image format is not supported").toAscii().data());
+    ret += ito::RetVal(ito::retError, 0, tr("Entered Image format is not supported").toLatin1().data());
     }
     return ret;
 }
@@ -859,16 +861,16 @@ ito::RetVal DataObjectIO::loadDataObjectParams(QVector<ito::Param> *paramsMand, 
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("DestinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObjet").toAscii().data());
+        ito::Param param = ito::Param("DestinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObjet").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source file name").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source file name").toLatin1().data());
         paramsMand->append(param);
 
         ito::StringMeta *m = new ito::StringMeta(ito::StringMeta::String, "R");
         m->addItem("G");
         m->addItem("B");
         m->addItem("RGB");
-        param = ito::Param("ColorElement", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Color element character: R or G or B or RGB").toAscii().data());
+        param = ito::Param("ColorElement", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Color element character: R or G or B or RGB").toLatin1().data());
         param.setMeta(m,true); //takes ownership of m
         paramsOpt->append(param);
     }
@@ -895,11 +897,11 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
 
     if(!fileinfo.exists())
     {
-        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toAscii().data(), filename);
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
     }    
     else if( !image.load(filename) )
     {
-        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable image file.").toAscii().data(), filename);
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable image file.").toLatin1().data(), filename);
     }
     else
     {
@@ -948,7 +950,7 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, tr("Image does not have supported format").toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, tr("Image does not have supported format").toLatin1().data());
         }
     }
     return ret;
@@ -969,17 +971,17 @@ ito::RetVal DataObjectIO::saveNistSDFParams(QVector<ito::Param> *paramsMand, QVe
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype or 3-planes DataObject of uint8").toAscii().data());
+        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype or 3-planes DataObject of uint8").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("decimalSigns",ito::ParamBase::Int | ito::ParamBase::In, 0, 12, 3, tr("Number of decimal signs (default: 3).").toAscii().data());
+        param = ito::Param("decimalSigns",ito::ParamBase::Int | ito::ParamBase::In, 0, 12, 3, tr("Number of decimal signs (default: 3).").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("verticalScale",ito::ParamBase::Int | ito::ParamBase::In, -12, 12, -3, tr("Power of 10 for the zValue (Default: -3, micrometer), only for floating point objects.").toAscii().data());
+        param = ito::Param("verticalScale",ito::ParamBase::Int | ito::ParamBase::In, -12, 12, -3, tr("Power of 10 for the zValue (Default: -3, micrometer), only for floating point objects.").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("invalidHandling",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Toggles NaN handling if dataObject is floating-type. 0: Write NaN (Default); 1: Substitut by InvalidValue.").toAscii().data());
+        param = ito::Param("invalidHandling",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Toggles NaN handling if dataObject is floating-type. 0: Write NaN (Default); 1: Substitut by InvalidValue.").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("invalidValue",ito::ParamBase::Double | ito::ParamBase::In, 0.0, -1 * std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), tr("New value for invalid substitution. Default is 0.0").toAscii().data());
+        param = ito::Param("invalidValue",ito::ParamBase::Double | ito::ParamBase::In, 0.0, -1 * std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), tr("New value for invalid substitution. Default is 0.0").toLatin1().data());
         paramsOpt->append(param);
 
     }
@@ -1019,7 +1021,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     }
     else if( !dataOut.open(QIODevice::WriteOnly) )
     {
-        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no writeable file.").toAscii().data(), filename);
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no writeable file.").toLatin1().data(), filename);
     }
 
     if(!ret.containsWarningOrError())
@@ -1038,7 +1040,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
         tag = dObjSrc->getTag("ManufacID", dummyBool).getVal_ToString();
         if(tag.empty())
         {
-            tag = fileinfo.fileName().toAscii().data();
+            tag = fileinfo.fileName().toLatin1().data();
         }
         outLine.append(tag.data());
         outLine.append('\n');
@@ -1370,9 +1372,9 @@ ito::RetVal DataObjectIO::loadNistSDFParams(QVector<ito::Param> *paramsMand, QVe
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("DestinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObjet").toAscii().data());
+        ito::Param param = ito::Param("DestinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObjet").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source file name").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source file name").toLatin1().data());
         paramsMand->append(param);
 
     }
@@ -1401,15 +1403,15 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 
     if(dObjDst == NULL)
     {
-        ret += ito::RetVal::format(ito::retError,0,tr("Dataobject not initialized").toAscii().data(), filename);
+        ret += ito::RetVal::format(ito::retError,0,tr("Dataobject not initialized").toLatin1().data(), filename);
     }
     else if(!fileinfo.exists())
     {
-        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toAscii().data(), filename);
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
     }    
     else if( !dataIn.open(QIODevice::ReadOnly) )
     {
-        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable file.").toAscii().data(), filename);
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable file.").toLatin1().data(), filename);
     }
     else
     {     
@@ -1482,7 +1484,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
     //First line Version Number (a: ASCII, b: binary), Unsigned Char, 8-bytes
     if(!curLine.contains("aNIST-1.0"))
     {
-        return ito::RetVal::format(ito::retError,0,tr("The file '%s' did not contain 'aNIST-1.0'-header.").toAscii().data(), inFile.fileName().toAscii().data());
+        return ito::RetVal::format(ito::retError,0,tr("The file '%s' did not contain 'aNIST-1.0'-header.").toLatin1().data(), inFile.fileName().toLatin1().data());
     }
     curLine = inFile.readLine();
     while(!curLine.contains("*") && !inFile.atEnd())
@@ -1718,11 +1720,11 @@ ito::RetVal DataObjectIO::saveTiffParams(QVector<ito::Param> *paramsMand, QVecto
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toAscii().data());
+        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "gray16" , tr("Color palette name [gray, gray16, ...]").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "gray16" , tr("Color palette name [gray, gray16, ...]").toLatin1().data());
         paramsMand->append(param);
     }
     return retval;
@@ -1761,14 +1763,14 @@ ito::RetVal DataObjectIO::saveJPGParams(QVector<ito::Param> *paramsMand, QVector
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toAscii().data());
+        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor" , tr("Color palette name [gray, gray16, ...]. 'gray16' supported for '.jp2' only").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor" , tr("Color palette name [gray, gray16, ...]. 'gray16' supported for '.jp2' only").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 100, 90, tr("Compression rate, 0: high, 100: low").toAscii().data());
+        param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 100, 90, tr("Compression rate, 0: high, 100: low").toLatin1().data());
         paramsOpt->append(param);
     }
     return retval;
@@ -1805,16 +1807,16 @@ ito::RetVal DataObjectIO::savePNGParams(QVector<ito::Param> *paramsMand, QVector
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toAscii().data());
+        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, gray16, ...].").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, gray16, ...].").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 9, tr("Compression rate, 0: high, 9: low").toAscii().data());
+        param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 9, tr("Compression rate, 0: high, 9: low").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("addAlphaChannel",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If enabled and in case of floating point values, invalid will have alpha low else high").toAscii().data());
+        param = ito::Param("addAlphaChannel",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If enabled and in case of floating point values, invalid will have alpha low else high").toLatin1().data());
         paramsOpt->append(param);
     }
     return retval;
@@ -1851,11 +1853,11 @@ ito::RetVal DataObjectIO::saveBMPParams(QVector<ito::Param> *paramsMand, QVector
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toAscii().data());
+        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, ...]").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, ...]").toLatin1().data());
         paramsMand->append(param);
     }
     return retval;
@@ -1892,13 +1894,13 @@ ito::RetVal DataObjectIO::savePPMParams(QVector<ito::Param> *paramsMand, QVector
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toAscii().data());
+        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, ...]").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, ...]").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toAscii().data());
+        param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toLatin1().data());
         paramsOpt->append(param);
     }
     return retval;
@@ -1936,13 +1938,13 @@ ito::RetVal DataObjectIO::savePGMParams(QVector<ito::Param> *paramsMand, QVector
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toAscii().data());
+        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "gray16", tr("Color palette name [gray, gray16]").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "gray16", tr("Color palette name [gray, gray16]").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toAscii().data());
+        param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toLatin1().data());
         paramsOpt->append(param);
     }
     return retval;
@@ -1980,11 +1982,11 @@ ito::RetVal DataObjectIO::saveRASParams(QVector<ito::Param> *paramsMand, QVector
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toAscii().data());
+        ito::Param  param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D-DataObject of anytype").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, ...]").toAscii().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, ...]").toLatin1().data());
         paramsMand->append(param);
     }
     return retval;
@@ -2031,21 +2033,21 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
 
     if(filename == NULL)
     {
-        return ito::RetVal(ito::retError, 0, tr("File name empty.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("File name empty.").toLatin1().data());
     }
     if(palette == NULL)
     {
-        return ito::RetVal(ito::retError, 0, tr("Palette name empty.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Palette name empty.").toLatin1().data());
     }
 
     //allow all 1-plane data objects (independent on dimensions), but no complex ones
     if (dObj->calcNumMats() != 1)
     {
-        ret += ito::RetVal(ito::retError, 0, tr("The given dataObject must have exactly one plane").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, tr("The given dataObject must have exactly one plane").toLatin1().data());
     }
     else if (dObj->getType() == ito::tComplex128 || dObj->getType() == ito::tComplex64)
     {
-        ret += ito::RetVal(ito::retError, 0, tr("Complex data types not supported").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, tr("Complex data types not supported").toLatin1().data());
     }
 
     //ito::dObjHelper::verify2DDataObject(dObj, "sourceImage", 1, std::numeric_limits<ito::int16>::max(), 1, std::numeric_limits<ito::int16>::max(), 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt8, ito::tInt8, ito::tUInt32, ito::tInt32, ito::tUInt8, ito::tInt8, ito::tFloat32, ito::tFloat64);
@@ -2063,12 +2065,12 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
 
     if(fileName.fileName().isEmpty())
     {
-        return ito::RetVal(ito::retError, 0, tr("Filename not valid.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Filename not valid.").toLatin1().data());
     }
 
     if(fileName.exists() && !fileName.isWritable())
     {
-        return ito::RetVal(ito::retError, 0, tr("File is not writeable.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("File is not writeable.").toLatin1().data());
     }
 
     std::vector<int> save_params;
@@ -2210,7 +2212,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
             colorSupported = true;
             break;
         default:
-            return ito::RetVal(ito::retError, 0, tr("Image Format not valid.").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("Image Format not valid.").toLatin1().data());
     }
 
     //Creating an Image in Mono Format
@@ -2246,7 +2248,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
                 ret += itom::io::transformScaled<ito::float64, ito::uint8>(saveMat, scrData);
                 break;
             default:
-                return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to unsigned int 8-bit.").toAscii().data());
+                return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to unsigned int 8-bit.").toLatin1().data());
         }
     }
     else if(imgPalette.compare("gray16") == 0 )
@@ -2277,23 +2279,23 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
                     ret += itom::io::transformScaled<ito::float64, ito::uint16>(saveMat, scrData);
                     break;
                 default:
-                    return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to unsigned int 16-bit.").toAscii().data());
+                    return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to unsigned int 16-bit.").toLatin1().data());
             }
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, tr("Image format does not support 16-Bit Gray value.").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("Image format does not support 16-Bit Gray value.").toLatin1().data());
         }
     }
     else if(imgPalette.compare("RGBA") == 0)
     {
         if(colorSupported)
         {
-            return ito::RetVal(ito::retError, 0, tr("Saving RGB-Image currently not supported.").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("Saving RGB-Image currently not supported.").toLatin1().data());
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, tr("Image format does not support color values.").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("Image format does not support color values.").toLatin1().data());
         }
         
     }
@@ -2341,7 +2343,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
                         ret += itom::io::transformScaledIndex8ToRGBA<ito::float64>(saveMat, scrData, newPalette.colorVector256);
                         break;
                     default:
-                        return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to index8 scaled images.").toAscii().data());
+                        return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to index8 scaled images.").toLatin1().data());
                 }
             }
             else
@@ -2374,33 +2376,33 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
                         ret += itom::io::transformScaledIndex8ToRGB<ito::float64>(saveMat, scrData, newPalette.colorVector256);
                         break;
                     default:
-                        return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to index8 scaled images.").toAscii().data());
+                        return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to index8 scaled images.").toLatin1().data());
                 } 
             }
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, tr("Image format does not support color values.").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("Image format does not support color values.").toLatin1().data());
         }
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, tr("Entered Image format is not supported").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, tr("Entered Image format is not supported").toLatin1().data());
     }
 
     if(!ret.containsError())
     {
         try 
         {
-            bool test = cv::imwrite(fileName.absoluteFilePath().toAscii().data(), saveMat, save_params);
+            bool test = cv::imwrite(fileName.absoluteFilePath().toLatin1().data(), saveMat, save_params);
             if(test == false)
             {
-                ret += ito::RetVal(ito::retError, 0, tr("cv::imwrite exited with false!").toAscii().data());
+                ret += ito::RetVal(ito::retError, 0, tr("cv::imwrite exited with false!").toLatin1().data());
             }
         }
         catch (cv::Exception exc)
         {
-            ret += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
         }
     }
     
@@ -2422,9 +2424,9 @@ ito::RetVal DataObjectIO::loadImageParams(QVector<ito::Param> *paramsMand, QVect
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("DestinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObjet").toAscii().data());
+        ito::Param param = ito::Param("DestinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObjet").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source file name").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source file name").toLatin1().data());
         paramsMand->append(param);
 
         ito::StringMeta *m = new ito::StringMeta(ito::StringMeta::String, "asIs");
@@ -2435,7 +2437,7 @@ ito::RetVal DataObjectIO::loadImageParams(QVector<ito::Param> *paramsMand, QVect
         m->addItem("RGB");
         m->addItem("ARGB");
         m->addItem("GRAY");
-        param = ito::Param("ColorElement", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Color element character: asIs (default) | alpha | R | G | B | RGB | ARGB | GRAY").toAscii().data());
+        param = ito::Param("ColorElement", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Color element character: asIs (default) | alpha | R | G | B | RGB | ARGB | GRAY").toLatin1().data());
         param.setMeta(m,true); //takes ownership of m
         paramsOpt->append(param);
     }
@@ -2464,7 +2466,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
 
     if(dObjDst == NULL)
     {
-        return ito::RetVal(ito::retError,0,tr("Destination dataObject is invalid.").toAscii().data());
+        return ito::RetVal(ito::retError,0,tr("Destination dataObject is invalid.").toLatin1().data());
     }
 
     ito::DataObject tempObject;
@@ -2510,7 +2512,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
 
     if(!fileinfo.exists())
     {
-        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toAscii().data(), filename);
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
     }    
     else
     {       
@@ -2520,7 +2522,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
         }
         catch (cv::Exception exc)
         {
-            ret += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toAscii().data());
+            ret += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
         }
     }
 
@@ -2544,10 +2546,10 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
             case CV_16UC3:
             case CV_16UC4:
                 if(reduceChanel) imageType = ito::tUInt16;
-                else return ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toAscii().data());
+                else return ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toLatin1().data());
                 break;
             default:
-                return ito::RetVal(ito::retError,0,tr("Color format of the file is currently not compatible with itom. Wait for next itom version.").toAscii().data());
+                return ito::RetVal(ito::retError,0,tr("Color format of the file is currently not compatible with itom. Wait for next itom version.").toLatin1().data());
         }
 
         tempObject = ito::DataObject(image.rows, image.cols, imageType);
@@ -2575,7 +2577,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
             }
             else if(image.type() == CV_16UC3)
             {
-                ret += ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toAscii().data());
+                ret += ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toLatin1().data());
             }
             else if(image.type() == CV_8UC4)
             {
@@ -2597,7 +2599,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
             }
             else if(image.type() == CV_16UC4)
             {
-                ret += ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toAscii().data());
+                ret += ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toLatin1().data());
             }
             else
             {
@@ -2627,7 +2629,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
             else
             {
                 colIndex = -1;
-                return ito::RetVal(ito::retError,0,tr("Color format of the file is currently not compatible with itom. Wait for next itom version.").toAscii().data());
+                return ito::RetVal(ito::retError,0,tr("Color format of the file is currently not compatible with itom. Wait for next itom version.").toLatin1().data());
             }
 
             if(image.type() == CV_8UC3)
@@ -2700,7 +2702,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
             }
             else
             {
-                return ito::RetVal(ito::retError,0,tr("Color channel not supported for extraction!").toAscii().data());
+                return ito::RetVal(ito::retError,0,tr("Color channel not supported for extraction!").toLatin1().data());
             }
         }
     }
@@ -2732,7 +2734,7 @@ ito::RetVal DataObjectIO::loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
 
     if(dObjDst == NULL)
     {
-        return ito::RetVal(ito::retError,0,tr("Destination dataObject is invalid.").toAscii().data());
+        return ito::RetVal(ito::retError,0,tr("Destination dataObject is invalid.").toLatin1().data());
     }
 
     ito::DataObject tempObject;
@@ -2762,9 +2764,9 @@ ito::RetVal DataObjectIO::loadItomIDOParams(QVector<ito::Param> *paramsMand, QVe
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObjet").toAscii().data());
+        ito::Param param = ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObjet").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source file name").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source file name").toLatin1().data());
         paramsMand->append(param);
     }
     return retval;
@@ -2792,7 +2794,7 @@ ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
 
     if(dObjDst == NULL)
     {
-        return ito::RetVal(ito::retError,0,tr("Destination dataObject is invalid.").toAscii().data());
+        return ito::RetVal(ito::retError,0,tr("Destination dataObject is invalid.").toLatin1().data());
     }
 
     ito::DataObject tempObject;
@@ -2817,14 +2819,14 @@ ito::RetVal DataObjectIO::saveItomIDOParams(QVector<ito::Param> *paramsMand, QVe
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Any type of dataObject").toAscii().data());
+        ito::Param  param = ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Any type of dataObject").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toAscii().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("headerOnly", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 0 the complete dataObject is saved (data + metadata), else the filter saves only metadata").toAscii().data());
+        param = ito::Param("headerOnly", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 0 the complete dataObject is saved (data + metadata), else the filter saves only metadata").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("tags2Binary", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 0 the metaData is saved as clear text, else double tags are saved as binary").toAscii().data());
+        param = ito::Param("tags2Binary", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 0 the metaData is saved as clear text, else double tags are saved as binary").toLatin1().data());
         paramsOpt->append(param);
     }
     return retval;

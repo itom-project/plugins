@@ -135,19 +135,19 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
     
     m_initParamsOpt.clear();
 
-    ito::Param param("fileFilter", ito::ParamBase::String, "*.tif", QObject::tr("File-Type, e.g. '*.tif', '*.png'").toAscii().data());
+    ito::Param param("fileFilter", ito::ParamBase::String, "*.tif", QObject::tr("File-Type, e.g. '*.tif', '*.png'").toLatin1().data());
     m_initParamsMand.append(param);
 
-    param = ito::Param("sourceFolder", ito::ParamBase::String, "", QObject::tr("Absolute path of the source images").toAscii().data());
+    param = ito::Param("sourceFolder", ito::ParamBase::String, "", QObject::tr("Absolute path of the source images").toLatin1().data());
     m_initParamsMand.append(param);
 
-    param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(0,24), QObject::tr("Destination bit depth. 0: Auto or 8, 12, 14, 16, 24").toAscii().data());
+    param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(0,24), QObject::tr("Destination bit depth. 0: Auto or 8, 12, 14, 16, 24").toLatin1().data());
     m_initParamsMand.append(param);
 
-    param = ito::Param("preloadImages", ito::ParamBase::Int, 0, new ito::IntMeta(0, 1000), QObject::tr("If 0, no preloading is active, else the first n image are loaded to a stack.").toAscii().data());
+    param = ito::Param("preloadImages", ito::ParamBase::Int, 0, new ito::IntMeta(0, 1000), QObject::tr("If 0, no preloading is active, else the first n image are loaded to a stack.").toLatin1().data());
     m_initParamsMand.append(param);
 
-    param = ito::Param("objectStack", ito::ParamBase::DObjPtr, NULL, QObject::tr("If not NULL and preloading is active, an 3D-Object can to used for the grabber.").toAscii().data());
+    param = ito::Param("objectStack", ito::ParamBase::DObjPtr, NULL, QObject::tr("If not NULL and preloading is active, an 3D-Object can to used for the grabber.").toLatin1().data());
     m_initParamsOpt.append(param);
 
     return;
@@ -166,7 +166,9 @@ FileGrabberInterface::~FileGrabberInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class FileGrabberInterface with the name FileGrabberinterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2(FileGrabberinterface, FileGrabberInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(FileGrabberinterface, FileGrabberInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -229,43 +231,43 @@ FileGrabber::FileGrabber() :
 
     ito::Param paramVal("name", ito::ParamBase::String, "FileGrabber", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.005, 100.0, 12.5, tr("Integrationtime of CCD programmed in s").toAscii().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.005, 100.0, 12.5, tr("Integrationtime of CCD programmed in s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.05, 150.0, 33.333333, tr("Time between two frames").toAscii().data());
+    paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.05, 150.0, 33.333333, tr("Time between two frames").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 1.0, tr("Virtual gain").toAscii().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 1.0, tr("Virtual gain").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.5, tr("Virtual offset").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("binning", ito::ParamBase::Int | ito::ParamBase::Readonly, 101, 101, 101, tr("Binning of different pixel").toAscii().data());
+    paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.5, tr("Virtual offset").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toAscii().data());
+    paramVal = ito::Param("binning", ito::ParamBase::Int | ito::ParamBase::Readonly, 101, 101, 101, tr("Binning of different pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 2047, 0, tr("Pixelsize in x (cols)").toAscii().data());
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 2047, 0, tr("Pixelsize in y (rows)").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 2047, 2047, tr("Pixelsize in x (cols)").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 2047, 2047, tr("Pixelsize in y (rows)").toAscii().data());
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 8, 64, 8, tr("Grabdepth of the images").toAscii().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 2047, 0, tr("Pixelsize in x (cols)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 2047, 0, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("time_out", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.1, 60.0, 60.0, tr("Timeout for acquiring images").toAscii().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 2047, 2047, tr("Pixelsize in x (cols)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 2047, 2047, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("current_image", ito::ParamBase::Int, 0, 24, 24, tr("The current shown image").toAscii().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 8, 64, 8, tr("Grabdepth of the images").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("number_of_images", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 25, 25, tr("The maximal number if images").toAscii().data());
+    paramVal = ito::Param("time_out", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.1, 60.0, 60.0, tr("Timeout for acquiring images").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("current_image", ito::ParamBase::Int, 0, 24, 24, tr("The current shown image").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("number_of_images", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 25, 25, tr("The maximal number if images").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     m_fileList.clear();
@@ -361,7 +363,7 @@ ito::RetVal FileGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
     if(key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -384,7 +386,7 @@ ito::RetVal FileGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
             if(paramIt->getFlags() & ito::ParamBase::Readonly)
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
                 goto end;
             }
             else if(val->isNumeric() && paramIt->isNumeric())
@@ -392,12 +394,12 @@ ito::RetVal FileGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 double curval = val->getVal<double>();
                 if( curval > paramIt->getMax())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else if(curval < paramIt->getMin())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else
@@ -411,7 +413,7 @@ ito::RetVal FileGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
                 goto end;
             }
 
@@ -447,7 +449,7 @@ ito::RetVal FileGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
 
@@ -514,7 +516,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         if(exObj->getDims() != 3 && !retVal.containsError())
         {
-            retVal += ito::RetVal(ito::retError, 0, QObject::tr("Stack object must be 3 dimensional").toAscii().data());  
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("Stack object must be 3 dimensional").toLatin1().data());  
         }
         else
         {
@@ -541,7 +543,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 else bppFilter = 30;
                 break;
             default:
-                retVal += ito::RetVal(ito::retError, 0, QObject::tr("Stack object type must be UInt8, UInt16 or Int32").toAscii().data()); 
+                retVal += ito::RetVal(ito::retError, 0, QObject::tr("Stack object type must be UInt8, UInt16 or Int32").toLatin1().data()); 
             }
         }
         if(!retVal.containsError()) 
@@ -573,12 +575,12 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         
         if(m_fileList.isEmpty())
         {
-            retVal += ito::RetVal(ito::retError, 0, QObject::tr("Folder %1 does not contain any matching files").arg( m_searchFolder.absolutePath() ).toAscii().data());  
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("Folder %1 does not contain any matching files").arg( m_searchFolder.absolutePath() ).toLatin1().data());  
         }
     }
     else    // No search path and no object so this operation failed!
     {
-        retVal += ito::RetVal(ito::retError, 0, QObject::tr("Folder %1 does not exist or is not readable").arg( m_searchFolder.absolutePath() ).toAscii().data());    
+        retVal += ito::RetVal(ito::retError, 0, QObject::tr("Folder %1 does not exist or is not readable").arg( m_searchFolder.absolutePath() ).toLatin1().data());    
     }
 
     if(exObj == NULL && !retVal.containsError())    // If we have an external object we are finished. In other cases we have to scan the folder and do some magic stuff with it.
@@ -591,7 +593,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
         for(i = 0; i < m_fileList.size(); i++)
         {
-            loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toAscii().data(), CV_LOAD_IMAGE_UNCHANGED );
+            loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toLatin1().data(), CV_LOAD_IMAGE_UNCHANGED );
 
             if(loadedMat.data != NULL && bppFilter == 0) // Loading okay and no bppFilter
             {
@@ -652,7 +654,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
         for(; i < m_fileList.size(); i++)
         {
-            loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toAscii().data(), openCVLoadingFlags);
+            loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toLatin1().data(), openCVLoadingFlags);
             if(loadedMat.data != NULL)
             {
                 if(!sizeX == loadedMat.cols ||
@@ -700,7 +702,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             }
             for (i = 0; i < nrPreLoading; i++)
             {
-                loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toAscii().data(), openCVLoadingFlags);
+                loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[i]).toLatin1().data(), openCVLoadingFlags);
                 if(loadedMat.data != NULL && loadedMat.type() != CV_8UC3)
                 {
                     memcpy(((cv::Mat*)m_preloadedObject.get_mdata()[i])->ptr(), loadedMat.ptr(), sizeX * sizeY * copySize);
@@ -753,7 +755,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 }
                 else
                 {
-                    retVal += ito::RetVal(ito::retError, 0, QObject::tr("Image loading failed").toAscii().data()); 
+                    retVal += ito::RetVal(ito::retError, 0, QObject::tr("Image loading failed").toLatin1().data()); 
                 }
 
             }
@@ -773,7 +775,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         }
         else
         {
-            retVal += ito::RetVal(ito::retError, 0, QObject::tr("No suitable images found").toAscii().data());    
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("No suitable images found").toLatin1().data());    
         }
     }
 
@@ -902,7 +904,7 @@ ito::RetVal FileGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     }
     else if(grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retWarning, 1001, tr("StopDevice of FileGrabber can not be executed, since camera has not been started.").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 1001, tr("StopDevice of FileGrabber can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -936,7 +938,7 @@ ito::RetVal FileGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wai
 
     if(grabberStartedCount() <= 0)
     {
-        retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of FileGrabber can not be executed, since camera has not been started.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of FileGrabber can not be executed, since camera has not been started.").toLatin1().data());
     }
     else
     {
@@ -979,7 +981,7 @@ ito::RetVal FileGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     {
         if(dObj == NULL)
         {
-            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toLatin1().data());
         }
         else
         {
@@ -1019,7 +1021,7 @@ ito::RetVal FileGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if(!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
     else
     {
@@ -1190,14 +1192,14 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of FileGrabber failed, since undefined bitdepth.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of FileGrabber failed, since undefined bitdepth.").toLatin1().data());
             }
         }
         else
         {
             cv::Mat loadedMat;
-            //loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[current_image]).toAscii().data(), CV_LOAD_IMAGE_UNCHANGED);
-            loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[current_image]).toAscii().data(), CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH);
+            //loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[current_image]).toLatin1().data(), CV_LOAD_IMAGE_UNCHANGED);
+            loadedMat = cv::imread(m_searchFolder.absoluteFilePath(m_fileList[current_image]).toLatin1().data(), CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH);
             long lsrcstrpos = 0;
             int maxxsize = (int)m_params["sizex"].getMax();
             int maxysize = (int)m_params["sizey"].getMax();
@@ -1208,7 +1210,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
 
             if(loadedMat.data == NULL)
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("Unable to load file").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 1002, tr("Unable to load file").toLatin1().data());
             }
             else if(loadedMat.type() == CV_8U)
             {
@@ -1327,7 +1329,7 @@ ito::RetVal FileGrabber::retrieveData(ito::DataObject *externalDataObject)
             }*/
             else 
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("Nice try but wrong turn.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 1002, tr("Nice try but wrong turn.").toLatin1().data());
             }
         }
         this->m_isgrabbing = false;

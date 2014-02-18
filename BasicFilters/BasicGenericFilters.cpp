@@ -407,15 +407,15 @@ ito::RetVal BasicFilters::genericStdParams(QVector<ito::Param> *paramsMand, QVec
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toAscii().data());
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("n-dim DataObject of type sourceImage").toAscii().data());
+        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("n-dim DataObject of type sourceImage").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("kernelx", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Odd kernelsize in x").toAscii().data());
+        param = ito::Param("kernelx", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Odd kernelsize in x").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("kernely", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Odd kernelsize in y").toAscii().data());
+        param = ito::Param("kernely", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Odd kernelsize in y").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 0 NaN values in input image will be copied to output image (default)").toAscii().data());
+        param = ito::Param("replaceNaN", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 0 NaN values in input image will be copied to output image (default)").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -433,19 +433,19 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
     if(!m_initilized)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Tried to run generic filter engine without correct initilization of all buffers").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Tried to run generic filter engine without correct initilization of all buffers").toLatin1().data());
     }
 
     if ((m_kernelSizeX == 0) || (m_kernelSizeY == 0) || (m_kernelSizeX >  m_dx) || (m_kernelSizeY >  m_dy))
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("One kernel dimension is zero or bigger than the image size").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("One kernel dimension is zero or bigger than the image size").toLatin1().data());
     }
 
     m_pInLines = (_Tp **)calloc(m_kernelSizeY, sizeof(_Tp*));
 
     if(m_pInLines == NULL)
     {
-        err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate linebuffer").toAscii().data());
+        err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate linebuffer").toLatin1().data());
         qDebug() << "Not enough memory to allocate linebuffer";
         return err;
     }
@@ -453,7 +453,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
     m_pInvalidMap = (ito::int8 **)calloc(m_kernelSizeY, sizeof(ito::int8 *));
     if(m_pInvalidMap == NULL)
     {
-        err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate invalidbuffer").toAscii().data());
+        err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate invalidbuffer").toLatin1().data());
         qDebug() << "Not enough memory to allocate invalidbuffer";
         free(m_pInLines);
         return err;
@@ -465,13 +465,13 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
         if (m_pInLines[kernRow] == NULL)
         {
-            err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate kernel linebuffer").toAscii().data());
+            err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate kernel linebuffer").toLatin1().data());
         }
 
         m_pInvalidMap[kernRow] = (ito::int8 *)calloc(m_dx + m_kernelSizeX - 1, sizeof(ito::int8) );
         if (m_pInvalidMap[kernRow] == NULL)
         {
-            err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate invalid linebuffer").toAscii().data());
+            err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate invalid linebuffer").toLatin1().data());
         }
     }
 
@@ -479,7 +479,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
     if (m_pOutLine == NULL)
     {
-        err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate output line buffer").toAscii().data());
+        err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate output line buffer").toLatin1().data());
         qDebug() << "memerr\n";
     }
 
@@ -860,15 +860,15 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
 
     if(!dObjSrc)    // Report error if input object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
     }
     else if(dObjSrc->getDims() < 1) // Report error of input object is empty
     {
-        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
     }
     if(!dObjDst)    // Report error of output object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
     }
 
     if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
@@ -901,12 +901,12 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
 
     if(kernelsizex % 2 == 0) //even
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toLatin1().data());
     }
 
     if(kernelsizey % 2 == 0) //even
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toLatin1().data());
     }
 
     ito::int32 z_length = dObjSrc->calcNumMats();  // get the number of Mats (planes) in the input object
@@ -1158,7 +1158,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
             msg.append( tr(" and removed NaN-values"));
         }
 
-        dObjDst -> addToProtocol(std::string(msg.toAscii().data()));
+        dObjDst -> addToProtocol(std::string(msg.toLatin1().data()));
     }
 
 //    if(f.buffer)      // delete the f.buffer defined in medianFilter-struct
@@ -1427,15 +1427,15 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
 
     if(!dObjSrc)    // Report error if input object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
     }
     else if(dObjSrc->getDims() < 1) // Report error of input object is empty
     {
-        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
     }
     if(!dObjDst)    // Report error of output object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
     }
 
     if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
@@ -1468,12 +1468,12 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
 
     if(kernelsizex % 2 == 0) //even
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toLatin1().data());
     }
 
     if(kernelsizey % 2 == 0) //even
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toLatin1().data());
     }
 
     ito::int32 z_length = dObjSrc->calcNumMats();  // get the number of Mats (planes) in the input object
@@ -1600,7 +1600,7 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
             msg.append( tr(" and removed NaN-values"));
         }
 
-        dObjDst->addToProtocol(std::string(msg.toAscii().data()));
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
     //int64 testend = cv::getTickCount() - teststart;
@@ -1769,15 +1769,15 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
 
     if(!dObjSrc)    // Report error if input object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
     }
     else if(dObjSrc->getDims() < 1) // Report error of input object is empty
     {
-        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
     }
     if(!dObjDst)    // Report error of output object is not defined
     {
-        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
     }
 
     if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
@@ -1810,12 +1810,12 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
 
     if(kernelsizex % 2 == 0) //even
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toLatin1().data());
     }
 
     if(kernelsizey % 2 == 0) //even
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toLatin1().data());
     }
 
     ito::int32 z_length = dObjSrc->calcNumMats();  // get the number of Mats (planes) in the input object
@@ -1942,7 +1942,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
             msg.append( tr(" and removed NaN-values"));
         }
 
-        dObjDst->addToProtocol(std::string(msg.toAscii().data()));
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
     //int64 testend = cv::getTickCount() - teststart;

@@ -23,6 +23,7 @@
 #include "dockWidgetDispWindow.h"
 #include "dispWindow.h"
 
+#include <qmessagebox.h>
 //#include "common/addInInterface.h"
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -86,7 +87,7 @@ void DockWidgetDispWindow::on_comboBox_currentIndexChanged(int index)
 
         if (!locker.getSemaphore()->wait(5000))
         {
-            retval += ito::RetVal(ito::retError, 0, tr("Dropped to time-out").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Dropped to time-out").toLatin1().data());
         }
         else
         {

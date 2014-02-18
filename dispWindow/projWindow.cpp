@@ -21,10 +21,10 @@
 *********************************************************************** */
 
 #if linux
-    #include "GL/glew.h"
+//    #include "GL/glew.h"
     #include <unistd.h>
 #else
-    #include "GL/glew.h"
+//    #include "GL/glew.h"
 #endif
 #include "projWindow.h"
 #include <qevent.h>
@@ -664,7 +664,7 @@ ito::RetVal PrjWindow::cosineExit()
             if ((ret = glGetError()))
             {
                 std::cerr << "error disable texture (cosine exit)\n";
-                retval += ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+                retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             }
         }
 
@@ -672,21 +672,21 @@ ito::RetVal PrjWindow::cosineExit()
         if ((ret = glGetError()))
         {
             std::cerr << "error unbind texture (cosine exit)\n";
-            retval += ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         }
 
         glDeleteTextures(m_phaShift, m_texture);
         if ((ret = glGetError()))
         {
             std::cerr << "error delete texture (cosine exit)\n";
-            retval += ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         }
 
         glDeleteTextures(m_phaShift, &m_texture[m_phaShift + m_grayBitsVert + 2]);
         if ((ret = glGetError()))
         {
             std::cerr << "error delete texture 2 (cosine exit)\n";
-            retval += ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         }
     }
 
@@ -740,7 +740,7 @@ ito::RetVal PrjWindow::graycodeExit()
             if ((ret = glGetError()))
             {
                 std::cerr << "error disable texture (graycode exit)\n";
-                retval += ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+                retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             }
         }
 
@@ -748,21 +748,21 @@ ito::RetVal PrjWindow::graycodeExit()
         if ((ret = glGetError()))
         {
             std::cerr << "error unbind texture (graycode exit)\n";
-            retval += ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         }
 
         glDeleteTextures(m_grayBitsVert + 2, &m_texture[m_phaShift]);
         if ((ret = glGetError()))
         {
             std::cerr << "error delete texture (graycode exit)\n";
-            retval += ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         }
 
         glDeleteTextures(m_grayBitsVert + 2, &m_texture[m_phaShift * 2 + m_grayBitsVert + 2]);
         if ((ret = glGetError()))
         {
             std::cerr << "error delete texture 2 (graycode exit)\n";
-            retval += ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval += ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         }
     }
 
@@ -824,19 +824,19 @@ ito::RetVal PrjWindow::cosineInit()
     if ((phasedummy = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == NULL)
     {
         std::cerr << "error out of memory (cosine init 1)\n";
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 1)").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 1)").toLatin1().data());
         goto end;
     }
     if ((m_cosImgsVert = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == NULL)
     {
         std::cerr << "error out of memory (cosine init 2)\n";
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 2)").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 2)").toLatin1().data());
         goto end;
     }
     if ((m_cosImgsHoriz = (unsigned char**)malloc(m_phaShift * sizeof(unsigned char*))) == NULL)
     {
         std::cerr << "error out of memory (cosine init 3)\n";
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 3)").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 3)").toLatin1().data());
         goto end;
     }
 
@@ -845,13 +845,13 @@ ito::RetVal PrjWindow::cosineInit()
         if((phasedummy[i] = (unsigned char*)malloc(m_period * sizeof(*phasedummy[i]))) == NULL)
         {
             std::cerr << "error out of memory (cosine init 4)\n";
-            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 4)").toAscii().data());
+            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 4)").toLatin1().data());
             goto end;
         }
         if((m_cosImgsVert[i] = (unsigned char*)malloc(width * height)) == NULL)
         {
             std::cerr << "error out of memory (cosine init 5)\n";
-            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 5)").toAscii().data());
+            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 5)").toLatin1().data());
 
 
             goto end;
@@ -860,7 +860,7 @@ ito::RetVal PrjWindow::cosineInit()
         {
 
             std::cerr << "error out of memory (cosine init 6)\n";
-            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 6)").toAscii().data());
+            retval = ito::RetVal(ito::retError, 0, QObject::tr("error out of memory (cosine init 6)").toLatin1().data());
             goto end;
         }
     }
@@ -908,7 +908,7 @@ ito::RetVal PrjWindow::cosineInit()
     if ((tempimg = (unsigned char*)calloc(width * height, sizeof(unsigned char))) == 0)
     {
         std::cerr << "error out of memory (cosine init 7)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("error out of memory (cosine init 7)").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("error out of memory (cosine init 7)").toLatin1().data());
         goto end;
     }
 
@@ -916,7 +916,7 @@ ito::RetVal PrjWindow::cosineInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error gen texture (cosine init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("error gen texture (cosine init)").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("error gen texture (cosine init)").toLatin1().data());
         goto end;
     }
 
@@ -924,7 +924,7 @@ ito::RetVal PrjWindow::cosineInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error gen texture (graycode / cosine init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("error gen texture (graycode / cosine init)").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("error gen texture (graycode / cosine init)").toLatin1().data());
         goto end;
     }
 
@@ -990,7 +990,7 @@ ito::RetVal PrjWindow::cosineInit()
         if ((ret = glGetError()))
         {
             std::cerr << "error bind texture (cosine init)\n";
-            retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
 
@@ -998,7 +998,7 @@ ito::RetVal PrjWindow::cosineInit()
         if ((ret = glGetError()))
         {
             std::cerr << "error tex image (cosine init)\n";
-            retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -1068,7 +1068,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((tempimg = (unsigned char *)calloc(width * height, sizeof(unsigned char))) == NULL)
     {
         std::cerr << "out of memory (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
@@ -1076,25 +1076,25 @@ ito::RetVal PrjWindow::graycodeInit()
     if((grayVert = (unsigned char**)malloc((m_grayBitsVert + 2) * sizeof(unsigned char*))) == NULL)
     {
         std::cerr << "out of memory (graycode init 1)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
     if((grayHoriz = (unsigned char**)malloc((m_grayBitsHoriz + 2) * sizeof(unsigned char*))) == NULL)
     {
         std::cerr << "out of memory (graycode init 2)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
     if((m_grayImgsVert = (unsigned char**)malloc((m_grayBitsVert + 2) * sizeof(unsigned char*))) == NULL)
     {
         std::cerr << "out of memory (graycode init 3)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
     if((m_grayImgsHoriz = (unsigned char**)malloc((m_grayBitsHoriz + 2) * sizeof(unsigned char*))) == NULL)
     {
         std::cerr << "out of memory (graycode init 4)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
@@ -1103,7 +1103,7 @@ ito::RetVal PrjWindow::graycodeInit()
         if((grayVert[i] = (unsigned char *)calloc(widthVert, sizeof(unsigned char))) == NULL)
         {
             std::cerr << "out of memory (graycode init 5)\n";
-            retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
     }
@@ -1112,7 +1112,7 @@ ito::RetVal PrjWindow::graycodeInit()
         if((grayHoriz[i] = (unsigned char *)calloc(widthHoriz, sizeof(unsigned char))) == NULL)
         {
             std::cerr << "out of memory (graycode init 6)\n";
-            retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
     }
@@ -1122,7 +1122,7 @@ ito::RetVal PrjWindow::graycodeInit()
         if((m_grayImgsVert[i] = (unsigned char *)malloc(width * height)) == NULL)
         {
             std::cerr << "out of memory (graycode init 7)\n";
-            retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
     }
@@ -1131,7 +1131,7 @@ ito::RetVal PrjWindow::graycodeInit()
         if((m_grayImgsHoriz[i] = (unsigned char *)malloc(width * height)) == NULL)
         {
             std::cerr << "out of memory (graycode init 8)\n";
-            retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
     }
@@ -1203,7 +1203,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error genTextures 2 (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
@@ -1211,7 +1211,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error genTextures 2 (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
@@ -1223,7 +1223,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error bind texture black image (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
@@ -1231,7 +1231,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image black image (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -1240,7 +1240,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error bind texture black image 2 (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
@@ -1248,7 +1248,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image black image 2 (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -1261,7 +1261,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error bind texture white image (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
@@ -1269,7 +1269,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image white image (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -1278,7 +1278,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error bind texture white image 2 (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
 
@@ -1286,7 +1286,7 @@ ito::RetVal PrjWindow::graycodeInit()
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image white image 2 (graycode init)\n";
-        retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+        retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
         goto end;
     }
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -1310,7 +1310,7 @@ ito::RetVal PrjWindow::graycodeInit()
         if ((ret = glGetError()))
         {
             std::cerr << "error bind texture (graycode init)\n";
-            retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
 
@@ -1318,7 +1318,7 @@ ito::RetVal PrjWindow::graycodeInit()
         if ((ret = glGetError()))
         {
             std::cerr << "error tex image (graycode init)\n";
-            retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -1353,7 +1353,7 @@ ito::RetVal PrjWindow::graycodeInit()
         if ((ret = glGetError()))
         {
             std::cerr << "error bind texture (graycode init)\n";
-            retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
 
@@ -1361,7 +1361,7 @@ ito::RetVal PrjWindow::graycodeInit()
         if ((ret = glGetError()))
         {
             std::cerr << "error tex image (graycode init)\n";
-            retval = ito::RetVal(ito::retError, ret, tr("").toAscii().data());
+            retval = ito::RetVal(ito::retError, ret, tr("").toLatin1().data());
             goto end;
         }
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -1523,7 +1523,7 @@ ito::RetVal PrjWindow::calcLUT(QVector<double> *grayvalues, QVector<unsigned cha
 
     if (grayvalues->size() < 64)
     {
-        retval = ito::RetVal(ito::retError, 0, tr("insufficient gray values").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, tr("insufficient gray values").toLatin1().data());
     }
 
     double minval = 10000;
@@ -2143,7 +2143,7 @@ ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaph
     
     if (filepath.exists() == false)
     {
-        retval += ito::RetVal::format(ito::retError,0,"folder '%s' does not exist", finfo.canonicalPath().toAscii().data());
+        retval += ito::RetVal::format(ito::retError,0,"folder '%s' does not exist", finfo.canonicalPath().toLatin1().data());
     }
     else
     {

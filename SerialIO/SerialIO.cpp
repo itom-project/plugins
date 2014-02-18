@@ -216,7 +216,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
             cfsetospeed(&options, B4000000);
         break;
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid baud rate").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("invalid baud rate").toLatin1().data());
     }
     m_serParams.baud = params.baud;
 
@@ -239,7 +239,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
             options.c_cflag |= CS8;
         break;
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of bits").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of bits").toLatin1().data());
     }
     m_serParams.bits = params.bits;
 
@@ -252,7 +252,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
             options.c_cflag |= (CSTOPB);
         break;
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of stopbits").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of stopbits").toLatin1().data());
     }
     m_serParams.stopbits = params.stopbits;
 
@@ -272,7 +272,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
             options.c_cflag |= PARENB;
         break;
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid parity").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("invalid parity").toLatin1().data());
     }
     m_serParams.parity = params.parity;
 
@@ -377,7 +377,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 //        case 128000:    dcbSerialParams.BaudRate = CBR_128000;  break;
 //        case 256000:    dcbSerialParams.BaudRate = CBR_256000;  break;
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid baud rate").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("invalid baud rate").toLatin1().data());
     }*/
     if (params.baud == 50      || params.baud == 75      || params.baud == 134     || params.baud == 150     || params.baud == 200     || params.baud == 300     ||
         params.baud == 600     || params.baud == 1200    || params.baud == 1800    || params.baud == 2400    || params.baud == 4800    || params.baud == 9600    ||
@@ -390,7 +390,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("invalid baud rate").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("invalid baud rate").toLatin1().data());
     }
     m_serParams.baud = params.baud;
 
@@ -401,7 +401,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
         case 7: dcbSerialParams.ByteSize = 7;   break;
         case 8: dcbSerialParams.ByteSize = 8;   break;
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of bits").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of bits").toLatin1().data());
     }*/
     if (params.bits > 4 && params.bits < 9)
     {
@@ -409,7 +409,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of bits").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of bits").toLatin1().data());
     }
     m_serParams.bits = params.bits;
 
@@ -418,7 +418,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
         case 1: dcbSerialParams.StopBits = ONESTOPBIT;      break;
         case 2: dcbSerialParams.StopBits = TWOSTOPBITS;     break;
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of stopbits").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of stopbits").toLatin1().data());
         // this is windows specific so we will do 1 and 2 as intuitiv standard
         //case 3: dcbSerialParams.StopBits = ONE5STOPBITS;    break;
     }
@@ -431,7 +431,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
         case 2: dcbSerialParams.Parity = EVENPARITY;    break;
         // space parity and mark parity not supported
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid parity").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("invalid parity").toLatin1().data());
     }
     m_serParams.parity = params.parity;
 
@@ -499,7 +499,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 
     if (!SetCommState(m_dev, &dcbSerialParams))      // Write the parameters
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("error setting parameters").toAscii().data());   // Ea=dataIO("SerialIO",0,9600,"\r")rror while writing
+        return ito::RetVal(ito::retError, 0, QObject::tr("error setting parameters").toLatin1().data());   // Ea=dataIO("SerialIO",0,9600,"\r")rror while writing
     }
 
     // Set TimeOut
@@ -517,7 +517,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 //    timeouts.WriteTotalTimeoutMultiplier = 0;
     timeouts.WriteTotalTimeoutMultiplier = params.timeout; // Set timeout in [ms]
     if (!SetCommTimeouts(m_dev, &timeouts))              // Write the parameters
-        return ito::RetVal(ito::retError, 0, QObject::tr("error setting timeout").toAscii().data());   // Error while writting the parameters
+        return ito::RetVal(ito::retError, 0, QObject::tr("error setting timeout").toLatin1().data());   // Error while writting the parameters
 #endif
 
     const char testBuf[3] = {0, 0, 0};
@@ -548,7 +548,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("invalid endline character").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("invalid endline character").toLatin1().data());
     }
 
     m_serParams.singlechar = params.singlechar;
@@ -617,7 +617,7 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
         m_dev = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
         if (m_dev < 0)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("could not open device").toAscii().data());      // Device not found
+            return ito::RetVal(ito::retError, 0, QObject::tr("could not open device").toLatin1().data());      // Device not found
         }
     }
     m_serParams.port = port;
@@ -633,11 +633,11 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
          m_dev = 0;
         if (GetLastError() == ERROR_FILE_NOT_FOUND)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("could not open device").toAscii().data());      // Device not found
+            return ito::RetVal(ito::retError, 0, QObject::tr("could not open device").toLatin1().data());      // Device not found
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("unknown error opening com port").toAscii().data());      // other generic error
+            return ito::RetVal(ito::retError, 0, QObject::tr("unknown error opening com port").toLatin1().data());      // other generic error
         }
     }
     m_serParams.port = port;
@@ -700,7 +700,7 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int singlechar)
 
     if (!m_dev)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
     int readable = sreadable();
@@ -735,7 +735,7 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int singlechar)
 
     if (!m_dev || INVALID_HANDLE_VALUE == m_dev)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
     int readable = sreadable();
@@ -749,7 +749,7 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int singlechar)
                 ret = ReadFile(m_dev, buf, 1, &numread, NULL);
                 if ((numread != 1) || !ret)
                 {
-                    return ito::RetVal(ito::retError, 0, QObject::tr("error reading from com port").toAscii().data());
+                    return ito::RetVal(ito::retError, 0, QObject::tr("error reading from com port").toLatin1().data());
                 }
                 readable++;
                 buf--;
@@ -761,7 +761,7 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int singlechar)
             *len = numread;
             if ((!ret) || (!numread))
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("error reading from com port").toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("error reading from com port").toLatin1().data());
             }
         }
     }
@@ -792,17 +792,17 @@ const ito::RetVal SerialPort::swrite(const char c) const
 #ifdef __linux__
     if (m_dev == 0)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
     if (write(m_dev, &outbuf, length) != length)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
     }
 #else
     if (!m_dev || INVALID_HANDLE_VALUE == m_dev)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
 //std::cout << "serial::swrite: " << c << "\n" << std::endl;
@@ -810,11 +810,11 @@ const ito::RetVal SerialPort::swrite(const char c) const
     DWORD bytesWritten = 0;
     if (!WriteFile(m_dev, outbuf, length, &bytesWritten, NULL))
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
     }
     if (bytesWritten != length)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
     }
 #endif
     return ito::retOk;
@@ -850,7 +850,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
     if (m_dev == 0)
     {
 		free(outbuf);
-        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
     if (singlechar)
@@ -861,7 +861,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
             if (write(m_dev, outbuf + n, 1) != 1)
             {
 				free(outbuf);
-                return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
             }
         }
     }
@@ -872,14 +872,14 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
         if ((a = write(m_dev, outbuf, length)) != length)
         {
 			free(outbuf);
-            return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
         }
     }
 #else
     if (!m_dev || INVALID_HANDLE_VALUE == m_dev)
     {
 		free(outbuf);
-        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
 //std::cout << "serial::swrite: " << buf << "\n" << std::endl;
@@ -891,12 +891,12 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
             if (!WriteFile(m_dev, outbuf + n, 1, &bytesWritten, NULL))
             {
 				free(outbuf);
-                return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
             }
             if (bytesWritten != 1)
             {
 				free(outbuf);
-                return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
             }
         }
     }
@@ -905,12 +905,12 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
         if (!WriteFile(m_dev, outbuf, length, &bytesWritten, NULL))
         {
 			free(outbuf);
-            return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
         }
         if (bytesWritten != length)
         {
 			free(outbuf);
-            return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
         }
     }
 #endif
@@ -932,7 +932,7 @@ const ito::RetVal SerialPort::sclearbuffer(int BufferType)
     int errorCode;
     if (m_dev == 0)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
     switch (BufferType)
@@ -940,17 +940,17 @@ const ito::RetVal SerialPort::sclearbuffer(int BufferType)
         case 0: errorCode = tcflush(m_dev, TCIFLUSH); break;
         case 1: errorCode = tcflush(m_dev, TCOFLUSH); break;
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of buffer type (0: input, 1: output)").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of buffer type (0: input, 1: output)").toLatin1().data());
     }
 
     if (errorCode != 0)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("Unable to clear buffer").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Unable to clear buffer").toLatin1().data());
     }
 #else
     if (!m_dev || INVALID_HANDLE_VALUE == m_dev)
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toAscii().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
     DWORD dwFlags;
@@ -959,13 +959,13 @@ const ito::RetVal SerialPort::sclearbuffer(int BufferType)
         case 0: dwFlags = PURGE_RXCLEAR; break;
         case 1: dwFlags = PURGE_TXCLEAR; break;
         default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of buffer type (0: input, 1: output)").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of buffer type (0: input, 1: output)").toLatin1().data());
     }
 
     if (PurgeComm(m_dev, dwFlags) == 0)
     {
-//        return ito::RetVal(ito::retError, 0, QObject::tr("Unable to clear buffer! Error message: %1").arg(SysErrorMessage(GetLastError())).toAscii().data());
-        return ito::RetVal(ito::retError, 0, QObject::tr("Unable to clear buffer").toAscii().data());
+//        return ito::RetVal(ito::retError, 0, QObject::tr("Unable to clear buffer! Error message: %1").arg(SysErrorMessage(GetLastError())).toLatin1().data());
+        return ito::RetVal(ito::retError, 0, QObject::tr("Unable to clear buffer").toLatin1().data());
     }
 #endif
 
@@ -1036,26 +1036,26 @@ Bit 64: dsr enabled, if not set dsr disabled";
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");  
 
-    ito::Param paramVal("port", ito::ParamBase::Int, 1, 255, 1, tr("The number of the serial port, starting with 1").toAscii().data());
+    ito::Param paramVal("port", ito::ParamBase::Int, 1, 255, 1, tr("The number of the serial port, starting with 1").toLatin1().data());
     m_initParamsMand.append(paramVal);
-    paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port").toAscii().data());
+    paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port").toLatin1().data());
     m_initParamsMand.append(paramVal);
-    paramVal = ito::Param("endline", ito::ParamBase::String, "\n", tr("The endline character, which is added automatically after every setVal()").toAscii().data());
+    paramVal = ito::Param("endline", ito::ParamBase::String, "\n", tr("The endline character, which is added automatically after every setVal()").toLatin1().data());
     m_initParamsMand.append(paramVal);
 
-    paramVal = ito::Param("bits", ito::ParamBase::Int, 5, 8, 8, tr("Number of bits to be written in line").toAscii().data());
+    paramVal = ito::Param("bits", ito::ParamBase::Int, 5, 8, 8, tr("Number of bits to be written in line").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("stopbits", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits").toAscii().data());
+    paramVal = ito::Param("stopbits", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::Int, 0, 2, 0, tr("Parity: 0 -> no parity, 1 -> odd parity, 2 -> even parity").toAscii().data());
+    paramVal = ito::Param("parity", ito::ParamBase::Int, 0, 2, 0, tr("Parity: 0 -> no parity, 1 -> odd parity, 2 -> even parity").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("flow", ito::ParamBase::Int, 0, 127, 0, tr("Bitmask for flow control (see docstring for more information)").toAscii().data());
+    paramVal = ito::Param("flow", ito::ParamBase::Int, 0, 127, 0, tr("Bitmask for flow control (see docstring for more information)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("singlechar", ito::ParamBase::Int, 0, 1, 0, tr("Toggle: write output buffer as block or single characters").toAscii().data());
+    paramVal = ito::Param("singlechar", ito::ParamBase::Int, 0, 1, 0, tr("Toggle: write output buffer as block or single characters").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toAscii().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("enableDebug", ito::ParamBase::Int, 0, 1, 0, tr("Initialised 'debug'-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget").toAscii().data());
+    paramVal = ito::Param("enableDebug", ito::ParamBase::Int, 0, 1, 0, tr("Initialised 'debug'-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     return;
@@ -1067,7 +1067,9 @@ SerialIOInterface::~SerialIOInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(SerialIOinterface, SerialIOInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(SerialIOinterface, SerialIOInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1090,25 +1092,25 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "SerialIO", NULL);
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 255, 0, tr("Serial port number of this device").toAscii().data());
+    paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 255, 0, tr("Serial port number of this device").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 50, 4000000, 9600, tr("Current baudrate in bits/s").toAscii().data());
+    paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 50, 4000000, 9600, tr("Current baudrate in bits/s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("bits", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 5, 8, 8, tr("Number of bits to be written in line").toAscii().data());
+    paramVal = ito::Param("bits", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 5, 8, 8, tr("Number of bits to be written in line").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("stopbits", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 1, 2, 1, tr("Stop bits after every n bits").toAscii().data());
+    paramVal = ito::Param("stopbits", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 1, 2, 1, tr("Stop bits after every n bits").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 2, 0, tr("Toggle parity check").toAscii().data());
+    paramVal = ito::Param("parity", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 2, 0, tr("Toggle parity check").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("flow", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 127, 0, tr("Bitmask for flow control as integer").toAscii().data());
+    paramVal = ito::Param("flow", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 127, 0, tr("Bitmask for flow control as integer").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("endline", ito::ParamBase::String | ito::ParamBase::NoAutosave, "\n", tr("Endline character, will be added automatically during setVal").toAscii().data());
+    paramVal = ito::Param("endline", ito::ParamBase::String | ito::ParamBase::NoAutosave, "\n", tr("Endline character, will be added automatically during setVal").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("singlechar", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 1, 0, tr("Toggle: write output buffer as block @ once or single characters").toAscii().data());
+    paramVal = ito::Param("singlechar", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 1, 0, tr("Toggle: write output buffer as block @ once or single characters").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toAscii().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all out and inputs are written to dockingWidget").toAscii().data());
+    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //register exec functions
@@ -1118,7 +1120,7 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false)
     registerExecFunc("clearInputBuffer", pMand, pOpt, pOut, tr("Clears the input buffer of serial port"));
     registerExecFunc("clearOutputBuffer", pMand, pOpt, pOut, tr("Clears the output buffer of serial port"));
 
-    pMand << ito::Param("bufferType", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Clears input (0) or output (1) buffer").toAscii().data());
+    pMand << ito::Param("bufferType", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Clears input (0) or output (1) buffer").toLatin1().data());
     registerExecFunc("clearBuffer", pMand, pOpt, pOut, tr("Clears the input or output buffer of serial port"));
 
 /*    //now create dock widget for this plugin
@@ -1169,7 +1171,7 @@ ito::RetVal SerialIO::getParam(QSharedPointer<ito::Param> val, ItomSharedSemapho
 
     if (key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -1180,7 +1182,7 @@ ito::RetVal SerialIO::getParam(QSharedPointer<ito::Param> val, ItomSharedSemapho
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
     if (waitCond)
@@ -1202,7 +1204,7 @@ ito::RetVal SerialIO::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
 
     if (key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -1220,7 +1222,7 @@ ito::RetVal SerialIO::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
 
             if (paramIt->getFlags() & ito::ParamBase::Readonly)    //check read-only
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
                 goto end;
             }
             else if (val->isNumeric() && paramIt->isNumeric())
@@ -1228,12 +1230,12 @@ ito::RetVal SerialIO::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
                 double curval = val->getVal<double>();
                 if (curval > paramIt->getMax())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else if (curval < paramIt->getMin())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else
@@ -1247,7 +1249,7 @@ ito::RetVal SerialIO::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
                 goto end;
             }
 
@@ -1264,7 +1266,7 @@ ito::RetVal SerialIO::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("Parameter not found").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Parameter not found").toLatin1().data());
         }
     }
     emit parametersChanged(m_params);
@@ -1312,7 +1314,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     // mandatory parameters
     if (paramsMand == NULL)
     {
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("Mandatory paramers are NULL").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("Mandatory paramers are NULL").toLatin1().data());
         goto end;
     }
 
@@ -1331,7 +1333,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     // optional parameters
     if (paramsOpt == NULL)
     {
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("Optinal paramers are NULL").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("Optinal paramers are NULL").toLatin1().data());
         goto end;
     }
 
@@ -1389,7 +1391,7 @@ ito::RetVal SerialIO::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SerialIO::startDevice(ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("StartDevice not necessary").toAscii().data());
+    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("StartDevice not necessary").toLatin1().data());
 
     if (waitCond)
     {
@@ -1403,7 +1405,7 @@ ito::RetVal SerialIO::startDevice(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SerialIO::stopDevice(ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("StopDevice not necessary").toAscii().data());
+    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("StopDevice not necessary").toLatin1().data());
 
     if (waitCond)
     {
@@ -1417,7 +1419,7 @@ ito::RetVal SerialIO::stopDevice(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SerialIO::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("Acquire not necessary").toAscii().data());
+    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("Acquire not necessary").toLatin1().data());
 
     if (waitCond)
     {

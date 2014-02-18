@@ -68,7 +68,7 @@ ito::RetVal FittingFiltersInterface::closeThisInst(ito::AddInBase **addInInst)
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, tr("plugin-instance cannot be converted to class FittingFilters. Close operation failed").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("plugin-instance cannot be converted to class FittingFilters. Close operation failed").toLatin1().data());
         }
     }
 
@@ -107,7 +107,9 @@ FittingFiltersInterface::~FittingFiltersInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(FittingFiltersInterface, FittingFiltersInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(FittingFiltersInterface, FittingFiltersInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -134,13 +136,13 @@ RetVal FittingFilters::fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<i
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    paramsMand->append( Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object").toAscii().data()) );
+    paramsMand->append( Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object").toLatin1().data()) );
 
-    paramsOpt->append( Param("method", ParamBase::String | ParamBase::In, "leastSquareFit", tr("fitting method (leastSquareFit [default], leastSquareFitSVD)").toAscii().data()) );
+    paramsOpt->append( Param("method", ParamBase::String | ParamBase::In, "leastSquareFit", tr("fitting method (leastSquareFit [default], leastSquareFitSVD)").toLatin1().data()) );
 
-    *paramsOut << Param("A", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Parameter A of regression plane z = A + Bx + Cy").toAscii().data());
-    *paramsOut << Param("B", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Parameter B of regression plane z = A + Bx + Cy").toAscii().data());
-    *paramsOut << Param("C", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Parameter C of regression plane z = A + Bx + Cy").toAscii().data());
+    *paramsOut << Param("A", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Parameter A of regression plane z = A + Bx + Cy").toLatin1().data());
+    *paramsOut << Param("B", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Parameter B of regression plane z = A + Bx + Cy").toLatin1().data());
+    *paramsOut << Param("C", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Parameter C of regression plane z = A + Bx + Cy").toLatin1().data());
 
     return retval;
 }
@@ -156,17 +158,17 @@ RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     if (dObjImages->getDims() != 2)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image must be two-dimensional.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image must be two-dimensional.").toLatin1().data());
     }
 
     if(dObjImages->getType() == tComplex64 || dObjImages->getType() == tComplex128)
     {
-        return ito::RetVal(retError, 0, tr("source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64").toAscii().data());
+        return ito::RetVal(retError, 0, tr("source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64").toLatin1().data());
     }
 
     if(!availableMethods.contains(method, Qt::CaseInsensitive))
     {
-        return ito::RetVal(retError, 0, tr("the chosen method is unknown").toAscii().data());
+        return ito::RetVal(retError, 0, tr("the chosen method is unknown").toLatin1().data());
     }
 
     int index = dObjImages->seekMat(0);
@@ -209,11 +211,11 @@ RetVal FittingFilters::subtractPlaneParams(QVector<ito::Param> *paramsMand, QVec
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    *paramsMand << Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toAscii().data());
-    *paramsMand << Param("destinationImage", ParamBase::DObjPtr, NULL, tr("destination image data object").toAscii().data());
-    *paramsMand << Param("A", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter A of regression plane z = A + Bx + Cy, which is subtracted").toAscii().data());
-    *paramsMand << Param("B", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter B of regression plane z = A + Bx + Cy, which is subtracted").toAscii().data());
-    *paramsMand << Param("C", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter C of regression plane z = A + Bx + Cy, which is subtracted").toAscii().data());
+    *paramsMand << Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toLatin1().data());
+    *paramsMand << Param("destinationImage", ParamBase::DObjPtr, NULL, tr("destination image data object").toLatin1().data());
+    *paramsMand << Param("A", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter A of regression plane z = A + Bx + Cy, which is subtracted").toLatin1().data());
+    *paramsMand << Param("B", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter B of regression plane z = A + Bx + Cy, which is subtracted").toLatin1().data());
+    *paramsMand << Param("C", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter C of regression plane z = A + Bx + Cy, which is subtracted").toLatin1().data());
 
     return retval;
 }
@@ -230,17 +232,17 @@ RetVal FittingFilters::subtractPlane(QVector<ito::ParamBase> *paramsMand, QVecto
 
     if (dObjInput->getDims() != 2)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image must be two-dimensional.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image must be two-dimensional.").toLatin1().data());
     }
 
     if(dObjInput->getType() == tComplex64 || dObjInput->getType() == tComplex128)
     {
-        return ito::RetVal(retError, 0, tr("source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64").toAscii().data());
+        return ito::RetVal(retError, 0, tr("source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64").toLatin1().data());
     }
 
     if(dObjOutput == NULL)
     {
-        return ito::RetVal(retError, 0, tr("destination matrix is NULL").toAscii().data());
+        return ito::RetVal(retError, 0, tr("destination matrix is NULL").toLatin1().data());
     }
 
     ito::DataObject dObjDst;
@@ -301,7 +303,7 @@ RetVal FittingFilters::subtractPlane(QVector<ito::ParamBase> *paramsMand, QVecto
 
     QString msg;
     msg = tr("Substracted plane with A = %1, B = %2, C = %3").arg(A).arg(B).arg(C);
-    dObjDst.addToProtocol(std::string(msg.toAscii().data()));
+    dObjDst.addToProtocol(std::string(msg.toLatin1().data()));
 
     return retOk;
 }
@@ -318,10 +320,10 @@ RetVal FittingFilters::subtractRegressionPlaneParams(QVector<ito::Param> *params
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    *paramsMand << Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toAscii().data());
-    *paramsMand << Param("destinationImage", ParamBase::DObjPtr, NULL, tr("destination image data object").toAscii().data());
+    *paramsMand << Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toLatin1().data());
+    *paramsMand << Param("destinationImage", ParamBase::DObjPtr, NULL, tr("destination image data object").toLatin1().data());
 
-    paramsOpt->append( Param("method", ParamBase::String | ParamBase::In, "leastSquareFit", tr("fitting method (leastSquareFit [default], leastSquareFitSVD)").toAscii().data()) );
+    paramsOpt->append( Param("method", ParamBase::String | ParamBase::In, "leastSquareFit", tr("fitting method (leastSquareFit [default], leastSquareFitSVD)").toLatin1().data()) );
     return retval;
 }
 
@@ -471,7 +473,7 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
 
     QString msg;
     msg = tr("Generated object via polyVal with order X = %1, Y = %2").arg(paramsMand->at(2).getVal<int>()).arg(paramsMand->at(3).getVal<int>());
-    dataZ->addToProtocol(std::string(msg.toAscii().data()));
+    dataZ->addToProtocol(std::string(msg.toLatin1().data()));
 
     return retval;
 }
@@ -689,7 +691,7 @@ to parallely compute the approximations for each pixel.";
     {
         QString msg;
         msg = tr("Caluclated polynomical coeffs along z-direction with order Z = %1").arg(order);
-        output->addToProtocol(std::string(msg.toAscii().data()));
+        output->addToProtocol(std::string(msg.toLatin1().data()));
     }
     return retval;
 }

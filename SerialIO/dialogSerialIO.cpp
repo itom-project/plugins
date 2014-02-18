@@ -290,7 +290,7 @@ ito::RetVal parseOutString(char *buf, int *length)
             if ((*buf2 != ')') || (atoi(charbuf) > 255))    // char token not closed correctly or number to big -> end with error
             {
                 free(out);
-                return ito::RetVal(ito::retError, 0, QObject::tr("Char token not closed correctly or number to big.").toAscii().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("Char token not closed correctly or number to big.").toLatin1().data());
                 //return ito::retError;
             }
 
@@ -303,7 +303,7 @@ ito::RetVal parseOutString(char *buf, int *length)
         else
         {
             free(out);
-            return ito::RetVal(ito::retError, 0, QObject::tr("Undefined error.").toAscii().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("Undefined error.").toLatin1().data());
         }
     }
     *length = outbuf - out + len - (buf1 - buf);
@@ -369,7 +369,7 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
     if (ui.RBASCII->isChecked())
     {
         qout.append(qstr);
-        qb = qstr.toAscii();
+        qb = qstr.toLatin1();
         tmpChar = qb.data();
         if (parseOutString(tmpChar, &length) == ito::retError)
         {

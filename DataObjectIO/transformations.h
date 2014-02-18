@@ -64,7 +64,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_Mono(QImage *image, ito:
     bool result = image->save(imgFilename);
     if (result == false)
     {
-        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toLatin1().data());
     }
     return ret;
 }
@@ -94,7 +94,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_MonoLSB(QImage *image, i
     bool result = image->save(imgFilename);
     if(result == false)
     {
-        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toLatin1().data());
     }
     return ret;
 }
@@ -141,7 +141,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_Indexed8(QImage *image, 
     bool result = image->save(imgFilename);
     if (result == false)
     {
-        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toLatin1().data());
     }
     return ret;
 }
@@ -218,7 +218,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_RGB32(QImage *image, ito
     bool result = image->save(imgFilename);
     if (result == false)
     {
-        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toLatin1().data());
     }
     return ret;
 }
@@ -296,7 +296,7 @@ template<> ito::RetVal transformDatatoImage_RGB32<ito::int32>(QImage *image, ito
     bool result = image->save(imgFilename);
     if (result == false)
     {
-        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toLatin1().data());
     }
     return ret;
 }
@@ -378,7 +378,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_ARGB32(QImage *image, it
     bool result = image->save(imgFilename);
     if (result == false)
     {
-        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toLatin1().data());
     }
     return ret;
 }
@@ -460,7 +460,7 @@ template<> ito::RetVal transformDatatoImage_ARGB32<ito::int32>(QImage *image, it
     bool result = image->save(imgFilename);
     if (result == false)
     {
-        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toAscii().data());
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toLatin1().data());
     }
     return ret;
 }

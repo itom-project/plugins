@@ -37,29 +37,29 @@ ito::RetVal FittingFilters::fitPolynom2DParams(QVector<ito::Param> *paramsMand, 
 
     if (!paramsMand || !paramsOpt || !paramsOut)
     {
-        return ito::RetVal(ito::retError, 0, tr("uninitialized vector for mandatory, optional or output parameters!").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("uninitialized vector for mandatory, optional or output parameters!").toLatin1().data());
     }
 
     paramsMand->clear();
     paramsOpt->clear();
     paramsOut->clear();
 
-    param = Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toAscii().data());
+    param = Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toLatin1().data());
     paramsMand->append(param);
 
-    param = Param("fittedImage", ParamBase::DObjPtr, NULL, tr("destination data object with fitted values").toAscii().data());
+    param = Param("fittedImage", ParamBase::DObjPtr, NULL, tr("destination data object with fitted values").toLatin1().data());
     paramsMand->append(param);
 
-    param = Param("gradX", ParamBase::Int, NULL, tr("number of polynoms in x-direction").toAscii().data());
+    param = Param("gradX", ParamBase::Int, NULL, tr("number of polynoms in x-direction").toLatin1().data());
     paramsMand->append(param);
 
-    param = Param("gradY", ParamBase::Int, NULL, tr("number of polynoms in y-direction").toAscii().data());
+    param = Param("gradY", ParamBase::Int, NULL, tr("number of polynoms in y-direction").toLatin1().data());
     paramsMand->append(param);
 
-    param = Param("replaceNaN", ParamBase::Int, 0, 1, 0, tr("if 0 infinite values in input image will be copied to output").toAscii().data());
+    param = Param("replaceNaN", ParamBase::Int, 0, 1, 0, tr("if 0 infinite values in input image will be copied to output").toLatin1().data());
     paramsOpt->append(param);
 
-    *paramsOut << Param("Sigma", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Variance value *sigma* of polynomial fit.").toAscii().data());
+    *paramsOut << Param("Sigma", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Variance value *sigma* of polynomial fit.").toLatin1().data());
 
 
     return retval;
@@ -78,17 +78,17 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
 
     if (dObjImages->getDims() != 2)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image must be two-dimensional.").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image must be two-dimensional.").toLatin1().data());
     }    
 
     if(!( dObjImages->getType() & (tUInt8 | tInt8 | tUInt16 | tInt16 | tUInt32 | tInt32 | tFloat32 | tFloat64)))
     {
-        return ito::RetVal(retError, 0, tr("source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64").toAscii().data());
+        return ito::RetVal(retError, 0, tr("source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64").toLatin1().data());
     }
 
     if(dObjDst == NULL)
     {
-        return ito::RetVal(retError, 0, tr("destination matrix is NULL").toAscii().data());
+        return ito::RetVal(retError, 0, tr("destination matrix is NULL").toLatin1().data());
     }
 
     cv::Mat *plane = reinterpret_cast<cv::Mat*>(dObjImages->get_mdata()[ dObjImages->seekMat(0) ]);
@@ -131,7 +131,7 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
 //    dObjDst->addToProtocol(std::string(prot));
     QString msg;
     msg = tr("2D polynomical fit with order x = %1 and y = %2").arg(gradX).arg(gradY);
-    dObjDst->addToProtocol(std::string(msg.toAscii().data()));
+    dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
 
     delete[] x;
     delete[] y;
@@ -188,7 +188,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     RetVal retValue(retOk);
     int   i, j, n, m,            // Zaehlvariable 
        maxGrad,             // Maximal vorkommender Grad
-       Fehler;              // Fehler aufgerufener Funktionen
+//       Fehler;              // Fehler aufgerufener Funktionen
 
     double   tx, ty,           // x, y Parameter
         dx, dy,             // Schrittweiten der X/Y-Koordinaten
@@ -210,12 +210,12 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     // Kontrolle der Polynomgrade -------------------------------------------
     if(gradX == 0 && gradY == 0)
     {
-        return retValue += ito::RetVal(retError, 2, tr("2:  gradX und gradY =0, Funktion abgebrochen").toAscii().data());
+        return retValue += ito::RetVal(retError, 2, tr("2:  gradX und gradY =0, Funktion abgebrochen").toLatin1().data());
     }
 
     if ( (gradX > (sizeX-1)) || (gradY > (sizeY-1)) )
     {
-        return retValue += ito::RetVal(retError, 3, tr("3:  gradX und/oder gradY zu gross").toAscii().data());
+        return retValue += ito::RetVal(retError, 3, tr("3:  gradX und/oder gradY zu gross").toLatin1().data());
     }
   
     maxGrad = gradX < gradY ? gradY : gradX;
@@ -246,7 +246,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     
     if(koeff->alphaY == NULL || koeff->alphaX == NULL || koeff->betaX == NULL || koeff->betaY == NULL || koeff->gammaX == NULL || koeff->gammaY == NULL)
     {
-        retValue += ito::RetVal(retError, 5, tr("5:  Fehler bei Speicherzuweisung fuer Rekursionskoeffizienten").toAscii().data());
+        retValue += ito::RetVal(retError, 5, tr("5:  Fehler bei Speicherzuweisung fuer Rekursionskoeffizienten").toLatin1().data());
         goto Error;
     }
 
@@ -272,7 +272,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 
     if(Sum == NULL || koeff->b == NULL || Werte == NULL || NormX == NULL || NormY == NULL)
     {
-        retValue += RetVal(retError, 6, tr("6:  Fehler bei Speicherzuweisung fuer Werte, NormX, NormY oder Sum").toAscii().data());
+        retValue += RetVal(retError, 6, tr("6:  Fehler bei Speicherzuweisung fuer Werte, NormX, NormY oder Sum").toLatin1().data());
         goto Error;
     }
 
@@ -304,7 +304,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     ZeilenSumme=(double *)calloc(koeff->gradX+1, sizeof(double));
     if(ZeilenSumme == NULL)
     {
-        retValue += ito::RetVal(retError, 7, tr("7:  Fehler bei Speicherzuweisung fuer ZeilenSumme").toAscii().data());
+        retValue += ito::RetVal(retError, 7, tr("7:  Fehler bei Speicherzuweisung fuer ZeilenSumme").toLatin1().data());
         goto Error;
     }
 
@@ -490,7 +490,7 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
         if(P) free(P);
         if(S) free(S);
         if(Q) free(Q);
-        return ito::RetVal(retError, 1000, tr("error while allocating memory").toAscii().data());
+        return ito::RetVal(retError, 1000, tr("error while allocating memory").toLatin1().data());
     }
 
     for( i=0 ; i<=PolyGrad ; i++)  // laeuft von 0 bis Grad +1

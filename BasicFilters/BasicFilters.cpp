@@ -115,7 +115,9 @@ BasicFiltersInterface::~BasicFiltersInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(BasicFiltersInterface, BasicFiltersInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(BasicFiltersInterface, BasicFiltersInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -208,9 +210,9 @@ ito::RetVal BasicFilters::stdParams2Objects(QVector<ito::Param> *paramsMand, QVe
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("scrImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image").toAscii().data());
+        ito::Param param = ito::Param("scrImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image").toAscii().data());
+        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image").toLatin1().data());
         paramsMand->append(param);
     }
 
