@@ -188,7 +188,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     RetVal retValue(retOk);
     int   i, j, n, m,            // Zaehlvariable 
        maxGrad,             // Maximal vorkommender Grad
-//       Fehler;              // Fehler aufgerufener Funktionen
+       Fehler;              // Fehler aufgerufener Funktionen
 
     double   tx, ty,           // x, y Parameter
         dx, dy,             // Schrittweiten der X/Y-Koordinaten
