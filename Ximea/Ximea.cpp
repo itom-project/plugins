@@ -1206,7 +1206,7 @@ ito::RetVal Ximea::close(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     XI_RETURN ret;
 
-    if (this->m_handle == NULL || 0xffffffffffffffff)
+    if (this->m_handle == NULL)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("Camera handle deleted before closing procedure").toAscii().data());
         goto endclose;
