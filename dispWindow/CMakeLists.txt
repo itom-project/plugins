@@ -30,15 +30,16 @@ if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
 endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
 if (NOT QT5_INSTALLED)
     find_package(Qt4 REQUIRED)
+    find_package(GLEW)
 endif (NOT QT5_INSTALLED)
 find_package(ITOM_SDK REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(GLEW)
+
 #find_package(Glut REQUIRED)
 find_package(VisualLeakDetector QUIET)
 
-IF(GLEW_FOUND)
+IF(GLEW_FOUND OR NOT QT5_INSTALLED)
     
     include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
@@ -176,6 +177,6 @@ IF(GLEW_FOUND)
     #ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     
-ELSE(GLEW_FOUND)
-    message(WARNING "glew could not be found. ${target_name} will not be build")
-ENDIF(GLEW_FOUND)
+ELSE(GLEW_FOUND OR NOT QT5_INSTALLED)
+    message(WARNING "glew (required with Qt4) could not be found. ${target_name} will not be build")
+ENDIF(GLEW_FOUND OR NOT QT5_INSTALLED)
