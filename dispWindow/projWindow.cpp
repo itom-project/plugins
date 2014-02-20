@@ -21,11 +21,13 @@
 *********************************************************************** */
 
 #if linux
-//    #include "GL/glew.h"
     #include <unistd.h>
-#else
-//    #include "GL/glew.h"
 #endif
+
+#if QT_VERSION < 0x050000
+    #include "GL/glew.h"
+#endif
+
 #include "projWindow.h"
 #include <qevent.h>
 #include <qstring.h>
