@@ -997,6 +997,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
         ret = pxiOpenDevice(iCamNumber, &m_handle);
         if (!m_handle || ret != XI_OK)
         {
+            m_handle = NULL;
             retValue += getErrStr(ret);
             retValue += ito::RetVal(ito::retError, 0, tr("Unable open camera").toAscii().data());
         }
@@ -1205,7 +1206,7 @@ ito::RetVal Ximea::close(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     XI_RETURN ret;
 
-    if (this->m_handle == NULL)
+    if (this->m_handle == NULL || 0xffffffffffffffff)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("Camera handle deleted before closing procedure").toAscii().data());
         goto endclose;
