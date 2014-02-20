@@ -1067,6 +1067,26 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                     }
                     else if ((maxBitsPerPixel < 17) || (limitBPP == 16))
                     {
+                        // This comes from the SDK and seems to wrap the little endian / big endian problem
+                        const unsigned int k_imageDataFmtReg = 0x1048;
+                        unsigned int value = 0;
+                        retError = m_myCam.ReadRegister( k_imageDataFmtReg, &value );
+                        if ( retError != FlyCapture2::PGRERROR_OK )
+                        {
+                            // Error
+                        }
+#ifdef _DEBUG
+                        std::cout << "Read value: " << QString::number(value).toLatin1().data() << "\n";
+#endif
+                        value &= ~(0x1 << 0);
+#ifdef _DEBUG
+                        std::cout << "Wrote value: " << QString::number(value).toLatin1().data() << " from " << QString::number((0x1 << 0)).toLatin1().data() << "\n";
+#endif
+                        retError = m_myCam.WriteRegister( k_imageDataFmtReg, value );
+                        if ( retError != FlyCapture2::PGRERROR_OK )
+                        {
+                            // Error
+                        }
                         f7ImageSettings.pixelFormat = FlyCapture2::PIXEL_FORMAT_MONO16;
                     }
                     
