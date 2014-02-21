@@ -46,12 +46,14 @@ class ItomUSBDevice : public ito::AddInDataIO //, public DummyGrabberInterface
         int isOpen() {  }
 
     private:
-        
+
         libusb_device_handle *m_pDevice;
+        bool m_autoDetach;
 
         bool m_debugMode;   /*! Enables / Disables live connection to dockingwidge-protocol */
         static int m_instCounter;
-
+        int m_timeoutMS;
+        int m_endpoint;
     signals:
         void serialLog(QByteArray data, const char InOutChar);
         void uniqueIDChanged(const int);

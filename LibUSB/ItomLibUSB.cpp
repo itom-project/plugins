@@ -122,13 +122,15 @@ const ito::RetVal ItomUSBDevice::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL)
+ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL), m_autoDetach(true), m_timeoutMS(4000), m_endpoint(1)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "ItomUSBDevice", NULL);
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 1, tr("If true, all out and inputs are written to dockingWidget").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 255, 1, tr("If true, all out and inputs are written to dockingWidget").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //register exec functions
@@ -294,26 +296,29 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
 	int status = 0, debugLevel = 0;
     bool foundDevice = false;
-	unsigned vid = 0x1cbe, pid = 0x0003;
+	unsigned int vid = 0x1cbe, pid = 0x0003;
 
-	unsigned busnum = 0, devaddr = 0, tmpBusnum, tmpDevaddr;
+	unsigned int busnum = 0, devaddr = 0, tmpBusnum, tmpDevaddr;
 
-	libusb_device *currentDevice = NULL, **deviceList = NULL;
+    libusb_device *currentDevice = NULL, **deviceList = NULL;
+
+	
 
     /* open the device using libusb */
     if(!retval.containsError())
     {
-	    status = libusb_init(NULL);
+        status = libusb_init(NULL);
 	    if (status < 0) 
         {
             retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
 	    }
+        if(!retval.containsError())
+        {
+	        libusb_set_debug(NULL, debugLevel);
+        } 
     }
 
-    if(!retval.containsError())
-    {
-	    libusb_set_debug(NULL, debugLevel);
-    }
+
 	
 /* We think we know what we are doing!!!! */
         
@@ -441,19 +446,29 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     if(!retval.containsError()) /* We need to claim the first interface */
     {
-        int test = 1;
-	    status =libusb_set_auto_detach_kernel_driver(m_pDevice, 1);
-
+        int test = 0;
+        
+	    m_autoDetach  = libusb_set_auto_detach_kernel_driver(m_pDevice, 1) == 0;
+        if (!m_autoDetach) 
+        {
+            libusb_detach_kernel_driver(m_pDevice, 0);
+		}
         struct libusb_config_descriptor *conf_desc;
         status = libusb_get_active_config_descriptor(libusb_get_device(m_pDevice), &conf_desc);
         
-        status = libusb_set_configuration(m_pDevice, test);
+        status = libusb_set_configuration(m_pDevice, conf_desc->bConfigurationValue);
 		if (status < 0) 
         {
 			retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
 		}
 
-        libusb_free_config_descriptor(conf_desc);
+        //status = libusb_set_configuration(m_pDevice, test);
+		//if (status < 0) 
+        //{
+		//	retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
+		//}
+
+        
 
         test = 0;
 	    status = libusb_claim_interface(m_pDevice, test);
@@ -461,6 +476,7 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         {
 			retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
 		}
+        libusb_free_config_descriptor(conf_desc);
 //        status = libusb_release_interface(m_pDevice, test);
 //		if (status < 0) 
 //        {
@@ -491,6 +507,10 @@ ito::RetVal ItomUSBDevice::close(ItomSharedSemaphore *waitCond)
     if(m_pDevice)
     {
 	    libusb_release_interface(m_pDevice, 0);
+        if (!m_autoDetach) 
+        {
+            libusb_attach_kernel_driver(m_pDevice, 0);
+		}
 	    libusb_close(m_pDevice);
     }
 	libusb_exit(NULL);
@@ -552,13 +572,13 @@ ito::RetVal ItomUSBDevice::getVal(QSharedPointer<char> data, QSharedPointer<int>
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     //retval = m_serport.sread(data.data(), length.data(), 0);
-
+    int status = 0;
     unsigned char *dataIn = NULL;
     int actual_length = 0;
 
     dataIn = (unsigned char*)calloc(*(length.data()) * 2, sizeof(unsigned char));
-    int status = libusb_claim_interface(m_pDevice, 0);
-    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_IN, dataIn, *(length.data()), &actual_length, m_params["timeout"].getVal<int>() * 1000);
+    //int status = libusb_claim_interface(m_pDevice, 0);
+    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_IN + m_endpoint, dataIn, *(length.data()), &actual_length, m_timeoutMS);
     if (status != 0) 
     {
         retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
@@ -590,6 +610,7 @@ ito::RetVal ItomUSBDevice::setVal(const void *data, const int datalength, ItomSh
     unsigned char *buf = (unsigned char*)data;
     ito::RetVal retval(ito::retOk);
 
+    int status = 0;
 
     int actual_length = 0;
 
@@ -598,15 +619,15 @@ ito::RetVal ItomUSBDevice::setVal(const void *data, const int datalength, ItomSh
     {
         emit serialLog(QByteArray((char*)buf,datalength), '>');
     }
-    int status = libusb_claim_interface(m_pDevice, 0);
-    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_OUT, buf, datalength, &actual_length, m_params["timeout"].getVal<int>() * 1000);
+    //status = libusb_claim_interface(m_pDevice, 0);
+    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_OUT + m_endpoint, buf, datalength, &actual_length, m_timeoutMS);
     if (status != 0) 
     {
         retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
     }
     if(actual_length != datalength)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Number of written characters differ from designated dataLength").toLatin1().data());
+        //retval += ito::RetVal(ito::retError, 0, tr("Number of written characters differ from designated dataLength").toLatin1().data());
     }
 
     if (waitCond)
