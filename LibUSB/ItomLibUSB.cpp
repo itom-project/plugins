@@ -81,7 +81,13 @@ ItomUSBDeviceInterface::ItomUSBDeviceInterface()
     m_description = tr("itom-plugin for a usb port communication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = "";
+    char docstring[] = \
+"LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.\nIt can be used by plugins for communication analog to the serial port.\n\
+The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.\n\
+\n\
+To connect to a device you need the vendor id and the product id.\n\
+\n\
+The setVal and getVal functions will write and read on the specified endpoint.";
 
     m_detaildescription = tr(docstring);
     m_author = "W. Lyda, twip optical solutions GmbH Stuttgart";
@@ -89,9 +95,19 @@ ItomUSBDeviceInterface::ItomUSBDeviceInterface()
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");  
+    m_aboutThis = QObject::tr("This plugin can be used for raw / lowlevel comminication with USB-devices");  
 
-/* TODO */
+    ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x1cbe, tr("The vendor id of the device to connect to").toAscii().data());
+    m_initParamsMand.append(paramVal);
+    paramVal = ito::Param("ProdictID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x0003, tr("The product id of the device to connect to").toAscii().data());
+    m_initParamsMand.append(paramVal);
+    paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 127, 1, tr("The endpoint to communicate with.").toAscii().data());
+    m_initParamsMand.append(paramVal);
+    
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toAscii().data());
+    m_initParamsOpt.append(paramVal);
+    paramVal = ito::Param("enableDebug", ito::ParamBase::Int, 0, 5, 0, tr("Initialised 'debug'-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget").toAscii().data());
+    m_initParamsOpt.append(paramVal);
 
     return;
 }
@@ -128,7 +144,7 @@ ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NU
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 1, tr("If true, all out and inputs are written to dockingWidget").toAscii().data());
+    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 5, 0, tr("If true, all out and inputs are written to dockingWidget").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 255, 1, tr("If true, all out and inputs are written to dockingWidget").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -262,6 +278,9 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 goto end;
             }
 
+            m_timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000 + 0.5);
+            m_endpoint = m_params["endpoint"].getVal<int>();
+            m_debugMode = m_params["debug"].getVal<int>() > 0;
 
         }
         else
@@ -294,15 +313,39 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 	const char *device_path = getenv("DEVICE");
 	const char *type = NULL;
 
-	int status = 0, debugLevel = 0;
+	int status = 0;
     bool foundDevice = false;
-	unsigned int vid = 0x1cbe, pid = 0x0003;
-
-	unsigned int busnum = 0, devaddr = 0, tmpBusnum, tmpDevaddr;
 
     libusb_device *currentDevice = NULL, **deviceList = NULL;
-
 	
+    // mandatory parameters
+    if (paramsMand == NULL)
+    {
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("Mandatory paramers are NULL").toAscii().data());
+    }
+    else
+    {
+        retval += m_params["endpoint"].copyValueFrom(&((*paramsMand)[2]));
+    }
+    // optional parameters
+    if (paramsOpt == NULL)
+    {
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("Optinal paramers are NULL").toAscii().data());
+    }
+    else
+    {
+        retval += m_params["timeout"].copyValueFrom(&((*paramsOpt)[0]));
+        retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[1]));
+    }
+
+    m_timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000 + 0.5);
+    m_endpoint = m_params["endpoint"].getVal<int>();
+    m_debugMode = m_params["debug"].getVal<int>() > 0;
+
+	unsigned int vid = (unsigned int)((*paramsMand)[0].getVal<int>() & 0x0000FFFF);
+    unsigned int pid = (unsigned int)((*paramsMand)[1].getVal<int>() & 0x0000FFFF);
+
+	unsigned int busnum = 0, devaddr = 0, tmpBusnum, tmpDevaddr;
 
     /* open the device using libusb */
     if(!retval.containsError())
@@ -312,9 +355,9 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         {
             retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
 	    }
-        if(!retval.containsError())
+        if(!retval.containsError() && m_debugMode)
         {
-	        libusb_set_debug(NULL, debugLevel);
+	        libusb_set_debug(NULL, m_params["debug"].getVal<int>());
         } 
     }
 
