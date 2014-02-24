@@ -165,8 +165,8 @@ PIPiezoCtrl::PIPiezoCtrl() :
     
     m_scale = 1e3; // PI is programmed in µm, this evil Programm sents in mm
     m_async = 0;
-    m_delayProp = 0.5; //s
-    m_delayOffset = 0.02; //s
+    m_delayProp = 4; //s
+    m_delayOffset = 0.08; //s
     m_hasHardwarePositionLimit = false;
     m_posLimitLow = -std::numeric_limits<double>::max();
     m_posLimitHigh = std::numeric_limits<double>::max();
@@ -201,7 +201,7 @@ PIPiezoCtrl::PIPiezoCtrl() :
     paramVal = ito::Param("hasOnTargetFlag", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("defines whether the device has the ability to check the 'on-target'-status (1), else (0)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("fastMode", ito::ParamBase::Int, 0, 3, 0, tr("Disabled position and end switch control during positioning for fast scans").toAscii().data());
+    paramVal = ito::Param("checkFlags", ito::ParamBase::Int, 0, 7, 5, tr("Check flags (or-combination possible): 0x0001: check position boundaries before positioning and actualize current position after positioning (default: on), 0x0010: check for errors when positioning (default: off), 0x1000: if device has a on-target flag, it is used for checking if the device is on target (default: on), else a simple time gap is used that lets the driver sleep after positioning").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toAscii().data());
@@ -513,13 +513,13 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                         break;
                     }
                 }
-                else if(paramName == "fastMode")
+                else if(paramName == "checkFlags")
                 {
                     paramIt.value().setVal<double>(curval);
 
-                    m_getPosInScan = m_params["fastMode"].getVal<int>() > 1 ? false : true;
-                    m_getStatusInScan = m_params["fastMode"].getVal<int>() > 0 ? false : true;
-                    m_useOnTarget = m_params["fastMode"].getVal<int>() > 2 ? false : true;
+                    m_getPosInScan = m_params["checkFlags"].getVal<int>() & 1 ? true : false;
+                    m_getStatusInScan = m_params["checkFlags"].getVal<int>() & 2 ? true : false;
+                    m_useOnTarget = m_params["checkFlags"].getVal<int>() & 4 ? true : false;
                 }
                 else
                 {
@@ -585,6 +585,10 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             retval += PICheckStatus();
             retval += RequestStatusAndPosition(true, false);
         }
+
+		m_getPosInScan = m_params["checkFlags"].getVal<int>() & 1 ? true : false;
+		m_getStatusInScan = m_params["checkFlags"].getVal<int>() & 2 ? true : false;
+		m_useOnTarget = m_params["checkFlags"].getVal<int>() & 4 ? true : false;
 
     }
     else
@@ -1220,16 +1224,16 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(QByteArray questionComma
 
     answer = _answer.toDouble(&ok);
 
-    if (retValue.containsError() && retValue.errorCode() == PI_READTIMEOUT)
+    if (retValue.containsError() && retValue.errorCode() != PI_READTIMEOUT)
     {
         QVector< QPair<int, QByteArray> > lastErrors;
         retValue += PIGetLastErrors(lastErrors);
-        retValue = convertPIErrorsToRetVal(lastErrors);
+        retValue += convertPIErrorsToRetVal(lastErrors);
 
     }
     else if (!ok)
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("value could not be parsed to a double value").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("value could not be parsed to a double value").toAscii().data());
     }
 
     return retValue;
@@ -1298,18 +1302,18 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     }
 
     //1. try to read *idn? in order to indentify device
-    retval += PISendQuestionWithAnswerString("*idn?", answer, 1500);
+    retval += PISendQuestionWithAnswerString("*idn?", answer, 500);
     if (retval.containsError() || answer.length() < 5)
     {
         //clear error-queue
         PIGetLastErrors(lastErrors);
         lastErrors.clear();
-        m_delayAfterSendCommandMS = 2; //small delay after sendCommands (else sometimes the controller didn't not understand the commands)
+        m_delayAfterSendCommandMS = 2; //small delay after sendCommands (else sometimes the controller does not understand the commands)
         retval = ito::retOk;
     }
 
     //2. try to read *idn? in order to indentify device
-    retval += PISendQuestionWithAnswerString("*idn?", answer, 1500);
+    retval += PISendQuestionWithAnswerString("*idn?", answer, 500);
     if (retval.containsError() || answer.length() < 5)
     {
         retval = ito::retOk;
@@ -1317,9 +1321,10 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         {
             //try to set baudrate to 115200
             retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 115200)), NULL);
-            retval += PISendQuestionWithAnswerString("*idn?", answer, 1500);
+			retval += PIDummyRead();
+            retval += PISendQuestionWithAnswerString("*idn?", answer, 1000);
         }
-        m_delayAfterSendCommandMS = 5; //small delay after sendCommands (else sometimes the controller didn't not understand the commands)
+        m_delayAfterSendCommandMS = 5; //small delay after sendCommands (else sometimes the controller does not understand the commands)
     }
 
     if (retval.containsError() || answer.length() < 5)
@@ -1544,20 +1549,6 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
         }
 
         QVector< QPair<int, QByteArray> > lastErrors;
-
-        if(m_getStatusInScan)
-        {
-            retval += PIGetLastErrors(lastErrors);
-            retval += convertPIErrorsToRetVal(lastErrors);
-        }
-
-        if (retval.containsError() && retval.errorCode() == PI_READTIMEOUT)
-        {
-            retval = ito::RetVal(ito::retOk);
-            retval += PIDummyRead();
-            retval += PIGetLastErrors(lastErrors);
-            retval += convertPIErrorsToRetVal(lastErrors);
-        }
         
         if (!retval.containsError())
         {
@@ -1572,6 +1563,20 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
             {
                 retval += waitForDone(delayTimeMS, QVector<int>(1,axis)); //WaitForAnswer(60000, axis);
             }
+
+			if(m_getStatusInScan)
+			{
+				retval += PIGetLastErrors(lastErrors);
+				retval += convertPIErrorsToRetVal(lastErrors);
+			
+				if (retval.containsError() && retval.errorCode() == PI_READTIMEOUT)
+				{
+					retval = ito::RetVal(ito::retOk);
+					retval += PIDummyRead();
+					retval += PIGetLastErrors(lastErrors);
+					retval += convertPIErrorsToRetVal(lastErrors);
+				}
+			}
 
             if (!m_async && waitCond && !released)
             {
@@ -1605,17 +1610,30 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
     bool atTarget = false;
     double answerDbl;
     int timeoutMS_ = timeoutMS;
+	ito::RetVal ontRetVal;
+	int ontIterations = 10;
     QSharedPointer<double> actPos = QSharedPointer<double>(new double);
 
     if (m_params["hasOnTargetFlag"].getVal<int>() > 0.0 && m_useOnTarget)
     {
         while(!atTarget && !retVal.containsError())
         {
-            retVal += PISendQuestionWithAnswerDouble("ONT? A", answerDbl, 50);
-            if (!retVal.containsError() && answerDbl > 0.0) 
+            ontRetVal = PISendQuestionWithAnswerDouble("ONT? A", answerDbl, 50);
+            if (!ontRetVal.containsError() && answerDbl > 0.0) 
             {
                 atTarget = true;
             }
+			else if (ontRetVal.containsError() && ontRetVal.errorCode() != PI_READTIMEOUT)
+			{
+				retVal += ontRetVal;
+			}
+			else if (ontIterations == 0)
+			{
+				retVal += ontRetVal;
+				break;
+			}
+
+			--ontIterations;
         }
     }
 
