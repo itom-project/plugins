@@ -21,7 +21,15 @@
 *********************************************************************** */
 
 #if linux
+    #include "GL/glew.h"
     #include <unistd.h>
+#endif
+
+#ifdef WIN32
+        #define NOMINMAX 
+        #include <Windows.h>
+        #include <gl/GL.h>
+        #include <gl/GLU.h>
 #endif
 
 #if QT_VERSION < 0x050000
@@ -133,7 +141,7 @@
 *    @param [in] height    window height
 *    @return        zero for no error, openGL error code otherwise
 */
-int initOGL2(const int width, const int height)
+int PrjWindow::initOGL2(const int width, const int height)
 {
     int ret = 0;
 
@@ -209,7 +217,7 @@ int initOGL2(const int width, const int height)
 *    the variable positions for the parameters needed by the frag and vert shader are determined and returned.
 *    The lut and the transformation are preloaded with standard values (linear lut and unity matrix).
 */
-int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &UniformLut, GLint &UniformGamma,
+int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &UniformLut, GLint &UniformGamma,
         GLint &UniformTexture, GLint &UniformColor, GLuint &ArrayBufferName, GLuint &ElementBufferName)
 {
     int ret = 0;
@@ -217,8 +225,13 @@ int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &Uni
     int len = 0;
 
     //!> create fragment and vertex shader
+    #if (QT_VERSION < 0x050000)
     GLuint VertexShader   = glCreateShader(GL_VERTEX_SHADER);
     GLuint FragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    #else
+    GLuint VertexShader   = m_glf->glCreateShader(GL_VERTEX_SHADER);
+    GLuint FragmentShader = m_glf->glCreateShader(GL_FRAGMENT_SHADER);
+    #endif
 
     //!> load source code for fragment and vertex shader and change version number of vertex and
     //!> fragment shader code to match the set version of the opengl context, in order to avoid
@@ -301,32 +314,56 @@ int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &Uni
         fragVerPos[11] = '0';
     }
 
+#if QT_VERSION < 0x050000
     glShaderSource(VertexShader, 1, (const GLchar**)&VertFinal, NULL);
     glShaderSource(FragmentShader, 1, (const GLchar**)&FragFinal, NULL);
+#else
+    m_glf->glShaderSource(VertexShader, 1, (const GLchar**)&VertFinal, NULL);
+    m_glf->glShaderSource(FragmentShader, 1, (const GLchar**)&FragFinal, NULL);
+#endif
     free(VertFinal);
     free(FragFinal);
 
     //!> compile vertex shader
+#if QT_VERSION < 0x050000
     glCompileShader(VertexShader);
     glGetShaderiv(VertexShader, GL_COMPILE_STATUS, &ret);
+#else
+    m_glf->glCompileShader(VertexShader);
+    m_glf->glGetShaderiv(VertexShader, GL_COMPILE_STATUS, &ret);
+#endif
     if (ret != GL_TRUE)
     {
         memset(buf, 0, 1024);
+#if QT_VERSION < 0x050000
         glGetShaderInfoLog(VertexShader, 1024, &len, buf);
+#else
+        m_glf->glGetShaderInfoLog(VertexShader, 1024, &len, buf);
+#endif
         std::cerr << "error compiling vertex shader\n" << buf << "\n";
     }
 
     //!> compile fragment shader
+#if QT_VERSION < 0x050000
     glCompileShader(FragmentShader);
     glGetShaderiv(FragmentShader, GL_COMPILE_STATUS, &ret);
+#else
+    m_glf->glCompileShader(FragmentShader);
+    m_glf->glGetShaderiv(FragmentShader, GL_COMPILE_STATUS, &ret);
+#endif
     if (ret != GL_TRUE)
     {
         memset(buf, 0, 1024);
+#if QT_VERSION < 0x050000
         glGetShaderInfoLog(FragmentShader, 1024, &len, buf);
+#else
+        m_glf->glGetShaderInfoLog(FragmentShader, 1024, &len, buf);
+#endif
         std::cerr << "error compiling fragment shader\n" << buf << "\n";
     }
 
     //!> create program and attach compiled vertex and fragment shader to it
+#if QT_VERSION < 0x050000
     ProgramName = glCreateProgram();
     glAttachShader(ProgramName, VertexShader);
     glAttachShader(ProgramName, FragmentShader);
@@ -334,19 +371,40 @@ int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &Uni
     //!> link shader program
     glLinkProgram(ProgramName);
     glGetProgramiv(ProgramName, GL_LINK_STATUS, &ret);
+#else
+    ProgramName = m_glf->glCreateProgram();
+    m_glf->glAttachShader(ProgramName, VertexShader);
+    m_glf->glAttachShader(ProgramName, FragmentShader);
+
+    //!> link shader program
+    m_glf->glLinkProgram(ProgramName);
+    m_glf->glGetProgramiv(ProgramName, GL_LINK_STATUS, &ret);
+#endif
     if (ret != GL_TRUE)
     {
         memset(buf, 0, 1024);
+#if QT_VERSION < 0x050000
         glGetProgramInfoLog(ProgramName, 1024, &len, buf);
+#else
+        m_glf->glGetProgramInfoLog(ProgramName, 1024, &len, buf);
+#endif
         std::cerr << "error linking shader program\n" << buf << "\n";
     }
 
     //!> retrieve location of uniform variables MVP and Diffuse from shader program
+#if QT_VERSION < 0x050000
     UniformMVP = glGetUniformLocation(ProgramName, "MVP");
     UniformLut = glGetUniformLocation(ProgramName, "lutarr");
     UniformGamma = glGetUniformLocation(ProgramName, "gamma");
     UniformTexture = glGetUniformLocation(ProgramName, "texture");
     UniformColor = glGetUniformLocation(ProgramName, "color");
+#else
+    UniformMVP = m_glf->glGetUniformLocation(ProgramName, "MVP");
+    UniformLut = m_glf->glGetUniformLocation(ProgramName, "lutarr");
+    UniformGamma = m_glf->glGetUniformLocation(ProgramName, "gamma");
+    UniformTexture = m_glf->glGetUniformLocation(ProgramName, "texture");
+    UniformColor = m_glf->glGetUniformLocation(ProgramName, "color");
+#endif
 
     // Compute the MVP (Model View Projection matrix)
     float MVP[4][4] = {
@@ -357,6 +415,7 @@ int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &Uni
     };
 
     //!> Bind the program for use
+#if QT_VERSION < 0x050000
     glUseProgram(ProgramName);
 
     //!> Set the value of coordinate transform (MVP) uniform.
@@ -366,6 +425,17 @@ int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &Uni
     glUniformMatrix4fv(UniformColor, 1, GL_FALSE, &MVP[0][0]);
 
     glUniform1i(UniformGamma, 0);
+#else
+    m_glf->glUseProgram(ProgramName);
+
+    //!> Set the value of coordinate transform (MVP) uniform.
+    m_glf->glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
+
+    //!> Set the value of color calculation (initially white)
+    m_glf->glUniformMatrix4fv(UniformColor, 1, GL_FALSE, &MVP[0][0]);
+
+    m_glf->glUniform1i(UniformGamma, 0);
+#endif
 
     GLint ElementSize = ElementCount * sizeof(GLint);
     GLint ElementData[ElementCount] = {0, 1, 2, 3};
@@ -387,6 +457,7 @@ int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &Uni
     };
 
     //!> create vertex buffer on device
+#if QT_VERSION < 0x050000
     glGenBuffers(1, &ArrayBufferName);
     glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
 
@@ -403,6 +474,24 @@ int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &Uni
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
     //!> unbind buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+#else
+    m_glf->glGenBuffers(1, &ArrayBufferName);
+    m_glf->glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+
+    //!> copy vertex coordinates
+    m_glf->glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
+    //!> unbind buffer
+    m_glf->glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    //!> generate use list on device
+    m_glf->glGenBuffers(1, &ElementBufferName);
+    m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+
+    //!> copy use list to device
+    m_glf->glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
+    //!> unbind buffer
+    m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+#endif
 
     //!> setting up initial gamma lut with linear response for rgb
     GLfloat templut[256][3];
@@ -413,8 +502,14 @@ int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &Uni
         templut[col][2] = col / 255.0;
     }
 
+#if QT_VERSION < 0x050000
     glUniform3fv(UniformLut, 256, &templut[0][0]);
     glUseProgram(0);
+#else
+    m_glf->glUniform3fv(UniformLut, 256, &templut[0][0]);
+    m_glf->glUseProgram(0);
+#endif
+
     ret = glGetError();
 
     return ret;
@@ -440,6 +535,7 @@ PrjWindow::PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &f
     m_cosImgsHoriz(0),
     m_grayImgsVert(0),
     m_grayImgsHoriz(0),
+    m_glf(NULL),
     ProgramName(0),
     ArrayBufferName(0),
     ElementBufferName(0),
@@ -464,20 +560,79 @@ PrjWindow::PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &f
     {
         m_lut[i] = i;
     }
+}
 
-    makeCurrent();
+//----------------------------------------------------------------------------------------------------------------------------------
+PrjWindow::~PrjWindow()
+{
+    hide();
+    m_isInit |= ~paramsValid;
+    Sleep(100);
+
+    if (m_isInit & initFail)
+        return;
+
+    if (m_glVer >= QGLFormat::OpenGL_Version_2_0 /*32*/)
+    {
+#if QT_VERSION < 0x050000
+        glDeleteBuffers(1, &ElementBufferName);
+        glDeleteBuffers(1, &ArrayBufferName);
+        glDeleteProgram(ProgramName);
+#else
+        m_glf->glDeleteBuffers(1, &ElementBufferName);
+        m_glf->glDeleteBuffers(1, &ArrayBufferName);
+        m_glf->glDeleteProgram(ProgramName);
+#endif
+    }
+    else
+    {
+//        glActiveTexture(GL_TEXTURE1);
+//        glBindTexture(GL_TEXTURE_1D, m_lutTex);
+//        glDeleteTextures(1, &m_lutTex);
+//        glActiveTexture(GL_TEXTURE0);
+    }
+
+    if (m_glf)
+    {
+        delete m_glf;
+    }
+
+    m_lut.clear();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*
+void PrjWindow::paintEvent(QPaintEvent *pevent)
+{
+    paintGL();
+}
+*/
+//----------------------------------------------------------------------------------------------------------------------------------
+void PrjWindow::initializeGL()
+{
+    int ret = 0;
 
     // set basic parameters
     if (m_glVer < QGLFormat::OpenGL_Version_2_0 /*32*/)
     {
-        ret = initOGL2(width(), height());
+        initOGL2(width(), height());
     }
     else
     {
+#if QT_VERSION < 0x050000
         if ((ret = glewInit()) != GLEW_OK)
         {
             m_isInit |= initFail;
         }
+#else
+        m_glf = new QGLFunctions(context());
+        if (!m_glf)
+        {
+            m_isInit |= initFail;
+            ret = GL_INVALID_OPERATION;
+        }
+        m_glf->initializeGLFunctions(context());
+#endif
         if (ret == 0)
         {
             ret = initOGL3(m_glVer, ProgramName, UniformMVP, UniformLut, UniformGamma, UniformTexture, UniformColor, ArrayBufferName, ElementBufferName);
@@ -495,39 +650,10 @@ PrjWindow::PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &f
     {
         std::cerr << "error setting up projection window: " << ret << "\n";
     }
-
-    doneCurrent();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PrjWindow::~PrjWindow()
-{
-    hide();
-    m_isInit |= ~paramsValid;
-    Sleep(100);
-
-    if (m_isInit & initFail)
-        return;
-
-    if (m_glVer >= QGLFormat::OpenGL_Version_2_0 /*32*/)
-    {
-        glDeleteBuffers(1, &ElementBufferName);
-        glDeleteBuffers(1, &ArrayBufferName);
-        glDeleteProgram(ProgramName);
-    }
-    else
-    {
-//        glActiveTexture(GL_TEXTURE1);
-//        glBindTexture(GL_TEXTURE_1D, m_lutTex);
-//        glDeleteTextures(1, &m_lutTex);
-//        glActiveTexture(GL_TEXTURE0);
-    }
-
-    m_lut.clear();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void PrjWindow::paintEvent(QPaintEvent * /*pevent*/)
+void PrjWindow::resizeGL(int width, int height)
 {
     paintGL();
 }
@@ -540,7 +666,7 @@ void PrjWindow::paintGL()
     if ((drawScene == 1) || (m_isInit != idleState) || (m_isInit & initFail))
         return;
     drawScene = 1;
-    makeCurrent();
+//    makeCurrent();
 
     // Set the display viewport
 //    glViewport(0, 0, width, height);
@@ -597,20 +723,29 @@ void PrjWindow::paintGL()
 //        glClear(GL_COLOR_BUFFER_BIT);    //clear screen buffer
 
         //!> Bind shader program
+#if QT_VERSION < 0x050000
         glUseProgram(ProgramName);
-
         glActiveTexture(GL_TEXTURE0);
-
+#else
+        m_glf->glUseProgram(ProgramName);
+//        m_glf->glActiveTexture(GL_TEXTURE0);
+#endif
         glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
+#if QT_VERSION < 0x050000
         glUniform1i(UniformTexture, 0);
+#else
+        m_glf->glUniform1i(UniformTexture, 0);
+#endif
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         //!> bind vertex buffer
+#if QT_VERSION < 0x050000
         glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
         glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
+
         //!> unbind buffer
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -619,17 +754,39 @@ void PrjWindow::paintGL()
 
         //!> enable the previously set up attribute
         glEnableVertexAttribArray(POSITION);
+#else
+        m_glf->glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+        m_glf->glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
 
+        //!> unbind buffer
+        m_glf->glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        //!> bind use list
+        m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+
+        //!> enable the previously set up attribute
+        m_glf->glEnableVertexAttribArray(POSITION);
+#endif
         //!> draw buffers
         glDrawElements(GL_QUADS, ElementCount, GL_UNSIGNED_INT, 0);
 
+#if QT_VERSION < 0x050000
         //!> disable the previously set up attributes
         glDisableVertexAttribArray(POSITION);
+#else
+        //!> disable the previously set up attributes
+        m_glf->glDisableVertexAttribArray(POSITION);
+#endif
 
         glBindTexture(GL_TEXTURE_2D, 0);
 
+#if QT_VERSION < 0x050000
         //!> Unbind shader program
         glUseProgram(0);
+#else
+        //!> Unbind shader program
+        m_glf->glUseProgram(0);
+#endif
     }
 
 //draw:
@@ -643,7 +800,7 @@ void PrjWindow::paintGL()
     glFlush();
     glFinish();
 
-    doneCurrent();
+//    doneCurrent();
     drawScene = 0;
 }
 
@@ -1588,10 +1745,18 @@ ito::RetVal PrjWindow::setLUT(QVector<unsigned char> *lut)
     m_isInit &= ~paramsValid;
 
     makeCurrent();
+
+#if QT_VERSION < 0x050000
     //!> Bind the program for use
     glUseProgram(ProgramName);
     glUniform3fv(UniformLut, 256, &templut[0][0]);
     glUseProgram(0);
+#else
+    //!> Bind the program for use
+    m_glf->glUseProgram(ProgramName);
+    m_glf->glUniform3fv(UniformLut, 256, &templut[0][0]);
+    m_glf->glUseProgram(0);
+#endif
     doneCurrent();
     m_isInit |= oldval;
 
@@ -1690,13 +1855,23 @@ ito::RetVal PrjWindow::setColor(const int col)
 
         int oldval = m_isInit;
         m_isInit &= ~paramsValid;
+
         makeCurrent();
+#if QT_VERSION < 0x050000
         //!> Bind the program for use
         glUseProgram(ProgramName);
         //!> Set the value of color calculation (initially white)
         glUniformMatrix4fv(UniformColor, 1, GL_FALSE, &color[0][0]);
         //!> Bind the program for use
         glUseProgram(0);
+#else
+        //!> Bind the program for use
+        m_glf->glUseProgram(ProgramName);
+        //!> Set the value of color calculation (initially white)
+        m_glf->glUniformMatrix4fv(UniformColor, 1, GL_FALSE, &color[0][0]);
+        //!> Bind the program for use
+        m_glf->glUseProgram(0);
+#endif
         doneCurrent();
         m_isInit |= oldval;
 
@@ -1794,6 +1969,7 @@ ito::RetVal PrjWindow::setGamma(const int gamma)
         int oldval = m_isInit;
         m_isInit &= ~paramsValid;
         makeCurrent();
+#if QT_VERSION < 0x050000
         //!> Bind the program for use
         glUseProgram(ProgramName);
         glUniform3fv(UniformLut, 256, &templut[0][0]);
@@ -1802,6 +1978,16 @@ ito::RetVal PrjWindow::setGamma(const int gamma)
         //int ret = glGetError();
         //!> Bind the program for use
         glUseProgram(0);
+#else
+        //!> Bind the program for use
+        m_glf->glUseProgram(ProgramName);
+        m_glf->glUniform3fv(UniformLut, 256, &templut[0][0]);
+        //!> Set the value of color calculation (initially white)
+        m_glf->glUniform1i(UniformGamma, m_gamma);
+        //int ret = glGetError();
+        //!> Bind the program for use
+        m_glf->glUseProgram(0);
+#endif
         doneCurrent();
         m_isInit |= oldval;
     }
@@ -1998,12 +2184,13 @@ int PrjWindow::getOrientationClearedCurImg(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*
 void PrjWindow::resizeEvent(QResizeEvent *pevent)
 {
     QSize newSize = pevent->size();
     resize(newSize.width(), newSize.height());
 }
-
+*/
 //----------------------------------------------------------------------------------------------------------------------------------
 int PrjWindow::getNumImages()
 {
@@ -2135,7 +2322,6 @@ ito::RetVal PrjWindow::configProjectionFull(int xpos, int sizex, int ypos, int s
     return retval;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
@@ -2167,3 +2353,5 @@ ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaph
 
     return retval;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------

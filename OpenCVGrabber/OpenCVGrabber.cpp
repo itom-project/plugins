@@ -278,10 +278,10 @@ Some supported cameras are only available if OpenCV is compiled with their suppo
     
     m_callInitInNewThread = false; //camera must be opened in main-thread
 
-    ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 16, 0, tr("consecutive number of the connected camera (starting with 0, default)").toAscii().data());
+    ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 16, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toAscii().data());
+    paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toLatin1().data());
     ito::StringMeta meta(ito::StringMeta::String);
     meta.addItem("auto");
     meta.addItem("color");
@@ -292,7 +292,7 @@ Some supported cameras are only available if OpenCV is compiled with their suppo
     paramVal.setMeta(&meta, false);
     m_initParamsOpt.append(paramVal);
 
-    //paramVal = ito::Param("Init-Dialog", ito::ParamBase::Int, 0, 1, 0, tr("If true, a camera selection dialog is opened during startup").toAscii().data());
+    //paramVal = ito::Param("Init-Dialog", ito::ParamBase::Int, 0, 1, 0, tr("If true, a camera selection dialog is opened during startup").toLatin1().data());
     //m_initParamsOpt.append(paramVal);
 
    return;
@@ -306,7 +306,9 @@ OpenCVGrabberInterface::~OpenCVGrabberInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(OpenCVGrabberinterface, OpenCVGrabberInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(OpenCVGrabberinterface, OpenCVGrabberInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -338,42 +340,42 @@ OpenCVGrabber::OpenCVGrabber() : AddInGrabber(), m_isgrabbing(false), m_pCam(NUL
     ito::Param paramVal("name", ito::ParamBase::String, "OpenCVGrabber", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toAscii().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toAscii().data());
+    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toAscii().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toAscii().data());
+   paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toAscii().data());
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toAscii().data());
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 24, 8, tr("bpp").toAscii().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 24, 8, tr("bpp").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.000010, 10.0, 0.01, tr("Integrationtime of CCD [s], does not exist for all cameras").toAscii().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.000010, 10.0, 0.01, tr("Integrationtime of CCD [s], does not exist for all cameras").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("brightness", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("brightness [0..1], does not exist for all cameras").toAscii().data());
+    paramVal = ito::Param("brightness", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("brightness [0..1], does not exist for all cameras").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("contrast", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("contrast [0..1], does not exist for all cameras").toAscii().data());
+    paramVal = ito::Param("contrast", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("contrast [0..1], does not exist for all cameras").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("saturation", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("saturation [0..1], does not exist for all cameras").toAscii().data());
+    paramVal = ito::Param("saturation", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("saturation [0..1], does not exist for all cameras").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("hue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("hue [0..1], does not exist for all cameras").toAscii().data());
+    paramVal = ito::Param("hue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("hue [0..1], does not exist for all cameras").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("Gain [0..1], does not exist for all cameras").toAscii().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("Gain [0..1], does not exist for all cameras").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
    
-    /*paramVal = ito::Param("channel", ito::ParamBase::Int, 0, 3, 0, tr("selected color channel (all available (0, default), R (1), G (2), B (3)").toAscii().data());
+    /*paramVal = ito::Param("channel", ito::ParamBase::Int, 0, 3, 0, tr("selected color channel (all available (0, default), R (1), G (2), B (3)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("colorConversion", ito::ParamBase::Int, 0, 1, 1, tr("no conversion (0), RGB->Grayscale (1, default). If the camera image only has one channel or channel>0, this parameter is ignored").toAscii().data());
+    paramVal = ito::Param("colorConversion", ito::ParamBase::Int, 0, 1, 1, tr("no conversion (0), RGB->Grayscale (1, default). If the camera image only has one channel or channel>0, this parameter is ignored").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);*/
 
-    paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toAscii().data());
+    paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toLatin1().data());
     ito::StringMeta meta(ito::StringMeta::String);
     meta.addItem("auto");
     meta.addItem("color");
@@ -429,7 +431,7 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
 
         if(m_imgBpp < 8 || m_imgBpp > 32) 
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("unknown bpp").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("unknown bpp").toLatin1().data());
         }
 
         m_camStatusChecked = true;
@@ -592,7 +594,7 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     /*if((*paramsOpt)[1].getVal<int>() == 1)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Dialog for manually selecting any camera not yet implemented.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Dialog for manually selecting any camera not yet implemented.").toLatin1().data());
     }
     else
     {*/
@@ -601,7 +603,7 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
         if(!m_pCam->isOpened())
         {
-            retValue += ito::RetVal::format(ito::retError,0,tr("Camera (%i) could not be opened").toAscii().data(), m_CCD_ID);
+            retValue += ito::RetVal::format(ito::retError,0,tr("Camera (%i) could not be opened").toLatin1().data(), m_CCD_ID);
         }
     //}
 
@@ -767,7 +769,7 @@ ito::RetVal OpenCVGrabber::stopDevice(ItomSharedSemaphore *waitCond)
 
     if(grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("the grabber already had zero users.").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("the grabber already had zero users.").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -788,11 +790,11 @@ ito::RetVal OpenCVGrabber::acquire(const int trigger, ItomSharedSemaphore *waitC
 
     if (grabberStartedCount() <= 0)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toLatin1().data());
     }
     else if(m_camStatusChecked == false)
     {
-        retValue += ito::RetVal(ito::retError,0,tr("Cannot acquire image since camera status is unverified").toAscii().data());
+        retValue += ito::RetVal(ito::retError,0,tr("Cannot acquire image since camera status is unverified").toLatin1().data());
     }
     else
     {
@@ -845,7 +847,7 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
 
     if (m_isgrabbing == false)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
     }
     else
     {
@@ -859,11 +861,11 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
         
         if(!RetCode)
         {
-            retValue+=ito::RetVal(ito::retError, 0, tr("Error: no data grabbed").toAscii().data());
+            retValue+=ito::RetVal(ito::retError, 0, tr("Error: no data grabbed").toLatin1().data());
         }
         if(m_pDataMatBuffer.cols == 0 || m_pDataMatBuffer.rows == 0)
         {
-            retValue+=ito::RetVal(ito::retError,0,tr("Error: grabbed image is empty").toAscii().data());
+            retValue+=ito::RetVal(ito::retError,0,tr("Error: grabbed image is empty").toLatin1().data());
         }
 
         if(!retValue.containsError())
@@ -890,15 +892,15 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
 
             if(m_imgBpp != 8 && m_imgBpp != 16)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Error: bpp other than 8 or 16 not allowed.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Error: bpp other than 8 or 16 not allowed.").toLatin1().data());
             }
             else if(m_imgChannels != 1 && m_imgChannels != 3)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Error: channels sizes other than 1 or 3 not allowed.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Error: channels sizes other than 1 or 3 not allowed.").toLatin1().data());
             }
             else if((desiredBpp != 8 && desiredBpp != 16))
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Error: desired bpp must be 8 or 16 bit.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Error: desired bpp must be 8 or 16 bit.").toLatin1().data());
             }
             else
             {   
@@ -946,7 +948,7 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
                         }
                         else
                         {
-                            retValue += ito::RetVal(ito::retError, 0, tr("Error while converting data format. Unsupported format.").toAscii().data());
+                            retValue += ito::RetVal(ito::retError, 0, tr("Error while converting data format. Unsupported format.").toLatin1().data());
                         }
                     }
                 
@@ -1002,7 +1004,7 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retError,0,tr("unknown color, conversion... combination in retrieveImage").toAscii().data());
+                        retValue += ito::RetVal(ito::retError,0,tr("unknown color, conversion... combination in retrieveImage").toLatin1().data());
                     }
                 }
             }
@@ -1020,7 +1022,7 @@ ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
 {
     if(!m_camStatusChecked)
     {
-        return ito::RetVal(ito::retError,0,tr("current camera status is undefined").toAscii().data());
+        return ito::RetVal(ito::retError,0,tr("current camera status is undefined").toLatin1().data());
     }
 
     int futureHeight = m_params["sizey"].getVal<int>();
@@ -1065,7 +1067,7 @@ ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, tr("A camera with a bitdepth > 8 cannot be operated in color mode.").toAscii().data());            
+        return ito::RetVal(ito::retError, 0, tr("A camera with a bitdepth > 8 cannot be operated in color mode.").toLatin1().data());            
     }
 
     if (futureType == ito::tRGBA32 && (m_alphaChannel.cols != futureWidth || m_alphaChannel.rows != futureHeight))
@@ -1097,11 +1099,11 @@ ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
         }
         else if(externalDataObject->calcNumMats () > 1)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toAscii().data());            
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());            
         }
         else if(externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
         }
 
         if (futureType == ito::tRGBA32)
@@ -1164,7 +1166,7 @@ ito::RetVal OpenCVGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if(!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
 
     if(!retValue.containsError())

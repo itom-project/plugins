@@ -116,42 +116,42 @@ Vistek::Vistek(QObject *parent) :
     m_params.insert(paramVal.getName(), paramVal);
 
     // Camera specific information
-    paramVal = ito::Param("cameraModel", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Camera Model ID").toAscii().data());
+    paramVal = ito::Param("cameraModel", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Camera Model ID").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("cameraManufacturer", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Camera manufacturer").toAscii().data());
+    paramVal = ito::Param("cameraManufacturer", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Camera manufacturer").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("cameraVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Camera firmware version").toAscii().data());
+    paramVal = ito::Param("cameraVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Camera firmware version").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("cameraSerialNo", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the camera (see camera housing)").toAscii().data());
+    paramVal = ito::Param("cameraSerialNo", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("Serial number of the camera (see camera housing)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("cameraIP", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("IP adress of the camera").toAscii().data());
+    paramVal = ito::Param("cameraIP", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("IP adress of the camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("camnum", ito::ParamBase::Int, 0, 63, 0, tr("Camera Number").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("exposure", ito::ParamBase::Double, 0.00001, 2.0, 0.0, tr("Exposure time in [s]").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 18.0, 0.0, tr("Gain [0..18 dB]").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Offset [0.0..1.0]").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("binning", ito::ParamBase::Int, 0, 5, 0, tr("Binning mode (OFF = 0 [default], HORIZONTAL = 1, VERTICAL = 2,  2x2 = 3, 3x3 = 4, 4x4 = 5").toAscii().data());
+    paramVal = ito::Param("camnum", ito::ParamBase::Int, 0, 63, 0, tr("Camera Number").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 1024, tr("Width of current camera frame").toAscii().data());
+    paramVal = ito::Param("exposure", ito::ParamBase::Double, 0.00001, 2.0, 0.0, tr("Exposure time in [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 1024, tr("Height of current camera frame").toAscii().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 18.0, 0.0, tr("Gain [0..18 dB]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 64, 8, tr("bit-depth for camera buffer").toAscii().data());
+    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Offset [0.0..1.0]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("timestamp", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 10000000.0, 0.0, tr("Time in ms since last image (end of exposure)").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("streamingPacketSize", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 16000, 1500, tr("Used streaming packet size (in bytes, more than 1500 usually only possible if you enable jumbo-frames at your network adapter)").toAscii().data());
+    paramVal = ito::Param("binning", ito::ParamBase::Int, 0, 5, 0, tr("Binning mode (OFF = 0 [default], HORIZONTAL = 1, VERTICAL = 2,  2x2 = 3, 3x3 = 4, 4x4 = 5").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("logLevel", ito::ParamBase::Int, 0, 7, 0, tr("Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera communication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback").toAscii().data());
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 1024, tr("Width of current camera frame").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 1024, tr("Height of current camera frame").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 64, 8, tr("bit-depth for camera buffer").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("timestamp", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 10000000.0, 0.0, tr("Time in ms since last image (end of exposure)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("streamingPacketSize", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 16000, 1500, tr("Used streaming packet size (in bytes, more than 1500 usually only possible if you enable jumbo-frames at your network adapter)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("logLevel", ito::ParamBase::Int, 0, 7, 0, tr("Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera communication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
@@ -454,18 +454,18 @@ ito::RetVal Vistek::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
 
             // Get camera info
             TempCam = m_pVistekContainer->getCamInfo(camNum);
-            m_params["cameraModel"].setVal<char*>(TempCam.camModel.toAscii().data());
-            m_params["cameraSerialNo"].setVal<char*>(TempCam.camSerialNo.toAscii().data());
-            m_params["cameraVersion"].setVal<char*>(TempCam.camVersion.toAscii().data());
-            m_params["cameraIP"].setVal<char*>(TempCam.camIP.toAscii().data());
-            m_params["cameraManufacturer"].setVal<char*>(TempCam.camManufacturer.toAscii().data());
+            m_params["cameraModel"].setVal<char*>(TempCam.camModel.toLatin1().data());
+            m_params["cameraSerialNo"].setVal<char*>(TempCam.camSerialNo.toLatin1().data());
+            m_params["cameraVersion"].setVal<char*>(TempCam.camVersion.toLatin1().data());
+            m_params["cameraIP"].setVal<char*>(TempCam.camIP.toLatin1().data());
+            m_params["cameraManufacturer"].setVal<char*>(TempCam.camManufacturer.toLatin1().data());
             m_identifier = TempCam.camSerialNo;
 
             ReturnValue += initCamera(camNum);
         }
         else
         {
-            ReturnValue += ito::RetVal(ito::retError,0,tr("No free camera found").toAscii().data());
+            ReturnValue += ito::RetVal(ito::retError,0,tr("No free camera found").toLatin1().data());
         }
         //*********************************************
     }
@@ -655,7 +655,7 @@ ito::RetVal Vistek::stopDevice(ItomSharedSemaphore *waitCond)
     }
     else if(grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retError, 1001, tr("StopDevice of Vistek can not be executed, since camera has not been started.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 1001, tr("StopDevice of Vistek can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -691,7 +691,7 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
     if(grabberStartedCount() <= 0)
     {
-        retValue += ito::RetVal(ito::retError, 1002, tr("acquisition not possible, since Vistek camera has not been started.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 1002, tr("acquisition not possible, since Vistek camera has not been started.").toLatin1().data());
     }
     else
     {
@@ -745,11 +745,11 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
 
     if(grabberStartedCount() <= 0)
     {
-        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of Vistek can not be executed, since camera has not been started.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of Vistek can not be executed, since camera has not been started.").toLatin1().data());
     }
     if(m_acquiredImage.status == asNoImageAcquired)
     {
-        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of Vistek can not be executed, since no image has been acquired.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of Vistek can not be executed, since no image has been acquired.").toLatin1().data());
     }
     else
     {   
@@ -780,7 +780,7 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 1002, tr("copy buffer during getVal of Vistek can not be executed, since no DataType unknown.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 1002, tr("copy buffer during getVal of Vistek can not be executed, since no DataType unknown.").toLatin1().data());
             }
 
             m_acquiredImage.status = asNoImageAcquired; //release frame
@@ -803,7 +803,7 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
         }
         else
         {
-            retValue += ito::RetVal::format(ito::retError,0,"error while retrieving image: %i", (int)(m_acquiredImage.status)); //camera data could not be received", m_acquiredImage.status); //ito::RetVal(ito::retError, 1002, tr("getVal of Vistek can not be executed, since no Data has been acquired.").toAscii().data());
+            retValue += ito::RetVal::format(ito::retError,0,"error while retrieving image: %i", (int)(m_acquiredImage.status)); //camera data could not be received", m_acquiredImage.status); //ito::RetVal(ito::retError, 1002, tr("getVal of Vistek can not be executed, since no Data has been acquired.").toLatin1().data());
         }
     }
 
@@ -837,7 +837,7 @@ ito::RetVal Vistek::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
         if(dObj == NULL)
         {
-            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toLatin1().data());
         }
         else
         {
@@ -878,7 +878,7 @@ ito::RetVal Vistek::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     
     if(!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
     else
     {
@@ -934,7 +934,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
     m_cam = CameraContainer_getCamera(m_pVistekContainer->getCameraContainerHandle(), CameraNumber);
     if( SVGigE_NO_CAMERA == m_cam )
     {
-        return ito::RetVal(ito::retError, 1004, tr("Requested camera could not be selected.").toAscii().data());
+        return ito::RetVal(ito::retError, 1004, tr("Requested camera could not be selected.").toLatin1().data());
     }
     std::cout << "done!\n" << std::endl;
 

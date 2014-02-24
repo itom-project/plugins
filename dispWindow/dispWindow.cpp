@@ -246,6 +246,8 @@ DispWindow::DispWindow()
 
     fmt.setDoubleBuffer(0);
     fmt.setOverlay(0);
+    fmt.setDirectRendering(1);
+    fmt.setStereo(0);
     if (fmt.swapInterval() != -1)
     {
         fmt.setSwapInterval(0);

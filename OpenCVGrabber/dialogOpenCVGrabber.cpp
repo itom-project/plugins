@@ -125,7 +125,7 @@ int DialogOpenCVGrabber::sendVals()
 
     if (colorModeChanged)
     {
-        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("colorMode", ito::ParamBase::String, ui.comboColorMode->currentText().toAscii().data())));
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("colorMode", ito::ParamBase::String, ui.comboColorMode->currentText().toLatin1().data())));
     }
 
 

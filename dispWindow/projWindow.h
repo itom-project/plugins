@@ -23,10 +23,10 @@
 #ifndef PROJWINDOW_H
 #define PROJWINDOW_H
 
+#include <QtOpenGL/qgl.h>
+#include <qglfunctions.h>
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
-
-#include <QtOpenGL/qgl.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class PrjWindow : public QGLWidget
@@ -86,9 +86,12 @@ class PrjWindow : public QGLWidget
         unsigned char **m_grayImgsVert;
         unsigned char **m_grayImgsHoriz;
         QVector<unsigned char> m_lut;
+        QGLFunctions *m_glf;
         void paintGL();
-        void paintEvent(QPaintEvent *pevent);
-        void resizeEvent(QResizeEvent *pevent);
+        void initializeGL();
+        void resizeGL(int width, int height);
+//        void paintEvent(QPaintEvent *pevent);
+//        void resizeEvent(QResizeEvent *pevent);
 
         GLuint ProgramName;
         GLuint ArrayBufferName;
@@ -103,6 +106,9 @@ class PrjWindow : public QGLWidget
         ito::RetVal cosineInit();
         ito::RetVal graycodeInit();
         ito::RetVal setupProjection();
+        int initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP, GLint &UniformLut, GLint &UniformGamma,
+            GLint &UniformTexture, GLint &UniformColor, GLuint &ArrayBufferName, GLuint &ElementBufferName);
+        int initOGL2(const int width, const int height);
 
         //ito::RetVal setPeriod(const int period);
         //ito::RetVal setPhaseShift(const int phaseshift);

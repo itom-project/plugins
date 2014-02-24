@@ -158,8 +158,11 @@ class PCOPixelFly : public ito::AddInGrabber
 class PCOPixelFlyInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-        Q_INTERFACES(ito::AddInInterfaceBase)
-        PLUGIN_ITOM_API
+#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
+#endif
+    Q_INTERFACES(ito::AddInInterfaceBase)
+    PLUGIN_ITOM_API
 
     protected:
 

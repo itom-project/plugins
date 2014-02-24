@@ -21,8 +21,8 @@
 *********************************************************************** */
 
 #include "dialogVistek.h"
-
 #include "Vistek.h"
+#include <qmessagebox.h>
 
 DialogVistek::DialogVistek(Vistek *grabber, const VistekFeatures *features)
     : m_Grabber(grabber), 

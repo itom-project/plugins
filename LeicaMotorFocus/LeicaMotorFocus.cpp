@@ -146,7 +146,7 @@ is closed again.";
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");     
 
-    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toAscii().data());
+    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data());
     paramVal.setMeta( new ito::HWMeta("SerialIO"), true );
     m_initParamsMand.append(paramVal);
 
@@ -159,7 +159,9 @@ LeicaMotorFocusInterface::~LeicaMotorFocusInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(LeicaMotorFocusInterface, LeicaMotorFocusInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(LeicaMotorFocusInterface, LeicaMotorFocusInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -304,7 +306,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
     {
         if (answer[0] == 17)
         {
-            retval += ito::RetVal(ito::retWarning, 0, tr("Unexspected #(17) at first sign in buffer. Sign deleted").toAscii().data());
+            retval += ito::RetVal(ito::retWarning, 0, tr("Unexspected #(17) at first sign in buffer. Sign deleted").toLatin1().data());
             copy = _strdup(&answer[1]);
         }
         else
@@ -315,7 +317,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("No answer read").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("No answer read").toLatin1().data());
         return retval;
     }
     /* check if response fits query */
@@ -334,7 +336,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
     }
     if (id != got_id || cmd != got_cmd) 
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Answer \"%1\" does not match query").arg(answer).toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Answer \"%1\" does not match query").arg(answer).toLatin1().data());
         free(copy);
         return retval;
     }
@@ -343,7 +345,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
     free(copy);
     if (!ptr) 
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Malformed answer '%1'").arg(answer).toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Malformed answer '%1'").arg(answer).toLatin1().data());
         return retval;
     }
 
@@ -390,12 +392,12 @@ const ito::RetVal LeicaMotorFocus::LMFQueryL(int id, int cmd, long *plval)
 //        retval += LMFQueryL(70, GET_STATUS_BYTE, &lval);
 //        if (retval == ito::retError)
 //        {
-//            retval += ito::RetVal(ito::retError, 0, tr("Error during reading serial port").toAscii().data());
+//            retval += ito::RetVal(ito::retError, 0, tr("Error during reading serial port").toLatin1().data());
 //            return retval;
 //        }
 //        if ( (lval & (1<<1)) || (lval & (1<<2)) ) 
 //        {
-//            retval += ito::RetVal(ito::retError, 0, tr("Hardware error during status check").toAscii().data());
+//            retval += ito::RetVal(ito::retError, 0, tr("Hardware error during status check").toLatin1().data());
 //            return retval;
 //        }
 //        /* the physically upper limit is 'LOWER LIMIT' */
@@ -408,7 +410,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryL(int id, int cmd, long *plval)
 //    }
 //
 //    if (chkcycles == cycle);
-//        retval += ito::RetVal(ito::retError, 0, tr("Dropped to time-out").toAscii().data());
+//        retval += ito::RetVal(ito::retError, 0, tr("Dropped to time-out").toLatin1().data());
 //
 //    return retval;
 //}
@@ -456,7 +458,7 @@ ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int>
             if(status & STATUS_UPPER_REF_SWITCH)
             {
                 qDebug() << "LeicaMotorFocus Status: " << status << " UPPER_REF:" << STATUS_UPPER_REF_SWITCH;
-                retVal += ito::RetVal(ito::retError, STATUS_UPPER_REF_SWITCH, tr("upper reference switch reached").toAscii().data());
+                retVal += ito::RetVal(ito::retError, STATUS_UPPER_REF_SWITCH, tr("upper reference switch reached").toLatin1().data());
                 done = true;
             }
         }
@@ -470,7 +472,7 @@ ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int>
             if(status & STATUS_LOWER_REF_SWITCH)
             {
                 qDebug() << "LeicaMotorFocus Status: " << status << " LOWER_REF:" << STATUS_LOWER_REF_SWITCH;
-                retVal += ito::RetVal(ito::retError, STATUS_LOWER_REF_SWITCH, tr("lower reference switch reached").toAscii().data());
+                retVal += ito::RetVal(ito::retError, STATUS_LOWER_REF_SWITCH, tr("lower reference switch reached").toLatin1().data());
                 done = true;
             }
         }
@@ -494,7 +496,7 @@ ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int>
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
             sendStatusUpdate(true);
 
-            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toAscii().data());
+            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
             done = true;
             return retVal;
         }
@@ -520,7 +522,7 @@ ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int>
     if (timeout)
     {
         replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout);
-        retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toLatin1().data());
     }
 
     return retVal;
@@ -551,7 +553,7 @@ const ito::RetVal LeicaMotorFocus::LMFStatus(int &status)
         else if (lval & STATUS_HARDWARE_ERROR1 || lval & STATUS_HARDWARE_ERROR2)
         {
             setStatus(m_currentStatus[0], ito::actuatorUnknown, ito::actStatusMask);
-            retval += ito::RetVal(ito::retError, 0, tr("Hardware error during status check").toAscii().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Hardware error during status check").toLatin1().data());
         }
         else if (status == (STATUS_MOVING | STATUS_ACTIVE))
         {
@@ -576,15 +578,15 @@ LeicaMotorFocus::LeicaMotorFocus() : AddInActuator(), m_async(0), m_direction(1)
     
     m_scale = 1e3; // Leica is Programmes in µm, this evil Programm sent in mm
 
-    paramVal = ito::Param("speed", ito::ParamBase::Double, FULLSPEED/1000, FULLSPEED, FULLSPEED, tr("Speed in m/s (Default=Maximum: 23,33 mm/s)").toAscii().data());
+    paramVal = ito::Param("speed", ito::ParamBase::Double, FULLSPEED/1000, FULLSPEED, FULLSPEED, tr("Speed in m/s (Default=Maximum: 23,33 mm/s)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ratio", ito::ParamBase::Int, 0, 32, 8, tr("Sensitivity of Handwheel. From 1 (fine) to 32 (coarse) (Default: 8)").toAscii().data());
+    paramVal = ito::Param("ratio", ito::ParamBase::Int, 0, 32, 8, tr("Sensitivity of Handwheel. From 1 (fine) to 32 (coarse) (Default: 8)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("inverseAxis", ito::ParamBase::Int, 0, 1, 0, tr("0: actuator moves upwards for positive relative position, 1: actuator moves downwards. (default: 0)").toAscii().data());
+    paramVal = ito::Param("inverseAxis", ito::ParamBase::Int, 0, 1, 0, tr("0: actuator moves upwards for positive relative position, 1: actuator moves downwards. (default: 0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("inverseRefSwitch", ito::ParamBase::Int, 0, 1, 0, tr("0: actuator uses upper reference switch, 1: actuator uses lower reference switch for calibration. (default: 0)").toAscii().data());
+    paramVal = ito::Param("inverseRefSwitch", ito::ParamBase::Int, 0, 1, 0, tr("0: actuator uses upper reference switch, 1: actuator uses lower reference switch for calibration. (default: 0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 1, 1, 1, tr("Number of axis @ device in ito-version is always 1").toAscii().data());
+    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 1, 1, 1, tr("Number of axis @ device in ito-version is always 1").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     m_currentStatus.fill(0,1);
@@ -626,7 +628,7 @@ ito::RetVal LeicaMotorFocus::getParam(QSharedPointer<ito::Param> val, ItomShared
 
     if (key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -637,7 +639,7 @@ ito::RetVal LeicaMotorFocus::getParam(QSharedPointer<ito::Param> val, ItomShared
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
 
@@ -669,7 +671,7 @@ ito::RetVal LeicaMotorFocus::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
 
     if (key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -679,18 +681,18 @@ ito::RetVal LeicaMotorFocus::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
 
             if (paramIt->getFlags() & ito::ParamBase::Readonly)
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
             }
             else if (val->isNumeric() && paramIt->isNumeric())
             {
                 double curval = val->getVal<double>();
                 if ( curval > paramIt->getMax())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
                 }
                 else if (curval < paramIt->getMin())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                 }
             }
             else if (paramIt->getType() == val->getType())
@@ -699,7 +701,7 @@ ito::RetVal LeicaMotorFocus::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
             }
 
             if(!retValue.containsWarningOrError())
@@ -725,7 +727,7 @@ ito::RetVal LeicaMotorFocus::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
 
@@ -777,7 +779,7 @@ ito::RetVal LeicaMotorFocus::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toAscii().data());
+        retval += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toLatin1().data());
     }
 
     if (retval!=ito::retError)
@@ -841,7 +843,7 @@ ito::RetVal LeicaMotorFocus::calib(const int /*axis*/, ItomSharedSemaphore *wait
 
     if (isMotorMoving())
     {
-        retval += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toLatin1().data());
     }
     else
     {
@@ -899,7 +901,7 @@ ito::RetVal LeicaMotorFocus::calib(const int /*axis*/, ItomSharedSemaphore *wait
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, tr("error: no reference switch reached").toAscii().data());
+                retval += ito::RetVal(ito::retError, 0, tr("error: no reference switch reached").toLatin1().data());
                 *oldPos = 0.0;
                 *endSwitchPos = 0.0;
             }
@@ -939,7 +941,7 @@ ito::RetVal LeicaMotorFocus::calib(const QVector<int> axis, ItomSharedSemaphore 
     else
     {
         ItomSharedSemaphoreLocker locker(waitCond);
-        ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Error. Number of axis must be 1.").toAscii().data());
+        ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Error. Number of axis must be 1.").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retval;
@@ -957,7 +959,7 @@ ito::RetVal LeicaMotorFocus::setOrigin(const int /*axis*/, ItomSharedSemaphore *
 
     if (isMotorMoving())
     {
-        retval += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toLatin1().data());
     }
     else
     {
@@ -984,7 +986,7 @@ ito::RetVal LeicaMotorFocus::setOrigin(const QVector<int> axis, ItomSharedSemaph
     else
     {
         ItomSharedSemaphoreLocker locker(waitCond);
-        ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Error. Number of axes must be 1.").toAscii().data());
+        ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Error. Number of axes must be 1.").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retval;
@@ -1020,7 +1022,7 @@ ito::RetVal LeicaMotorFocus::getPos(const int axis, QSharedPointer<double> pos, 
 
     if (axis != 0)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
     }
     else
     {
@@ -1056,7 +1058,7 @@ ito::RetVal LeicaMotorFocus::getPos(const QVector<int> axis, QSharedPointer<QVec
     }
     else
     {
-        retval +=ito::RetVal(ito::retError, 0, tr("Error. Too many Axis / wrong Axis").toAscii().data());
+        retval +=ito::RetVal(ito::retError, 0, tr("Error. Too many Axis / wrong Axis").toLatin1().data());
     }
     if (waitCond)
     {
@@ -1075,7 +1077,7 @@ const ito::RetVal LeicaMotorFocus::LMFSetPos(QVector<int> axis, const double dpo
 
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toLatin1().data());
     }
     else
     {
@@ -1168,7 +1170,7 @@ ito::RetVal LeicaMotorFocus::setPosAbs(const int axis, const double pos, ItomSha
     
     if (axis!=0)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retval;
@@ -1193,7 +1195,7 @@ ito::RetVal LeicaMotorFocus::setPosAbs(const QVector<int> axis, QVector<double> 
     else
     {
         ItomSharedSemaphoreLocker locker(waitCond);
-        ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Error. Number of axis must be 1.").toAscii().data());
+        ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Error. Number of axis must be 1.").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retval;
@@ -1212,7 +1214,7 @@ ito::RetVal LeicaMotorFocus::setPosRel(const int axis, const double pos, ItomSha
 
     if (axis!=0)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retval;
@@ -1237,7 +1239,7 @@ ito::RetVal LeicaMotorFocus::setPosRel(const QVector<int> axis, QVector<double> 
     else
     {
         ItomSharedSemaphoreLocker locker(waitCond);
-        ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Error. Too many Axis").toAscii().data());
+        ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Error. Too many Axis").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retval;

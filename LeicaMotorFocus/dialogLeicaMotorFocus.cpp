@@ -22,7 +22,7 @@
 
 #include "dialogLeicaMotorFocus.h"
 #include "LeicaMotorFocus.h"
-
+#include <qmessagebox.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogLeicaMotorFocus::DialogLeicaMotorFocus(QObject *pluginInstance) : m_pluginInstance(pluginInstance), m_unappliedChanges(false)
@@ -250,7 +250,7 @@ ito::RetVal DialogLeicaMotorFocus::applyParameters()
         QMetaObject::invokeMethod(m_pluginInstance, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, outVector), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         if(!locker.getSemaphore()->wait(5000))
         {
-            retVal +=  ito::RetVal(ito::retError,0,tr("timeout while applying parameters").toAscii().data());
+            retVal +=  ito::RetVal(ito::retError,0,tr("timeout while applying parameters").toLatin1().data());
         }
         else
         {
@@ -262,7 +262,7 @@ ito::RetVal DialogLeicaMotorFocus::applyParameters()
     }
     else
     {
-        retVal += ito::RetVal(ito::retError,0,tr("no plugin available").toAscii().data());
+        retVal += ito::RetVal(ito::retError,0,tr("no plugin available").toLatin1().data());
     }
 
     return retVal;

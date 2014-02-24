@@ -23,13 +23,13 @@
 #ifndef DOCKWIDGETDISPWINDOW_H
 #define DOCKWIDGETDISPWINDOW_H
 
-#include <QtGui>
+#include "projWindow.h"
+//#include <QtGui>
 #include <qwidget.h>
 #include <qmap.h>
 #include <qstring.h>
 
 #include "ui_dockWidgetDispWindow.h"
-#include "projWindow.h"
 
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"

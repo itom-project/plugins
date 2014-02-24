@@ -32,6 +32,7 @@
 
 #include "dockWidgetAerotechEnsemble.h"
 #include "common/addInInterface.h"
+#include <qmessagebox.h>
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 /** @detail The constructor by the constructor of the DummyMotor during initialisation of the DummyMotor-Instance.

@@ -106,17 +106,19 @@ PI controller. Therefore don't mix stages and controllers but only use the origi
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");    
     
-    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toAscii().data());
+    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toLatin1().data());
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
-    paramVal = ito::Param("keepSerialConfig", ito::ParamBase::Int, 0, 1, 0, tr("If 1 the current configuration of the given serial port is kept, else 0 [default].").toAscii().data());
+    paramVal = ito::Param("keepSerialConfig", ito::ParamBase::Int, 0, 1, 0, tr("If 1 the current configuration of the given serial port is kept, else 0 [default].").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class PIPiezoCtrlInterface with the name PIPiezoCtrlInterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2(PIPiezoCtrlInterface, PIPiezoCtrlInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(PIPiezoCtrlInterface, PIPiezoCtrlInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -173,38 +175,38 @@ PIPiezoCtrl::PIPiezoCtrl() :
     m_ctrlType = Unknown;
     m_numAxis = 1;
 
-    paramVal = ito::Param("ctrlType", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Current type of controller, e.g. E-662, E-665, ...").toAscii().data());
+    paramVal = ito::Param("ctrlType", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Current type of controller, e.g. E-662, E-665, ...").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ctrlName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("device information string").toAscii().data());
+    paramVal = ito::Param("ctrlName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("device information string").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("piezoName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("piezo information string").toAscii().data());
+    paramVal = ito::Param("piezoName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("piezo information string").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("posLimitLow", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitLow, tr("lower position limit [mm] of piezo (this can be supported by the device or by this plugin)").toAscii().data());
+    paramVal = ito::Param("posLimitLow", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitLow, tr("lower position limit [mm] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("posLimitHigh", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitHigh, tr("higher position limit [mm] of piezo (this can be supported by the device or by this plugin)").toAscii().data());
+    paramVal = ito::Param("posLimitHigh", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), m_posLimitHigh, tr("higher position limit [mm] of piezo (this can be supported by the device or by this plugin)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("delayProp", ito::ParamBase::Double, 0.0, 10.0, m_delayProp, tr("delay [s] per step size [mm] (e.g. value of 1 means that a delay of 100ms is set for a step of 100mu)").toAscii().data());
+    paramVal = ito::Param("delayProp", ito::ParamBase::Double, 0.0, 10.0, m_delayProp, tr("delay [s] per step size [mm] (e.g. value of 1 means that a delay of 100ms is set for a step of 100mu)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("delayOffset", ito::ParamBase::Double, 0.0, 10.0, m_delayOffset, tr("offset delay [s] per movement (independent on step size)").toAscii().data());
+    paramVal = ito::Param("delayOffset", ito::ParamBase::Double, 0.0, 10.0, m_delayOffset, tr("offset delay [s] per movement (independent on step size)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("local", ito::ParamBase::Int, 0, 1, 0, tr("defines whether system is in local (1.0) or remote (0.0) mode.").toAscii().data());
+    paramVal = ito::Param("local", ito::ParamBase::Int, 0, 1, 0, tr("defines whether system is in local (1.0) or remote (0.0) mode.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1.0) or sychronous (0.0) mode").toAscii().data());
+    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1.0) or sychronous (0.0) mode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, tr("Number of axes (here always 1)").toAscii().data());
+    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, tr("Number of axes (here always 1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("PI_CMD", ito::ParamBase::String, "", tr("use this parameter followed by :YourCommand in order to read/write value from/to device (e.g. PI_CMD:ERR?)").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("hasLocalRemote", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 1, tr("defines whether the device has the ability to switch between local and remote control (1), else (0)").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("hasOnTargetFlag", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("defines whether the device has the ability to check the 'on-target'-status (1), else (0)").toAscii().data());
+    paramVal = ito::Param("PI_CMD", ito::ParamBase::String, "", tr("use this parameter followed by :YourCommand in order to read/write value from/to device (e.g. PI_CMD:ERR?)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("fastMode", ito::ParamBase::Int, 0, 3, 0, tr("Disabled position and end switch control during positioning for fast scans").toAscii().data());
+    paramVal = ito::Param("hasLocalRemote", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 1, tr("defines whether the device has the ability to switch between local and remote control (1), else (0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("hasOnTargetFlag", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("defines whether the device has the ability to check the 'on-target'-status (1), else (0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toAscii().data());
+    paramVal = ito::Param("fastMode", ito::ParamBase::Int, 0, 3, 0, tr("Disabled position and end switch control during positioning for fast scans").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     m_targetPos = QVector<double>(1,0.0);
@@ -247,21 +249,21 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 
     if (hasIndex && index != 0)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("this motor only has one axis, therefore it is not allowed to get a parameter with index unequal to 0").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("this motor only has one axis, therefore it is not allowed to get a parameter with index unequal to 0").toLatin1().data());
     }
     else if (paramName == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
     }
     else if (paramName == "PI_CMD")
     {
         if (additionalTag == "")
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter PI_CMD requires the real command send to the motor after a colon-sign.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter PI_CMD requires the real command send to the motor after a colon-sign.").toLatin1().data());
         }
         else
         {
-            retValue += PISendQuestionWithAnswerString(additionalTag.toAscii(), answerString, 400);
+            retValue += PISendQuestionWithAnswerString(additionalTag.toLatin1(), answerString, 400);
             if (retValue.containsError())
             {
                 retValue += PIGetLastErrors(lastError);
@@ -281,10 +283,10 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
             retValue += PISendQuestionWithAnswerString("SYST:DEV:CONT?", answerString, 400);
             break;
         case E625Family:
-            retValue += ito::RetVal(ito::retError, 3, tr("this device has no local/remote switch").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 3, tr("this device has no local/remote switch").toLatin1().data());
             break;
         default:
-            retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toLatin1().data());
             break;
         }
 
@@ -317,7 +319,7 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
             break;
 
         default:
-            retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toLatin1().data());
             break;
         }
         if (retValue.containsError())
@@ -341,7 +343,7 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
         case E625Family:
             break;
         default:
-            retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toLatin1().data());
             break;
         }
         if (retValue.containsError())
@@ -402,7 +404,7 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
     if (paramName == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
     }
     else if (paramName == "PI_CMD")
     {
@@ -419,13 +421,13 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
             if (additionalTag == "")
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("parameter PI_CMD requires the real command send to the motor after a colon-sign in the parameter name or as value (second parameter of setParam method).").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("parameter PI_CMD requires the real command send to the motor after a colon-sign in the parameter name or as value (second parameter of setParam method).").toLatin1().data());
             }
         }
 
         if (!retValue.containsError())
         {
-            retValue += PISendCommand(additionalTag.toAscii());
+            retValue += PISendCommand(additionalTag.toLatin1());
         }
     }
     else
@@ -436,7 +438,7 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
             if (paramIt->getFlags() & ito::ParamBase::Readonly)
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
                 goto end;
             }
             else if (val->isNumeric() && paramIt->isNumeric())
@@ -444,12 +446,12 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 double curval = val->getVal<double>();
                 if (curval > paramIt->getMax())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else if (curval < paramIt->getMin())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else if (paramName == "local")
@@ -468,7 +470,7 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retError, 0, tr("this device does not support the local/remote control mode switch").toAscii().data());
+                        retValue += ito::RetVal(ito::retError, 0, tr("this device does not support the local/remote control mode switch").toLatin1().data());
                     }
                 }
                 else if (paramName == "posLimitLow")
@@ -532,13 +534,13 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Given parameter and m_param do not have the same type").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Given parameter and m_param do not have the same type").toLatin1().data());
                 goto end;
             }
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
 end:
@@ -589,7 +591,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toAscii().data());
+        retval += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toLatin1().data());
     }
 
     if (waitCond)
@@ -646,7 +648,7 @@ ito::RetVal PIPiezoCtrl::calib(const int axis, ItomSharedSemaphore *waitCond)
 */
 ito::RetVal PIPiezoCtrl::calib(const QVector<int> /*axis*/, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("not implemented").toAscii().data());
+    ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("not implemented").toLatin1().data());
 
     if (waitCond)
     {
@@ -679,7 +681,7 @@ ito::RetVal PIPiezoCtrl::setOrigin(const int axis, ItomSharedSemaphore * /*waitC
 */
 ito::RetVal PIPiezoCtrl::setOrigin(QVector<int> /*axis*/, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("not implemented").toAscii().data());
+    ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("not implemented").toLatin1().data());
 
     if (waitCond)
     {
@@ -728,7 +730,7 @@ ito::RetVal PIPiezoCtrl::getPos(const int axis, QSharedPointer<double> pos, Itom
 
     if (axis != 0)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
     }
     else
     {
@@ -768,7 +770,7 @@ ito::RetVal PIPiezoCtrl::getPos(const QVector<int> axis, QSharedPointer<QVector<
     }
     else
     {
-        retval +=ito::RetVal(ito::retError, 0, tr("Error. Too many Axis / wrong Axis").toAscii().data());
+        retval +=ito::RetVal(ito::retError, 0, tr("Error. Too many Axis / wrong Axis").toLatin1().data());
     }
     if (waitCond)
     {
@@ -815,7 +817,7 @@ ito::RetVal PIPiezoCtrl::setPosAbs(const QVector<int> axis, QVector<double> pos,
 
     if (axis.size() > 1)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Too many axis. This is currently a single axis device").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Too many axis. This is currently a single axis device").toLatin1().data());
 
         if (waitCond)
         {
@@ -868,7 +870,7 @@ ito::RetVal PIPiezoCtrl::setPosRel(const QVector<int> axis, QVector<double> pos,
     
     if (axis.size() > 1)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Too many axis. This is currently a single axis device.").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Too many axis. This is currently a single axis device.").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retval;
@@ -935,7 +937,7 @@ ito::RetVal PIPiezoCtrl::PICheckStatus(void)
 
     if (m_ctrlType == Unknown)
     {
-        return ito::RetVal(ito::retError, 0, tr("controller device unknown").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("controller device unknown").toLatin1().data());
     }
     else if (m_ctrlType == E662Family)
     {
@@ -1044,7 +1046,7 @@ ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutM
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("could not read endline parameter from serial port").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("could not read endline parameter from serial port").toLatin1().data());
     }
 
     if (!retValue.containsError())
@@ -1074,7 +1076,7 @@ ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutM
 
             if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
             {
-                retValue += ito::RetVal(ito::retError, PI_READTIMEOUT, tr("timeout").toAscii().data());
+                retValue += ito::RetVal(ito::retError, PI_READTIMEOUT, tr("timeout").toLatin1().data());
             }
         }
 
@@ -1124,7 +1126,7 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
                 }
                 else
                 {
-                    lastErrors.append(QPair<int,QByteArray>(-1000, tr("error could not be parsed").toAscii().data()));
+                    lastErrors.append(QPair<int,QByteArray>(-1000, tr("error could not be parsed").toLatin1().data()));
                 }
             }
             else if (m_ctrlType == E625Family)
@@ -1136,26 +1138,26 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
                     {
                         switch(errorNo)
                         {
-                        case 1: errorText = tr("Parameter syntax error").toAscii(); break;
-                        case 2: errorText = tr("Unknown command").toAscii(); break;
-                        case 3: errorText = tr("Command length out of limits or command buffer overrun").toAscii(); break;
-                        case 5: errorText = tr("Unallowable move attempted on unreferenced axis, or move attempted with servo off").toAscii(); break;
-                        case 10: errorText = tr("Controller was stopped by command").toAscii(); break;
-                        case 15: errorText = tr("Invalid axis identifier").toAscii(); break;
-                        case 17: errorText = tr("Parameter out of range").toAscii(); break;
-                        case 20: errorText = tr("Macro not found").toAscii(); break;
-                        case 54: errorText = tr("Unknown parameter").toAscii(); break;
-                        case 56: errorText = tr("Password invalid").toAscii(); break;
-                        case 60: errorText = tr("Protected Param: current Command Level (CCL) too low").toAscii(); break;
-                        case 73: errorText = tr("Motion commands are not allowed when wave generator is active").toAscii(); break;
-                        case 79: errorText = tr("Open-loop commands (SVA, SVR) are not allowed when servo is on").toAscii(); break;
-                        case 89: errorText = tr("Command not allowed in current motion mode").toAscii(); break;
-                        case 210: errorText = tr("Illegal file name (must be 8-0 format)").toAscii(); break;
-                        case 232: errorText = tr("Save system configuration failed").toAscii(); break;
-                        case 233: errorText = tr("Load system configuration failed").toAscii(); break;
-                        case 306: errorText = tr("Error on I2C bus").toAscii(); break;
-                        case 309: errorText = tr("Insufficient space to store macro").toAscii(); break;
-                        case 405: errorText = tr("Wave parameter out of range").toAscii(); break;
+                        case 1: errorText = tr("Parameter syntax error").toLatin1(); break;
+                        case 2: errorText = tr("Unknown command").toLatin1(); break;
+                        case 3: errorText = tr("Command length out of limits or command buffer overrun").toLatin1(); break;
+                        case 5: errorText = tr("Unallowable move attempted on unreferenced axis, or move attempted with servo off").toLatin1(); break;
+                        case 10: errorText = tr("Controller was stopped by command").toLatin1(); break;
+                        case 15: errorText = tr("Invalid axis identifier").toLatin1(); break;
+                        case 17: errorText = tr("Parameter out of range").toLatin1(); break;
+                        case 20: errorText = tr("Macro not found").toLatin1(); break;
+                        case 54: errorText = tr("Unknown parameter").toLatin1(); break;
+                        case 56: errorText = tr("Password invalid").toLatin1(); break;
+                        case 60: errorText = tr("Protected Param: current Command Level (CCL) too low").toLatin1(); break;
+                        case 73: errorText = tr("Motion commands are not allowed when wave generator is active").toLatin1(); break;
+                        case 79: errorText = tr("Open-loop commands (SVA, SVR) are not allowed when servo is on").toLatin1(); break;
+                        case 89: errorText = tr("Command not allowed in current motion mode").toLatin1(); break;
+                        case 210: errorText = tr("Illegal file name (must be 8-0 format)").toLatin1(); break;
+                        case 232: errorText = tr("Save system configuration failed").toLatin1(); break;
+                        case 233: errorText = tr("Load system configuration failed").toLatin1(); break;
+                        case 306: errorText = tr("Error on I2C bus").toLatin1(); break;
+                        case 309: errorText = tr("Insufficient space to store macro").toLatin1(); break;
+                        case 405: errorText = tr("Wave parameter out of range").toLatin1(); break;
                         }
 
                         lastErrors.append(QPair<int,QByteArray>(errorNo, errorText));
@@ -1167,7 +1169,7 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
                 }
                 else
                 {
-                    lastErrors.append(QPair<int,QByteArray>(-1000, tr("error could not be parsed").toAscii().data()));
+                    lastErrors.append(QPair<int,QByteArray>(-1000, tr("error could not be parsed").toLatin1().data()));
                 }
             }
             else //unknown controller
@@ -1175,7 +1177,7 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
                 errorNo = buffer.left(1).toInt();
                 if (errorNo != 0)
                 {
-                    lastErrors.append(QPair<int,QByteArray>(-1001,tr( "unknown error").toAscii().data()));
+                    lastErrors.append(QPair<int,QByteArray>(-1001,tr( "unknown error").toLatin1().data()));
                 }
                 else
                 {
@@ -1229,7 +1231,7 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(QByteArray questionComma
     }
     else if (!ok)
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("value could not be parsed to a double value").toAscii().data());
+        retValue = ito::RetVal(ito::retError, 0, tr("value could not be parsed to a double value").toLatin1().data());
     }
 
     return retValue;
@@ -1324,7 +1326,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
     if (retval.containsError() || answer.length() < 5)
     {
-        retval = ito::RetVal(ito::retError, 0, tr("could not identify controller. No answer for command *idn?").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, tr("could not identify controller. No answer for command *idn?").toLatin1().data());
         return retval;
     }
     else
@@ -1333,7 +1335,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         retval += m_pSer->getParam(param, NULL);
         if (retval.containsError() || param->getVal<int>() < 1)
         {
-            retval = ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toAscii().data());
+            retval = ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toLatin1().data());
             return retval;
         }
         else
@@ -1442,7 +1444,7 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
 
     if (m_ctrlType == Unknown)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("controller device unknown").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("controller device unknown").toLatin1().data());
     }
     else if (m_ctrlType == E662Family)
     {
@@ -1487,7 +1489,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
 
     if (axis != 0)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
 
         if (waitCond && !released)
         {
@@ -1511,7 +1513,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
             {
                 if (m_currentPos[0] + posMM > m_params["posLimitHigh"].getVal<double>() || m_currentPos[0] + posMM < m_params["posLimitLow"].getVal<double>())
                 {
-                    retval += ito::RetVal(ito::retError, 0, tr("the new position (rel) seems to be out of the allowed position range (software check only). Please check params 'posLimitHigh' and 'posLimitLow'").toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("the new position (rel) seems to be out of the allowed position range (software check only). Please check params 'posLimitHigh' and 'posLimitLow'").toLatin1().data());
                     outOfRange = true;
                 }
             }
@@ -1526,7 +1528,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
             {
                 if (posMM > m_params["posLimitHigh"].getVal<double>() || posMM < m_params["posLimitLow"].getVal<double>())
                 {
-                    retval += ito::RetVal(ito::retError, 0, tr("the new position (abs) seems to be out of the allowed position range (software check only). Please check params 'posLimitHigh' and 'posLimitLow'").toAscii().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("the new position (abs) seems to be out of the allowed position range (software check only). Please check params 'posLimitHigh' and 'posLimitLow'").toLatin1().data());
                     outOfRange = true;
                 }
             }

@@ -124,15 +124,15 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
     m_initParamsMand.clear();
     m_initParamsOpt.clear();
 
-    ito::Param p = ito::Param("CameraSerialNo", ito::ParamBase::String | ito::ParamBase::In, "", tr("Serial Number of the SVS Vistek camera (see camera housing)").toAscii().data());
+    ito::Param p = ito::Param("CameraSerialNo", ito::ParamBase::String | ito::ParamBase::In, "", tr("Serial Number of the SVS Vistek camera (see camera housing)").toLatin1().data());
     ito::StringMeta *m = new ito::StringMeta(ito::StringMeta::RegExp, "^[0-9]*$");
     p.setMeta(m, true);
     m_initParamsOpt << p;
 
-    p = ito::Param("streamingPacketSize", ito::ParamBase::Int | ito::ParamBase::In, -1, 16000, -1, tr("used streaming packet size (-1: use maximal available packet size, else value in bytes). Try to enable jumbo-frames at your network adapter in order to realize higher packet sizes").toAscii().data());
+    p = ito::Param("streamingPacketSize", ito::ParamBase::Int | ito::ParamBase::In, -1, 16000, -1, tr("used streaming packet size (-1: use maximal available packet size, else value in bytes). Try to enable jumbo-frames at your network adapter in order to realize higher packet sizes").toLatin1().data());
     m_initParamsOpt << p;
 
-    p = ito::Param("streamingBuffers", ito::ParamBase::Int | ito::ParamBase::In, 3, 300, 100, tr("number of streaming buffers. Increase if you get data losses, decrease if you want to consume less memory").toAscii().data());
+    p = ito::Param("streamingBuffers", ito::ParamBase::Int | ito::ParamBase::In, 3, 300, 100, tr("number of streaming buffers. Increase if you get data losses, decrease if you want to consume less memory").toLatin1().data());
     m_initParamsOpt << p;
 }
 
@@ -149,4 +149,6 @@ VistekInterface::~VistekInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class VistekInterface with the name Vistekinterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2(Vistekinterface, VistekInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(Vistekinterface, VistekInterface)
+#endif

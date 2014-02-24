@@ -88,7 +88,7 @@ ito::RetVal VistekContainer::initCameraContainer()
             char *newpath = (char*)malloc(strlen(oldpath) + dllDir2.size() + 10);
             newpath[0] = 0;
             strcat(newpath, "path=");
-            strcat(newpath, dllDir2.toAscii().data());
+            strcat(newpath, dllDir2.toLatin1().data());
             strcat(newpath, ";");
             strcat(newpath, oldpath);
             _putenv(newpath);
@@ -112,9 +112,9 @@ ito::RetVal VistekContainer::initCameraContainer()
 				QString gotVersion = QString("%1.%2.%3.%4").arg( dllVersion.MajorVersion).arg(dllVersion.MinorVersion).arg(dllVersion.DriverVersion).arg(dllVersion.BuildVersion);
 				QString expectedVersion = QString("%1.%2.%3.%4").arg( dllVersion.MajorVersion).arg(dllVersion.MinorVersion).arg(dllVersion.DriverVersion).arg(dllVersion.BuildVersion);
 #ifdef _WIN64                 
-				return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch, got: %1, expected: %2 (64bit).").arg(gotVersion).arg(expectedVersion).toAscii().data());
+				return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch, got: %1, expected: %2 (64bit).").arg(gotVersion).arg(expectedVersion).toLatin1().data());
 #else
-				return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch, got: %1, expected: %2.").arg(gotVersion).arg(expectedVersion).toAscii().data());
+				return ito::RetVal(ito::retError, 0, tr("SVS Vistek: dll version mismatch, got: %1, expected: %2.").arg(gotVersion).arg(expectedVersion).toLatin1().data());
 #endif
             }
             else
@@ -134,7 +134,7 @@ ito::RetVal VistekContainer::initCameraContainer()
                     m_camClient = CameraContainer_create(SVGigETL_TypeWinsock);
                     if(m_camClient == SVGigE_NO_CLIENT)
                     {
-                        return ito::RetVal(ito::retError, 0, tr("Connecting via winsock failed.").toAscii().data());
+                        return ito::RetVal(ito::retError, 0, tr("Connecting via winsock failed.").toLatin1().data());
                     }
                 }
                 std::cout << "done!\n" << std::endl;
@@ -157,7 +157,7 @@ ito::RetVal VistekContainer::initCameraContainer()
                 int numberOfCameras = CameraContainer_getNumberOfCameras(m_camClient);
                 if( 0 == numberOfCameras )
                 {
-                    return ito::RetVal(ito::retError, 0, tr("No cameras detected.").toAscii().data());
+                    return ito::RetVal(ito::retError, 0, tr("No cameras detected.").toLatin1().data());
                 }
                 std::cout << numberOfCameras << " camera(s) detected!\n" << std::endl;
 
@@ -182,7 +182,7 @@ ito::RetVal VistekContainer::initCameraContainer()
                     cam.sensorPixelsY = TempSize;*/
                     cam.started = false;
 
-                    std::cout << "Camera SN: " << cam.camSerialNo.toAscii().data() << " found at IP " << cam.camIP.toAscii().data() << "\n" <<std::endl;
+                    std::cout << "Camera SN: " << cam.camSerialNo.toLatin1().data() << " found at IP " << cam.camIP.toLatin1().data() << "\n" <<std::endl;
                     Camera_closeConnection(TempCam);
                     m_cameras << cam;
                 }
@@ -287,18 +287,18 @@ const int VistekContainer::getCameraBySN(const QString &camSerialNo)
         {
             if(m_cameras[i].started == false)
             {
-                std::cout << "Camera " << i << " selected by SN: " << camSerialNo.toAscii().data() << "\n" <<std::endl;
+                std::cout << "Camera " << i << " selected by SN: " << camSerialNo.toLatin1().data() << "\n" <<std::endl;
                 m_cameras[i].started = true;
                 return i;
             }
             else
             {
-                std::cout << "Camera " << i << " selected by SN: " << camSerialNo.toAscii().data() << " is busy, looking for alternatives...\n" <<std::endl;
+                std::cout << "Camera " << i << " selected by SN: " << camSerialNo.toLatin1().data() << " is busy, looking for alternatives...\n" <<std::endl;
                 return -1;
             }
         }
     }
-    std::cout << "SN: " << camSerialNo.toAscii().data() << " not found\n" <<std::endl;
+    std::cout << "SN: " << camSerialNo.toLatin1().data() << " not found\n" <<std::endl;
     return -1;
 }
 

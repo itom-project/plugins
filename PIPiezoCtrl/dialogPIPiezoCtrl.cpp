@@ -86,7 +86,7 @@ ito::RetVal DialogPIPiezoCtrl::checkParameters()
     ito::RetVal retValue(ito::retOk);
     if (ui.dblSpinPosLimitHigh->value() < ui.dblSpinPosLimitLow->value())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("the upper position limit must be higher than the lower one").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("the upper position limit must be higher than the lower one").toLatin1().data());
     }
 
     return retValue;
@@ -155,13 +155,13 @@ ito::RetVal DialogPIPiezoCtrl::sendParameters()
 
             if (!success)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("timeout while setting parameters of plugin.").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("timeout while setting parameters of plugin.").toLatin1().data());
             }
         }
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("plugin instance not defined.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("plugin instance not defined.").toLatin1().data());
     }
 
     return retValue;

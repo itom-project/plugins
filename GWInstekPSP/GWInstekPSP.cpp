@@ -105,11 +105,11 @@ instance when initializing this plugin.";
     m_license = QObject::tr("Licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");      
     
-    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toAscii().data());
+    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data());
     paramVal.setMeta( new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
-    paramVal = ito::Param("save", ito::ParamBase::Int, 0, 1, 1, tr("Save the present status to the EEPROM").toAscii().data());
+    paramVal = ito::Param("save", ito::ParamBase::Int, 0, 1, 1, tr("Save the present status to the EEPROM").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     return;
 }
@@ -122,7 +122,9 @@ GWInstekPSPInterface::~GWInstekPSPInterface()
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class GWInstekPSPInterface with the name GWInstekPSPInterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2(GWInstekPSPInterface, GWInstekPSPInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(GWInstekPSPInterface, GWInstekPSPInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -200,7 +202,7 @@ const ito::RetVal GWInstekPSP::ReadFromSerial(bool *state)
 
     if (timeout == -1)
     {
-        return ito::RetVal(ito::retError, 0, tr("Undefined answer from serial port").toAscii().data());
+        return ito::RetVal(ito::retError, 0, tr("Undefined answer from serial port").toLatin1().data());
     }
 
     for (startpos = 0; (startpos < totlen) && (buf[startpos] != 'V'); startpos++); {}
@@ -248,7 +250,7 @@ const ito::RetVal GWInstekPSP::WriteToSerial(const char *text)
         }
         if (!state)
         {
-            return ito::RetVal(ito::retError, 0, tr("No answer from serial port").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("No answer from serial port").toLatin1().data());
         }
     }
 
@@ -271,33 +273,33 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
     ito::Param paramVal("name", ito::ParamBase::String, "GWInstekPSP", NULL);
     m_params.insert(paramVal.getName(), paramVal);
     
-    paramVal = ito::Param("status", ito::ParamBase::String | ito::ParamBase::Readonly, m_status, tr("Current status string of controller").toAscii().data());
+    paramVal = ito::Param("status", ito::ParamBase::String | ito::ParamBase::Readonly, m_status, tr("Current status string of controller").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("voltage", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Ouput voltage; the unit: V").toAscii().data());
+    paramVal = ito::Param("voltage", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Ouput voltage; the unit: V").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("current", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 99.0, 0.0, tr("Ouput current; the unit: A").toAscii().data());
+    paramVal = ito::Param("current", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 99.0, 0.0, tr("Ouput current; the unit: A").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("load", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 250.0, 0.0, tr("Ouput load; the unit: W").toAscii().data());
+    paramVal = ito::Param("load", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 250.0, 0.0, tr("Ouput load; the unit: W").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("voltage_limit", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Ouput voltage limit; the unit: V").toAscii().data());
+    paramVal = ito::Param("voltage_limit", ito::ParamBase::Double, 0.0, 40.0, 0.0, tr("Ouput voltage limit; the unit: V").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("current_limit", ito::ParamBase::Double, 0.0, 5.0, 0.0, tr("Ouput current limit; the unit: A").toAscii().data());
+    paramVal = ito::Param("current_limit", ito::ParamBase::Double, 0.0, 5.0, 0.0, tr("Ouput current limit; the unit: A").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("load_limit", ito::ParamBase::Double, 0.0, 200.0, 0.0, tr("Ouput load limit; the unit: W").toAscii().data());
+    paramVal = ito::Param("load_limit", ito::ParamBase::Double, 0.0, 200.0, 0.0, tr("Ouput load limit; the unit: W").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("save", ito::ParamBase::Int, 0, 1, 1, tr("Save the present status to the EEPROM on exit").toAscii().data());
+    paramVal = ito::Param("save", ito::ParamBase::Int, 0, 1, 1, tr("Save the present status to the EEPROM on exit").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("relay", ito::ParamBase::Int, 0, 1, 0, tr("Relay status 0: off, 1: on").toAscii().data());
+    paramVal = ito::Param("relay", ito::ParamBase::Int, 0, 1, 0, tr("Relay status 0: off, 1: on").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("temperature", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Temperature status 0: normal, 1: overheat").toAscii().data());
+    paramVal = ito::Param("temperature", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Temperature status 0: normal, 1: overheat").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("wheel", ito::ParamBase::Int, 0, 1, 0, tr("Wheel knob 0: normal, 1: fine").toAscii().data());
+    paramVal = ito::Param("wheel", ito::ParamBase::Int, 0, 1, 0, tr("Wheel knob 0: normal, 1: fine").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("wheel_lock", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Wheel knob 0: lock, 1: unlock").toAscii().data());
+    paramVal = ito::Param("wheel_lock", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Wheel knob 0: lock, 1: unlock").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("remote", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Remote status 0: normal, 1: remote").toAscii().data());
+    paramVal = ito::Param("remote", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Remote status 0: normal, 1: remote").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("lock", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Lock status 0: lock, 1: unlock").toAscii().data());
+    paramVal = ito::Param("lock", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Lock status 0: lock, 1: unlock").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
 //now create dock widget for this plugin
@@ -335,7 +337,7 @@ ito::RetVal GWInstekPSP::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 
     if (key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -346,7 +348,7 @@ ito::RetVal GWInstekPSP::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
     if (waitCond) 
@@ -368,7 +370,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
     if (key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -377,7 +379,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             if (paramIt->getFlags() & ito::ParamBase::Readonly)    //check read-only
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
                 goto end;
             }
             else if (val->isNumeric() && paramIt->isNumeric())
@@ -385,12 +387,12 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 double curval = val->getVal<double>();
                 if (curval > paramIt->getMax())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else if(curval < paramIt->getMin())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else 
@@ -404,7 +406,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
                 goto end;
             }
 
@@ -459,7 +461,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
 
@@ -502,7 +504,7 @@ ito::RetVal GWInstekPSP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toLatin1().data());
     }
 
     if (!retValue.containsError())

@@ -25,8 +25,6 @@
 
 #include "common/addInInterface.h"
 
-#include "Ensemble.h"
-
 #include "dialogAerotechEnsemble.h"	//! This is the configuration dialog
 #include "dockWidgetAerotechEnsemble.h"	//! This is the controll dialog
 
@@ -35,12 +33,17 @@
 #include <qlibrary.h>
 #include <qevent.h>
 
+#include "Ensemble.h"
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class AerotechEnsembleInterface
 */
 class AerotechEnsembleInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
+#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
+#endif
     Q_INTERFACES(ito::AddInInterfaceBase)
     PLUGIN_ITOM_API
 

@@ -42,7 +42,8 @@
 
 #include "pluginVersion.h"
 
-//#include <windows.h>
+#define MAX1394 5
+#define LIM(a)    (a<0?0:a>4095?4095:a)
 
 #pragma comment(lib, "1394camera.lib")
 #pragma comment(linker, "/delayload:1394camera.dll")
@@ -104,16 +105,16 @@ of this plugin.";
     m_maxItomVer        = MAXVERSION;
     m_aboutThis         = tr("N.A."); 
 
-   ito::Param paramVal = ito::Param("Format", ito::ParamBase::Int, 0, 2, 0, tr("Formattype for the camera, first index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.").toAscii().data());
+   ito::Param paramVal = ito::Param("Format", ito::ParamBase::Int, 0, 2, 0, tr("Formattype for the camera, first index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.").toLatin1().data());
    m_initParamsMand.append(paramVal);
 
-   paramVal = ito::Param("Mode", ito::ParamBase::Int, 0, 5, 0, tr("Modetype for the camera, second index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.").toAscii().data());
+   paramVal = ito::Param("Mode", ito::ParamBase::Int, 0, 5, 0, tr("Modetype for the camera, second index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.").toLatin1().data());
    m_initParamsMand.append(paramVal);
 
-   paramVal = ito::Param("Rate", ito::ParamBase::Int, 0, 8, 0, tr("Rate (fps) for the camera (1: 3.75, 2: 7.5, 3: 15, 4: 30, 5: 60, 6: 120). For more information see tableQPP of CMU.").toAscii().data());
+   paramVal = ito::Param("Rate", ito::ParamBase::Int, 0, 8, 0, tr("Rate (fps) for the camera (1: 3.75, 2: 7.5, 3: 15, 4: 30, 5: 60, 6: 120). For more information see tableQPP of CMU.").toLatin1().data());
    m_initParamsMand.append(paramVal);
 
-   paramVal = ito::Param("CameraNumber", ito::ParamBase::Int, -1, MAX1394 - 1, -1, tr("Camera number (-1 for auto)").toAscii().data());
+   paramVal = ito::Param("CameraNumber", ito::ParamBase::Int, -1, MAX1394 - 1, -1, tr("Camera number (-1 for auto)").toLatin1().data());
    m_initParamsOpt.append(paramVal);
 
    return;
@@ -160,7 +161,9 @@ CMU1394Interface::~CMU1394Interface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(CMU1394interface, CMU1394Interface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(CMU1394interface, CMU1394Interface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -176,7 +179,7 @@ const ito::RetVal CMU1394::showConfDialog(void)
     dialogCMU1394 *confDialog = new dialogCMU1394();
 
     if(grabberStartedCount() > 0)
-        return ito::RetVal(ito::retWarning, 0, tr("Please run stopDevice() and shut down live data before configuration").toAscii().data());
+        return ito::RetVal(ito::retWarning, 0, tr("Please run stopDevice() and shut down live data before configuration").toLatin1().data());
 
     connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
     connect(confDialog, SIGNAL(changeParameters(QMap<QString, ito::ParamBase>)), this , SLOT(updateParameters(QMap<QString, ito::ParamBase>)));
@@ -208,39 +211,39 @@ CMU1394::CMU1394() :  AddInGrabber(), m_saveParamsOnClose(false),
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "CMU1394", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 0.0, 0.0, tr("Integrationtime of CCD programmed in s").toAscii().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 0.0, 0.0, tr("Integrationtime of CCD programmed in s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain").toAscii().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Offset").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-
-    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1391, 0, tr("Startvalue for ROI").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Stoppvalue for ROI").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizex", ito::ParamBase::Int, 1, 1392, 1392, tr("ROI-Size in x").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int, 1, 1024, 1024, tr("ROI-Size in y").toAscii().data());
+    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Offset").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("Grabdepth in bpp").toAscii().data());
+
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1391, 0, tr("Startvalue for ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Stoppvalue for ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizex", ito::ParamBase::Int, 1, 1392, 1392, tr("ROI-Size in x").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizey", ito::ParamBase::Int, 1, 1024, 1024, tr("ROI-Size in y").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.001, 4095.0, 1.0, tr("Timeout for grabbing in s").toAscii().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("Grabdepth in bpp").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("binning", ito::ParamBase::Int, 0, 0, 0, tr("Activate nxn binning (not implemented yet)").toAscii().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.001, 4095.0, 1.0, tr("Timeout for grabbing in s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("trigger_enable", ito::ParamBase::Int, 0, 1, 0, tr("Enable triggermode").toAscii().data());
+    paramVal = ito::Param("binning", ito::ParamBase::Int, 0, 0, 0, tr("Activate nxn binning (not implemented yet)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal= ito::Param("CamNumber", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, MAX1394 - 1, 0, tr("Number of this Camera").toAscii().data());
+    paramVal = ito::Param("trigger_enable", ito::ParamBase::Int, 0, 1, 0, tr("Enable triggermode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, 0, 2, 0, tr("Set Triggermode").toAscii().data());
+    paramVal= ito::Param("CamNumber", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, MAX1394 - 1, 0, tr("Number of this Camera").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, 0, 2, 0, tr("Set Triggermode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
@@ -277,7 +280,7 @@ ito::RetVal CMU1394::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
 
     if(key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -307,7 +310,7 @@ ito::RetVal CMU1394::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
 
@@ -353,7 +356,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
     if(key == "")    // Check if the key is valied
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
     }
     else    // key valid so go on
     {
@@ -364,7 +367,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
     
             if(paramIt->getFlags() & ito::ParamBase::Readonly)
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
                 goto end;
             }
             else if(val->isNumeric() && paramIt->isNumeric())
@@ -372,12 +375,12 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 double curval = val->getVal<double>();
                 if( curval > paramIt->getMax())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else if(curval < paramIt->getMin())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else 
@@ -391,7 +394,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
                 goto end;
             }
         
@@ -439,7 +442,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                         ret=m_pC1394trigger->SetMode((unsigned short)trigger_mode);
                     }
                     else
-                        retValue = ito::RetVal(ito::retError, 0, tr("Camera has no trigger feature").toAscii().data());
+                        retValue = ito::RetVal(ito::retError, 0, tr("Camera has no trigger feature").toLatin1().data());
                 }
                 else if(!key.compare("trigger_enable"))
                 {
@@ -451,9 +454,9 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                             if ( (ret = m_ptheCamera->StartImageAcquisitionEx( 6, timeout_ms, ACQ_START_VIDEO_STREAM)))  
                             {
                                 if (ret == -14)
-                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toAscii().data()); 
+                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toLatin1().data()); 
                                 else if (ret==-15)
-                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toAscii().data());
+                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toLatin1().data());
                                 return -1;
                             }
                             m_ptheCamera->StopImageAcquisition();
@@ -466,9 +469,9 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                             if ( (ret = m_ptheCamera->StartImageAcquisition() ) )  
                             {
                                 if (ret == -14)
-                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toAscii().data()); 
+                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toLatin1().data()); 
                                 else if (ret==-15)
-                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toAscii().data());
+                                    retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toLatin1().data());
                                 return -1;
                             }
                             ret = m_ptheCamera->GetNode();
@@ -476,13 +479,13 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                         }
                     }
                     else
-                        retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toAscii().data());
+                        retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\ntime out!").toLatin1().data());
                 }
             }
         }
         else
         {
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Parameter not found").toAscii().data());
+            retValue = ito::RetVal(ito::retWarning, 0, tr("Parameter not found").toLatin1().data());
         }
     }
 
@@ -545,11 +548,11 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 
     if(Initnum > MAX1394)
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("Maximal number of CMU1394 grabber already running").toAscii().data());
+        retValue = ito::RetVal(ito::retError, 0, tr("Maximal number of CMU1394 grabber already running").toLatin1().data());
     }
     else if(m_iCamNumber > 127)
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("Invalid input for camera number").toAscii().data());
+        retValue = ito::RetVal(ito::retError, 0, tr("Invalid input for camera number").toLatin1().data());
     }
     else
     {
@@ -575,7 +578,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
             {
                 if(InitList[i] == m_iCamNumber + 1)
                 {
-                    retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized").toAscii().data());
+                    retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized").toLatin1().data());
                     m_iCamNumber = -1;
                     break;
                 }
@@ -596,19 +599,19 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     if (!retValue.containsError())
     {
         if (!(m_ptheCamera->RefreshCameraList()))
-            retValue = ito::RetVal(ito::retError, 0, tr("Refresh camera list failed").toAscii().data());
+            retValue = ito::RetVal(ito::retError, 0, tr("Refresh camera list failed").toLatin1().data());
     }
 
     if (!retValue.containsError())
     {
         if ((numcameras = m_ptheCamera->GetNumberCameras())==0)
-            retValue = ito::RetVal(ito::retError, 0, tr("Get number of cameras failed").toAscii().data());
+            retValue = ito::RetVal(ito::retError, 0, tr("Get number of cameras failed").toLatin1().data());
     }
 
     if (!retValue.containsError())
     {
         if (m_ptheCamera->SelectCamera(m_iCamNumber))
-            retValue = ito::RetVal(ito::retError, 0, tr("Select camera failed").toAscii().data());
+            retValue = ito::RetVal(ito::retError, 0, tr("Select camera failed").toLatin1().data());
     }
 
     m_identifier = QString("CamNum: %1").arg(m_iCamNumber);
@@ -710,14 +713,14 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
                             maxxsize = 1624; maxysize = 1224; bpp = 8;
                             break;
                         default:
-                            retValue = ito::RetVal(ito::retError, 0, tr("PtGrey Kamera:illegaler Camera Mode! Only: 0)\n").toAscii().data());
+                            retValue = ito::RetVal(ito::retError, 0, tr("PtGrey Kamera:illegaler Camera Mode! Only: 0)\n").toLatin1().data());
                             break;            
                     }
                 }
             break;
             default:
                 maxxsize = 0; maxysize = 0; bpp = 0;
-                retValue = ito::RetVal(ito::retError, 0, tr("This Video/Camera mode is not implemented in this version of the firewire driver!\n").toAscii().data());
+                retValue = ito::RetVal(ito::retError, 0, tr("This Video/Camera mode is not implemented in this version of the firewire driver!\n").toLatin1().data());
             break;
         }
         m_params["bpp"].setVal<int>(bpp);
@@ -731,7 +734,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         }
         else
         {
-            retValue = ito::RetVal(ito::retError, 0, tr("Unable to set video format!\n").toAscii().data());
+            retValue = ito::RetVal(ito::retError, 0, tr("Unable to set video format!\n").toLatin1().data());
         }
     }
     if (!retValue.containsError())
@@ -742,7 +745,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         }
         else
         {
-            retValue = ito::RetVal(ito::retError, 0, tr("Unable to set video mode!\n").toAscii().data());
+            retValue = ito::RetVal(ito::retError, 0, tr("Unable to set video mode!\n").toLatin1().data());
         }
     }
     if (!retValue.containsError())
@@ -753,7 +756,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         }
         else
         {
-            retValue = ito::RetVal(ito::retError, 0, tr("Unable to set video frame rate!\n").toAscii().data());
+            retValue = ito::RetVal(ito::retError, 0, tr("Unable to set video frame rate!\n").toLatin1().data());
         }
     }
 
@@ -806,15 +809,15 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         {
             if (ret == -14)
             {
-                retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed, maybe video rate too high!\n").toAscii().data());
+                retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed, maybe video rate too high!\n").toLatin1().data());
             }
             else if (ret==-15)
             {
-                retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed, time out!\n").toAscii().data());
+                retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed, time out!\n").toLatin1().data());
             }
             else
             {
-                retValue = ito::RetVal(ito::retError, 0, tr("FireWire: Unknown!\n").toAscii().data());
+                retValue = ito::RetVal(ito::retError, 0, tr("FireWire: Unknown!\n").toLatin1().data());
             }
         }
         else
@@ -937,7 +940,7 @@ ito::RetVal CMU1394::startDevice(ItomSharedSemaphore *waitCond)
             ret = m_ptheCamera->StartImageAcquisition();
         if (ret != 0)
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("StartImageAcquisition failed").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("StartImageAcquisition failed").toLatin1().data());
         }
         else
         {
@@ -978,7 +981,7 @@ ito::RetVal CMU1394::stopDevice(ItomSharedSemaphore *waitCond)
             m_ptheCamera->StopImageAcquisition();
             if (ret != 0)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("StopImageAcquisition failed").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("StopImageAcquisition failed").toLatin1().data());
             }
         }
         else
@@ -988,7 +991,7 @@ ito::RetVal CMU1394::stopDevice(ItomSharedSemaphore *waitCond)
     }
     if(grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Cameraflag was < 0").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Cameraflag was < 0").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -1009,7 +1012,7 @@ ito::RetVal CMU1394::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() <= 0)
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toAscii().data());
+        retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toLatin1().data());
     }
     else
     {
@@ -1017,7 +1020,7 @@ ito::RetVal CMU1394::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         
         if ( m_ptheCamera->AcquireImage() )  
         {
-            retValue = ito::RetVal(ito::retError, 0, tr("FireWireDll: CaptureImage failed!").toAscii().data());
+            retValue = ito::RetVal(ito::retError, 0, tr("FireWireDll: CaptureImage failed!").toLatin1().data());
         }
     }
 
@@ -1060,7 +1063,7 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
 
     if (this->m_isgrabbing == false)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
     }
     else
     {
@@ -1106,7 +1109,7 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
                     break;
                 }
                 default:
-                    retValue += ito::RetVal(ito::retError, 0, tr("F Wrong picture Type").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("F Wrong picture Type").toLatin1().data());
                     break;
             }
         
@@ -1155,7 +1158,7 @@ ito::RetVal CMU1394::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if(!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
     else
     {

@@ -96,9 +96,9 @@ license browse to http://www.alliedvisiontec.com. This plugin was mainly tested 
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
 
-    m_initParamsOpt.append(ito::Param("cameraID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("specific number of the camera, don't use with cameraNumber (0 = unused)").toAscii().data()));
-    m_initParamsOpt.append(ito::Param("vendorID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("number of the vendor (e.g. Allied: vendorID=673537), don't use with cameraNumber (0 = unused)").toAscii().data()));
-    m_initParamsOpt.append(ito::Param("cameraNumber", ito::ParamBase::Int | ito::ParamBase::In, 0, 25, 0, tr("number of order of plugging the cameras (0 = parameter not used)").toAscii().data()));
+    m_initParamsOpt.append(ito::Param("cameraID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("specific number of the camera, don't use with cameraNumber (0 = unused)").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("vendorID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("number of the vendor (e.g. Allied: vendorID=673537), don't use with cameraNumber (0 = unused)").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("cameraNumber", ito::ParamBase::Int | ito::ParamBase::In, 0, 25, 0, tr("number of order of plugging the cameras (0 = parameter not used)").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -109,7 +109,9 @@ FireGrabberInterface::~FireGrabberInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(FireGrabberinterface, FireGrabberInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(FireGrabberinterface, FireGrabberInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -140,52 +142,52 @@ FireGrabber::FireGrabber() :
    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "FireGrabber", NULL);
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("vendorID", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, std::numeric_limits<int>::max(), 0, tr("vendor ID of the camera").toAscii().data());
+   paramVal = ito::Param("vendorID", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, std::numeric_limits<int>::max(), 0, tr("vendor ID of the camera").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("cameraID", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, std::numeric_limits<int>::max(), 0, tr("camera ID of the camera").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
-   paramVal = ito::Param("vendorName", ito::ParamBase::String | ito::ParamBase::Readonly, NULL, tr("vendor name of the camera [if connected]").toAscii().data());
+   paramVal = ito::Param("cameraID", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, std::numeric_limits<int>::max(), 0, tr("camera ID of the camera").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("modelName", ito::ParamBase::String | ito::ParamBase::Readonly, NULL, tr("model name of the camera [if connected]").toAscii().data());
+   paramVal = ito::Param("vendorName", ito::ParamBase::String | ito::ParamBase::Readonly, NULL, tr("vendor name of the camera [if connected]").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.001, 5000.0, 0.01, tr("Integrationtime of CCD programmed in s").toAscii().data());
+   paramVal = ito::Param("modelName", ito::ParamBase::String | ito::ParamBase::Readonly, NULL, tr("model name of the camera [if connected]").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.005, 150.0, 33.333333, tr("Transmission time per frame in s").toAscii().data());
+
+   paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.001, 5000.0, 0.01, tr("Integrationtime of CCD programmed in s").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.005, 150.0, 33.333333, tr("Transmission time per frame in s").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
    
-   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 24, 8, tr("bit depth of camera").toAscii().data());
+   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 24, 8, tr("bit depth of camera").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("brightness", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Brightness value (if supported)").toAscii().data());
+   paramVal = ito::Param("brightness", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Brightness value (if supported)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sharpness", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Sharpness value (if supported)").toAscii().data());
+   paramVal = ito::Param("sharpness", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Sharpness value (if supported)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("gamma", ito::ParamBase::Int, 0, 1, 0, tr("Gamma correction (0: off, 1: on, default: off)").toAscii().data());
+   paramVal = ito::Param("gamma", ito::ParamBase::Int, 0, 1, 0, tr("Gamma correction (0: off, 1: on, default: off)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Virtual gain").toAscii().data());
+   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Virtual gain").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 0.0, 0.0, tr("Offset not used here.").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
-   paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Startvalue for ROI").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("Startvalue for ROI").toAscii().data());
+   paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 0.0, 0.0, tr("Offset not used here.").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Stopvalue for ROI").toAscii().data());
+   paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Startvalue for ROI").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Stopvalue for ROI").toAscii().data());
+   paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("Startvalue for ROI").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toAscii().data());
+   paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Stopvalue for ROI").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toAscii().data());
+   paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Stopvalue for ROI").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+
+   paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
    
-   //paramVal = ito::Param("fps", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100, 0, tr("Read frames per second").toAscii().data());
+   //paramVal = ito::Param("fps", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 100, 0, tr("Read frames per second").toLatin1().data());
    //m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
@@ -278,14 +280,14 @@ ito::RetVal FireGrabber::AlliedChkError(int errornumber)
         {
             if (errors[i].value == errornumber)
             {
-                retValue += ito::RetVal::format(ito::retError, 0, tr(&errors[i].text[0]).toAscii().data());
+                retValue += ito::RetVal::format(ito::retError, 0, tr(&errors[i].text[0]).toLatin1().data());
                 found = true;
             }
         }
 
         if (!found)
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("Unknown Error Code").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Unknown Error Code").toLatin1().data());
         }
     }
         
@@ -386,7 +388,7 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             if (m_isgrabbing == true)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("camera is grabbing, stop camera first").toAscii().data());        
+                retValue += ito::RetVal(ito::retError, 0, tr("camera is grabbing, stop camera first").toLatin1().data());        
             }
             else
             {
@@ -420,7 +422,7 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("only 8 and 16 bit are implemented").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("only 8 and 16 bit are implemented").toLatin1().data());
                 }
 
                 retValue += AlliedChkError(Result);
@@ -626,7 +628,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         camID = 0;
         venID = 0;
-        retValue += ito::RetVal(ito::retWarning, 0, tr("too much input parameters, plugin number is used").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("too much input parameters, plugin number is used").toLatin1().data());
     }
 
     FireGrabber::m_numberOfInstances++;
@@ -658,11 +660,11 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 {
                     if (camID != 0 && venID == 0 && (NodeInfo[i].Guid.Low == NodeInfo[j + 1].Guid.Low))
                     {
-                        retValue += ito::RetVal(ito::retWarning, 0, tr("same cameraID for more than one camera, connected the first plugged and free camera").toAscii().data());
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("same cameraID for more than one camera, connected the first plugged and free camera").toLatin1().data());
                     }
                     if (camID == 0 && venID != 0 && (NodeInfo[i].Guid.High == NodeInfo[j + 1].Guid.High))
                     {
-                        retValue += ito::RetVal(ito::retWarning, 0, tr("same vendorID for more than one camera, connected the first plugged and free camera").toAscii().data());
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("same vendorID for more than one camera, connected the first plugged and free camera").toLatin1().data());
                     }
                 }
             }
@@ -944,7 +946,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     }
     else if(connected == false)
     {
-        retValue += ito::RetVal(ito::retError,0, tr("no camera has been connected").toAscii().data());
+        retValue += ito::RetVal(ito::retError,0, tr("no camera has been connected").toLatin1().data());
     }
     
     m_isgrabbing = false;
@@ -1068,7 +1070,7 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     }
     else if (grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retWarning, 1001, tr("stopDevice not executed since camera has not been started.").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 1001, tr("stopDevice not executed since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -1240,7 +1242,7 @@ ito::RetVal FireGrabber::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
         if (dObj == NULL)
         {
-            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toLatin1().data());
         }
         else
         {
@@ -1282,7 +1284,7 @@ ito::RetVal FireGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if (!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
     else
     {

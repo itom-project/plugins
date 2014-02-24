@@ -57,7 +57,6 @@ class LeicaMotorFocus : public ito::AddInActuator
         ~LeicaMotorFocus() {};    /*! < Destructor*/
         LeicaMotorFocus();/*! < Constructor*/
 
-
     public:
         friend class LeicaMotorFocusInterface;
         const ito::RetVal showConfDialog(void);    /*! < Opens the modal configuration dialog*/
@@ -135,8 +134,11 @@ class LeicaMotorFocus : public ito::AddInActuator
 class LeicaMotorFocusInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-        Q_INTERFACES(ito::AddInInterfaceBase)
-        PLUGIN_ITOM_API
+#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
+#endif
+    Q_INTERFACES(ito::AddInInterfaceBase)
+    PLUGIN_ITOM_API
 
     protected:
 

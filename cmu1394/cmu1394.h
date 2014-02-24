@@ -34,15 +34,12 @@
 #include "common/addInGrabber.h"
 #include "dialogcmu1394.h"
 
-#define MY1394CAMERA_EXPORTS 1
-
-#include "./cmu1394/include/1394Camera.h"
-
-#define MAX1394 5
-#define LIM(a)    (a<0?0:a>4095?4095:a)
-
 #include <qsharedpointer.h>
 
+#ifndef Q_MOC_RUN
+#define MY1394CAMERA_EXPORTS 1
+#include "./cmu1394/include/1394Camera.h"
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
@@ -138,8 +135,11 @@ class CMU1394 : public ito::AddInGrabber
 class CMU1394Interface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-        Q_INTERFACES(ito::AddInInterfaceBase)
-        PLUGIN_ITOM_API
+#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
+#endif
+    Q_INTERFACES(ito::AddInInterfaceBase)
+    PLUGIN_ITOM_API
 
     protected:
 
