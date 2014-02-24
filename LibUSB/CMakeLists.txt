@@ -24,113 +24,111 @@ find_package(Qt4 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(ITOM_SDK REQUIRED)
 find_package(VisualLeakDetector QUIET)
+find_package(LibUSB QUIET)
 
-FIND_PATH( LIBUSB_INC_DIR libusb.h CACHE PATH "Include directory of libUSB static include directory")
+#FIND_PATH( LIBUSB_INC_DIR libusb.h CACHE PATH "Include directory of libUSB static include directory")
 
-IF(LIBUSB_INC_DIR)
+IF(LibUSB_FOUND)
 
-include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+    include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-IF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-ENDIF (BUILD_UNICODE)
-ADD_DEFINITIONS(-DCMAKE)
+    ADD_DEFINITIONS(${QT_DEFINITIONS})
+    IF (BUILD_UNICODE)
+        ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+    ENDIF (BUILD_UNICODE)
+    ADD_DEFINITIONS(-DCMAKE)
 
 
-IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-    ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+    IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+        ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
+    ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-# enable some qt stuff
-SET (QT_USE_QTXML TRUE)
+    # enable some qt stuff
+    SET (QT_USE_QTXML TRUE)
 
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
+    # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
+    IF (DEFINED CMAKE_BUILD_TYPE)
+        SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    ELSE(CMAKE_BUILD_TYPE)
+        SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
+    message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-INCLUDE_DIRECTORIES(
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${QT_QTCORE_INCLUDE_DIR}
-    ${OpenCV_DIR}/include
-    ${ITOM_SDK_INCLUDE_DIR}
-    ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-	${LIBUSB_INC_DIR}
-	${LIBUSB_INC_DIR}/os
-)
-set(LIBUSB_API_DIR ${LIBUSB_INC_DIR}/../ CACHE PATH "Base directory of libUSB static include directory")
-find_library(LIBUSB_LIBRARY NAMES "libusb"  PATHS ${LIBUSB_API_DIR}/lib NO_DEFAULT_PATH)
+    INCLUDE_DIRECTORIES(
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${QT_QTCORE_INCLUDE_DIR}
+        ${OpenCV_DIR}/include
+        ${ITOM_SDK_INCLUDE_DIR}
+        ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+	    ${LibUSB_INCLUDE_DIRS}
+    )
 
-LINK_DIRECTORIES(
-    ${OpenCV_DIR}/lib
-	${LIBUSB_API_DIR}/lib
-)
+    LINK_DIRECTORIES(
+        ${OpenCV_DIR}/lib
+    )
 
-INCLUDE(${QT_USE_FILE})
+    INCLUDE(${QT_USE_FILE})
 
-set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ItomLibUSB.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-)
+    set(plugin_HEADERS
+        ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
+        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
+        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ItomLibUSB.h
+	    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    )
 
-QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
 
-set(plugin_ui
-	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.ui
-)
+    set(plugin_ui
+	    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.ui
+    )
 
-QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
+    QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
 
-set(plugin_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/ItomLibUSB.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.cpp
-)
+    set(plugin_SOURCES 
+        ${CMAKE_CURRENT_SOURCE_DIR}/ItomLibUSB.cpp
+	    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLibUSB.cpp
+    )
 
-#Add version information to the plugIn-dll unter MSVC
-if(MSVC)
-    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-endif(MSVC)
+    #Add version information to the plugIn-dll unter MSVC
+    if(MSVC)
+        list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    endif(MSVC)
 
-#handle translations BEGIN STEP 1
-set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
-set (TRANSLATION_OUTPUT_FILES)
-set (TRANSLATIONS_FILES)
+    #handle translations BEGIN STEP 1
+    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
+    set (TRANSLATION_OUTPUT_FILES)
+    set (TRANSLATIONS_FILES)
 
-file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-#handle translations END STEP 1
+    file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+    #handle translations END STEP 1
 
-ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${LIBUSB_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
+    ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${LibUSB_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
 
-#handle translations BEGIN STEP 2
-if (UPDATE_TRANSLATIONS)
-    QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+    #handle translations BEGIN STEP 2
+    if (UPDATE_TRANSLATIONS)
+        QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+        
+        add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+        add_dependencies(${target_name} _${target_name}_translation)
+        
+        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
+    else (UPDATE_TRANSLATIONS)
+        QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
+    endif (UPDATE_TRANSLATIONS)
+    #handle translations END STEP 2
+
+    # COPY SECTION
+    set(COPY_SOURCES "")
+    set(COPY_DESTINATIONS "")
+    ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+    POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
     
-    add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-    add_dependencies(${target_name} _${target_name}_translation)
-    
-    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-else (UPDATE_TRANSLATIONS)
-    QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-endif (UPDATE_TRANSLATIONS)
-#handle translations END STEP 2
-
-# COPY SECTION
-set(COPY_SOURCES "")
-set(COPY_DESTINATIONS "")
-ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-ELSE (LIBUSB_INC_DIR)
+ELSE (LibUSB_FOUND)
     message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")	
-ENDIF (LIBUSB_INC_DIR)
+ENDIF (LibUSB_FOUND)

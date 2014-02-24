@@ -491,7 +491,7 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     {
         int test = 0;
         
-	    m_autoDetach  = libusb_set_auto_detach_kernel_driver(m_pDevice, 1) == 0;
+        m_autoDetach  = libusb_set_auto_detach_kernel_driver(m_pDevice, 1) == 0;
         if (!m_autoDetach) 
         {
             libusb_detach_kernel_driver(m_pDevice, 0);

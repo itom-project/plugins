@@ -100,7 +100,7 @@ endif (PLUGIN_LeicaMotorFocus)
 # LibUSB
 OPTION(PLUGIN_LIBUSB "Build with this plugin." ON)
 if (PLUGIN_LIBUSB)
-    ADD_SUBDIRECTORY(LIBUSB)
+    ADD_SUBDIRECTORY(LibUSB)
 endif (PLUGIN_LIBUSB)
 
 # OpenCVFilters
@@ -168,5 +168,5 @@ ENDIF (WIN32)
 # XIMEA
 OPTION(PLUGIN_XIMEA "Build with this plugin." ON)
 if (PLUGIN_XIMEA)
-    ADD_SUBDIRECTORY(XIMEA)
+    ADD_SUBDIRECTORY(Ximea)
 endif (PLUGIN_XIMEA)
