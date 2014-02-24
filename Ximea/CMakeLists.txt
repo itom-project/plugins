@@ -44,7 +44,7 @@ find_package(OpenCV REQUIRED)
 find_package(ITOM_SDK REQUIRED)
 find_package(VisualLeakDetector QUIET)
 
-FIND_PATH( XIMEA_APIDIR m3Api.h)
+FIND_PATH( XIMEA_APIDIR m3Api.h CACHE PATH "Include directory of XIMEA API")
 
 IF(XIMEA_APIDIR)
 

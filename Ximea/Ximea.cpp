@@ -997,6 +997,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
         ret = pxiOpenDevice(iCamNumber, &m_handle);
         if (!m_handle || ret != XI_OK)
         {
+            m_handle = NULL;
             retValue += getErrStr(ret);
             retValue += ito::RetVal(ito::retError, 0, tr("Unable open camera").toAscii().data());
         }

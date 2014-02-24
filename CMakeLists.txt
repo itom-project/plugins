@@ -97,6 +97,12 @@ if (PLUGIN_LeicaMotorFocus)
     ADD_SUBDIRECTORY(LeicaMotorFocus)
 endif (PLUGIN_LeicaMotorFocus)
 
+# LibUSB
+OPTION(PLUGIN_LIBUSB "Build with this plugin." ON)
+if (PLUGIN_LIBUSB)
+    ADD_SUBDIRECTORY(LIBUSB)
+endif (PLUGIN_LIBUSB)
+
 # OpenCVFilters
 OPTION(PLUGIN_OpenCVFilters "Build with this plugin." ON)
 if (PLUGIN_OpenCVFilters)
