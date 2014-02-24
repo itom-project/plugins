@@ -23,8 +23,11 @@
 #ifndef PROJWINDOW_H
 #define PROJWINDOW_H
 
+#define NOMINMAX        // we need this define to remove min max macros from M$ includes, otherwise we get problems within params.h
 #include <QtOpenGL/qgl.h>
-#include <qglfunctions.h>
+#if QT_VERSION >= 0x050000
+    #include <qglfunctions.h>
+#endif
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 
@@ -86,7 +89,12 @@ class PrjWindow : public QGLWidget
         unsigned char **m_grayImgsVert;
         unsigned char **m_grayImgsHoriz;
         QVector<unsigned char> m_lut;
+#if QT_VERSION >= 0x050000
         QGLFunctions *m_glf;
+#else
+        // just a dummy pointer so we don't need to adapt the rest of the code
+        char *m_glf;
+#endif
         void paintGL();
         void initializeGL();
         void resizeGL(int width, int height);

@@ -19,21 +19,17 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-
 #if linux
-    #include "GL/glew.h"
     #include <unistd.h>
 #endif
+#if (QT_VERSION < 0x050000) || (defined linux)
+    #include "GL/glew.h"
+#endif
 
-#ifdef WIN32
-        #define NOMINMAX 
+#if (defined WIN32) && (QT_VERSION >= 0x050000)
         #include <Windows.h>
         #include <gl/GL.h>
         #include <gl/GLU.h>
-#endif
-
-#if QT_VERSION < 0x050000
-    #include "GL/glew.h"
 #endif
 
 #include "projWindow.h"
