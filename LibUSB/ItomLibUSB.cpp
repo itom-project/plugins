@@ -496,14 +496,33 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         {
             libusb_detach_kernel_driver(m_pDevice, 0);
 		}
-        struct libusb_config_descriptor *conf_desc;
+        struct libusb_config_descriptor *conf_desc = NULL;
         status = libusb_get_active_config_descriptor(libusb_get_device(m_pDevice), &conf_desc);
         
-        status = libusb_set_configuration(m_pDevice, conf_desc->bConfigurationValue);
+        if(conf_desc == NULL)
+        {
+            status = libusb_get_config_descriptor(libusb_get_device(m_pDevice), 1, &conf_desc);   
+
+            if(conf_desc)
+            {
+                test = conf_desc->bConfigurationValue;
+            }
+        }
+
+        status = libusb_set_configuration(m_pDevice, test);
 		if (status < 0) 
         {
-			retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
+            status = libusb_set_configuration(m_pDevice, 1);
+		    if (status < 0) 
+            {
+                status = libusb_set_configuration(m_pDevice, 0);
+		        if (status < 0) 
+                {
+			        retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
+		        }
+		    }
 		}
+        
 
         //status = libusb_set_configuration(m_pDevice, test);
 		//if (status < 0) 
