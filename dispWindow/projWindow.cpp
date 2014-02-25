@@ -22,17 +22,7 @@
 #if linux
     #include <unistd.h>
 #endif
-#if (QT_VERSION < 0x050000) || (defined linux)
-    #include "GL/glew.h"
-#endif
 
-#if (defined WIN32) && (QT_VERSION >= 0x050000)
-        #include <Windows.h>
-        #include <gl/GL.h>
-        #include <gl/GLU.h>
-#endif
-
-#include "projWindow.h"
 #include <qevent.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -41,6 +31,18 @@
 #include <qdir.h>
 #include <qimage.h>
 
+#if (QT_VERSION < 0x050000) || (defined linux)
+    #include "GL/glew.h"
+#endif
+
+#if (defined WIN32) && (QT_VERSION >= 0x050000)
+        #define NOMINMAX
+        #include <Windows.h>
+        #include <gl/GL.h>
+        #include <gl/GLU.h>
+#endif
+
+#include "projWindow.h"
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
 
