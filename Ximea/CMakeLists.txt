@@ -40,6 +40,7 @@ endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
 if (NOT QT5_FOUND)
     find_package(Qt4 REQUIRED)
 endif (NOT QT5_FOUND)
+
 find_package(OpenCV REQUIRED)
 find_package(ITOM_SDK REQUIRED)
 find_package(VisualLeakDetector QUIET)
@@ -48,148 +49,148 @@ FIND_PATH( XIMEA_APIDIR m3Api.h CACHE PATH "Include directory of XIMEA API")
 
 IF(XIMEA_APIDIR)
 
-	include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+    include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
-	ADD_DEFINITIONS(${QT_DEFINITIONS})
-	IF (BUILD_UNICODE)
-		ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-	ENDIF (BUILD_UNICODE)
-	ADD_DEFINITIONS(-DCMAKE)
+    ADD_DEFINITIONS(${QT_DEFINITIONS})
+    IF (BUILD_UNICODE)
+        ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+    ENDIF (BUILD_UNICODE)
+    ADD_DEFINITIONS(-DCMAKE)
 
-	IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-		ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-	ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+    IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+        ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
+    ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-	# enable some qt stuff
-	#SET (QT_USE_QTXML TRUE)
+    # enable some qt stuff
+    #SET (QT_USE_QTXML TRUE)
 
-	# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-	IF (DEFINED CMAKE_BUILD_TYPE)
-		SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-	ELSE(CMAKE_BUILD_TYPE)
-		SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-	ENDIF (DEFINED CMAKE_BUILD_TYPE)
+    # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
+    IF (DEFINED CMAKE_BUILD_TYPE)
+        SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    ELSE(CMAKE_BUILD_TYPE)
+        SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
-	message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
+    message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-	INCLUDE_DIRECTORIES(
-		${CMAKE_CURRENT_BINARY_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}
-		${QT_QTCORE_INCLUDE_DIR}
-		${OpenCV_DIR}/include
-		${ITOM_SDK_INCLUDE_DIR}
-		${VISUALLEAKDETECTOR_INCLUDE_DIR}
-		${XIMEA_APIDIR}
-	)
+    INCLUDE_DIRECTORIES(
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${QT_QTCORE_INCLUDE_DIR}
+        ${OpenCV_DIR}/include
+        ${ITOM_SDK_INCLUDE_DIR}
+        ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+        ${XIMEA_APIDIR}
+    )
 
-	if(BUILD_TARGET64)
-		LINK_DIRECTORIES(
-			${OpenCV_DIR}/lib
-			${XIMEA_APIDIR}/x64
-		)
-	else(BUILD_TARGET64)
-		LINK_DIRECTORIES(
-			${OpenCV_DIR}/lib
-			${XIMEA_APIDIR}/x86
-		)
-	endif(BUILD_TARGET64)
+    if(BUILD_TARGET64)
+        LINK_DIRECTORIES(
+            ${OpenCV_DIR}/lib
+            ${XIMEA_APIDIR}/x64
+        )
+    else(BUILD_TARGET64)
+        LINK_DIRECTORIES(
+            ${OpenCV_DIR}/lib
+            ${XIMEA_APIDIR}/x86
+        )
+    endif(BUILD_TARGET64)
 
     if (NOT QT5_FOUND)
         INCLUDE(${QT_USE_FILE})
     endif (NOT QT5_FOUND)
 
-	set(plugin_HEADERS
-		${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
-		${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-		${ITOM_SDK_INCLUDE_DIR}/common/sharedFunctionsQt.h
-		${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-		${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-		${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.h
-		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.h
-		${CMAKE_CURRENT_SOURCE_DIR}/Ximea.h
-		${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-	)
+    set(plugin_HEADERS
+        ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
+        ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
+        ${ITOM_SDK_INCLUDE_DIR}/common/sharedFunctionsQt.h
+        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
+        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    )
 
     if (NOT QT5_FOUND)
         QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
     endif (NOT QT5_FOUND)
 
-	set(plugin_ui
-		${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.ui
-		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.ui
-	)
+    set(plugin_ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.ui
+    )
 
-    if (NOT QT5_FOUND)
+    if (QT5_FOUND)
         QT5_WRAP_UI(plugin_ui_MOC ${plugin_ui})
-    else (NOT QT5_FOUND)
+    else (QT5_FOUND)
         QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
-    endif (NOT QT5_FOUND)
+    endif (QT5_FOUND)
 
-	set(plugin_SOURCES 
-		${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.cpp
-		${CMAKE_CURRENT_SOURCE_DIR}/Ximea.cpp
-	)
+    set(plugin_SOURCES 
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.cpp
+    )
 
-	#Add version information to the plugIn-dll unter MSVC
-	if(MSVC)
-		list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-	endif(MSVC)
+    #Add version information to the plugIn-dll unter MSVC
+    if(MSVC)
+        list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    endif(MSVC)
 
-	#handle translations BEGIN STEP 1
-	set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
-	set (TRANSLATION_OUTPUT_FILES)
-	set (TRANSLATIONS_FILES)
+    #handle translations BEGIN STEP 1
+    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
+    set (TRANSLATION_OUTPUT_FILES)
+    set (TRANSLATIONS_FILES)
 
-	file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-	#handle translations END STEP 1
+    file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+    #handle translations END STEP 1
 
-	ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
-    if (NOT QT5_FOUND)
+    ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
+    if (QT5_FOUND)
         TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
         qt5_use_modules(${target_name} Widgets UiTools Xml)
-    else (NOT QT5_FOUND)
+    else (QT5_FOUND)
         TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
-    endif (NOT QT5_FOUND)
+    endif (QT5_FOUND)
 
-	#handle translations BEGIN STEP 2
-	if (UPDATE_TRANSLATIONS)
-        if (NOT QT5_FOUND)
+    #handle translations BEGIN STEP 2
+    if (UPDATE_TRANSLATIONS)
+        if (QT5_FOUND)
             QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-        else (NOT QT5_FOUND)
+        else (QT5_FOUND)
             QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-        endif (NOT QT5_FOUND)
-		
-		add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-		add_dependencies(${target_name} _${target_name}_translation)
-		
-        if (NOT QT5_FOUND)
+        endif (QT5_FOUND)
+        
+        add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
+        add_dependencies(${target_name} _${target_name}_translation)
+        
+        if (QT5_FOUND)
             QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-        else (NOT QT5_FOUND)
+        else (QT5_FOUND)
             QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-        endif (NOT QT5_FOUND)
-	else (UPDATE_TRANSLATIONS)
-        if (NOT QT5_FOUND)
+        endif (QT5_FOUND)
+    else (UPDATE_TRANSLATIONS)
+        if (QT5_FOUND)
             QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-        else (NOT QT5_FOUND)
+        else (QT5_FOUND)
             QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-        endif (NOT QT5_FOUND)
-	endif (UPDATE_TRANSLATIONS)
-	#handle translations END STEP 2
+        endif (QT5_FOUND)
+    endif (UPDATE_TRANSLATIONS)
+    #handle translations END STEP 2
 
-	# COPY SECTION
-	set(COPY_SOURCES "")
-	set(COPY_DESTINATIONS "")
-	ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-	#ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
-	POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    # COPY SECTION
+    set(COPY_SOURCES "")
+    set(COPY_DESTINATIONS "")
+    ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    #ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+    POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-	if(BUILD_TARGET64)
-		file(GLOB dlls "${XIMEA_APIDIR}/x64/*.dll")
-	else(BUILD_TARGET64)    
-		file(GLOB dlls "${XIMEA_APIDIR}/x86/*.dll")
-	endif(BUILD_TARGET64)
-	POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
+    if(BUILD_TARGET64)
+        file(GLOB dlls "${XIMEA_APIDIR}/x64/*.dll")
+    else(BUILD_TARGET64)    
+        file(GLOB dlls "${XIMEA_APIDIR}/x86/*.dll")
+    endif(BUILD_TARGET64)
+    POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
 ELSE (XIMEA_APIDIR)
-    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")	
+    message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")    
 ENDIF (XIMEA_APIDIR)
