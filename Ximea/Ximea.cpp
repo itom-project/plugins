@@ -154,6 +154,11 @@ Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnCl
    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Currently not used").toAscii().data());
    m_params.insert(paramVal.getName(), paramVal);
 
+   paramVal = ito::Param("gamma", ito::ParamBase::Double, 0.3, 1.0, 1.0, tr("gamma").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("sharpness").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+
    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1279, 0, tr("Startvalue for ROI").toAscii().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Startvalue for ROI").toAscii().data());
@@ -596,7 +601,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
     int running = 0;
     int bin = 1;
-    float gain = 0;
+    float gain = 0.0f, sharpness = 0.0f, gamma = 0.0f;
     int bitppix = 10;
     int bitppix_old = m_params["bpp"].getVal<int>();
     int shift = 0;
@@ -679,6 +684,10 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
             bin = m_params["binning"].getVal<int>();
             gain = (int)(m_params["gain"].getVal<double>() * 10 + 0.5);
+
+            gamma = (float)m_params["gamma"].getVal<double>();
+            sharpness = (float)m_params["sharpness"].getVal<double>();
+
             bitppix = (int) m_params["bpp"].getVal<int>();
 
             if (strcmp(paramIt.value().getName(),"bpp") == 0)
@@ -759,6 +768,16 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
             }
+            else if (strcmp(paramIt.value().getName(),"sharpness") == 0)
+            {
+                if ((ret = pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat)))
+                    retValue += getErrStr(ret);
+            }
+            else if (strcmp(paramIt.value().getName(),"gamma") == 0)
+            {
+                if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
+                    retValue += getErrStr(ret);
+            }    
             else if (strcmp(paramIt.value().getName(),"trigger_mode") == 0)
             {
                 if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
@@ -972,6 +991,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     int trigger_mode2 = 0;
     int timing_mode = 0;
     float framerate = 30;
+    float gamma = 0.0;
+    float sharpness = 1.0;
     double gain = 0;
     QFile paramFile;
 
@@ -1064,6 +1085,9 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             timing_mode = m_params["timing_mode"].getVal<int>();
             framerate = m_params["framerate"].getVal<double>();
 
+            gamma = m_params["gamma"].getVal<double>();
+            sharpness = m_params["sharpness"].getVal<double>();
+
             if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);
             if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
@@ -1076,6 +1100,11 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             // Though in api the dll reports not supported ...
     //        if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &framerate, sizeof(float), xiTypeFloat)))
     //            retValue += getErrStr(ret);
+            if ((ret = pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat)))
+                retValue += getErrStr(ret);
+            if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
+                retValue += getErrStr(ret); 
+
             switch (m_params["bpp"].getVal<int>())
             {
                 case 8:
