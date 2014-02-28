@@ -159,6 +159,17 @@ Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnCl
    paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("sharpness").toAscii().data());
    m_params.insert(paramVal.getName(), paramVal);
 
+   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 1, tr("Enable hdr mode").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("hdr_knee1", ito::ParamBase::Int, 0, 100, 40, tr("").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("hdr_knee2", ito::ParamBase::Int, 0, 100, 60, tr("").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("hdr_it1", ito::ParamBase::Int, 0, 100, 50, tr("").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("hdr_it2", ito::ParamBase::Int, 0, 100, 75, tr("").toAscii().data());
+   m_params.insert(paramVal.getName(), paramVal);
+
    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1279, 0, tr("Startvalue for ROI").toAscii().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Startvalue for ROI").toAscii().data());
@@ -762,6 +773,40 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 m_params["y1"].setMin(0);*/
                 m_params["x1"].setVal<int>(curxsize-1);
                 m_params["y1"].setVal<int>(curysize-1);
+            }
+
+            else if (strcmp(paramIt.value().getName(),"hdr_enable") == 0)
+            {
+                int knee1 = (int)m_params["hdr_knee1"].getVal<int>();
+                int knee2 = (int)m_params["hdr_knee2"].getVal<int>();
+                int intTime1 = (int)m_params["hdr_it1"].getVal<int>();
+                int intTime2 = (int)m_params["hdr_it2"].getVal<int>();
+                int enable = (int)m_params["hdr_enable"].getVal<int>();
+
+                if(enable)
+                {
+                    if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), xiTypeInteger)))
+                    {
+                        retValue += getErrStr(ret);
+                    }
+                    else if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT2 , &knee2, sizeof(int), xiTypeInteger)))
+                    {
+                        retValue += getErrStr(ret);
+                    }
+                    else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T1 , &intTime1, sizeof(int), xiTypeInteger)))
+                    {
+                        retValue += getErrStr(ret);
+                    }
+                    else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T2, &intTime2, sizeof(int), xiTypeInteger)))
+                    {
+                        retValue += getErrStr(ret);
+                    }
+                }
+                if ((ret = pxiSetParam(m_handle, XI_PRM_HDR, &enable, sizeof(int), xiTypeInteger)))
+                {
+                    retValue += getErrStr(ret);
+                }
+
             }
             else if (strcmp(paramIt.value().getName(),"integration_time") == 0)
             {
