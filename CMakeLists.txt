@@ -54,10 +54,10 @@ if (PLUGIN_DummyMotor)
 endif (PLUGIN_DummyMotor)
 
 # FFTW-Wrapper
-#OPTION(PLUGIN_FFTWFilters "Build with this plugin." ON)
-#if (PLUGIN_FFTWFilters)
-#    ADD_SUBDIRECTORY(FFTWfilters)
-#endif (PLUGIN_FFTWFilters)
+OPTION(PLUGIN_FFTWFilters "Build with this plugin." ON)
+if (PLUGIN_FFTWFilters)
+    ADD_SUBDIRECTORY(FFTWfilters)
+endif (PLUGIN_FFTWFilters)
 
 # FileGrabber
 OPTION(PLUGIN_FileGrabber "Build with this plugin." ON)
@@ -124,12 +124,12 @@ IF (WIN32)
 ENDIF (WIN32)
 
 # PGRFlyCapture
-#IF (WIN32)
-#    OPTION(PLUGIN_PGRFlyCapture "Build with this plugin." ON)
-#    if (PLUGIN_PGRFlyCapture)
-#            ADD_SUBDIRECTORY(PGRFlyCapture)
-#    endif (PLUGIN_PGRFlyCapture)
-#ENDIF (WIN32)
+IF (WIN32)
+    OPTION(PLUGIN_PGRFlyCapture "Build with this plugin." ON)
+    if (PLUGIN_PGRFlyCapture)
+            ADD_SUBDIRECTORY(PGRFlyCapture)
+    endif (PLUGIN_PGRFlyCapture)
+ENDIF (WIN32)
 
 # PIPiezoCtrl
 OPTION(PLUGIN_PIPiezoCtrl "Build with this plugin." ON)
@@ -138,10 +138,10 @@ if (PLUGIN_PIPiezoCtrl)
 endif (PLUGIN_PIPiezoCtrl)
 
 # QCam
-#OPTION(PLUGIN_QCam "Build with this plugin." OFF)
-#if (PLUGIN_QCam)
-#    ADD_SUBDIRECTORY(QCam)
-#endif (PLUGIN_QCam)
+OPTION(PLUGIN_QCam "Build with this plugin." OFF)
+if (PLUGIN_QCam)
+    ADD_SUBDIRECTORY(QCam)
+endif (PLUGIN_QCam)
 
 # SerialIO
 OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
