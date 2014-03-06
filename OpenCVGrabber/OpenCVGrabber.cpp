@@ -456,21 +456,32 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
 ito::RetVal OpenCVGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
     QMap<QString,ito::Param>::iterator it;
-    ito::RetVal retValue = apiGetParamFromMapByKey(m_params, val->getName(), it, false);
+
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
+    {
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
+    }
 
     if(!retValue.containsError())
     {
         *val = it.value();
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
