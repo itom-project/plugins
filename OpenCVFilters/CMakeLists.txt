@@ -44,7 +44,7 @@ if (NOT QT5_FOUND)
 endif (NOT QT5_FOUND)
 
 find_package(ITOM_SDK REQUIRED)
-find_package(OpenCV REQUIRED COMPONENTS core calib3d imgproc)
+find_package(OpenCV COMPONENTS core calib3d imgproc REQUIRED)
 find_package(VisualLeakDetector QUIET)
 
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")

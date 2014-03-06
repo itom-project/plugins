@@ -43,7 +43,7 @@ if (NOT QT5_FOUND)
     find_package(Qt4 REQUIRED)
 endif (NOT QT5_FOUND)
 
-find_package(OpenCV REQUIRED COMPONENTS core)
+find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(ITOM_SDK REQUIRED)
 find_package(LAPACKE)
 find_package(VisualLeakDetector QUIET)

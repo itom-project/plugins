@@ -45,7 +45,7 @@ if (NOT QT5_FOUND)
 endif (NOT QT5_FOUND)
 
 find_package(ITOM_SDK REQUIRED)
-find_package(OpenCV REQUIRED)
+find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(OpenGL REQUIRED)
 
 find_package(VisualLeakDetector QUIET)

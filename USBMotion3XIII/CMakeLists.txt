@@ -43,7 +43,7 @@ if (NOT QT5_FOUND)
     find_package(Qt4 REQUIRED)
 endif (NOT QT5_FOUND)
 find_package(ITOM_SDK REQUIRED)
-find_package(OpenCV REQUIRED)
+find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
 
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
