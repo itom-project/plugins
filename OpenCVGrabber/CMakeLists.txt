@@ -42,7 +42,7 @@ endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
 if (NOT QT5_FOUND)
     find_package(Qt4 REQUIRED)
 endif (NOT QT5_FOUND)
-find_package(OpenCV COMPONENTS core REQUIRED)
+find_package(OpenCV COMPONENTS core highgui imgproc REQUIRED)
 find_package(ITOM_SDK REQUIRED)
 find_package(VisualLeakDetector QUIET)
 
