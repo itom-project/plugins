@@ -790,12 +790,15 @@ ito::RetVal BasicFilters::calcMeanOverZParams(QVector<ito::Param> *paramsMand, Q
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image with 3 or 4 uint8 planes").toLatin1().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input object with multiple z-planes").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image with uint32 planes").toLatin1().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image with 1 or 2 float64 planes").toLatin1().data());
         paramsMand->append(param);
 
         param = ito::Param("ignoreInf", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Ignore invalid-Values for floating point").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("calcStd", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If true, calculate standard deviation").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -886,7 +889,95 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***srcP
     }
     return;
 }
+template<typename _Type, typename _TypeDst> void calcDeviationOverZHelp(_Type ***srcPtr, cv::Mat *meanMat, cv::Mat *dstMat, const int *sizes, const bool toogleInf)
+{
+    _TypeDst *linePtr = 0;
+    _TypeDst *meanlinePtr = 0;
+    ito::float64 value = 0.0;
+    ito::float64 cnts = 0;
+    if(std::numeric_limits<_Type>::is_exact)
+    {
+        for(int y = 0; y < sizes[1]; y++)
+        {
+            linePtr = dstMat->ptr<_TypeDst>(y);
+            meanlinePtr = meanMat->ptr<_TypeDst>(y);
+            for(int x = 0; x < sizes[2]; x++)
+            {
+                value = 0.0;
+                cnts = 0.0;
+                for(int z = 0; z < sizes[0]; z ++)
+                {
+                    value += pow((ito::float64)(srcPtr[z][y][x]) - (ito::float64)(meanlinePtr[x]), 2);
+                    cnts++;
+                }
+                linePtr[x] = cv::saturate_cast<_TypeDst>(sqrt(value / cnts));
+            }
+        }
+    }
+    else
+    {
+        if(toogleInf)
+        {
+            for(int y = 0; y < sizes[1]; y++)
+            {
+                linePtr = dstMat->ptr<_TypeDst>(y);
+                meanlinePtr = meanMat->ptr<_TypeDst>(y);
+                for(int x = 0; x < sizes[2]; x++)
+                {
+                    value = 0.0;
+                    cnts = 0.0;
 
+                    for(int z = 0; z < sizes[0]; z ++)
+                    {
+                        if(ito::dObjHelper::isFinite<_Type>(srcPtr[z][y][x]))
+                        {
+                            value += pow((ito::float64)(srcPtr[z][y][x]) - (ito::float64)(meanlinePtr[x]), 2);
+                            cnts++;                    
+                        }
+                    }
+                    if(cnts > 0.0)
+                    {
+                        linePtr[x] = cv::saturate_cast<_TypeDst>(sqrt(value / cnts));
+                    }
+                    else
+                    {
+                        linePtr[x] = std::numeric_limits<_TypeDst>::quiet_NaN();
+                    }
+                
+                }
+            } 
+        }
+        else
+        {
+            for(int y = 0; y < sizes[1]; y++)
+            {
+                linePtr = dstMat->ptr<_TypeDst>(y);
+                meanlinePtr = meanMat->ptr<_TypeDst>(y);
+                for(int x = 0; x < sizes[2]; x++)
+                {
+                    value = 0.0;
+                    cnts = 0.0;
+
+                    for(int z = 0; z < sizes[0]; z ++)
+                    {
+                        value += pow((ito::float64)(srcPtr[z][y][x]) - (ito::float64)(meanlinePtr[x]), 2);
+                        cnts++;                    
+                    }
+                    if(cnts > 0.0)
+                    {
+                        linePtr[x] = cv::saturate_cast<_TypeDst>(sqrt(value / cnts));
+                    }
+                    else
+                    {
+                        linePtr[x] = std::numeric_limits<_TypeDst>::quiet_NaN();
+                    }
+                
+                }
+            }
+        }    
+    }
+    return;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -913,7 +1004,8 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
         return ito::RetVal(ito::retError, 0, tr("Error: sourceImageStack is Null-Pointer").toLatin1().data());
     }
     
-    bool toogleInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
+    int nessPlanes = (*paramsOpt)[1].getVal<int>() > 0 ? 2 : 1;
+    bool toogleInf = (*paramsOpt)[0].getVal<int>() > 0;
 
     xsize = dObjSrc->getSize(dObjSrc->getDims() - 1);
     ysize = dObjSrc->getSize(dObjSrc->getDims() - 2);
@@ -932,10 +1024,10 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
     {
         if(dObjDst != dObjSrc)
         {
-            ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjDst, "destinationPlane", ysize, ysize, xsize, xsize,  1, dObjSrc->getType());
+            ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjDst, "destinationPlane", nessPlanes, nessPlanes, ysize, ysize, xsize, xsize,  1, dObjSrc->getType());
             if(tRetval.containsError())
             {
-                destPlane = ito::DataObject(ysize, xsize, dObjSrc->getType());
+                destPlane = ito::DataObject(nessPlanes, ysize, xsize, dObjSrc->getType());
             }
             else
             {
@@ -962,6 +1054,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
             ito::int8 ***srcPtr = NULL;
             ito::dObjHelper::getRowPointer<ito::int8>(dObjSrc, srcPtr);
             calcMeanOverZHelp<ito::int8, ito::int8>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            if(nessPlanes > 1) calcDeviationOverZHelp<ito::int8, ito::int8>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), (cv::Mat*)(destPlane.get_mdata()[1]), sizes, toogleInf);
             ito::dObjHelper::freeRowPointer<ito::int8>(srcPtr);
         }
         break;
@@ -970,6 +1063,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
             ito::uint8 ***srcPtr = NULL;
             ito::dObjHelper::getRowPointer<ito::uint8>(dObjSrc, srcPtr);
             calcMeanOverZHelp<ito::uint8, ito::uint8>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            if(nessPlanes > 1) calcDeviationOverZHelp<ito::uint8, ito::uint8>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), (cv::Mat*)(destPlane.get_mdata()[1]), sizes, toogleInf);
             ito::dObjHelper::freeRowPointer<ito::uint8>(srcPtr);
         }
         break;
@@ -978,6 +1072,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
             ito::int16 ***srcPtr = NULL;
             ito::dObjHelper::getRowPointer<ito::int16>(dObjSrc, srcPtr);
             calcMeanOverZHelp<ito::int16, ito::int16>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            if(nessPlanes > 1) calcDeviationOverZHelp<ito::int16, ito::int16>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), (cv::Mat*)(destPlane.get_mdata()[1]), sizes, toogleInf);
             ito::dObjHelper::freeRowPointer<ito::int16>(srcPtr);
         }
         break;
@@ -986,6 +1081,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
             ito::uint16 ***srcPtr = NULL;
             ito::dObjHelper::getRowPointer<ito::uint16>(dObjSrc, srcPtr);
             calcMeanOverZHelp<ito::uint16, ito::uint16>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            if(nessPlanes > 1) calcDeviationOverZHelp<ito::uint16, ito::uint16>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), (cv::Mat*)(destPlane.get_mdata()[1]), sizes, toogleInf);
             ito::dObjHelper::freeRowPointer<ito::uint16>(srcPtr);
         }
         break;
@@ -994,6 +1090,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
             ito::int32 ***srcPtr = NULL;
             ito::dObjHelper::getRowPointer<ito::int32>(dObjSrc, srcPtr);
             calcMeanOverZHelp<ito::int32, ito::int32>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            if(nessPlanes > 1) calcDeviationOverZHelp<ito::int32, ito::int32>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), (cv::Mat*)(destPlane.get_mdata()[1]), sizes, toogleInf);
             ito::dObjHelper::freeRowPointer<ito::int32>(srcPtr);
         }
         break;
@@ -1002,6 +1099,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
             ito::float32 ***srcPtr = NULL;
             ito::dObjHelper::getRowPointer<ito::float32>(dObjSrc, srcPtr);
             calcMeanOverZHelp<ito::float32, ito::float32>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            if(nessPlanes > 1) calcDeviationOverZHelp<ito::float32, ito::float32>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), (cv::Mat*)(destPlane.get_mdata()[1]), sizes, toogleInf);
             ito::dObjHelper::freeRowPointer<ito::float32>(srcPtr);
         }
         break;
@@ -1010,6 +1108,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
             ito::float64 ***srcPtr = NULL;
             ito::dObjHelper::getRowPointer<ito::float64>(dObjSrc, srcPtr);
             calcMeanOverZHelp<ito::float64, ito::float64>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), sizes, toogleInf);
+            if(nessPlanes > 1) calcDeviationOverZHelp<ito::float64, ito::float64>(srcPtr, (cv::Mat*)(destPlane.get_mdata()[0]), (cv::Mat*)(destPlane.get_mdata()[1]), sizes, toogleInf);
             ito::dObjHelper::freeRowPointer<ito::float64>(srcPtr);
         }
         break;
