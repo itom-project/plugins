@@ -551,7 +551,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
         return ito::RetVal(ito::retError, 0, QObject::tr("invalid endline character").toLatin1().data());
     }
 
-    m_serParams.singlechar = params.singlechar;
+    m_serParams.sendDelay = params.sendDelay;
 
     return ito::retOk;
 }
@@ -560,18 +560,18 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
     \detail This function sets the parameters of this serial port
 
     \param[in] baud            Baudrate in bits / s
-    \param[in] endline        Endline character
+    \param[in] endline         Endline character
     \param[in] bits            Number of bits in line before stopbits
     \param[in] stopbits        Number of stop bits after every n bits
-    \param[in] parity        Toggle parity check options
-    \param[in] flow         Flow control bitmask
-    \param[in] singlechar    Write every character seperated or complete buffer at once
-    \param[in] timeout        Time to wait until timeout in [ms]
+    \param[in] parity          Toggle parity check options
+    \param[in] flow            Flow control bitmask
+    \param[in] sendDelay       Write every character seperated with delay or (=0) complete buffer at once
+    \param[in] timeout         Time to wait until timeout in [ms]
 
     \return retOk
 */
 const ito::RetVal SerialPort::setparams(const int baud, const char* endline, const int bits,
-            const int stopbits, const int parity, const int flow, const int singlechar, const int timeout)
+            const int stopbits, const int parity, const int flow, const int sendDelay, const int timeout)
 {
     SerialPort::serParams params;
     params.baud = baud;
@@ -579,7 +579,7 @@ const ito::RetVal SerialPort::setparams(const int baud, const char* endline, con
     params.stopbits = stopbits;
     params.parity = parity;
     params.flow = flow;
-    params.singlechar = singlechar;
+    params.sendDelay = sendDelay;
     params.timeout = timeout; // Set timeout in [ms]
     strcpy(params.endline, endline);
     return setparams(params);
@@ -591,18 +591,18 @@ const ito::RetVal SerialPort::setparams(const int baud, const char* endline, con
 
     \param[in] port            Number of serial port
     \param[in] baud            Baudrate in bits / s
-    \param[in] endline        Endline character
+    \param[in] endline         Endline character
     \param[in] bits            Number of bits in line before stopbits
     \param[in] stopbits        Number of stop bits after every n bits
-    \param[in] parity        Toggle parity check options
-    \param[in] flow         Flow control bitmask
-    \param[in] singlechar    Write every character seperated or complete buffer at once
-    \param[in] timeout        Time to wait until timeout in [ms]
+    \param[in] parity          Toggle parity check options
+    \param[in] flow            Flow control bitmask
+    \param[in] sendDelay       Write every character seperated with delay or (=0) complete buffer at once
+    \param[in] timeout         Time to wait until timeout in [ms]
 
     \return retOk
 */
 const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* endline, const int bits,
-            const int stopbits, const int parity, const int flow, const int singlechar, const int timeout)
+            const int stopbits, const int parity, const int flow, const int sendDelay, const int timeout)
 {
     char device[50];
 #ifdef __linux__
@@ -623,7 +623,7 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
     m_serParams.port = port;
     fcntl(m_dev, F_SETFL, FNDELAY);     // set nonblocking mode
 
-    return setparams(baud, endline, bits, stopbits, parity, flow, singlechar, timeout);
+    return setparams(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
 #else
     _snprintf(device, 50, "\\\\.\\COM%d", port);
     // Open device
@@ -642,7 +642,7 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
     }
     m_serParams.port = port;
 
-    return setparams(baud, endline, bits, stopbits, parity, flow, singlechar, timeout);
+    return setparams(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
 #endif
 }
 
@@ -693,7 +693,7 @@ int SerialPort::sreadable(void) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal SerialPort::sread(char *buf, int *len, const int singlechar)
+const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
 {
 #ifdef __linux__
     int ret = 0;
@@ -707,13 +707,14 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int singlechar)
     if (readable)
     {
         *len = *len > readable ? *len : readable;
-        if (singlechar)
+        if (sendDelay)
         {
             while (readable)
             {
                 ret = read(m_dev, buf, 1);
                 buf++;
                 readable--;
+                Sleep(sendDelay);
             }
         }
         else
@@ -742,7 +743,7 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int singlechar)
     *len = readable < *len ? readable : *len;
     if (readable)
     {
-        if (singlechar)
+        if (sendDelay)
         {
             while (readable)
             {
@@ -753,6 +754,7 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int singlechar)
                 }
                 readable++;
                 buf--;
+                Sleep(sendDelay);
             }
         }
         else
@@ -821,7 +823,7 @@ const ito::RetVal SerialPort::swrite(const char c) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int singlechar) const
+const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int sendDelay) const
 {
 //    char *outbuf = (char*)calloc(strlen(buf) + 3, sizeof(char));
 //    sprintf(outbuf, "%s%s", buf, m_serParams.endline);
@@ -853,7 +855,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
         return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
-    if (singlechar)
+    if (sendDelay)
     {
         for (int n = 0; n < length; n++)
         {
@@ -863,6 +865,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
 				free(outbuf);
                 return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
             }
+            Sleep(sendDelay);
         }
     }
     else
@@ -884,7 +887,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
 
 //std::cout << "serial::swrite: " << buf << "\n" << std::endl;
     DWORD bytesWritten = 0;
-    if (singlechar)
+    if (sendDelay)
     {
         for (int n = 0; n < length; n++)
         {
@@ -898,6 +901,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
 				free(outbuf);
                 return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
             }
+            Sleep(sendDelay);
         }
     }
     else
@@ -1071,7 +1075,7 @@ Example \n\
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("flow", ito::ParamBase::Int, 0, 127, 0, tr("Bitmask for flow control (see docstring for more information)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("singlechar", ito::ParamBase::Int, 0, 1, 0, tr("Toggle: write output buffer as block or single characters").toLatin1().data());
+    paramVal = ito::Param("sendDelay", ito::ParamBase::Int, 0, 65000, 0, tr("0 -> write output buffer as block or single characters with delay (1..65000)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -1126,7 +1130,7 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false)
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("endline", ito::ParamBase::String | ito::ParamBase::NoAutosave, "\n", tr("Endline character, will be added automatically during setVal").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("singlechar", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 1, 0, tr("Toggle: write output buffer as block @ once or single characters").toLatin1().data());
+    paramVal = ito::Param("sendDelay", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 65000, 0, tr("0 -> write output buffer as block at once or single characters with delay (1..65000)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -1237,7 +1241,7 @@ ito::RetVal SerialIO::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
             int parity = 0;
             int flow = 0;
             char *endline = NULL;
-            int singlechar = 0;
+            int sendDelay = 0;
             int timeout = 0;
 
             if (paramIt->getFlags() & ito::ParamBase::Readonly)    //check read-only
@@ -1279,10 +1283,10 @@ ito::RetVal SerialIO::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
             parity = m_params["parity"].getVal<int>();
             flow = m_params["flow"].getVal<int>();
             endline = m_params["endline"].getVal<char*>(); //borrowed reference
-            singlechar = m_params["singlechar"].getVal<int>();
+            sendDelay = m_params["sendDelay"].getVal<int>();
             timeout = (int)(m_params["timeout"].getVal<double>() * 1000.0 + 0.5);
             m_debugMode = (bool)(m_params["debug"].getVal<int>());
-            retValue += m_serport.setparams(baud, endline, bits, stopbits, parity, flow, singlechar, timeout);
+            retValue += m_serport.setparams(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
         }
         else
         {
@@ -1314,7 +1318,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     // 5. stopbits [1 .. 2]
     // 6. parity [0 .. 2: none, odd, even]
     // 7. flow control [off, hardware, xoff]
-    // 8. singlechar [0 .. 1]
+    // 8. sendDelay [0 .. 65000]
     // 9. timeout [0 .. 30000]
 
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1327,7 +1331,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     int stopbits = 1;
     int parity = 0;
     int flow = 0;
-    int singlechar = 0;
+    int sendDelay = 0;
     int timeout = 4000;
     char * tendline = NULL;
 
@@ -1369,13 +1373,13 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     retval += m_params["flow"].copyValueFrom(&((*paramsOpt)[3]));
     flow = m_params["flow"].getVal<int>();
 
-    retval += m_params["singlechar"].copyValueFrom(&((*paramsOpt)[4]));
-    singlechar = m_params["singlechar"].getVal<int>();
+    retval += m_params["sendDelay"].copyValueFrom(&((*paramsOpt)[4]));
+    sendDelay = m_params["sendDelay"].getVal<int>();
 
     retval += m_params["timeout"].copyValueFrom(&((*paramsOpt)[5]));
     timeout = (int)(m_params["timeout"].getVal<double>() * 1000 + 0.5);
 
-    retval = m_serport.sopen(port, baud, endline, bits, stopbits, parity, flow, singlechar, timeout);
+    retval = m_serport.sopen(port, baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
 
     retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[6]));
     m_debugMode = (bool)(m_params["debug"].getVal<int>());
@@ -1485,7 +1489,7 @@ ito::RetVal SerialIO::setVal(const void *data, const int datalength, ItomSharedS
     {
         emit serialLog(QByteArray(buf,datalength), QByteArray(endline, (int)strlen(endline)), '>');
     }
-    retval = m_serport.swrite(buf, datalength, m_params["singlechar"].getVal<int>());
+    retval = m_serport.swrite(buf, datalength, m_params["sendDelay"].getVal<int>());
 
     if (waitCond)
     {

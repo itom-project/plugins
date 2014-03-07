@@ -69,7 +69,7 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1" rowspan="2">
+          <item row="0" column="1">
            <widget class="QComboBox" name="combo_baud">
             <property name="minimumSize">
              <size>
@@ -247,7 +247,7 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="4" rowspan="2">
+          <item row="0" column="4">
            <widget class="QComboBox" name="combo_parity">
             <property name="minimumSize">
              <size>
@@ -270,20 +270,7 @@
             </item>
            </widget>
           </item>
-          <item row="1" column="5" rowspan="2">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>1</width>
-              <height>15</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="2" column="0">
+          <item row="1" column="0">
            <widget class="QLabel" name="label_bits">
             <property name="font">
              <font>
@@ -298,7 +285,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="1" column="1">
            <widget class="QComboBox" name="combo_bits">
             <property name="minimumSize">
              <size>
@@ -331,7 +318,7 @@
             </item>
            </widget>
           </item>
-          <item row="2" column="2">
+          <item row="1" column="2">
            <widget class="QLabel" name="label">
             <property name="minimumSize">
              <size>
@@ -350,14 +337,14 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="3">
+          <item row="1" column="3">
            <widget class="QLabel" name="label_timeout">
             <property name="text">
              <string>Time out</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="4">
+          <item row="1" column="4">
            <widget class="QSpinBox" name="spinBox_timeout">
             <property name="minimumSize">
              <size>
@@ -373,7 +360,20 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="1" column="5">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>1</width>
+              <height>15</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="2" column="0">
            <widget class="QLabel" name="label_endline">
             <property name="font">
              <font>
@@ -388,7 +388,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="2" column="1">
            <widget class="QComboBox" name="combo_endline">
             <property name="minimumSize">
              <size>
@@ -421,29 +421,35 @@
             </item>
            </widget>
           </item>
-          <item row="3" column="3">
-           <widget class="QLabel" name="label_singlechar">
+          <item row="2" column="3">
+           <widget class="QLabel" name="label_sendDelay">
             <property name="font">
              <font>
               <pointsize>8</pointsize>
              </font>
             </property>
             <property name="text">
-             <string>Single char</string>
-            </property>
-            <property name="buddy">
-             <cstring>checkBox_single</cstring>
+             <string>Send Delay</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="4">
-           <widget class="QCheckBox" name="checkBox_single">
-            <property name="text">
-             <string/>
+          <item row="2" column="4">
+           <widget class="QSpinBox" name="spinBox_sendDelay">
+            <property name="minimumSize">
+             <size>
+              <width>73</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="suffix">
+             <string>ms</string>
+            </property>
+            <property name="maximum">
+             <number>65000</number>
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="label_stopbits">
             <property name="font">
              <font>
@@ -458,7 +464,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="3" column="1">
            <widget class="QComboBox" name="combo_stopbits">
             <property name="minimumSize">
              <size>
@@ -481,7 +487,7 @@
             </item>
            </widget>
           </item>
-          <item row="4" column="3">
+          <item row="3" column="3">
            <widget class="QLabel" name="label_debug">
             <property name="font">
              <font>
@@ -496,7 +502,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="4">
+          <item row="3" column="4">
            <widget class="QCheckBox" name="checkBox_debug">
             <property name="text">
              <string/>
@@ -1057,7 +1063,6 @@
   <tabstop>combo_stopbits</tabstop>
   <tabstop>combo_parity</tabstop>
   <tabstop>spinBox_timeout</tabstop>
-  <tabstop>checkBox_single</tabstop>
   <tabstop>checkBox_debug</tabstop>
   <tabstop>combo_flow_xonxoff</tabstop>
   <tabstop>combo_flow_cts</tabstop>
