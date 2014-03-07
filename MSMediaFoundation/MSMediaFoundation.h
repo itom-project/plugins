@@ -60,6 +60,7 @@ class MSMediaFoundation : public ito::AddInGrabber //, public MSMediaFoundationI
 
         VideoInput *m_pVI;    /*!< Handle to the VideoInput-Class */
         CamParameters m_camParams;
+        QHash<QString, Parameter*> m_camParamsHash;
 
         int m_deviceID; /*!< Camera ID */
         bool m_isgrabbing; /*!< Check if acquire was called */
@@ -88,6 +89,10 @@ class MSMediaFoundation : public ito::AddInGrabber //, public MSMediaFoundationI
             modeBlue,
             modeGray
         };
+
+        ito::RetVal synchronizeParam(const Parameter &parameter, ito::Param &paramDbl, ito::Param &paramAutoInt);
+        ito::RetVal updateCamParam(Parameter &parameter, const ito::ParamBase &paramDbl, const ito::ParamBase &paramAutoInt);
+        ito::RetVal synchronizeCameraParametersToParams(bool deleteIfNotAvailable = false);
 
     public slots:
         //!< Get Camera-Parameter

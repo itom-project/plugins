@@ -27,6 +27,8 @@
 #include "pluginVersion.h"
 #include "opencv2/core/types_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
+#include <strmif.h>
+#include <wchar.h>
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
@@ -73,7 +75,23 @@ MSMediaFoundationInterface::MSMediaFoundationInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"";
+"This plugin uses the Microsoft Media Foundation framework (Windows Vista, 7, 8) for capturing supported camera devices (e.g. ordinary USB or integrated cameras). \n\
+\n\
+This driver detects an interal list of connected cameras. The parameter *cameraNumber* indicates the device to open (until now, there is no mechanism to open the next \n\
+not yet opened device!). The camera can either be used as colored camera, as gray valued camera or it is also possible to only select one color channel that is mapped \n\
+to the gray output. \n\
+\n\
+Any detected and supported device can offer multiple framerates and sizes. Use the parameter *mediaTypeID* to select the right value. Open your device with *mediaTypeID* = -1 \n\
+to let the plugin print a list of supported formats (the plugin initialization then stops with a desired error). \n\
+\n\
+Build requirements \n\
+------------------- \n\
+For building this plugin the Windows SDK needs to be installed and Windows Vista or higher is required. \n\
+\n\
+Affiliation \n\
+------------ \n\
+This plugin internally used a modified version of VideoInput, proposed by Evgeny Pereguda and published under \n\
+http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License)";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = "M. Gronle, ITO, University Stuttgart";
@@ -82,8 +100,6 @@ MSMediaFoundationInterface::MSMediaFoundationInterface()
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");     
-    
-    m_callInitInNewThread = false; //camera must be opened in main-thread
 
     ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 16, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -97,6 +113,9 @@ MSMediaFoundationInterface::MSMediaFoundationInterface()
     meta.addItem("blue");
     meta.addItem("gray");
     paramVal.setMeta(&meta, false);
+    m_initParamsOpt.append(paramVal);
+
+    paramVal = ito::Param("mediaTypeID", ito::ParamBase::Int, -1, 1000, 0, tr("ID of the media format. 0 (default) takes the first from the list (must be MFVideoFormat_RGBA24 as subtype). -1: prints out a list of devices and quits the initialization, other: other index from the list of available types").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     //paramVal = ito::Param("Init-Dialog", ito::ParamBase::Int, 0, 1, 0, tr("If true, a camera selection dialog is opened during startup").toLatin1().data());
@@ -129,7 +148,10 @@ void StopEvent(int deviceID, void *userData)
 //----------------------------------------------------------------------------------------------------------------------------------
 MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_pVI(NULL), m_deviceID(0), m_camStatusChecked(false)
 {
-    ito::Param paramVal("name", ito::ParamBase::String, "MSMediaFoundation", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MSMediaFoundation", NULL);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", "name of device");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
@@ -145,20 +167,54 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 24, 8, tr("bpp").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 8, 8, tr("bpp").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.000010, 10.0, 0.01, tr("Integrationtime of CCD [s], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("integrationTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.01, tr("Integrationtime of CCD [0..1] (no unit)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("brightness", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("brightness [0..1], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("integrationTimeAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled integration time of CCD (on:1, off:0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("contrast", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("contrast [0..1], does not exist for all cameras").toLatin1().data());
+
+    paramVal = ito::Param("brightness", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("brightness [0..1]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("saturation", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("saturation [0..1], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("contrast", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("contrast [0..1]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("hue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("hue [0..1], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("saturation", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("saturation [0..1]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("Gain [0..1], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("hue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("hue [0..1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("gain [0..1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("focus", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("focus [0..1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gamma", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("gamma [0..1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("iris", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("iris [0..1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("zoom", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("zoom [0..1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("backlightCompensation", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("backlightCompensation [0..1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("brightnessAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled brightness (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("contrastAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled contrast (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("saturationAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled saturation (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("hueAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled hue (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gainAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled gain (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("focusAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled focus (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gammaAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled gamma (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("irisAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled iris (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("zoomAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled zoom (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("backlightCompensationAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled backlightCompensation (on:1, off:0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
    
     /*paramVal = ito::Param("channel", ito::ParamBase::Int, 0, 3, 0, tr("selected color channel (all available (0, default), R (1), G (2), B (3)").toLatin1().data());
@@ -256,6 +312,11 @@ ito::RetVal MSMediaFoundation::getParam(QSharedPointer<ito::Param> val, ItomShar
 
     if(!retValue.containsError())
     {
+        if (m_camParamsHash.contains(key))
+        {
+            synchronizeCameraParametersToParams(false);
+        }
+
         *val = it.value();
     }
 
@@ -304,6 +365,23 @@ ito::RetVal MSMediaFoundation::setParam(QSharedPointer<ito::ParamBase> val, Itom
 
     if (!retValue.containsError())
     {
+        if (m_camParamsHash.contains(key))
+        {
+            if (key.endsWith("Auto"))
+            {
+                QString keyWithoutAuto = key.left( key.size()-4 );
+                retValue += updateCamParam(*(m_camParamsHash[key]), m_params[keyWithoutAuto], *val);
+            }
+            else
+            {
+                retValue += updateCamParam(*(m_camParamsHash[key]), *val, m_params[key + "Auto"]);
+            }
+
+            if (!retValue.containsError() && m_pVI)
+            {
+                m_pVI->setParameters(m_deviceID, m_camParams);
+            }
+        }
         if (key == "colorMode")
         {
             const char *mode = val->getVal<char*>();
@@ -383,9 +461,9 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     //exceptionally, this init dialog is executed in the main thread of itom (m_callInitInNewThread == false in OpenCVGrabberInterface)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    bool ret;
 
     m_deviceID = paramsOpt->at(0).getVal<int>();
+    int mediaTypeID = paramsOpt->at(2).getVal<int>();
 
     m_pVI = &VideoInput::getInstance();
     int numDevices = m_pVI->listDevices();
@@ -396,20 +474,69 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     }
     else
     {
-        if (!m_pVI->setupDevice(m_deviceID, 640, 480, 60))
+        QString deviceName = QString::fromUtf16((const ushort*)m_pVI->getNameVideoDevice(m_deviceID));
+
+        if (deviceName == "Empty")
         {
-            retValue += ito::RetVal::format(ito::retError,0,tr("Camera (%i) could not be opened").toLatin1().data(), numDevices);
+            retValue += ito::RetVal(ito::retError,0,tr("desired device does not exist").toLatin1().data());
         }
         else
         {
-            if (m_pVI->isFrameNew(m_deviceID))
+            m_params["deviceName"].setVal<char*>(deviceName.toLatin1().data());
+            MediaType mediaType;
+
+            if (mediaTypeID == -1)
             {
-                m_pVI->setEmergencyStopEvent(m_deviceID, NULL, StopEvent);
-                m_camParams = m_pVI->getParameters(m_deviceID);
+                std::cout << "Media types for selected camera '" << deviceName.toLatin1().data() << "'\n---------------------------------------------------------------\n" << std::endl;
+            }
+
+            int j = 0;
+            int foundID = -1;
+
+            for (int i = 0; i < m_pVI->getCountFormats(m_deviceID); ++i)
+            {
+                mediaType = m_pVI->getFormat(m_deviceID, i);
+
+                if (wcscmp(mediaType.pMF_MT_MAJOR_TYPEName, L"MFMediaType_Video") == 0)
+                {
+                    if (wcscmp(mediaType.pMF_MT_SUBTYPEName, L"MFVideoFormat_RGB24") == 0)
+                    {
+                        if (mediaTypeID == -1)
+                        {
+                            std::cout << "ID " << j << ": " << mediaType.height << " x " << mediaType.width << " px, " << mediaType.MF_MT_FRAME_RATE << " fps (RGB24, Video)\n" << std::endl;
+                        }
+                        else if (mediaTypeID == j)
+                        {
+                            foundID = i;
+                            break;
+                        }
+                        j++;
+                    }
+                }
+            }
+
+            if (mediaTypeID == -1)
+            {
+                retValue += ito::RetVal(ito::retError,0,tr("Camera initialization aborted since only list of media types requested").toLatin1().data());
+            }
+            else if (foundID == -1)
+            {
+                retValue += ito::RetVal(ito::retError,0,tr("Number of available media types was smaller than the given mediaTypeID. Try mediaTypeID = -1 to print a list of available types.").toLatin1().data());
+            }
+            else if (!m_pVI->setupDevice(m_deviceID, foundID))
+            {
+                retValue += ito::RetVal::format(ito::retError,0,tr("Camera (%i) could not be opened").toLatin1().data(), numDevices);
             }
             else
             {
-                retValue += ito::RetVal::format(ito::retError,0,tr("No frame could be aquired from device %i").toLatin1().data(), numDevices);
+                if (m_pVI->isFrameNew(m_deviceID))
+                {
+                    m_pVI->setEmergencyStopEvent(m_deviceID, NULL, StopEvent);
+                }
+                else
+                {
+                    retValue += ito::RetVal::format(ito::retError,0,tr("No frame could be aquired from device %i").toLatin1().data(), numDevices);
+                }
             }
         }
     }
@@ -419,32 +546,9 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     {
         m_params["sizex"].setVal<int>( m_pVI->getWidth(m_deviceID) );
         m_params["sizey"].setVal<int>( m_pVI->getHeight(m_deviceID) );
-        m_pDataMatBuffer = cv::Mat(m_pVI->getHeight(m_deviceID), m_pVI->getWidth(m_deviceID), CV_8UC3);
+        
 
-        if(m_camParams.Brightness.Available == false)    //Brightness of the data (only for cameras).
-        {
-            m_params.remove("brightness");
-        }
-        if(m_camParams.Contrast.Available == false) //Contrast of the data (only for cameras).
-        {
-            m_params.remove("contrast");
-        } 
-        if(m_camParams.Hue.Available == false) //Hue of the data (only for cameras).
-        {
-            m_params.remove("hue");
-        }
-        if(m_camParams.Saturation.Available == false) //Saturation of the data (only for cameras).
-        {
-            m_params.remove("saturation");
-        }
-        if(m_camParams.Gain.Available == false) //Gain of the data (only for cameras).
-        {
-            m_params.remove("gain");
-        }
-        if(m_camParams.Exposure.Available == false) //Exposure of the data (only for cameras).
-        {
-            m_params.remove("integration_time");
-        }
+        synchronizeCameraParametersToParams(true);
     }
 
 
@@ -469,6 +573,185 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
         
     setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MSMediaFoundation::synchronizeParam(const Parameter &parameter, ito::Param &paramDbl, ito::Param &paramAutoInt)
+{
+    ito::DoubleMeta *dm = (ito::DoubleMeta*)(paramDbl.getMeta());
+
+    if (parameter.Available && (parameter.Max > parameter.Min))
+    {
+        dm->setStepSize( static_cast<double>(parameter.Step) / static_cast<double>(parameter.Max - parameter.Min));
+        paramDbl.setVal<double>(static_cast<double>(parameter.CurrentValue - parameter.Min) / static_cast<double>(parameter.Max - parameter.Min));
+        paramAutoInt.setVal<int>( parameter.Flag == VideoProcAmp_Flags_Auto ? 1 : 0 );
+    }
+    else
+    {
+        return ito::RetVal(ito::retError,0,"Parameter not available or useless range");
+    }
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MSMediaFoundation::updateCamParam(Parameter &parameter, const ito::ParamBase &paramDbl, const ito::ParamBase &paramAutoInt)
+{
+    if (paramAutoInt.getVal<int>() > 0)
+    {
+        parameter.Flag = VideoProcAmp_Flags_Auto;
+    }
+    else
+    {
+        parameter.Flag = VideoProcAmp_Flags_Manual;
+    }
+
+    parameter.CurrentValue = parameter.Min + (long)(paramDbl.getVal<double>() * (parameter.Max - parameter.Min));
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MSMediaFoundation::synchronizeCameraParametersToParams(bool firstCall /*= false*/)
+{
+    if (m_pVI)
+    {
+        m_camParams = m_pVI->getParameters(m_deviceID);
+
+        if (m_camParams.Brightness.Available && m_camParams.Brightness.Max > m_camParams.Brightness.Min)
+        {
+            m_camParamsHash["brightness"] = &m_camParams.Brightness;
+            m_camParamsHash["brightnessAuto"] = &m_camParams.Brightness;
+            synchronizeParam(m_camParams.Brightness, m_params["brightness"], m_params["brightnessAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("brightness");
+            m_params.remove("brightnessAuto");
+        }
+
+        if (m_camParams.Contrast.Available && m_camParams.Contrast.Max > m_camParams.Contrast.Min)
+        {
+            m_camParamsHash["contrast"] = &m_camParams.Brightness;
+            m_camParamsHash["contrastAuto"] = &m_camParams.Brightness;
+            synchronizeParam(m_camParams.Contrast, m_params["contrast"], m_params["contrastAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("contrast");
+            m_params.remove("contrastAuto");
+        }
+
+        if (m_camParams.Hue.Available && m_camParams.Hue.Max > m_camParams.Hue.Min)
+        {
+            m_camParamsHash["hue"] = &m_camParams.Hue;
+            m_camParamsHash["hueAuto"] = &m_camParams.Hue;
+            synchronizeParam(m_camParams.Hue, m_params["hue"], m_params["hueAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("hue");
+            m_params.remove("hueAuto");
+        }
+
+        if (m_camParams.Saturation.Available && m_camParams.Saturation.Max > m_camParams.Saturation.Min)
+        {
+            m_camParamsHash["saturation"] = &m_camParams.Saturation;
+            m_camParamsHash["saturationAuto"] = &m_camParams.Saturation;
+            synchronizeParam(m_camParams.Saturation, m_params["saturation"], m_params["saturationAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("saturation");
+            m_params.remove("saturationAuto");
+        }
+
+        if (m_camParams.Gain.Available && m_camParams.Gain.Max > m_camParams.Gain.Min)
+        {
+            m_camParamsHash["gain"] = &m_camParams.Gain;
+            m_camParamsHash["gainAuto"] = &m_camParams.Gain;
+            synchronizeParam(m_camParams.Gain, m_params["gain"], m_params["gainAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("gain");
+            m_params.remove("gainAuto");
+        }
+
+        if (m_camParams.Exposure.Available && m_camParams.Exposure.Max > m_camParams.Exposure.Min)
+        {
+            m_camParamsHash["integrationTime"] = &m_camParams.Exposure;
+            m_camParamsHash["integrationTimeAuto"] = &m_camParams.Exposure;
+            synchronizeParam(m_camParams.Exposure, m_params["integrationTime"], m_params["integrationTimeAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("integrationTime");
+            m_params.remove("integrationTimeAuto");
+        }
+
+        if (m_camParams.Focus.Available && m_camParams.Focus.Max > m_camParams.Focus.Min)
+        {
+            m_camParamsHash["focus"] = &m_camParams.Focus;
+            m_camParamsHash["FocusAuto"] = &m_camParams.Focus;
+            synchronizeParam(m_camParams.Focus, m_params["focus"], m_params["FocusAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("focus");
+            m_params.remove("focusAuto");
+        }
+
+        if (m_camParams.Gamma.Available && m_camParams.Gamma.Max > m_camParams.Gamma.Min)
+        {
+            m_camParamsHash["gamma"] = &m_camParams.Gamma;
+            m_camParamsHash["gammaAuto"] = &m_camParams.Gamma;
+            synchronizeParam(m_camParams.Gamma, m_params["gamma"], m_params["gammaAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("gamma");
+            m_params.remove("gammaAuto");
+        }
+
+        if (m_camParams.Iris.Available && m_camParams.Iris.Max > m_camParams.Iris.Min)
+        {
+            m_camParamsHash["iris"] = &m_camParams.Iris;
+            m_camParamsHash["irisAuto"] = &m_camParams.Iris;
+            synchronizeParam(m_camParams.Iris, m_params["iris"], m_params["irisAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("iris");
+            m_params.remove("irisAuto");
+        }
+
+        if (m_camParams.Zoom.Available && m_camParams.Zoom.Max > m_camParams.Zoom.Min)
+        {
+            m_camParamsHash["zoom"] = &m_camParams.Zoom;
+            m_camParamsHash["zoomAuto"] = &m_camParams.Zoom;
+            synchronizeParam(m_camParams.Zoom, m_params["zoom"], m_params["zoomAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("zoom");
+            m_params.remove("zoomAuto");
+        }
+
+        if (m_camParams.BacklightCompensation.Available && m_camParams.BacklightCompensation.Max > m_camParams.BacklightCompensation.Min)
+        {
+            m_camParamsHash["backlightCompensation"] = &m_camParams.BacklightCompensation;
+            m_camParamsHash["backlightCompensationAuto"] = &m_camParams.BacklightCompensation;
+            synchronizeParam(m_camParams.BacklightCompensation, m_params["backlightCompensation"], m_params["backlightCompensationAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("backlightCompensation");
+            m_params.remove("backlightCompensationAuto");
+        }
+    }
+
+    return ito::retOk;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -568,7 +851,7 @@ ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *w
         {
             if (m_pVI->isFrameNew(m_deviceID))
             {
-                m_pVI->getPixels(m_deviceID, (unsigned char *)m_pDataMatBuffer.data); 
+                m_pVI->getPixels(m_deviceID, (unsigned char *)m_pDataMatBuffer.data, false, true); 
                 break;
             }
 
@@ -643,11 +926,11 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                 resizeRequired = true;
             }
 
-            if(m_imgBpp != 8 && m_imgBpp != 16)
+            /*if(m_imgBpp != 8 && m_imgBpp != 16)
             {
                 retValue += ito::RetVal(ito::retError, 0, tr("Error: bpp other than 8 or 16 not allowed.").toLatin1().data());
             }
-            else if(m_imgChannels != 1 && m_imgChannels != 3)
+            else */if(m_imgChannels != 1 && m_imgChannels != 3)
             {
                 retValue += ito::RetVal(ito::retError, 0, tr("Error: channels sizes other than 1 or 3 not allowed.").toLatin1().data());
             }
@@ -828,11 +1111,16 @@ ito::RetVal MSMediaFoundation::checkData(ito::DataObject *externalDataObject)
         m_alphaChannel = cv::Mat(futureHeight, futureWidth, CV_8UC1, cv::Scalar(255));
     }
 
+    if (m_pDataMatBuffer.rows != futureHeight || m_pDataMatBuffer.cols != futureWidth)
+    {
+        m_pDataMatBuffer = cv::Mat(futureHeight, futureWidth, CV_8UC3);
+    }
+
     if(!externalDataObject)
     {
         if(m_data.getDims() != 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
         {
-            m_data = ito::DataObject(futureHeight,futureWidth,futureType);   
+            m_data = ito::DataObject(futureHeight,futureWidth,futureType);  
 
             if (futureType == ito::tRGBA32)
             {
