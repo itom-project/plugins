@@ -103,6 +103,14 @@ if (PLUGIN_LIBUSB)
     ADD_SUBDIRECTORY(LibUSB)
 endif (PLUGIN_LIBUSB)
 
+IF(WIN32)
+# MSMediaFoundation
+OPTION(PLUGIN_MSMediaFoundation "Build with this plugin." OFF)
+if (PLUGIN_MSMediaFoundation)
+    ADD_SUBDIRECTORY(MSMediaFoundation)
+endif (PLUGIN_MSMediaFoundation)
+ENDIF(WIN32)
+
 # OpenCVFilters
 OPTION(PLUGIN_OpenCVFilters "Build with this plugin." ON)
 if (PLUGIN_OpenCVFilters)
