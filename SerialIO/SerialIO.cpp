@@ -1022,11 +1022,31 @@ flow bitmask \n\
 -------------- \n\
 \n\
 The flow bitmask is an OR combination of the following possible values: \n\
-Bit 1: Xon/Xoff enabled, if not set disabled \n\
-Bit 2/4: not set -> no rts control, 2 only -> rts control on, 4 set, 2 arbitrary -> rts control handshake \n\
-Bit 8: cts enabled, if not set disabled \n\
-Bit 16/32: not set -> dtr disabled, 16 only -> dtr enabled, 32 set, 16 arbitrary -> dtr handshake \n\
-Bit 64: dsr enabled, if not set dsr disabled";
+Xon/Xoff - default: Xoff, Xon=1 (1. bit) \n\
+rts control - default: disabled, enabled=2, handshake=4 or (4+2) (2. and 3. bit) \n\
+cts control - default: disabled, enabled=8 (4. bit) \n\
+dtr control - default: disabled, enabled = 16, handshake = 32 or (32+16) (5. and 6. bit) \n\
+dsr control - default: disabled, enabled = 64 \n\
+\n\
+If an endline character is given, this is automatically appended to each sequence that is send using the setVal-command. \n\
+On the other side, any obtained value from the serial port is scanned for this endline character and automatically split. \n\
+Use an empty endline character if you want to organize all this by yourself. \n\
+\n\
+Example \n\
+-------- \n\
+\n\
+.. \n\
+    \n\
+    s = dataIO(\"SerialIO\",port=1,baud=9600,endline=\"\",bits=8,stopbits=1,parity=0,flow=16) \n\
+    \n\
+    #send command \n\
+    sendString = bytearray(b\"POS?\") #or bytearray([80,79,83,63]); \n\
+    s.setVal(sendString) \n\
+    \n\
+    #get result \n\
+    answer = bytearray(9) #supposed length is 9 characters \n\
+    num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns ";
+
 
     m_detaildescription = tr(docstring);
     m_author = "H. Bieger, C. Kohler, ITO, University Stuttgart";
