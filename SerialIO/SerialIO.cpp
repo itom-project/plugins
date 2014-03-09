@@ -851,7 +851,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
 #ifdef __linux__
     if (m_dev == 0)
     {
-		free(outbuf);
+        free(outbuf);
         return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
@@ -862,7 +862,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
             // maybe error here it maybe was &outbuf???
             if (write(m_dev, outbuf + n, 1) != 1)
             {
-				free(outbuf);
+                free(outbuf);
                 return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
             }
             Sleep(sendDelay);
@@ -874,14 +874,14 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
         int a;
         if ((a = write(m_dev, outbuf, length)) != length)
         {
-			free(outbuf);
+            free(outbuf);
             return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
         }
     }
 #else
     if (!m_dev || INVALID_HANDLE_VALUE == m_dev)
     {
-		free(outbuf);
+        free(outbuf);
         return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
     }
 
@@ -893,12 +893,12 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
         {
             if (!WriteFile(m_dev, outbuf + n, 1, &bytesWritten, NULL))
             {
-				free(outbuf);
+                free(outbuf);
                 return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
             }
             if (bytesWritten != 1)
             {
-				free(outbuf);
+                free(outbuf);
                 return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
             }
             Sleep(sendDelay);
@@ -908,17 +908,17 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
     {
         if (!WriteFile(m_dev, outbuf, length, &bytesWritten, NULL))
         {
-			free(outbuf);
+            free(outbuf);
             return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
         }
         if (bytesWritten != length)
         {
-			free(outbuf);
+            free(outbuf);
             return ito::RetVal(ito::retError, 0, QObject::tr("error writing to com port").toLatin1().data());
         }
     }
 #endif
-	free(outbuf);
+    free(outbuf);
     return ito::retOk;
 }
 

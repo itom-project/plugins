@@ -30,11 +30,11 @@
 
 #define PLUGIN_VERSION_MAJOR 0
 #define PLUGIN_VERSION_MINOR 0
-#define PLUGIN_VERSION_PATCH 1
+#define PLUGIN_VERSION_PATCH 2
 #define PLUGIN_VERSION_REVISION 0
-#define PLUGIN_VERSION_STRING "0.0.1"
+#define PLUGIN_VERSION_STRING "0.0.2"
 #define PLUGIN_COMPANY        "Institut fuer Technische Optik, University Stuttgart"
-#define PLUGIN_COPYRIGHT      "(C) 2013, ITO, University Stuttgart"
+#define PLUGIN_COPYRIGHT      "(C) 2014, ITO, University Stuttgart"
 #define PLUGIN_NAME           "SerialIO"
 
 //----------------------------------------------------------------------------------------------------------------------------------
