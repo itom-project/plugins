@@ -103,9 +103,46 @@ parameters can be changed using *setParam*.
     Timeout in seconds. If the incoming buffer of the serial port cannot be read within this time, the call returns. [0,65]
 **enableDebug**: {int}
     Set this value to 1 if you want to read the entire data transfer in the toolbox of an instance (disabled: 0).
+    
+Usage
+=====
+
+Lets assume a serial port connection should be established with the following properties:
+
+* COM 1
+* 9600 baud
+* 8 bits
+* 1 stopbit
+* no parity
+* every command should finish with "\\n"
+
+Then open the serial port and assign it to the variable *serial*
+
+.. code-block:: python  
+    
+    serial = dataIO("SerialIO",1,9600,endline="\n",bits=8,stopbits=1,parity=0)
+
+If you have a scenario that you need to ask for the position of an actuator. Maybe the string to send in order to ask
+for the current position is **POS?\n**, then use the **setVal** method to send this string (*\\n* is automatically appended):
+
+.. code-block:: python
+    
+    serial.setVal("POS?")
+    
+Then it is necessary to get the result. Therefore create a bytearray with enough space and pass this array to the **getVal** method:
+
+.. code-block:: python
+    
+    ba = bytearray(9) #array with nine elements
+    len = serial.getVal(ba)
+
+*len* finally contains the number of characters that have been filled by the serial port, of course, *len* cannot be bigger than
+the size of the allocated buffer *ba*. If the serial port does not respond at all within the given timeout time, an error is raised.
+*getVal* does not wait until the entire buffer is filled or the timeout occurs but returns immediately with the content of the buffer that
+has been filled until this time. In order to get the full answer, it is also possible to repeatedly call *getVal*.
 
 Installation
 ============
 
-For using this plugin no further 3rd party libraries or driver are necessary.
+For using this plugin no further 3rd party libraries or drivers are necessary.
 

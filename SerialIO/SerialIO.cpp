@@ -1114,7 +1114,7 @@ const ito::RetVal SerialIO::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "SerialIO", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "SerialIO", NULL);
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 255, 0, tr("Serial port number of this device").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
