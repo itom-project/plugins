@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <QtHelpProject version="1.0">
-    <namespace>org.sphinx.itompluginserialio.0.0.2</namespace>
+    <namespace>org.sphinx.serialio.0.0.2</namespace>
     <virtualFolder>doc</virtualFolder>
-    <customFilter name="itom plugin &#x27;SerialIO&#x27; 0.0.2">
-        <filterAttribute>itompluginSerialIO</filterAttribute>
+    <customFilter name="SerialIO 0.0.2">
+        <filterAttribute>SerialIO</filterAttribute>
         <filterAttribute>0.0.2</filterAttribute>
     </customFilter>
     <filterSection>
-        <filterAttribute>itompluginSerialIO</filterAttribute>
+        <filterAttribute>SerialIO</filterAttribute>
         <filterAttribute>0.0.2</filterAttribute>
         <toc>
             <section title="itom Documentation" ref="serialIO.html">

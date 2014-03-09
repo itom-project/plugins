@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QHelpCollectionProject version="1.0">
+    <assistant>
+        <title>itom</title>
+        <homePage>qthelp://org.sphinx.serialio.0.0.2/doc/serialIO.html</homePage>
+        <startPage>qthelp://org.sphinx.serialio.0.0.2/doc/index.html</startPage>
+    </assistant>
+    <docFiles>
+        <generate>
+            <file>
+                <input>SerialIO.qhp</input>
+                <output>SerialIO.qch</output>
+            </file>
+        </generate>
+        <register>
+            <file>SerialIO.qch</file>
+        </register>
+    </docFiles>
+</QHelpCollectionProject>
