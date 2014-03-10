@@ -512,6 +512,19 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
                         }
                         j++;
                     }
+                    else if (wcscmp(mediaType.pMF_MT_SUBTYPEName, L"MFVideoFormat_YUY2") == 0)
+                    {
+                        if (mediaTypeID == -1)
+                        {
+                            std::cout << "ID " << j << ": " << mediaType.height << " x " << mediaType.width << " px, " << mediaType.MF_MT_FRAME_RATE << " fps (YUY2, Video)\n" << std::endl;
+                        }
+                        else if (mediaTypeID == j)
+                        {
+                            foundID = i;
+                            break;
+                        }
+                        j++;
+                    }
                 }
             }
 
