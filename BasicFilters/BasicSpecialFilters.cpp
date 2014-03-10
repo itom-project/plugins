@@ -804,6 +804,8 @@ ito::RetVal BasicFilters::calcMeanOverZParams(QVector<ito::Param> *paramsMand, Q
 
     return retval;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***srcPtr, cv::Mat *dstMat, const int *sizes, const bool toogleInf)
 {
     _TypeDst *linePtr = 0;
@@ -889,6 +891,8 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***srcP
     }
     return;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Type, typename _TypeDst> void calcDeviationOverZHelp(_Type ***srcPtr, cv::Mat *meanMat, cv::Mat *dstMat, const int *sizes, const bool toogleInf)
 {
     _TypeDst *linePtr = 0;
@@ -1619,6 +1623,1008 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
         dObjDst->setAxisOffset(1, startPx);
     }
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\brief This function sets values below minVal and above maxVal to newValue
+   \detail
+   \param[in|out]   planeInOut   Image data
+   \param[in]   minVal   Lowest Value in new Image
+   \param[in]   maxVal   Highest Value in new Image
+   \param[in]   newValue New value for pixel, which are out of range
+   \param[in]   outside  If true, values outside if [min max] are clipped else inside;
+   \author ITO
+   \sa  
+   \date
+*/
+template<typename _Tp> ito::RetVal clipValuesHelper(cv::Mat *planeInOut, _Tp minVal, _Tp maxVal, _Tp newValue, bool outside)
+{
+
+    #if (USEOMP)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+    #endif  
+
+    _Tp* rowPtr = NULL;
+    
+    int x, y;
+
+    if(outside)
+    {
+        if(std::numeric_limits<_Tp>::is_exact)
+        {
+            #if (USEOMP)
+            #pragma omp for schedule(guided)
+            #endif 
+            for(y = 0; y < planeInOut->rows; y++)
+            {
+                rowPtr = (_Tp*)planeInOut->ptr(y);
+                for(x = 0; x < planeInOut->cols; x++)
+                {
+                    if ( (rowPtr[x] < minVal) )
+                    {
+                        rowPtr[x] = newValue;
+                    }
+                    else if (rowPtr[x] > maxVal)
+                    {
+                        rowPtr[x] = newValue;
+                    }
+                }
+            }
+        }
+        else
+        {
+            #if (USEOMP)
+            #pragma omp for schedule(guided)
+            #endif 
+            for(y = 0; y < planeInOut->rows; y++)
+            {
+                rowPtr = (_Tp*)planeInOut->ptr(y);
+                for(x = 0; x < planeInOut->cols; x++)
+                {
+                    if ( !ito::dObjHelper::isFinite<_Tp>(rowPtr[x]))
+                    {
+                        rowPtr[x] = newValue;
+                    }
+                    else if ( (rowPtr[x] < minVal) )
+                    {
+                        rowPtr[x] = newValue;
+                    }
+                    else if (rowPtr[x] > maxVal)
+                    {
+                        rowPtr[x] = newValue;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        #if (USEOMP)
+        #pragma omp for schedule(guided)
+        #endif 
+        for(y = 0; y < planeInOut->rows; y++)
+        {
+            rowPtr = (_Tp*)planeInOut->ptr(y);
+            for(x = 0; x < planeInOut->cols; x++)
+            {
+                /*if ( !ito::dObjHelper::isFinite<_Tp>(rowPtr[x]))
+                {
+                    rowPtr[x] = newValue;
+                }
+                else */if (rowPtr[x] > minVal && rowPtr[x] < maxVal)
+                {
+                    rowPtr[x] = newValue;
+                }
+            }
+        }  
+
+    }
+    #if (USEOMP)
+    }
+    #endif
+    return ito::retOk;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal BasicFilters::clipValueFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("input image [real typed data object]").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr, NULL, tr("destination image (inplace possible)").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("minValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("lowest value in range").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("maxValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("highest value in range").toLatin1().data());
+    paramsMand->append(param);
+
+    param = ito::Param("newValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("value set to clipped values (default: 0.0)").toLatin1().data());
+    paramsOpt->append(param);
+    param = ito::Param("insideFlag", ito::ParamBase::Int, 0, 1, 0, tr("0: clip values outside of given range (default), 1: clip inside").toLatin1().data());
+    paramsOpt->append(param);
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\detail  
+   \param[in|out]   paramsMand  Mandatory parameters for the filter function
+   \param[in|out]   paramsOpt   Optinal parameters for the filter function
+   \param[out]   outVals   Outputvalues, not implemented for this function
+   \author ITO
+   \sa  mcppfilters::clipValueFilter
+   \date
+*/
+ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *dObjImages = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
+
+    if (!dObjImages)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source image empty").toLatin1().data());
+    }
+
+    if (!dObjDst)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image empty").toLatin1().data());
+    }
+
+    if (dObjImages->getDims() < 2)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source is not a matrix or image stack").toLatin1().data());
+    }
+
+    if( (*paramsMand)[2].getVal<double>() > (*paramsMand)[3].getVal<double>())
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: minValue must be smaller than maxValue").toLatin1().data());
+    }
+    bool outsideFlag = (*paramsOpt)[1].getVal<int>() == 0 ? true : false;
+
+    double minValProt = 0;
+    double maxValProt = 0;
+    double valProt = 0;
+
+    if(dObjImages != dObjDst)
+    {
+        dObjImages->copyTo(*dObjDst);
+    }
+    
+    int z_length = dObjImages->calcNumMats();
+    cv::Mat *cvMatOut;
+
+    switch(dObjImages->getType())
+    {
+        case ito::tInt8:
+        {
+            ito::int8 minVal = cv::saturate_cast<ito::int8>((*paramsMand)[2].getVal<double>());
+            ito::int8 maxVal = cv::saturate_cast<ito::int8>((*paramsMand)[3].getVal<double>());
+            ito::int8 newValue = cv::saturate_cast<ito::int8>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipValuesHelper<ito::int8>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
+            }
+            minValProt = minVal;
+            maxValProt = maxVal;
+            valProt = newValue;
+        }
+        break;
+        case ito::tUInt8:
+        {
+            ito::uint8 minVal = cv::saturate_cast<ito::uint8>((*paramsMand)[2].getVal<double>());
+            ito::uint8 maxVal = cv::saturate_cast<ito::uint8>((*paramsMand)[3].getVal<double>());
+            ito::uint8 newValue = cv::saturate_cast<ito::uint8>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipValuesHelper<ito::uint8>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
+            }
+
+            minValProt = minVal;
+            maxValProt = maxVal;
+            valProt = newValue;
+        }
+        break;
+        case ito::tUInt16:
+        {
+            ito::uint16 minVal = cv::saturate_cast<ito::uint16>((*paramsMand)[2].getVal<double>());
+            ito::uint16 maxVal = cv::saturate_cast<ito::uint16>((*paramsMand)[3].getVal<double>());
+            ito::uint16 newValue = cv::saturate_cast<ito::uint16>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipValuesHelper<ito::uint16>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
+            }
+
+            minValProt = minVal;
+            maxValProt = maxVal;
+            valProt = newValue;
+        }
+        break;
+        case ito::tInt16:
+        {
+            ito::int16 minVal = cv::saturate_cast<ito::int16>((*paramsMand)[2].getVal<double>());
+            ito::int16 maxVal = cv::saturate_cast<ito::int16>((*paramsMand)[3].getVal<double>());
+            ito::int16 newValue = cv::saturate_cast<ito::int16>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipValuesHelper<ito::int16>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
+            }
+
+            minValProt = minVal;
+            maxValProt = maxVal;
+            valProt = newValue;
+        }
+        break;
+        case ito::tInt32:
+        {
+            ito::int32 minVal = cv::saturate_cast<ito::int32>((*paramsMand)[2].getVal<double>());
+            ito::int32 maxVal = cv::saturate_cast<ito::int32>((*paramsMand)[3].getVal<double>());
+            ito::int32 newValue = cv::saturate_cast<ito::int32>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipValuesHelper<ito::int32>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
+            }
+
+            minValProt = minVal;
+            maxValProt = maxVal;
+            valProt = newValue;
+        }
+        break;
+        case ito::tFloat32:
+        {
+            ito::float32 minVal = cv::saturate_cast<ito::float32>((*paramsMand)[2].getVal<double>());
+            ito::float32 maxVal = cv::saturate_cast<ito::float32>((*paramsMand)[3].getVal<double>());
+            ito::float32 newValue;
+            valProt = (*paramsOpt)[0].getVal<double>();
+            if(ito::dObjHelper::isNaN<double>(valProt))
+            {
+                newValue = std::numeric_limits<ito::float32>::quiet_NaN();
+            }
+            else if(ito::dObjHelper::isInf<double>(valProt))
+            {
+                newValue = std::numeric_limits<ito::float32>::infinity();
+            }
+            else
+            {
+                newValue = cv::saturate_cast<ito::float32>(valProt);
+                valProt = newValue;
+            }
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipValuesHelper<ito::float32>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
+            }
+
+            minValProt = minVal;
+            maxValProt = maxVal;
+        }
+        break;
+        case ito::tFloat64:
+        {
+            ito::float64 minVal = (*paramsMand)[2].getVal<double>();
+            ito::float64 maxVal = (*paramsMand)[3].getVal<double>();
+            ito::float64 newValue = (*paramsOpt)[0].getVal<double>();
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipValuesHelper<ito::float64>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
+            }
+
+            minValProt = minVal;
+            maxValProt = maxVal;
+            valProt = newValue;
+        }
+        break;
+        default:
+            return ito::RetVal(ito::retError, 0, tr("unknown type or type not implemented (e.g. complex)").toLatin1().data());
+    }
+
+
+    if(!retval.containsError())
+    {
+        QString msg;
+        if(outsideFlag)
+        {
+            msg = tr("Clipped values outside %1 : %2 to %3").arg(minValProt).arg(maxValProt).arg(valProt);
+        }
+        else
+        {
+            msg = tr("Clipped values inside %1 : %2 to %3").arg(minValProt).arg(maxValProt).arg(valProt);
+        }
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
+    }
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\brief This function sets values below minVal and above maxVal to newValue
+   \detail
+   \param[in|out]   planeInOut   Image data
+   \param[in]   minVal   Lowest Value in new Image
+   \param[in]   maxVal   Highest Value in new Image
+   \param[in]   newValue New value for pixel, which are out of range
+   \param[in]   outside  If true, values outside if [min max] are clipped else inside;
+   \author ITO
+   \sa  
+   \date
+*/
+template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp, cv::Mat *planeBinary, _Tp minVal, _Tp maxVal, bool outside)
+{
+    #if (USEOMP)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+    #endif  
+
+    const _Tp* rowPtrComp = NULL;
+    ito::uint8* rowPtrInOut = NULL;
+    
+    int x, y;
+
+    if(outside)
+    {
+        if(std::numeric_limits<_Tp>::is_exact)
+        {
+            #if (USEOMP)
+            #pragma omp for schedule(guided)
+            #endif 
+            for(y = 0; y < planeBinary->rows; y++)
+            {
+                rowPtrInOut = (ito::uint8*)planeBinary->ptr(y);
+                rowPtrComp = (_Tp*)planeComp->ptr(y);
+                for(x = 0; x < planeBinary->cols; x++)
+                {
+                    if ( (rowPtrComp[x] < minVal) )
+                    {
+                        rowPtrInOut[x] = 0;
+                    }
+                    else if (rowPtrComp[x] > maxVal)
+                    {
+                        rowPtrInOut[x] = 0;
+                    }
+                    else
+                    {
+                        rowPtrInOut[x] = 1;
+                    }
+                }
+            }
+        }
+        else
+        {
+            #if (USEOMP)
+            #pragma omp for schedule(guided)
+            #endif 
+            for(y = 0; y < planeBinary->rows; y++)
+            {
+                rowPtrInOut = (ito::uint8*)planeBinary->ptr(y);
+                rowPtrComp = (_Tp*)planeComp->ptr(y);
+                for(x = 0; x < planeBinary->cols; x++)
+                {
+                    if ( !ito::dObjHelper::isFinite<_Tp>(rowPtrComp[x]))
+                    {
+                        rowPtrInOut[x] = 0;
+                    }
+                    else if ( (rowPtrComp[x] < minVal) )
+                    {
+                        rowPtrInOut[x] = 0;
+                    }
+                    else if (rowPtrComp[x] > maxVal)
+                    {
+                        rowPtrInOut[x] = 0;
+                    }
+                    else
+                    {
+                        rowPtrInOut[x] = 1;
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        #if (USEOMP)
+        #pragma omp for schedule(guided)
+        #endif 
+        for(y = 0; y < planeBinary->rows; y++)
+        {
+            rowPtrInOut = (ito::uint8*)planeBinary->ptr(y);
+            rowPtrComp = (_Tp*)planeComp->ptr(y);
+            for(x = 0; x < planeBinary->cols; x++)
+            {
+                /* if ( !ito::dObjHelper::isFinite<_Tp>(rowPtrComp[x]))
+                {
+                    rowPtr[x] = newValue;
+                }
+                else */ if (rowPtrComp[x] > minVal && rowPtrComp[x] < maxVal)
+                {
+                    rowPtrInOut[x] = 0;
+                }
+                else
+                {
+                    rowPtrInOut[x] = 1;
+                }
+            }
+        }  
+
+    }
+    #if (USEOMP)
+    }
+    #endif
+    return ito::retOk;
+}
+template<typename _Tp> ito::RetVal clipAbyBSecondHelper(const cv::Mat *planeBinary, cv::Mat *planeInOut, _Tp newValue)
+{
+    #if (USEOMP)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+    #endif  
+
+    const ito::uint8* rowPtrComp = NULL;
+    _Tp* rowPtrInOut = NULL;
+    
+    int x, y;
+
+    #if (USEOMP)
+    #pragma omp for schedule(guided)
+    #endif 
+    for(y = 0; y < planeBinary->rows; y++)
+    {
+        rowPtrInOut = (_Tp*)planeInOut->ptr(y);
+        rowPtrComp = (const ito::uint8*)planeBinary->ptr(y);
+        for(x = 0; x < planeBinary->cols; x++)
+        {
+            if (rowPtrComp[x] == 0)
+            {
+                rowPtrInOut[x] = newValue;
+            }
+        }
+    }
+
+    #if (USEOMP)
+    }
+    #endif
+    return ito::retOk;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal BasicFilters::clipAbyBFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("input image [real typed data object]").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("comparisonImage", ito::ParamBase::DObjPtr, NULL, tr("input image [real typed data object] for comparision").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr, NULL, tr("destination image (inplace possible)").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("minValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("lowest value in range").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("maxValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("highest value in range").toLatin1().data());
+    paramsMand->append(param);
+
+    param = ito::Param("newValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("value set to clipped values (default: 0.0)").toLatin1().data());
+    paramsOpt->append(param);
+    param = ito::Param("insideFlag", ito::ParamBase::Int, 0, 1, 0, tr("0: clip values outside of given range (default), 1: clip inside").toLatin1().data());
+    paramsOpt->append(param);
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\detail  
+   \param[in|out]   paramsMand  Mandatory parameters for the filter function
+   \param[in|out]   paramsOpt   Optinal parameters for the filter function
+   \param[out]   outVals   Outputvalues, not implemented for this function
+   \author ITO
+   \sa  mcppfilters::clipValueFilter
+   \date
+*/
+ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *dObjImages = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject *dObjComperator = (*paramsMand)[1].getVal<ito::DataObject*>();
+    ito::DataObject *dObjDst = (*paramsMand)[2].getVal<ito::DataObject*>();
+
+    if (!dObjImages)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source image empty").toLatin1().data());
+    }
+
+    if (!dObjComperator)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: comparison image empty").toLatin1().data());
+    }
+
+    if (!dObjDst)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image empty").toLatin1().data());
+    }
+
+    if (dObjImages->getDims() < 2)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source is not a matrix or image stack").toLatin1().data());
+    }
+
+    retval += ito::dObjHelper::verify2DDataObject(
+                                dObjComperator, 
+                                "comparison image", 
+                                dObjImages->getSize(dObjImages->getDims() - 2), 
+                                dObjImages->getSize(dObjImages->getDims() - 2), 
+                                dObjImages->getSize(dObjImages->getDims() - 1), 
+                                dObjImages->getSize(dObjImages->getDims() - 1), 
+                                7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64); 
+
+    if( (*paramsMand)[3].getVal<double>() > (*paramsMand)[4].getVal<double>())
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: minValue must be smaller than maxValue").toLatin1().data());
+    }
+    bool outsideFlag = (*paramsOpt)[1].getVal<int>() == 0 ? true : false;
+
+    double minValProt = 0;
+    double maxValProt = 0;
+    double valProt = 0;
+
+    if(dObjImages != dObjDst)
+    {
+        dObjImages->copyTo(*dObjDst);
+    }
+    
+    int z_length = dObjImages->calcNumMats();
+    cv::Mat *cvMatOut;
+    cv::Mat *cvMatComp = ((cv::Mat *)dObjComperator->get_mdata()[dObjComperator->seekMat(0)]);
+
+    cv::Mat combBin(cvMatComp->rows, cvMatComp->cols, CV_8U);
+    switch(dObjComperator->getType())
+    {
+        case ito::tInt8:
+        {
+            ito::int8 minVal = cv::saturate_cast<ito::int8>((*paramsMand)[3].getVal<double>());
+            ito::int8 maxVal = cv::saturate_cast<ito::int8>((*paramsMand)[4].getVal<double>()); 
+
+            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            minValProt = (double)minVal;
+            maxValProt = (double)maxVal;
+        }
+        break;
+        case ito::tUInt8:
+        {
+            ito::uint8 minVal = cv::saturate_cast<ito::uint8>((*paramsMand)[3].getVal<double>());
+            ito::uint8 maxVal = cv::saturate_cast<ito::uint8>((*paramsMand)[4].getVal<double>()); 
+
+            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            minValProt = (double)minVal;
+            maxValProt = (double)maxVal;
+        }
+        break;
+        case ito::tInt16:
+        {
+            ito::int16 minVal = cv::saturate_cast<ito::int16>((*paramsMand)[3].getVal<double>());
+            ito::int16 maxVal = cv::saturate_cast<ito::int16>((*paramsMand)[4].getVal<double>()); 
+
+            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            minValProt = (double)minVal;
+            maxValProt = (double)maxVal;
+        }
+        break;
+        case ito::tUInt16:
+        {
+            ito::uint16 minVal = cv::saturate_cast<ito::uint16>((*paramsMand)[3].getVal<double>());
+            ito::uint16 maxVal = cv::saturate_cast<ito::uint16>((*paramsMand)[4].getVal<double>()); 
+
+            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            minValProt = (double)minVal;
+            maxValProt = (double)maxVal;
+        }
+        break;
+        case ito::tInt32:
+        {
+            ito::int32 minVal = cv::saturate_cast<ito::int32>((*paramsMand)[3].getVal<double>());
+            ito::int32 maxVal = cv::saturate_cast<ito::int32>((*paramsMand)[4].getVal<double>()); 
+
+            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            minValProt = (double)minVal;
+            maxValProt = (double)maxVal;
+        }
+        break;
+        case ito::tFloat32:
+        {
+            ito::float32 minVal = cv::saturate_cast<ito::float32>((*paramsMand)[3].getVal<double>());
+            ito::float32 maxVal = cv::saturate_cast<ito::float32>((*paramsMand)[4].getVal<double>()); 
+
+            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            minValProt = (double)minVal;
+            maxValProt = (double)maxVal;
+        }
+        break;
+        case ito::tFloat64:
+        {
+            ito::float64 minVal = cv::saturate_cast<ito::float64>((*paramsMand)[3].getVal<double>());
+            ito::float64 maxVal = cv::saturate_cast<ito::float64>((*paramsMand)[4].getVal<double>()); 
+
+            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            minValProt = (double)minVal;
+            maxValProt = (double)maxVal;
+        }
+        break;
+        default:
+            return ito::RetVal(ito::retError, 0, tr("unknown type or type not implemented (e.g. complex)").toLatin1().data());
+    }
+
+    switch(dObjImages->getType())
+    {
+        case ito::tInt8:
+        {
+            ito::int8 newValue = cv::saturate_cast<ito::int8>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+            }
+            valProt = (double)newValue;
+        }
+        break;
+        case ito::tUInt8:
+        {
+            ito::uint8 newValue = cv::saturate_cast<ito::uint8>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+            }
+            valProt = (double)newValue;
+        }
+        break;
+        case ito::tInt16:
+        {
+            ito::int16 newValue = cv::saturate_cast<ito::int16>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+            }
+            valProt = (double)newValue;
+        }
+        break;
+        case ito::tUInt16:
+        {
+            ito::uint16 newValue = cv::saturate_cast<ito::uint16>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+            }
+            valProt = (double)newValue;
+        }
+        break;
+        case ito::tInt32:
+        {
+            ito::int32 newValue = cv::saturate_cast<ito::int32>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+            }
+            valProt = (double)newValue;
+        }
+        break;
+        case ito::tFloat32:
+        {
+            ito::float32 newValue;
+            double valProt = (*paramsOpt)[0].getVal<double>();
+            if(ito::dObjHelper::isNaN<double>(valProt))
+            {
+                newValue = std::numeric_limits<ito::float32>::quiet_NaN();
+            }
+            else if(ito::dObjHelper::isInf<double>(valProt))
+            {
+                newValue = std::numeric_limits<ito::float32>::infinity();
+            }
+            else
+            {
+                newValue = cv::saturate_cast<ito::float32>(valProt);
+                valProt = newValue;
+            }
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+            }
+            valProt = newValue;
+        }
+        break;
+        case ito::tFloat64:
+        {
+            ito::float64 newValue = cv::saturate_cast<ito::float64>((*paramsOpt)[0].getVal<double>());
+
+            for(int z = 0; z < z_length; z++)
+            {
+                cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
+                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+            }
+            valProt = newValue;
+        }
+        break;
+        default:
+            return ito::RetVal(ito::retError, 0, tr("unknown type or type not implemented (e.g. complex)").toLatin1().data());
+    }
+
+    if(!retval.containsError())
+    {
+        QString msg;
+        if(outsideFlag)
+        {
+            msg = tr("Clipped values outside %1 : %2 to %3").arg(minValProt).arg(maxValProt).arg(valProt);
+        }
+        else
+        {
+            msg = tr("Clipped values inside %1 : %2 to %3").arg(minValProt).arg(maxValProt).arg(valProt);
+        }
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
+    }
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\detail This function calculates a the histogram for a plane
+   \param[in]   planeIn  Inputplane
+   \param[in|out]   histOut   Preallocated histogramm buffer
+   \param[in]   min   Lowest value in this histogramm
+   \param[in]   max   Highest value in this histogramm
+   \author ITO
+   \sa  mcppfilters::calcHistParams, mcppfilters::calcHistFilter
+   \date
+*/
+template<typename _Tp> ito::RetVal HistogrammBlock(cv::Mat *planeIn, cv::Mat *histOut, double min, double max)
+{
+    ito::int32 * rowPtrOut;
+    rowPtrOut = (ito::int32*)histOut->ptr(0);
+    memset(rowPtrOut, 0, histOut->cols * sizeof(ito::int32));
+    ito::int32 x, y;
+    ito::float64 indexfaktor = (histOut->cols - 1) / (max - min);
+
+    for (y = 0; y < planeIn->rows; y++)
+    {
+        #if (USEOMP)
+        #pragma omp parallel num_threads(NTHREADS)
+        {
+        #endif
+        ito::int32 index;
+        const _Tp* rowPtrIn;
+
+        rowPtrIn = (_Tp*)planeIn->ptr(y);
+        #if (USEOMP)
+        #pragma omp for schedule(guided)
+        #endif
+        for (x = 0; x < planeIn->cols; x++)
+        {
+            index = static_cast<ito::int32>((rowPtrIn[x] - min) * indexfaktor);
+            if(index >= 0 && index < histOut->cols)
+            {
+                #if (USEOMP)
+                #pragma omp atomic
+                #endif
+                rowPtrOut[index]++;
+            }
+        }
+        #if (USEOMP)
+        }
+        #endif
+    }
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal BasicFilters::calcHistParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Image of type Integer or float").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr, NULL, tr("(Empty) dataObject-hanlde. Will be source type later").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("Steps", ito::ParamBase::Int, 0, 2048, 0, tr("Number of steps").toLatin1().data());
+    paramsOpt->append(param);
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\detail
+   \param[in|out]   paramsMand  Mandatory parameters for the filter function
+   \param[in|out]   paramsOpt   Optinal parameters for the filter function
+   \param[out]   outVals   Outputvalues, not implemented for this function
+   \author ITO
+   \sa  mcppfilters::calcHistFilter, HistogrammBlock
+   \date
+*/
+ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *dObjImages = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
+
+    if (!dObjImages)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
+    }
+
+    if (!dObjDst)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
+    }
+
+    if (dObjImages->getDims() < 2)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source is not a matrix or image stack").toLatin1().data());
+    }
+
+    int hbins = (*paramsOpt)[0].getVal<int>();
+    double maxVal = 0;
+    double minVal = 0;
+    bool recalcMinMax = false;
+
+    switch(dObjImages->getType())
+    {
+        case ito::tInt8:
+            hbins = 256;
+            minVal = -128;
+            maxVal = 127;
+            break;
+        case ito::tUInt8:
+            hbins = 256;
+            minVal = 0;
+            maxVal = 255;
+            break;
+        case ito::tUInt16:
+        case ito::tInt16:
+        case ito::tUInt32:
+        case ito::tInt32:
+        case ito::tFloat32:
+        case ito::tFloat64:
+            if( hbins < 1 )
+            {
+                hbins = 1024;
+            }
+            recalcMinMax = true;
+            break;
+        default:
+            return ito::RetVal(ito::retError, 0, tr("Unknown type or type not implemented").toLatin1().data());
+    }
+
+    ito::uint32 minLoc[3] = {0, 0, 0};
+    ito::uint32 maxLoc[3] = {0, 0, 0};
+
+    ito::dObjHelper::minMaxValue(dObjImages, minVal, minLoc, maxVal, maxLoc);
+
+    int z_length = dObjImages->calcNumMats();
+
+    int * sizesVector;
+    sizesVector = (int*)calloc(dObjImages->getDims(), sizeof(int));
+
+    for(int i = 0; i < dObjImages->getDims()-2; i++)
+    {
+        sizesVector[i] = dObjImages->getSize(i);
+    }
+
+    sizesVector[dObjImages->getDims()-2] = 1;
+    sizesVector[dObjImages->getDims()-1] = hbins;
+
+    ito::DataObject dObjDestination(dObjImages->getDims(), sizesVector, ito::tInt32);
+
+    free(sizesVector);
+
+    cv::Mat *cvMatIn;
+    cv::Mat *cvMatOut;
+    
+    if(fabs(maxVal - minVal) < std::numeric_limits<double>::epsilon() * hbins)
+    {
+        if(maxVal < minVal)
+        {
+            minVal += (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
+            maxVal -= (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
+        }
+        else
+        {
+            minVal -= (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
+            maxVal += (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
+        }
+    }
+
+    for(int z = 0; z < z_length; z++)
+    {
+        cvMatIn = ((cv::Mat *)dObjImages->get_mdata()[dObjImages->seekMat(z)]);
+        cvMatOut = ((cv::Mat *)dObjDestination.get_mdata()[dObjDestination.seekMat(z)]);
+
+        switch(dObjImages->getType())
+        {
+            case ito::tUInt8:
+                HistogrammBlock<ito::uint8>(cvMatIn, cvMatOut, minVal, maxVal);
+            break;
+            case ito::tInt8:
+                HistogrammBlock<ito::int8>(cvMatIn, cvMatOut, minVal, maxVal);
+            break;
+            case ito::tUInt16:
+                HistogrammBlock<ito::uint16>(cvMatIn, cvMatOut, minVal, maxVal);
+            break;
+            case ito::tInt16:
+                HistogrammBlock<ito::int16>(cvMatIn, cvMatOut, minVal, maxVal);
+            break;
+            case ito::tUInt32:
+                HistogrammBlock<ito::uint32>(cvMatIn, cvMatOut, minVal, maxVal);
+            break;
+            case ito::tInt32:
+                HistogrammBlock<ito::int32>(cvMatIn, cvMatOut, minVal, maxVal);
+            break;
+            case ito::tFloat32:
+                HistogrammBlock<ito::float32>(cvMatIn, cvMatOut, minVal, maxVal);
+            break;
+            case ito::tFloat64:
+                HistogrammBlock<ito::float64>(cvMatIn, cvMatOut, minVal, maxVal);
+            break;
+        }
+    }
+
+    // Add scale and offset
+
+
+    if(!retval.containsError())
+    {
+
+        // Add scale and offset for all z + (y and x)
+        for(int planes = 0; planes < dObjImages->getDims()-2; planes++)
+        {
+            dObjDestination.setAxisOffset(planes, dObjImages->getAxisOffset(planes));
+            dObjDestination.setAxisScale(planes, dObjImages->getAxisScale(planes));
+
+            bool isValid = false;
+            std::string tempDes = dObjImages->getAxisDescription(planes, isValid);
+            if(isValid) dObjDestination.setAxisDescription(planes, tempDes);
+            isValid = false;
+            std::string tempUnit = dObjImages->getAxisUnit(planes, isValid);
+            if(isValid) dObjDestination.setAxisUnit(planes, tempUnit);
+        }
+
+        dObjDestination.setAxisOffset(dObjDestination.getDims()-1, -minVal/(maxVal-minVal) * hbins);
+        dObjDestination.setAxisScale(dObjDestination.getDims()-1, (maxVal-minVal) / (hbins-1));
+        dObjDestination.setAxisDescription(dObjDestination.getDims()-1,std::string((*dObjImages).getValueDescription()));
+        dObjDestination.setAxisUnit(dObjDestination.getDims()-1,std::string((*dObjImages).getValueUnit()));;
+
+        // Add Protokoll
+        dObjImages->copyTagMapTo(dObjDestination);
+        QString msg = tr("Calculated Histogramm between %1 : %2").arg(minVal).arg(maxVal);
+        dObjDestination.addToProtocol(std::string(msg.toLatin1().data()));
+
+        *dObjDst = dObjDestination;
+    }
+
 
     return retval;
 }
