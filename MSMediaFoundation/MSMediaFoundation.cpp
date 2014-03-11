@@ -483,6 +483,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
         else
         {
             m_params["deviceName"].setVal<char*>(deviceName.toLatin1().data());
+            m_identifier = deviceName;
             MediaType mediaType;
 
             if (mediaTypeID == -1)
