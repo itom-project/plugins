@@ -118,8 +118,8 @@ OpenCVFiltersInterface::~OpenCVFiltersInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION < 0x05000
-    Q_EXPORT_PLUGIN2(OpenCVFilter, OpenCVFiltersInterface)
+#if QT_VERSION < QT_VERSION_CHECK(5,0,0)
+    Q_EXPORT_PLUGIN2(OpenCVFiltersInterface, OpenCVFiltersInterface)
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
