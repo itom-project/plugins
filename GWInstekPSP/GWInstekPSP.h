@@ -98,8 +98,6 @@ class GWInstekPSP : public ito::AddInDataIO
   *\brief    Interface-Class for GWInstekPSPInterface-Class
   *
   *    \sa    AddInActuator, GWInstekPSP
-  *    \date    11.10.2010
-  *    \author    Wolfram Lyda
   * \warning    NA
   *
   */

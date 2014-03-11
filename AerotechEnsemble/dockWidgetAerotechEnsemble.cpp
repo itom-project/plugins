@@ -26,8 +26,6 @@
 *    This file defines the functions of the DockWidgetDummyMotor-Class defined in the file "dockWidgetDummyMotor.h"
 * 
 *\sa dockWidgetDummyMotor, DummyMotor
-*\author Wolfram Lyda
-*\date    Oct2011
 */
 
 #include "dockWidgetAerotechEnsemble.h"
