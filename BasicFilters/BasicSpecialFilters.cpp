@@ -1965,7 +1965,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
    \sa  
    \date
 */
-template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp, cv::Mat *planeBinary, _Tp minVal, _Tp maxVal, bool outside)
+template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp, cv::Mat &planeBinary, _Tp minVal, _Tp maxVal, bool outside)
 {
     #if (USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
@@ -1984,11 +1984,11 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
             #if (USEOMP)
             #pragma omp for schedule(guided)
             #endif 
-            for(y = 0; y < planeBinary->rows; y++)
+            for(y = 0; y < planeBinary.rows; y++)
             {
-                rowPtrInOut = (ito::uint8*)planeBinary->ptr(y);
+                rowPtrInOut = (ito::uint8*)planeBinary.ptr(y);
                 rowPtrComp = (_Tp*)planeComp->ptr(y);
-                for(x = 0; x < planeBinary->cols; x++)
+                for(x = 0; x < planeBinary.cols; x++)
                 {
                     if ( (rowPtrComp[x] < minVal) )
                     {
@@ -2010,17 +2010,17 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
             #if (USEOMP)
             #pragma omp for schedule(guided)
             #endif 
-            for(y = 0; y < planeBinary->rows; y++)
+            for(y = 0; y < planeBinary.rows; y++)
             {
-                rowPtrInOut = (ito::uint8*)planeBinary->ptr(y);
+                rowPtrInOut = (ito::uint8*)planeBinary.ptr(y);
                 rowPtrComp = (_Tp*)planeComp->ptr(y);
-                for(x = 0; x < planeBinary->cols; x++)
+                for(x = 0; x < planeBinary.cols; x++)
                 {
                     if ( !ito::dObjHelper::isFinite<_Tp>(rowPtrComp[x]))
                     {
                         rowPtrInOut[x] = 0;
                     }
-                    else if ( (rowPtrComp[x] < minVal) )
+                    else if (rowPtrComp[x] < minVal)
                     {
                         rowPtrInOut[x] = 0;
                     }
@@ -2041,11 +2041,11 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
         #if (USEOMP)
         #pragma omp for schedule(guided)
         #endif 
-        for(y = 0; y < planeBinary->rows; y++)
+        for(y = 0; y < planeBinary.rows; y++)
         {
-            rowPtrInOut = (ito::uint8*)planeBinary->ptr(y);
+            rowPtrInOut = (ito::uint8*)planeBinary.ptr(y);
             rowPtrComp = (_Tp*)planeComp->ptr(y);
-            for(x = 0; x < planeBinary->cols; x++)
+            for(x = 0; x < planeBinary.cols; x++)
             {
                 /* if ( !ito::dObjHelper::isFinite<_Tp>(rowPtrComp[x]))
                 {
@@ -2068,7 +2068,7 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
     #endif
     return ito::retOk;
 }
-template<typename _Tp> ito::RetVal clipAbyBSecondHelper(const cv::Mat *planeBinary, cv::Mat *planeInOut, _Tp newValue)
+template<typename _Tp> ito::RetVal clipAbyBSecondHelper(const cv::Mat &planeBinary, cv::Mat *planeInOut, _Tp newValue)
 {
     #if (USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
@@ -2083,11 +2083,11 @@ template<typename _Tp> ito::RetVal clipAbyBSecondHelper(const cv::Mat *planeBina
     #if (USEOMP)
     #pragma omp for schedule(guided)
     #endif 
-    for(y = 0; y < planeBinary->rows; y++)
+    for(y = 0; y < planeBinary.rows; y++)
     {
         rowPtrInOut = (_Tp*)planeInOut->ptr(y);
-        rowPtrComp = (const ito::uint8*)planeBinary->ptr(y);
-        for(x = 0; x < planeBinary->cols; x++)
+        rowPtrComp = (const ito::uint8*)planeBinary.ptr(y);
+        for(x = 0; x < planeBinary.cols; x++)
         {
             if (rowPtrComp[x] == 0)
             {
@@ -2200,7 +2200,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             ito::int8 minVal = cv::saturate_cast<ito::int8>((*paramsMand)[3].getVal<double>());
             ito::int8 maxVal = cv::saturate_cast<ito::int8>((*paramsMand)[4].getVal<double>()); 
 
-            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            clipAbyBFirstHelper(cvMatComp, combBin, minVal, maxVal, outsideFlag);
             minValProt = (double)minVal;
             maxValProt = (double)maxVal;
         }
@@ -2210,7 +2210,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             ito::uint8 minVal = cv::saturate_cast<ito::uint8>((*paramsMand)[3].getVal<double>());
             ito::uint8 maxVal = cv::saturate_cast<ito::uint8>((*paramsMand)[4].getVal<double>()); 
 
-            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            clipAbyBFirstHelper(cvMatComp, combBin, minVal, maxVal, outsideFlag);
             minValProt = (double)minVal;
             maxValProt = (double)maxVal;
         }
@@ -2220,7 +2220,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             ito::int16 minVal = cv::saturate_cast<ito::int16>((*paramsMand)[3].getVal<double>());
             ito::int16 maxVal = cv::saturate_cast<ito::int16>((*paramsMand)[4].getVal<double>()); 
 
-            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            clipAbyBFirstHelper(cvMatComp, combBin, minVal, maxVal, outsideFlag);
             minValProt = (double)minVal;
             maxValProt = (double)maxVal;
         }
@@ -2230,7 +2230,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             ito::uint16 minVal = cv::saturate_cast<ito::uint16>((*paramsMand)[3].getVal<double>());
             ito::uint16 maxVal = cv::saturate_cast<ito::uint16>((*paramsMand)[4].getVal<double>()); 
 
-            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            clipAbyBFirstHelper(cvMatComp, combBin, minVal, maxVal, outsideFlag);
             minValProt = (double)minVal;
             maxValProt = (double)maxVal;
         }
@@ -2240,7 +2240,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             ito::int32 minVal = cv::saturate_cast<ito::int32>((*paramsMand)[3].getVal<double>());
             ito::int32 maxVal = cv::saturate_cast<ito::int32>((*paramsMand)[4].getVal<double>()); 
 
-            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            clipAbyBFirstHelper(cvMatComp, combBin, minVal, maxVal, outsideFlag);
             minValProt = (double)minVal;
             maxValProt = (double)maxVal;
         }
@@ -2250,7 +2250,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             ito::float32 minVal = cv::saturate_cast<ito::float32>((*paramsMand)[3].getVal<double>());
             ito::float32 maxVal = cv::saturate_cast<ito::float32>((*paramsMand)[4].getVal<double>()); 
 
-            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            clipAbyBFirstHelper(cvMatComp, combBin, minVal, maxVal, outsideFlag);
             minValProt = (double)minVal;
             maxValProt = (double)maxVal;
         }
@@ -2260,7 +2260,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             ito::float64 minVal = cv::saturate_cast<ito::float64>((*paramsMand)[3].getVal<double>());
             ito::float64 maxVal = cv::saturate_cast<ito::float64>((*paramsMand)[4].getVal<double>()); 
 
-            clipAbyBFirstHelper(cvMatComp, &combBin, minVal, maxVal, outsideFlag);
+            clipAbyBFirstHelper(cvMatComp, combBin, minVal, maxVal, outsideFlag);
             minValProt = (double)minVal;
             maxValProt = (double)maxVal;
         }
@@ -2278,7 +2278,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             for(int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
-                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+                clipAbyBSecondHelper(combBin, cvMatOut, newValue);
             }
             valProt = (double)newValue;
         }
@@ -2290,7 +2290,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             for(int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
-                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+                clipAbyBSecondHelper(combBin, cvMatOut, newValue);
             }
             valProt = (double)newValue;
         }
@@ -2302,7 +2302,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             for(int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
-                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+                clipAbyBSecondHelper(combBin, cvMatOut, newValue);
             }
             valProt = (double)newValue;
         }
@@ -2314,7 +2314,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             for(int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
-                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+                clipAbyBSecondHelper(combBin, cvMatOut, newValue);
             }
             valProt = (double)newValue;
         }
@@ -2326,7 +2326,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             for(int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
-                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+                clipAbyBSecondHelper(combBin, cvMatOut, newValue);
             }
             valProt = (double)newValue;
         }
@@ -2352,7 +2352,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             for(int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
-                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+                clipAbyBSecondHelper(combBin, cvMatOut, newValue);
             }
             valProt = newValue;
         }
@@ -2364,7 +2364,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
             for(int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
-                clipAbyBSecondHelper(&combBin, cvMatOut, newValue);
+                clipAbyBSecondHelper(combBin, cvMatOut, newValue);
             }
             valProt = newValue;
         }
