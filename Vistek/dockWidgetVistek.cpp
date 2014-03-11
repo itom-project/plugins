@@ -22,6 +22,7 @@
 
 #include "dockWidgetVistek.h"
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DockWidgetVistek::DockWidgetVistek() : m_inEditing(false), m_exposureStep(0.001)
 {
     ui.setupUi(this); 
@@ -31,7 +32,7 @@ DockWidgetVistek::DockWidgetVistek() : m_inEditing(false), m_exposureStep(0.001)
     ui.offsetSpinBox->setKeyboardTracking(false);
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetVistek::valuesChanged(QMap<QString, ito::Param> params)
 {
     if (!m_inEditing)
@@ -100,6 +101,7 @@ void DockWidgetVistek::valuesChanged(QMap<QString, ito::Param> params)
      
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetVistek::on_exposureSpinBox_valueChanged(double val)
 {
     if (!m_inEditing)
@@ -120,6 +122,7 @@ void DockWidgetVistek::on_exposureSpinBox_valueChanged(double val)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetVistek::on_gainSpinBox_valueChanged(double val)
 {
     if (!m_inEditing)
@@ -133,6 +136,7 @@ void DockWidgetVistek::on_gainSpinBox_valueChanged(double val)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetVistek::on_offsetSpinBox_valueChanged(double val)
 {
     if (!m_inEditing)
@@ -146,6 +150,7 @@ void DockWidgetVistek::on_offsetSpinBox_valueChanged(double val)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetVistek::propertiesChanged(float gainIncrement, float exposureIncrement, VistekFeatures features)
 {
     ui.gainSpinBox->setEnabled(features.adjustGain);

@@ -24,20 +24,15 @@
 #define MSMEDIAFOUNDATION_H
 
 #include "common/addInGrabber.h"
-
 #include "opencv2/opencv.hpp"
-
 #include <qsharedpointer.h>
-
 #include "videoInput.h"
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    MSMediaFoundation 
 
   */
-
 class MSMediaFoundation : public ito::AddInGrabber //, public MSMediaFoundationInterface
 {
     Q_OBJECT
@@ -118,10 +113,8 @@ class MSMediaFoundation : public ito::AddInGrabber //, public MSMediaFoundationI
         ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
     private slots:
-
+        void MSMediaFoundation::dockWidgetVisibilityChanged(bool visible);
 };
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
@@ -135,7 +128,7 @@ class MSMediaFoundation : public ito::AddInGrabber //, public MSMediaFoundationI
 class MSMediaFoundationInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
     Q_INTERFACES(ito::AddInInterfaceBase)
