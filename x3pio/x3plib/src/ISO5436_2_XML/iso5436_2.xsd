@@ -1,0 +1,581 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.opengps.eu/2008/ISO5436_2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.opengps.eu/2008/ISO5436_2" elementFormDefault="unqualified">
+   <xsd:annotation>
+      <xsd:documentation>
+      Proposal of an XML-implementation for ISO5436-2 file format.
+      04-Apr-2007
+      Copyright by Georg Wiora (NanoFocus AG), Jörg Seewig (Uni Hannover),
+      Andreas Walther (NanoFocus AG), Mark A. Weber (NanoFocus AG) 2007
+
+      This file is part of the openGPS(R)[TM] software library.
+      This program is free software; you can redistribute it and/or modify
+      it under the terms of the GNU Lesser General Public License (LGPL)
+      as published by the Free Software Foundation; either version 3 of
+      the License, or (at your option) any later version.
+      for detail see the files "licence_LGPL-3.0.txt" and
+      "licence_GPL-3.0.txt".
+
+      openGPS is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU Lesser General Public License for more details.
+
+      You should have received a copy of the GNU General Public License
+      along with this program.  If not, see http://www.gnu.org/licenses/.
+
+      openGPS and the openGPS logo is a registered trademark of
+      Physikalisch Technische Bundesanstalt (PTB)
+      http://www.ptb.de/
+
+      More information about openGPS can be found at
+      http://www.opengps.eu/
+    </xsd:documentation>
+   </xsd:annotation>
+   <xsd:element name="ISO5436_2" type="ISO5436_2Type">
+      <xsd:annotation>
+         <xsd:documentation>
+    			The only global element: The root node
+    		</xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="Record1Type">
+      <xsd:annotation>
+         <xsd:documentation>
+				Record1 contains the axis description
+			</xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="Revision" type="xsd:token" minOccurs="1" maxOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+						Revision of file format. Currently: ISO5436 -
+						2000
+					</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="FeatureType" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+						"SUR" for surface type feature, "PRF" for
+						profile type feature or "PCL" for unordered point clouds. Profile features are
+						allways defined as a matrix of size (N,1,M) with
+						N beeing the number of points in the profile and
+						M the number of layers in z-direction.
+            Point clouds have to be stored as list type. 
+					</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:token">
+                  <xsd:whiteSpace value="collapse">
+                  </xsd:whiteSpace>
+                  <xsd:enumeration value="PRF">
+                  </xsd:enumeration>
+                  <xsd:enumeration value="SUR">
+                  </xsd:enumeration>
+                  <xsd:enumeration value="PCL">
+                  </xsd:enumeration>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
+         <xsd:element name="Axes" type="AxesType" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+						Axis description
+					</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="ISO5436_2Type">
+      <xsd:annotation>
+         <xsd:documentation>
+        		This is the top tag of a data file
+        	</xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="Record1" type="Record1Type" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="Record2" type="Record2Type" maxOccurs="1" minOccurs="0">
+         </xsd:element>
+         <xsd:element name="Record3" type="Record3Type" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="Record4" type="Record4Type" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="VendorSpecificID" type="xsd:anyURI" minOccurs="0" maxOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+        				This is an extension hook for vendor specific data formats derived from ISO5436_2_XML
+        				This tag contains a vendor specific ID which is the URL of the vendor. It does not need to be valid
+        				but it must be worldwide unique!
+        				Example: http://www.example-inc.com/myformat
+        			</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="Record2Type">
+      <xsd:annotation>
+         <xsd:documentation>
+        		Record2 is optional and contains the metadata of the
+        		data set.
+        	</xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="Date" type="xsd:dateTime" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Date and time of file creation.
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Creator" type="xsd:token" maxOccurs="1" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Optional name of the creator of the file: Name
+    					of the measuring person.
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Instrument" type="InstrumentType" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="CalibrationDate" type="xsd:dateTime" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Date of currently used calibration
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="ProbingSystem" type="ProbingSystemType" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+                 Type of probing system: This can be contacting, non contacting or software
+               </xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Comment" type="xsd:string" maxOccurs="1" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
+    					User comment to this data set
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="Record3Type">
+      <xsd:annotation>
+         <xsd:documentation>
+    			Record 3 contains the measured data.
+    		</xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:choice maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					The data list can be organised as an unordered
+    					list or as a 1,2 or 3D matrix
+    				</xsd:documentation>
+            </xsd:annotation>
+            <xsd:element name="MatrixDimension" maxOccurs="1" minOccurs="1" type="MatrixDimensionType">
+               <xsd:annotation>
+                  <xsd:documentation>
+    						Use Matrix to define the matrix organisation
+    						of the data list. A matrix does also specify
+    						the topography of datapoints. That means
+    						point that are neighbours in the matrix are
+    						also neighbours in space. See
+    						<xsd:List></xsd:List>
+    						for unordered data sets.
+    					</xsd:documentation>
+               </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="ListDimension" type="xsd:unsignedLong" maxOccurs="1" minOccurs="1">
+               <xsd:annotation>
+                  <xsd:documentation>
+    						A list does specify an unordered data set
+    						like a point cloud which does not contain
+    						topologic information.
+    					</xsd:documentation>
+               </xsd:annotation>
+            </xsd:element>
+         </xsd:choice>
+         <xsd:choice maxOccurs="1" minOccurs="1">
+            <xsd:element name="DataLink" type="DataLinkType" maxOccurs="1" minOccurs="1">
+               <xsd:annotation>
+                  <xsd:documentation>
+    						Link specification to an external binary
+    						data file.
+    					</xsd:documentation>
+               </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DataList" type="DataListType" maxOccurs="1" minOccurs="1">
+               <xsd:annotation>
+                  <xsd:documentation>
+    						Data list is ordered like specified in
+    						DataOrder: Z-Index is empty (only one sample
+    						per pixel) X is fastest index, Y is slower,
+    						Z is slowest:
+    						(x1,y1),(x2,y1),(x3,y1),(x4,y1),(x1,y2)...
+    					</xsd:documentation>
+               </xsd:annotation>
+            </xsd:element>
+         </xsd:choice>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="Record4Type">
+      <xsd:annotation>
+         <xsd:documentation>
+        		Record4 contains only the checksum of the xml file.
+        	</xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="ChecksumFile" type="xsd:string" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					An URI pointing to an external ascii file
+    					containting an MD5 digest with a 32 byte
+    					hexadecimal MD5Checksum of the whole XML-file
+    					and its filename as produced by the unix command
+    					"md5sum". The checksum can be calculated by the
+    					unix command "md5sum main.xml &gt;md5checksum.hex"
+    					and checked by the command "md5sum -c
+    					md5checksum.hex". Default name of the checksum
+    					file is "md5checksum.hex".
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="AxesType">
+      <xsd:sequence>
+         <xsd:element name="CX" type="AxisDescriptionType" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Description of X-Axis
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="CY" type="AxisDescriptionType" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Description of Y-Axis
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="CZ" type="AxisDescriptionType" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Description of Z-Axis
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Rotation" type="RotationType" maxOccurs="1" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
+    					An optional rotation of the data points. If this
+    					element is missing a unit transformation is
+    					assumed.
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="AxisDescriptionType">
+      <xsd:sequence>
+         <xsd:element name="AxisType" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Type of axis can be "I" for Incremental, "A" for
+    					Absolute.The z-axis must be absolute!
+    				</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:token">
+                  <xsd:enumeration value="A">
+                  </xsd:enumeration>
+                  <xsd:enumeration value="I">
+                  </xsd:enumeration>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
+         <xsd:element name="DataType" maxOccurs="1" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Data type for absolute axis: "I" for
+    					int16, "L" for int32, "F"
+    					for float32, "D" for float64.
+    					Incremental axes do not have/need a data type
+    				</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:token">
+                  <xsd:enumeration value="I">
+                  </xsd:enumeration>
+                  <xsd:enumeration value="L">
+                  </xsd:enumeration>
+                  <xsd:enumeration value="F">
+                  </xsd:enumeration>
+                  <xsd:enumeration value="D">
+                  </xsd:enumeration>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
+         <xsd:element name="Increment" type="xsd:double" maxOccurs="1" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
+                		Needed for incremental axis and integer data
+                		types: Increment is the multiplyer of the
+                		integer coordinate for the computation of the
+                		real coordinate: Xreal = Xoffset +
+                		Xinteger*XIncrement. The unit of increment and
+                		offset is metre.
+                	</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Offset" type="xsd:double" maxOccurs="1" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
+    					The offset of axis in meter.
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="InstrumentType">
+      <xsd:sequence>
+         <xsd:element name="Manufacturer" type="xsd:token" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Name of the equipment manufacturer
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Model" type="xsd:token">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Name of the machine model used for the
+    					measurement
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Serial" type="xsd:token">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Serial number of the machine.
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Version" type="xsd:token">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Software and hardware version strings used to
+    					create this file.
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="ProbingSystemType">
+      <xsd:sequence>
+         <xsd:element name="Type" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					one of "NonContacting" or "Contacting" or "Software"
+    				</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:token">
+                  <xsd:enumeration value="Contacting">
+                  </xsd:enumeration>
+                  <xsd:enumeration value="NonContacting">
+                  </xsd:enumeration>
+                  <xsd:enumeration value="Software">
+                  </xsd:enumeration>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
+         <xsd:element name="Identification" type="xsd:token" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Vendor specific identification of probe tip,
+    					lens, etc...
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="DataListType">
+      <xsd:annotation>
+         <xsd:documentation>
+        		The datalist contains the point coordinates in ASCII. A
+        		list can by definition not contain invalid points,
+        		because it does not define a topological neighbourship.
+        		A list is allways ab unsorted list of 3D-points.
+        	</xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="Datum" maxOccurs="unbounded" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Datum contains a ";" separated list of X,Y,Z
+    					floating point or integer coordinates. An empty
+    					Datum tag defines an invalid data point.
+    				</xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+               <xsd:restriction base="xsd:token">
+                  <xsd:pattern value="((-|\+)?(\d*\.?\d+)((e|E)(-|\+)?\d{1,4})?)?(;(-|\+)?(\d*\.?\d+)((e|E)(-|\+)?\d{1,4})?)*">
+                  </xsd:pattern>
+               </xsd:restriction>
+            </xsd:simpleType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="DataLinkType">
+      <xsd:annotation>
+         <xsd:documentation>
+        		Defines a Link to a binary data file and a binary file
+        		containing the information about valid points.
+        	</xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="PointDataLink" type="xsd:string" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Relative filename in unix notation to a binary
+    					file with point data. Data can be specified
+    					directly in the xml file or with a link be
+    					stored in an external binary file. The Binary
+    					file has the same organisation as the DataList
+    					and has the datatypes specified in the axis
+    					description.
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="MD5ChecksumPointData" type="xsd:hexBinary" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					An MD5Checksum of the point data file like
+    					calculated by the unix command "md5sum". It
+    					consists of 32 hexadecimal digits. The binary
+    					representation is a 128 bit number.
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:sequence maxOccurs="1" minOccurs="0">
+            <xsd:element name="ValidPointsLink" type="xsd:string" maxOccurs="1" minOccurs="1">
+               <xsd:annotation>
+                  <xsd:documentation>
+    					Relative filename in unix notation to a binary
+    					file that contains a packed array of bools. Each
+    					element that is true corresponds to a valid data
+    					point in the binary point data file.
+
+    					If this tag does not exist, all points are valid
+    					except for floating point numbers of the special
+    					value "NaN" (Not a Number).
+    				</xsd:documentation>
+               </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="MD5ChecksumValidPoints" type="xsd:hexBinary" maxOccurs="1" minOccurs="1">
+               <xsd:annotation>
+                  <xsd:documentation>
+    					An MD5Checksum of the valid points file like
+    					calculated by the unix command "md5sum". It
+    					consists of 32 hexadecimal digits. The binary
+    					representation is a 128 bit number.
+    				</xsd:documentation>
+               </xsd:annotation>
+            </xsd:element>
+         </xsd:sequence>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="MatrixDimensionType">
+      <xsd:annotation>
+         <xsd:documentation>
+        		Defines the size of the 3 dimensions of the data matrix.
+        	</xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="SizeX" type="xsd:unsignedLong" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Define the size of the first dimension of the
+    					data matrix
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="SizeY" type="xsd:unsignedLong" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Define the size of the second dimension of the
+    					data matrix
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="SizeZ" type="xsd:unsignedLong" maxOccurs="1" minOccurs="1">
+            <xsd:annotation>
+               <xsd:documentation>
+    					Define the size of the third dimension of the
+    					data matrix
+    				</xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="RotationType">
+      <xsd:annotation>
+         <xsd:documentation>
+    			The optional transformation contains a 3D rotation
+    			matrix R with 3 by 3 elements that is used to rotate the
+    			data points in its final orientation. The full
+    			transformation consists of a rotation and a following
+    			translation that is taken from the
+    			AxisDescriptionType.Offset elements: Q = R*P + T With Q
+    			beeing the final point, P the coordinate as specified in
+    			Record3, R the 3 by 3 rotation matrix and T the
+    			3-element offset vector. The * denotes a matrix product.
+    			The formula for the x coordinate is: Qx =
+    			r11*Px+r12*Py+r13*Pz + Tx. The formula for the y
+    			coordinate is: Qy = r21*Px+r22*Py+r23*Pz + Ty. The
+    			formula for the x coordinate is: Qz =
+    			r31*Px+r32*Py+r33*Pz + Tz.s
+    		</xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="r11" maxOccurs="1" minOccurs="1" type="RotationMatrixElementType">
+         </xsd:element>
+         <xsd:element name="r12" type="RotationMatrixElementType" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="r13" type="RotationMatrixElementType" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="r21" type="RotationMatrixElementType" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="r22" type="RotationMatrixElementType" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="r23" type="RotationMatrixElementType" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="r31" type="RotationMatrixElementType" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="r32" type="RotationMatrixElementType" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+         <xsd:element name="r33" type="RotationMatrixElementType" maxOccurs="1" minOccurs="1">
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:simpleType name="RotationMatrixElementType">
+      <xsd:annotation>
+         <xsd:documentation>
+    			An element of a pure rotation matrix is limited to a
+    			value range of [-1..1].
+    		</xsd:documentation>
+      </xsd:annotation>
+      <xsd:restriction base="xsd:double">
+         <xsd:maxInclusive value="1">
+         </xsd:maxInclusive>
+         <xsd:minInclusive value="-1">
+         </xsd:minInclusive>
+         <xsd:whiteSpace value="collapse">
+         </xsd:whiteSpace>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

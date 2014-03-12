@@ -178,3 +178,9 @@ OPTION(PLUGIN_XIMEA "Build with this plugin." ON)
 if (PLUGIN_XIMEA)
     ADD_SUBDIRECTORY(Ximea)
 endif (PLUGIN_XIMEA)
+
+# x3pio
+OPTION(PLUGIN_x3pio "Build with this plugin." ON)
+if (PLUGIN_x3pio)
+    ADD_SUBDIRECTORY(x3pio)
+endif (PLUGIN_x3pio)
