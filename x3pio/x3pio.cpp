@@ -247,7 +247,7 @@ X3pIOInterface::X3pIOInterface()
 "This plugin provides methods to save and load dataObjects in/from the file format 'x3p'. \
 This format is specified in ISO 25178 - Geometrical product specification (GPS). \n\
 \n\
-The necessary library ISO 5436-2 XML that is necessary for this plugin and included in the sources \n\
+The library ISO 5436-2 XML, that is necessary for this plugin and included in the sources, \n\
 is licensed under the LGPL license and uses further libraries. For more information about the license \n\
 of the library itself see www.opengps.eu";
 
