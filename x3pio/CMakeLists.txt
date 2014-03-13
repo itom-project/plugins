@@ -45,8 +45,8 @@ endif (NOT QT5_FOUND)
 
 find_package(ITOM_SDK REQUIRED)
 find_package(OpenCV COMPONENTS core REQUIRED)
-find_package(Xsd)
 find_package(Xerces)
+find_package(Xsd)
 find_package(VisualLeakDetector QUIET)
 
 IF(XERCESC_FOUND AND XSD_FOUND)

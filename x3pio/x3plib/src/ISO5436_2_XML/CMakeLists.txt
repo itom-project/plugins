@@ -26,8 +26,8 @@ SET(iso54362xmlNAME iso5436-2-xml${iso54362LIBSUFFIX})
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
+find_package(Xerces REQUIRED)
 find_package(XSD REQUIRED)
-
 
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/opengps/cxx/iso5436_2_xsd.cxx)
     file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/opengps/cxx/iso5436_2_xsd.cxx" "//this file will be overwritten by XSD_SCHEMA" )
@@ -37,8 +37,6 @@ if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/opengps/cxx/iso5436_2_xsd.hxx)
 endif()
 
 XSD_SCHEMA(OUTPATH ${PROJECT_SOURCE_DIR}/iso5436_2.xsd  --prologue-file ${PROJECT_SOURCE_DIR}/xsd_Licence_Header.c --generate-doxygen --generate-ostream --generate-serialization --char-type wchar_t --generate-comparison --generate-from-base-ctor --namespace-map http://www.opengps.eu/2008/ISO5436_2=OpenGPS::Schemas::ISO5436_2 --export-symbol _OPENGPS_EXPORT --cxx-suffix \"_xsd.cxx\" --hxx-suffix \"_xsd.hxx\" --output-dir ${CMAKE_CURRENT_BINARY_DIR}/opengps/cxx) #${PROJECT_SOURCE_DIR}/../../include/opengps/cxx/)
-
-find_package(Xerces REQUIRED)
 
 # Subversion is needed to generate version.h from version.in
 FIND_PACKAGE(Subversion)
