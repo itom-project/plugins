@@ -40,65 +40,64 @@ void DockWidgetVistek::valuesChanged(QMap<QString, ito::Param> params)
         m_inEditing = true;
         if (params.contains("sizex"))
         {
-            ui.lblWidth->setText( QString("%1").arg( params["sizex"].getVal<int>()));
+            ui.lblWidth->setText(QString("%1").arg(params["sizex"].getVal<int>()));
         }
 
         if (params.contains("sizey"))
         {
-            ui.lblHeight->setText( QString("%1").arg( params["sizey"].getVal<int>()));
+            ui.lblHeight->setText(QString("%1").arg(params["sizey"].getVal<int>()));
         }
 
         if (params.contains("bpp"))
         {
-            ui.lblBitDepth->setText( QString("%1").arg( params["bpp"].getVal<int>()));
+            ui.lblBitDepth->setText(QString("%1").arg(params["bpp"].getVal<int>()));
         }
 
         if (params.contains("cameraModel"))
         {
-            ui.ModelLabel->setText( params["cameraModel"].getVal<char*>() );
+            ui.ModelLabel->setText(params["cameraModel"].getVal<char*>());
         }
         
         if (params.contains("cameraSerialNo"))
         {
-            ui.SerialLabel->setText( params["cameraSerialNo"].getVal<char*>() );
+            ui.SerialLabel->setText(params["cameraSerialNo"].getVal<char*>());
         }
 
         if (params.contains("cameraIP"))
         {
-            ui.IPLabel->setText( params["cameraIP"].getVal<char*>() );
+            ui.IPLabel->setText(params["cameraIP"].getVal<char*>());
         }
 
         if (params.contains("cameraManufacturer"))
         {
-            ui.ManufacturerLabel->setText( params["cameraManufacturer"].getVal<char*>() );
+            ui.ManufacturerLabel->setText(params["cameraManufacturer"].getVal<char*>());
         }
 
         if (params.contains("exposure"))
         {
             ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["exposure"].getMeta());
-            ui.exposureSpinBox->setMinimum( dm->getMin() );
-            ui.exposureSpinBox->setMaximum( dm->getMax() );
-            ui.exposureSpinBox->setSingleStep( (dm->getMax() - dm->getMin()) / 100 );
-            ui.exposureSpinBox->setValue( params["exposure"].getVal<double>() );
+            ui.exposureSpinBox->setMinimum(dm->getMin());
+            ui.exposureSpinBox->setMaximum(dm->getMax());
+            ui.exposureSpinBox->setSingleStep((dm->getMax() - dm->getMin()) / 100);
+            ui.exposureSpinBox->setValue(params["exposure"].getVal<double>());
         }
 
         if (params.contains("gain"))
         {
             ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["gain"].getMeta());
-            ui.gainSpinBox->setMinimum( dm->getMin() );
-            ui.gainSpinBox->setMaximum( dm->getMax() );
-            ui.gainSpinBox->setSingleStep( (dm->getMax() - dm->getMin()) / 100 );
-            ui.gainSpinBox->setValue( params["gain"].getVal<double>() );
+            ui.gainSpinBox->setMinimum(dm->getMin());
+            ui.gainSpinBox->setMaximum(dm->getMax());
+            ui.gainSpinBox->setSingleStep((dm->getMax() - dm->getMin()) / 100);
+            ui.gainSpinBox->setValue(params["gain"].getVal<double>());
         }
 
         if (params.contains("offset")) //already from 0.0 to 1.0 (in vistek driver this is 0..255)
         {
             ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["offset"].getMeta());
-            ui.offsetSpinBox->setValue( params["offset"].getVal<double>() );
+            ui.offsetSpinBox->setValue(params["offset"].getVal<double>());
         }
         m_inEditing = false;
     }
-     
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -117,7 +116,7 @@ void DockWidgetVistek::on_exposureSpinBox_valueChanged(double val)
             ui.exposureSpinBox->setValue(val);
         }
 
-        emit ExposurePropertyChanged( val );
+        emit ExposurePropertyChanged(val);
         m_inEditing = false;
     }
 }
@@ -131,7 +130,7 @@ void DockWidgetVistek::on_gainSpinBox_valueChanged(double val)
 
         //gain does not have specific increment steps
 
-        emit GainPropertyChanged( val );
+        emit GainPropertyChanged(val);
         m_inEditing = false;
     }
 }
@@ -145,7 +144,7 @@ void DockWidgetVistek::on_offsetSpinBox_valueChanged(double val)
 
         //gain does not have specific increment steps
 
-        emit OffsetPropertyChanged( val );
+        emit OffsetPropertyChanged(val);
         m_inEditing = false;
     }
 }
