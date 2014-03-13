@@ -180,6 +180,8 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("saturation", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("saturation [0..1]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sharpness", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("sharpness [0..1]").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("hue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("hue [0..1]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("gain [0..1]").toLatin1().data());
@@ -200,6 +202,8 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
     paramVal = ito::Param("contrastAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled contrast (on:1, off:0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("saturationAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled saturation (on:1, off:0)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sharpnessAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled sharpness (on:1, off:0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("hueAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled hue (on:1, off:0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -388,12 +392,12 @@ ito::RetVal MSMediaFoundation::setParam(QSharedPointer<ito::ParamBase> val, Itom
             {
                 if (QString::compare(mode,"auto") != 0 || QString::compare(mode,"gray") != 0)
                 {
-                    retValue += ito::RetVal(ito::retError,0,"The connected grayscale camera cannot be operated in any colored colorMode");
+                    retValue += ito::RetVal(ito::retError, 0, "The connected grayscale camera cannot be operated in any colored colorMode");
                 }
             }
             else if (m_imgChannels == 3 && m_imgBpp > 8)
             {
-                retValue += ito::RetVal(ito::retError,0,"The connected color camera cannot output an color image since the bit depth is > 8");
+                retValue += ito::RetVal(ito::retError, 0, "The connected color camera cannot output an color image since the bit depth is > 8");
             }
 
             if (!retValue.containsError())
@@ -468,7 +472,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
 
     if (m_deviceID >= numDevices)
     {
-        retValue += ito::RetVal::format(ito::retError,0,tr("invalid cameraNumber. Only %i cameras found").toLatin1().data(), numDevices);
+        retValue += ito::RetVal::format(ito::retError, 0, tr("invalid cameraNumber. Only %i cameras found").toLatin1().data(), numDevices);
     }
     else
     {
@@ -476,7 +480,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
 
         if (deviceName == "Empty")
         {
-            retValue += ito::RetVal(ito::retError,0,tr("desired device does not exist").toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("desired device does not exist").toLatin1().data());
         }
         else
         {
@@ -529,15 +533,15 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
 
             if (mediaTypeID == -1)
             {
-                retValue += ito::RetVal(ito::retError,0,tr("Camera initialization aborted since only list of media types requested").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Camera initialization aborted since only list of media types requested").toLatin1().data());
             }
             else if (foundID == -1)
             {
-                retValue += ito::RetVal(ito::retError,0,tr("Number of available media types was smaller than the given mediaTypeID. Try mediaTypeID = -1 to print a list of available types.").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Number of available media types was smaller than the given mediaTypeID. Try mediaTypeID = -1 to print a list of available types.").toLatin1().data());
             }
             else if (!m_pVI->setupDevice(m_deviceID, foundID))
             {
-                retValue += ito::RetVal::format(ito::retError,0,tr("Camera (%i) could not be opened").toLatin1().data(), numDevices);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("Camera (%i) could not be opened").toLatin1().data(), numDevices);
             }
             else
             {
@@ -547,7 +551,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
                 }
                 else
                 {
-                    retValue += ito::RetVal::format(ito::retError,0,tr("No frame could be aquired from device %i").toLatin1().data(), numDevices);
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("No frame could be aquired from device %i").toLatin1().data(), numDevices);
                 }
             }
         }
@@ -598,7 +602,7 @@ ito::RetVal MSMediaFoundation::synchronizeParam(const Parameter &parameter, ito:
     }
     else
     {
-        return ito::RetVal(ito::retError,0,"Parameter not available or useless range");
+        return ito::RetVal(ito::retError, 0, tr("Parameter not available or useless range").toLatin1().data());
     }
     return ito::retOk;
 }
@@ -673,6 +677,18 @@ ito::RetVal MSMediaFoundation::synchronizeCameraParametersToParams(bool firstCal
         {
             m_params.remove("saturation");
             m_params.remove("saturationAuto");
+        }
+
+        if (m_camParams.Sharpness.Available && m_camParams.Sharpness.Max > m_camParams.Sharpness.Min)
+        {
+            m_camParamsHash["sharpness"] = &m_camParams.Sharpness;
+            m_camParamsHash["sharpnessAuto"] = &m_camParams.Sharpness;
+            synchronizeParam(m_camParams.Sharpness, m_params["sharpness"], m_params["sharpnessAuto"]);
+        }
+        else if (firstCall)
+        {
+            m_params.remove("sharpness");
+            m_params.remove("sharpnessAuto");
         }
 
         if (m_camParams.Gain.Available && m_camParams.Gain.Max > m_camParams.Gain.Min)
@@ -839,7 +855,7 @@ ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *w
     }
     else if (m_camStatusChecked == false)
     {
-        retValue += ito::RetVal(ito::retError,0,tr("Cannot acquire image since camera status is unverified").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Cannot acquire image since camera status is unverified").toLatin1().data());
     }
     else
     {
@@ -1045,11 +1061,10 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retError,0,tr("unknown color, conversion... combination in retrieveImage").toLatin1().data());
+                        retValue += ito::RetVal(ito::retError, 0, tr("unknown color, conversion... combination in retrieveImage").toLatin1().data());
                     }
                 }
             }
-            
         }
 
         m_isgrabbing = false;
@@ -1063,7 +1078,7 @@ ito::RetVal MSMediaFoundation::checkData(ito::DataObject *externalDataObject)
 {
     if (!m_camStatusChecked)
     {
-        return ito::RetVal(ito::retError,0,tr("current camera status is undefined").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("current camera status is undefined").toLatin1().data());
     }
 
     int futureHeight = m_params["sizey"].getVal<int>();

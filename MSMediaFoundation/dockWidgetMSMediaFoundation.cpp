@@ -1,7 +1,7 @@
 /* ********************************************************************
-    Plugin "DummyGrabber" for itom software
+    Plugin "MSMediaFoundation" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2014, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -22,18 +22,20 @@
 
 #include "dockWidgetMSMediaFoundation.h"
 
- DockWidgetMSMediaFoundation::DockWidgetMSMediaFoundation(QMap<QString, ito::Param> params, int uniqueID)
- {
+//----------------------------------------------------------------------------------------------------------------------------------
+DockWidgetMSMediaFoundation::DockWidgetMSMediaFoundation(QMap<QString, ito::Param> params, int uniqueID)
+{
     ui.setupUi(this); 
     
-    ui.lblID->setText(QString::number(uniqueID));
+/*    ui.lblID->setText(QString::number(uniqueID));
 
-    valuesChanged(params);
- }
+    valuesChanged(params);*/
+}
 
- void DockWidgetMSMediaFoundation::valuesChanged(QMap<QString, ito::Param> params)
- {
-    if(params.contains("bpp"))
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::valuesChanged(QMap<QString, ito::Param> params)
+{
+/*    if(params.contains("bpp"))
     {
         ui.spinBpp->setValue(params["bpp"].getVal<int>());
     }
@@ -94,23 +96,23 @@
     }
     else
         ui.doubleSpinBox_integration_time->setEnabled(false);
+*/
+}
 
- }
-
+//----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetMSMediaFoundation::on_spinBox_gain_valueChanged(int /*d*/)
 {
-    emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
+//    emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetMSMediaFoundation::on_spinBox_offset_valueChanged(int /*d*/)
 {
-    emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
+//    emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetMSMediaFoundation::on_doubleSpinBox_integration_time_valueChanged(double /*d*/)
 {
-    emit IntegrationPropertiesChanged( ui.doubleSpinBox_integration_time->value() / 1000.0);
+//    emit IntegrationPropertiesChanged( ui.doubleSpinBox_integration_time->value() / 1000.0);
 }
-
-
-
