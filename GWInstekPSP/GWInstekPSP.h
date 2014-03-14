@@ -86,7 +86,7 @@ class GWInstekPSP : public ito::AddInDataIO
         ito::RetVal close(ItomSharedSemaphore *waitConde = NULL);
 
         ito::RetVal getVal(char *data, int *len, ItomSharedSemaphore *waitCond);
-        ito::RetVal setVal(const void *data, const int length, ItomSharedSemaphore *waitCond);
+        ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond);
 
     private slots:
 };
