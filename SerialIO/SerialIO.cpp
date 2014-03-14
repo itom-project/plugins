@@ -602,7 +602,7 @@ const ito::RetVal SerialPort::setparams(const int baud, const char* endline, con
     \return retOk
 */
 const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* endline, const int bits,
-            const int stopbits, const int parity, const int flow, const int sendDelay, const int timeout)
+            const int stopbits, const int parity, const int flow, const int sendDelay, const int timeout, PortType &portType)
 {
     char device[50];
 #ifdef __linux__
@@ -619,6 +619,14 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
         {
             return ito::RetVal(ito::retError, 0, QObject::tr("could not open device").toLatin1().data());      // Device not found
         }
+        else
+        {
+            portType = TTYS;
+        }
+    }
+    else
+    {
+        portType = TTYUSB;
     }
     m_serParams.port = port;
     fcntl(m_dev, F_SETFL, FNDELAY);     // set nonblocking mode
@@ -640,6 +648,11 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
             return ito::RetVal(ito::retError, 0, QObject::tr("unknown error opening com port").toLatin1().data());      // other generic error
         }
     }
+    else
+    {
+        portType = COM;
+    }
+
     m_serParams.port = port;
 
     return setparams(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
@@ -1060,7 +1073,7 @@ Example \n\
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");  
 
-    ito::Param paramVal("port", ito::ParamBase::Int, 1, 255, 1, tr("The number of the serial port, starting with 1").toLatin1().data());
+    ito::Param paramVal("port", ito::ParamBase::Int, 0, 255, 1, tr("The number of the serial port, starting with 1 (linux 0)").toLatin1().data());
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port").toLatin1().data());
     m_initParamsMand.append(paramVal);
@@ -1344,7 +1357,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 
     retval += m_params["port"].copyValueFrom(&((*paramsMand)[0]));
     port = m_params["port"].getVal<int>();
-    m_identifier = QString("COM %1").arg( port );
+    
 
     retval += m_params["baud"].copyValueFrom(&((*paramsMand)[1]));
     baud = m_params["baud"].getVal<int>();
@@ -1379,7 +1392,25 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     retval += m_params["timeout"].copyValueFrom(&((*paramsOpt)[5]));
     timeout = (int)(m_params["timeout"].getVal<double>() * 1000 + 0.5);
 
-    retval = m_serport.sopen(port, baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
+    SerialPort::PortType portType;
+    retval = m_serport.sopen(port, baud, endline, bits, stopbits, parity, flow, sendDelay, timeout, portType);
+
+    if (!retval.containsError())
+    {
+        switch (portType)
+        {
+        case SerialPort::COM:
+            m_identifier = QString("COM %1").arg( port );
+            break;
+        case SerialPort::TTYS:
+            m_identifier = QString("/dev/ttyS%1").arg(port);
+            break;
+        case SerialPort::TTYUSB:
+            m_identifier = QString("/dev/ttyUSB%1").arg(port);
+            break;
+        }
+    }
+
 
     retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[6]));
     m_debugMode = (bool)(m_params["debug"].getVal<int>());

@@ -65,8 +65,9 @@ class SerialPort
 #endif
 
     public:
+        enum PortType { COM, TTYS, TTYUSB }; //COM is for windows, TTYS is a serial port on linux, TTYUSB is a usb-serial port on linux
         SerialPort() : m_pDevice(0), m_dev(0) {}
-        const ito::RetVal sopen(const int port, const int baud, const char* endline, const int bits, const int stopbits, const int parity, const int flow, const int sendDelay, const int timeout);
+        const ito::RetVal sopen(const int port, const int baud, const char* endline, const int bits, const int stopbits, const int parity, const int flow, const int sendDelay, const int timeout, PortType &portType);
         const ito::RetVal sclose(void);
         const ito::RetVal sread(char *buf, int *len, const int sendDelay);
         int sreadable(void) const;
