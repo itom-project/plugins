@@ -10,7 +10,7 @@
 **Devices**:    COM-Ports (Windows), ttySx and ttyUSBx (Linux)
 **Author**:     :pluginauthor:`SerialIO`
 =============== ========================================================================================================
- 
+
 Overview
 ========
 
