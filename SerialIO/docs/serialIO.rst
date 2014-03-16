@@ -146,3 +146,15 @@ Installation
 
 For using this plugin no further 3rd party libraries or drivers are necessary.
 
+If you are using linux to open a serial connection and you are running **itom** without root privileges, which is recommended, you have to add
+your user to the **dialout** group, logout once and login again.
+
+.. code-block:: bash
+
+    sudo adduser USERNAME dialout
+
+where USERNAME ist the username under which you are running **itom**
+
+	
+
+
