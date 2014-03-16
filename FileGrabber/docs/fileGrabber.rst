@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ FileGrabber
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`FileGrabber`
+**Type**:       :plugintype:`FileGrabber`
+**License**:    :pluginlicense:`FileGrabber`
+**Platforms**:  Windows, Linux
+**Devices**:    Virtual file camera (grabbing from image files)
+**Author**:     :pluginauthor:`FileGrabber`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: FileGrabber
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: FileGrabber
 

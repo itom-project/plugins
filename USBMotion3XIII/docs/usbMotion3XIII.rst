@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ USBMotion3XIII
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`USBMotion3XIII`
+**Type**:       :plugintype:`USBMotion3XIII`
+**License**:    :pluginlicense:`USBMotion3XIII`
+**Platforms**:  Windows
+**Devices**:    USB Motion 3x III controller from COPTONIX GmbH (www.coptonix.com)
+**Author**:     :pluginauthor:`USBMotion3XIII`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: USBMotion3XIII
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: USBMotion3XIII
 

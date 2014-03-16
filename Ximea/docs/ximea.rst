@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ Ximea
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`Ximea`
+**Type**:       :plugintype:`Ximea`
+**License**:    :pluginlicense:`Ximea`
+**Platforms**:  Windows, (Linux possible but yet not implemented)
+**Devices**:    Cameras from company *Ximea*
+**Author**:     :pluginauthor:`Ximea`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: Ximea
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: Ximea
 

@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ CMU1394
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`CMU1394`
+**Type**:       :plugintype:`CMU1394`
+**License**:    :pluginlicense:`CMU1394`
+**Platforms**:  Windows
+**Devices**:    Firewire cameras supported by CMU1394 driver
+**Author**:     :pluginauthor:`CMU1394`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: CMU1394
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: CMU1394
 

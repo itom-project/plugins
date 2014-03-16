@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ AerotechEnsemble
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`AerotechEnsemble`
+**Type**:       :plugintype:`AerotechEnsemble`
+**License**:    :pluginlicense:`AerotechEnsemble`
+**Platforms**:  Windows
+**Devices**:    Axes from company Aerotech that can be driven using the Aerotech Ensemble interface
+**Author**:     :pluginauthor:`AerotechEnsemble`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: AerotechEnsemble
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: AerotechEnsemble
 

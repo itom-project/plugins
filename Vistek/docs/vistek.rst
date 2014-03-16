@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ Vistek
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`Vistek`
+**Type**:       :plugintype:`Vistek`
+**License**:    :pluginlicense:`Vistek`
+**Platforms**:  Windows
+**Devices**:    Cameras from company Vistek
+**Author**:     :pluginauthor:`Vistek`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: Vistek
 
 Initialization
 ==============
@@ -23,5 +23,9 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: Vistek
 
+Disclaimer
+==========
+
+The company *Vistek* is not responsible for this plugin and therefore does not provide any support.

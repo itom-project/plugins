@@ -81,7 +81,7 @@ ito::RetVal BasicFiltersInterface::closeThisInst(ito::AddInBase **addInInst)
 BasicFiltersInterface::BasicFiltersInterface()
 {
     m_type = ito::typeAlgo;
-    setObjectName("Basic Filters");
+    setObjectName("BasicFilters");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \

@@ -281,6 +281,7 @@ IF(XERCESC_FOUND AND XSD_FOUND)
       endif (QT5_FOUND)
     endif (UPDATE_TRANSLATIONS)
     #handle translations END STEP 2
+    
 
     # COPY SECTION
     set(COPY_SOURCES "")

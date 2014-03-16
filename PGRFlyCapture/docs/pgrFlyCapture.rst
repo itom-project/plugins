@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ PGRFlyCapture
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`PGRFlyCapture`
+**Type**:       :plugintype:`PGRFlyCapture`
+**License**:    :pluginlicense:`PGRFlyCapture`
+**Platforms**:  Windows, (Linux possible but yet not implemented)
+**Devices**:    PointGrey cameras supported by Fly Capture driver
+**Author**:     :pluginauthor:`PGRFlyCapture`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: PGRFlyCapture
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: PGRFlyCapture
 

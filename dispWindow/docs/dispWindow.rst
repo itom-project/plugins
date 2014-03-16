@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ DispWindow
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`DispWindow`
+**Type**:       :plugintype:`DispWindow`
+**License**:    :pluginlicense:`DispWindow`
+**Platforms**:  Windows, Linux
+**Devices**:    OpenGL based widget to show cosine and graycode sequences
+**Author**:     :pluginauthor:`DispWindow`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: DispWindow
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: DispWindow
 

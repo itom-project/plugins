@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ OpenCVGrabber
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`OpenCVGrabber`
+**Type**:       :plugintype:`OpenCVGrabber`
+**License**:    :pluginlicense:`OpenCVGrabber`
+**Platforms**:  Windows, Linux
+**Devices**:    USB Plug&Play Cameras and further cameras supported by OpenCV
+**Author**:     :pluginauthor:`OpenCVGrabber`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: OpenCVGrabber
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: OpenCVGrabber
 

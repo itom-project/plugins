@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ LibUSB
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`LibUSB`
+**Type**:       :plugintype:`LibUSB`
+**License**:    :pluginlicense:`LibUSB`
 **Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Devices**:    
+**Author**:     :pluginauthor:`LibUSB`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: LibUSB
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: LibUSB
 

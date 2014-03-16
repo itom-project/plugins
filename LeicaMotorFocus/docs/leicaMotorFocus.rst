@@ -1,21 +1,22 @@
 ===================
- MSMediaFoundation
+ LeicaMotorFocus
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`LeicaMotorFocus`
+**Type**:       :plugintype:`LeicaMotorFocus`
+**License**:    :pluginlicense:`LeicaMotorFocus`
+**Platforms**:  Windows, Linux
+**Devices**:    z-stage controller of Leica MZ12 or MZ12.5
+**Author**:     :pluginauthor:`LeicaMotorFocus`
+**Requires**:   Plugin SerialIO
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: LeicaMotorFocus
 
 Initialization
 ==============
@@ -23,5 +24,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: LeicaMotorFocus
 

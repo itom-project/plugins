@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ FireGrabber
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`FireGrabber`
+**Type**:       :plugintype:`FireGrabber`
+**License**:    :pluginlicense:`FireGrabber`
+**Platforms**:  Windows, Linux
+**Devices**:    Cameras supported by FirePackage from Allied Vision
+**Author**:     :pluginauthor:`FireGrabber`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: FireGrabber
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: FireGrabber
 

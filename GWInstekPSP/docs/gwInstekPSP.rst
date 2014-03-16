@@ -1,21 +1,22 @@
 ===================
- MSMediaFoundation
+ GWInstekPSP
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`GWInstekPSP`
+**Type**:       :plugintype:`GWInstekPSP`
+**License**:    :pluginlicense:`GWInstekPSP`
+**Platforms**:  Windows, Linux
+**Devices**:    Power supplies PSP-405, PSP-603, PSP-2010 of company GWInstek
+**Author**:     :pluginauthor:`GWInstekPSP`
+**Requires**:   Plugin SerialIO
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: GWInstekPSP
 
 Initialization
 ==============
@@ -23,5 +24,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: GWInstekPSP
 

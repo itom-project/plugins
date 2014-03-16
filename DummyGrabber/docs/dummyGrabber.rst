@@ -1,21 +1,21 @@
 ===================
- MSMediaFoundation
+ DummyGrabber
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`MSMediaFoundation`
-**Type**:       :plugintype:`MSMediaFoundation`
-**License**:    :pluginlicense:`MSMediaFoundation`
-**Platforms**:  Windows (Vista, 7, 8)
-**Devices**:    USB Plug&Play Cameras
-**Author**:     :pluginauthor:`MSMediaFoundation`
+**Summary**:    :pluginsummary:`DummyGrabber`
+**Type**:       :plugintype:`DummyGrabber`
+**License**:    :pluginlicense:`DummyGrabber`
+**Platforms**:  Windows, Linux
+**Devices**:    Virtual camera providing random noise images
+**Author**:     :pluginauthor:`DummyGrabber`
 =============== ========================================================================================================
  
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: MSMediaFoundation
+    :plugin: DummyGrabber
 
 Initialization
 ==============
@@ -23,5 +23,5 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: MSMediaFoundation
+        :plugin: DummyGrabber
 
