@@ -186,6 +186,8 @@ if(WINDOWSSDK_FOUND)
         endif (QT5_FOUND)
     endif (UPDATE_TRANSLATIONS)
     #handle translations END STEP 2
+    
+    PLUGIN_DOCUMENTATION(${target_name} msMediaFoundation)
 
     # COPY SECTION
     set(COPY_SOURCES "")

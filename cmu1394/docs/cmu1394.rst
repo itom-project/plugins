@@ -1,0 +1,27 @@
+===================
+ CMU1394
+===================
+
+=============== ========================================================================================================
+**Summary**:    :pluginsummary:`CMU1394`
+**Type**:       :plugintype:`CMU1394`
+**License**:    :pluginlicense:`CMU1394`
+**Platforms**:  Windows
+**Devices**:    Firewire cameras supported by CMU1394 driver
+**Author**:     :pluginauthor:`CMU1394`
+=============== ========================================================================================================
+ 
+Overview
+========
+
+.. pluginsummaryextended::
+    :plugin: CMU1394
+
+Initialization
+==============
+  
+The following parameters are mandatory or optional for initializing an instance of this plugin:
+    
+    .. plugininitparams::
+        :plugin: CMU1394
+

@@ -567,7 +567,7 @@ ito::RetVal GWInstekPSP::getVal(char * /*data*/, int * /*len*/, ItomSharedSemaph
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GWInstekPSP::setVal(const void * /*data*/, const int /*datalength*/, ItomSharedSemaphore *waitCond)
+ito::RetVal GWInstekPSP::setVal(const char * /*data*/, const int /*datalength*/, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
 //    const char *buf = (const char*)data;

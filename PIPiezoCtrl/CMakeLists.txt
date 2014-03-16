@@ -161,6 +161,8 @@ else (UPDATE_TRANSLATIONS)
 endif (UPDATE_TRANSLATIONS)
 #handle translations END STEP 2
 
+PLUGIN_DOCUMENTATION(${target_name} piPiezoCtrl)
+
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")

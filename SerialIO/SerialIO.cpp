@@ -1508,10 +1508,10 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SerialIO::setVal(const void *data, const int datalength, ItomSharedSemaphore *waitCond)
+ito::RetVal SerialIO::setVal(const char *data, const int datalength, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    const char *buf = (const char*)data;
+    const char *buf = data;
     char endline[3] = {0, 0, 0};
     ito::RetVal retval(ito::retOk);
 

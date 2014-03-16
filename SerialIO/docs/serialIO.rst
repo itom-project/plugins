@@ -2,6 +2,15 @@
  SerialIO
 ==========
 
+=============== ========================================================================================================
+**Summary**:    :pluginsummary:`SerialIO`
+**Type**:       :plugintype:`SerialIO`
+**License**:    :pluginlicense:`SerialIO`
+**Platforms**:  Windows, Linux
+**Devices**:    COM-Ports (Windows), ttySx and ttyUSBx (Linux)
+**Author**:     :pluginauthor:`SerialIO`
+=============== ========================================================================================================
+
 Overview
 ========
 
@@ -21,7 +30,7 @@ Features are:
 
 Initialization
 ==============
-
+  
 For a connection to a serial port, create a new instance of this plugin using:
 
 .. py:function:: dataIO("SerialIO", port, baud, endline [, bits, stopbits, parity, flow, sendDelay, timeout, debug])
