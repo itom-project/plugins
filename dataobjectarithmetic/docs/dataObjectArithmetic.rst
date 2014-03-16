@@ -1,25 +1,25 @@
-===================
- Basic Filters
-===================
+=======================
+ DataObject Arithmetic
+=======================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`BasicFilters`
-**Type**:       :plugintype:`BasicFilters`
-**License**:    :pluginlicense:`BasicFilters`
+**Summary**:    :pluginsummary:`dataobjectarithmetic`
+**Type**:       :plugintype:`dataobjectarithmetic`
+**License**:    :pluginlicense:`dataobjectarithmetic`
 **Platforms**:  Windows, Linux
-**Author**:     :pluginauthor:`BasicFilters`
+**Author**:     :pluginauthor:`dataobjectarithmetic`
 =============== ========================================================================================================
   
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: BasicFilters
+    :plugin: dataobjectarithmetic
 
 These filters are defined in the plugin:
 
 .. pluginfilterlist::
-    :plugin: BasicFilters
+    :plugin: dataobjectarithmetic
     :overviewonly:
 
 Filters
@@ -28,5 +28,5 @@ Filters
 Detailed overview about all defined filters:
     
 .. pluginfilterlist::
-    :plugin: BasicFilters
+    :plugin: dataobjectarithmetic
 

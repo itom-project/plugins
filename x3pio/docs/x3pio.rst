@@ -1,25 +1,25 @@
 ===================
- Basic Filters
+ X3P Input Output
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`BasicFilters`
-**Type**:       :plugintype:`BasicFilters`
-**License**:    :pluginlicense:`BasicFilters`
+**Summary**:    :pluginsummary:`x3pio`
+**Type**:       :plugintype:`x3pio`
+**License**:    :pluginlicense:`x3pio`
 **Platforms**:  Windows, Linux
-**Author**:     :pluginauthor:`BasicFilters`
+**Author**:     :pluginauthor:`x3pio`
 =============== ========================================================================================================
   
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: BasicFilters
+    :plugin: x3pio
 
 These filters are defined in the plugin:
 
 .. pluginfilterlist::
-    :plugin: BasicFilters
+    :plugin: x3pio
     :overviewonly:
 
 Filters
@@ -28,5 +28,5 @@ Filters
 Detailed overview about all defined filters:
     
 .. pluginfilterlist::
-    :plugin: BasicFilters
+    :plugin: x3pio
 

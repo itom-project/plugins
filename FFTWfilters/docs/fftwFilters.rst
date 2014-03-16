@@ -1,25 +1,25 @@
 ===================
- Basic Filters
+ FFTW Filters
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`BasicFilters`
-**Type**:       :plugintype:`BasicFilters`
-**License**:    :pluginlicense:`BasicFilters`
+**Summary**:    :pluginsummary:`fftwFilters`
+**Type**:       :plugintype:`fftwFilters`
+**License**:    :pluginlicense:`fftwFilters`
 **Platforms**:  Windows, Linux
-**Author**:     :pluginauthor:`BasicFilters`
+**Author**:     :pluginauthor:`fftwFilters`
 =============== ========================================================================================================
   
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: BasicFilters
+    :plugin: fftwFilters
 
 These filters are defined in the plugin:
 
 .. pluginfilterlist::
-    :plugin: BasicFilters
+    :plugin: fftwFilters
     :overviewonly:
 
 Filters
@@ -28,5 +28,5 @@ Filters
 Detailed overview about all defined filters:
     
 .. pluginfilterlist::
-    :plugin: BasicFilters
+    :plugin: fftwFilters
 

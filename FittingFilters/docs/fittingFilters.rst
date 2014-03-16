@@ -1,25 +1,25 @@
 ===================
- Basic Filters
+ Fitting Filters
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`BasicFilters`
-**Type**:       :plugintype:`BasicFilters`
-**License**:    :pluginlicense:`BasicFilters`
+**Summary**:    :pluginsummary:`FittingFilters`
+**Type**:       :plugintype:`FittingFilters`
+**License**:    :pluginlicense:`FittingFilters`
 **Platforms**:  Windows, Linux
-**Author**:     :pluginauthor:`BasicFilters`
+**Author**:     :pluginauthor:`FittingFilters`
 =============== ========================================================================================================
   
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: BasicFilters
+    :plugin: FittingFilters
 
 These filters are defined in the plugin:
 
 .. pluginfilterlist::
-    :plugin: BasicFilters
+    :plugin: FittingFilters
     :overviewonly:
 
 Filters
@@ -28,5 +28,5 @@ Filters
 Detailed overview about all defined filters:
     
 .. pluginfilterlist::
-    :plugin: BasicFilters
+    :plugin: FittingFilters
 
