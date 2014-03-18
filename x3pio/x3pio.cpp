@@ -954,8 +954,10 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     Record2Type::CalibrationDate_type calibrationDate(_T("1900-01-01T00:00:00.0+00:00"), 0);
     // in case the calibration dateTime is unknown we should not use this function, as it will produce
     // a date time string that makes the created x3p file invalid
-    if (tmpStr.length() && foundTag && stricmp(tmpStr.ToChar(), "{unknown}") != 0)
+    if (tmpStr.length() && foundTag && strcmp(tmpStr.ToChar(), "{unknown}") != 0)
+    {
         calibrationDate = Record2Type::CalibrationDate_type(tmpStr.data(), 0);
+    }
 
     tmpStr.FromChar(dObj->getTag(std::string("probingSystemType"), foundTag).getVal_ToString().data());
     Record2Type::ProbingSystem_type::Type_type type(Record2Type::ProbingSystem_type::Type_type::Software);
