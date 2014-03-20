@@ -22,97 +22,389 @@
 
 #include "dockWidgetMSMediaFoundation.h"
 
-//----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetMSMediaFoundation::DockWidgetMSMediaFoundation(QMap<QString, ito::Param> params, int uniqueID)
-{
-    ui.setupUi(this); 
-    
-/*    ui.lblID->setText(QString::number(uniqueID));
+#include <qmetaobject.h>
 
-    valuesChanged(params);*/
+//----------------------------------------------------------------------------------------------------------------------------------
+DockWidgetMSMediaFoundation::DockWidgetMSMediaFoundation(ito::AddInDataIO *grabber) :
+    m_pMSMediaFoundation(grabber),
+    m_inEditing(false),
+    m_firstRun(true)
+{
+    ui.setupUi(this);
+
+    ui.sW_Brightness->setTracking(false);
+    ui.sW_Contrast->setTracking(false);
+    ui.sW_Gain->setTracking(false);
+    ui.sW_Saturation->setTracking(false);
+    ui.sW_Sharpness->setTracking(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetMSMediaFoundation::valuesChanged(QMap<QString, ito::Param> params)
 {
-/*    if(params.contains("bpp"))
+//qDebug() << "----------------- valuesChanged m_firstRun: " << m_firstRun << "; m_inEditing: " << m_inEditing;
+    if (m_firstRun)
     {
-        ui.spinBpp->setValue(params["bpp"].getVal<int>());
-    }
-
-    if(params.contains("sizex"))
-    {
-        ui.spinWidth->setValue(params["sizex"].getVal<int>());
-    }
-
-    if(params.contains("sizey"))
-    {
-        ui.spinHeight->setValue(params["sizey"].getVal<int>());
-    }
-
-    if(params.contains("gain"))
-    {
-        if(!(params["gain"].getFlags() & ito::ParamBase::Readonly))
+        int propCount = 0;
+        if (params.contains("brightness"))
         {
-            ui.spinBox_gain->setEnabled(true);
+            ui.lB_Brightness->setVisible(true);
+            ui.cB_Brightness->setVisible(true);
+            ui.sW_Brightness->setVisible(true);
+            ito::DoubleMeta* dm = (ito::DoubleMeta*)(params["brightness"].getMeta());
+            ui.sW_Brightness->setSingleStep(dm->getStepSize());
+            ++propCount;
         }
         else
         {
-            ui.spinBox_gain->setEnabled(false);
+            ui.lB_Brightness->setVisible(false);
+            ui.cB_Brightness->setVisible(false);
+            ui.sW_Brightness->setVisible(false);
         }
-        ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
-    }
-    else
-        ui.spinBox_gain->setEnabled(false);
 
-    if(params.contains("offset"))
-    {
-        if(!(params["offset"].getFlags() & ito::ParamBase::Readonly))
+        if (params.contains("contrast"))
         {
-            ui.spinBox_offset->setEnabled(true);
+            ui.lB_Contrast->setVisible(true);
+            ui.cB_Contrast->setVisible(true);
+            ui.sW_Contrast->setVisible(true);
+            ito::DoubleMeta* dm = (ito::DoubleMeta*)(params["contrast"].getMeta());
+            ui.sW_Contrast->setSingleStep(dm->getStepSize());
+            ++propCount;
         }
         else
         {
-            ui.spinBox_offset->setEnabled(false);
+            ui.lB_Contrast->setVisible(false);
+            ui.cB_Contrast->setVisible(false);
+            ui.sW_Contrast->setVisible(false);
         }
-        ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
-    }
-    else
-        ui.spinBox_offset->setEnabled(false);
 
-    if(params.contains("integration_time"))
-    {
-        if(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
+        if (params.contains("gain"))
         {
-            ui.doubleSpinBox_integration_time->setEnabled(true);
+            ui.lB_Gain->setVisible(true);
+            ui.cB_Gain->setVisible(true);
+            ui.sW_Gain->setVisible(true);
+            ito::DoubleMeta* dm = (ito::DoubleMeta*)(params["gain"].getMeta());
+            ui.sW_Gain->setSingleStep(dm->getStepSize());
+            ++propCount;
         }
         else
         {
-            ui.doubleSpinBox_integration_time->setEnabled(false);
+            ui.lB_Gain->setVisible(false);
+            ui.cB_Gain->setVisible(false);
+            ui.sW_Gain->setVisible(false);
         }
-        ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
-        ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
-        ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>()*1000.0);
+
+        if (params.contains("saturation"))
+        {
+            ui.lB_Saturation->setVisible(true);
+            ui.cB_Saturation->setVisible(true);
+            ui.sW_Saturation->setVisible(true);
+            ito::DoubleMeta* dm = (ito::DoubleMeta*)(params["saturation"].getMeta());
+            ui.sW_Saturation->setSingleStep(dm->getStepSize());
+            ++propCount;
+        }
+        else
+        {
+            ui.lB_Saturation->setVisible(false);
+            ui.cB_Saturation->setVisible(false);
+            ui.sW_Saturation->setVisible(false);
+        }
+
+        if (params.contains("sharpness"))
+        {
+            ui.lB_Sharpness->setVisible(true);
+            ui.cB_Sharpness->setVisible(true);
+            ui.sW_Sharpness->setVisible(true);
+            ito::DoubleMeta* dm = (ito::DoubleMeta*)(params["sharpness"].getMeta());
+            ui.sW_Sharpness->setSingleStep(dm->getStepSize());
+            ++propCount;
+        }
+        else
+        {
+            ui.lB_Sharpness->setVisible(false);
+            ui.cB_Sharpness->setVisible(false);
+            ui.sW_Sharpness->setVisible(false);
+        }
+
+        if (params.contains("sizex"))
+        {
+            ui.lblWidth->setText(QString("%1").arg(params["sizex"].getVal<int>()));
+        }
+
+        if (params.contains("sizey"))
+        {
+            ui.lblHeight->setText(QString("%1").arg(params["sizey"].getVal<int>()));
+        }
+
+        if (params.contains("bpp"))
+        {
+            ui.lblBitDepth->setText(QString("%1").arg(params["bpp"].getVal<int>()));
+        }
+
+        if (propCount == 0)
+        {
+            ui.groupBox_3->setVisible(false);
+            setMinimumHeight(109);
+        }
+        else
+        {
+            setMinimumHeight((26 * propCount) + 129);
+        }
+
+        m_firstRun = false;
+    }
+
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        if (params.contains("brightness"))
+        {
+            ui.cB_Brightness->setChecked(params["brightnessAuto"].getVal<int>());
+            ui.sW_Brightness->setValue(params["brightness"].getVal<double>());
+        }
+
+        if (params.contains("contrast"))
+        {
+            ui.cB_Contrast->setChecked(params["contrastAuto"].getVal<int>());
+            ui.sW_Contrast->setValue(params["contrast"].getVal<double>());
+        }
+
+        if (params.contains("gain"))
+        {
+            ui.cB_Gain->setChecked(params["gainAuto"].getVal<int>());
+            ui.sW_Gain->setValue(params["gain"].getVal<double>());
+        }
+
+        if (params.contains("saturation"))
+        {
+            ui.cB_Saturation->setChecked(params["saturationAuto"].getVal<int>());
+            ui.sW_Saturation->setValue(params["saturation"].getVal<double>());
+        }
+
+        if (params.contains("sharpness"))
+        {
+            ui.cB_Sharpness->setChecked(params["sharpnessAuto"].getVal<int>());
+            ui.sW_Sharpness->setValue(params["sharpness"].getVal<double>());
+        }
+
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::sendParameters(const int type, const double d)
+{
+//qDebug() << "----------------- sendParameters type: " << type << "; d: " << d << "; int: " << (int)d;
+    ito::RetVal retValue(ito::retOk);
+    QVector<QSharedPointer<ito::ParamBase> > values;
+    bool success = false;
+
+    switch(type)
+        {
+        case 1:
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("brightness", ito::ParamBase::Double, d)));
+            break;
+        case 2:
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("contrast", ito::ParamBase::Double, d)));
+            break;
+        case 3:
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, d)));
+            break;
+        case 4:
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("saturation", ito::ParamBase::Double, d)));
+            break;
+        case 5:
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sharpness", ito::ParamBase::Double, d)));
+            break;
+        case 11:
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("brightnessAuto", ito::ParamBase::Int, (int)d)));
+            break;
+        case 22:
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("contrastAuto", ito::ParamBase::Int, (int)d)));
+            break;
+        case 33:
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gainAuto", ito::ParamBase::Int, (int)d)));
+            break;
+        case 44:
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("saturationAuto", ito::ParamBase::Int, (int)d)));
+            break;
+        case 55:
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sharpnessAuto", ito::ParamBase::Int, (int)d)));
+            break;
+        }
+    
+    if (m_pMSMediaFoundation)
+    {
+        if (values.size() > 0)
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(m_pMSMediaFoundation, "setParamVector", Q_ARG( const QVector<QSharedPointer<ito::ParamBase> >, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+            while(!success)
+            {
+                if (locker.getSemaphore()->wait(PLUGINWAIT) == true)
+                {
+                    success = true;
+                }
+                if (!m_pMSMediaFoundation->isAlive())
+                {
+                    break;
+                }
+            }
+
+            if (!success)
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("timeout while setting parameters of plugin.").toLatin1().data());
+            }
+            if (locker.getSemaphore()->returnValue.containsError())
+            {
+                retValue += ito::RetVal(ito::retError, 0, locker.getSemaphore()->returnValue.errorMessage());
+            }
+        }
     }
     else
-        ui.doubleSpinBox_integration_time->setEnabled(false);
-*/
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("plugin instance not defined.").toLatin1().data());
+    }
+
+    if (retValue.containsError())
+    {
+        QMessageBox::information(this, tr("error"), retValue.errorMessage());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMSMediaFoundation::on_spinBox_gain_valueChanged(int /*d*/)
+double getStepValue(double value, double stepSize)
 {
-//    emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
+    int stepCount = (int)((value / stepSize) + .5);
+qDebug() << "----------------- getStepValue stepCount: " << stepCount << "; alt: " << value / stepSize;  // getStepValue stepCount:  77.4818 ; alt:  77.4 
+    return stepSize * stepCount;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMSMediaFoundation::on_spinBox_offset_valueChanged(int /*d*/)
+void DockWidgetMSMediaFoundation::on_sW_Brightness_valueChanged(double d)
 {
-//    emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        d = getStepValue(d, ui.sW_Brightness->singleStep());
+        ui.sW_Brightness->setValue(d);
+        sendParameters(1, d);
+        m_inEditing = false;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMSMediaFoundation::on_doubleSpinBox_integration_time_valueChanged(double /*d*/)
+void DockWidgetMSMediaFoundation::on_sW_Contrast_valueChanged(double d)
 {
-//    emit IntegrationPropertiesChanged( ui.doubleSpinBox_integration_time->value() / 1000.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        emit sendParameters(2, getStepValue(d, ui.sW_Contrast->singleStep()));
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::on_sW_Gain_valueChanged(double d)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        emit sendParameters(3, getStepValue(d, ui.sW_Gain->singleStep()));
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::on_sW_Saturation_valueChanged(double d)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        emit sendParameters(4, getStepValue(d, ui.sW_Saturation->singleStep()));
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::on_sW_Sharpness_valueChanged(double d)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        emit sendParameters(5, getStepValue(d, ui.sW_Sharpness->singleStep()));
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::on_cB_Brightness_stateChanged(int /*state*/)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        ui.sW_Brightness->setEnabled(!ui.cB_Brightness->isChecked());
+        double v = ui.cB_Brightness->isChecked() ? 1.0 : 0.0;
+        emit sendParameters(11, v);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::on_cB_Contrast_stateChanged(int /*state*/)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        ui.sW_Contrast->setEnabled(!ui.cB_Contrast->isChecked());
+        double v = ui.cB_Contrast->isChecked() ? 1.0 : 0.0;
+        emit sendParameters(22, v);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::on_cB_Gain_stateChanged(int /*state*/)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        ui.sW_Gain->setEnabled(!ui.cB_Gain->isChecked());
+        double v = ui.cB_Gain->isChecked() ? 1.0 : 0.0;
+        emit sendParameters(33, v);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::on_cB_Saturation_stateChanged(int /*state*/)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        ui.sW_Saturation->setEnabled(!ui.cB_Saturation->isChecked());
+        double v = ui.cB_Saturation->isChecked() ? 1.0 : 0.0;
+        emit sendParameters(44, v);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::on_cB_Sharpness_stateChanged(int /*state*/)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        ui.sW_Sharpness->setEnabled(!ui.cB_Sharpness->isChecked());
+        double v = ui.cB_Sharpness->isChecked() ? 1.0 : 0.0;
+        emit sendParameters(55, v);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::propertiesChanged(QString identifier)
+{
+    ui.label_Identifier->setText(identifier);
 }

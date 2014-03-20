@@ -24,6 +24,7 @@
 #define DOCKWIDGETMSMEDIAFOUNDATION_H
 
 #include "common/sharedStructures.h"
+#include "common/sharedStructuresQt.h"
 
 #include <QtGui>
 #include <qwidget.h>
@@ -31,30 +32,43 @@
 #include <qstring.h>
 
 #include "ui_dockWidgetMSMediaFoundation.h"
+#include "common/addInInterface.h"
 
 class DockWidgetMSMediaFoundation : public QWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetMSMediaFoundation(QMap<QString, ito::Param> params, int uniqueID);
+        DockWidgetMSMediaFoundation(ito::AddInDataIO *grabber);
         ~DockWidgetMSMediaFoundation() {};
 
     private:
         Ui::DockWidgetMSMediaFoundation ui;
+        bool m_inEditing;
+        bool m_firstRun;
+        ito::AddInDataIO *m_pMSMediaFoundation;
 
     signals:
-        void GainOffsetPropertiesChanged(double gain, double offset);
-        void IntegrationPropertiesChanged(double integrationtime);
+//        void dockWidgetValueChanged(int type, double value);
 
     public slots:
         void valuesChanged(QMap<QString, ito::Param> params);
-
+        void propertiesChanged(QString identifier);
 
     private slots:
-        void on_spinBox_offset_valueChanged(int d);
-        void on_spinBox_gain_valueChanged(int d);
-        void on_doubleSpinBox_integration_time_valueChanged(double d);
+        void on_sW_Brightness_valueChanged(double d);
+        void on_sW_Contrast_valueChanged(double d);
+        void on_sW_Gain_valueChanged(double d);
+        void on_sW_Saturation_valueChanged(double d);
+        void on_sW_Sharpness_valueChanged(double d);
+
+        void on_cB_Brightness_stateChanged(int state);
+        void on_cB_Contrast_stateChanged(int state);
+        void on_cB_Gain_stateChanged(int state);
+        void on_cB_Saturation_stateChanged(int state);
+        void on_cB_Sharpness_stateChanged(int state);
+
+        void sendParameters(const int type, const double d);
 };
 
 #endif

@@ -150,7 +150,10 @@ ito::RetVal DialogPIPiezoCtrl::sendParameters()
                 {
                     success = true;
                 }
-                if (!m_pPIPiezo->isAlive()) break;
+                if (!m_pPIPiezo->isAlive())
+                {
+                    break;
+                }
             }
 
             if (!success)
@@ -165,7 +168,6 @@ ito::RetVal DialogPIPiezoCtrl::sendParameters()
     }
 
     return retValue;
-
 }
 
 //---------------------------------------------------------------------------------------------------------------------

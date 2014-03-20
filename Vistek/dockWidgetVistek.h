@@ -44,7 +44,6 @@ class DockWidgetVistek : public QWidget
     private:
         Ui::DockWidgetVistek ui;
         bool m_inEditing;
-
         float m_exposureStep;
 
     signals:

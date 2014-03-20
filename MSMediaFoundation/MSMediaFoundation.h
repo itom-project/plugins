@@ -114,6 +114,7 @@ class MSMediaFoundation : public ito::AddInGrabber //, public MSMediaFoundationI
 
     private slots:
         void MSMediaFoundation::dockWidgetVisibilityChanged(bool visible);
+//        void dockWidgetValueChanged(int type, double value);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

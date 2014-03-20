@@ -35,6 +35,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
+#include <qmessagebox.h>
 
 #include "dockWidgetMSMediaFoundation.h"
 
@@ -236,6 +237,12 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
     meta.addItem("gray");
     paramVal.setMeta(&meta, false);
     m_params.insert(paramVal.getName(), paramVal);
+
+    DockWidgetMSMediaFoundation *dw = new DockWidgetMSMediaFoundation(this);
+    
+    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -371,7 +378,7 @@ ito::RetVal MSMediaFoundation::setParam(QSharedPointer<ito::ParamBase> val, Itom
         {
             if (key.endsWith("Auto"))
             {
-                QString keyWithoutAuto = key.left(key.size()-4);
+                QString keyWithoutAuto = key.left(key.size() - 4);
                 retValue += updateCamParam(*(m_camParamsHash[key]), m_params[keyWithoutAuto], *val);
             }
             else
@@ -434,11 +441,11 @@ ito::RetVal MSMediaFoundation::setParam(QSharedPointer<ito::ParamBase> val, Itom
 
         if (key == "x0" || key == "x1")
         {
-            m_params["sizex"].setVal<int>(1+ m_params["x1"].getVal<int>() - m_params["x0"].getVal<int>());
+            m_params["sizex"].setVal<int>(1 + m_params["x1"].getVal<int>() - m_params["x0"].getVal<int>());
         }
         else if (key == "y0" || key == "y1")
         {
-            m_params["sizey"].setVal<int>(1+ m_params["y1"].getVal<int>() - m_params["y0"].getVal<int>());
+            m_params["sizey"].setVal<int>(1 + m_params["y1"].getVal<int>() - m_params["y0"].getVal<int>());
         }
     }
 
@@ -585,6 +592,12 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
         waitCond->release();
     }
         
+    DockWidgetMSMediaFoundation *dw = qobject_cast<DockWidgetMSMediaFoundation*>(getDockWidget()->widget());
+    if (dw)
+    {
+        QMetaObject::invokeMethod(dw, "propertiesChanged", Q_ARG(QString, m_identifier));
+    }
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
 }
@@ -876,7 +889,7 @@ ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *w
         {
             if (m_pVI->isFrameNew(m_deviceID))
             {
-                m_pVI->getPixels(m_deviceID, (unsigned char *)m_pDataMatBuffer.data, false, true); 
+                m_pVI->getPixels(m_deviceID, (unsigned char *)m_pDataMatBuffer.data, false, false); 
                 break;
             }
 
@@ -1249,6 +1262,70 @@ ito::RetVal MSMediaFoundation::copyVal(void *vpdObj, ItomSharedSemaphore *waitCo
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! Set changed value from dockWidget
+/*!
+    \type [in] 1: brightness, 2: contrast, 3: gain, 4: saturation, 5: sharpness, 11: brightnessAuto, 22: contrastAuto, 33: gainAuto, 44: saturationAuto, 55: sharpnessAuto
+    \value [in] changed value
+*/
+/*void MSMediaFoundation::dockWidgetValueChanged(int type, double value)
+{
+    ito::RetVal retValue(ito::retOk);
+qDebug() << "----------------- dockWidgetValueChanged type: " << type;
+    switch(type)
+        {
+        case 1:
+            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("brightness", ito::ParamBase::Double, value)), NULL);
+            break;
+        case 2:
+            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("contrast", ito::ParamBase::Double, value)), NULL);
+            break;
+        case 3:
+            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, value)), NULL);
+            break;
+        case 4:
+            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("saturation", ito::ParamBase::Double, value)), NULL);
+            break;
+        case 5:
+            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sharpness", ito::ParamBase::Double, value)), NULL);
+            break;
+
+        case 11:
+            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("brightnessAuto", ito::ParamBase::Int, (int)value)), NULL);
+qDebug() << "----------------- dockWidgetValueChanged brightnessAuto: " << m_params["brightnessAuto"].getVal<int>();
+            break;
+        case 22:
+            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("contrastAuto", ito::ParamBase::Int, (int)value)), NULL);
+qDebug() << "----------------- dockWidgetValueChanged contrastAuto: " << m_params["contrastAuto"].getVal<int>();
+            break;
+        case 33:
+            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gainAuto", ito::ParamBase::Int, (int)value)), NULL);
+qDebug() << "----------------- dockWidgetValueChanged gainAuto: " << m_params["gainAuto"].getVal<int>();
+            break;
+        case 44:
+            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("saturationAuto", ito::ParamBase::Int, (int)value)), NULL);
+qDebug() << "----------------- dockWidgetValueChanged saturationAuto: " << m_params["saturationAuto"].getVal<int>();
+            break;
+        case 55:
+            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sharpnessAuto", ito::ParamBase::Int, (int)value)), NULL);
+qDebug() << "----------------- dockWidgetValueChanged sharpnessAuto: " << m_params["sharpnessAuto"].getVal<int>();
+            break;
+        }
+
+    if (retValue.containsError())
+    {
+qDebug() << "----------------- dockWidgetValueChanged Error: " << retValue.errorMessage();
+        if (retValue.errorMessage() == NULL)
+        {
+            QMessageBox::critical(this, tr("error"), tr("unknown error when setting parameter"));
+        }
+        else
+        {
+            QMessageBox::critical(this, tr("error"), retValue.errorMessage());
+        }
+    }
+}*/
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void MSMediaFoundation::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
@@ -1257,14 +1334,14 @@ void MSMediaFoundation::dockWidgetVisibilityChanged(bool visible)
         if (visible)
         {
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-//            connect(this, SIGNAL(serialLog(QByteArray, QByteArray, const char)), dw, SLOT(serialLog(QByteArray, QByteArray, const char)));
+//            connect(dw, SIGNAL(dockWidgetValueChanged(int, double)), this, SLOT(dockWidgetValueChanged(int, double)));
 
             emit parametersChanged(m_params);
         }
         else
         {
             disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-//            disconnect(this, SIGNAL(serialLog(QByteArray, QByteArray, const char)), dw, SLOT(serialLog(QByteArray, QByteArray, const char)));
+//            disconnect(dw, SIGNAL(dockWidgetValueChanged(int, double)), this, SLOT(dockWidgetValueChanged(int, double)));
         }
     }
 }

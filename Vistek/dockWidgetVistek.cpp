@@ -23,7 +23,9 @@
 #include "dockWidgetVistek.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetVistek::DockWidgetVistek() : m_inEditing(false), m_exposureStep(0.001)
+DockWidgetVistek::DockWidgetVistek() :
+    m_inEditing(false),
+    m_exposureStep(0.001)
 {
     ui.setupUi(this); 
 
