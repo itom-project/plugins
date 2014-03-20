@@ -170,7 +170,7 @@ DummyMotor::DummyMotor() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("accel", ito::ParamBase::Double, 1.0, 10.0, 1.0, tr("Acceleration in mm/s^2, currently not implemented").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, 0, tr("Toggles if motor has to wait until end of movement (0:sync) or not (1:async)").toLatin1().data());
+    paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("Toggles if motor has to wait until end of movement (0:sync) or not (1:async)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     /*paramVal = ito::Param("array", ito::ParamBase::IntArray, NULL, tr("test").toLatin1().data());
