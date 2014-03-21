@@ -140,7 +140,7 @@ const ito::RetVal Ximea::showConfDialog(void)
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnClose(false), m_handle(NULL), m_isgrabbing(0)
+Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnClose(false), m_handle(NULL), m_isgrabbing(0), m_acqRetVal(ito::retOk)
 {
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
@@ -735,7 +735,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                     goto end;
                 }
 
-                if ((ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING, &bin, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING, &ybin, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
 
                 DWORD pSize = sizeof(int);
@@ -1235,6 +1235,13 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
         if (!retValue.containsError())
         {
+            int val = XI_BP_SAFE;
+            if ((ret = pxiSetParam(m_handle, XI_PRM_BUFFER_POLICY, &val, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);
+        }
+
+        if (!retValue.containsError())
+        {
             retValue += checkData();
         }
     }
@@ -1346,6 +1353,8 @@ ito::RetVal Ximea::startDevice(ItomSharedSemaphore *waitCond)
         incGrabberStarted();
     }
 
+    m_isgrabbing = Ximea::grabberRunning;
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -1367,7 +1376,7 @@ ito::RetVal Ximea::stopDevice(ItomSharedSemaphore *waitCond)
         XI_RETURN ret;
         if ((ret = pxiStopAcquisition(m_handle)))
             retValue += getErrStr(ret);
-        m_isgrabbing = false;
+        m_isgrabbing = Ximea::grabberStopped;
     }
     if(grabberStartedCount() < 0)
     {
@@ -1393,19 +1402,52 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     if (grabberStartedCount() <= 0)
     {
         retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toAscii().data());
+
+        m_isgrabbing &= ~Ximea::grabberGrabbed;
+        m_isgrabbing |= Ximea::grabberGrabbed;
     }
     else
     {
         XI_RETURN ret;
-        if(!m_isgrabbing)
+        if(m_isgrabbing & Ximea::grabberGrabbed)
         {
-            if (triggermode == XI_TRG_SOFTWARE)
-                if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, 0, sizeof(int), xiTypeInteger))) //TODO: isn't it necessary to set the value to XI_TRG_SOFTWARE here?
-                    retValue += getErrStr(ret);
+            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal. This acquire was ignored.").toAscii().data());
         }
         else
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal. This acquire was ignored.").toAscii().data());
-        m_isgrabbing = true;
+        {
+            if (triggermode == XI_TRG_SOFTWARE)
+            {
+                if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, 0, sizeof(int), xiTypeInteger))) //TODO: isn't it necessary to set the value to XI_TRG_SOFTWARE here?
+                {
+                    retValue += getErrStr(ret); 
+                    m_acqRetVal += retValue;
+                }
+            }
+        }
+
+        if (waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+        }
+
+        int iPicTimeOut = 2000; //timeout in ms
+        XI_IMG img;
+        img.size = sizeof(XI_IMG);
+        img.bp = m_data.rowPtr(0, 0);
+        int curxsize = m_params["sizex"].getVal<int>();
+        int curysize = m_params["sizey"].getVal<int>();
+
+        img.bp_size = curxsize * curysize * (m_data.getType() == ito::tUInt16 ? 2 : 1);
+        if ((ret = pxiGetImage(m_handle, iPicTimeOut, &img)))
+        {
+            retValue += getErrStr(ret);
+            m_acqRetVal += retValue;
+            m_isgrabbing |= Ximea::grabberGrabError;
+        }
+
+        m_isgrabbing |= Ximea::grabberGrabbed;
+        return retValue;
     }
 
     if (waitCond)
@@ -1413,6 +1455,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
 
@@ -1421,92 +1464,45 @@ ito::RetVal Ximea::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue(ito::retOk);
 
-    int iPicTimeOut = 2000; //timeout in ms
+    bool copyExternal = externalDataObject != NULL;
 
-    long lcopysize = 0;
-    int maxxsize = (int)m_params["sizex"].getMax();
-    int maxysize = (int)m_params["sizey"].getMax();
-    int curxsize = m_params["sizex"].getVal<int>();
-    int curysize = m_params["sizey"].getVal<int>();
-    int x0 = m_params["x0"].getVal<int>();
-    int y0 = m_params["y0"].getVal<int>();
-
-    bool hasListeners;
-    bool copyExternal;
-    XI_IMG img;
-    XI_RETURN ret;
-
-    if(m_autoGrabbingListeners.size() > 0)
-        hasListeners = true;
-    else
-        hasListeners = false;
-
-    if(externalDataObject != NULL)
-        copyExternal = true;
-    else
-        copyExternal = false;
-
-    if (this->m_isgrabbing == false)
+    if (!(this->m_isgrabbing & Ximea::grabberRunning))
+    {
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without starting device").toAscii().data());
+    }
+    else if (!(this->m_isgrabbing & Ximea::grabberGrabbed))
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toAscii().data());
     }
-    else
+    else if (this->m_isgrabbing & Ximea::grabberGrabError)
+    {
+        retValue += m_acqRetVal;
+        m_acqRetVal = ito::retOk;      
+    }
+    else if(copyExternal)
     {
         //here we wait until the Event is set to signaled state
         //or the timeout runs out
-        img.size = sizeof(XI_IMG);
-        img.bp = NULL;
-        img.bp_size = 0;
-        if ((ret = pxiGetImage(m_handle, iPicTimeOut, &img)))
-            retValue += getErrStr(ret);
+
+        cv::Mat* internalMat = (cv::Mat*)(m_data.get_mdata()[0]);
+        cv::Mat* externalMat = (cv::Mat*)(externalDataObject->get_mdata()[externalDataObject->seekMat(0)]);
+
+        if (externalMat->isContinuous())
+        {
+            memcpy(externalMat->ptr(0), internalMat->ptr(0), internalMat->cols * internalMat->rows * externalMat->elemSize());
+        }
         else
-        {// Now we shoud have a picture in the camera buffer
-            switch (m_params["bpp"].getVal<int>())
+        {
+            for (int y = 0; y < internalMat->rows; y++)
             {
-                case 8:
-                    //retValue += CopyBuf2Obj<uint8>(dObj, m_params, this->m_pAdr[this->m_nextbuf]);
-                    if (curxsize == img.width)
-                    {
-                        if(copyExternal)
-                            retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)img.bp, img.width, curysize);
-                        if(!copyExternal || hasListeners)
-                            retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)img.bp, maxxsize, curysize);
-                    }
-                    else
-                    {
-                        if(copyExternal)
-                            retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)img.bp, img.width, img.height, x0, y0, curxsize, curysize);
-                        if(!copyExternal || hasListeners)
-                            retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)img.bp, img.width, img.height, x0, y0, curxsize, curysize);
-                    }
-                break;
-
-                case 10:
-                case 12:
-                case 16:
-                    if (curxsize == maxxsize)
-                    {
-                        if(copyExternal)
-                            retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)img.bp, img.width, curysize);
-                        if(!copyExternal || hasListeners)
-                            retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)img.bp, img.width, curysize);
-                    }
-                    else
-                    {
-                        if(copyExternal)
-                            retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)img.bp, img.width, img.height, x0, y0, curxsize, curysize);
-                        if(!copyExternal || hasListeners)
-                            retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)img.bp, img.width, img.height, x0, y0, curxsize, curysize);
-                    }
-                break;
-
-                default:
-                    retValue += ito::RetVal(ito::retError, 0, tr("F Wrong picture Type").toAscii().data());
-                break;
+                memcpy(externalMat->ptr(y), internalMat->ptr(y), internalMat->cols * externalMat->elemSize());
             }
         }
-        this->m_isgrabbing = false;
+
     }
+
+    this->m_isgrabbing &= ~ Ximea::grabberGrabbed;
+    this->m_isgrabbing &= ~ Ximea::grabberGrabError;
 
     return retValue;
 }
