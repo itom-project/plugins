@@ -66,6 +66,7 @@ class MSMediaFoundation : public ito::AddInGrabber //, public MSMediaFoundationI
         int m_imgRows; /*!< rows of the camera image due to current parameterization */
         int m_imgBpp; /*!< number of element size of the camera image due to current parameterization */
         bool m_camStatusChecked;
+        bool m_flipImage;
 
         int m_colorMode;
 

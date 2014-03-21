@@ -95,12 +95,12 @@ This plugin internally used a modified version of VideoInput, proposed by Evgeny
 http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License)";
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, H. Bieger, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");     
+    m_aboutThis = QObject::tr("");     
 
     ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 16, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -117,6 +117,9 @@ http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Wi
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("mediaTypeID", ito::ParamBase::Int, -1, 1000, 0, tr("ID of the media format. 0 (default) takes the first from the list (must be MFVideoFormat_RGBA24 as subtype). -1: prints out a list of devices and quits the initialization, other: other index from the list of available types").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
+
+    paramVal = ito::Param("flipImage", ito::ParamBase::Int, 0, 1, 0, tr("if 1 image is vertically flipped (default: 0)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     //paramVal = ito::Param("Init-Dialog", ito::ParamBase::Int, 0, 1, 0, tr("If true, a camera selection dialog is opened during startup").toLatin1().data());
@@ -473,6 +476,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
 
     m_deviceID = paramsOpt->at(0).getVal<int>();
     int mediaTypeID = paramsOpt->at(2).getVal<int>();
+    m_flipImage = paramsOpt->at(3).getVal<int>() > 0 ? true : false;
 
     m_pVI = &VideoInput::getInstance();
     int numDevices = m_pVI->listDevices();
@@ -889,7 +893,7 @@ ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *w
         {
             if (m_pVI->isFrameNew(m_deviceID))
             {
-                m_pVI->getPixels(m_deviceID, (unsigned char *)m_pDataMatBuffer.data, false, false); 
+                m_pVI->getPixels(m_deviceID, (unsigned char *)m_pDataMatBuffer.data, false, m_flipImage); 
                 break;
             }
 
