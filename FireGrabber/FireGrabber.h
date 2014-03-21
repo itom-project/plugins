@@ -1,33 +1,16 @@
-/* ********************************************************************
-    Plugin "FireGrabber" for itom software
-    URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
-
-    This file is part of a plugin for the measurement software itom.
-  
-    This itom-plugin is free software; you can redistribute it and/or modify it
-    under the terms of the GNU Library General Public Licence as published by
-    the Free Software Foundation; either version 2 of the Licence, or (at
-    your option) any later version.
-
-    itom and its plugins are distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
-    General Public Licence for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with itom. If not, see <http://www.gnu.org/licenses/>.
-*********************************************************************** */
-
 #ifndef FIREGRABBER_H
 #define FIREGRABBER_H
 
 #include "common/addInGrabber.h"
 #include "dialogFireGrabber.h"
 
-//#include "./FireGrab/lib/FGCamera.h"
-#include <FGCamera.h>
+#ifndef linux
+    #include <FGCamera.h>
+#else
+    #include <FireGrab/dc1394/dc1394.h>
+    #include <FireGrab/dc1394/offsets.h>
+    #include <FireGrab/dc1394/vendor/avt.h>
+#endif
 
 #include "common/helperCommon.h"
 
@@ -44,7 +27,7 @@ class FireGrabberInterface : public ito::AddInInterfaceBase
 #if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
-    Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this FireGrabberInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
+    Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this FileGrabberInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
     PLUGIN_ITOM_API
 
     public:
@@ -62,14 +45,14 @@ class FireGrabberInterface : public ito::AddInInterfaceBase
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
-  *\class    FireGrabber 
-  *\brief    class to use a the standard grabber from Allied Fire Grab Packet as an itom-Addin.
+  *\class	FireGrabber 
+  *\brief	class to use a the standard grabber from Allied Fire Grab Packet as an itom-Addin.
   *
   *
-  *    \sa    AddInDataIO, FireGrabber
-  *    \date    Jun.2012
-  *    \author    Alexander Bielke
-  * \warning    NA
+  *	\sa	AddInDataIO, FireGrabber
+  *	\date	Jun.2012
+  *	\author	Alexander Bielke (WindowsVersion) , Goran Baer (Linux Version)
+  * \warning	NA
   *
   */
 
@@ -78,21 +61,37 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
     Q_OBJECT
 
     protected:
-        //! Destructor
+		//! Destructor
         ~FireGrabber();
-        //! Constructor
+		//! Constructor
         FireGrabber();
-        ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
+		ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
 
 
     public:
         friend class FireGrabberInterface;
 
-        const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
-        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
-        
-    private:
-        CFGCamera  Camera;
+        const ito::RetVal showConfDialog(void);	//! Open the config nonmodal dialog to set camera parameters 
+		int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
+		
+    private:        
+        #ifndef linux
+            CFGCamera  Camera;
+        #else
+            dc1394camera_t *camera;
+            int i;
+            dc1394featureset_t features;
+            dc1394framerates_t framerates;
+            dc1394video_modes_t video_modes;
+            dc1394framerate_t framerate;
+            dc1394video_mode_t video_mode;
+            dc1394color_coding_t coding;
+            dc1394_t * d;
+            dc1394camera_list_t * list;
+            dc1394error_t Result;
+            dc1394video_frame_t *frame;
+
+        #endif
 
         struct ExposureParameters
         {
@@ -103,51 +102,52 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
         };
 
         ExposureParameters m_exposureParams;
-
+#ifdef linux
+        unsigned int  m_xSize, m_ySize;
+#else
         unsigned long  m_xSize, m_ySize;
-        
-        bool m_isgrabbing; /*!< Check if acquire was called */
+#endif
+        bool m_isgrabbing; /*!< Check if camera is started */
+        bool m_acquireReady; /*!< Check if frame was aquired */
         //bool saturation_on; /*!< Check if saturation is controlled manually */
 
-        ito::RetVal AlliedChkError(int errornumber); /*!< Map Allied-Error-Number to ITOM-Errortype and Message */
+		ito::RetVal AlliedChkError(int errornumber); /*!< Map Allied-Error-Number to ITOM-Errortype and Message */
 
         ito::RetVal adjustROI(int x0, int x1, int y0, int y1);
 
         static int m_numberOfInstances;
 
+#ifndef linux
         QMap<QString, FGPINFO> m_camProperties;
-
+#endif
+        // cast shutter time to internal whatever
         double shutterToExposureSec(int shutter);
         int exposureSecToShutter(double exposure);
 
     public slots:
         //!< Get Camera-Parameter
-        ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
+		ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond);
         //!< Set Camera-Parameter
-        ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
+		ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond);
         //!< Initialise board, load dll, allocate buffer
-        ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
+		ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         //!< Free buffer, delete board, unload dll
         ito::RetVal close(ItomSharedSemaphore *waitCond);
-
-        //!< Start the camera to enable acquire-commands
+		//!< Start the camera to enable acquire-commands
         ito::RetVal startDevice(ItomSharedSemaphore *waitCond);
         //!< Stop the camera to disable acquire-commands
-        ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
+		ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
         //!< Softwaretrigger for the camera
-        ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
-        //!< Wait for acquired picture, copy the picture to dObj of right type and size
+		ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
+		//!< Wait for acquired picture, copy the picture to dObj of right type and size
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
-        void GainOffsetPropertiesChanged(double gain, double offset);
+		void GainOffsetPropertiesChanged(double gain, double offset);
         void IntegrationPropertiesChanged(double integrationtime);
 
     private slots:
-        void dockWidgetVisibilityChanged(bool visible);
-
-         
+        void dockWidgetVisibilityChanged(bool visible);		 
 };
 
 

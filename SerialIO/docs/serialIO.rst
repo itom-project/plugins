@@ -2,6 +2,15 @@
  SerialIO
 ==========
 
+=============== ========================================================================================================
+**Summary**:    :pluginsummary:`SerialIO`
+**Type**:       :plugintype:`SerialIO`
+**License**:    :pluginlicense:`SerialIO`
+**Platforms**:  Windows, Linux
+**Devices**:    COM-Ports (Windows), ttySx and ttyUSBx (Linux)
+**Author**:     :pluginauthor:`SerialIO`
+=============== ========================================================================================================
+
 Overview
 ========
 
@@ -21,7 +30,7 @@ Features are:
 
 Initialization
 ==============
-
+  
 For a connection to a serial port, create a new instance of this plugin using:
 
 .. py:function:: dataIO("SerialIO", port, baud, endline [, bits, stopbits, parity, flow, sendDelay, timeout, debug])
@@ -145,4 +154,16 @@ Installation
 ============
 
 For using this plugin no further 3rd party libraries or drivers are necessary.
+
+If you are using linux to open a serial connection and you are running **itom** without root privileges, which is recommended, you have to add
+your user to the **dialout** group, logout once and login again.
+
+.. code-block:: bash
+
+    sudo adduser USERNAME dialout
+
+where USERNAME ist the username under which you are running **itom**
+
+	
+
 

@@ -162,6 +162,8 @@ else (UPDATE_TRANSLATIONS)
 endif (UPDATE_TRANSLATIONS)
 #handle translations END STEP 2
 
+PLUGIN_DOCUMENTATION(${target_name} openCVFilters)
+
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")

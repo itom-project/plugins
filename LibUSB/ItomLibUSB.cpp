@@ -666,7 +666,7 @@ ito::RetVal ItomUSBDevice::getVal(QSharedPointer<char> data, QSharedPointer<int>
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ItomUSBDevice::setVal(const void *data, const int datalength, ItomSharedSemaphore *waitCond)
+ito::RetVal ItomUSBDevice::setVal(const char *data, const int datalength, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     unsigned char *buf = (unsigned char*)data;

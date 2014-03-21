@@ -72,12 +72,18 @@ if (PLUGIN_FittingFilters)
 endif (PLUGIN_FittingFilters)
 
 # FireGrabber
-IF (WIN32)
-    OPTION(PLUGIN_FireGrabber "Build with this plugin." ON)
-    if (PLUGIN_FireGrabber)
-        ADD_SUBDIRECTORY(FireGrabber)
-    endif (PLUGIN_FireGrabber)
-ENDIF (WIN32)
+OPTION(PLUGIN_FireGrabber "Build with this plugin." ON)
+if (PLUGIN_FireGrabber)
+    ADD_SUBDIRECTORY(FireGrabber)
+endif (PLUGIN_FireGrabber)
+
+# GenICam
+#IF (WIN32)
+#    OPTION(PLUGIN_GenICam "Build with this plugin." OFF)
+#    if (PLUGIN_GenICam)
+#        ADD_SUBDIRECTORY(GenICam)
+#    endif (PLUGIN_GenICam)
+#ENDIF (WIN32)
 
 # GWInstekPSP
 OPTION(PLUGIN_GWInstekPSP "Build with this plugin." ON)

@@ -82,8 +82,6 @@ class Vistek : public ito::AddInGrabber
 
         AcquiredImage m_acquiredImage;
 
-        
-
         // Variables that are filled during the data callback
         int TriggerViolationCount;
         double Timestamp, TimeSinceLastFrame, TransferTime;
@@ -92,7 +90,6 @@ class Vistek : public ito::AddInGrabber
         Event_handle m_eventID;
 
     private:
-
         ito::RetVal checkError(const char *prependStr, SVGigE_RETURN returnCode);
 
         VistekContainer *m_pVistekContainer;
@@ -104,7 +101,6 @@ class Vistek : public ito::AddInGrabber
         float m_exposureIncrement;
         int m_numBuf;
         
-
         // Utility functions to control the camera
         ito::RetVal initCamera(int CameraNumber);
         ito::RetVal startStreamAndRegisterCallbacks();
@@ -131,9 +127,7 @@ class Vistek : public ito::AddInGrabber
         void OffsetPropertyChanged(double offset);
 
         void dockWidgetVisibilityChanged(bool visible);
-
 };
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Callback function for Vistek

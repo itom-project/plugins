@@ -160,7 +160,6 @@ Vistek::Vistek(QObject *parent) :
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);   
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -196,13 +195,13 @@ ito::RetVal Vistek::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         *val = it.value();
     }
@@ -237,15 +236,15 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
     QMap<QString, ito::Param>::iterator it;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
     
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
@@ -253,14 +252,14 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         bool set = false;
         if (!key.compare("logLevel"))
         {
             retValue += checkError("set log level",Camera_registerForLogMessages(m_cam,val->getVal<int>(),"Vistek_SVGigE.log",NULL));
         }
-        else if(!key.compare("exposure"))
+        else if (!key.compare("exposure"))
         {
             // Camera_setExposureTime expects µs, so multiply by 10^6
             retValue += checkError("set exposure time",Camera_setExposureTime(m_cam, val->getVal<double>()*1.e6));
@@ -275,7 +274,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             // Camera_setOffset expects a value between 0..255 mapped from 0.0 .. 1.0
             retValue += checkError("set offset", Camera_setOffset(m_cam, val->getVal<double>() * 255));
         }
-        else if(!key.compare("binning"))
+        else if (!key.compare("binning"))
         {
             BINNING_MODE mode;
             BINNING_MODE currentMode;
@@ -310,7 +309,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             {
                 m_binningMode = mode;
 
-                if(grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
+                if (grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
                 {
                     retValue += checkError("stop camera", Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP));
                 }
@@ -319,7 +318,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                 retValue += checkError("set binning",Camera_setBinningMode(m_cam, mode));
                 retValue += startStreamAndRegisterCallbacks();
 
-                if(grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
+                if (grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
                 {
                     retValue += checkError("restart camera 1", Camera_setAcquisitionMode(m_cam, ACQUISITION_MODE_SOFTWARE_TRIGGER));
                     retValue += checkError("restart camera 2", Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_START));
@@ -328,7 +327,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                 set = true;
             }      
         }
-        else if(!key.compare("bpp"))
+        else if (!key.compare("bpp"))
         {
             SVGIGE_PIXEL_DEPTH depth;
             switch (val->getVal<int>())
@@ -369,7 +368,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
 
             if (!retValue.containsError())
             {
-                if(grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
+                if (grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
                 {
                     retValue += checkError("stop camera", Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP));
                 }
@@ -378,7 +377,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                 retValue += checkError("set pixel depth",Camera_setPixelDepth(m_cam, depth));
                 retValue += startStreamAndRegisterCallbacks();
 
-                if(grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
+                if (grabberStartedCount() >= 1 && m_cam != SVGigE_NO_CAMERA)
                 {
                     retValue += checkError("restart camera 1", Camera_setAcquisitionMode(m_cam, ACQUISITION_MODE_SOFTWARE_TRIGGER));
                     retValue += checkError("restart camera 2", Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_START));
@@ -388,11 +387,11 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
 
         if (!retValue.containsError() && !set) //binning is already set earlier
         {
-            retValue += it->copyValueFrom( &(*val) );
+            retValue += it->copyValueFrom(&(*val));
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
@@ -426,9 +425,9 @@ ito::RetVal Vistek::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
     VistekCam TempCam;
 
     //*********************************************
-    m_params["cameraSerialNo"].setVal<char*>( paramsOpt->at(0).getVal<char*>() );
+    m_params["cameraSerialNo"].setVal<char*>(paramsOpt->at(0).getVal<char*>());
 
-    m_params["streamingPacketSize"].setVal<int>( paramsOpt->at(1).getVal<int>() );
+    m_params["streamingPacketSize"].setVal<int>(paramsOpt->at(1).getVal<int>());
 
     m_numBuf = paramsOpt->at(2).getVal<int>();
 
@@ -443,12 +442,12 @@ ito::RetVal Vistek::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
             camNum = m_pVistekContainer->getCameraBySN(m_params["cameraSerialNo"].getVal<char*>());
         }
 
-        if ( camNum < 0)
+        if (camNum < 0)
         {
             camNum = m_pVistekContainer->getNextFreeCam();
         }
 
-        if ( camNum >= 0)
+        if (camNum >= 0)
         {
             m_params["camnum"].setVal<int>(camNum);
 
@@ -470,14 +469,14 @@ ito::RetVal Vistek::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
         //*********************************************
     }
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = ReturnValue;
         waitCond->release();
     }
 
 
-    if(!ReturnValue.containsError())
+    if (!ReturnValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
@@ -500,7 +499,7 @@ ito::RetVal Vistek::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
 
-    if(m_timerID > 0)
+    if (m_timerID > 0)
     {
         killTimer(m_timerID);
         m_timerID = 0;
@@ -508,7 +507,7 @@ ito::RetVal Vistek::close(ItomSharedSemaphore *waitCond)
 
     // ONE TIME DEINIT HERE (Holger)
     //*********************************************
-    if( m_cam != SVGigE_NO_CAMERA)
+    if (m_cam != SVGigE_NO_CAMERA)
     {
         std::cout << "Forcing camera shutdown.\n" << std::endl;
 
@@ -531,7 +530,7 @@ ito::RetVal Vistek::close(ItomSharedSemaphore *waitCond)
     }
     //*********************************************
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = ito::retOk;
         waitCond->release();
@@ -600,10 +599,10 @@ ito::RetVal Vistek::startDevice(ItomSharedSemaphore *waitCond)
 
         incGrabberStarted();
 
-        if(grabberStartedCount() == 1)
+        if (grabberStartedCount() == 1)
         {
             //*********************************************
-            if( m_cam != SVGigE_NO_CAMERA)
+            if (m_cam != SVGigE_NO_CAMERA)
             {
                 retValue += checkError("set software trigger and start 1", Camera_setAcquisitionMode(m_cam, ACQUISITION_MODE_SOFTWARE_TRIGGER));
                 retValue += checkError("set software trigger and start 2", Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_START));
@@ -612,13 +611,13 @@ ito::RetVal Vistek::startDevice(ItomSharedSemaphore *waitCond)
         }
 
         // Dont count a grabber that is not really started ...
-        if ( retValue != ito::retOk )
+        if (retValue != ito::retOk)
         {
             decGrabberStarted();
         }
     }
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -644,23 +643,23 @@ ito::RetVal Vistek::stopDevice(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue = ito::retOk;
 
     decGrabberStarted();
-    if(grabberStartedCount() == 0)
+    if (grabberStartedCount() == 0)
     {
         //*********************************************
-        if( m_cam != SVGigE_NO_CAMERA)
+        if (m_cam != SVGigE_NO_CAMERA)
         {
             retValue += checkError("stop camera",Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP));
         }
         //*********************************************
     }
-    else if(grabberStartedCount() < 0)
+    else if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retError, 1001, tr("StopDevice of Vistek can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -689,7 +688,7 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     
     int timeout = 0;
 
-    if(grabberStartedCount() <= 0)
+    if (grabberStartedCount() <= 0)
     {
         retValue += ito::RetVal(ito::retError, 1002, tr("acquisition not possible, since Vistek camera has not been started.").toLatin1().data());
     }
@@ -706,7 +705,7 @@ ito::RetVal Vistek::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         }
     }
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -733,21 +732,21 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
 
     SVGigE_RETURN ret;
 
-    if(m_autoGrabbingListeners.size() > 0)
+    if (m_autoGrabbingListeners.size() > 0)
     {
         hasListeners = true;
     }
 
-    if(externalDataObject != NULL)
+    if (externalDataObject != NULL)
     {
         copyExternal = true;
     }
 
-    if(grabberStartedCount() <= 0)
+    if (grabberStartedCount() <= 0)
     {
         retValue += ito::RetVal(ito::retError, 1002, tr("getVal of Vistek can not be executed, since camera has not been started.").toLatin1().data());
     }
-    if(m_acquiredImage.status == asNoImageAcquired)
+    if (m_acquiredImage.status == asNoImageAcquired)
     {
         retValue += ito::RetVal(ito::retError, 1002, tr("getVal of Vistek can not be executed, since no image has been acquired.").toLatin1().data());
     }
@@ -768,15 +767,15 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
 
         if (m_acquiredImage.status == asImageReady && m_acquiredImage.sizex >= 0)
         {
-            if(m_data.getType() == ito::tUInt8)
+            if (m_data.getType() == ito::tUInt8)
             {
-                if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);
-                if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);
+                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);
+                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);
             }
-            else if(m_data.getType() == ito::tUInt16)
+            else if (m_data.getType() == ito::tUInt16)
             {
-                if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);
-                if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);            
+                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);
+                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) m_acquiredImage.buffer.data(), m_acquiredImage.sizex, m_acquiredImage.sizey);            
             }
             else
             {
@@ -832,10 +831,10 @@ ito::RetVal Vistek::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     retValue += retrieveData();
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
 
-        if(dObj == NULL)
+        if (dObj == NULL)
         {
             retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toLatin1().data());
         }
@@ -876,7 +875,7 @@ ito::RetVal Vistek::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
     
-    if(!dObj)
+    if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
@@ -885,12 +884,12 @@ ito::RetVal Vistek::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         retValue += checkData(dObj);  //intermediate buffer is already ok
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += retrieveData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         sendDataToListeners(0); //don't wait for live image, since user should get the image as fast as possible.
     }
@@ -920,7 +919,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
     ito::RetVal retval;
 
     // Check if there already is an open handle for a camera
-    if( m_cam != SVGigE_NO_CAMERA )
+    if (m_cam != SVGigE_NO_CAMERA)
     {
         // TODO: Shutdown the cam first.
         std::cout << "Camera handle exists, trying to close an existing connection." << std::endl;
@@ -932,7 +931,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
     // Get a Camera Handle
     std::cout << "Getting camera handle ... " << std::endl;
     m_cam = CameraContainer_getCamera(m_pVistekContainer->getCameraContainerHandle(), CameraNumber);
-    if( SVGigE_NO_CAMERA == m_cam )
+    if (SVGigE_NO_CAMERA == m_cam)
     {
         return ito::RetVal(ito::retError, 1004, tr("Requested camera could not be selected.").toLatin1().data());
     }
@@ -940,12 +939,12 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
 
     // Open the camera connection
     std::cout << "Opening camera connection ... " << std::endl;
-    if( SVGigE_SUCCESS != Camera_openConnection(m_cam, 30) )
+    if (SVGigE_SUCCESS != Camera_openConnection(m_cam, 30))
     {
         std::cout << "\nOpening camera failed. Trying to enforce valid network settings.\n" << std::endl;
         // Check for valid network settings & doing necessary steps
         SVGigERet = Camera_forceValidNetworkSettings(m_cam, &IPAddress, &SubnetMask);
-        if( SVGigERet == SVGigE_SVCAM_STATUS_CAMERA_OCCUPIED )
+        if (SVGigERet == SVGigE_SVCAM_STATUS_CAMERA_OCCUPIED)
         {
             retval += checkError("Requested camera is occupied by another application", SVGigERet);
         }
@@ -963,7 +962,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
 
             // print out the new valid network settings
             memset(Msg,0,sizeof(Msg));
-            sprintf_s(Msg,255,"Camera has been forced to a valid IP '%d.%d.%d.%d'\n", 
+            sprintf_s(Msg, 255, "Camera has been forced to a valid IP '%d.%d.%d.%d'\n", 
                 (IPAddress >> 24)%256, (IPAddress >> 16)%256, (IPAddress >> 8)%256, IPAddress%256);
             std::cout << Msg << std::endl;
         }
@@ -974,7 +973,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
         //check some necessary features
         if (!Camera_isCameraFeature(m_cam, CAMERA_FEATURE_SOFTWARE_TRIGGER))
         {
-            retval += ito::RetVal(ito::retError,0,"Camera does not support software triggers. This camera cannot be used by this plugin.");
+            retval += ito::RetVal(ito::retError, 0, "Camera does not support software triggers. This camera cannot be used by this plugin.");
         }
 
     }
@@ -984,7 +983,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
         retval += checkError("",Camera_setAcquisitionMode(m_cam, ACQUISITION_MODE_NO_ACQUISITION));
         retval += checkError("",Camera_setAcquisitionControl(m_cam, ACQUISITION_CONTROL_STOP));
 
-        Camera_registerForLogMessages(m_cam,m_params["logLevel"].getVal<int>(),"Vistek_SVGigE.log",NULL);
+        Camera_registerForLogMessages(m_cam,m_params["logLevel"].getVal<int>(), "Vistek_SVGigE.log",NULL);
 
         m_features.adjustExposureTime = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_EXPOSURE_TIME);
         m_features.adjustGain = Camera_isCameraFeature(m_cam, CAMERA_FEATURE_GAIN);
@@ -1059,7 +1058,7 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
         DockWidgetVistek *dw = qobject_cast<DockWidgetVistek*>(getDockWidget()->widget());
         if (dw)
         {
-            QMetaObject::invokeMethod(dw, "propertiesChanged", Q_ARG(float,m_gainIncrement), Q_ARG(float,m_exposureIncrement), Q_ARG(VistekFeatures,m_features) );
+            QMetaObject::invokeMethod(dw, "propertiesChanged", Q_ARG(float, m_gainIncrement), Q_ARG(float, m_exposureIncrement), Q_ARG(VistekFeatures, m_features));
         }
     }
 
@@ -1126,7 +1125,7 @@ ito::RetVal Vistek::startStreamAndRegisterCallbacks()
         //obtain binning mode
         BINNING_MODE currentBinning;
         Camera_getBinningMode(m_cam, &currentBinning);
-        m_params["binning"].setVal<int>( (int)currentBinning);
+        m_params["binning"].setVal<int>((int)currentBinning);
 
         GVSP_PIXEL_TYPE pixeltype;
         Camera_getPixelType(m_cam, &pixeltype);
@@ -1237,13 +1236,13 @@ ito::RetVal Vistek::startStreamAndRegisterCallbacks()
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_END_OF_EXPOSURE);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_START_OF_TRANSFER);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_BANDWIDTH_EXCEEDED);
-            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_OLD_STYLE_DATA_PACKETS );
+            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_OLD_STYLE_DATA_PACKETS);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_TEST_PACKET);*/
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_IMAGE_TRANSFER_DONE);
             /*Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_CONNECTION_LOST);
-            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_MULTICAST_MESSAGE );
-            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_FRAME_INCOMPLETE );
-            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_MESSAGE_FIFO_OVERRUN );
+            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_MULTICAST_MESSAGE);
+            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_FRAME_INCOMPLETE);
+            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_MESSAGE_FIFO_OVERRUN);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_SEQ_DONE);
             */Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_TRIGGER_VIOLATION);
 
@@ -1262,11 +1261,11 @@ ito::RetVal Vistek::startStreamAndRegisterCallbacks()
 
         if (m_params["bpp"].getVal<int>() == 8)
         {
-            m_acquiredImage.buffer.resize( sizex * sizey ); //8bit content
+            m_acquiredImage.buffer.resize(sizex * sizey); //8bit content
         }
         else
         {
-            m_acquiredImage.buffer.resize( 2 * sizex * sizey ); //2*8bit = 16bit content
+            m_acquiredImage.buffer.resize(2 * sizex * sizey); //2*8bit = 16bit content
         }
 
         m_acquiredImage.status = asNoImageAcquired;
@@ -1308,19 +1307,19 @@ void Vistek::dockWidgetVisibilityChanged(bool visible)
 //----------------------------------------------------------------------------------------------------------------------------------
 void Vistek::ExposurePropertyChanged(double exposure)
 {
-    setParam( QSharedPointer<ito::ParamBase>( new ito::ParamBase("exposure", ito::ParamBase::Double, exposure )));
+    setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("exposure", ito::ParamBase::Double, exposure)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void Vistek::GainPropertyChanged(double gain)
 {
-    setParam( QSharedPointer<ito::ParamBase>( new ito::ParamBase("gain", ito::ParamBase::Double, gain )));
+    setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, gain)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void Vistek::OffsetPropertyChanged(double offset)
 {
-    setParam( QSharedPointer<ito::ParamBase>( new ito::ParamBase("offset", ito::ParamBase::Double, offset )));
+    setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, offset)));
 }
 
 
@@ -1335,7 +1334,7 @@ SVGigE_RETURN __stdcall DataCallback(Image_handle data, void* context)
         return SVGigE_INVALID_PARAMETERS;
     }
 
-    if(Image_getDataPointer(data) == NULL)
+    if (Image_getDataPointer(data) == NULL)
     {
         if (Image_getSignalType(data) == SVGigE_SIGNAL_CAMERA_CONNECTION_LOST)
         {
@@ -1375,13 +1374,13 @@ SVGigE_RETURN __stdcall DataCallback(Image_handle data, void* context)
             {
                 v->m_acquiredImage.buffer.resize(elems);
             }
-            memcpy( v->m_acquiredImage.buffer.data(), Image_getDataPointer(data), sizeof(ito::uint8) * elems );
+            memcpy(v->m_acquiredImage.buffer.data(), Image_getDataPointer(data), sizeof(ito::uint8) * elems);
         }
         else if (v->m_acquiredImage.pixelType == GVSP_PIX_MONO12 || v->m_acquiredImage.pixelType == GVSP_PIX_MONO12_PACKED)
         {
-            if (v->m_acquiredImage.buffer.size() != 2*elems)
+            if (v->m_acquiredImage.buffer.size() != 2 * elems)
             {
-                v->m_acquiredImage.buffer.resize(2*elems);
+                v->m_acquiredImage.buffer.resize(2 * elems);
             }
             Image_getImage12bitAs16bit(data, v->m_acquiredImage.buffer.data(), sizeof(ito::uint16) * elems);
         }
@@ -1389,9 +1388,9 @@ SVGigE_RETURN __stdcall DataCallback(Image_handle data, void* context)
         {
             if (v->m_acquiredImage.buffer.size() != 2 * elems)
             {
-                v->m_acquiredImage.buffer.resize(2*elems);
+                v->m_acquiredImage.buffer.resize(2 * elems);
             }
-            memcpy( v->m_acquiredImage.buffer.data(), Image_getDataPointer(data), sizeof(ito::uint16) * elems );
+            memcpy(v->m_acquiredImage.buffer.data(), Image_getDataPointer(data), sizeof(ito::uint16) * elems);
         }
         else
         {
@@ -1412,41 +1411,41 @@ SVGigE_RETURN __stdcall MessageCallback(Event_handle eventID, void* context)
 {
     // Check for valid context
     Vistek *v = reinterpret_cast<Vistek*>(context);
-    if(v == NULL)
+    if (v == NULL)
         return SVGigE_ERROR;
 
     Message_handle MessageID;
     SVGigE_SIGNAL_TYPE MessageType;
 
     // Get the signal
-    if( SVGigE_SUCCESS != Stream_getMessage(v->m_streamingChannel,eventID,&MessageID,&MessageType) )
+    if (SVGigE_SUCCESS != Stream_getMessage(v->m_streamingChannel,eventID,&MessageID,&MessageType))
         return SVGigE_ERROR;
 
     //qDebug() << "message:" << MessageType;
 
     // Get Message timestamp
-    if(MessageType == SVGigE_SIGNAL_START_OF_TRANSFER)
+    if (MessageType == SVGigE_SIGNAL_START_OF_TRANSFER)
     {
         v->MessageTimestampLastStartOfTransfer = v->MessageTimestampStartOfTransfer;
         Stream_getMessageTimestamp(v->m_streamingChannel,eventID,MessageID,&v->MessageTimestampStartOfTransfer);
         v->updateTimestamp();
     }
-    //if(MessageType == SVGigE_SIGNAL_FRAME_COMPLETED)
+    //if (MessageType == SVGigE_SIGNAL_FRAME_COMPLETED)
     //{
     //    Stream_getMessageTimestamp(v->m_streamingChannel,eventID,MessageID,&v->MessageTimestampFrameCompleted);
     //}
-    if(MessageType == SVGigE_SIGNAL_CAMERA_TRIGGER_VIOLATION)
+    if (MessageType == SVGigE_SIGNAL_CAMERA_TRIGGER_VIOLATION)
     {
         // Count trigger violations in current streaming channel
         v->TriggerViolationCount++;
     }
 
     
-    //if(MessageType == SVGigE_SIGNAL_FRAME_ABANDONED)
+    //if (MessageType == SVGigE_SIGNAL_FRAME_ABANDONED)
     //{
     //    // Not implemented yet
     //}
-    if(MessageType == SVGigE_SIGNAL_END_OF_EXPOSURE)
+    if (MessageType == SVGigE_SIGNAL_END_OF_EXPOSURE)
     {
         //Stream_getMessageTimestamp(v->m_streamingChannel,eventID,MessageID, &v->MessageTimestampEndOfExposure);
     }

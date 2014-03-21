@@ -56,6 +56,7 @@ if(WINDOWSSDK_FOUND)
         ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
     ENDIF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DCMAKE)
+	ADD_DEFINITIONS(-DITOMWIDGETS_SHARED)
 
     IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
         ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
@@ -79,6 +80,7 @@ if(WINDOWSSDK_FOUND)
         ${QT_QTCORE_INCLUDE_DIR}
         ${OpenCV_DIR}/include
         ${ITOM_SDK_INCLUDE_DIR}
+		${ITOM_SDK_INCLUDE_DIR}/itomWidgets
         ${VISUALLEAKDETECTOR_INCLUDE_DIR}
         videoInput
     )
@@ -97,6 +99,7 @@ if(WINDOWSSDK_FOUND)
         ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
         ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
         ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.h
         ${CMAKE_CURRENT_SOURCE_DIR}/MSMediaFoundation.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/Common.h
@@ -116,7 +119,7 @@ if(WINDOWSSDK_FOUND)
     endif (NOT QT5_FOUND)
 
     set(plugin_ui
-        #${CMAKE_CURRENT_SOURCE_DIR}/dialogOpenCVGrabber.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.ui
     )
 
     if (QT5_FOUND)
@@ -126,6 +129,7 @@ if(WINDOWSSDK_FOUND)
     endif (QT5_FOUND)
 
     set(plugin_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/MSMediaFoundation.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/DebugPrintOut.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/FormatReader.cpp
@@ -155,11 +159,11 @@ if(WINDOWSSDK_FOUND)
 
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
     if (QT5_FOUND)
-        TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${OpenCV_opencv_highgui_LIBRARY} ${OpenCV_opencv_imgproc_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${ITOM_SDK_itomWidgets_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
         
         qt5_use_modules(${target_name} Widgets UiTools Xml)
     else (QT5_FOUND)
-        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${OpenCV_opencv_highgui_LIBRARY} ${OpenCV_opencv_imgproc_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${ITOM_SDK_itomWidgets_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
     endif (QT5_FOUND)
 
     #handle translations BEGIN STEP 2
@@ -186,6 +190,8 @@ if(WINDOWSSDK_FOUND)
         endif (QT5_FOUND)
     endif (UPDATE_TRANSLATIONS)
     #handle translations END STEP 2
+    
+    PLUGIN_DOCUMENTATION(${target_name} msMediaFoundation)
 
     # COPY SECTION
     set(COPY_SOURCES "")
