@@ -274,6 +274,50 @@ void DockWidgetMSMediaFoundation::sendParameters(const int type, const double d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetMSMediaFoundation::sendParameter(QSharedPointer<ito::ParamBase> &param)
+{
+    ito::RetVal retValue;
+
+    if (m_pMSMediaFoundation)
+    {
+        bool success = false;
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(m_pMSMediaFoundation, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, param), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        while(!success)
+        {
+            if (locker.getSemaphore()->wait(PLUGINWAIT) == true)
+            {
+                success = true;
+            }
+            if (!m_pMSMediaFoundation->isAlive())
+            {
+                break;
+            }
+        }
+
+        if (!success)
+        {
+            retValue += ito::RetVal(ito::retError, 0, tr("timeout while setting parameter of plugin.").toLatin1().data());
+        }
+        else
+        {
+            retValue += locker.getSemaphore()->returnValue;
+        }
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("plugin instance not defined.").toLatin1().data());
+    }
+
+    if (retValue.containsError())
+    {
+        QMessageBox::information(this, tr("error"), retValue.errorMessage());
+    }
+    
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 double getStepValue(double value, double stepSize)
 {
     int stepCount = (int)((value / stepSize) + .5);
@@ -289,7 +333,8 @@ void DockWidgetMSMediaFoundation::on_sW_Brightness_valueChanged(double d)
         m_inEditing = true;
         d = getStepValue(d, ui.sW_Brightness->singleStep());
         ui.sW_Brightness->setValue(d);
-        sendParameters(1, d);
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("brightness",ito::ParamBase::Double,d));
+        sendParameter(p);
         m_inEditing = false;
     }
 }
@@ -300,7 +345,7 @@ void DockWidgetMSMediaFoundation::on_sW_Contrast_valueChanged(double d)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        emit sendParameters(2, getStepValue(d, ui.sW_Contrast->singleStep()));
+        sendParameters(2, getStepValue(d, ui.sW_Contrast->singleStep()));
         m_inEditing = false;
     }
 }
@@ -311,7 +356,7 @@ void DockWidgetMSMediaFoundation::on_sW_Gain_valueChanged(double d)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        emit sendParameters(3, getStepValue(d, ui.sW_Gain->singleStep()));
+        sendParameters(3, getStepValue(d, ui.sW_Gain->singleStep()));
         m_inEditing = false;
     }
 }
@@ -322,7 +367,7 @@ void DockWidgetMSMediaFoundation::on_sW_Saturation_valueChanged(double d)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        emit sendParameters(4, getStepValue(d, ui.sW_Saturation->singleStep()));
+        sendParameters(4, getStepValue(d, ui.sW_Saturation->singleStep()));
         m_inEditing = false;
     }
 }
@@ -333,72 +378,72 @@ void DockWidgetMSMediaFoundation::on_sW_Sharpness_valueChanged(double d)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        emit sendParameters(5, getStepValue(d, ui.sW_Sharpness->singleStep()));
+        sendParameters(5, getStepValue(d, ui.sW_Sharpness->singleStep()));
         m_inEditing = false;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMSMediaFoundation::on_cB_Brightness_stateChanged(int /*state*/)
+void DockWidgetMSMediaFoundation::on_cB_Brightness_toggled(bool checked)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        ui.sW_Brightness->setEnabled(!ui.cB_Brightness->isChecked());
-        double v = ui.cB_Brightness->isChecked() ? 1.0 : 0.0;
-        emit sendParameters(11, v);
+        ui.sW_Brightness->setEnabled(!checked);
+        double v = checked ? 1.0 : 0.0;
+        sendParameters(11, v);
         m_inEditing = false;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMSMediaFoundation::on_cB_Contrast_stateChanged(int /*state*/)
+void DockWidgetMSMediaFoundation::on_cB_Contrast_toggled(bool checked)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        ui.sW_Contrast->setEnabled(!ui.cB_Contrast->isChecked());
-        double v = ui.cB_Contrast->isChecked() ? 1.0 : 0.0;
-        emit sendParameters(22, v);
+        ui.sW_Contrast->setEnabled(!checked);
+        double v = checked ? 1.0 : 0.0;
+        sendParameters(22, v);
         m_inEditing = false;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMSMediaFoundation::on_cB_Gain_stateChanged(int /*state*/)
+void DockWidgetMSMediaFoundation::on_cB_Gain_toggled(bool checked)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        ui.sW_Gain->setEnabled(!ui.cB_Gain->isChecked());
-        double v = ui.cB_Gain->isChecked() ? 1.0 : 0.0;
-        emit sendParameters(33, v);
+        ui.sW_Gain->setEnabled(!checked);
+        double v = checked ? 1.0 : 0.0;
+        sendParameters(33, v);
         m_inEditing = false;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMSMediaFoundation::on_cB_Saturation_stateChanged(int /*state*/)
+void DockWidgetMSMediaFoundation::on_cB_Saturation_toggled(bool checked)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        ui.sW_Saturation->setEnabled(!ui.cB_Saturation->isChecked());
-        double v = ui.cB_Saturation->isChecked() ? 1.0 : 0.0;
-        emit sendParameters(44, v);
+        ui.sW_Saturation->setEnabled(!checked);
+        double v = checked ? 1.0 : 0.0;
+        sendParameters(44, v);
         m_inEditing = false;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetMSMediaFoundation::on_cB_Sharpness_stateChanged(int /*state*/)
+void DockWidgetMSMediaFoundation::on_cB_Sharpness_toggled(bool checked)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        ui.sW_Sharpness->setEnabled(!ui.cB_Sharpness->isChecked());
-        double v = ui.cB_Sharpness->isChecked() ? 1.0 : 0.0;
-        emit sendParameters(55, v);
+        ui.sW_Sharpness->setEnabled(!checked);
+        double v = checked ? 1.0 : 0.0;
+        sendParameters(55, v);
         m_inEditing = false;
     }
 }

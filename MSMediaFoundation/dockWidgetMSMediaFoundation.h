@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "DummyGrabber" for itom software
+    Plugin "MsMediaFoundation" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2013, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
@@ -48,6 +48,8 @@ class DockWidgetMSMediaFoundation : public QWidget
         bool m_firstRun;
         ito::AddInDataIO *m_pMSMediaFoundation;
 
+        void sendParameters(const int type, const double d);
+        void sendParameter(QSharedPointer<ito::ParamBase> &param);
     signals:
 //        void dockWidgetValueChanged(int type, double value);
 
@@ -62,13 +64,13 @@ class DockWidgetMSMediaFoundation : public QWidget
         void on_sW_Saturation_valueChanged(double d);
         void on_sW_Sharpness_valueChanged(double d);
 
-        void on_cB_Brightness_stateChanged(int state);
-        void on_cB_Contrast_stateChanged(int state);
-        void on_cB_Gain_stateChanged(int state);
-        void on_cB_Saturation_stateChanged(int state);
-        void on_cB_Sharpness_stateChanged(int state);
+        void on_cB_Brightness_toggled(bool checked);
+        void on_cB_Contrast_toggled(bool checked);
+        void on_cB_Gain_toggled(bool checked);
+        void on_cB_Saturation_toggled(bool checked);
+        void on_cB_Sharpness_toggled(bool checked);
 
-        void sendParameters(const int type, const double d);
+        
 };
 
 #endif
