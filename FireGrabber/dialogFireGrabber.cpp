@@ -1,27 +1,4 @@
-/* ********************************************************************
-    Plugin "FireGrabber" for itom software
-    URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
-
-    This file is part of a plugin for the measurement software itom.
-  
-    This itom-plugin is free software; you can redistribute it and/or modify it
-    under the terms of the GNU Library General Public Licence as published by
-    the Free Software Foundation; either version 2 of the Licence, or (at
-    your option) any later version.
-
-    itom and its plugins are distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
-    General Public Licence for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with itom. If not, see <http://www.gnu.org/licenses/>.
-*********************************************************************** */
-
 #include "dialogFireGrabber.h"
-#include <qmessagebox.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 int dialogFireGrabber::getVals(QMap<QString, ito::Param> *paramVals)
@@ -461,23 +438,18 @@ int dialogFireGrabber::sendVals()
             ito::RetVal retval = locker.getSemaphore()->returnValue;
 
             if(retval.containsError())
-            {
+			{
                 QString msg = "<unknown error>";
-                if (retval.errorMessage())
-                {
-                    msg = retval.errorMessage();
-                }
-                QMessageBox::critical(this, tr("error"), tr("Error while setting parameters (%1)").arg(msg));
-            }
-            else if(retval.containsWarning())
-            {
+
+                if (retval.errorMessage()) msg = retval.errorMessage();
+				QMessageBox::critical(this,tr("error"),tr("Error while setting parameters (%1)").arg(msg));
+			}
+			else if(retval.containsWarning())
+			{
                 QString msg = "<unknown warning>";
-                if (retval.errorMessage())
-                {
-                    msg = retval.errorMessage();
-                }
-                QMessageBox::warning(this, tr("warning"), tr("Warning while setting parameters (%1)").arg(msg));
-            }
+                if (retval.errorMessage()) msg = retval.errorMessage();
+				QMessageBox::warning(this,tr("warning"),tr("Warning while setting parameters (%1)").arg(msg));
+			}
         }
     }
     return 0;
@@ -495,9 +467,9 @@ void dialogFireGrabber::valuesChanged(QMap<QString, ito::Param> params)
 /**
  * \detail This function resets the x-size of the ROI to the maximum value!
  *
- * \date    Oct.2011
- * \author    Wolfram Lyda
- * \warning    NA
+ * \date	Oct.2011
+ * \author	Wolfram Lyda
+ * \warning	NA
 */
 void dialogFireGrabber::on_pushButton_setSizeXMax_clicked()
 {
@@ -517,9 +489,9 @@ void dialogFireGrabber::on_pushButton_setSizeXMax_clicked()
 /**
  * \detail This function resets the y-size of the ROI to the maximum value!
  *
- * \date    Oct.2011
- * \author    Wolfram Lyda
- * \warning    NA
+ * \date	Oct.2011
+ * \author	Wolfram Lyda
+ * \warning	NA
 */
 void dialogFireGrabber::on_pushButton_setSizeYMax_clicked()
 {
@@ -539,9 +511,9 @@ void dialogFireGrabber::on_pushButton_setSizeYMax_clicked()
  * \detail If the applyButton is clicked, the bpp and the binning of the attached camera is changed!
  *  Changes of parameters lead to a reload of all camera parameters. Other unapplied values are lost!
  *
- * \date    Oct.2011
- * \author    Wolfram Lyda
- * \warning    NA
+ * \date	Oct.2011
+ * \author	Wolfram Lyda
+ * \warning	NA
 */
 void dialogFireGrabber::on_applyButton_clicked()
 {
@@ -553,9 +525,9 @@ void dialogFireGrabber::on_applyButton_clicked()
 /**
  * \detail If the spinBox for x0 changes its value, the size in X and the minimal x1 changes also
  *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
+ * \date	Jun.2012
+ * \author	Wolfram Lyda
+ * \warning	NA
 */
 void dialogFireGrabber::on_spinBox_x0_valueChanged(int value)
 {
@@ -571,9 +543,9 @@ void dialogFireGrabber::on_spinBox_x0_valueChanged(int value)
 /**
  * \detail If the spinBox for x1 changes its value, the size in X and the maximal x0 changes also
  *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
+ * \date	Jun.2012
+ * \author	Wolfram Lyda
+ * \warning	NA
 */
 void dialogFireGrabber::on_spinBox_x1_valueChanged(int value)
 {
@@ -589,9 +561,9 @@ void dialogFireGrabber::on_spinBox_x1_valueChanged(int value)
 /**
  * \detail If the spinBox for y0 changes its value, the size in Y and the minimal y1 changes also
  *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
+ * \date	Jun.2012
+ * \author	Wolfram Lyda
+ * \warning	NA
 */
 void dialogFireGrabber::on_spinBox_y0_valueChanged(int value)
 {
@@ -607,9 +579,9 @@ void dialogFireGrabber::on_spinBox_y0_valueChanged(int value)
 /**
  * \detail If the spinBox for y0 changes its value, the size in Y and the maximal y0 changes also
  *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
+ * \date	Jun.2012
+ * \author	Wolfram Lyda
+ * \warning	NA
 */
 void dialogFireGrabber::on_spinBox_y1_valueChanged(int value)
 {
@@ -625,9 +597,9 @@ void dialogFireGrabber::on_spinBox_y1_valueChanged(int value)
 /**
  * \detail If the binning is activated, further settings of size will be disabled until apply is pressed
  *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
+ * \date	Jun.2012
+ * \author	Wolfram Lyda
+ * \warning	NA
 */
 void dialogFireGrabber::on_spinBox_binX_valueChanged(int /*value*/)
 {
@@ -640,9 +612,9 @@ void dialogFireGrabber::on_spinBox_binX_valueChanged(int /*value*/)
 /**
  * \detail If the binning is activated, further settings of size will be disabled until apply is pressed
  *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
+ * \date	Jun.2012
+ * \author	Wolfram Lyda
+ * \warning	NA
 */
 void dialogFireGrabber::on_spinBox_binY_valueChanged(int /*value*/)
 {
