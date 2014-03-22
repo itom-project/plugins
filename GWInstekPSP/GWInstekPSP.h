@@ -88,6 +88,8 @@ class GWInstekPSP : public ito::AddInDataIO
         ito::RetVal getVal(char *data, int *len, ItomSharedSemaphore *waitCond);
         ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond);
 
+        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
+
     private slots:
 };
 

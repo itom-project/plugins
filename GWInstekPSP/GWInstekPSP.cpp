@@ -36,6 +36,7 @@
 #include <QtCore/QtPlugin>
 
 #include "pluginVersion.h"
+#include <iostream>
 
 //#include "common/helperCommon.h"
 
@@ -310,6 +311,17 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, GWInstekPSPWidget);
+
+   //register exec functions
+    QVector<ito::Param> pMand;
+    pMand << ito::Param("startVoltage", ito::ParamBase::Double | ito::ParamBase::In, 0, 50, 0, tr("start voltage in volt").toLatin1().data());
+    pMand << ito::Param("endVoltage", ito::ParamBase::Double | ito::ParamBase::In, 0, 50, 10, tr("end voltage in volt").toLatin1().data());
+    pMand << ito::Param("totalTime", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 10000, tr("total ramp time in ms").toLatin1().data());
+    pMand << ito::Param("steps", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 10, tr("start voltage in volt").toLatin1().data());
+    QVector<ito::Param> pOpt;
+    pOpt << ito::Param("async", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("synchronous (0) or asynchronous (1, default)").toLatin1().data());
+    QVector<ito::Param> pOut;
+    registerExecFunc("startRamp", pMand, pOpt, pOut, tr("todo"));
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -585,6 +597,95 @@ ito::RetVal GWInstekPSP::setVal(const char * /*data*/, const int /*datalength*/,
         waitCond->release();
     }
     return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond /*= NULL*/)
+{
+    ito::RetVal retValue;
+
+    if (funcName == "rampStart")
+    {
+        double startVoltage = paramsMand->at(0).getVal<double>();
+        double endVoltage = paramsMand->at(1).getVal<double>();
+        int totalTime = paramsMand->at(2).getVal<int>();
+        int steps = paramsMand->at(3).getVal<int>();
+        bool async = paramsOpt->at(0).getVal<int>() > 0;
+
+        if (async)
+        {
+            if(waitCond)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+                waitCond->deleteSemaphore();
+                waitCond = NULL;
+            }
+        }
+
+        QElapsedTimer timer;
+        timer.start();
+        char text[50];
+        double yourVoltage;
+        int timeStep = 10; //TODO (ms)
+
+        while(1)
+        {
+            if (timer.elapsed() >= timeStep)
+            {
+                setAlive(); //marks that this plugin is still executing something "good"
+                yourVoltage = 0.0; //todo
+                sprintf(text, "SV %05.2f", yourVoltage);
+                retValue += WriteToSerial(text);
+                
+                if (yourVoltage < endVoltage)
+                {
+                    timer.restart();
+                }
+                else
+                {
+                    break;
+                }
+
+                if (retValue.containsError())
+                {
+                    if (retValue.errorMessage())
+                    {
+                        std::cerr << "error while setting ramp: " << retValue.errorMessage() << "\n" << std::endl;
+                    }
+                    else
+                    {
+                        std::cerr << "unknown error while setting ramp.\n" << std::endl;
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (!async)
+        {
+            if(waitCond)
+            {
+                waitCond->returnValue = retValue;
+                waitCond->release();
+                waitCond->deleteSemaphore();
+                waitCond = NULL;
+            }
+        }
+    }
+    else
+    {
+        if(waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
+        }
+    }
+
+    return retValue;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
