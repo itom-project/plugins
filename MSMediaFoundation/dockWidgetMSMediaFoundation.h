@@ -23,18 +23,16 @@
 #ifndef DOCKWIDGETMSMEDIAFOUNDATION_H
 #define DOCKWIDGETMSMEDIAFOUNDATION_H
 
-#include "common/sharedStructures.h"
-#include "common/sharedStructuresQt.h"
+#include "common/addInInterface.h"
+#include "common/abstractAddInDockWidget.h"
 
-#include <QtGui>
 #include <qwidget.h>
 #include <qmap.h>
 #include <qstring.h>
 
 #include "ui_dockWidgetMSMediaFoundation.h"
-#include "common/addInInterface.h"
 
-class DockWidgetMSMediaFoundation : public QWidget
+class DockWidgetMSMediaFoundation : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
@@ -46,16 +44,10 @@ class DockWidgetMSMediaFoundation : public QWidget
         Ui::DockWidgetMSMediaFoundation ui;
         bool m_inEditing;
         bool m_firstRun;
-        ito::AddInDataIO *m_pMSMediaFoundation;
-
-        void sendParameters(const int type, const double d);
-        void sendParameter(QSharedPointer<ito::ParamBase> &param);
-    signals:
-//        void dockWidgetValueChanged(int type, double value);
 
     public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);
-        void propertiesChanged(QString identifier);
+        void parametersChanged(QMap<QString, ito::Param> params);
+        void identifierChanged(const QString &identifier);
 
     private slots:
         void on_sW_Brightness_valueChanged(double d);
@@ -68,9 +60,7 @@ class DockWidgetMSMediaFoundation : public QWidget
         void on_cB_Contrast_toggled(bool checked);
         void on_cB_Gain_toggled(bool checked);
         void on_cB_Saturation_toggled(bool checked);
-        void on_cB_Sharpness_toggled(bool checked);
-
-        
+        void on_cB_Sharpness_toggled(bool checked);   
 };
 
 #endif

@@ -67,7 +67,7 @@ struct MediaType
 	void Clear();
 };
 
-// Structure for collecting info about one parametr of current video device
+// Structure for collecting info about one parameter of current video device
 struct Parameter
 {
 	long CurrentValue;

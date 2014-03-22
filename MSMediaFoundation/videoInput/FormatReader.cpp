@@ -10,7 +10,7 @@ HRESULT GetGUIDNameNew(const GUID& guid, WCHAR **ppwsz);
 HRESULT LogAttributeValueByIndexNew(IMFAttributes *pAttr, DWORD index);
 HRESULT SpecialCaseAttributeValueNew(GUID guid, const PROPVARIANT& var, MediaType &out);
 
-unsigned int *GetParametr(GUID guid, MediaType &out)
+unsigned int *GetParameter(GUID guid, MediaType &out)
 {
 	if(guid == MF_MT_YUV_MATRIX) 
 		return &(out.MF_MT_YUV_MATRIX);
@@ -83,7 +83,7 @@ HRESULT LogAttributeValueByIndexNew(IMFAttributes *pAttr, DWORD index, MediaType
         {
         case VT_UI4:
 
-			p = GetParametr(guid, out);
+			p = GetParameter(guid, out);
 
 			if(p) 
 			{

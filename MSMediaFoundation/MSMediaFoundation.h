@@ -33,7 +33,7 @@
   *\class    MSMediaFoundation 
 
   */
-class MSMediaFoundation : public ito::AddInGrabber //, public MSMediaFoundationInterface
+class MSMediaFoundation : public ito::AddInGrabber
 {
     Q_OBJECT
 

@@ -496,7 +496,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
         else
         {
             m_params["deviceName"].setVal<char*>(deviceName.toLatin1().data());
-            m_identifier = deviceName;
+            setIdentifier(deviceName);
             MediaType mediaType;
 
             if (mediaTypeID == -1)
@@ -594,12 +594,6 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-    }
-        
-    DockWidgetMSMediaFoundation *dw = qobject_cast<DockWidgetMSMediaFoundation*>(getDockWidget()->widget());
-    if (dw)
-    {
-        QMetaObject::invokeMethod(dw, "propertiesChanged", Q_ARG(QString, m_identifier));
     }
 
     setInitialized(true); //init method has been finished (independent on retval)
@@ -1337,15 +1331,13 @@ void MSMediaFoundation::dockWidgetVisibilityChanged(bool visible)
         DockWidgetMSMediaFoundation *dw = qobject_cast<DockWidgetMSMediaFoundation*>(getDockWidget()->widget());
         if (visible)
         {
-            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-//            connect(dw, SIGNAL(dockWidgetValueChanged(int, double)), this, SLOT(dockWidgetValueChanged(int, double)));
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
 
             emit parametersChanged(m_params);
         }
         else
         {
-            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-//            disconnect(dw, SIGNAL(dockWidgetValueChanged(int, double)), this, SLOT(dockWidgetValueChanged(int, double)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
         }
     }
 }

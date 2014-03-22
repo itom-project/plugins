@@ -79,7 +79,7 @@ CamParameters VideoDevice::getParameters()
 		{
 			unsigned int shift = sizeof(Parameter);
 
-			Parameter *pParametr = (Parameter *)(&out);
+			Parameter *pParameter = (Parameter *)(&out);
 
 			IAMVideoProcAmp *pProcAmp = NULL;
 			HRESULT hr = vd_pSource->QueryInterface(IID_PPV_ARGS(&pProcAmp));
@@ -97,11 +97,11 @@ CamParameters VideoDevice::getParameters()
 						temp.CurrentValue = temp.Default;
                         temp.Available = true;
 
-						pParametr[i] = temp;
+						pParameter[i] = temp;
 					}
                     else if (hr == E_PROP_ID_UNSUPPORTED)
                     {
-                        pParametr[i].Available = false;
+                        pParameter[i].Available = false;
                     }
 				}
 
@@ -123,7 +123,7 @@ CamParameters VideoDevice::getParameters()
 					{
 						temp.CurrentValue = temp.Default;
 
-						pParametr[10 + i] = temp;
+						pParameter[10 + i] = temp;
 					}
 				}
 
