@@ -1866,19 +1866,20 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
 
     decGrabberStarted();
+#ifdef linux
     if (grabberStartedCount() == 0 && camera!=0)
     {
-#ifdef linux
         // Stop image device
         retValue += AlliedChkError(dc1394_video_set_transmission(camera,DC1394_OFF));
         retValue += AlliedChkError(dc1394_capture_stop(camera));
+    }
 #else
         // Stop image device
 	    retValue += AlliedChkError(Camera.StopDevice());
 		retValue += AlliedChkError(Camera.CloseCapture());
 #endif
 
-    }
+
     else if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retWarning, 1001, tr("stopDevice not executed since camera has not been started.").toAscii().data());
