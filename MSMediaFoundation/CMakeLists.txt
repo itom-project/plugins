@@ -99,6 +99,7 @@ if(WINDOWSSDK_FOUND)
         ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
         ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
         ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogMSMediaFoundation.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.h
         ${CMAKE_CURRENT_SOURCE_DIR}/MSMediaFoundation.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
@@ -119,6 +120,7 @@ if(WINDOWSSDK_FOUND)
     endif (NOT QT5_FOUND)
 
     set(plugin_ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogMSMediaFoundation.ui
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.ui
     )
 
@@ -129,6 +131,7 @@ if(WINDOWSSDK_FOUND)
     endif (QT5_FOUND)
 
     set(plugin_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogMSMediaFoundation.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/MSMediaFoundation.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/DebugPrintOut.cpp

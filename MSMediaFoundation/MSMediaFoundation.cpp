@@ -400,7 +400,7 @@ ito::RetVal MSMediaFoundation::setParam(QSharedPointer<ito::ParamBase> val, Itom
 
             if (m_imgChannels == 1)
             {
-                if (QString::compare(mode,"auto") != 0 || QString::compare(mode,"gray") != 0)
+                if (QString::compare(mode,"auto") != 0 || QString::compare(mode, "gray") != 0)
                 {
                     retValue += ito::RetVal(ito::retError, 0, "The connected grayscale camera cannot be operated in any colored colorMode");
                 }
