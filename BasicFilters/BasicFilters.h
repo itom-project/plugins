@@ -67,10 +67,6 @@ class BasicFiltersInterface : public ito::AddInInterfaceBase
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
-
-    signals:
-
-    public slots:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
