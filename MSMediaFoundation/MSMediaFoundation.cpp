@@ -44,25 +44,14 @@ Q_DECLARE_METATYPE(ito::DataObject)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MSMediaFoundationInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    MSMediaFoundation* newInst = new MSMediaFoundation();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(MSMediaFoundation)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MSMediaFoundationInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-      delete ((MSMediaFoundation *)*addInInst);
-      int idx = m_InstList.indexOf(*addInInst);
-      m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(MSMediaFoundation)
    return ito::retOk;
 }
 

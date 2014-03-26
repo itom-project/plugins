@@ -21,27 +21,27 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-find_package(ITOM_SDK REQUIRED)
-include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core imgproc REQUIRED)
+
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 find_package(VisualLeakDetector QUIET)
 find_package(WindowsSDK QUIET)
 
 if(WINDOWSSDK_FOUND)
+
+    include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+    FIND_PACKAGE_QT(ON LinguistTools Designer Widgets UiTools)
+
     ADD_DEFINITIONS(${QT_DEFINITIONS})
     IF (BUILD_UNICODE)
         ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
     ENDIF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DCMAKE)
-	ADD_DEFINITIONS(-DITOMWIDGETS_SHARED)
+    ADD_DEFINITIONS(-DITOMWIDGETS_SHARED)
 
     IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
         ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
     ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-
-    # enable some qt stuff
-    #SET (QT_USE_QTXML TRUE)
 
     # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
     IF (DEFINED CMAKE_BUILD_TYPE)
@@ -58,7 +58,7 @@ if(WINDOWSSDK_FOUND)
         ${QT_QTCORE_INCLUDE_DIR}
         ${OpenCV_DIR}/include
         ${ITOM_SDK_INCLUDE_DIR}
-		${ITOM_SDK_INCLUDE_DIR}/itomWidgets
+        ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
         ${VISUALLEAKDETECTOR_INCLUDE_DIR}
         videoInput
     )
@@ -66,10 +66,6 @@ if(WINDOWSSDK_FOUND)
     LINK_DIRECTORIES(
         ${OpenCV_DIR}/lib
     )
-
-    if (NOT QT5_FOUND)
-        INCLUDE(${QT_USE_FILE})
-    endif (NOT QT5_FOUND)
 
     set(plugin_HEADERS
         ${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsInc.h
@@ -130,48 +126,22 @@ if(WINDOWSSDK_FOUND)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)
 
-    #handle translations BEGIN STEP 1
-    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
-    set (TRANSLATION_OUTPUT_FILES)
-    set (TRANSLATIONS_FILES)
-
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-    #handle translations END STEP 1
 
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
     if (QT5_FOUND)
-        TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${ITOM_SDK_itomWidgets_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
         
-        qt5_use_modules(${target_name} Widgets UiTools Xml)
+        qt5_use_modules(${target_name} Widgets UiTools)
     else (QT5_FOUND)
-        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${ITOM_SDK_itomWidgets_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
     endif (QT5_FOUND)
-
-    #handle translations BEGIN STEP 2
-    if (UPDATE_TRANSLATIONS)
-        if (QT5_FOUND)
-            QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-        else (QT5_FOUND)
-            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-        endif (QT5_FOUND)
-        
-        add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-        add_dependencies(${target_name} _${target_name}_translation)
-        
-        if (QT5_FOUND)
-            QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-        else (QT5_FOUND)
-            QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-        endif (QT5_FOUND)
-    else (UPDATE_TRANSLATIONS)
-        if (QT5_FOUND)
-            QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-        else (QT5_FOUND)
-            QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-        endif (QT5_FOUND)
-    endif (UPDATE_TRANSLATIONS)
-    #handle translations END STEP 2
     
+    #translation
+    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
+    PLUGIN_TRANSLATION(${target_name} ${UPDATE_TRANSLATIONS} ${EXISTING_TRANSLATION_FILES} ITOM_LANGUAGES FILES_TO_TRANSLATE)
+    
+    #documentation
     PLUGIN_DOCUMENTATION(${target_name} msMediaFoundation)
 
     # COPY SECTION
