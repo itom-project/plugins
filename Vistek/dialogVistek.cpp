@@ -24,8 +24,9 @@
 #include "Vistek.h"
 #include <qmessagebox.h>
 
-DialogVistek::DialogVistek(Vistek *grabber, const VistekFeatures *features)
-    : m_Grabber(grabber), 
+//----------------------------------------------------------------------------------------------------------------------------------
+DialogVistek::DialogVistek(Vistek *grabber, const VistekFeatures *features) : 
+    m_Grabber(grabber), 
     m_currentBinning(-1),
     m_currentBpp(-1),
     m_currentOffset(-1),
@@ -36,6 +37,7 @@ DialogVistek::DialogVistek(Vistek *grabber, const VistekFeatures *features)
     ui.setupUi(this); 
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DialogVistek::~DialogVistek()
 {
     delete m_features;
@@ -123,7 +125,6 @@ void DialogVistek::valuesChanged(QMap<QString, ito::Param> params)
         ui.combo_binning->setCurrentIndex( m_currentBinning );
     }
 
-    
     ui.doubleSpinBox_integration_time->setEnabled( m_features->adjustExposureTime );
     if (params.contains("exposure"))
     {
@@ -161,8 +162,6 @@ void DialogVistek::valuesChanged(QMap<QString, ito::Param> params)
 //----------------------------------------------------------------------------------------------------------------------------------
 int DialogVistek::sendParameters(void)
 {
-    
-
     QVector<QSharedPointer<ito::ParamBase> > outVector;
 
     //binning

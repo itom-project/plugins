@@ -126,8 +126,17 @@ class DataObjectIO : public ito::AddInAlgo
             sunFormat = 0x08
         } tImageFormat;
 
+        static enum
+        {
+            invWrite = 0x00,
+            invIgnor = 0x01,
+            invChange = 0x02,
+            invBAD = 0x03,
+            invHandlingMask = 0x0F
+        } tInvalidHandling;
+
     private:
-        template<typename _Tp> static ito::RetVal writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator);
+        template<typename _Tp> static ito::RetVal writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator, const double nanValue);
         template<typename _Tp> static ito::RetVal readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int flags, const char seperator);
         static ito::RetVal readNistHeader(QFile &inFile, ito::DataObject &newObject, double &zscale,const int flags);
 

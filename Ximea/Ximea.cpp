@@ -215,8 +215,17 @@ Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnCl
 //----------------------------------------------------------------------------------------------------------------------------------
 Ximea::~Ximea()
 {
-   m_params.clear();
-   delete ximeaLib;
+    m_params.clear();
+// Already freed in Ximea::close
+//    if(!Initnum && ximeaLib)
+//    {
+//#if linux
+//        dlclose(ximeaLib);
+//#else
+//        FreeLibrary(ximeaLib);
+//#endif
+//        ximeaLib = NULL;
+//    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1321,7 +1330,7 @@ endclose:
     }
     else
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("DLLs not unloaded due to still living instances of PCO-Cams").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("DLLs not unloaded due to still living instances of Ximea-Cams").toAscii().data());
     }
 
     if (waitCond)
