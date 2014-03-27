@@ -314,8 +314,8 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
 
    //register exec functions
     QVector<ito::Param> pMand;
-    pMand << ito::Param("startVoltage", ito::ParamBase::Double | ito::ParamBase::In, 0, 50, 0, tr("start voltage in volt").toLatin1().data());
-    pMand << ito::Param("endVoltage", ito::ParamBase::Double | ito::ParamBase::In, 0, 50, 10, tr("end voltage in volt").toLatin1().data());
+    pMand << ito::Param("startVoltage", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 50.0, 0.0, tr("start voltage in volt").toLatin1().data());
+    pMand << ito::Param("endVoltage", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 50.0, 10.0, tr("end voltage in volt").toLatin1().data());
     pMand << ito::Param("totalTime", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 10000, tr("total ramp time in ms").toLatin1().data());
     pMand << ito::Param("steps", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 10, tr("start voltage in volt").toLatin1().data());
     QVector<ito::Param> pOpt;
@@ -602,9 +602,10 @@ ito::RetVal GWInstekPSP::setVal(const char * /*data*/, const int /*datalength*/,
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
 
-    if (funcName == "rampStart")
+    if (funcName == "startRamp")
     {
         double startVoltage = paramsMand->at(0).getVal<double>();
         double endVoltage = paramsMand->at(1).getVal<double>();
@@ -618,7 +619,6 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
             {
                 waitCond->returnValue = retValue;
                 waitCond->release();
-                waitCond->deleteSemaphore();
                 waitCond = NULL;
             }
         }
@@ -627,14 +627,16 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
         timer.start();
         char text[50];
         double yourVoltage;
-        int timeStep = 10; //TODO (ms)
+        int timeStep = totalTime*1000/steps; //ms
+		int i = 0;
 
         while(1)
         {
-            if (timer.elapsed() >= timeStep)
+			if (timer.elapsed() >= timeStep)
             {
-                setAlive(); //marks that this plugin is still executing something "good"
-                yourVoltage = 0.0; //todo
+				setAlive(); //marks that this plugin is still executing something "good"
+                yourVoltage = startVoltage + i*(endVoltage - startVoltage)/steps;
+				i++;
                 sprintf(text, "SV %05.2f", yourVoltage);
                 retValue += WriteToSerial(text);
                 
@@ -668,7 +670,6 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
             {
                 waitCond->returnValue = retValue;
                 waitCond->release();
-                waitCond->deleteSemaphore();
                 waitCond = NULL;
             }
         }
@@ -679,13 +680,12 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
         {
             waitCond->returnValue = retValue;
             waitCond->release();
-            waitCond->deleteSemaphore();
             waitCond = NULL;
         }
+          
     }
 
     return retValue;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
