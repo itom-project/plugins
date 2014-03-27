@@ -138,6 +138,36 @@ void StopEvent(int deviceID, void *userData)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! shows the configuration dialog. This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
+/*!
+    creates new instance of dialogDummyGrabber, calls the method setVals of DialogMSMediaFoundation, starts the execution loop and if the dialog
+    is closed, reads the new parameter set and deletes the dialog.
+
+    \return retOk
+    \sa DialogMSMediaFoundation
+*/
+const ito::RetVal MSMediaFoundation::showConfDialog(void)
+{
+    DialogMSMediaFoundation *confDialog = new DialogMSMediaFoundation(this);
+
+    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+    QMetaObject::invokeMethod(this, "sendParameterRequest");
+
+    if (confDialog->exec())
+    {
+        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+        confDialog->sendParameters();
+    }
+    else
+    {
+        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+    }
+    delete confDialog;
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_pVI(NULL), m_deviceID(0), m_camStatusChecked(false)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MSMediaFoundation", NULL);
@@ -269,6 +299,11 @@ ito::RetVal MSMediaFoundation::checkCameraAbilities()
     static_cast<ito::IntMeta*>(m_params["y0"].getMeta())->setMax(m_imgRows-1);
     m_params["x0"].setVal<int>(0);
     m_params["y0"].setVal<int>(0);
+
+    static_cast<ito::IntMeta*>(m_params["x1"].getMeta())->setMax(m_imgCols-1);
+    static_cast<ito::IntMeta*>(m_params["y1"].getMeta())->setMax(m_imgRows-1);
+    m_params["x1"].setVal<int>(m_imgCols-1);
+    m_params["y1"].setVal<int>(m_imgRows-1);
 
     //m_params["bpp"].setMin(8);
     //m_params["bpp"].setMax(elemSize1*8);

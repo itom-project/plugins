@@ -51,20 +51,30 @@ void DialogMSMediaFoundation::parametersChanged(QMap<QString, ito::Param> params
         ui.spinSizeX->setEnabled(false);  // readonly
         ui.spinSizeY->setEnabled(false);  // readonly
 
-        ito::StringMeta* cm = (ito::StringMeta*)(params["colorMode"].getMeta());
-        for (int x = 0; x < cm->getLen(); x++)
+        ito::StringMeta* sm = (ito::StringMeta*)(params["colorMode"].getMeta());
+        for (int x = 0; x < sm->getLen(); x++)
         {
-            ui.comboColorMode->addItem(cm->getString());
+            ui.comboColorMode->addItem(sm->getString(x));
         }
         m_firstRun = false;
     }
 
-//    ui.comboColorMode->setcurrenttecurrentText((params["colorMode"].getVal<char*>()));
+    ui.comboColorMode->setCurrentIndex(ui.comboColorMode->findText(params["colorMode"].getVal<char*>()));
 
+    ui.spinX0->setMaximum(params["x1"].getMax());
     ui.spinX0->setValue(params["x0"].getVal<int>());
+
+    ui.spinY0->setMaximum(params["y1"].getMax());
     ui.spinY0->setValue(params["y0"].getVal<int>());
+
+    ui.spinX1->setMinimum(params["x0"].getVal<int>());
+    ui.spinX1->setMaximum(params["x1"].getMax());
     ui.spinX1->setValue(params["x1"].getVal<int>());
+
+    ui.spinY1->setMinimum(params["y0"].getVal<int>());
+    ui.spinY1->setMaximum(params["y1"].getMax());
     ui.spinY1->setValue(params["y1"].getVal<int>());
+
     ui.spinSizeX->setValue(params["sizex"].getVal<int>());
     ui.spinSizeY->setValue(params["sizey"].getVal<int>());
 
@@ -75,19 +85,51 @@ void DialogMSMediaFoundation::parametersChanged(QMap<QString, ito::Param> params
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogMSMediaFoundation::checkParameters()
+void DialogMSMediaFoundation::on_spinX0_valueChanged(int i)
 {
-    ito::RetVal retValue(ito::retOk);
-/*    if (ui.dblSpinPosLimitHigh->value() < ui.dblSpinPosLimitLow->value())
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("the upper position limit must be higher than the lower one").toLatin1().data());
-    }*/
-
-    return retValue;
+    ui.spinX1->setMinimum(i);
+    ui.spinSizeX->setValue(ui.spinX1->value() - i + 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogMSMediaFoundation::sendParameters()
+void DialogMSMediaFoundation::on_spinX1_valueChanged(int i)
+{
+    ui.spinX0->setMaximum(i);
+    ui.spinSizeX->setValue(i - ui.spinX0->value() + 1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogMSMediaFoundation::on_spinY0_valueChanged(int i)
+{
+    ui.spinY1->setMinimum(i);
+    ui.spinSizeY->setValue(ui.spinY1->value() - i + 1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogMSMediaFoundation::on_spinY1_valueChanged(int i)
+{
+    ui.spinY0->setMaximum(i);
+    ui.spinSizeY->setValue(i - ui.spinY0->value() + 1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogMSMediaFoundation::on_btnSetFullROI_clicked()
+{
+    ui.spinX0->setValue(0);
+    ui.spinX0->setMaximum(ui.spinX1->maximum());
+    ui.spinX1->setMinimum(0);
+    ui.spinX1->setValue(ui.spinX1->maximum());
+    ui.spinSizeX->setValue(ui.spinX1->value() + 1);
+
+    ui.spinY0->setValue(0);
+    ui.spinY0->setMaximum(ui.spinY1->maximum());
+    ui.spinY1->setMinimum(0);
+    ui.spinY1->setValue(ui.spinY1->maximum());
+    ui.spinSizeY->setValue(ui.spinY1->value() + 1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int DialogMSMediaFoundation::sendParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
@@ -95,48 +137,41 @@ ito::RetVal DialogMSMediaFoundation::sendParameters()
 
     //only send parameters which are changed
 
-/*    double v = ui.comboMode->currentIndex() > 0 ? 1.0 : 0.0;
-    if (m_actualParameters["local"].getVal<double>() != v)
+    if (QString::compare(m_actualParameters["colorMode"].getVal<char*>(), ui.comboColorMode->currentText()) != 0)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("local", ito::ParamBase::Int, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("colorMode", ito::ParamBase::Char, ui.comboColorMode->currentText().toLatin1().data())));
     }
     
-    v = ui.checkAsync->isChecked() ? 1.0 : 0.0;
-    if (m_actualParameters["async"].getVal<double>() != v)
+    int i = ui.spinX0->value();
+    if (m_actualParameters["x0"].getVal<int>() != i)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("async", ito::ParamBase::Int, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, i)));
     }
 
-    v = ui.dblSpinPosLimitHigh->value() / 1000.0;
-    if (m_actualParameters["posLimitHigh"].getVal<double>() != v)
+    i = ui.spinY0->value();
+    if (m_actualParameters["y0"].getVal<int>() != i)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("posLimitHigh", ito::ParamBase::Double, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, i)));
     }
 
-    v = ui.dblSpinPosLimitLow->value() / 1000.0;
-    if (m_actualParameters["posLimitLow"].getVal<double>() != v)
+    i = ui.spinX1->value();
+    if (m_actualParameters["x1"].getVal<int>() != i)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("posLimitLow", ito::ParamBase::Double, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, i)));
     }
 
-    v = ui.spinDelayOffset->value() / 1000.0;
-    if (m_actualParameters["delayOffset"].getVal<double>() != v)
+    i = ui.spinY1->value();
+    if (m_actualParameters["y1"].getVal<int>() != i)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("delayOffset", ito::ParamBase::Double, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, i)));
     }
 
-    v = ui.spinDelayProp->value();
-    if (m_actualParameters["delayProp"].getVal<double>() != v)
-    {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("delayProp", ito::ParamBase::Double, v) ) );
-    }
-
-    if (m_pPIPiezo)
+    if (m_pMSMediaFoundation)
     {
         if (values.size() > 0)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(m_pPIPiezo, "setParamVector", Q_ARG( const QVector< QSharedPointer<ito::ParamBase> >, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(m_pMSMediaFoundation, "setParamVector", Q_ARG(const QVector< QSharedPointer<ito::ParamBase> >, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
             while(!success)
             {
@@ -144,7 +179,7 @@ ito::RetVal DialogMSMediaFoundation::sendParameters()
                 {
                     success = true;
                 }
-                if (!m_pPIPiezo->isAlive())
+                if (!m_pMSMediaFoundation->isAlive())
                 {
                     break;
                 }
@@ -159,9 +194,9 @@ ito::RetVal DialogMSMediaFoundation::sendParameters()
     else
     {
         retValue += ito::RetVal(ito::retError, 0, tr("plugin instance not defined.").toLatin1().data());
-    }*/
+    }
 
-    return retValue;
+    return 0;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -177,41 +212,24 @@ void DialogMSMediaFoundation::on_buttonBox_clicked(QAbstractButton* btn)
     }
     else //ApplyRole or AcceptRole
     {
-        retValue += checkParameters();
+        retValue += sendParameters();
+
         if (retValue.containsError())
         {
             QMessageBox msgBox(this);
-            QString text = tr("Invalid parameter input");
-            msgBox.setText( text );
+            QString text = tr("Error while setting parameters of plugin.");
+            msgBox.setText(text);
             msgBox.setIcon(QMessageBox::Critical);
             if (retValue.errorMessage()) //if no error message indicates, this is NULL
             {
-                msgBox.setInformativeText( retValue.errorMessage() );
+                msgBox.setInformativeText(retValue.errorMessage());
             }
 
             msgBox.exec();
         }
-        else
+        else if (role == QDialogButtonBox::AcceptRole)
         {
-            retValue += sendParameters();
-
-            if (retValue.containsError())
-            {
-                QMessageBox msgBox(this);
-                QString text = tr("Error while setting parameters of plugin.");
-                msgBox.setText( text );
-                msgBox.setIcon(QMessageBox::Critical);
-                if (retValue.errorMessage()) //if no error message indicates, this is NULL
-                {
-                    msgBox.setInformativeText( retValue.errorMessage() );
-                }
-
-                msgBox.exec();
-            }
-            else if (role == QDialogButtonBox::AcceptRole)
-            {
-                accept(); //close dialog with accept
-            }
+            accept(); //close dialog with accept
         }
     }
 }
@@ -220,5 +238,6 @@ void DialogMSMediaFoundation::on_buttonBox_clicked(QAbstractButton* btn)
 void DialogMSMediaFoundation::enableDialog(bool enabled)
 {
     ui.groupBox->setEnabled(enabled);
-    ui.groupBox_3->setEnabled(enabled);
+//    ui.groupBox_3->setEnabled(enabled);
+    ui.groupBox_3->setEnabled(false);  // not implemented!
 }

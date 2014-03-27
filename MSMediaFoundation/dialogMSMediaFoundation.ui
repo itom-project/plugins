@@ -23,7 +23,11 @@
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QComboBox" name="comboColorMode"/>
+         <widget class="QComboBox" name="comboColorMode">
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

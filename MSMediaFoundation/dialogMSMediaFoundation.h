@@ -48,10 +48,10 @@ class DialogMSMediaFoundation : public QDialog
         DialogMSMediaFoundation(ito::AddInGrabber *grabber);
         ~DialogMSMediaFoundation() {};
 
+        int sendParameters(void);
+
     private:
         void enableDialog(bool enabled);
-        ito::RetVal checkParameters();
-        ito::RetVal sendParameters();
         bool m_firstRun;
 
         ito::AddInGrabber *m_pMSMediaFoundation;
@@ -64,7 +64,11 @@ class DialogMSMediaFoundation : public QDialog
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
-
+        void on_spinX0_valueChanged(int i);
+        void on_spinX1_valueChanged(int i);
+        void on_spinY0_valueChanged(int i);
+        void on_spinY1_valueChanged(int i);
+        void on_btnSetFullROI_clicked();
 };
 
 #endif

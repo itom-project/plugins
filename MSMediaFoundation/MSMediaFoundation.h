@@ -27,6 +27,7 @@
 #include "opencv2/opencv.hpp"
 #include <qsharedpointer.h>
 #include "videoInput.h"
+#include "dialogMSMediaFoundation.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
@@ -48,8 +49,8 @@ class MSMediaFoundation : public ito::AddInGrabber
 
     public:
         friend class MSMediaFoundationInterface;
-
-        int hasConfDialog(void) { return 0; }; //!< indicates that this plugin has got a configuration dialog
+        const ito::RetVal showConfDialog(void);
+        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
 

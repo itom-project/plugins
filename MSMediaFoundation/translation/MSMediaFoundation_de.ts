@@ -2,24 +2,315 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="de">
 <context>
+    <name>DialogMSMediaFoundation</name>
+    <message>
+        <location filename="../dialogMSMediaFoundation.ui"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Color Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Region of Interest (ROI)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>X0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>X1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Size X</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Y0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Y1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Size Y</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Set Full ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogMSMediaFoundation.cpp" line="+49"/>
+        <source>Configuration Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+135"/>
+        <source>Invalid parameter input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Error while setting parameters of plugin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DockWidgetMSMediaFoundation</name>
+    <message>
+        <location filename="../dockWidgetMSMediaFoundation.ui"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>General Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>[Identifier]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Identifier:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Image Properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Width:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Height:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Bit depth:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Integration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Brightness:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Contrast:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Saturation:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Sharpness:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Gain:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MSMediaFoundation</name>
     <message>
-        <location filename="../MSMediaFoundation.cpp" line="+329"/>
+        <location filename="../MSMediaFoundation.cpp" line="+162"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+250"/>
+        <location line="+2"/>
+        <source>Integrationtime of CCD [0..1] (no unit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>auto-controlled integration time of CCD (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>brightness [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>contrast [0..1]</source>
+        <translation type="unfinished">Kontrast [0..1]</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>saturation [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>sharpness [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>hue [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gain [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>focus [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gamma [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>iris [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>zoom [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>backlightCompensation [0..1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>auto-controlled brightness (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>auto-controlled contrast (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>auto-controlled saturation (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>auto-controlled sharpness (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>auto-controlled hue (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>auto-controlled gain (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>auto-controlled focus (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>auto-controlled gamma (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>auto-controlled iris (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>auto-controlled zoom (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>auto-controlled backlightCompensation (on:1, off:0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+262"/>
+        <source>invalid cameraNumber. Only %i cameras found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>desired device does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+53"/>
+        <source>Camera initialization aborted since only list of media types requested</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Number of available media types was smaller than the given mediaTypeID. Try mediaTypeID = -1 to print a list of available types.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>Camera (%i) could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-172"/>
+        <location line="+382"/>
+        <source>Timeout while acquiring image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-646"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-91"/>
+        <location line="-131"/>
         <source>first pixel index in ROI (x-direction)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -49,42 +340,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>Integrationtime of CCD [s], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>brightness [0..1], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>contrast [0..1], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>saturation [0..1], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>hue [0..1], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Gain [0..1], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
+        <location line="+63"/>
         <source>color mode of camera (auto|color|red|green|blue|gray, default: auto -&gt; color or gray)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+394"/>
+        <location line="+332"/>
+        <source>No frame could be aquired from device %i</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>Parameter not available or useless range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+228"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -99,27 +370,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+64"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Error: no data grabbed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error: grabbed image is empty</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Error: bpp other than 8 or 16 not allowed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
+        <location line="+36"/>
         <source>Error: channels sizes other than 1 or 3 not allowed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -134,12 +390,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+54"/>
         <source>unknown color, conversion... combination in retrieveImage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+17"/>
         <source>current camera status is undefined</source>
         <translation type="unfinished"></translation>
     </message>
@@ -149,7 +405,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+36"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -165,9 +421,9 @@
     </message>
 </context>
 <context>
-    <name>OpenCVGrabberInterface</name>
+    <name>MSMediaFoundationInterface</name>
     <message>
-        <location line="-886"/>
+        <location line="-1135"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -176,232 +432,45 @@
         <source>color mode of camera (auto|color|red|green|blue|gray, default: auto -&gt; color or gray)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+11"/>
+        <source>ID of the media format. 0 (default) takes the first from the list (must be MFVideoFormat_RGBA24 as subtype). -1: prints out a list of devices and quits the initialization, other: other index from the list of available types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>if 1 image is vertically flipped (default: 0)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-25"/>
-        <source>OpenCV Video Capture (USB-Cams, Firewire CMU1394...)</source>
+        <location line="-47"/>
+        <source>MSMediaFoundation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+27"/>
         <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>dialogOpenCVGrabber</name>
-    <message>
-        <location filename="../dialogOpenCVGrabber.ui"/>
-        <source>Buffer Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>ms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>X0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Size X</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Y0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Size Y</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Apply</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Configuration OpenCV Grabber</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Bit per Pixel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Set Full ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Y1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>X1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Color Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Integration Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location line="+92"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1053"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
-        <source>function execution unused in this plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+147"/>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>timer could not be set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <source>not implemented</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInGrabber</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
-        <location line="+15"/>
-        <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+118"/>
-        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
