@@ -1868,6 +1868,8 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
 
     decGrabberStarted();
+
+    
 #ifdef linux
     if (grabberStartedCount() == 0 && camera!=0)
     {
@@ -1876,9 +1878,12 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
         retValue += AlliedChkError(dc1394_capture_stop(camera));
     }
 #else
+    if (grabberStartedCount() == 0)
+    {
         // Stop image device
 	    retValue += AlliedChkError(Camera.StopDevice());
 		retValue += AlliedChkError(Camera.CloseCapture());
+    }
 #endif
 
 
@@ -2091,8 +2096,8 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 		}
 		else if (m_params["bpp"].getVal<int>() == 16)
 		{
-            if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)frame->image, m_xSize, m_ySize);
-            if (!copyExternal || hasLiveList) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)frame->image, m_xSize, m_ySize);
+            if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)frame.pData, m_xSize, m_ySize);
+            if (!copyExternal || hasLiveList) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)frame.pData, m_xSize, m_ySize);
 
             ito::uint16 *rowPtr = NULL;
 			ito::uint8 *rowPtr8 = NULL;
