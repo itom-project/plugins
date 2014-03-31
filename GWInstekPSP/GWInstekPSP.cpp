@@ -219,24 +219,25 @@ const ito::RetVal GWInstekPSP::ReadFromSerial(bool *state)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal GWInstekPSP::WriteToSerial(const char *text) 
+const ito::RetVal GWInstekPSP::WriteToSerial(const char *text, bool getCurrentStatus /*= true*/) 
 {
-    bool state = false;
-
     ito::RetVal retValue = ito::retOk;
 
-    retValue += m_pSer->setVal(text, (int)strlen(text));
-    if (retValue == ito::retError)
+    if (strcmp(text, "L") != 0) //if question is L (the only command that sends an answer, goto the if-case below)
     {
-        return retValue;
+
+        retValue += m_pSer->setVal(text, (int)strlen(text));
+        if (retValue == ito::retError)
+        {
+            return retValue;
+        }
     }
-    retValue += ReadFromSerial(&state);
-    if (retValue == ito::retError)
+    else
     {
-        return retValue;
+        getCurrentStatus = true;
     }
 
-    if (!state)
+    if (getCurrentStatus)
     {
         retValue += m_pSer->setVal("L", 1);
         if (retValue == ito::retError)
@@ -244,6 +245,7 @@ const ito::RetVal GWInstekPSP::WriteToSerial(const char *text)
             return retValue;
         }
 
+        bool state;
         retValue += ReadFromSerial(&state);
         if (retValue == ito::retError)
         {
@@ -638,7 +640,7 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
                 yourVoltage = startVoltage + i*(endVoltage - startVoltage)/steps;
 				i++;
                 sprintf(text, "SV %05.2f", yourVoltage);
-                retValue += WriteToSerial(text);
+                retValue += WriteToSerial(text, false);
                 
                 if (yourVoltage < endVoltage)
                 {
@@ -663,6 +665,8 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
                 }
             }
         }
+
+        retValue += WriteToSerial("L"); //get current values after the end of the ramp operation
 
         if (!async)
         {

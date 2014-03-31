@@ -73,7 +73,7 @@ class GWInstekPSP : public ito::AddInDataIO
 
         const ito::RetVal SetParams();
         const ito::RetVal ReadFromSerial(bool *state);
-        const ito::RetVal WriteToSerial(const char *text);
+        const ito::RetVal WriteToSerial(const char *text, bool getCurrentStatus = true);
         static void doNotDelSharedPtr(char * /*ptr*/) {} /*!<workaround for deleter for QSharedPointer, such that the pointer is NOT deleted if shared-pointer's reference drops towards zero.*/
 
     public slots:
