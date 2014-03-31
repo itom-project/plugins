@@ -28,6 +28,11 @@ FIND_PACKAGE_QT(ON Widgets Xml OpenGL LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(OpenGL REQUIRED)
 
+# Qt4 requires GLEW for this plugin
+IF(NOT QT5_INSTALLED)
+	find_package(GLEW REQUIRED)
+ENDIF(NOT QT5_INSTALLED)
+
 find_package(VisualLeakDetector QUIET)
 
 IF(GLEW_FOUND OR QT5_INSTALLED)
