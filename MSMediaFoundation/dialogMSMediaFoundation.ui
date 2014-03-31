@@ -17,7 +17,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QGroupBox" name="groupBox">
+      <widget class="QGroupBox" name="groupColorMode">
        <property name="title">
         <string>Color Mode</string>
        </property>
@@ -33,7 +33,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox_3">
+      <widget class="QGroupBox" name="groupROI">
        <property name="title">
         <string>Region of Interest (ROI)</string>
        </property>

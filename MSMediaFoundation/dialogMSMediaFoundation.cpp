@@ -30,8 +30,8 @@
 #include <qmessagebox.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogMSMediaFoundation::DialogMSMediaFoundation(ito::AddInGrabber *grabber) :
-    m_pMSMediaFoundation(grabber),
+DialogMSMediaFoundation::DialogMSMediaFoundation(ito::AddInBase *grabber) :
+    AbstractAddInConfigDialog(grabber),
     m_firstRun(true)
 {
     ui.setupUi(this);
@@ -81,7 +81,7 @@ void DialogMSMediaFoundation::parametersChanged(QMap<QString, ito::Param> params
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
 
-    m_actualParameters = params;
+    m_currentParameters = params;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ void DialogMSMediaFoundation::on_btnSetFullROI_clicked()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int DialogMSMediaFoundation::sendParameters()
+ito::RetVal DialogMSMediaFoundation::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
@@ -137,66 +137,38 @@ int DialogMSMediaFoundation::sendParameters()
 
     //only send parameters which are changed
 
-    if (QString::compare(m_actualParameters["colorMode"].getVal<char*>(), ui.comboColorMode->currentText()) != 0)
+    if (QString::compare(m_currentParameters["colorMode"].getVal<char*>(), ui.comboColorMode->currentText()) != 0)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("colorMode", ito::ParamBase::Char, ui.comboColorMode->currentText().toLatin1().data())));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("colorMode", ito::ParamBase::String, ui.comboColorMode->currentText().toLatin1().data())));
     }
     
     int i = ui.spinX0->value();
-    if (m_actualParameters["x0"].getVal<int>() != i)
+    if (m_currentParameters["x0"].getVal<int>() != i)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, i)));
     }
 
     i = ui.spinY0->value();
-    if (m_actualParameters["y0"].getVal<int>() != i)
+    if (m_currentParameters["y0"].getVal<int>() != i)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, i)));
     }
 
     i = ui.spinX1->value();
-    if (m_actualParameters["x1"].getVal<int>() != i)
+    if (m_currentParameters["x1"].getVal<int>() != i)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, i)));
     }
 
     i = ui.spinY1->value();
-    if (m_actualParameters["y1"].getVal<int>() != i)
+    if (m_currentParameters["y1"].getVal<int>() != i)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, i)));
     }
 
-    if (m_pMSMediaFoundation)
-    {
-        if (values.size() > 0)
-        {
-            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(m_pMSMediaFoundation, "setParamVector", Q_ARG(const QVector< QSharedPointer<ito::ParamBase> >, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    retValue += setPluginParameters(values, msgLevelWarningAndError);
 
-            while(!success)
-            {
-                if (locker.getSemaphore()->wait(PLUGINWAIT) == true)
-                {
-                    success = true;
-                }
-                if (!m_pMSMediaFoundation->isAlive())
-                {
-                    break;
-                }
-            }
-
-            if (!success)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("timeout while setting parameters of plugin.").toLatin1().data());
-            }
-        }
-    }
-    else
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("plugin instance not defined.").toLatin1().data());
-    }
-
-    return 0;
+    return retValue;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -210,34 +182,19 @@ void DialogMSMediaFoundation::on_buttonBox_clicked(QAbstractButton* btn)
     {
         reject(); //close dialog with reject
     }
-    else //ApplyRole or AcceptRole
+    else if (role == QDialogButtonBox::AcceptRole)
     {
-        retValue += sendParameters();
-
-        if (retValue.containsError())
-        {
-            QMessageBox msgBox(this);
-            QString text = tr("Error while setting parameters of plugin.");
-            msgBox.setText(text);
-            msgBox.setIcon(QMessageBox::Critical);
-            if (retValue.errorMessage()) //if no error message indicates, this is NULL
-            {
-                msgBox.setInformativeText(retValue.errorMessage());
-            }
-
-            msgBox.exec();
-        }
-        else if (role == QDialogButtonBox::AcceptRole)
-        {
-            accept(); //close dialog with accept
-        }
+        accept(); //AcceptRole
+    }
+    else
+    {
+        applyParameters(); //ApplyRole
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DialogMSMediaFoundation::enableDialog(bool enabled)
 {
-    ui.groupBox->setEnabled(enabled);
-//    ui.groupBox_3->setEnabled(enabled);
-    ui.groupBox_3->setEnabled(false);  // not implemented!
+    ui.groupColorMode->setEnabled(enabled);
+    ui.groupROI->setEnabled(enabled);
 }

@@ -148,23 +148,7 @@ void StopEvent(int deviceID, void *userData)
 */
 const ito::RetVal MSMediaFoundation::showConfDialog(void)
 {
-    DialogMSMediaFoundation *confDialog = new DialogMSMediaFoundation(this);
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-    QMetaObject::invokeMethod(this, "sendParameterRequest");
-
-    if (confDialog->exec())
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-        confDialog->sendParameters();
-    }
-    else
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-    }
-    delete confDialog;
-
-    return ito::retOk;
+    return apiShowConfigurationDialog(this, new DialogMSMediaFoundation(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

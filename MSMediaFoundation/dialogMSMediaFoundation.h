@@ -25,6 +25,7 @@
 
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
+#include "common/abstractAddInConfigDialog.h"
 
 #include "ui_dialogMSMediaFoundation.h"
 
@@ -37,25 +38,22 @@
 
 namespace ito
 {
-    class AddInGrabber; //forward declaration
+    class AddInBase; //forward declaration
 }
 
-class DialogMSMediaFoundation : public QDialog 
+class DialogMSMediaFoundation : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
     public:
-        DialogMSMediaFoundation(ito::AddInGrabber *grabber);
+        DialogMSMediaFoundation(ito::AddInBase *grabber);
         ~DialogMSMediaFoundation() {};
 
-        int sendParameters(void);
+        ito::RetVal applyParameters();
 
     private:
         void enableDialog(bool enabled);
         bool m_firstRun;
-
-        ito::AddInGrabber *m_pMSMediaFoundation;
-        QMap<QString, ito::Param> m_actualParameters;
 
         Ui::DialogMSMediaFoundation ui;
 
