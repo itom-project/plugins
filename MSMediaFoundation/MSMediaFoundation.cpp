@@ -501,6 +501,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     m_deviceID = paramsOpt->at(0).getVal<int>();
     int mediaTypeID = paramsOpt->at(2).getVal<int>();
     m_flipImage = paramsOpt->at(3).getVal<int>() > 0 ? true : false;
+    QSharedPointer<ito::ParamBase> colorMode(new ito::ParamBase(paramsOpt->at(1)));
 
     m_pVI = &VideoInput::getInstance();
     int numDevices = m_pVI->listDevices();
@@ -604,6 +605,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     if (!retValue.containsError())
     {
         retValue += checkCameraAbilities();
+        retValue += setParam(colorMode,NULL);
     }
 
     if (!retValue.containsError())
@@ -1166,9 +1168,9 @@ ito::RetVal MSMediaFoundation::checkData(ito::DataObject *externalDataObject)
         m_alphaChannel = cv::Mat(futureHeight, futureWidth, CV_8UC1, cv::Scalar(255));
     }
 
-    if (m_pDataMatBuffer.rows != futureHeight || m_pDataMatBuffer.cols != futureWidth)
+    if (m_pDataMatBuffer.rows != m_imgRows || m_pDataMatBuffer.cols != m_imgCols) //always original chip size, resize to roi in retrieveImage
     {
-        m_pDataMatBuffer = cv::Mat(futureHeight, futureWidth, CV_8UC3);
+        m_pDataMatBuffer = cv::Mat(m_imgRows, m_imgCols, CV_8UC3);
     }
 
     if (!externalDataObject)
