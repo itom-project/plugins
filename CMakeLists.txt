@@ -111,7 +111,7 @@ endif (PLUGIN_LIBUSB)
 
 IF(WIN32)
 # MSMediaFoundation
-OPTION(PLUGIN_MSMediaFoundation "Build with this plugin." OFF)
+OPTION(PLUGIN_MSMediaFoundation "Build with this plugin." ON)
 if (PLUGIN_MSMediaFoundation)
     ADD_SUBDIRECTORY(MSMediaFoundation)
 endif (PLUGIN_MSMediaFoundation)
