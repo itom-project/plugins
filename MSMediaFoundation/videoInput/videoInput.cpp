@@ -643,6 +643,9 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
 		{
 			for(int y = 0; y < height; y++)
 			{
+#if _WIN64
+	memcpy(dst + (y * widthInBytes), src + ( (height -y -1) * widthInBytes), widthInBytes);
+#else
 				dstInt = (int *)(dst + (y * widthInBytes));
 				
 				srcInt = (int *)(src + ( (height -y -1) * widthInBytes));
@@ -659,11 +662,15 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
 
 					rep movsd
 				}
+#endif
 			}
 									
 		}
 		else
 		{		
+#if _WIN64
+	memcpy(dst, src, numBytes);
+#else
 			_asm
 			{
 				mov ESI, src
@@ -676,6 +683,7 @@ void VideoInput::processPixels(unsigned char * src, unsigned char * dst, unsigne
 
 				rep movsd
 			}
+#endif
 		}
 	}
 	else

@@ -53,6 +53,9 @@ void RawImage::setCopy(const BYTE * pSampleBuffer)
 
 void RawImage::fastCopy(const BYTE * pSampleBuffer)
 {
+#if _WIN64
+	memcpy(ri_pixels, pSampleBuffer, ri_size);
+#else
 	int *bsrc = (int *)pSampleBuffer;
 
 	int *dst = (int *)ri_pixels;
@@ -71,6 +74,7 @@ void RawImage::fastCopy(const BYTE * pSampleBuffer)
 
 		rep movsd
 	}
+#endif
 
 	ri_new = true;
 
