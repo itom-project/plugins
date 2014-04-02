@@ -50,7 +50,7 @@ class USBMotion3XIIIInterface : public ito::AddInInterfaceBase
     public:
         USBMotion3XIIIInterface(QObject *parent = 0);
         ~USBMotion3XIIIInterface();
-        ito::RetVal getAddInInst(ito::AddInBase **addInInst);    //!< Creates a new DummyMotor and gives him a unique identification
+        ito::RetVal getAddInInst(ito::AddInBase **addInInst);    //!< Creates a new actuator instance
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
