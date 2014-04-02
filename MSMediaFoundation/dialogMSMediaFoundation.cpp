@@ -21,13 +21,10 @@
 *********************************************************************** */
 
 #include "dialogMSMediaFoundation.h"
-#include "MSMediaFoundation.h"
 
-#include "common/addInInterface.h"
-
-#include <qmetaobject.h>
 #include <qdialogbuttonbox.h>
-#include <qmessagebox.h>
+#include <qvector.h>
+#include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogMSMediaFoundation::DialogMSMediaFoundation(ito::AddInBase *grabber) :

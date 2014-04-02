@@ -25,7 +25,6 @@
 
 #include "MSMediaFoundation.h"
 #include "pluginVersion.h"
-#include "opencv2/core/types_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <strmif.h>
 #include <wchar.h>
@@ -34,12 +33,10 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <QtCore/QtPlugin>
+#include <qplugin.h>
 #include <qmessagebox.h>
 
 #include "dockWidgetMSMediaFoundation.h"
-
-Q_DECLARE_METATYPE(ito::DataObject)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MSMediaFoundationInterface::getAddInInst(ito::AddInBase **addInInst)
@@ -478,7 +475,6 @@ ito::RetVal MSMediaFoundation::setParam(QSharedPointer<ito::ParamBase> val, Itom
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
-    //exceptionally, this init dialog is executed in the main thread of itom (m_callInitInNewThread == false in OpenCVGrabberInterface)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
@@ -598,6 +594,8 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
         retValue += setParam(colorMode, NULL);
         
         retValue += checkData();
+
+        emit parametersChanged(m_params);
     }
     
     if (waitCond)
@@ -1338,16 +1336,16 @@ void MSMediaFoundation::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
-        DockWidgetMSMediaFoundation *dw = qobject_cast<DockWidgetMSMediaFoundation*>(getDockWidget()->widget());
+        QWidget *widget = getDockWidget()->widget();
         if (visible)
         {
-            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
 
             emit parametersChanged(m_params);
         }
         else
         {
-            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
         }
     }
 }

@@ -30,7 +30,8 @@ find_package(WindowsSDK QUIET)
 if(WINDOWSSDK_FOUND)
 
     include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-    FIND_PACKAGE_QT(ON LinguistTools Designer Widgets UiTools)
+    FIND_PACKAGE_QT(ON Core Widgets LinguistTools)
+
 
     IF (BUILD_UNICODE)
         ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
@@ -54,7 +55,6 @@ if(WINDOWSSDK_FOUND)
     INCLUDE_DIRECTORIES(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${QT_QTCORE_INCLUDE_DIR}
         ${OpenCV_DIR}/include
         ${ITOM_SDK_INCLUDE_DIR}
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
@@ -63,15 +63,10 @@ if(WINDOWSSDK_FOUND)
     )
 
     LINK_DIRECTORIES(
-        ${OpenCV_DIR}/lib
+        #${OpenCV_DIR}/lib
     )
 
     set(plugin_HEADERS
-        ${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsInc.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogMSMediaFoundation.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.h
         ${CMAKE_CURRENT_SOURCE_DIR}/MSMediaFoundation.h
@@ -88,20 +83,14 @@ if(WINDOWSSDK_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/videoInput.h
     )
 
-    if (NOT QT5_FOUND)
-        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-    endif (NOT QT5_FOUND)
-
-    set(plugin_ui
+    set(plugin_UI
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogMSMediaFoundation.ui
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetMSMediaFoundation.ui
     )
 
-    if (QT5_FOUND)
-        QT5_WRAP_UI(plugin_ui_MOC ${plugin_ui})
-    else (QT5_FOUND)
-        QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
-    endif (QT5_FOUND)
+	set(plugin_RCC
+		#add absolute pathes to any *.qrc resource files here
+	)
 
     set(plugin_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogMSMediaFoundation.cpp
@@ -118,12 +107,22 @@ if(WINDOWSSDK_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/videoInput.cpp
     )
 
-    ADD_SOURCE_GROUP(videoInput)
-
-    #Add version information to the plugIn-dll unter MSVC
+	#Add version information to the plugIn-dll unter MSVC
     if(MSVC)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)
+
+	if (QT5_FOUND)
+		#if automoc if OFF, you also need to call QT5_WRAP_CPP here
+		QT5_WRAP_UI(plugin_ui_MOC ${plugin_UI})
+		QT5_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
+	else (QT5_FOUND)
+		QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+		QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_UI})
+		QT4_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
+	endif (QT5_FOUND)
+
+    ADD_SOURCE_GROUP(videoInput)
 
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
@@ -131,13 +130,13 @@ if(WINDOWSSDK_FOUND)
     if (QT5_FOUND)
         TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
         
-        qt5_use_modules(${target_name} Widgets UiTools)
+        qt5_use_modules(${target_name} ${QT_COMPONENTS})
     else (QT5_FOUND)
-        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
     endif (QT5_FOUND)
     
     #translation
-    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
+    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
     PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} ${EXISTING_TRANSLATION_FILES} ITOM_LANGUAGES FILES_TO_TRANSLATE)
     
     #documentation

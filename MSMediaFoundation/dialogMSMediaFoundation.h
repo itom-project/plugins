@@ -23,18 +23,17 @@
 #ifndef DIALOGMSMEDIAFOUNDATION_H
 #define DIALOGMSMEDIAFOUNDATION_H
 
-#include "common/sharedStructures.h"
+#include "common/param.h"
+#include "common/retVal.h"
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
 
 #include "ui_dialogMSMediaFoundation.h"
 
-#include <qdialog.h>
 #include <qstring.h>
 #include <qmap.h>
 #include <qabstractbutton.h>
-#include <qvector.h>
-#include <qsharedpointer.h>
+
 
 namespace ito
 {

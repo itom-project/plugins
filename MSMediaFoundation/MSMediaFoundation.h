@@ -24,7 +24,7 @@
 #define MSMEDIAFOUNDATION_H
 
 #include "common/addInGrabber.h"
-#include "opencv2/opencv.hpp"
+#include "opencv/cv.h"
 #include <qsharedpointer.h>
 #include "videoInput.h"
 #include "dialogMSMediaFoundation.h"
@@ -115,8 +115,7 @@ class MSMediaFoundation : public ito::AddInGrabber
         ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
 
     private slots:
-        void MSMediaFoundation::dockWidgetVisibilityChanged(bool visible);
-//        void dockWidgetValueChanged(int type, double value);
+        void dockWidgetVisibilityChanged(bool visible);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

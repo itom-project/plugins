@@ -23,10 +23,9 @@
 #ifndef DOCKWIDGETMSMEDIAFOUNDATION_H
 #define DOCKWIDGETMSMEDIAFOUNDATION_H
 
-#include "common/addInInterface.h"
 #include "common/abstractAddInDockWidget.h"
+#include "common/addInInterface.h"
 
-#include <qwidget.h>
 #include <qmap.h>
 #include <qstring.h>
 
