@@ -153,4 +153,4 @@ class MSMediaFoundationInterface : public ito::AddInInterfaceBase
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
-#endif // OpenCVGrabber_H
+#endif // MSMEDIAFOUNDATION_H
