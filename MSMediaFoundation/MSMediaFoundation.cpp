@@ -589,10 +589,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
     }
 
     if (!retValue.containsError())
-    {
-        QSharedPointer<ito::ParamBase> colorMode(new ito::ParamBase("colorMode", ito::ParamBase::String, paramsOpt->at(1).getVal<char*>()));
-        retValue += setParam(colorMode, NULL);
-        
+    {        
         retValue += checkData();
 
         emit parametersChanged(m_params);
