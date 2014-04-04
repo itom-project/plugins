@@ -171,6 +171,14 @@ IF (WIN32)
     endif (PLUGIN_USBMotion3XIII)
 ENDIF (WIN32)
 
+# V4L2
+IF (UNIX)
+    OPTION(PLUGIN_V4L2 "Build with this plugin." OFF)
+    if (PLUGIN_V4L2)
+        ADD_SUBDIRECTORY(V4L2)
+    endif (PLUGIN_V4L2)
+ENDIF (UNIX)
+
 # Vistek
 IF (WIN32)
     OPTION(PLUGIN_Vistek "Build with this plugin." ON)
