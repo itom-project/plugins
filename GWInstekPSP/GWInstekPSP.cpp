@@ -41,7 +41,7 @@
 //#include "common/helperCommon.h"
 
 
-#define GWDELAY 200
+#define GWDELAY 10
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -199,7 +199,7 @@ const ito::RetVal GWInstekPSP::ReadFromSerial(bool *state)
         totlen += *len;
         Sleep(2);
     }
-    while ((buf[totlen - 1] != '\n') && (totlen < bufsize) && (totlen > 0) && (retValue != ito::retError) && (0 < timeout--));
+    while ((totlen == 0 || buf[totlen - 1] != '\n') && (totlen < bufsize) && (retValue != ito::retError) && (0 < timeout--));
 
     if (timeout == -1)
     {
@@ -219,7 +219,7 @@ const ito::RetVal GWInstekPSP::ReadFromSerial(bool *state)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal GWInstekPSP::WriteToSerial(const char *text, bool getCurrentStatus /*= true*/) 
+const ito::RetVal GWInstekPSP::WriteToSerial(const char *text, bool commandHasAnswer, bool getCurrentStatus /*= true*/) 
 {
     ito::RetVal retValue = ito::retOk;
 
@@ -230,6 +230,20 @@ const ito::RetVal GWInstekPSP::WriteToSerial(const char *text, bool getCurrentSt
         if (retValue == ito::retError)
         {
             return retValue;
+        }
+
+        if (commandHasAnswer)
+        {
+            bool state;
+            retValue += ReadFromSerial(&state);
+            if (retValue == ito::retError)
+            {
+                return retValue;
+            }
+        }
+        else
+        {
+            Sleep(200);
         }
     }
     else
@@ -381,6 +395,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     ito::RetVal retValue(ito::retOk);
     QString key = val->getName();
     char text[50];
+    bool commandHasAnswer;
 
     if (key == "")
     {
@@ -426,22 +441,27 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
             if (key == "voltage") 
             {
+                commandHasAnswer = false;
                 sprintf(text, "SV %05.2f", m_params["voltage"].getVal<double>());
             }
             else if (key == "voltage_limit") 
             {
+                commandHasAnswer = false;
                 sprintf(text, "SU %02.0f", (m_params["voltage_limit"].getVal<double>()));
             }
             else if (key == "current_limit") 
             {
+                commandHasAnswer = false;
                 sprintf(text, "SI %04.2f", (m_params["current_limit"].getVal<double>()));
             }
             else if (key == "load_limit") 
             {
+                commandHasAnswer = false;
                 sprintf(text, "SP %03.0f", (m_params["load_limit"].getVal<double>()));
             }
             else if (key == "relay") 
             {
+                commandHasAnswer = false;
                 if (m_params["relay"].getVal<int>())
                 {
                     sprintf(text, "KOE");
@@ -453,6 +473,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             }
             else if (key == "wheel") 
             {
+                commandHasAnswer = false;
                 if (m_params["wheel"].getVal<int>())
                 {
                     sprintf(text, "KF");
@@ -466,7 +487,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             {
                 goto end;
             }
-            retValue += WriteToSerial(text);
+            retValue += WriteToSerial(text, commandHasAnswer);
 
             if (retValue != ito::retError)
             {
@@ -524,7 +545,7 @@ ito::RetVal GWInstekPSP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     if (!retValue.containsError())
     {
         retValue += m_params["save"].copyValueFrom( &((*paramsOpt)[0]) );
-        retValue += WriteToSerial("L");
+        retValue += WriteToSerial("L", true);
     }
 
     if (waitCond)
@@ -550,7 +571,7 @@ ito::RetVal GWInstekPSP::close(ItomSharedSemaphore *waitCond)
 
     if (m_params["save"].getVal<int>() && m_pSer)
     {
-        retValue += WriteToSerial("EEP");
+        retValue += WriteToSerial("EEP", false);
     }
 
     if (waitCond)
@@ -631,22 +652,22 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
         double yourVoltage;
         int timeStep = totalTime*1000/steps; //ms
 		int i = 0;
+        bool firstRun = true;
 
         while(1)
         {
-			if (timer.elapsed() >= timeStep)
+			if (timer.elapsed() >= timeStep || firstRun)
             {
+                firstRun = false;
+                //qDebug() << "bin drin";
 				setAlive(); //marks that this plugin is still executing something "good"
                 yourVoltage = startVoltage + i*(endVoltage - startVoltage)/steps;
 				i++;
                 sprintf(text, "SV %05.2f", yourVoltage);
-                retValue += WriteToSerial(text, false);
+                timer.restart();
+                retValue += WriteToSerial(text, false, false);
                 
-                if (yourVoltage < endVoltage)
-                {
-                    timer.restart();
-                }
-                else
+                if (yourVoltage >= endVoltage)
                 {
                     break;
                 }
@@ -664,9 +685,13 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
                     break;
                 }
             }
+            //else
+            //{
+            //    qDebug() << "muss warten";
+            //Ô}
         }
 
-        retValue += WriteToSerial("L"); //get current values after the end of the ramp operation
+        retValue += WriteToSerial("L", true); //get current values after the end of the ramp operation
 
         if (!async)
         {
