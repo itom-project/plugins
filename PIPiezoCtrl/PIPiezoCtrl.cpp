@@ -585,7 +585,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         {
             //retval += PISetOperationMode(false); //already done by identify system above
             retval += PICheckStatus();
-            retval += RequestStatusAndPosition(true, false);
+            retval += requestStatusAndPosition(true, false);
         }
 
 		m_getPosInScan = m_params["checkFlags"].getVal<int>() & 1 ? true : false;
@@ -895,7 +895,7 @@ ito::RetVal PIPiezoCtrl::setPosRel(const QVector<int> axis, QVector<double> pos,
     \sa PISetPos
     \return retOk
 */
-ito::RetVal PIPiezoCtrl::RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos)
+ito::RetVal PIPiezoCtrl::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {
     ito::RetVal retval(ito::retOk);
 
@@ -904,7 +904,7 @@ ito::RetVal PIPiezoCtrl::RequestStatusAndPosition(bool sendActPosition, bool sen
 
     retval += PICheckStatus();
 
-    if (sendActPosition)
+    if (sendCurrentPos)
     {
         retval += getPos(0,sharedpos,0);
         m_currentPos[0] = *sharedpos;

@@ -439,7 +439,7 @@
          </widget>
         </item>
         <item row="0" column="3">
-         <widget class="QPushButton" name="pushButton_up">
+         <widget class="QPushButton" name="pushButton_zp">
           <property name="minimumSize">
            <size>
             <width>19</width>
@@ -477,7 +477,7 @@
          </widget>
         </item>
         <item row="1" column="3">
-         <widget class="QPushButton" name="pushButton_down">
+         <widget class="QPushButton" name="pushButton_zm">
           <property name="minimumSize">
            <size>
             <width>19</width>
@@ -652,7 +652,7 @@
       </size>
      </property>
      <property name="title">
-      <string>Absolut Positioning</string>
+      <string>Absolute Positioning</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <property name="leftMargin">
@@ -1134,8 +1134,8 @@
   <tabstop>pushButton_yp</tabstop>
   <tabstop>pushButton_ym</tabstop>
   <tabstop>pushButton_xp</tabstop>
-  <tabstop>pushButton_up</tabstop>
-  <tabstop>pushButton_down</tabstop>
+  <tabstop>pushButton_zp</tabstop>
+  <tabstop>pushButton_zm</tabstop>
   <tabstop>pushButton_am</tabstop>
   <tabstop>pushButton_bp</tabstop>
   <tabstop>pushButton_bm</tabstop>

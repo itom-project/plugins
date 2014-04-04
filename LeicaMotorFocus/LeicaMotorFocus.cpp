@@ -599,7 +599,7 @@ LeicaMotorFocus::LeicaMotorFocus() : AddInActuator(), m_async(0), m_direction(1)
     connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), LMFWid, SLOT(valuesChanged(QMap<QString, ito::Param>)));
     connect(LMFWid, SIGNAL(MoveRelative(const int,const double,ItomSharedSemaphore *)), this, SLOT(setPosRel(const int,const double,ItomSharedSemaphore *)));
     connect(LMFWid, SIGNAL(MoveAbsolute(const int,const double,ItomSharedSemaphore *)), this, SLOT(setPosAbs(const int,const double,ItomSharedSemaphore *)));
-    connect(LMFWid, SIGNAL(MotorTriggerStatusRequest(bool,bool)), this, SLOT(RequestStatusAndPosition(bool,bool)));
+    connect(LMFWid, SIGNAL(MotorTriggerStatusRequest(bool,bool)), this, SLOT(requestStatusAndPosition(bool,bool)));
 
     connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), LMFWid, SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
     connect(this, SIGNAL(targetChanged(QVector<double>)), LMFWid, SLOT(targetChanged(QVector<double>)));
@@ -808,7 +808,7 @@ ito::RetVal LeicaMotorFocus::init(QVector<ito::ParamBase> *paramsMand, QVector<i
 
     if(retval != ito::retError)
     {
-        RequestStatusAndPosition(true,true); //initial position check
+        requestStatusAndPosition(true,true); //initial position check
     }
 
     if (waitCond)
@@ -1249,7 +1249,7 @@ ito::RetVal LeicaMotorFocus::setPosRel(const QVector<int> axis, QVector<double> 
     }
 }
 //---------------------------------------------------------------------------------------------------------------------------------- 
-ito::RetVal LeicaMotorFocus::RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos)
+ito::RetVal LeicaMotorFocus::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {
     ito::RetVal retval(ito::retOk);
     int status;
@@ -1259,7 +1259,7 @@ ito::RetVal LeicaMotorFocus::RequestStatusAndPosition(bool sendActPosition, bool
 
     retval += LMFStatus(status);
 
-    if (sendActPosition)
+    if (sendCurrentPos)
     {
         retval += getPos(0,sharedpos,0);
         m_currentPos[0] = *sharedpos;
@@ -1293,7 +1293,7 @@ void LeicaMotorFocus::dockWidgetVisibilityChanged(bool visible)
         {
             QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)),getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
             QObject::connect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
-            RequestStatusAndPosition(true,true);
+            requestStatusAndPosition(true,true);
         }
         else
         {

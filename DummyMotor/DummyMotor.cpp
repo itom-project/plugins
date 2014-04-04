@@ -182,16 +182,11 @@ DummyMotor::DummyMotor() :
 
     // This is for the docking widged
     //now create dock widget for this plugin
-   DockWidgetDummyMotor *dummyMotorWid = new DockWidgetDummyMotor(m_params, getID(), this);    // Create a new non-modal dialog
+   DockWidgetDummyMotor *dummyMotorWid = new DockWidgetDummyMotor(getID(), this);    // Create a new non-modal dialog
 
    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dummyMotorWid);    // Give the widget a name ..)
-
-   connect(dummyMotorWid, SIGNAL(MoveRelative(const int,const double,ItomSharedSemaphore*)), this, SLOT(setPosRel(const int,const double,ItomSharedSemaphore*)));
-   connect(dummyMotorWid, SIGNAL(MoveAbsolute(QVector<int>, QVector<double>,ItomSharedSemaphore*)), this, SLOT(setPosAbs(QVector<int>,QVector<double>,ItomSharedSemaphore *)));
-   connect(dummyMotorWid, SIGNAL(MotorTriggerStatusRequest(bool,bool)), this, SLOT(RequestStatusAndPosition(bool, bool)));
-   connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dummyMotorWid, SLOT(valuesChanged(QMap<QString, ito::Param>)));
    
    // till here
 }
@@ -788,13 +783,13 @@ ito::RetVal DummyMotor::setPosRel(const QVector<int> axis, QVector<double> pos, 
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
-ito::RetVal DummyMotor::RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos)
+ito::RetVal DummyMotor::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {
     ito::RetVal retval(ito::retOk);
 
     //in real motor, call getStatus and getPos here
 
-    sendStatusUpdate(!sendActPosition);
+    sendStatusUpdate(!sendCurrentPos);
     if (sendTargetPos)
     {
         sendTargetUpdate();
@@ -810,12 +805,15 @@ void DummyMotor::dockWidgetVisibilityChanged(bool visible)
     {
         if (visible)
         {
+            QObject::connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(parametersChanged(QMap<QString, ito::Param>)));
             QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)),getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
             QObject::connect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
-            RequestStatusAndPosition(true,true);
+            emit parametersChanged(m_params);
+            requestStatusAndPosition(true,true);
         }
         else
         {
+            QObject::disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(parametersChanged(QMap<QString, ito::Param>)));
             QObject::disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)),getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
             QObject::disconnect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
         }
