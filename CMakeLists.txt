@@ -129,6 +129,20 @@ if (PLUGIN_OpenCVGrabber)
     ADD_SUBDIRECTORY(OpenCVGrabber)
 endif (PLUGIN_OpenCVGrabber)
 
+# PclTools
+OPTION(PLUGIN_PclTools "Build with this plugin." ON)
+if (PLUGIN_PclTools)
+  ADD_SUBDIRECTORY(PclTools)
+endif (PLUGIN_PclTools)
+
+# PCOCamera
+IF (WIN32)
+  OPTION(PLUGIN_PCOCamera "Build with this plugin." ON)
+  if (PLUGIN_PCOCamera)
+      ADD_SUBDIRECTORY(PCOCamera)
+  endif (PLUGIN_PCOCamera)
+ENDIF (WIN32)
+
 # PCOPixelFly
 IF (WIN32)
   OPTION(PLUGIN_PCOPixelFly "Build with this plugin." ON)
@@ -173,7 +187,7 @@ ENDIF (WIN32)
 
 # V4L2
 IF (UNIX)
-    OPTION(PLUGIN_V4L2 "Build with this plugin." OFF)
+    OPTION(PLUGIN_V4L2 "Build with this plugin." ON)
     if (PLUGIN_V4L2)
         ADD_SUBDIRECTORY(V4L2)
     endif (PLUGIN_V4L2)
