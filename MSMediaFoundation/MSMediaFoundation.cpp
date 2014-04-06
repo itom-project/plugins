@@ -77,7 +77,7 @@ For building this plugin the Windows SDK needs to be installed and Windows Vista
 \n\
 Affiliation \n\
 ------------ \n\
-This plugin internally used a modified version of VideoInput, proposed by Evgeny Pereguda and published under \n\
+This plugin internally uses a modified version of VideoInput, proposed by Evgeny Pereguda and published under \n\
 http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License)";
     m_detaildescription = QObject::tr(docstring);
 
@@ -88,7 +88,7 @@ http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Wi
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("");     
 
-    ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 16, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
+    ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 255, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toLatin1().data());
