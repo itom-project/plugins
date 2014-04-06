@@ -7,11 +7,11 @@
 #include <qsharedpointer.h>
 #include <QTimerEvent>
 
-#include "PCO/include/sc2_defs.h"
-#include "PCO/include/PCO_err.h"
+#include "sc2_defs.h"
+#include "PCO_err.h"
 #define PCO_ERRT_H_CREATE_OBJECT
-#include "PCO/include/sc2_SDKStructures.h"
-#include "PCO/include/SC2_CamExport.h"
+#include "sc2_SDKStructures.h"
+#include "SC2_CamExport.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class PCOCameraInterface : public ito::AddInInterfaceBase

@@ -52,17 +52,15 @@ FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
 
 IF(BUILD_TARGET64)
     find_library(PCO_SDK_SC2_CAM_LIB SC2_Cam PATHS ${PCO_SDK_DIR} PATH_SUFFIXES lib64)
-    find_library(PCO_SDK_SC2_PCO_CONV Pco_conv PATHS ${PCO_SDK_DIR} PATH_SUFFIXES lib64)
     find_file(PCO_SDK_LIBRARY SC2_Cam.dll PATHS ${PCO_SDK_DIR} PATH_SUFFIXES bin64)
 ELSE(BUILD_TARGET64)
     find_library(PCO_SDK_SC2_CAM_LIB SC2_Cam PATHS ${PCO_SDK_DIR} PATH_SUFFIXES lib)
-    find_library(PCO_SDK_SC2_PCO_CONV Pco_conv PATHS ${PCO_SDK_DIR} PATH_SUFFIXES lib)
     find_file(PCO_SDK_LIBRARY SC2_Cam.dll PATHS ${PCO_SDK_DIR} PATH_SUFFIXES bin)
 ENDIF(BUILD_TARGET64)
 
 find_path(PCO_SDK_INCLUDE_DIR SC2_CamExport.h PATHS ${PCO_SDK_DIR} PATH_SUFFIXES include)
 
-IF(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_SC2_PCO_CONV AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
+IF(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
 
     #################################################################
     # General settings and preprocessor settings
@@ -214,10 +212,12 @@ IF(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_SC2_PCO_CONV AND PCO_SDK_LIBRARY AND PCO_SDK_
     # if you want to link against one library whose directory is already added to LINK_DIRECTORIES above
     # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${PCO_SDK_SC2_CAM_LIB} ${PCO_SDK_SC2_PCO_CONV})
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${PCO_SDK_SC2_CAM_LIB} delayimp)
     if (QT5_FOUND)
         qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
     endif (QT5_FOUND)
+
+	SET_TARGET_PROPERTIES(${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:SC2_Cam.dll")
 
     #################################################################
     # Plugin Translation
@@ -285,6 +285,6 @@ IF(PCO_SDK_SC2_CAM_LIB AND PCO_SDK_SC2_PCO_CONV AND PCO_SDK_LIBRARY AND PCO_SDK_
     # copy SC2_Cam.dll in itoms lib folder
     POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} PCO_SDK_LIBRARY)
 
-ELSE (PCO_SDK_SC2_CAM_LIB AND PCO_SDK_SC2_PCO_CONV AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
+ELSE (PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
     message(WARNING "PCO_SDK_DIR directory is not given or no valid pco.sdk directory. ${target_name} will not be build.")    
-ENDIF (PCO_SDK_SC2_CAM_LIB AND PCO_SDK_SC2_PCO_CONV AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)
+ENDIF (PCO_SDK_SC2_CAM_LIB AND PCO_SDK_LIBRARY AND PCO_SDK_INCLUDE_DIR)

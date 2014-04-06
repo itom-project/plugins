@@ -18,11 +18,11 @@
 
 #include "common/helperCommon.h"
 
-#include "PCO/include/PCO_errt.h"
+#include "PCO_errt.h"
 
 #include <QElapsedTimer>
 
-#pragma comment(linker, "/delayload:SC2_Cam.dll")
+//#pragma comment(linker, "/delayload:SC2_Cam.dll")
 
 //#include <qdebug.h>
 //#include <qmessagebox.h>
