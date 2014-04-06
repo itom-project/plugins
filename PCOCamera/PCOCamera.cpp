@@ -188,14 +188,15 @@ PCOCamera::PCOCamera() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Pixelsize in x (cols)").toAscii().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("First column within the region of interest (zero-based, x0 < x1)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("Pixelsize in y (rows)").toAscii().data());
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("First row within the region of interest (zero-based, y0 < y1)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Pixelsize in x (cols)").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Pixelsize in y (rows)").toAscii().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Last column within the region of interest (zero-based, x0 < x1)").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);    
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Last row within the region of interest (zero-based, y0 < y1)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 16, 16, 16, tr("Grabdepth of the images").toAscii().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 16, 16, 16, tr("bits per pixel").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     //paramVal = ito::Param("time_out", ito::ParamBase::Double , 0.1, 60.0, 2.0, tr("Timeout for acquiring images").toAscii().data());
     //m_params.insert(paramVal.getName(), paramVal);
@@ -646,7 +647,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                   _snprintf(name, 9, "PCO.????");
             }
             m_params["name"].setVal<char*>(name, (int)strlen(name));
-            m_identifier = QString("%1 (%2)").arg(name).arg( getID() );
+            setIdentifier(QString("%1 (%2)").arg(name).arg( getID() ));
         }
     }
     
