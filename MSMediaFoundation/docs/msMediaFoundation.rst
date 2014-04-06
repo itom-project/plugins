@@ -85,7 +85,17 @@ automatically adjusts the real parameters.
 
 Possible parameters are:
 
-**integrationTime**, **brightness**, **contrast**, **saturation**, **sharpness**, **hue**, **focus**, **gamma**, **iris**, **zoom**, **backlightCompensation**.
+* **integrationTime**
+* **brightness**
+* **contrast**
+* **saturation**
+* **sharpness**
+* **hue**
+* **focus**
+* **gamma**
+* **iris**
+* **zoom**
+* **backlightCompensation**.
 
 Each parameter not only has a minimum and maximum value but also a step size. All this is considered by their parameter, also having a specific step size.
 
@@ -101,5 +111,5 @@ The location of the installed Windows SDK is then automatically detected by CMak
 Affiliation
 ============
 
-This plugin internally uses a modified versionof VideoInput, proposed by Evgeny Pereguda and published under http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License).
+This plugin internally uses a modified version of VideoInput, proposed by Evgeny Pereguda and published under http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License).
 
