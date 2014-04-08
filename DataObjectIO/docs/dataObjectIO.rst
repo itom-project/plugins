@@ -1,25 +1,25 @@
 ===================
- OpenCV Filters
+ DataObjectIO
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`OpenCV-Filters`
-**Type**:       :plugintype:`OpenCV-Filters`
-**License**:    :pluginlicense:`OpenCV-Filters`
+**Summary**:    :pluginsummary:`DataObjectIO`
+**Type**:       :plugintype:`DataObjectIO`
+**License**:    :pluginlicense:`DataObjectIO`
 **Platforms**:  Windows, Linux
-**Author**:     :pluginauthor:`OpenCV-Filters`
+**Author**:     :pluginauthor:`DataObjectIO`
 =============== ========================================================================================================
   
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: OpenCV-Filters
+    :plugin: DataObjectIO
 
 These filters are defined in the plugin:
 
 .. pluginfilterlist::
-    :plugin: OpenCV-Filters
+    :plugin: DataObjectIO
     :overviewonly:
 
 Filters
@@ -28,5 +28,5 @@ Filters
 Detailed overview about all defined filters:
     
 .. pluginfilterlist::
-    :plugin: OpenCV-Filters
+    :plugin: DataObjectIO
 

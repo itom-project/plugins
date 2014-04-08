@@ -72,9 +72,9 @@ QCamInterface::QCamInterface() : AddInInterfaceBase()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char* docstring = \
-"...";
-	m_detaildescription = QObject::tr(docstring);
-	m_author            = "M. Holtom, College of Eng., Swansea University; M. Gronle, ITO, University Stuttgart";
+"This plugin is currently under development.";
+    m_detaildescription = QObject::tr(docstring);
+    m_author            = "M. Holtom, College of Eng., Swansea University; M. Gronle, ITO, University Stuttgart";
     m_license           = QObject::tr("itom-plugin under LGPL / QCam driver under ???");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;

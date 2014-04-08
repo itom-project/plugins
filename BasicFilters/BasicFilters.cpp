@@ -45,10 +45,11 @@ BasicFiltersInterface::BasicFiltersInterface()
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
 "This plugin provides several basic filter calculations for itom::dataObject. These are for instance: \n\
-- merging of planes\n\
-- swap byte order of objects \n\
-- resample slices from dataObjects \n\
-- mean value filter along axis \n\
+\n\
+* merging of planes\n\
+* swap byte order of objects \n\
+* resample slices from dataObjects \n\
+* mean value filter along axis \n\
 \n\
 This plugin does not have any unusual dependencies.";
 

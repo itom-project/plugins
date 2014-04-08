@@ -84,11 +84,12 @@ OpenCVFiltersInterface::OpenCVFiltersInterface()
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
 "This plugin provides wrappers for various OpenCV algorithms. These are for instance: \n\
-- morphological filters (dilation, erosion) \n\
-- image filtering (blur, median blur...) \n\
-- 1d and 2d fft and ifft \n\
-- histogram determination \n\
-- feature detections (circles, chessboard corners...) \n\
+\n\
+* morphological filters (dilation, erosion) \n\
+* image filtering (blur, median blur...) \n\
+* 1d and 2d fft and ifft \n\
+* histogram determination \n\
+* feature detections (circles, chessboard corners...) \n\
 \n\
 This plugin not only requires access to the core library of OpenCV but also to further libraries like \
 imgproc and calib3d.";
