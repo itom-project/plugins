@@ -102,8 +102,7 @@ Please install first the necessary drivers for the camera and grabber board from
 drivers. The driver with major version 1 only supports Windows, 32bit operating systems, while the new driver version 2 also operates \
 on 64bit Windows systems.";
     m_detaildescription = QObject::tr(docstring);
-
-    m_detaildescription = QObject::tr("Developed for Windows only. Tested with PixelFlyQE.");
+    
     m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;

@@ -82,7 +82,16 @@ PCOCameraInterface::PCOCameraInterface()
     setObjectName("PCOCamera");
 
     m_description = QObject::tr("DLL for PCO-Cameras");
-    m_detaildescription = QObject::tr("The PCOCamera is a Plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000, with ito itom.");
+    
+    char docstring[] = \
+"The PCOCamera is a Plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000, with ito itom. \n\
+\n\
+For compiling this plugin, set the CMake variable **PCO_SDK_DIR** to the base directory of the pco.sdk. \n\
+The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). \n\
+Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board.";
+
+    m_detaildescription = QObject::tr(docstring);
+    
     m_author = "W. Lyda, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
