@@ -85,6 +85,7 @@ PCOCameraInterface::PCOCameraInterface()
     
     char docstring[] = \
 "The PCOCamera is a Plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000, with ito itom. \n\
+This plugin has for instance be tested with the camera PCO.1300. \n\
 \n\
 For compiling this plugin, set the CMake variable **PCO_SDK_DIR** to the base directory of the pco.sdk. \n\
 The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). \n\

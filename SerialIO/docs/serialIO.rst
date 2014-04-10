@@ -150,6 +150,20 @@ the size of the allocated buffer *ba*. If the serial port does not respond at al
 *getVal* does not wait until the entire buffer is filled or the timeout occurs but returns immediately with the content of the buffer that
 has been filled until this time. In order to get the full answer, it is also possible to repeatedly call *getVal*.
 
+Clear input or output buffer
+============================
+
+Sometimes, it is necessary to immediately clear all characters inside of the input buffer (obtained by *getVal*) and/or output buffer (send by *setVal*). This can be done using specific **exec**-functions:
+
+.. code-block:: python
+    
+    serial.exec("clearInputBuffer") #clear input buffer
+    serial.exec("clearOutputBuffer") #clear output buffer
+    
+    #alternative:
+    serial.exec("clearBuffer", 0) #clear input buffer
+    serial.exec("clearBuffer", 1) #clear output buffer
+
 Installation
 ============
 
@@ -163,7 +177,5 @@ your user to the **dialout** group, logout once and login again.
     sudo adduser USERNAME dialout
 
 where USERNAME ist the username under which you are running **itom**
-
-	
 
 
