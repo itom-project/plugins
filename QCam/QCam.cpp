@@ -113,7 +113,7 @@ QCam::QCam() :
 
     paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Integration time of CCD programmed in s").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain").toAscii().data());
+	paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Offset").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -122,13 +122,13 @@ QCam::QCam() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("first pixel of ROI in y-direction").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1391, 0, tr("last pixel of ROI in x-direction").toAscii().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1391, 1391, tr("last pixel of ROI in x-direction").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1023, 0, tr("last pixel of ROI in y-direction").toAscii().data());
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1023, 1023, tr("last pixel of ROI in y-direction").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1920, 1024, tr("width of ROI").toAscii().data());
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1340, 1040, tr("width of ROI").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1920, 1024, tr("height of ROI").toAscii().data());
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1340, 1040, tr("height of ROI").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 8, tr("bit depth per pixel").toAscii().data());
@@ -258,8 +258,8 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 		QCam_GetInfo( m_camHandle, qinfImageWidth, &width );
                 
 		QCam_GetParam64(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_time);
-                QCam_GetParam64Max(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_timeMax);
-                QCam_GetParam64Min(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_timeMin);
+        QCam_GetParam64Max(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_timeMax);
+        QCam_GetParam64Min(&m_camSettings, qprm64Exposure, (unsigned long long *)&integ_timeMin);
 		integration_time = double(integ_time)/1e9;
 
 		paramMeta = (ito::IntMeta*)(m_params["x0"].getMeta());
