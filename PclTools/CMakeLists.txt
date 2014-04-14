@@ -25,9 +25,8 @@ find_package(ITOM_SDK REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets LinguistTools)
 
-find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
-
 IF(ITOM_SDK_PCL_SUPPORT)
+    find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
     find_package(OpenCV REQUIRED)
     find_package(VTK QUIET)
     
