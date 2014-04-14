@@ -33,9 +33,9 @@
 #define PLUGIN_VERSION_PATCH 1
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION_STRING "0.0.1"
-#define PLUGIN_COMPANY        "Institut fuer Technische Optik, University Stuttgart"
-#define PLUGIN_COPYRIGHT      "(C) 2013, ITO, University Stuttgart"
-#define PLUGIN_NAME           "SerialIO"
+#define PLUGIN_COMPANY        "twip optical solutions GmbH, Stuttgart"
+#define PLUGIN_COPYRIGHT      "(C) 2014, twip GmbH, Stuttgart"
+#define PLUGIN_NAME           "3dConnexion"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

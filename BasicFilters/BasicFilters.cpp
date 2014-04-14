@@ -37,59 +37,19 @@
 int NTHREADS = 2;
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal BasicFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
-{
-    BasicFilters* newInst = new BasicFilters();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    //fill basePlugin-pointer of every registered filter
-    QHashIterator<QString, ito::AddInAlgo::FilterDef *> i(newInst->m_filterList);
-    while (i.hasNext()) 
-    {
-        i.next();
-        i.value()->m_pBasePlugin = this;
-    }
-
-    //fill basePlugin-pointer of every registered algo widget
-    QHashIterator<QString, ito::AddInAlgo::AlgoWidgetDef *> j(newInst->m_algoWidgetList);
-    while (j.hasNext()) 
-    {
-        j.next();
-        j.value()->m_pBasePlugin = this;
-    }
-    
-    m_InstList.append(*addInInst);
-
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal BasicFiltersInterface::closeThisInst(ito::AddInBase **addInInst)
-{
-    if (*addInInst)
-    {
-        delete ((BasicFilters *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-    }
-
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 BasicFiltersInterface::BasicFiltersInterface()
 {
     m_type = ito::typeAlgo;
-    setObjectName("Basic Filters");
+    setObjectName("BasicFilters");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
 "This plugin provides several basic filter calculations for itom::dataObject. These are for instance: \n\
-- merging of planes\n\
-- swap byte order of objects \n\
-- resample slices from dataObjects \n\
-- mean value filter along axis \n\
+\n\
+* merging of planes\n\
+* swap byte order of objects \n\
+* resample slices from dataObjects \n\
+* mean value filter along axis \n\
 \n\
 This plugin does not have any unusual dependencies.";
 
@@ -110,8 +70,21 @@ This plugin does not have any unusual dependencies.";
 //----------------------------------------------------------------------------------------------------------------------------------
 BasicFiltersInterface::~BasicFiltersInterface()
 {
-    m_initParamsMand.clear();
-    m_initParamsOpt.clear();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal BasicFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
+{
+    NEW_PLUGININSTANCE(BasicFilters)
+    REGISTER_FILTERS_AND_WIDGETS
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal BasicFiltersInterface::closeThisInst(ito::AddInBase **addInInst)
+{
+    REMOVE_PLUGININSTANCE(BasicFilters)
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -155,7 +128,20 @@ const char* BasicFilters::calcMeanOverZDoc= "Calculate meanValue of a 3D-Object 
 //----------------------------------------------------------------------------------------------------------------------------------
 const char* BasicFilters::calcObjSliceDoc= "Interpolate 1D-slice from along the defined line from a 2D-Object. \n\
 \n";
-
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* BasicFilters::clipValueDoc = "clip values outside or inside of minValue and maxValue to newValue (default = 0) \n\
+\n\
+Depending on the parameter 'insideFlag', this filter sets all values within (1) or outside (0) of the range (minValue, maxValue) to \
+the value given by 'newValue'. In both cases the range boundaries are not clipped and replaced. If clipping is executed outside of range, \
+NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.";
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* BasicFilters::clipAbyBDoc = "clip values of image A to newValue (default = 0) outside or inside of minValue and maxValue in image B \n\
+\n\
+Depending on the parameter 'insideFlag', this filter sets all values in image A depending on image B within (1) or outside (0) of the range (minValue, maxValue) to \
+the value given by 'newValue'. In both cases the range boundaries are not clipped and replaced. If clipping is executed outside of range, \
+NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.";
+//----------------------------------------------------------------------------------------------------------------------------------
+const char *BasicFilters::calcHistDoc = "calculates histgram of real input data object";
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
 {
@@ -175,6 +161,15 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     m_filterList.insert("calcMeanZ", filter);
     filter = new FilterDef(BasicFilters::calcObjSlice, BasicFilters::calcObjSliceParams, tr(calcObjSliceDoc));
     m_filterList.insert("calcObjSlice", filter);
+
+    filter = new FilterDef(BasicFilters::calcHistFilter, BasicFilters::calcHistParams, tr(calcHistDoc));
+    m_filterList.insert("calcHist", filter);
+
+    filter = new FilterDef(BasicFilters::clipValueFilter, BasicFilters::clipValueFilterParams, tr(clipValueDoc));
+    m_filterList.insert("clipValues", filter);
+
+    filter = new FilterDef(BasicFilters::clipAbyBFilter, BasicFilters::clipAbyBFilterParams, tr(clipAbyBDoc));
+    m_filterList.insert("clipAbyB", filter);
 
     filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("Set each pixel to the lowest value within the kernel (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("lowValueFilter", filter);

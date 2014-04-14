@@ -73,7 +73,7 @@ class GWInstekPSP : public ito::AddInDataIO
 
         const ito::RetVal SetParams();
         const ito::RetVal ReadFromSerial(bool *state);
-        const ito::RetVal WriteToSerial(const char *text);
+        const ito::RetVal WriteToSerial(const char *text, bool commandHasAnswer, bool getCurrentStatus = true);
         static void doNotDelSharedPtr(char * /*ptr*/) {} /*!<workaround for deleter for QSharedPointer, such that the pointer is NOT deleted if shared-pointer's reference drops towards zero.*/
 
     public slots:
@@ -86,7 +86,9 @@ class GWInstekPSP : public ito::AddInDataIO
         ito::RetVal close(ItomSharedSemaphore *waitConde = NULL);
 
         ito::RetVal getVal(char *data, int *len, ItomSharedSemaphore *waitCond);
-        ito::RetVal setVal(const void *data, const int length, ItomSharedSemaphore *waitCond);
+        ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond);
+
+        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
 
     private slots:
 };
@@ -98,8 +100,6 @@ class GWInstekPSP : public ito::AddInDataIO
   *\brief    Interface-Class for GWInstekPSPInterface-Class
   *
   *    \sa    AddInActuator, GWInstekPSP
-  *    \date    11.10.2010
-  *    \author    Wolfram Lyda
   * \warning    NA
   *
   */

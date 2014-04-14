@@ -21,38 +21,16 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-set (QT5_FOUND FALSE)
-if (CMAKE_VERSION VERSION_GREATER 2.8.7)
-    if (POLICY CMP0020)
-        cmake_policy(SET CMP0020 NEW)
-    endif (POLICY CMP0020)
-    
-    if (WIN32)
-        find_package(WindowsSDK REQUIRED)
-        set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
-        set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
-    endif (WIN32)
-    find_package(Qt5 COMPONENTS Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools QUIET)
-
-    if (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-        set(QT5_FOUND TRUE)
-        set(CMAKE_AUTOMOC ON)
-    endif (NOT ${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
-endif (CMAKE_VERSION VERSION_GREATER 2.8.7)
-if (NOT QT5_FOUND)
-    find_package(Qt4 REQUIRED)
-endif (NOT QT5_FOUND)
-find_package(OpenCV REQUIRED)
 find_package(ITOM_SDK REQUIRED)
+include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
+find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
 find_package(LibUSB QUIET)
 
 #FIND_PATH( LIBUSB_INC_DIR libusb.h CACHE PATH "Include directory of libUSB static include directory")
 
 IF(LibUSB_FOUND)
-
-    include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-
     ADD_DEFINITIONS(${QT_DEFINITIONS})
     IF (BUILD_UNICODE)
         ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
@@ -166,6 +144,8 @@ IF(LibUSB_FOUND)
         endif (QT5_FOUND)
     endif (UPDATE_TRANSLATIONS)
     #handle translations END STEP 2
+    
+    PLUGIN_DOCUMENTATION(${target_name} libUSB)
 
     # COPY SECTION
     set(COPY_SOURCES "")

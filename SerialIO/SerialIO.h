@@ -42,7 +42,7 @@ class SerialPort
                 stopbits(1),
                 flow(0),
                 debug(0),
-                singlechar(0),
+                sendDelay(0),
                 timeout(4000) { endline[0] = '\n'; endline[1] = 0; endline[2] = 0; }
             char port;
             int baud;
@@ -52,7 +52,7 @@ class SerialPort
             char flow;
             char endline[3];
             char debug;
-            int singlechar;
+            int sendDelay;
             int timeout;
         };
         serParams m_serParams;
@@ -65,17 +65,16 @@ class SerialPort
 #endif
 
     public:
+        enum PortType { COM, TTYS, TTYUSB }; //COM is for windows, TTYS is a serial port on linux, TTYUSB is a usb-serial port on linux
         SerialPort() : m_pDevice(0), m_dev(0) {}
-        const ito::RetVal sopen(const int port, const int baud, const char* endline, const int bits,
-            const int stopbits, const int parity, const int flow, const int singlechar, const int timeout);
+        const ito::RetVal sopen(const int port, const int baud, const char* endline, const int bits, const int stopbits, const int parity, const int flow, const int sendDelay, const int timeout, PortType &portType);
         const ito::RetVal sclose(void);
-        const ito::RetVal sread(char *buf, int *len, const int singlechar);
+        const ito::RetVal sread(char *buf, int *len, const int sendDelay);
         int sreadable(void) const;
         const ito::RetVal swrite(const char c) const;
-        const ito::RetVal swrite(const char *buf, const int len, const int singlechar) const;
+        const ito::RetVal swrite(const char *buf, const int len, const int sendDelay) const;
         const ito::RetVal setparams(const serParams &params);
-        const ito::RetVal setparams(const int baud, const char* endline, const int bits = 8, 
-            const int stopbits = 0, const int parity = 0, const int flow = 0, const int singlechar = 0, const int timeout = 4000);
+        const ito::RetVal setparams(const int baud, const char* endline, const int bits = 8, const int stopbits = 0, const int parity = 0, const int flow = 0, const int sendDelay = 0, const int timeout = 4000);
         int isOpen() { return m_dev != 0 ? 1 : 0; }
         const ito::RetVal sclearbuffer(int BufferType);
         const ito::RetVal getendline(char *eline);
@@ -124,7 +123,7 @@ class SerialIO : public ito::AddInDataIO //, public DummyGrabberInterface
         ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getVal(QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setVal(const void *data, const int length, ItomSharedSemaphore *waitCond);
+        ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond);
 
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
 

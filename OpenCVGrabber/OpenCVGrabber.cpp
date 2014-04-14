@@ -278,7 +278,7 @@ Some supported cameras are only available if OpenCV is compiled with their suppo
     
     m_callInitInNewThread = false; //camera must be opened in main-thread
 
-    ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 16, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
+    ito::Param paramVal = ito::Param("cameraNumber", ito::ParamBase::Int, 0, 999, 0, tr("consecutive number of the connected camera (starting with 0, default)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toLatin1().data());
@@ -456,21 +456,32 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
 ito::RetVal OpenCVGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
     QMap<QString,ito::Param>::iterator it;
-    ito::RetVal retValue = apiGetParamFromMapByKey(m_params, val->getName(), it, false);
+
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
+    {
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
+    }
 
     if(!retValue.containsError())
     {
         *val = it.value();
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

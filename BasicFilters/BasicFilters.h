@@ -67,10 +67,6 @@ class BasicFiltersInterface : public ito::AddInInterfaceBase
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
-
-    signals:
-
-    public slots:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -101,6 +97,9 @@ class BasicFilters : public ito::AddInAlgo
         static const char* mergeColorPlaneDoc;
         static const char* calcMeanOverZDoc;
         static const char* calcObjSliceDoc;
+        static const char* clipValueDoc;
+        static const char* calcHistDoc;
+        static const char* clipAbyBDoc;
 
         static ito::RetVal replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal replaceInfAndNaNParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
@@ -108,6 +107,14 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal flaten3Dto2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< Combine 3 dataObjects by highest contrast of modulation maps */
         static ito::RetVal swapByteOrder(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);    /** Simply swap current byte order */
 
+        static ito::RetVal calcHistParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                      /**< Get the standard IO-Parameters histogramm-filter */
+        static ito::RetVal calcHistFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);/**< This function calucaltes a histogramm for every cvMat int the input dataObject  */        
+
+        static ito::RetVal clipValueFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/);
+        static ito::RetVal clipValueFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut);
+
+        static ito::RetVal clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/);
+        static ito::RetVal clipAbyBFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut);
 
         static ito::RetVal mergeColorPlanesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
         static ito::RetVal mergeColorPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);        /**< Combine 3 object planes to a single uint32 object*/

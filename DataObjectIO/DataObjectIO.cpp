@@ -975,13 +975,13 @@ ito::RetVal DataObjectIO::saveNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("decimalSigns",ito::ParamBase::Int | ito::ParamBase::In, 0, 12, 3, tr("Number of decimal signs (default: 3).").toLatin1().data());
+        param = ito::Param("decimalSigns",ito::ParamBase::Int | ito::ParamBase::In, 0, 12, 3, tr("Number of decimal signs (default: 3). For MountainsMaps reduce total number of digits to 5").toLatin1().data());
         paramsOpt->append(param);
         param = ito::Param("verticalScale",ito::ParamBase::Int | ito::ParamBase::In, -12, 12, -3, tr("Power of 10 for the zValue (Default: -3, micrometer), only for floating point objects.").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("invalidHandling",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Toggles NaN handling if dataObject is floating-type. 0: Write NaN (Default); 1: Substitut by InvalidValue.").toLatin1().data());
+        param = ito::Param("invalidHandling",ito::ParamBase::Int | ito::ParamBase::In, 0, 3, 0, tr("Toggles NaN handling if dataObject is floating-type. 0: Write NaN (Default); 1: Skip Value, 2: Substitut by InvalidValue, 3: Substitute by BAD for MountainsMaps.").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("invalidValue",ito::ParamBase::Double | ito::ParamBase::In, 0.0, -1 * std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), tr("New value for invalid substitution. Default is 0.0").toLatin1().data());
+        param = ito::Param("invalidValue",ito::ParamBase::Double | ito::ParamBase::In, -1 * std::numeric_limits<double>::max(), std::numeric_limits<double>::max() , -42.0, tr("New value for invalid substitution. Default is 0.0").toLatin1().data());
         paramsOpt->append(param);
 
     }
@@ -1014,6 +1014,24 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 
     double verticalScale = pow(10.0, (*paramsOpt)[1].getVal<int>());
     int decimals = (*paramsOpt)[0].getVal<int>();
+    
+    int flags = DataObjectIO::invWrite;
+
+    switch((*paramsOpt)[2].getVal<int>())
+    {
+        default:
+        case DataObjectIO::invWrite:
+            break;
+        case DataObjectIO::invBAD:
+            flags = DataObjectIO::invBAD;
+            break;
+        case DataObjectIO::invChange:
+            flags = DataObjectIO::invChange;
+            break;
+        case DataObjectIO::invIgnor:
+            flags = DataObjectIO::invIgnor;
+            break;
+    }
 
     if(ret.containsWarningOrError())
     {
@@ -1210,31 +1228,33 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
         outLine = "\n";
         dataOut.write(outLine);
 
+        double newInvalidValue = (*paramsOpt)[3].getVal<double>() / verticalScale;
+
         switch(dObjSrc->getType())
         {
             case ito::tUInt8:
-                writeDataBlock<ito::uint8>(dataOut, dObjSrc, 1/verticalScale, decimals, 0, ' ');
+                writeDataBlock<ito::uint8>(dataOut, dObjSrc, 1/verticalScale, decimals, flags, ' ', newInvalidValue);
                 break;
             case ito::tUInt16:
-                writeDataBlock<ito::uint16>(dataOut, dObjSrc, 1/verticalScale, decimals, 0, ' ');
+                writeDataBlock<ito::uint16>(dataOut, dObjSrc, 1/verticalScale, decimals, flags, ' ', newInvalidValue);
                 break;
             case ito::tUInt32:
-                writeDataBlock<ito::uint32>(dataOut, dObjSrc, 1/verticalScale, decimals, 0, ' ');
+                writeDataBlock<ito::uint32>(dataOut, dObjSrc, 1/verticalScale, decimals, flags, ' ', newInvalidValue);
                 break;
             case ito::tInt8:
-                writeDataBlock<ito::int8>(dataOut, dObjSrc, 1/verticalScale, decimals, 0, ' ');
+                writeDataBlock<ito::int8>(dataOut, dObjSrc, 1/verticalScale, decimals, flags, ' ', newInvalidValue);
                 break;
             case ito::tInt16:
-                writeDataBlock<ito::int16>(dataOut, dObjSrc, 1/verticalScale, decimals, 0, ' ');
+                writeDataBlock<ito::int16>(dataOut, dObjSrc, 1/verticalScale, decimals, flags, ' ', newInvalidValue);
                 break;
             case ito::tInt32:
-                writeDataBlock<ito::int32>(dataOut, dObjSrc, 1/verticalScale, decimals, 0, ' ');
+                writeDataBlock<ito::int32>(dataOut, dObjSrc, 1/verticalScale, decimals, flags, ' ', newInvalidValue);
                 break;
             case ito::tFloat32:
-                writeDataBlock<ito::float32>(dataOut, dObjSrc, 1/verticalScale, decimals, 0, ' ');
+                writeDataBlock<ito::float32>(dataOut, dObjSrc, 1/verticalScale, decimals, flags, ' ', newInvalidValue);
                 break;
             case ito::tFloat64:
-                writeDataBlock<ito::float64>(dataOut, dObjSrc, 1/verticalScale, decimals, 0, ' ');
+                writeDataBlock<ito::float64>(dataOut, dObjSrc, 1/verticalScale, decimals, flags, ' ', newInvalidValue);
                 break;
         }
 
@@ -1259,7 +1279,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 *    @param [in]     zscale      The zscale, will be multiplied with the extracted data
 *   @param [int]    flags       For later improvements, not used yet
 */
-template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator)
+template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator, const double nanValue)
 {
     ito::RetVal ret(ito::retOk);
 
@@ -1338,18 +1358,72 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
         }
         else
         {
-            for(y = 0; y < ysize; y ++)
+            switch((flags & invHandlingMask))
             {
-                p_Dst = dstMat->ptr<_Tp>(y);
-                curLine.clear();
-                for(x = 0; x < xsize - 1; x ++)
+                default:
+                for(y = 0; y < ysize; y ++)
                 {
-                    curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
-                    curLine.append(seperator);
-                }
-                curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
-                curLine.append('\n');
-                outFile.write(curLine);
+                    p_Dst = dstMat->ptr<_Tp>(y);
+                    curLine.clear();
+                    for(x = 0; x < xsize - 1; x ++)
+                    {
+                        curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
+                        curLine.append(seperator);
+                    }
+                    curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
+                    curLine.append('\n');
+                    outFile.write(curLine);
+                } 
+                break;
+                case DataObjectIO::invIgnor:
+                for(y = 0; y < ysize; y ++)
+                {
+                    p_Dst = dstMat->ptr<_Tp>(y);
+                    curLine.clear();
+                    for(x = 0; x < xsize - 1; x ++)
+                    {
+                        if(ito::dObjHelper::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
+                        curLine.append(seperator);
+                    }
+                    if(ito::dObjHelper::isFinite<_Tp>(p_Dst[xsize - 1])) curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
+                    curLine.append('\n');
+                    outFile.write(curLine);
+                } 
+                break;
+                case DataObjectIO::invChange:
+                for(y = 0; y < ysize; y ++)
+                {
+                    p_Dst = dstMat->ptr<_Tp>(y);
+                    curLine.clear();
+                    for(x = 0; x < xsize - 1; x ++)
+                    {
+                        if(ito::dObjHelper::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
+                        else curLine.append(QByteArray::number(nanValue, 'f', decimals));
+                        curLine.append(seperator);
+                    }
+                    if(ito::dObjHelper::isFinite<_Tp>(p_Dst[xsize - 1])) curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
+                    else curLine.append(QByteArray::number(nanValue, 'f', decimals));
+                    curLine.append('\n');
+                    outFile.write(curLine);
+                } 
+                break;
+                case DataObjectIO::invBAD:
+                for(y = 0; y < ysize; y ++)
+                {
+                    p_Dst = dstMat->ptr<_Tp>(y);
+                    curLine.clear();
+                    for(x = 0; x < xsize - 1; x ++)
+                    {
+                        if(ito::dObjHelper::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
+                        else curLine.append("BAD");
+                        curLine.append(seperator);
+                    }
+                    if(ito::dObjHelper::isFinite<_Tp>(p_Dst[xsize - 1])) curLine.append(QByteArray::number(p_Dst[xsize - 1]*zScale, 'f', decimals));
+                    else curLine.append("BAD");
+                    curLine.append('\n');
+                    outFile.write(curLine);
+                } 
+                break;
             }
         }
     }

@@ -1,0 +1,71 @@
+/***************************************************************************
+ *   Copyright by Georg Wiora (NanoFocus AG) 2007                          *
+ *                                                                         *
+ *   This file is part of the openGPS (R)[TM] software library.            *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU Lesser General Public License (LGPL)    *
+ *   as published by the Free Software Foundation; either version 3 of     *
+ *   the License, or (at your option) any later version.                   *
+ *   for detail see the files "licence_LGPL-3.0.txt" and                   *
+ *   "licence_GPL-3.0.txt".                                                *
+ *                                                                         *
+ *   openGPS is distributed in the hope that it will be useful,            *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU Lesser General Public License for more details.                   *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+ *                                                                         *
+ *   The name "openGPS" and the logo are registered as                     *
+ *   European trade mark No. 006178354 for                                 *
+ *   Physikalisch Technische Bundesanstalt (PTB)                           *
+ *   http://www.ptb.de/                                                    *
+ *                                                                         *
+ *   More information about openGPS can be found at                        *
+ *   http://www.opengps.eu/                                                *
+ ***************************************************************************/
+
+/*! @addtogroup C 
+   @{ */
+
+
+/*! @file
+ * Include file generated from "Version.in" containing the current version
+ * 
+ * @author Georg Wiora
+ */
+ 
+#ifndef _OPENGPS_VERSION_H
+#define _OPENGPS_VERSION_H
+ 
+/// Major program version. This is increased manually in the release process
+#define _OPENGPS_VERSION 0
+/// Minor program revision. This is increased manually in the release process
+#define _OPENGPS_MINVERSION 3
+/// Build number is automatically incremented after each succesfull release build.
+#define _OPENGPS_BUILD     41
+/// Version or Version range, automatically extracted from SVN repository
+#define _OPENGPS_REVISION "$WCRANGE$"
+
+/// Date of highest revision
+#define _OPENGPS_REVISION_DATE "$WCDATE$"
+/// Build date
+#define _OPENGPS_BUILD_DATE "$WCNOW$"
+/// URL of project archive
+#define _OPENGPS_REPOSITORY_URL "$WCURL$"
+/// Warning message "Warning! Contains locally modified code!" or empty.
+#define _OPENGPS_CLEAN_BUILD $WCMODS?"Warning! Contains locally modified code!":$
+/// Warning message "Warning! Contains mixed revisions!" or empty
+#define _OPENGPS_CLEAN_REVISION $WCMIXED?"Warning! Contains mixed revisions!":$
+
+/// 0 if locally modified sources exist, 1 otherwise
+#define _OPENGPS_CLEAN_BUILD_FLAG $WCMODS?0:1$
+/// 0 if it contains mixed revisions, 1 otherwise
+#define _OPENGPS_CLEAN_REVISION_FLAG $WCMIXED?0:1$
+
+// End ifdef _OPENGPS_VERSION_H
+#endif
+
+/*! @} */

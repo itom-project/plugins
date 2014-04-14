@@ -63,6 +63,15 @@ class Ximea : public ito::AddInGrabber
         ito::RetVal setXimeaParam(const char *paramName, int newValue);
 
     private:
+
+        enum grabState
+        {
+            grabberStopped = 0x00,
+            grabberRunning = 0x01,
+            grabberGrabbed = 0x02,
+            grabberGrabError = 0x04
+        };
+
         ito::RetVal LoadLib();
         ito::RetVal getErrStr(const int error);
         int m_numDevices;
@@ -74,7 +83,7 @@ class Ximea : public ito::AddInGrabber
         HANDLE m_handle;
 #endif
         int m_isgrabbing;
-
+        ito::RetVal m_acqRetVal;
     signals:
         //void parametersChanged(QMap<QString, ito::Param> params);    /*! Signal send changed or all parameters to listeners */
 

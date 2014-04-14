@@ -72,12 +72,18 @@ if (PLUGIN_FittingFilters)
 endif (PLUGIN_FittingFilters)
 
 # FireGrabber
-IF (WIN32)
-    OPTION(PLUGIN_FireGrabber "Build with this plugin." ON)
-    if (PLUGIN_FireGrabber)
-        ADD_SUBDIRECTORY(FireGrabber)
-    endif (PLUGIN_FireGrabber)
-ENDIF (WIN32)
+OPTION(PLUGIN_FireGrabber "Build with this plugin." ON)
+if (PLUGIN_FireGrabber)
+    ADD_SUBDIRECTORY(FireGrabber)
+endif (PLUGIN_FireGrabber)
+
+# GenICam
+#IF (WIN32)
+#    OPTION(PLUGIN_GenICam "Build with this plugin." OFF)
+#    if (PLUGIN_GenICam)
+#        ADD_SUBDIRECTORY(GenICam)
+#    endif (PLUGIN_GenICam)
+#ENDIF (WIN32)
 
 # GWInstekPSP
 OPTION(PLUGIN_GWInstekPSP "Build with this plugin." ON)
@@ -103,6 +109,14 @@ if (PLUGIN_LIBUSB)
     ADD_SUBDIRECTORY(LibUSB)
 endif (PLUGIN_LIBUSB)
 
+IF(WIN32)
+# MSMediaFoundation
+OPTION(PLUGIN_MSMediaFoundation "Build with this plugin." ON)
+if (PLUGIN_MSMediaFoundation)
+    ADD_SUBDIRECTORY(MSMediaFoundation)
+endif (PLUGIN_MSMediaFoundation)
+ENDIF(WIN32)
+
 # OpenCVFilters
 OPTION(PLUGIN_OpenCVFilters "Build with this plugin." ON)
 if (PLUGIN_OpenCVFilters)
@@ -114,6 +128,20 @@ OPTION(PLUGIN_OpenCVGrabber "Build with this plugin." ON)
 if (PLUGIN_OpenCVGrabber)
     ADD_SUBDIRECTORY(OpenCVGrabber)
 endif (PLUGIN_OpenCVGrabber)
+
+# PclTools
+OPTION(PLUGIN_PclTools "Build with this plugin." ON)
+if (PLUGIN_PclTools)
+  ADD_SUBDIRECTORY(PclTools)
+endif (PLUGIN_PclTools)
+
+# PCOCamera
+IF (WIN32)
+  OPTION(PLUGIN_PCOCamera "Build with this plugin." ON)
+  if (PLUGIN_PCOCamera)
+      ADD_SUBDIRECTORY(PCOCamera)
+  endif (PLUGIN_PCOCamera)
+ENDIF (WIN32)
 
 # PCOPixelFly
 IF (WIN32)
@@ -157,6 +185,14 @@ IF (WIN32)
     endif (PLUGIN_USBMotion3XIII)
 ENDIF (WIN32)
 
+# V4L2
+IF (UNIX)
+    OPTION(PLUGIN_V4L2 "Build with this plugin." ON)
+    if (PLUGIN_V4L2)
+        ADD_SUBDIRECTORY(V4L2)
+    endif (PLUGIN_V4L2)
+ENDIF (UNIX)
+
 # Vistek
 IF (WIN32)
     OPTION(PLUGIN_Vistek "Build with this plugin." ON)
@@ -170,3 +206,9 @@ OPTION(PLUGIN_XIMEA "Build with this plugin." ON)
 if (PLUGIN_XIMEA)
     ADD_SUBDIRECTORY(Ximea)
 endif (PLUGIN_XIMEA)
+
+# x3pio
+OPTION(PLUGIN_x3pio "Build with this plugin." ON)
+if (PLUGIN_x3pio)
+    ADD_SUBDIRECTORY(x3pio)
+endif (PLUGIN_x3pio)

@@ -27,8 +27,6 @@
 * \brief In this file the class of the modal dialog for the AerotechEnsemble are specified
 *
 *\sa dialogAerotechEnsemble, AerotechEnsemble
-*\author Wolfram Lyda
-*\date    Oct2011
 */
 
 #include "common/sharedStructures.h"

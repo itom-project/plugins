@@ -20,14 +20,11 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-/**\file dockWidgetDummyMotor.cpp
-* \brief In this file the functions of the non modal dialog for the DummyMotor are specified
+/**\file dockWidgetUSBMotion3XIII.cpp
+* \brief In this file the functions of the non modal dialog for the USBMotion3XIII are specified
 *
-*    This file defines the functions of the DockWidgetDummyMotor-Class defined in the file "dockWidgetDummyMotor.h"
+*    This file defines the functions of the DockWidgetDummyMotor-Class defined in the file "dockWidgetUSBMotion3XIII.h"
 * 
-*\sa dockWidgetDummyMotor, DummyMotor
-*\author Wolfram Lyda
-*\date    Oct2011
 */
 
 #include "dockWidgetUSBMotion3XIII.h"

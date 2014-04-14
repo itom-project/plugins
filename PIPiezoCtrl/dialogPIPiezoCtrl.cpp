@@ -45,9 +45,9 @@ void DialogPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
 {
 //    QString temp;
     setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-    ui.lblDevice1->setText( params["ctrlType"].getVal<char*>() );
-    ui.lblDevice2->setText( params["ctrlName"].getVal<char*>() );
-    ui.lblPiezo->setText( params["piezoName"].getVal<char*>() );
+    ui.lblDevice1->setText(params["ctrlType"].getVal<char*>());
+    ui.lblDevice2->setText(params["ctrlName"].getVal<char*>());
+    ui.lblPiezo->setText(params["piezoName"].getVal<char*>());
 
     bool hasMode = params["hasLocalRemote"].getVal<int>() > 0;
     ui.comboMode->setVisible(hasMode);
@@ -62,17 +62,17 @@ void DialogPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
         ui.comboMode->setCurrentIndex(0);
     }
 
-    ui.checkAsync->setChecked( params["async"].getVal<int>() > 0 );
-    ui.dblSpinPosLimitHigh->setValue( params["posLimitHigh"].getVal<double>() * 1000 );
-    ui.dblSpinPosLimitLow->setValue( params["posLimitLow"].getVal<double>() * 1000 );
+    ui.checkAsync->setChecked(params["async"].getVal<int>() > 0);
+    ui.dblSpinPosLimitHigh->setValue(params["posLimitHigh"].getVal<double>() * 1000);
+    ui.dblSpinPosLimitLow->setValue(params["posLimitLow"].getVal<double>() * 1000);
 
     ui.spinDelayOffset->setMinimum(0);
-    ui.spinDelayOffset->setMaximum( params["delayOffset"].getMax() * 1000 );
-    ui.spinDelayOffset->setValue( params["delayOffset"].getVal<double>() * 1000 );
+    ui.spinDelayOffset->setMaximum(params["delayOffset"].getMax() * 1000);
+    ui.spinDelayOffset->setValue(params["delayOffset"].getVal<double>() * 1000);
 
     ui.spinDelayProp->setMinimum(0);
-    ui.spinDelayProp->setMaximum( params["delayProp"].getMax() * 1000 );
-    ui.spinDelayProp->setValue( params["delayProp"].getVal<double>() );
+    ui.spinDelayProp->setMaximum(params["delayProp"].getMax() * 1000);
+    ui.spinDelayProp->setValue(params["delayProp"].getVal<double>());
 
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
@@ -101,40 +101,40 @@ ito::RetVal DialogPIPiezoCtrl::sendParameters()
 
     //only send parameters which are changed
 
-    double v = ui.comboMode->currentIndex() > 0 ? 1.0 : 0.0;
-    if (m_actualParameters["local"].getVal<double>() != v)
+    int i = ui.comboMode->currentIndex() > 0 ? 1 : 0;
+    if (m_actualParameters["local"].getVal<int>() != i)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("local", ito::ParamBase::Int, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("local", ito::ParamBase::Int, i)));
     }
     
-    v = ui.checkAsync->isChecked() ? 1.0 : 0.0;
-    if (m_actualParameters["async"].getVal<double>() != v)
+    i = ui.checkAsync->isChecked() ? 1 : 0;
+    if (m_actualParameters["async"].getVal<int>() != i)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("async", ito::ParamBase::Int, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, i)));
     }
 
-    v = ui.dblSpinPosLimitHigh->value() / 1000.0;
+    double v = ui.dblSpinPosLimitHigh->value() / 1000.0;
     if (m_actualParameters["posLimitHigh"].getVal<double>() != v)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("posLimitHigh", ito::ParamBase::Double, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("posLimitHigh", ito::ParamBase::Double, v)));
     }
 
     v = ui.dblSpinPosLimitLow->value() / 1000.0;
     if (m_actualParameters["posLimitLow"].getVal<double>() != v)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("posLimitLow", ito::ParamBase::Double, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("posLimitLow", ito::ParamBase::Double, v)));
     }
 
     v = ui.spinDelayOffset->value() / 1000.0;
     if (m_actualParameters["delayOffset"].getVal<double>() != v)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("delayOffset", ito::ParamBase::Double, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayOffset", ito::ParamBase::Double, v)));
     }
 
     v = ui.spinDelayProp->value();
     if (m_actualParameters["delayProp"].getVal<double>() != v)
     {
-        values.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("delayProp", ito::ParamBase::Double, v) ) );
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayProp", ito::ParamBase::Double, v)));
     }
 
     if (m_pPIPiezo)
@@ -142,7 +142,7 @@ ito::RetVal DialogPIPiezoCtrl::sendParameters()
         if (values.size() > 0)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(m_pPIPiezo, "setParamVector", Q_ARG( const QVector< QSharedPointer<ito::ParamBase> >, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(m_pPIPiezo, "setParamVector", Q_ARG(const QVector< QSharedPointer<ito::ParamBase> >, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
             while(!success)
             {
@@ -150,7 +150,10 @@ ito::RetVal DialogPIPiezoCtrl::sendParameters()
                 {
                     success = true;
                 }
-                if (!m_pPIPiezo->isAlive()) break;
+                if (!m_pPIPiezo->isAlive())
+                {
+                    break;
+                }
             }
 
             if (!success)
@@ -165,7 +168,6 @@ ito::RetVal DialogPIPiezoCtrl::sendParameters()
     }
 
     return retValue;
-
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -186,11 +188,11 @@ void DialogPIPiezoCtrl::on_buttonBox_clicked(QAbstractButton* btn)
         {
             QMessageBox msgBox(this);
             QString text = tr("Invalid parameter input");
-            msgBox.setText( text );
+            msgBox.setText(text);
             msgBox.setIcon(QMessageBox::Critical);
             if (retValue.errorMessage()) //if no error message indicates, this is NULL
             {
-                msgBox.setInformativeText( retValue.errorMessage() );
+                msgBox.setInformativeText(retValue.errorMessage());
             }
 
             msgBox.exec();
@@ -203,11 +205,11 @@ void DialogPIPiezoCtrl::on_buttonBox_clicked(QAbstractButton* btn)
             {
                 QMessageBox msgBox(this);
                 QString text = tr("Error while setting parameters of plugin.");
-                msgBox.setText( text );
+                msgBox.setText(text);
                 msgBox.setIcon(QMessageBox::Critical);
                 if (retValue.errorMessage()) //if no error message indicates, this is NULL
                 {
-                    msgBox.setInformativeText( retValue.errorMessage() );
+                    msgBox.setInformativeText(retValue.errorMessage());
                 }
 
                 msgBox.exec();

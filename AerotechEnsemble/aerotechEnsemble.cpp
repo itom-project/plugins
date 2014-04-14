@@ -1316,12 +1316,12 @@ ito::RetVal AerotechEnsemble::axisFaultToRetVal(int axisFault, int axisID)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
-ito::RetVal AerotechEnsemble::RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos)
+ito::RetVal AerotechEnsemble::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {
     ito::RetVal retValue(ito::retOk);
     retValue += doUpdatePosAndState(m_allAxesVector);
 
-    if (sendActPosition)
+    if (sendCurrentPos)
     {
         sendStatusUpdate(false);
     }
@@ -1347,7 +1347,7 @@ void AerotechEnsemble::dockWidgetVisibilityChanged(bool visible)
         {
             QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
             QObject::connect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
-            RequestStatusAndPosition(true, true);
+            requestStatusAndPosition(true, true);
         }
         else
         {

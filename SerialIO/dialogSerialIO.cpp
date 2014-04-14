@@ -162,14 +162,14 @@ int dialogSerialIO::setVals(QMap<QString, ito::Param> *params)
     int timeoutmax = (int)((*params)["timeout"].getMax() * 1000.0 + 0.5);
     ui.spinBox_timeout->setMaximum(timeoutmax);
 
-    int singlechar = (*params)["singlechar"].getVal<int>();
-    ui.checkBox_single->setChecked(singlechar);
+    int sendDelay = (*params)["sendDelay"].getVal<int>();
+    ui.spinBox_sendDelay->setValue(sendDelay);
 
     return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int dialogSerialIO::getVals(int &baud, char *endline, int &bits, int &stopbits, int &parity, unsigned int &flow, int &singlechar, double &timeout, bool &debug)
+int dialogSerialIO::getVals(int &baud, char *endline, int &bits, int &stopbits, int &parity, unsigned int &flow, int &sendDelay, double &timeout, bool &debug)
 {
     QVariant qvar;
 
@@ -209,7 +209,7 @@ int dialogSerialIO::getVals(int &baud, char *endline, int &bits, int &stopbits, 
 
     timeout = (double)ui.spinBox_timeout->value() / 1000.0;
 
-    singlechar = ui.checkBox_single->isChecked();
+    sendDelay = ui.spinBox_sendDelay->value();
 
     return 0;
 }
@@ -520,30 +520,63 @@ void dialogSerialIO::on_pushButtonSet_clicked()
     int stopbits;
     int parity;
     unsigned int flow;
-    int singlechar;
+    int sendDelay;
     double timeout;
     bool enableDebug;
     ito::RetVal ret;
     char endline[3] = {0, 0, 0};
 
     SerialIO *sio = (SerialIO *)m_psport;
-    getVals(baud, endline, bits, stopbits, parity, flow, singlechar, timeout, enableDebug);
+    getVals(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout, enableDebug);
 
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, endline)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, baud)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, bits)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, stopbits)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, parity)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, (int)flow)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("singlechar", ito::ParamBase::Int, singlechar)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("debug", ito::ParamBase::Int, enableDebug)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, endline)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, baud)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, bits)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, stopbits)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, parity)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, (int)flow)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sendDelay", ito::ParamBase::Int, sendDelay)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("debug", ito::ParamBase::Int, enableDebug)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void dialogSerialIO::on_pushButtonCreateCommand_clicked()
 {
     char txt[100];
+    int baud;
+    int bits;
+    int stopbits;
+    int parity;
+    unsigned int flow;
+    int sendDelay;
+    double timeout;
+    bool enableDebug;
+    ito::RetVal ret;
+    char endline[3] = {0, 0, 0};
+
+    SerialIO *sio = (SerialIO *)m_psport;
+    QMap<QString, ito::Param> *paramList = NULL;
+    sio->getParamList(&paramList);
+
+    getVals(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout, enableDebug);
+
+    char *deviceName = (*paramList)["name"].getVal<char*>(); //borrowed reference
+    sprintf(txt,
+            "dataIO(\"%s\",%d,%d,\"%s\",%d,%d,%d,%d,%d,%f)",
+            deviceName,
+            (*paramList)["port"].getVal<int>(),
+            baud,
+            endline,
+            bits,
+            stopbits,
+            parity,
+            flow,
+            sendDelay,
+            timeout);
+    ui.lineEditCommandStr->setText(txt);
+
+/*    char txt[100];
     char endline[5] = { 0, 0, 0, 0, 0 };
     SerialIO *sio = (SerialIO *)m_psport;
     QMap<QString, ito::Param> *paramList = NULL;
@@ -582,12 +615,12 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
             (*paramList)["stopbits"].getVal<int>(),
             (*paramList)["parity"].getVal<int>(),
             (*paramList)["flow"].getVal<int>(),
-            (*paramList)["singlechar"].getVal<int>(),
+            (*paramList)["sendDelay"].getVal<int>(),
             (*paramList)["timeout"].getVal<double>());
     ui.lineEditCommandStr->setText(txt);
 
 //    QClipboard *clipboard = QApplication::clipboard();
-//    clipboard->setText(txt);
+//    clipboard->setText(txt);*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -633,14 +666,14 @@ void dialogSerialIO::on_cancelButton_clicked()
 
     if (m_endline)
     {
-        ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, m_endline)));
+        ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, m_endline)));
     }
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, m_baud)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, m_bits)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, m_stopbits)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, m_parity)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, (int)m_flow)));
-    ret += sio->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, m_timeout)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, m_baud)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, m_bits)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, m_stopbits)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, m_parity)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, (int)m_flow)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, m_timeout)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

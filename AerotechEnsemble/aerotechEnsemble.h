@@ -120,7 +120,7 @@ class AerotechEnsemble : public ito::AddInActuator
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
 
         //! Emits status and position if triggered. Used form the dockingwidget
-        ito::RetVal RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos);
+        ito::RetVal requestStatusAndPosition(bool sendActPosition, bool sendTargetPos);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);

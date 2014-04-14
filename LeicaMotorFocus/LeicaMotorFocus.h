@@ -113,7 +113,7 @@ class LeicaMotorFocus : public ito::AddInActuator
         //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls LMFSetPos of axis[0]=0 && axis.size()=1 else ito::retError
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
         //! Emits status and position if triggered. Used form the dockingwidget
-        ito::RetVal RequestStatusAndPosition(bool sendActPosition, bool sendTargetPos);
+        ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);
 
     private slots:
         void dockWidgetVisibilityChanged( bool visible );

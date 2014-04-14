@@ -40,29 +40,79 @@
 *
 *\sa DummyMotor
 */
-DockWidgetDummyMotor::DockWidgetDummyMotor(QMap<QString, ito::Param> params, int uniqueID, ito::AddInActuator * myPlugin) :
-    m_pMyPlugin(myPlugin),
+DockWidgetDummyMotor::DockWidgetDummyMotor(int uniqueID, ito::AddInActuator * myPlugin) :
+    ito::AbstractAddInDockWidget(myPlugin),
     m_isVisible(false),
     m_numaxis(-1)
-{
-//    m_numaxis = params["numaxis"].getVal<int>();     
+{   
     ui.setupUi(this);
 
-    char* temp = params["name"].getVal<char*>(); //borrowed reference
-//    ui.lblName->setText(temp);
     ui.lblID->setText(QString::number(uniqueID));
 
-    CheckAxisNums(params);
+    m_btnRelDec.append(ui.pushButton_xm);
+    m_btnRelDec.append(ui.pushButton_ym);
+    m_btnRelDec.append(ui.pushButton_zm);
+    m_btnRelDec.append(ui.pushButton_am);
+    m_btnRelDec.append(ui.pushButton_bm);
+    m_btnRelDec.append(ui.pushButton_cm);
+    foreach(QPushButton* btn, m_btnRelDec)
+    {
+        connect(btn, SIGNAL(clicked()), this, SLOT(btnRelDecClicked()));
+    }
+
+    m_btnRelInc.append(ui.pushButton_xp);
+    m_btnRelInc.append(ui.pushButton_yp);
+    m_btnRelInc.append(ui.pushButton_zp);
+    m_btnRelInc.append(ui.pushButton_ap);
+    m_btnRelInc.append(ui.pushButton_bp);
+    m_btnRelInc.append(ui.pushButton_cp);
+    foreach(QPushButton* btn, m_btnRelInc)
+    {
+        connect(btn, SIGNAL(clicked()), this, SLOT(btnRelIncClicked()));
+    }
+
+    m_checkEnabled.append(ui.checkBox_enablex);
+    m_checkEnabled.append(ui.checkBox_enabley);
+    m_checkEnabled.append(ui.checkBox_enablez);
+    m_checkEnabled.append(ui.checkBox_enablea);
+    m_checkEnabled.append(ui.checkBox_enableb);
+    m_checkEnabled.append(ui.checkBox_enablec);
+    foreach(QCheckBox* btn, m_checkEnabled)
+    {
+        connect(btn, SIGNAL(clicked(bool)), this, SLOT(checkEnabledClicked(bool)));
+    }
+
+    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_x);
+    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_y);
+    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_z);
+    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_a);
+    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_b);
+    m_spinCurrentPos.append(ui.doubleSpinBox_actpos_c);
+
+    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_x);
+    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_y);
+    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_z);
+    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_a);
+    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_b);
+    m_spinTargetPos.append(ui.doubleSpinBox_tarpos_c);
+
+    m_labels.append(ui.label_xachse);
+    m_labels.append(ui.label_yachse);
+    m_labels.append(ui.label_zachse);
+    m_labels.append(ui.label_aachse);
+    m_labels.append(ui.label_bachse);
+    m_labels.append(ui.label_cachse);
+
     enableWidget(true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-/** @detail This Slot checks the axis-numbers and enables the corresponding GUI-elements
+/** @detail This Slot checks all parameters, checks the axis-numbers and enables the corresponding GUI-elements
 *
 *\param[in] params        m_params-Variable containg the parameters of the DummyMotor
 *
 */
-void  DockWidgetDummyMotor::CheckAxisNums(QMap<QString, ito::Param> params)
+void DockWidgetDummyMotor::parametersChanged(QMap<QString, ito::Param> params)
 {
     bool newNumaxis = m_numaxis != params["numaxis"].getVal<int>();
     if (newNumaxis)
@@ -73,40 +123,15 @@ void  DockWidgetDummyMotor::CheckAxisNums(QMap<QString, ito::Param> params)
         visibleWidget();
     }
 
-    ui.checkBox_enablex->setEnabled(m_numaxis > 0);
-    ui.checkBox_enablex->setChecked(m_numaxis > 0);
-    on_checkBox_enablex_clicked();
+    enableWidget(true);
 
-    ui.checkBox_enabley->setEnabled(m_numaxis > 1);
-    ui.checkBox_enabley->setChecked(m_numaxis > 1);
-    on_checkBox_enabley_clicked();
-
-    ui.checkBox_enablez->setEnabled(m_numaxis > 2);
-    ui.checkBox_enablez->setChecked(m_numaxis > 2);
-    on_checkBox_enablez_clicked();
-
-    ui.checkBox_enablea->setEnabled(m_numaxis > 3);
-    ui.checkBox_enablea->setChecked(m_numaxis > 3);
-    on_checkBox_enablea_clicked();
-
-    ui.checkBox_enableb->setEnabled(m_numaxis > 4);
-    ui.checkBox_enableb->setChecked(m_numaxis > 4);
-    on_checkBox_enableb_clicked();
-
-    ui.checkBox_enablec->setEnabled(m_numaxis > 5);
-    ui.checkBox_enablec->setChecked(m_numaxis > 5);
-    on_checkBox_enablec_clicked();
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-/** @detail This Slot checks all parameters, currently only calling CheckAxisNums
-*
-*\param[in] params        m_params-Variable containg the parameters of the DummyMotor
-*
-*/
-void DockWidgetDummyMotor::valuesChanged(QMap<QString, ito::Param> params)
-{
-     CheckAxisNums(params);
+    for (int i = 0; i < m_checkEnabled.size(); i++)
+    {
+        m_checkEnabled[i]->setChecked(m_numaxis > i);
+        m_btnRelDec[i]->setEnabled(m_numaxis > i);
+        m_btnRelInc[i]->setEnabled(m_numaxis > i);
+        m_spinTargetPos[i]->setEnabled(m_numaxis > i);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -114,188 +139,99 @@ void DockWidgetDummyMotor::targetChanged(QVector<double> targetPos)
 {
     for (int i = 0; i < targetPos.size(); i++)
     {
-        switch(i)
-        {
-        case 0:
-            ui.doubleSpinBox_tarpos_x->setValue(targetPos[i]);
-            break;
-        case 1:
-            ui.doubleSpinBox_tarpos_y->setValue(targetPos[i]);
-            break;
-        case 2:
-            ui.doubleSpinBox_tarpos_z->setValue(targetPos[i]);
-            break;
-        case 3:
-            ui.doubleSpinBox_tarpos_a->setValue(targetPos[i]);
-            break;
-        case 4:
-            ui.doubleSpinBox_tarpos_b->setValue(targetPos[i]);
-            break;
-        case 5:
-            ui.doubleSpinBox_tarpos_c->setValue(targetPos[i]);
-            break;
-        }
+        m_spinTargetPos[i]->setValue(targetPos[i]);
     }
  }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetDummyMotor::actuatorStatusChanged(QVector<int> status, QVector<double> positions)
 {
-        bool running = false;
-        QString style;
+    bool running = false;
+    QString style;
 
-        for (int i = 0; i < status.size(); i++)
+    for (int i = 0; i < std::min(status.size(), m_spinCurrentPos.size()); i++)
+    {
+        if (status[i] & ito::actuatorMoving)
         {
-            if (status[i] & ito::actuatorMoving)
-            {
-                style = "background-color: yellow";
-                running = true;
-            }
-            else if (status[i] & ito::actuatorInterrupted)
-            {
-                style = "background-color: red";
-            }
-            /*else if (status[i] & ito::actuatorTimeout) //timeout is bad for dummyMotor, since the waitForDone-method always drops into a timeout
-            {
-                style = "background-color: green";
-            }*/
-            else
-            {
-                style = "background-color: ";
-            }
-
-            switch(i)
-            {
-            case 0:
-                ui.doubleSpinBox_actpos_x->setStyleSheet(style);
-                break;
-            case 1:
-                ui.doubleSpinBox_actpos_y->setStyleSheet(style);
-                break;
-            case 2:
-                ui.doubleSpinBox_actpos_z->setStyleSheet(style);
-                break;
-            case 3:
-                ui.doubleSpinBox_actpos_a->setStyleSheet(style);
-                break;
-            case 4:
-                ui.doubleSpinBox_actpos_b->setStyleSheet(style);
-                break;
-            case 5:
-                ui.doubleSpinBox_actpos_c->setStyleSheet(style);
-                break;
-            }
+            style = "background-color: yellow";
+            running = true;
+        }
+        else if (status[i] & ito::actuatorInterrupted)
+        {
+            style = "background-color: red";
+        }
+        /*else if (status[i] & ito::actuatorTimeout) //timeout is bad for dummyMotor, since the waitForDone-method always drops into a timeout
+        {
+            style = "background-color: green";
+        }*/
+        else
+        {
+            style = "background-color: ";
         }
 
-        enableWidget(!running);
+        m_spinCurrentPos[i]->setStyleSheet(style);
+    }
 
-        if (positions.size() < 6)
+    enableWidget(!running);
+
+    for (int i = 0; i < std::min(positions.size(), m_spinCurrentPos.size()); i++)
+    {
+        m_spinCurrentPos[i]->setValue(positions[i]);
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetDummyMotor::btnRelDecClicked()                //slot if any button for a relative, negative movement is clicked
+{
+    double dpos = ui.spinStepSize->value() / -1e3;
+
+    if (qobject_cast<QPushButton*>(sender()))
+    {
+        int idx = m_btnRelDec.indexOf(qobject_cast<QPushButton*>(sender()));
+
+        if (idx >= 0)
         {
-            positions.resize(6);
+            setActuatorPosition(idx, dpos, true);
         }
-
-    ui.doubleSpinBox_actpos_x->setValue(positions[0]);
-    ui.doubleSpinBox_actpos_y->setValue(positions[1]);
-    ui.doubleSpinBox_actpos_z->setValue(positions[2]);
-    ui.doubleSpinBox_actpos_a->setValue(positions[3]);
-    ui.doubleSpinBox_actpos_b->setValue(positions[4]);
-    ui.doubleSpinBox_actpos_c->setValue(positions[5]);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_xp_clicked()
+void DockWidgetDummyMotor::btnRelIncClicked()                //slot if any button for a relative, positive movement is clicked
 {
     double dpos = ui.spinStepSize->value() / 1e3;
-    emit MoveRelative(0, dpos, 0);
+
+    if (qobject_cast<QPushButton*>(sender()))
+    {
+        int idx = m_btnRelInc.indexOf(qobject_cast<QPushButton*>(sender()));
+
+        if (idx >= 0)
+        {
+            setActuatorPosition(idx, dpos, true);
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_xm_clicked()
+void DockWidgetDummyMotor::checkEnabledClicked(bool checked) //slot if any "enabled"-checkbox is clicked
 {
-    double dpos = ui.spinStepSize->value() / -1e3;
-    emit MoveRelative(0, dpos, 0);
-}
+    if (qobject_cast<QCheckBox*>(sender()))
+    {
+        int idx = m_checkEnabled.indexOf(qobject_cast<QCheckBox*>(sender()));
 
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_yp_clicked()
-{
-    double dpos = ui.spinStepSize->value() / 1e3;
-    emit MoveRelative(1, dpos, 0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_ym_clicked()
-{
-    double dpos = ui.spinStepSize->value() / -1e3;
-    emit MoveRelative(1, dpos, 0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_up_clicked()
-{
-    double dpos = ui.spinStepSize->value() / 1e3;
-    emit MoveRelative(2, dpos, 0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_down_clicked()
-{
-    double dpos = ui.spinStepSize->value() / -1e3;
-    emit MoveRelative(2, dpos, 0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_ap_clicked()
-{
-    double dpos = ui.spinStepSize->value() / 1e3;
-    emit MoveRelative(3, dpos, 0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_am_clicked()
-{
-    double dpos = ui.spinStepSize->value() / -1e3;
-    emit MoveRelative(3, dpos, 0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_bp_clicked()
-{
-    double dpos = ui.spinStepSize->value() / 1e3;
-    emit MoveRelative(4, dpos, 0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_bm_clicked()
-{
-    double dpos = ui.spinStepSize->value() / -1e3;
-    emit MoveRelative(4, dpos, 0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_cp_clicked()
-{
-    double dpos = ui.spinStepSize->value() / 1e3;
-    emit MoveRelative(5, dpos, 0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_cm_clicked()
-{
-    double dpos = ui.spinStepSize->value() / -1e3;
-    emit MoveRelative(5, dpos, 0);
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_pushButton_refresh_clicked()
-{
-    emit MotorTriggerStatusRequest(true, false);
+        if (idx >= 0)
+        {
+            m_btnRelDec[idx]->setEnabled(checked);
+            m_btnRelInc[idx]->setEnabled(checked);
+            m_spinTargetPos[idx]->setEnabled(checked);
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetDummyMotor::on_pushButton_stop_clicked()
 {
-    m_pMyPlugin->setInterrupt();
+    setActuatorInterrupt();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -304,130 +240,36 @@ void DockWidgetDummyMotor::on_pushButton_start_clicked()
     QVector<int> axis;
     QVector<double> dpos;
 
-    if (ui.checkBox_enablex->isChecked() == 1)
+    for (int i = 0; i < m_checkEnabled.size(); ++i)
     {
-        axis << 0;
-        dpos << ui.doubleSpinBox_tarpos_x->value();
-    }
-    if (ui.checkBox_enabley->isChecked() == 1)
-    {
-        axis << 1;
-        dpos << ui.doubleSpinBox_tarpos_y->value();
-    }
-    if (ui.checkBox_enablez->isChecked() == 1)
-    {
-        axis << 2;
-        dpos << ui.doubleSpinBox_tarpos_z->value();
-    }
-    if (ui.checkBox_enablea->isChecked() == 1)
-    {
-        axis << 3;
-        dpos << ui.doubleSpinBox_tarpos_a->value();
-    }
-    if (ui.checkBox_enableb->isChecked() == 1)
-    {
-        axis << 4;
-        dpos << ui.doubleSpinBox_tarpos_b->value();
-    }
-    if (ui.checkBox_enablec->isChecked() == 1)
-    {
-        axis << 5;
-        dpos << ui.doubleSpinBox_tarpos_c->value();
+        if (m_checkEnabled[i]->isChecked() == 1)
+        {
+            axis << i;
+            dpos << m_spinTargetPos[i]->value();
+        }
     }
 
-    emit MoveAbsolute(axis, dpos, 0);
+    setActuatorPosition(axis, dpos, false);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_checkBox_enablex_clicked()
+void DockWidgetDummyMotor::on_pushButton_refresh_clicked()
 {
-    ui.pushButton_xm->setEnabled(ui.checkBox_enablex->isChecked());
-    ui.pushButton_xp->setEnabled(ui.checkBox_enablex->isChecked());
-    ui.doubleSpinBox_tarpos_x->setEnabled(ui.checkBox_enablex->isChecked());
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_checkBox_enabley_clicked()
-{
-    ui.pushButton_ym->setEnabled(ui.checkBox_enabley->isChecked());
-    ui.pushButton_yp->setEnabled(ui.checkBox_enabley->isChecked());
-    ui.doubleSpinBox_tarpos_y->setEnabled(ui.checkBox_enabley->isChecked());
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_checkBox_enablez_clicked()
-{
-    ui.pushButton_up->setEnabled(ui.checkBox_enablez->isChecked());
-    ui.pushButton_down->setEnabled(ui.checkBox_enablez->isChecked());
-    ui.doubleSpinBox_tarpos_z->setEnabled(ui.checkBox_enablez->isChecked());
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_checkBox_enablea_clicked()
-{
-    ui.pushButton_ap->setEnabled(ui.checkBox_enablea->isChecked());
-    ui.pushButton_am->setEnabled(ui.checkBox_enablea->isChecked());
-    ui.doubleSpinBox_tarpos_a->setEnabled(ui.checkBox_enablea->isChecked());
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_checkBox_enableb_clicked()
-{
-    ui.pushButton_bp->setEnabled(ui.checkBox_enableb->isChecked());
-    ui.pushButton_bm->setEnabled(ui.checkBox_enableb->isChecked());
-    ui.doubleSpinBox_tarpos_b->setEnabled(ui.checkBox_enableb->isChecked());
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetDummyMotor::on_checkBox_enablec_clicked()
-{
-    ui.pushButton_cp->setEnabled(ui.checkBox_enablec->isChecked());
-    ui.pushButton_cm->setEnabled(ui.checkBox_enablec->isChecked());
-    ui.doubleSpinBox_tarpos_c->setEnabled(ui.checkBox_enablec->isChecked());
+    requestActuatorStatusAndPositions(true, true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetDummyMotor::visibleWidget()
 {
-    ui.checkBox_enablex->setVisible(m_numaxis > 0);
-    ui.checkBox_enabley->setVisible(m_numaxis > 1);
-    ui.checkBox_enablez->setVisible(m_numaxis > 2);
-    ui.checkBox_enablea->setVisible(m_numaxis > 3);
-    ui.checkBox_enableb->setVisible(m_numaxis > 4);
-    ui.checkBox_enablec->setVisible(m_numaxis > 5);
-
-    ui.pushButton_xm->setVisible(m_numaxis > 0);
-    ui.pushButton_xp->setVisible(m_numaxis > 0);
-    ui.pushButton_ym->setVisible(m_numaxis > 1);
-    ui.pushButton_yp->setVisible(m_numaxis > 1);
-    ui.pushButton_up->setVisible(m_numaxis > 2);
-    ui.pushButton_down->setVisible(m_numaxis > 2);
-    ui.pushButton_am->setVisible(m_numaxis > 3);
-    ui.pushButton_ap->setVisible(m_numaxis > 3);
-    ui.pushButton_bm->setVisible(m_numaxis > 4);
-    ui.pushButton_bp->setVisible(m_numaxis > 4);
-    ui.pushButton_cm->setVisible(m_numaxis > 5);
-    ui.pushButton_cp->setVisible(m_numaxis > 5);
-
-    ui.doubleSpinBox_actpos_x->setVisible(m_numaxis > 0);
-    ui.doubleSpinBox_tarpos_x->setVisible(m_numaxis > 0);
-    ui.doubleSpinBox_actpos_y->setVisible(m_numaxis > 1);
-    ui.doubleSpinBox_tarpos_y->setVisible(m_numaxis > 1);
-    ui.doubleSpinBox_actpos_z->setVisible(m_numaxis > 2);
-    ui.doubleSpinBox_tarpos_z->setVisible(m_numaxis > 2);
-    ui.doubleSpinBox_actpos_a->setVisible(m_numaxis > 3);
-    ui.doubleSpinBox_tarpos_a->setVisible(m_numaxis > 3);
-    ui.doubleSpinBox_actpos_b->setVisible(m_numaxis > 4);
-    ui.doubleSpinBox_tarpos_b->setVisible(m_numaxis > 4);
-    ui.doubleSpinBox_actpos_c->setVisible(m_numaxis > 5);
-    ui.doubleSpinBox_tarpos_c->setVisible(m_numaxis > 5);
-
-    ui.label_xachse->setVisible(m_numaxis > 0);
-    ui.label_yachse->setVisible(m_numaxis > 1);
-    ui.label_zachse->setVisible(m_numaxis > 2);
-    ui.label_aachse->setVisible(m_numaxis > 3);
-    ui.label_bachse->setVisible(m_numaxis > 4);
-    ui.label_cachse->setVisible(m_numaxis > 5);
+    for (int i = 0; i < m_checkEnabled.size(); i++)
+    {
+        m_checkEnabled[i]->setVisible(m_numaxis > i);
+        m_btnRelDec[i]->setVisible(m_numaxis > i);
+        m_btnRelInc[i]->setVisible(m_numaxis > i);
+        m_spinCurrentPos[i]->setVisible(m_numaxis > i);
+        m_spinTargetPos[i]->setVisible(m_numaxis > i);
+        m_labels[i]->setVisible(m_numaxis > i);
+    }
 
     ui.label_actpos_t->setVisible(m_numaxis > 3);
     ui.label_tarpos_r->setVisible(m_numaxis > 3);
@@ -445,25 +287,12 @@ void DockWidgetDummyMotor::visibleWidget()
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetDummyMotor::enableWidget(bool enabled)
 {
-    ui.checkBox_enablex->setEnabled(enabled && m_numaxis > 0);
-    ui.checkBox_enabley->setEnabled(enabled && m_numaxis > 1);
-    ui.checkBox_enablez->setEnabled(enabled && m_numaxis > 2);
-    ui.checkBox_enablea->setEnabled(enabled && m_numaxis > 3);
-    ui.checkBox_enableb->setEnabled(enabled && m_numaxis > 4);
-    ui.checkBox_enablec->setEnabled(enabled && m_numaxis > 5);
-
-    ui.pushButton_xm->setEnabled(enabled && m_numaxis > 0);
-    ui.pushButton_xp->setEnabled(enabled && m_numaxis > 0);
-    ui.pushButton_ym->setEnabled(enabled && m_numaxis > 1);
-    ui.pushButton_yp->setEnabled(enabled && m_numaxis > 1);
-    ui.pushButton_up->setEnabled(enabled && m_numaxis > 2);
-    ui.pushButton_down->setEnabled(enabled && m_numaxis > 2);
-    ui.pushButton_am->setEnabled(enabled && m_numaxis > 3);
-    ui.pushButton_ap->setEnabled(enabled && m_numaxis > 3);
-    ui.pushButton_bm->setEnabled(enabled && m_numaxis > 4);
-    ui.pushButton_bp->setEnabled(enabled && m_numaxis > 4);
-    ui.pushButton_cm->setEnabled(enabled && m_numaxis > 5);
-    ui.pushButton_cp->setEnabled(enabled && m_numaxis > 5);
+    for (int i = 0; i < m_checkEnabled.size(); i++)
+    {
+        m_checkEnabled[i]->setEnabled(enabled && m_numaxis > i);
+        m_btnRelDec[i]->setEnabled(enabled && m_numaxis > i);
+        m_btnRelInc[i]->setEnabled(enabled && m_numaxis > i);
+    }
 
     ui.pushButton_start->setVisible(enabled);
     ui.pushButton_stop->setVisible(!enabled);

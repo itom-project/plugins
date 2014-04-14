@@ -20,14 +20,11 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-/**\file dialogDummyMotor.cpp
+/**\file dialogUSBMotion3XIII.cpp
 * \brief In this file the functions of the modal dialog for the DummyMotor are specified
 *
 *    This file defines the functions of the dialogDummyMotor-Class defined in the file "dialogDummyMotor.h"
 * 
-*\sa dialogDummyMotor, DummyMotor
-*\author Wolfram Lyda
-*\date    Oct2011
 */
 
 #include "dialogUSBMotion3XIII.h"

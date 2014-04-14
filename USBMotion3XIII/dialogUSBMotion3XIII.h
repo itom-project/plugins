@@ -27,8 +27,6 @@
 * \brief In this file the class of the modal dialog for the USB Motor Driver Board is described.
 * 
 *\sa dialogDummyMotor, DummyMotor
-*\author Wolfram Lyda
-*\date    Oct2011
 */
 
 #include "common/sharedStructures.h"
