@@ -26,7 +26,7 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 find_package(VisualLeakDetector QUIET)
 
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-FIND_PACKAGE_QT(ON LinguistTools Designer Widgets)
+FIND_PACKAGE_QT(ON Core LinguistTools Designer Widgets)
 
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
@@ -52,10 +52,7 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${QT_QTCORE_INCLUDE_DIR}
-	${OpenCV_DIR}/include
-	${ITOM_SDK_INCLUDE_DIR}
-	${ITOM_SDK_INCLUDE_DIR}/itomWidgets
+	${ITOM_SDK_INCLUDE_DIRS}
 	${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
@@ -95,7 +92,7 @@ list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
 if (QT5_FOUND)
-	QT5_WRAP_UI(plugin_ui_MOC ${plugin_ui})
+	#QT5_WRAP_UI(plugin_ui_MOC ${plugin_ui})
 else (QT5_FOUND)
 	QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
 	QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
