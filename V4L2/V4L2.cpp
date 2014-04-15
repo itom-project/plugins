@@ -97,8 +97,6 @@ to let the plugin print a list of supported formats (the plugin initialization t
 
     //paramVal = ito::Param("Init-Dialog", ito::ParamBase::Int, 0, 1, 0, tr("If true, a camera selection dialog is opened during startup").toLatin1().data());
     //m_initParamsOpt.append(paramVal);
-
-
    return;
 }
 

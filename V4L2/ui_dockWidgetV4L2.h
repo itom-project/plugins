@@ -35,6 +35,7 @@
 #include <QtGui/QTabWidget>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
+#include <QtGui/QScrollArea>
 #include "sliderWidget.h"
 
 
@@ -48,7 +49,6 @@ public:
     QWidget *tab_ctrl;
     QVBoxLayout *layout_tab1;
     QGroupBox *gb_controls;
-    QVBoxLayout *layout_gb_controls;
     QGridLayout *gridLayout_controls;
     QLabel *lbl_slider1;
     QSlider *horizontalSlider;
@@ -56,7 +56,6 @@ public:
     QSlider *horizontalSlider_2;
     QWidget *tab_info;
     QVBoxLayout *layout_tab2;
-    QVBoxLayout *verticalLayout_tab_info;
     QGroupBox *gb_general;
     QVBoxLayout *layout_general;
     QLabel *label_general;
@@ -66,6 +65,12 @@ public:
     QGroupBox *gb_media;
     QVBoxLayout *layout_media;
     QLabel *label_media;
+    QScrollArea *scroll_area_ctrltab;
+    QWidget *scroll_area_ctrltab_contents;
+    QVBoxLayout *ctrltab_layout;
+    QScrollArea *scroll_area_infotab;
+    QWidget *scroll_area_infotab_contents;
+    QVBoxLayout *infotab_layout;
 
     void setupUi(QWidget *DockWidgetV4L2)
     {
@@ -84,18 +89,36 @@ public:
     	tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
     	tabWidget->setTabPosition(QTabWidget::South);
 
+    	QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    	sizePolicy.setHorizontalStretch(0);
+    	sizePolicy.setVerticalStretch(0);
+    	//sizePolicy.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+
+    	tabWidget->setSizePolicy(sizePolicy);
+
     	//Control Tab
     	tab_ctrl = new QWidget();
     	tab_ctrl->setObjectName(QString::fromUtf8("tab_ctrl"));
+
     	layout_tab1 = new QVBoxLayout(tab_ctrl);
     	layout_tab1->setObjectName(QString::fromUtf8("layout_tab1"));
 
-    	gb_controls = new QGroupBox(tab_ctrl);
-    	gb_controls->setObjectName(QString::fromUtf8("gb_controls"));
-    	layout_gb_controls = new QVBoxLayout(gb_controls);
-    	layout_gb_controls->setObjectName(QString::fromUtf8("layout_gb_controls"));
+    	//Scroll Area for ctrltab
+    	scroll_area_ctrltab = new QScrollArea(tab_ctrl);
+    	scroll_area_ctrltab->setObjectName(QString::fromUtf8("scroll_area1"));
+    	scroll_area_ctrltab->setWidgetResizable(true);
 
-    	gridLayout_controls = new QGridLayout();
+    	//Content Widget for scroll area
+    	scroll_area_ctrltab_contents = new QWidget();
+    	scroll_area_ctrltab_contents->setObjectName(QString::fromUtf8("scroll_area_ctrltab_contents"));
+
+    	ctrltab_layout = new QVBoxLayout(scroll_area_ctrltab_contents);
+    	ctrltab_layout->setObjectName(QString::fromUtf8("ctrltab_layout"));
+
+    	gb_controls = new QGroupBox(scroll_area_ctrltab_contents);
+    	gb_controls->setObjectName(QString::fromUtf8("gb_controls"));
+
+    	gridLayout_controls = new QGridLayout(gb_controls);
     	gridLayout_controls->setObjectName(QString::fromUtf8("gridLayout_controls"));
 
     	//lbl_slider1 = new QLabel(gb_controls);
@@ -121,21 +144,31 @@ public:
     	//gridLayout_controls->addWidget(horizontalSlider_2, 1, 1, 1, 1);
 
     	// add all to tab1
-    	layout_gb_controls->addLayout(gridLayout_controls);
-    	layout_tab1->addWidget(gb_controls);
+    	ctrltab_layout->addWidget(gb_controls);
+    	scroll_area_ctrltab->setWidget(scroll_area_ctrltab_contents);
+    	layout_tab1->addWidget(scroll_area_ctrltab);
     	tabWidget->addTab(tab_ctrl, QString());
 
     	//Info Tab
     	tab_info = new QWidget();
     	tab_info->setObjectName(QString::fromUtf8("tab_info"));
+
     	layout_tab2 = new QVBoxLayout(tab_info);
     	layout_tab2->setObjectName(QString::fromUtf8("layout_tab2"));
 
-    	verticalLayout_tab_info = new QVBoxLayout();
-    	verticalLayout_tab_info->setObjectName(QString::fromUtf8("verticalLayout_tab_info"));
+    	//Scroll Area for ctrltab
+    	scroll_area_infotab = new QScrollArea(tab_info);
+    	scroll_area_infotab->setObjectName(QString::fromUtf8("scroll_area_infotab"));
+    	scroll_area_infotab->setWidgetResizable(true);
+
+    	//Content Widget for scroll area
+    	scroll_area_infotab_contents = new QWidget();
+    	scroll_area_infotab_contents->setObjectName(QString::fromUtf8("scroll_area_infotab_contents"));
+    	infotab_layout = new QVBoxLayout(scroll_area_infotab_contents);
+    	infotab_layout->setObjectName(QString::fromUtf8("infotab_layout"));
 
     	//Groupbox General
-    	gb_general = new QGroupBox(tab_info);
+    	gb_general = new QGroupBox(scroll_area_infotab_contents);
     	gb_general->setObjectName(QString::fromUtf8("gb_general"));
     	layout_general = new QVBoxLayout(gb_general);
     	layout_general->setObjectName(QString::fromUtf8("layout_general"));
@@ -143,10 +176,10 @@ public:
     	label_general->setObjectName(QString::fromUtf8("label_general"));
 
     	layout_general->addWidget(label_general);
-    	verticalLayout_tab_info->addWidget(gb_general);
+    	infotab_layout->addWidget(gb_general);
 
     	//Groupbox Image
-    	gb_image = new QGroupBox(tab_info);
+    	gb_image = new QGroupBox(scroll_area_infotab_contents);
     	gb_image->setObjectName(QString::fromUtf8("gb_image"));
     	layout_image = new QVBoxLayout(gb_image);
     	layout_image->setObjectName(QString::fromUtf8("layout_image"));
@@ -154,10 +187,10 @@ public:
     	label_image->setObjectName(QString::fromUtf8("label_image"));
 
     	layout_image->addWidget(label_image);
-    	verticalLayout_tab_info->addWidget(gb_image);
+    	infotab_layout->addWidget(gb_image);
 
     	//Groupbox Media
-    	gb_media = new QGroupBox(tab_info);
+    	gb_media = new QGroupBox(scroll_area_infotab_contents);
     	gb_media->setObjectName(QString::fromUtf8("gb_media"));
     	layout_media = new QVBoxLayout(gb_media);
     	layout_media->setObjectName(QString::fromUtf8("layout_media"));
@@ -165,10 +198,11 @@ public:
     	label_media->setObjectName(QString::fromUtf8("label_media"));
 
     	layout_media->addWidget(label_media);
-    	verticalLayout_tab_info->addWidget(gb_media);
+    	infotab_layout->addWidget(gb_media);
 
     	//Add all to tab2
-    	layout_tab2->addLayout(verticalLayout_tab_info);
+    	scroll_area_infotab->setWidget(scroll_area_infotab_contents);
+    	layout_tab2->addWidget(scroll_area_infotab);
     	tabWidget->addTab(tab_info, QString());
 
     	//add tabwidget to main
