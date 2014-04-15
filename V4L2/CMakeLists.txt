@@ -71,7 +71,6 @@ set(plugin_HEADERS
 	${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
 	${CMAKE_CURRENT_SOURCE_DIR}/dialogV4L2.h
 	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ui_dockWidgetV4L2.h
 	${CMAKE_CURRENT_SOURCE_DIR}/V4L2.h
 	${CMAKE_CURRENT_SOURCE_DIR}/v4l2_itom_api.h
 	${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
@@ -79,7 +78,7 @@ set(plugin_HEADERS
 
 set(plugin_ui
 	${CMAKE_CURRENT_SOURCE_DIR}/dialogV4L2.ui
-	#${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2_base.ui
+	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2.ui
 )
 
 

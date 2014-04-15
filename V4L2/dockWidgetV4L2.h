@@ -30,6 +30,7 @@
 #include <qmap.h>
 #include <qstring.h>
 #include <QCheckBox>
+#include "sliderWidget.h"
 
 #include "ui_dockWidgetV4L2.h"
 

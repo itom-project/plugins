@@ -41,42 +41,13 @@
             <height>229</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <layout class="QVBoxLayout" name="ctrltab_layout">
            <item>
             <widget class="QGroupBox" name="gb_controls">
              <property name="title">
               <string>Device Info</string>
              </property>
-             <layout class="QGridLayout" name="gridLayout">
-              <item row="0" column="0">
-               <widget class="QLabel" name="lbl_slider1">
-                <property name="text">
-                 <string>lbl_slider1</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QSlider" name="horizontalSlider">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="lbl_slider2">
-                <property name="text">
-                 <string>lbl_slider2</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QSlider" name="horizontalSlider_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <layout class="QGridLayout" name="gridLayout_controls"/>
             </widget>
            </item>
           </layout>
@@ -104,7 +75,7 @@
             <height>229</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
+          <layout class="QVBoxLayout" name="infotab_layout">
            <item>
             <widget class="QGroupBox" name="gb_general">
              <property name="title">
