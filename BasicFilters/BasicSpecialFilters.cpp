@@ -2840,7 +2840,7 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
         return ito::RetVal(ito::retError, 0, tr("Error: geometricElement must be either float32 or float64").toLatin1().data());
     }
 
-    bool check;
+    //bool check;
     ito::int32 xDim = 1;
     ito::int32 yDim = 0;
     ito::int32 type = 0; 
@@ -2857,6 +2857,11 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
     ito::float64 insideVal = (*paramsOpt)[2].getVal<double>();
     ito::float64 outsideVal = (*paramsOpt)[3].getVal<double>();
+
+    ito::float64 xScale = dObjDst->getAxisScale(xDim);
+    ito::float64 yScale = dObjDst->getAxisScale(yDim);
+    ito::float64 xOffset = dObjDst->getAxisOffset(xDim);
+    ito::float64 yOffset = dObjDst->getAxisOffset(yDim);
 
     bool inFlag = (*paramsOpt)[0].getVal<int>() & 0x01;
     bool outFlag = (*paramsOpt)[0].getVal<int>() & 0x02;
@@ -2993,22 +2998,26 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
     {
         case ito::PrimitiveContainer::tCircle:
         case ito::PrimitiveContainer::tEllipse:
-            x0 = dObjDst->getPhysToPix(xDim, x0, check);
-            y0 = dObjDst->getPhysToPix(yDim, y0, check);
-            rA = dObjDst->getPhysToPix(xDim, rA, check);
-            rB = dObjDst->getPhysToPix(yDim, rB, check);
+            x0 = x0 / xScale + xOffset;
+            y0 = y0 / yScale + yOffset;
+            rA = rA / xScale;
+            rB = rB / yScale;
             y1 = 0.0;
             x1 = 0.0;
             if(fabs(rA-rB) < dObjDst->getAxisScale(xDim) && fabs(rA-rB) < dObjDst->getAxisScale(yDim)) type = ito::PrimitiveContainer::tCircle;
             else type = ito::PrimitiveContainer::tEllipse;
 
+            if(!ito::dObjHelper::isNotZero(rA) || !ito::dObjHelper::isNotZero(rB))  
+            {
+                return ito::RetVal(ito::retError, 0, tr("Error: radii of geometricElement must not be zero").toLatin1().data());
+            }
             break;
         case ito::PrimitiveContainer::tRectangle:
         case ito::PrimitiveContainer::tSquare:
-            x0 = dObjDst->getPhysToPix(xDim, x0, check);
-            y0 = dObjDst->getPhysToPix(yDim, y0, check);
-            x1 = dObjDst->getPhysToPix(xDim, x1, check);
-            y1 = dObjDst->getPhysToPix(yDim, y1, check);
+            x0 = x0 / xScale + xOffset;
+            y0 = y0 / yScale + yOffset;
+            x1 = x1 / xScale + xOffset;
+            y1 = y1 / yScale + yOffset;
             rA = 0.0;
             rB = 0.0;
             break;
@@ -3016,6 +3025,10 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
     cv::Mat* myMat = (cv::Mat*)(dObjDst->get_mdata()[dObjDst->seekMat(0)]);
 
+    if(!ito::dObjHelper::isFinite(rA) || !ito::dObjHelper::isFinite(rB) || !ito::dObjHelper::isFinite(x0) || !ito::dObjHelper::isFinite(y1) || !ito::dObjHelper::isFinite(x1) || !ito::dObjHelper::isFinite(y0))  
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: coordinates of geometricElement must be finite").toLatin1().data());
+    }
 
     switch(dObjDst->getType())
     {
