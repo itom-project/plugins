@@ -143,6 +143,12 @@ NaN and Inf values are replaced as well (floating point data objects only). This
 //----------------------------------------------------------------------------------------------------------------------------------
 const char *BasicFilters::calcHistDoc = "calculates histgram of real input data object";
 //----------------------------------------------------------------------------------------------------------------------------------
+const char *BasicFilters::fillGeometricDoc = "fills a ROI, which defined by a geometric primitiv, of the given dataObject with a defined value\n\
+\n\
+Depending on the parameter 'insideFlag', this filter sets all values of the dataObject depending on the geometric primitiv within (1) or outside (2) or both (3) to \
+the value given by 'newValueInside' and 'newValueOutside'. The 'edgeFlag' is currently not used but shall manage the edge handling of primitiv.";
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
 {
     ito::RetVal retval = ito::retOk;
@@ -179,6 +185,9 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     m_filterList.insert("medianFilter", filter);
     filter = new FilterDef(BasicFilters::genericLowPassFilter, BasicFilters::genericStdParams, tr("Performs a low-pass filter with kernelsize (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("lowPassFilter", filter);
+
+    filter = new FilterDef(BasicFilters::fillGeometricPrimitiv, BasicFilters::fillGeometricParams, tr(fillGeometricDoc));
+    m_filterList.insert("fillObject", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
