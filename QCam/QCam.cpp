@@ -40,25 +40,14 @@ int QCam::instanceCounter = 0;
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal QCamInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    QCam* newInst = new QCam();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(QCam)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal QCamInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-      delete ((QCam *)*addInInst);
-      int idx = m_InstList.indexOf(*addInInst);
-      m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(QCam)
    return ito::retOk;
 }
 
@@ -92,8 +81,9 @@ QCamInterface::~QCamInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(QCaminterface, QCamInterface)
-
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(QCaminterface, QCamInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QCam::QCam() :  
@@ -124,7 +114,7 @@ QCam::QCam() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1391, 1391, tr("last pixel of ROI in x-direction").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1023, 1023, tr("last pixel of ROI in y-direction").toAscii().data());
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1039, 1039, tr("last pixel of ROI in y-direction").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1340, 1040, tr("width of ROI").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -219,7 +209,7 @@ ito::RetVal QCam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 		unsigned long cameraType;
 		QCam_GetInfo( m_camHandle, qinfCameraType,  &cameraType);
 		m_identifier = QString("type: %1").arg(cameraType);
-
+		
 		//initialize the setting structure
 		m_camSettings.size = sizeof(m_camSettings);
 
@@ -337,6 +327,13 @@ ito::RetVal QCam::close(ItomSharedSemaphore *waitCond)
 		killTimer(m_timerID);
 		m_timerID=0;
 	}
+
+    //stop device, if not yet done (only if still started - counter > 0)
+    if(grabberStartedCount() > 0)
+    {
+        setGrabberStarted(1); //force the counter to 0, such that stopDevice drops it to 0 and really stops the device!
+        retValue += stopDevice(NULL);
+    }
     
     if (m_camHandle > 0)
     {
@@ -423,7 +420,7 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
 
-	bool settingsChanged = false;
+    bool needToReallocate = false; //true, if the image size, roi, bpp have been changed
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
@@ -459,41 +456,144 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
 
 			if (!retValue.containsError())
 			{
-				settingsChanged = true;
-				retValue += it->copyValueFrom( &(*val) );
+				retValue += it->copyValueFrom( &(*val) ); //copy obtained gain value to the internal m_params["gain"]
 			}
-			
-			// stop the camera, clear the buffers and send the parameter to the camera.  then restart the camera.
-			// if it was running live, restart that also
 		}
-        else
-        {
-            //all parameters that don't need further checks can simply be assigned
-            //to the value in m_params (the rest is already checked above)
-            retValue += it->copyValueFrom( &(*val) );
-        }
-		if (key == "integration_time")
+        else if (key == "integration_time")
 		{
 			unsigned long long expMax, expMin;
 
 			double integration_time = val->getVal<double>();
-                        QCam_GetParam64Min( &m_camSettings, qprm64Exposure, (unsigned long long *)&expMax );
-                        QCam_GetParam64Max( &m_camSettings, qprm64Exposure, (unsigned long long *)&expMin );
-
-			//calculate normalized-gain from 0-1-gain
-			//gain = gainMin + gain * (gainMax - gainMin);
+            QCam_GetParam64Min( &m_camSettings, qprm64Exposure, (unsigned long long *)&expMax );
+            QCam_GetParam64Max( &m_camSettings, qprm64Exposure, (unsigned long long *)&expMin );
 			
 			retValue += errorCheck( QCam_SetParam64(&m_camSettings, qprm64Exposure, uint64(integration_time*1000000000)) );
 
 			if (!retValue.containsError())
 			{
-				settingsChanged = true;
-				retValue += it->copyValueFrom( &(*val) );
+				retValue += it->copyValueFrom( &(*val) ); //copy obtained integration_time value to the internal m_params["integration_time"]
 			}
-			
-			// stop the camera, clear the buffers and send the parameter to the camera.  then restart the camera.
-			// if it was running live, restart that also
 		}
+		else if (key == "x0") //x0 is the left border of the image
+		{
+			unsigned long  RoiXMax, RoiXMin;
+
+			int x0 = val->getVal<int>(); //x0 is an integer
+
+            if (x0 != it->getVal<int>()) //only do something if x0 really changed (it->... is pointing to m_params["x0"])
+            {
+                QCam_GetParamMin( &m_camSettings, qprmRoiX, (unsigned long *)&RoiXMax );
+                QCam_GetParamMax( &m_camSettings, qprmRoiX, (unsigned long *)&RoiXMin );
+
+                retValue += rangeCheck(RoiXMin, RoiXMax, x0, "x0");
+
+                if (!retValue.containsError())
+                {
+			        retValue += errorCheck( QCam_SetParam(&m_camSettings, qprmRoiX, uint(x0)) );
+                }
+
+			    if (!retValue.containsError())
+			    { 
+                    // stop the camera, clear the buffers and send the parameter to the camera.  then restart the camera.
+			        // if it was running live, restart that also
+                    needToReallocate = true;
+				    m_params["x0"].setVal<int>(x0);
+				    int x1 = m_params["x1"].getVal<int>();
+				    m_params["sizex"].setVal<int>(x1-x0+1);
+			    }
+            }
+		}
+		else if (key == "y0") //y0 is the top of the image
+		{
+			unsigned long  RoiYMax, RoiYMin;
+
+			int y0 = val->getVal<int>();
+
+            if (y0 != it->getVal<int>()) //only do something if y0 really changed (it->... is pointing to m_params["y0"])
+            {
+                QCam_GetParamMin( &m_camSettings, qprmRoiY, (unsigned long *)&RoiYMax );
+                QCam_GetParamMax( &m_camSettings, qprmRoiY, (unsigned long *)&RoiYMin );
+
+                retValue += rangeCheck(RoiYMin, RoiYMax, y0, "y0");
+
+                if (!retValue.containsError())
+                {
+			        retValue += errorCheck( QCam_SetParam(&m_camSettings, qprmRoiY, uint(y0)) );
+                }
+
+			    if (!retValue.containsError())
+			    {
+                    // stop the camera, clear the buffers and send the parameter to the camera.  then restart the camera.
+			        // if it was running live, restart that also
+				    needToReallocate = true;
+				    m_params["y0"].setVal<int>(y0);
+				    int y1 = m_params["y1"].getVal<int>();
+				    m_params["sizey"].setVal<int>(y1-y0+1);
+			    }
+            }
+		}
+		else if (key == "x1") //x1 is the pixel-coordinate of the right border
+		{
+			unsigned long  roiWidthMin, roiWidthMax;
+
+			int x1 = val->getVal<int>();
+            if (x1 != it->getVal<int>()) //only do something if x1 really changed (it->... is pointing to m_params["x1"])
+            {
+                int newWidth = 1 + x1 - m_params["x0"].getVal<int>();
+
+                QCam_GetParamMin( &m_camSettings, qprmRoiWidth, (unsigned long *)&roiWidthMin );
+                QCam_GetParamMax( &m_camSettings, qprmRoiWidth, (unsigned long *)&roiWidthMax );
+
+                retValue += rangeCheck(roiWidthMin, roiWidthMax, newWidth, "x1");
+
+                if (!retValue.containsError())
+                {
+			        retValue += errorCheck( QCam_SetParam(&m_camSettings, qprmRoiWidth, uint(newWidth)) );
+                }
+
+			    if (!retValue.containsError())
+			    {
+                    // stop the camera, clear the buffers and send the parameter to the camera.  then restart the camera.
+			        // if it was running live, restart that also
+				    needToReallocate = true;
+				    m_params["x1"].setVal<int>(x1);
+				    m_params["sizex"].setVal<int>(newWidth);
+			    }
+            }
+		}
+		else if (key == "y1") //y1 is the pixel-coordinate of the bottom
+		{
+			unsigned long  roiHeightMin, roiHeightMax;
+
+			int y1 = val->getVal<int>();
+
+            if (y1 != it->getVal<int>()) //only do something if y1 really changed (it->... is pointing to m_params["y1"])
+            {
+                int newHeight = 1 + y1 - m_params["y0"].getVal<int>();
+                QCam_GetParamMin( &m_camSettings, qprmRoiHeight, (unsigned  long *)&roiHeightMax );
+                QCam_GetParamMax( &m_camSettings, qprmRoiHeight, (unsigned  long *)&roiHeightMin );
+
+			    retValue += rangeCheck(roiHeightMin, roiHeightMax, newHeight, "y1");
+
+                if (!retValue.containsError())
+                {
+			        retValue += errorCheck( QCam_SetParam(&m_camSettings, qprmRoiHeight, uint(newHeight)) );
+                }
+
+			    if (!retValue.containsError())
+			    {
+                    // stop the camera, clear the buffers and send the parameter to the camera.  then restart the camera.
+			        // if it was running live, restart that also
+				    needToReallocate = true;
+				    m_params["y1"].setVal<int>(y1);
+				    m_params["sizey"].setVal<int>(newHeight);
+			    }
+            }
+		}
+        else if (key == "bpp")
+        {
+            retValue += ito::RetVal(ito::retError,0,"not implemented yet. todo");
+        }
         else
         {
             //all parameters that don't need further checks can simply be assigned
@@ -502,51 +602,59 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
         }
     }
 
-	if (settingsChanged)
+	if (!retValue.containsError() && needToReallocate)
 	{
 		bool acquisitionInterrupted = false;
 		if (grabberStartedCount() > 0)
 		{
-                    QCam_Abort( m_camHandle);
+            QCam_Abort( m_camHandle);
 
-                    if (m_waitingForAcquire) acquisitionInterrupted = true;
-                    //m_frameCallbackFrameIdx = -1;
-                    //m_waitingForAcquire = false;
+            if (m_waitingForAcquire) acquisitionInterrupted = true;
+            //m_frameCallbackFrameIdx = -1;
+            //m_waitingForAcquire = false;
 
-                    // delete buffer(s)
-                    for (int i = 0; i < NUMBERBUFFERS; ++i)
-                    {
-                        if (m_frames[i].pBuffer)
-                            free(m_frames[i].pBuffer);
-                        m_frames[i].pBuffer = NULL;
-                    }
+            // delete buffer(s)
+            for (int i = 0; i < NUMBERBUFFERS; ++i)
+            {
+                if (m_frames[i].pBuffer)
+                {
+                    free(m_frames[i].pBuffer);
+                }
+                m_frames[i].pBuffer = NULL;
+            }
 		}
 
 		retValue += errorCheck(QCam_SendSettingsToCam( m_camHandle, &m_camSettings));
+        checkData(); //also resize the internal data object m_data to the new size given by sizex, sizey and bpp
 
 		if (grabberStartedCount() > 0)
 		{
-                    //reallocate buffer(s)
-                    unsigned long size;
-                    QCam_GetInfo(m_camHandle, qinfImageSize, &size);
+            //reallocate buffer(s)
+            unsigned long size;
+            QCam_GetInfo(m_camHandle, qinfImageSize, &size);
 
-                    for (int i = 0; i < NUMBERBUFFERS; ++i)
-                    {
-                        //MUST be 4 byte aligned according to header file!
-                        if (m_frames[i].pBuffer)
-                            free(m_frames[i].pBuffer);
-                        m_frames[i].pBuffer = calloc(size, sizeof(unsigned char));
-                        m_frames[i].bufferSize = size;
-                        memset( m_frames[i].pBuffer, 0, size * sizeof(unsigned char) );
-                        QCam_QueueFrame(m_camHandle, &(m_frames[i]), qCamFrameCallback, qcCallbackDone, this, i);
-                    }
+            for (int i = 0; i < NUMBERBUFFERS; ++i)
+            {
+                //MUST be 4 byte aligned according to header file!
+                if (m_frames[i].pBuffer)
+                    free(m_frames[i].pBuffer);
+                m_frames[i].pBuffer = calloc(size, sizeof(unsigned char));
+                m_frames[i].bufferSize = size;
+                memset( m_frames[i].pBuffer, 0, size * sizeof(unsigned char) );
+                QCam_QueueFrame(m_camHandle, &(m_frames[i]), qCamFrameCallback, qcCallbackDone, this, i);
+            }
 
-                    if (acquisitionInterrupted)
-                    {
-                        retValue += acquire(0); //reacquire a new image, since we aborted the last acquisition
-                    }
+            if (acquisitionInterrupted)
+            {
+                retValue += acquire(0); //reacquire a new image, since we aborted the last acquisition
+            }
 		}
 	}
+    else if (!retValue.containsError() && !needToReallocate)
+    {
+        //only send the parameters, but camera must not be reallocated or stopped
+        retValue += errorCheck(QCam_SendSettingsToCam( m_camHandle, &m_camSettings));
+    }
 
     if(!retValue.containsError())
     {
@@ -560,6 +668,16 @@ ito::RetVal QCam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
     }
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal QCam::rangeCheck(const unsigned long &min, const unsigned long &max, const unsigned long &value, const QByteArray &name)
+{
+    if (value > max || value < min)
+    {
+        return ito::RetVal::format(ito::retError, 0, "value '%s' out of bounds.", name.data());
+    }
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -606,12 +724,16 @@ ito::RetVal QCam::startDevice(ItomSharedSemaphore *waitCond)
         for (int i = 0; i < NUMBERBUFFERS; ++i)
         {
             if (m_frames[i].pBuffer)
+            {
                 free(m_frames[i].pBuffer);
+            }
             m_frames[i].pBuffer = calloc(size, sizeof(unsigned char));
             m_frames[i].bufferSize = size;
             memset( m_frames[i].pBuffer, 0, size * sizeof(unsigned char) );
             QCam_QueueFrame(m_camHandle, &(m_frames[i]), qCamFrameCallback, qcCallbackDone, this, i);
         }
+
+        checkData(); //also resize the internal data object m_data to the new size given by sizex, sizey and bpp
     }
 
     incGrabberStarted();
@@ -639,9 +761,11 @@ ito::RetVal QCam::stopDevice(ItomSharedSemaphore *waitCond)
 
 		for (int i = 0; i < NUMBERBUFFERS; ++i)
 		{
-                    if (m_frames[i].pBuffer)
-                        free(m_frames[i].pBuffer);
-                    m_frames[i].pBuffer = NULL;
+            if (m_frames[i].pBuffer)
+            {
+                free(m_frames[i].pBuffer);
+            }
+            m_frames[i].pBuffer = NULL;
 		}
 
 	}
