@@ -438,10 +438,17 @@ ito::RetVal V4L2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBa
 					std::cout <<"---------------------------V4L2------------------------------------\n"<< std::endl;
 					retValue += ito::RetVal(ito::retError,0,tr("Camera initialization aborted since only list of media types requested").toLatin1().data());
 				}
+				else if (mediaTypeID == 0 && nformats==0)
+				{
+					// if no fmt available try to set standard format selected by driver pass -1 to set_fmt
+					retValue+=m_pDL.m_device.set_fmt(-1); //set camera to format selected by user via mediaTypeID
+					retValue+=fill_m_params(); // fill m_params with all controls of camera: brightness, etc.
+				}
 				else if (mediaTypeID >= nformats)
 				{
 					retValue += ito::RetVal(ito::retError,0,tr("Number of available media types was smaller than the given mediaTypeID. Try mediaTypeID = -1 to print a list of available types.").toLatin1().data());
 				}
+
 				else // try to set format to mediaTypeID
 				{
 					retValue+=m_pDL.m_device.set_fmt(mediaTypeID); //set camera to format selected by user via mediaTypeID

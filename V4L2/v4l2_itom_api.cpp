@@ -677,9 +677,12 @@ ito::RetVal Device::set_fmt(int number)
 
 	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	//get the new values from the m_formatlist at position number choosen by the user
-	fmt.fmt.pix.width = m_formatlist.at(number).m_width;
-	fmt.fmt.pix.height = m_formatlist.at(number).m_height;
-	fmt.fmt.pix.pixelformat = m_formatlist.at(number).m_pxformat;
+	if (number != -1){
+		fmt.fmt.pix.width = m_formatlist.at(number).m_width;
+		fmt.fmt.pix.height = m_formatlist.at(number).m_height;
+		fmt.fmt.pix.pixelformat = m_formatlist.at(number).m_pxformat;
+	}
+
 	fmt.fmt.pix.bytesperline = 0;
 	//fmt.fmt.pix.field = V4L2_FIELD_INTERLACED;
 
