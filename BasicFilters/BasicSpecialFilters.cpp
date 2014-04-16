@@ -32,7 +32,7 @@
 #include "BasicFilters.h"
 
 #include "DataObject/dataObjectFuncs.h"
-#include "Common/sharedStructuresPrimitives.h"
+#include "common/sharedStructuresPrimitives.h"
 
 //#include "common/helperCommon.h"
 
