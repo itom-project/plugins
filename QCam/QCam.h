@@ -93,6 +93,9 @@ class QCam : public ito::AddInGrabber
         ito::RetVal requeueFrame();
 
     private:
+
+        ito::RetVal rangeCheck(const unsigned long &min, const unsigned long &max, const unsigned long &value, const QByteArray &name);
+
         QCam_Handle m_camHandle;
         QCam_Settings m_camSettings;
 
