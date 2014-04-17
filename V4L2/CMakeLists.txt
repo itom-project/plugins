@@ -26,7 +26,7 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 find_package(VisualLeakDetector QUIET)
 
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-FIND_PACKAGE_QT(ON LinguistTools Designer Widgets)
+FIND_PACKAGE_QT(ON Core LinguistTools Designer Widgets)
 
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
@@ -50,13 +50,10 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_BINARY_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}
-	${QT_QTCORE_INCLUDE_DIR}
-	${OpenCV_DIR}/include
-	${ITOM_SDK_INCLUDE_DIR}
-	${ITOM_SDK_INCLUDE_DIR}/itomWidgets
-	${VISUALLEAKDETECTOR_INCLUDE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${ITOM_SDK_INCLUDE_DIRS}
+    ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
 LINK_DIRECTORIES(
@@ -64,30 +61,29 @@ LINK_DIRECTORIES(
 )
 
 set(plugin_HEADERS
-	${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsInc.h
-	${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
-	${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-	${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-	${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dialogV4L2.h
-	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2.h
-	${CMAKE_CURRENT_SOURCE_DIR}/ui_dockWidgetV4L2.h
-	${CMAKE_CURRENT_SOURCE_DIR}/V4L2.h
-	${CMAKE_CURRENT_SOURCE_DIR}/v4l2_itom_api.h
-	${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsInc.h
+    ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
+    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
+    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
+    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogV4L2.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/V4L2.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/v4l2_itom_api.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
 set(plugin_ui
-	${CMAKE_CURRENT_SOURCE_DIR}/dialogV4L2.ui
-	#${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2_base.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogV4L2.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2.ui
 )
 
 
 set(plugin_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/V4L2.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/v4l2_itom_api.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dialogV4L2.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/V4L2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/v4l2_itom_api.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogV4L2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2.cpp
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -96,13 +92,11 @@ list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
 if (QT5_FOUND)
-	QT5_WRAP_UI(plugin_ui_MOC ${plugin_ui})
+    #QT5_WRAP_UI(plugin_ui_MOC ${plugin_ui})
 else (QT5_FOUND)
-	QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
-	QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+    QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
+    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
 endif (QT5_FOUND)
-
-
 
 find_library(V4LCONVERT_LIBRARY libv4lconvert v4lconvert PATHS "/usr/lib" "/usr/lib/x86-64-linux-gnu")
 IF(NOT V4LCONVERT_LIBRARY)
@@ -114,12 +108,13 @@ ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} $
 
 TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${V4LCONVERT_LIBRARY})
 if (QT5_FOUND)
-	qt5_use_modules(${target_name} ${QT_COMPONENTS})
+    qt5_use_modules(${target_name} ${QT_COMPONENTS})
 endif (QT5_FOUND)
 
 #translation
 set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
-PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} ${EXISTING_TRANSLATION_FILES} ITOM_LANGUAGES FILES_TO_TRANSLATE)
+
+PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
 #documentation
 PLUGIN_DOCUMENTATION(${target_name} v4l2)
@@ -128,6 +123,5 @@ PLUGIN_DOCUMENTATION(${target_name} v4l2)
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
 ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-#ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-
