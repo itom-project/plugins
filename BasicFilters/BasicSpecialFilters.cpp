@@ -32,7 +32,7 @@
 #include "BasicFilters.h"
 
 #include "DataObject/dataObjectFuncs.h"
-
+#include "common/sharedStructuresPrimitives.h"
 
 //#include "common/helperCommon.h"
 
@@ -2625,6 +2625,570 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
         *dObjDst = dObjDestination;
     }
 
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal BasicFilters::fillGeometricParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Preallocated dataObject to be filled").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("geometricElement", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Geometric primitiv according to definition").toLatin1().data());
+    paramsMand->append(param);
+    param = ito::Param("insideFlag", ito::ParamBase::Int, 1, 3, 1, tr("Switch between fill inside, outside or both").toLatin1().data());
+    paramsOpt->append(param);
+    param = ito::Param("edgeFlag", ito::ParamBase::Int, 0, 0, 0, tr("Edge-Flag, currently not used").toLatin1().data());
+    paramsOpt->append(param);
+    param = ito::Param("newValueInside", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 1.0, tr("New value for pixels inside the geometric element").toLatin1().data());
+    paramsOpt->append(param);
+    param = ito::Param("newValueOutside", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("New value for pixels outside the geometric element").toLatin1().data());
+    paramsOpt->append(param);
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void BasicFilters::fillGeoCircle(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radius, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal)
+{
+    #if (USEOMP)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+    #endif
+
+    _Tp* rowPtr;
+    ito::int32 y;
+    ito::int32 x;
+
+    ito::float64 evalY;
+    ito::float64 eval;
+    ito::float64 radQ2 = radius * radius;
+
+    #if (USEOMP)
+    #pragma omp for schedule(guided)
+    #endif
+    for (y = 0; y < dst->rows; y++)
+    {
+        
+        rowPtr = (_Tp*)dst->ptr(y);
+
+        evalY = pow((ito::float64)y - y0, 2);
+
+        for (x = 0; x < dst->cols; x++)
+        {
+            eval = (pow((ito::float64)x - x0, 2) + evalY);
+            if(eval < radQ2)
+            {
+                if(inside)
+                {
+                    rowPtr[x] = insideVal;
+                }
+            }
+            else
+            {
+                if(outside)
+                {
+                    rowPtr[x] = outsideVal;
+                }            
+            }
+
+        }
+
+    }
+    #if (USEOMP)
+    }
+    #endif
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void BasicFilters::fillGeoEllipse(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radiusX, const ito::float64 radiusY, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal)
+{
+    #if (USEOMP)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+    #endif
+
+    _Tp* rowPtr;
+    ito::int32 y;
+    ito::int32 x;
+
+    ito::float64 evalY;
+    ito::float64 eval;
+
+    #if (USEOMP)
+    #pragma omp for schedule(guided)
+    #endif
+    for (y = 0; y < dst->rows; y++)
+    {
+        
+        rowPtr = (_Tp*)dst->ptr(y);
+
+        evalY = pow(((ito::float64)y - y0) / radiusY, 2);
+
+        for (x = 0; x < dst->cols; x++)
+        {
+            eval = (pow(((ito::float64)x - x0) / radiusX, 2) + evalY);
+            if(eval < 1.0)
+            {
+                if(inside)
+                {
+                    rowPtr[x] = insideVal;
+                }
+            }
+            else
+            {
+                if(outside)
+                {
+                    rowPtr[x] = outsideVal;
+                }            
+            }
+
+        }
+
+    }
+    #if (USEOMP)
+    }
+    #endif
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void BasicFilters::fillGeoRectangle(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 x1, const ito::float64 y1, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal)
+{
+    #if (USEOMP)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+    #endif
+
+    _Tp* rowPtr;
+    ito::int32 y;
+    ito::int32 x;
+
+    bool evalY;
+
+    #if (USEOMP)
+    #pragma omp for schedule(guided)
+    #endif
+    for (y = 0; y < dst->rows; y++)
+    {
+        
+        rowPtr = (_Tp*)dst->ptr(y);
+
+        evalY = (y > y0) && (y < y1);
+
+        for (x = 0; x < dst->cols; x++)
+        {
+            if((x > x0) && (x < x1) && evalY)
+            {
+                if(inside)
+                {
+                    rowPtr[x] = insideVal;
+                }
+            }
+            else
+            {
+                if(outside)
+                {
+                    rowPtr[x] = outsideVal;
+                }            
+            }
+
+        }
+
+    }
+    #if (USEOMP)
+    }
+    #endif
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\detail
+   \param[in|out]   paramsMand  Mandatory parameters for the filter function
+   \param[in|out]   paramsOpt   Optinal parameters for the filter function
+   \param[out]   outVals   Outputvalues, not implemented for this function
+   \author ITO
+   \date
+*/
+ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+    ito::DataObject *dObjPrimitiv = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
+
+    if (!dObjPrimitiv)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: geometricElement ptr empty").toLatin1().data());
+    }
+
+    if (!dObjDst)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
+    }
+
+    if (dObjDst->getDims() != 2)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source is not a 2d matrix").toLatin1().data());
+    }
+
+    if (dObjPrimitiv->getDims() != 2)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: geometricElement is not a 2d matrix").toLatin1().data());
+    }
+
+    if (dObjPrimitiv->getType() != ito::tFloat32 && dObjPrimitiv->getType() != ito::tFloat64)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: geometricElement must be either float32 or float64").toLatin1().data());
+    }
+
+    //bool check;
+    ito::int32 xDim = 1;
+    ito::int32 yDim = 0;
+    ito::int32 type = 0; 
+
+    // Type 1 Structure will be dataObject([1, 11], 'float32') with [idx, type, x, y, 0, 0, 0, 0]
+    // Type 2 Structure will be dataObject([8, 1], 'float32') with [[idx], [type], [x], [y], [0], [0], [0],[0]]
+
+    ito::float64 x0;
+    ito::float64 x1;
+    ito::float64 y0;
+    ito::float64 y1;
+    ito::float64 rA;
+    ito::float64 rB;
+
+    ito::float64 insideVal = (*paramsOpt)[2].getVal<double>();
+    ito::float64 outsideVal = (*paramsOpt)[3].getVal<double>();
+
+    ito::float64 xScale = dObjDst->getAxisScale(xDim);
+    ito::float64 yScale = dObjDst->getAxisScale(yDim);
+    ito::float64 xOffset = dObjDst->getAxisOffset(xDim);
+    ito::float64 yOffset = dObjDst->getAxisOffset(yDim);
+
+    bool inFlag = (*paramsOpt)[0].getVal<int>() & 0x01;
+    bool outFlag = (*paramsOpt)[0].getVal<int>() & 0x02;
+
+    if(dObjPrimitiv->getSize(0) == 1 && dObjPrimitiv->getSize(1) > 8)
+    {
+        if(dObjPrimitiv->getType() == ito::tFloat32) type = cv::saturate_cast<int>(dObjPrimitiv->at<ito::float32>(0, 1));
+        else type = cv::saturate_cast<int>(dObjPrimitiv->at<ito::float64>(0, 1));
+
+
+        switch(type & 0x000000FF)
+        {
+            default:
+                return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
+            case ito::PrimitiveContainer::tCircle:
+                if(dObjPrimitiv->getType() == ito::tFloat32)
+                {
+                    x0 = dObjPrimitiv->at<ito::float32>(0, 2);
+                    y0 = dObjPrimitiv->at<ito::float32>(0, 3);
+                    rA = dObjPrimitiv->at<ito::float32>(0, 5);
+                    rB = dObjPrimitiv->at<ito::float32>(0, 5);
+                }
+                else
+                {
+                    x0 = dObjPrimitiv->at<ito::float64>(0, 2);
+                    y0 = dObjPrimitiv->at<ito::float64>(0, 3);
+                    rA = dObjPrimitiv->at<ito::float64>(0, 5);
+                    rB = dObjPrimitiv->at<ito::float64>(0, 5);
+                }
+                break;
+            case ito::PrimitiveContainer::tEllipse:
+                if(dObjPrimitiv->getType() == ito::tFloat32)
+                {
+                    x0 = dObjPrimitiv->at<ito::float32>(0, 2);
+                    y0 = dObjPrimitiv->at<ito::float32>(0, 3);
+                    rA = dObjPrimitiv->at<ito::float32>(0, 5);
+                    rB = dObjPrimitiv->at<ito::float32>(0, 6);
+                }
+                else
+                {
+                    x0 = dObjPrimitiv->at<ito::float64>(0, 2);
+                    y0 = dObjPrimitiv->at<ito::float64>(0, 3);
+                    rA = dObjPrimitiv->at<ito::float64>(0, 5);
+                    rB = dObjPrimitiv->at<ito::float64>(0, 6);
+                }
+                break;
+            case ito::PrimitiveContainer::tRectangle:
+                if(dObjPrimitiv->getType() == ito::tFloat32)
+                {
+                    x0 = dObjPrimitiv->at<ito::float32>(0, 2);
+                    y0 = dObjPrimitiv->at<ito::float32>(0, 3);
+                    x1 = dObjPrimitiv->at<ito::float32>(0, 5);
+                    y1 = dObjPrimitiv->at<ito::float32>(0, 6);
+                }
+                else
+                {
+                    x0 = dObjPrimitiv->at<ito::float64>(0, 2);
+                    y0 = dObjPrimitiv->at<ito::float64>(0, 3);
+                    x1 = dObjPrimitiv->at<ito::float64>(0, 5);
+                    y1 = dObjPrimitiv->at<ito::float64>(0, 6);
+                }
+                break;
+            case ito::PrimitiveContainer::tSquare:
+                if(dObjPrimitiv->getType() == ito::tFloat32)
+                {
+                    x0 = dObjPrimitiv->at<ito::float32>(0, 2) - dObjPrimitiv->at<ito::float32>(0, 5) / 2.0;
+                    y0 = dObjPrimitiv->at<ito::float32>(0, 3) - dObjPrimitiv->at<ito::float32>(0, 5) / 2.0;
+                    x1 = dObjPrimitiv->at<ito::float32>(0, 2) + dObjPrimitiv->at<ito::float32>(0, 5) / 2.0;
+                    y1 = dObjPrimitiv->at<ito::float32>(0, 3) + dObjPrimitiv->at<ito::float32>(0, 5) / 2.0;
+                }
+                else
+                {
+                    x0 = dObjPrimitiv->at<ito::float64>(0, 2) - dObjPrimitiv->at<ito::float64>(0, 5) / 2.0;
+                    y0 = dObjPrimitiv->at<ito::float64>(0, 3) - dObjPrimitiv->at<ito::float64>(0, 5) / 2.0;
+                    x1 = dObjPrimitiv->at<ito::float64>(0, 2) + dObjPrimitiv->at<ito::float64>(0, 5) / 2.0;
+                    y1 = dObjPrimitiv->at<ito::float64>(0, 3) + dObjPrimitiv->at<ito::float64>(0, 5) / 2.0;
+                }
+                break;
+        }
+
+    }
+    else if(dObjPrimitiv->getSize(0) > 6 && dObjPrimitiv->getSize(1) == 1)
+    {
+        if(dObjPrimitiv->getType() == ito::tFloat32) type = cv::saturate_cast<int>(dObjPrimitiv->at<ito::float32>(1, 0));
+        else type = cv::saturate_cast<int>(dObjPrimitiv->at<ito::float64>(1, 0));
+
+        switch(type & 0x000000FF)
+        {
+            default:
+                return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
+            case ito::PrimitiveContainer::tCircle:
+            case ito::PrimitiveContainer::tEllipse:
+                if(dObjPrimitiv->getType() == ito::tFloat32)
+                {
+                    x0 = (dObjPrimitiv->at<ito::float32>(2, 0) + dObjPrimitiv->at<ito::float32>(4, 0)) / 2.0;
+                    y0 = (dObjPrimitiv->at<ito::float32>(3, 0) + dObjPrimitiv->at<ito::float32>(5, 0)) / 2.0;
+                    rA = fabs(dObjPrimitiv->at<ito::float32>(2, 0) - dObjPrimitiv->at<ito::float32>(4, 0)) / 2.0;
+                    rB = fabs(dObjPrimitiv->at<ito::float32>(3, 0) - dObjPrimitiv->at<ito::float32>(5, 0)) / 2.0;
+                }
+                else
+                {
+                    x0 = (dObjPrimitiv->at<ito::float64>(2, 0) + dObjPrimitiv->at<ito::float64>(4, 0)) / 2.0;
+                    y0 = (dObjPrimitiv->at<ito::float64>(3, 0) + dObjPrimitiv->at<ito::float64>(5, 0)) / 2.0;
+                    rA = fabs(dObjPrimitiv->at<ito::float64>(2, 0) - dObjPrimitiv->at<ito::float64>(4, 0)) / 2.0;
+                    rB = fabs(dObjPrimitiv->at<ito::float64>(3, 0) - dObjPrimitiv->at<ito::float64>(5, 0)) / 2.0;
+                }
+                break;
+            case ito::PrimitiveContainer::tRectangle:
+            case ito::PrimitiveContainer::tSquare:
+                if(dObjPrimitiv->getType() == ito::tFloat32)
+                {
+                    x0 = dObjPrimitiv->at<ito::float32>(2, 0);
+                    y0 = dObjPrimitiv->at<ito::float32>(3, 0);
+                    x1 = dObjPrimitiv->at<ito::float32>(4, 0);
+                    y1 = dObjPrimitiv->at<ito::float32>(5, 0);
+                }
+                else
+                {
+                    x0 = dObjPrimitiv->at<ito::float64>(2, 0);
+                    y0 = dObjPrimitiv->at<ito::float64>(3, 0);
+                    x1 = dObjPrimitiv->at<ito::float64>(4, 0);
+                    y1 = dObjPrimitiv->at<ito::float64>(5, 0);
+                }
+                break;
+        }
+    }
+    else 
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: geometricElement must be either marker-style (8x1) or primitiv-style (1x11)").toLatin1().data());
+    }
+
+
+    switch(type & 0x000000FF)
+    {
+        case ito::PrimitiveContainer::tCircle:
+        case ito::PrimitiveContainer::tEllipse:
+            x0 = x0 / xScale + xOffset;
+            y0 = y0 / yScale + yOffset;
+            rA = rA / xScale;
+            rB = rB / yScale;
+            y1 = 0.0;
+            x1 = 0.0;
+            if(fabs(rA-rB) < dObjDst->getAxisScale(xDim) && fabs(rA-rB) < dObjDst->getAxisScale(yDim)) type = ito::PrimitiveContainer::tCircle;
+            else type = ito::PrimitiveContainer::tEllipse;
+
+            if(!ito::dObjHelper::isNotZero(rA) || !ito::dObjHelper::isNotZero(rB))  
+            {
+                return ito::RetVal(ito::retError, 0, tr("Error: radii of geometricElement must not be zero").toLatin1().data());
+            }
+            break;
+        case ito::PrimitiveContainer::tRectangle:
+        case ito::PrimitiveContainer::tSquare:
+            x0 = x0 / xScale + xOffset;
+            y0 = y0 / yScale + yOffset;
+            x1 = x1 / xScale + xOffset;
+            y1 = y1 / yScale + yOffset;
+            rA = 0.0;
+            rB = 0.0;
+            break;
+    }
+
+    cv::Mat* myMat = (cv::Mat*)(dObjDst->get_mdata()[dObjDst->seekMat(0)]);
+
+    if(!ito::dObjHelper::isFinite(rA) || !ito::dObjHelper::isFinite(rB) || !ito::dObjHelper::isFinite(x0) || !ito::dObjHelper::isFinite(y1) || !ito::dObjHelper::isFinite(x1) || !ito::dObjHelper::isFinite(y0))  
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: coordinates of geometricElement must be finite").toLatin1().data());
+    }
+
+    switch(dObjDst->getType())
+    {
+        case ito::tUInt8:
+        {
+            ito::uint8 inVal = cv::saturate_cast<ito::uint8>(insideVal);
+            ito::uint8 outVal = cv::saturate_cast<ito::uint8>(outsideVal);
+
+            switch(type & 0x000000FF)
+            {
+                case ito::PrimitiveContainer::tCircle:
+                    fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tEllipse:
+                    fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tRectangle:
+                case ito::PrimitiveContainer::tSquare:
+                    fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
+                    break;
+                default:
+                    return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
+            }
+            break;
+        }
+        case ito::tInt8:
+        {
+            ito::int8 inVal = cv::saturate_cast<ito::int8>(insideVal);
+            ito::int8 outVal = cv::saturate_cast<ito::int8>(outsideVal);
+
+            switch(type & 0x000000FF)
+            {
+                case ito::PrimitiveContainer::tCircle:
+                    fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tEllipse:
+                    fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tRectangle:
+                case ito::PrimitiveContainer::tSquare:
+                    fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
+                    break;
+                default:
+                    return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
+            }
+            break;
+        }
+        case ito::tUInt16:
+        {
+            ito::uint16 inVal = cv::saturate_cast<ito::uint16>(insideVal);
+            ito::uint16 outVal = cv::saturate_cast<ito::uint16>(outsideVal);
+
+            switch(type & 0x000000FF)
+            {
+                case ito::PrimitiveContainer::tCircle:
+                    fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tEllipse:
+                    fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tRectangle:
+                case ito::PrimitiveContainer::tSquare:
+                    fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
+                    break;
+                default:
+                    return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
+            }
+            break;
+        }
+        case ito::tInt16:
+        {
+            ito::int16 inVal = cv::saturate_cast<ito::int16>(insideVal);
+            ito::int16 outVal = cv::saturate_cast<ito::int16>(outsideVal);
+
+            switch(type & 0x000000FF)
+            {
+                case ito::PrimitiveContainer::tCircle:
+                    fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tEllipse:
+                    fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tRectangle:
+                case ito::PrimitiveContainer::tSquare:
+                    fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
+                    break;
+                default:
+                    return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
+            }
+            break;
+        }
+        case ito::tInt32:
+        {
+            ito::int32 inVal = cv::saturate_cast<ito::int32>(insideVal);
+            ito::int32 outVal = cv::saturate_cast<ito::int32>(outsideVal);
+
+            switch(type & 0x000000FF)
+            {
+                case ito::PrimitiveContainer::tCircle:
+                    fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tEllipse:
+                    fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tRectangle:
+                case ito::PrimitiveContainer::tSquare:
+                    fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
+                    break;
+                default:
+                    return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
+            }
+            break;
+        }
+        case ito::tFloat32:
+        {
+            ito::float32 inVal = cv::saturate_cast<ito::float32>(insideVal);
+            ito::float32 outVal = cv::saturate_cast<ito::float32>(outsideVal);
+
+            switch(type & 0x000000FF)
+            {
+                case ito::PrimitiveContainer::tCircle:
+                    fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tEllipse:
+                    fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tRectangle:
+                case ito::PrimitiveContainer::tSquare:
+                    fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
+                    break;
+                default:
+                    return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
+            }
+            break;
+        }
+        case ito::tFloat64:
+        {
+            ito::float64 inVal = cv::saturate_cast<ito::float64>(insideVal);
+            ito::float64 outVal = cv::saturate_cast<ito::float64>(outsideVal);
+
+            switch(type & 0x000000FF)
+            {
+                case ito::PrimitiveContainer::tCircle:
+                    fillGeoCircle(myMat, x0, y0, rA, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tEllipse:
+                    fillGeoEllipse(myMat, x0, y0, rA, rB, inFlag, outFlag, inVal, outVal);
+                    break;
+                case ito::PrimitiveContainer::tRectangle:
+                case ito::PrimitiveContainer::tSquare:
+                    fillGeoRectangle(myMat, x0, y0, x1, y1, inFlag, outFlag, inVal, outVal);
+                    break;
+                default:
+                    return ito::RetVal(ito::retError, 0, tr("Error: geometric primitiv not supported for filling").toLatin1().data());
+            }
+            break;
+        }
+        default:
+            return ito::RetVal(ito::retError, 0, tr("Error: destination object type is not suppirted for filling").toLatin1().data());
+    }
 
     return retval;
 }
