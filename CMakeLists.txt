@@ -97,6 +97,13 @@ if (PLUGIN_BasicFilters)
     ADD_SUBDIRECTORY(BasicFilters)
 endif (PLUGIN_BasicFilters)
 
+# BasicGPLFilters
+OPTION(PLUGIN_BasicGPLFilters "Build with this plugin." ON)
+if (PLUGIN_BasicGPLFilters)
+    ADD_SUBDIRECTORY(BasicGPLFilters)
+endif (PLUGIN_BasicGPLFilters) 
+
+
 # LeicaMotorFocus
 OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." ON)
 if (PLUGIN_LeicaMotorFocus)
