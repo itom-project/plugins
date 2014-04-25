@@ -237,13 +237,13 @@ template<typename _Tp> void BasicGPLFilters::despeckleAdaptedFilterBlock(Despeck
     const ito::uint8* src;
     ito::uint8* dst;
 
+    // get the first pixel within the column to be able to deal with ROI-settings
+    src = cvMatIn->ptr<const ito::uint8>(0);
+    dst = cvMatOut->ptr<ito::uint8>(0);
 
     // iterate through all rows
     for (y = 0; y < cvMatIn->rows; y++)
     {
-        // get the first pixel within the column to be able to deal with ROI-settings
-        src = cvMatIn->ptr<const ito::uint8>(y);
-        dst = cvMatOut->ptr<ito::uint8>(y);
 
         x = 0;
         ymin = std::max<int>(0, y - curRadius);
@@ -260,7 +260,7 @@ template<typename _Tp> void BasicGPLFilters::despeckleAdaptedFilterBlock(Despeck
         histogram.ymin = ymin;
         histogram.xmax = xmax;
         histogram.ymax = ymax;
-        add_vals<_Tp>(filterSettings, histogram, src, /*cvMatIn->cols,*/ histogram.xmin, histogram.ymin, histogram.xmax, histogram.ymax);
+        add_vals<_Tp>(filterSettings, histogram, src, cvMatIn->cols, histogram.xmin, histogram.ymin, histogram.xmax, histogram.ymax);
 
         // iterate through all colums
         for (x = 0; x < cvMatIn->cols; x++)
@@ -274,11 +274,11 @@ template<typename _Tp> void BasicGPLFilters::despeckleAdaptedFilterBlock(Despeck
             xmax = std::min<int>(cvMatIn->cols - 1, x + curRadius);
 
             // update currently used histogramm to new kernel
-            update_histogram<_Tp>(filterSettings, histogram, src, /*cvMatIn->cols,*/ xmin, ymin, xmax, ymax);
+            update_histogram<_Tp>(filterSettings, histogram, src, cvMatIn->cols, xmin, ymin, xmax, ymax);
 
             // get the current source and destination position relativ to first pixel within the row
-            //pos = (x + y * cvMatIn->cols)* sizeof(_Tp);
-            pos = x * sizeof(_Tp);
+            pos = (x + y * cvMatIn->cols)* sizeof(_Tp);
+            //pos = x * sizeof(_Tp);
 
             // retrieve median filtered data for the current pixel
             pixel = histogram_get_median(filterSettings.histRemain, histogram, src + pos);

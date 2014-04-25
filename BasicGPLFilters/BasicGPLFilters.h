@@ -151,35 +151,11 @@ class BasicGPLFilters : public ito::AddInAlgo
         {
             return *pixel;
         }
-        /*
-        static inline void list_add_elem (PixelsList *list, const ito::uint8 *elem)
-        {
-            const ito::int32 pos = list->start + list->count++;
-            list->elems[pos >= MAX_LIST_ELEMS ? pos - MAX_LIST_ELEMS : pos] = elem;
-        }
-        */
-        /*
-        static inline void list_del_elem (PixelsList* list)
-        {
-            list->count--;
-            list->start++;
 
-            if (list->start >= MAX_LIST_ELEMS) list->start = 0;
-        }
-        */
-        /*
-        static inline const ito::uint8 * list_get_random_elem (PixelsList *list)
-        {
-            const ito::int32 pos = list->start + rand() % list->count;
-
-            if (pos >= MAX_LIST_ELEMS) return list->elems[pos - MAX_LIST_ELEMS];
-            else return list->elems[pos];
-        }
-        */
         static inline void histogram_add (DespeckleHistogram &hist, const ito::uint8 &val, const ito::uint8 *orig)
         {
             hist.elems[val]++;
-            //list_add_elem (&hist->origs[val], orig);
+            // Add the element to the original value list
             const ito::int32 pos = hist.origs[val].start + hist.origs[val].count++;
             hist.origs[val].elems[pos >= MAX_LIST_ELEMS ? pos - MAX_LIST_ELEMS : pos] = orig;
         }
@@ -187,7 +163,8 @@ class BasicGPLFilters : public ito::AddInAlgo
         static inline void histogram_remove (DespeckleHistogram &hist, const ito::uint8 &val)
         {
             hist.elems[val]--;
-            //list_del_elem (&hist->origs[val]);
+            
+            // Delete the element from the original value list
             hist.origs[val].count--;
             hist.origs[val].start++;
 
@@ -223,61 +200,19 @@ class BasicGPLFilters : public ito::AddInAlgo
             {
                 i++;
             }
-            //return list_get_random_elem (&hist->origs[i]);
-
+            
+            // Get a random element from the right bucket
             const ito::int32 pos = hist.origs[i].start + rand() % hist.origs[i].count;
 
             if (pos >= MAX_LIST_ELEMS) return hist.origs[i].elems[pos - MAX_LIST_ELEMS];
             else return hist.origs[i].elems[pos];
         }
 
-        /*
-        template<typename _Tp> static inline void add_val (DespeckleHistogram *hist, const ito::uint8 *src, ito::int32 width, ito::int32 x, ito::int32 y)
-        {
-            const ito::int32 pos   = (x + (y * width)) * sizeof(_Tp);
-            const ito::uint8 value = pixel_luminance<_Tp>(src + pos);
-
-            if (value > blackLevel && value < whiteLevel)
-            {
-                histogram_add (hist, value, src + pos);
-                BasicGPLFilters::histRemain++;
-            }
-            else
-            {
-                if (value <= blackLevel)
-                    BasicGPLFilters::histLess++;
-
-                if (value >= whiteLevel)
-                    BasicGPLFilters::histMore++;
-            }
-        }
-        */
-        /*
-        template<typename _Tp> static inline void del_val (DespeckleHistogram *hist, const ito::uint8 *src, ito::int32 width, ito::int32 x, ito::int32 y)
-        {
-            const ito::int32 pos   = (x + (y * width)) * sizeof(_Tp);
-            const ito::int32 value = pixel_luminance<_Tp>(src + pos);
-
-            if (value > blackLevel && value < whiteLevel)
-            {
-                histogram_remove (hist, value);
-                BasicGPLFilters::histRemain--;
-            }
-            else
-            {
-                if (value <= blackLevel)
-                    BasicGPLFilters::histLess--;
-
-                if (value >= whiteLevel)
-                    BasicGPLFilters::histMore--;
-            }
-        }
-        */
         template<typename _Type> static inline void add_vals (
             DespeckleSettings &settings,
             DespeckleHistogram &hist, 
             const ito::uint8 *src, 
-            //const ito::int32 &width, 
+            const ito::int32 &width, 
             const ito::int32 &xmin, 
             const ito::int32 &ymin, 
             const ito::int32 &xmax, 
@@ -294,8 +229,8 @@ class BasicGPLFilters : public ito::AddInAlgo
                 for (x = xmin; x <= xmax; x++)
                 {
                     //add_val<_Type>(hist, src, width, x, y);
-                    //const ito::int32 pos   = (x + (y * width)) * sizeof(_Type);
-                    const ito::int32 pos   = x * sizeof(_Type);
+                    const ito::int32 pos   = (x + (y * width)) * sizeof(_Type);
+                    //const ito::int32 pos   = x * sizeof(_Type);
                     const ito::uint8 value = pixel_luminance<_Type>(src + pos);
                     if (value > settings.blackLevel && value < settings.whiteLevel)
                     {
@@ -318,7 +253,7 @@ class BasicGPLFilters : public ito::AddInAlgo
             DespeckleSettings &settings,
             DespeckleHistogram &hist, 
             const ito::uint8 *src, 
-            //const ito::int32 &width, 
+            const ito::int32 &width, 
             const ito::int32 &xmin, 
             const ito::int32 &ymin, 
             const ito::int32 &xmax, 
@@ -335,8 +270,8 @@ class BasicGPLFilters : public ito::AddInAlgo
                 for (x = xmin; x <= xmax; x++)
                 {
                     //del_val<_Type>(hist, src, width, x, y);
-                    //const ito::int32 pos   = (x + (y * width)) * sizeof(_Type);
-                    const ito::int32 pos   = x * sizeof(_Type);
+                    const ito::int32 pos   = (x + (y * width)) * sizeof(_Type);
+                    //const ito::int32 pos   = x * sizeof(_Type);
                     const ito::int32 value = pixel_luminance<_Type>(src + pos);
 
                     if (value > settings.blackLevel && value < settings.whiteLevel)
@@ -360,7 +295,7 @@ class BasicGPLFilters : public ito::AddInAlgo
             DespeckleSettings &settings,
             DespeckleHistogram &hist, 
             const ito::uint8 *src, 
-            //const ito::int32 &width, 
+            const ito::int32 &width, 
             const ito::int32 &xmin, 
             const ito::int32 &ymin, 
             const ito::int32 &xmax, 
@@ -370,13 +305,13 @@ class BasicGPLFilters : public ito::AddInAlgo
                 pixel in each call */
             /* assuming that box is moving either right or down */
 
-            del_vals<_Tp>(settings, hist, src, /*width,*/ hist.xmin, hist.ymin, xmin - 1, hist.ymax);
-            del_vals<_Tp>(settings, hist, src, /*width,*/ xmin, hist.ymin, xmax, ymin - 1);
-            del_vals<_Tp>(settings, hist, src, /*width,*/ xmin, ymax + 1, xmax, hist.ymax);
+            del_vals<_Tp>(settings, hist, src, width, hist.xmin, hist.ymin, xmin - 1, hist.ymax);
+            del_vals<_Tp>(settings, hist, src, width, xmin, hist.ymin, xmax, ymin - 1);
+            del_vals<_Tp>(settings, hist, src, width, xmin, ymax + 1, xmax, hist.ymax);
 
-            add_vals<_Tp>(settings, hist, src, /*width,*/ hist.xmax + 1, ymin, xmax, ymax);
-            add_vals<_Tp>(settings, hist, src, /*width,*/ xmin, ymin, hist.xmax, hist.ymin - 1);
-            add_vals<_Tp>(settings, hist, src, /*width,*/ hist.xmin, hist.ymax + 1, hist.xmax, ymax);
+            add_vals<_Tp>(settings, hist, src, width, hist.xmax + 1, ymin, xmax, ymax);
+            add_vals<_Tp>(settings, hist, src, width, xmin, ymin, hist.xmax, hist.ymin - 1);
+            add_vals<_Tp>(settings, hist, src, width, hist.xmin, hist.ymax + 1, hist.xmax, ymax);
 
             hist.xmin = xmin;
             hist.ymin = ymin;
