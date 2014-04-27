@@ -23,33 +23,24 @@
 #ifndef DOCKWIDGETDISPWINDOW_H
 #define DOCKWIDGETDISPWINDOW_H
 
-#include "projWindow.h"
-//#include <QtGui>
+#include "common/addInInterface.h"
+#include "common/abstractAddInDockWidget.h"
+
 #include <qwidget.h>
 #include <qmap.h>
 #include <qstring.h>
 
 #include "ui_dockWidgetDispWindow.h"
 
-#include "common/sharedStructures.h"
-#include "common/sharedStructuresQt.h"
 
-namespace ito {
-    class AddInActuator;
-}
 
-class DispWindow; //forward declaration
-
-class DockWidgetDispWindow : public QWidget
+class DockWidgetDispWindow : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetDispWindow(const QString &identifier, PrjWindow *prjWindow, DispWindow *dispWindow);
+        DockWidgetDispWindow(ito::AddInDataIO *dispWindow);
         ~DockWidgetDispWindow() {}
-        PrjWindow *m_pPrjWindow;
-        DispWindow *m_pDispWindow;
-        //QMap<QString, ito::Param> *m_pParams;
 
     private:
         Ui::DockWidgetDispWindow ui;
@@ -58,10 +49,14 @@ class DockWidgetDispWindow : public QWidget
         int m_curNumGrayCodes;
         bool m_numimgChangeInProgress;
 
+        bool m_inEditing;
+        bool m_firstRun;
+
     signals:
 
     public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);
+        void parametersChanged(QMap<QString, ito::Param> params);
+        void identifierChanged(const QString &identifier);
         
     private slots:
         void on_comboBox_currentIndexChanged(int index);

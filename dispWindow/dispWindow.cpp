@@ -313,7 +313,7 @@ DispWindow::DispWindow()
  //   m_pWindow->doneCurrent();
 
 //now create dock widget for this plugin
-    DockWidgetDispWindow *DispWinWid = new DockWidgetDispWindow("HoloEye",m_pWindow,this);
+    DockWidgetDispWindow *DispWinWid = new DockWidgetDispWindow(this);
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
@@ -506,7 +506,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             }
             else if (QString::compare(key, "numimg", Qt::CaseInsensitive) == 0)
             {
-                m_pWindow->showImageNum(it->getVal<int>());
+                QMetaObject::invokeMethod(m_pWindow, "showImageNum", Qt::BlockingQueuedConnection, Q_ARG(int, it->getVal<int>()));
             }
             else if (QString::compare(key, "x0", Qt::CaseInsensitive) == 0)
             {
@@ -863,8 +863,8 @@ const ito::RetVal DispWindow::showConfDialog(void)
     }
     delete confDialog;
 
-    QSharedPointer<ito::Param> temp(new ito::Param(m_params["numimg"]));
-    this->setParam(temp);
+    QSharedPointer<ito::ParamBase> temp(new ito::ParamBase(m_params["numimg"]));
+    QMetaObject::invokeMethod(this,"setParam",Q_ARG(QSharedPointer<ito::ParamBase>, temp),NULL);
 
     return ito::retOk;
 }
@@ -941,12 +941,12 @@ void DispWindow::dockWidgetVisibilityChanged(bool visible)
     {
         if (visible)
         {
-            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(valuesChanged(QMap<QString, ito::Param>)));
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(parametersChanged(QMap<QString, ito::Param>)));
             emit parametersChanged(m_params);
         }
         else
         {
-            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(valuesChanged(QMap<QString, ito::Param>)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(parametersChanged(QMap<QString, ito::Param>)));
         }
     }
 }

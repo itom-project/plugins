@@ -98,7 +98,8 @@
     {                                   \
         if (gamma == 0)                 \
         {                               \
-            gl_FragColor = color * texture2D(texture, TexCoord); \
+            float c = texture2D(texture, TexCoord).r; \
+            FragColor = color * vec4(c,c,c,1.0); \
         }                               \
         else                            \
         {                               \
@@ -122,7 +123,8 @@
     {                                    \
         if (gamma == 0)                 \
         {                               \
-            FragColor = color * texture2D(texture, TexCoord); \
+            float c = texture2D(texture, TexCoord).r; \
+            FragColor = color * vec4(c,c,c,1.0); \
         }                               \
         else                            \
         {                               \
@@ -1151,7 +1153,8 @@ ito::RetVal PrjWindow::cosineInit()
             goto end;
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
         if ((ret = glGetError()))
         {
             std::cerr << "error tex image (cosine init)\n";
@@ -1384,7 +1387,8 @@ ito::RetVal PrjWindow::graycodeInit()
         goto end;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image black image (graycode init)\n";
@@ -1401,7 +1405,8 @@ ito::RetVal PrjWindow::graycodeInit()
         goto end;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image black image 2 (graycode init)\n";
@@ -1422,7 +1427,8 @@ ito::RetVal PrjWindow::graycodeInit()
         goto end;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image white image (graycode init)\n";
@@ -1439,7 +1445,8 @@ ito::RetVal PrjWindow::graycodeInit()
         goto end;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
     if ((ret = glGetError()))
     {
         std::cerr << "error tex image white image 2 (graycode init)\n";
@@ -1471,7 +1478,8 @@ ito::RetVal PrjWindow::graycodeInit()
             goto end;
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
         if ((ret = glGetError()))
         {
             std::cerr << "error tex image (graycode init)\n";
@@ -1514,7 +1522,8 @@ ito::RetVal PrjWindow::graycodeInit()
             goto end;
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, tempimg);
+        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tempimg);
         if ((ret = glGetError()))
         {
             std::cerr << "error tex image (graycode init)\n";
