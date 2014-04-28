@@ -20,36 +20,51 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGSERIALIO_H
-#define DIALOGSERIALIO_H
+#ifndef DIALOGDISPWINDOW_H
+#define DIALOGDISPWINDOW_H
 
 #include "common/sharedStructures.h"
+#include "common/sharedStructuresQt.h"
+#include "common/abstractAddInConfigDialog.h"
 
 #include "ui_dialogDispWindow.h"
-#include <QtGui>
-#include <qdialog.h>
 
-class dialogDispWindow : public QDialog 
+#include <qstring.h>
+#include <qmap.h>
+#include <qabstractbutton.h>
+
+namespace ito
+{
+    class AddInBase; //forward declaration
+}
+
+class PrjWindow;
+
+class DialogDispWindow : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
-    private:
-        Ui::dialogDispWindow ui;
-        void *m_pWindow;
-
     public:
-        dialogDispWindow(const void *prjWindow);
-        ~dialogDispWindow();
-        int setVals(QMap<QString, ito::Param> *params, const int numImages);
-        int getVals(QMap<QString, ito::Param> *params);
+        DialogDispWindow(ito::AddInBase *grabber, PrjWindow *prjWindow);
+        ~DialogDispWindow() {};
+
+        ito::RetVal applyParameters();
+
+    private:
+        bool m_firstRun;
+        bool m_inEditing;
+
+        Ui::DialogDispWindow ui;
+        PrjWindow *m_pWindow;
 
     public slots:
-        void on_pushButtonSet_clicked(void);
-//        void on_slider_image_valueChanged();
-        void on_horizontalSlider_valueChanged();
-        void on_comboBox_orientation_currentIndexChanged(int index);
-        void on_comboBox_color_currentIndexChanged(int index);
-        void on_checkBox_gamma_stateChanged(int state);
+        void parametersChanged(QMap<QString, ito::Param> params);
+
+    private slots:
+        void on_buttonBox_clicked(QAbstractButton* btn);
+
+        void on_horizontalSlider_valueChanged(int value);
+
 };
 
 #endif

@@ -105,7 +105,8 @@ require this library.";
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("ysize", ito::ParamBase::Int, 3, 4096, 3, tr("width of window").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("period", ito::ParamBase::Int, 3, 2048, 12, tr("cosine period in pixel").toLatin1().data());
+    paramVal = ito::Param("period", ito::ParamBase::Int, 12, NULL, tr("cosine period in pixel").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(4, 4096, 2), true);
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("phaseshift", ito::ParamBase::Int, 3, 8, 4, tr("number of total phase shifts").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -201,7 +202,8 @@ DispWindow::DispWindow()
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DispWindow", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("period", ito::ParamBase::Int, 3, 2048, 12, tr("Cosine period").toLatin1().data());
+    paramVal = ito::Param("period", ito::ParamBase::Int, 12, NULL, tr("Cosine period").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(4, 4096, 2), true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("phaseshift", ito::ParamBase::Int, 3, 8, 4, tr("Count of phase shifts").toLatin1().data());
@@ -490,54 +492,107 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         }
         else
         {
-            //in an earlier version, at first, it has been checked whether the new value is the same than the old one. If so, the setting has been aborted.
-
-            it->copyValueFrom( &(*val) );
-
             if (QString::compare(key, "color", Qt::CaseInsensitive) == 0)
             {
-                m_pWindow->setColor(it->getVal<int>());
-            }
-            else if (QString::compare(key, "orientation", Qt::CaseInsensitive) == 0)
-            {
-                QMetaObject::invokeMethod(m_pWindow, "setOrientation", Qt::BlockingQueuedConnection, Q_ARG(int, it->getVal<int>()));
-                m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependent parameter
-                static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
+                retValue += m_pWindow->setColor(val->getVal<int>());
+                if (!retValue.containsError())
+                {
+                    it->copyValueFrom(&(*val));
+                }
             }
             else if (QString::compare(key, "numimg", Qt::CaseInsensitive) == 0)
             {
-                QMetaObject::invokeMethod(m_pWindow, "showImageNum", Qt::BlockingQueuedConnection, Q_ARG(int, it->getVal<int>()));
+                QMetaObject::invokeMethod(m_pWindow, "showImageNum", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()));
+                it->copyValueFrom(&(*val));
             }
             else if (QString::compare(key, "x0", Qt::CaseInsensitive) == 0)
             {
-                QMetaObject::invokeMethod(m_pWindow, "setPos", Qt::BlockingQueuedConnection, Q_ARG(int, it->getVal<int>()), Q_ARG(int,  m_params["y0"].getVal<int>()));
+                QMetaObject::invokeMethod(m_pWindow, "setPos", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()), Q_ARG(int,  m_params["y0"].getVal<int>()));
+                it->copyValueFrom(&(*val));
             }
             else if (QString::compare(key, "y0", Qt::CaseInsensitive) == 0)
             {
-                QMetaObject::invokeMethod(m_pWindow, "setPos", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["x0"].getVal<int>()), Q_ARG(int,  it->getVal<int>()));
+                QMetaObject::invokeMethod(m_pWindow, "setPos", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["x0"].getVal<int>()), Q_ARG(int,  val->getVal<int>()));
+                it->copyValueFrom(&(*val));
             }
             else if (QString::compare(key, "xsize", Qt::CaseInsensitive) == 0)
             {
-                QMetaObject::invokeMethod(m_pWindow, "setSize", Qt::BlockingQueuedConnection, Q_ARG(int, it->getVal<int>()), Q_ARG(int,  m_params["ysize"].getVal<int>()));
+                QMetaObject::invokeMethod(m_pWindow, "setSize", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()), Q_ARG(int,  m_params["ysize"].getVal<int>()));
+                it->copyValueFrom(&(*val));
             }
             else if (QString::compare(key, "ysize", Qt::CaseInsensitive) == 0)
             {
-                QMetaObject::invokeMethod(m_pWindow, "setSize", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["xsize"].getVal<int>()), Q_ARG(int,  it->getVal<int>()));
+                QMetaObject::invokeMethod(m_pWindow, "setSize", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["xsize"].getVal<int>()), Q_ARG(int,  val->getVal<int>()));
+                it->copyValueFrom(&(*val));
             }
-            else if (QString::compare(key, "phaseshift", Qt::CaseInsensitive) == 0 || QString::compare(key, "period", Qt::CaseInsensitive) == 0 || QString::compare(key, "orientation", Qt::CaseInsensitive) == 0)
+            else if (QString::compare(key, "orientation", Qt::CaseInsensitive) == 0)
             {
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
                 QMetaObject::invokeMethod(m_pWindow, "configProjection", 
                                             Qt::BlockingQueuedConnection, 
                                             Q_ARG(int, m_params["period"].getVal<int>()), 
                                             Q_ARG(int, m_params["phaseshift"].getVal<int>()), 
-                                            Q_ARG(int, m_params["orientation"].getVal<int>()), 
+                                            Q_ARG(int, val->getVal<int>()), 
                                             Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
                 retValue += locker.getSemaphore()->returnValue;
 
                 m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
                 static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
+
+                if (!retValue.containsError())
+                {
+                    it->copyValueFrom(&(*val));
+                }
+            }
+            else if (QString::compare(key, "phaseshift", Qt::CaseInsensitive) == 0)
+            {
+                
+                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+                QMetaObject::invokeMethod(m_pWindow, "configProjection", 
+                                        Qt::BlockingQueuedConnection,  
+                                        Q_ARG(int, m_params["period"].getVal<int>()),
+                                        Q_ARG(int, val->getVal<int>()),
+                                        Q_ARG(int, m_params["orientation"].getVal<int>()), 
+                                        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+                retValue += locker.getSemaphore()->returnValue;
+
+                m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
+                static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
+
+                if (!retValue.containsError())
+                {
+                    it->copyValueFrom(&(*val));
+                }
+            }
+            else if (QString::compare(key, "period", Qt::CaseInsensitive) == 0)
+            {
+                
+                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+                QMetaObject::invokeMethod(m_pWindow, "configProjection", 
+                                        Qt::BlockingQueuedConnection, 
+                                        Q_ARG(int, val->getVal<int>()), 
+                                        Q_ARG(int, m_params["phaseshift"].getVal<int>()), 
+                                        Q_ARG(int, m_params["orientation"].getVal<int>()), 
+                                        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+                retValue += locker.getSemaphore()->returnValue;
+
+                m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
+                static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
+
+                if (!retValue.containsError())
+                {
+                    it->copyValueFrom(&(*val));
+                }
+            }
+
+            //one last thing, if the value of numimg is now greater than its maximum, reset the value to the maximum and set the value
+            if (m_params["numimg"].getVal<int>() > m_params["numimg"].getMax())
+            {
+                m_params["numimg"].setVal<int>( m_params["numimg"].getMax() );
+                QMetaObject::invokeMethod(m_pWindow, "showImageNum", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["numimg"].getVal<int>()));
             }
         }
     }
@@ -665,7 +720,7 @@ ito::RetVal DispWindow::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
-    QMetaObject::invokeMethod(m_pWindow, "shotDown");
+    QMetaObject::invokeMethod(m_pWindow, "shutDown");
 
 
     if (waitCond)
@@ -854,19 +909,7 @@ void DispWindow::numberOfImagesChanged(int numImg, int numGray, int numCos)
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal DispWindow::showConfDialog(void)
 {
-    dialogDispWindow *confDialog = new dialogDispWindow((void*)this);
-    confDialog->setVals(&m_params, m_pWindow->getNumImages());
-    if (confDialog->exec())
-    {
-        confDialog->getVals(&m_params);
-        emit parametersChanged(m_params);
-    }
-    delete confDialog;
-
-    QSharedPointer<ito::ParamBase> temp(new ito::ParamBase(m_params["numimg"]));
-    QMetaObject::invokeMethod(this,"setParam",Q_ARG(QSharedPointer<ito::ParamBase>, temp),NULL);
-
-    return ito::retOk;
+    return apiShowConfigurationDialog(this, new DialogDispWindow(this, m_pWindow));
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DispWindow::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)

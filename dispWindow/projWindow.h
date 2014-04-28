@@ -46,18 +46,18 @@ class PrjWindow : public QGLWidget
         ito::RetVal setGamma(const int gamma);
         ito::RetVal setGammaPrj(const int gammaCol);
 
-        int getNumImages(void);
-        int getOrientation(void) {return m_orientation;};
-        int getPhaseShift(void)  {return m_phaShift;};
-        int getNumGrayImages(void);
-        int getCurImg(void) { return m_imgNum; }
-        int getOrientationClearedCurImg(void);
-        int getGrayBitsVert(void) { return m_grayBitsVert; }
-        int getGrayBitsHoriz(void) { return m_grayBitsHoriz; }
-        unsigned char ** getCosPtrVert(void) { return m_cosImgsVert; };
-        unsigned char ** getCosPtrHoriz(void) { return m_cosImgsHoriz; };
-        unsigned char ** getGrayPtrVert(void) { return m_grayImgsVert; };
-        unsigned char ** getGrayPtrHoriz(void) { return m_grayImgsHoriz; };
+        int getNumImages(void) const;
+        int getOrientation(void) const {return m_orientation;};
+        int getPhaseShift(void) const  {return m_phaShift;};
+        int getNumGrayImages(void) const;
+        int getCurImg(void) const { return m_imgNum; }
+        int getOrientationClearedCurImg(void) const;
+        int getGrayBitsVert(void) const { return m_grayBitsVert; }
+        int getGrayBitsHoriz(void) const { return m_grayBitsHoriz; }
+        unsigned char ** getCosPtrVert(void) const { return m_cosImgsVert; };
+        unsigned char ** getCosPtrHoriz(void) const { return m_cosImgsHoriz; };
+        unsigned char ** getGrayPtrVert(void) const { return m_grayImgsVert; };
+        unsigned char ** getGrayPtrHoriz(void) const { return m_grayImgsHoriz; };
 
         enum InitState
         {
@@ -130,14 +130,14 @@ class PrjWindow : public QGLWidget
         void numberOfImagesChanged(int numImg, int numGray, int numCos); /** Signal to sent new max image counts to the parent-Plugin*/
 
     public slots:
-        void setSize(int sizex, int sizey, bool reCalcGL = true);
+        ito::RetVal setSize(int sizex, int sizey, bool reCalcGL = true);
         void setPos(int xpos, int ypos);
 
-        ito::RetVal shotDown(ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal shutDown(ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal configProjection(int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal configProjectionFull(int xpos, int sizex, int ypos, int sizey, int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond = NULL);
 
-        ito::RetVal setOrientation(const int orient);
+        //ito::RetVal setOrientation(const int orient);
 
         void enableInit() { if (!(m_isInit & paramsValid)) m_isInit |= paramsValid; };
         void disableInit() { m_isInit &= ~paramsValid; };

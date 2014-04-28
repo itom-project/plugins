@@ -666,7 +666,7 @@ void PrjWindow::paintGL()
     if ((drawScene == 1) || (m_isInit != idleState) || (m_isInit & initFail))
         return;
     drawScene = 1;
-//    makeCurrent();
+    makeCurrent();
 
     // Set the display viewport
 //    glViewport(0, 0, width, height);
@@ -719,8 +719,8 @@ void PrjWindow::paintGL()
     }
     else
     {
-//        glClearColor(0.0f, 0.0f, 1.0f, 0.0f);    //black background
-//        glClear(GL_COLOR_BUFFER_BIT);    //clear screen buffer
+        glClearColor(0.0f, 0.0f, 1.0f, 0.0f);    //black background
+        glClear(GL_COLOR_BUFFER_BIT);    //clear screen buffer
 
         //!> Bind shader program
 #if QT_VERSION < 0x050000
@@ -792,15 +792,15 @@ void PrjWindow::paintGL()
 //draw:
     //!> flush buffers, wait for drawing to finish and jic swap the buffers (we do not have double buffering)
 //    swapBuffers();
-
-//    if (ret = glGetError())
-//    {
-//        std::cerr << "error while drawing openGl scene: " << ret << "\n";
-//    }
+    int ret = glGetError();
+    if (ret)
+    {
+        std::cerr << "error while drawing openGl scene: " << ret << "\n";
+    }
     glFlush();
     glFinish();
 
-//    doneCurrent();
+    doneCurrent();
     drawScene = 0;
 }
 
@@ -1590,96 +1590,114 @@ ito::RetVal PrjWindow::setupProjection()
     test = div((int)m_period, (int)2);
     if (test.rem != 0)
     {
-        m_period++;
-        std::cerr << "for a combination of graycode and cosine fringes the period of the \
-                      cosine fringes must be a mutliple of 2. The cosine fringe period was \
-                      changed to " << m_period << " pixels!\n";
+        retval += ito::RetVal::format(ito::retError, 0, "The period of the cosine fringes (%i px) must be dividable by 2.", m_period);
     }
 
     // period must dividable by the number of shifts
     periodTest = div((int)m_period, (int)m_phaShift);
     if(periodTest.rem != 0)
     {
-        m_period = ceil((float)m_period / (float)m_phaShift) * (float)m_phaShift;
-        std::cerr << "the period number of the cosine fringes must be dividable by the \
-                      number of phaseshifts. Therefore the period number was changed to" << m_period << " pixels!\n";
+        retval += ito::RetVal::format(ito::retError, 0, "The period of the cosine fringes (%i px) must be dividable by the number of phaseshifts (%i).", m_period, m_phaShift);
     }
 
-    if (m_period < width())
+    if (!retval.containsError())
     {
-        bitsTemp = floor(log(width() / (float)m_period) / log(2.0));
-    }
-    else
-    {
-        bitsTemp = 0;
-    }
-    if (pow(2.0, (double)bitsTemp) < width() / (float)m_period)
-    {
-        bitsTemp++;
-    }
-    m_grayBitsVert = bitsTemp + 1;
-    // one graycode bit is minimum
-    if (m_grayBitsVert < 1)
-    {
-        m_grayBitsVert++;
-    }
 
-    if (m_period < height())
-    {
-        bitsTemp = floor(log(height() / (float)m_period) / log(2.0));
-    }
-    else
-    {
-        bitsTemp = 0;
-    }
-    if (pow(2.0, (double)bitsTemp) < height() / (float)m_period)
-    {
-        bitsTemp++;
-    }
-    m_grayBitsHoriz = bitsTemp + 1;
-    // one graycode bit is minimum
-    if (m_grayBitsHoriz < 1)
-    {
-        m_grayBitsHoriz++;
+        if (m_period < width())
+        {
+            bitsTemp = floor(log(width() / (float)m_period) / log(2.0));
+        }
+        else
+        {
+            bitsTemp = 0;
+        }
+        if (pow(2.0, (double)bitsTemp) < width() / (float)m_period)
+        {
+            bitsTemp++;
+        }
+        m_grayBitsVert = bitsTemp + 1;
+        // one graycode bit is minimum
+        if (m_grayBitsVert < 1)
+        {
+            m_grayBitsVert++;
+        }
+
+        if (m_period < height())
+        {
+            bitsTemp = floor(log(height() / (float)m_period) / log(2.0));
+        }
+        else
+        {
+            bitsTemp = 0;
+        }
+        if (pow(2.0, (double)bitsTemp) < height() / (float)m_period)
+        {
+            bitsTemp++;
+        }
+        m_grayBitsHoriz = bitsTemp + 1;
+        // one graycode bit is minimum
+        if (m_grayBitsHoriz < 1)
+        {
+            m_grayBitsHoriz++;
+        }
     }
 
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PrjWindow::setSize(int sizex, int sizey, bool reCalcGL)
+ito::RetVal PrjWindow::setSize(int sizex, int sizey, bool reCalcGL)
 {
-    m_isInit &= ~paramsValid;
-    Sleep(100);
+    ito::RetVal retval;
 
-    resize(sizex, sizey);
-
-    makeCurrent();
-    cosineExit();
-    graycodeExit();
-
-    setupProjection();
-
-    int width = this->width();
-    int height = this->height();
-    // Set the display viewport
-    glViewport(0, 0, width, height);
-
-    m_isInit |= paramsValid;
-
-    if(reCalcGL)
+    QSize newSize(sizex, sizey);
+    if ((m_isInit & paramsValid) == false || size() != newSize)
     {
-        cosineInit();
-        graycodeInit();
-        numberOfImagesChanged(this->getNumImages(), this->getNumGrayImages(), this->getPhaseShift());
+        m_isInit &= ~paramsValid;
+        Sleep(100);
+
+        resize(newSize);
+
+        makeCurrent();
+        retval += cosineExit();
+        retval += graycodeExit();
+
+        if (!retval.containsError())
+        {
+            retval += setupProjection();
+        }
+
+        if (!retval.containsError())
+        {
+
+            GLsizei width = this->width();
+            GLsizei height = this->height();
+            // Set the display viewport
+            glViewport(0, 0, width, height);
+
+            m_isInit |= paramsValid;
+
+            if(reCalcGL)
+            {
+                retval += cosineInit();
+                retval += graycodeInit();
+                numberOfImagesChanged(this->getNumImages(), this->getNumGrayImages(), this->getPhaseShift());
+            }
+        }
+        doneCurrent();
     }
-    doneCurrent();
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PrjWindow::setPos(int xpos, int ypos)
 {
-    move(xpos, ypos);
+    QPoint newPos(xpos, ypos);
+    if (pos() != newPos)
+    {
+        move(newPos);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1888,40 +1906,40 @@ ito::RetVal PrjWindow::setColor(const int col)
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::setOrientation(const int orient)
-{
-    ito::RetVal retval = ito::retOk;
-
-    if (orient <= 0)
-    {
-        m_orientation = 0;
-        if (m_imgNum < 0)
-        {
-            m_imgNum = 0;
-        }
-        else if (m_imgNum >= m_phaShift + m_grayBitsVert + 2)
-        {
-            m_imgNum = m_phaShift + m_grayBitsVert + 1;
-        }
-    }
-    else
-    {
-        m_orientation = 1;
-        if (m_imgNum < m_phaShift + m_grayBitsVert + 2)
-        {
-            m_imgNum = m_phaShift + m_grayBitsVert + 2;
-        }
-        else if (m_imgNum >=  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 2)
-        {
-            m_imgNum =  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 1;
-        }
-    }
-
-    paintGL();
-
-    return retval;
-}
+////----------------------------------------------------------------------------------------------------------------------------------
+//ito::RetVal PrjWindow::setOrientation(const int orient)
+//{
+//    ito::RetVal retval = ito::retOk;
+//
+//    if (orient <= 0)
+//    {
+//        m_orientation = 0;
+//        if (m_imgNum < 0)
+//        {
+//            m_imgNum = 0;
+//        }
+//        else if (m_imgNum >= m_phaShift + m_grayBitsVert + 2)
+//        {
+//            m_imgNum = m_phaShift + m_grayBitsVert + 1;
+//        }
+//    }
+//    else
+//    {
+//        m_orientation = 1;
+//        if (m_imgNum < m_phaShift + m_grayBitsVert + 2)
+//        {
+//            m_imgNum = m_phaShift + m_grayBitsVert + 2;
+//        }
+//        else if (m_imgNum >=  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 2)
+//        {
+//            m_imgNum =  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 1;
+//        }
+//    }
+//
+//    paintGL();
+//
+//    return retval;
+//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*ito::RetVal PrjWindow::setPhaseShift(const int phaseshift)
@@ -2177,7 +2195,7 @@ ito::RetVal PrjWindow::showImageNum(const int num)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int PrjWindow::getOrientationClearedCurImg(void)
+int PrjWindow::getOrientationClearedCurImg(void) const
 {
     if (m_orientation <= 0)
     {
@@ -2199,7 +2217,7 @@ void PrjWindow::resizeEvent(QResizeEvent *pevent)
 }
 */
 //----------------------------------------------------------------------------------------------------------------------------------
-int PrjWindow::getNumImages()
+int PrjWindow::getNumImages() const
 {
     if (m_orientation <= 0)
     {
@@ -2212,7 +2230,7 @@ int PrjWindow::getNumImages()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int PrjWindow::getNumGrayImages(void)
+int PrjWindow::getNumGrayImages(void) const
 {
     if (m_orientation <= 0)
     {
@@ -2224,7 +2242,7 @@ int PrjWindow::getNumGrayImages(void)
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::shotDown(ItomSharedSemaphore *waitCond)
+ito::RetVal PrjWindow::shutDown(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
@@ -2249,65 +2267,83 @@ ito::RetVal PrjWindow::configProjection(int period, int phaseShift, int orient, 
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
-    
-    int oldval = m_isInit;
 
-    m_isInit &= ~paramsValid;
-    Sleep(100);
+    bool updateNecessary = false;
+    if (m_phaShift != phaseShift) updateNecessary = true;
+    if (m_period != period) updateNecessary = true;
+    if (m_orientation != orient) updateNecessary = true;
 
-    makeCurrent();
-//    retval += cosineExit();
-//    retval += graycodeExit();
-
-    m_phaShift = phaseShift;
-    m_period = period;
-    retval += setupProjection();
-
-    m_isInit |= paramsValid;
-
-    retval += cosineInit();
-    retval += graycodeInit();
-
-    doneCurrent();
-
-    if(!retval.containsError())
+    if ((m_isInit ^ idleState) > 0 || updateNecessary)
     {
-        m_isInit |= paramsValid;
+        int oldval = m_isInit;
 
-        if (orient <= 0)
+        m_isInit &= ~paramsValid;
+        Sleep(100);
+
+        makeCurrent();
+
+        //delete existing textures (if some exists)
+        retval += cosineExit();
+        retval += graycodeExit();
+
+        if (!retval.containsError())
         {
-            m_orientation = 0;
-            if (m_imgNum < 0)
+
+            m_phaShift = phaseShift;
+            m_period = period;
+            retval += setupProjection();
+
+            m_isInit |= paramsValid;
+
+            if (!retval.containsError())
             {
-                m_imgNum = 0;
-            }
-            else if (m_imgNum >= m_phaShift + m_grayBitsVert + 2)
-            {
-                m_imgNum = m_phaShift + m_grayBitsVert + 1;
+                retval += cosineInit();
+                retval += graycodeInit();
             }
         }
-        else
+
+        doneCurrent();
+
+        if(!retval.containsError())
         {
-            m_orientation = 1;
-            if (m_imgNum < m_phaShift + m_grayBitsVert + 2)
+            m_isInit |= paramsValid;
+
+            if (orient <= 0)
             {
-                m_imgNum = m_phaShift + m_grayBitsVert + 2;
+                m_orientation = 0;
+                if (m_imgNum < 0)
+                {
+                    m_imgNum = 0;
+                }
+                else if (m_imgNum >= m_phaShift + m_grayBitsVert + 2)
+                {
+                    m_imgNum = m_phaShift + m_grayBitsVert + 1;
+                }
             }
-            else if (m_imgNum >=  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 2)
+            else
             {
-                m_imgNum =  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 1;
+                m_orientation = 1;
+                if (m_imgNum < m_phaShift + m_grayBitsVert + 2)
+                {
+                    m_imgNum = m_phaShift + m_grayBitsVert + 2;
+                }
+                else if (m_imgNum >=  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 2)
+                {
+                    m_imgNum =  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 1;
+                }
             }
         }
+        paintGL();
+
+        numberOfImagesChanged(this->getNumImages(), this->getNumGrayImages(), this->getPhaseShift());
     }
-    paintGL();
-
-    numberOfImagesChanged(this->getNumImages(), this->getNumGrayImages(), this->getPhaseShift());
 
     if (waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
