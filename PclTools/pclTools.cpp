@@ -114,7 +114,9 @@ PclToolsInterface::~PclToolsInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(PclTools, PclToolsInterface)
+#if QT_VERSION < 0x050000
+	Q_EXPORT_PLUGIN2(PclTools, PclToolsInterface)
+#endif
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -503,7 +505,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 
     if (filenameCanonical == "")
     {
-        QByteArray ba = filename.toAscii();
+        QByteArray ba = filename.toLatin1();
         char *name = ba.data();
         if (name)
         {
@@ -569,7 +571,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
     }
     else
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("unsupported format '%s'").toLatin1().data(), type.toAscii().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("unsupported format '%s'").toLatin1().data(), type.toLatin1().data());
     }
 
     if (retval == ito::retOk && type != "xyz")
@@ -893,7 +895,7 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
     }
     else
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("unsupported format '%s'").toLatin1().data(), type.toAscii().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("unsupported format '%s'").toLatin1().data(), type.toLatin1().data());
     }
 
     if (ret < 0)
