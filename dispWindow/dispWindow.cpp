@@ -136,7 +136,8 @@ DispWindowInterface::~DispWindowInterface()
 *
 *    the openGL window is opened here, based on a qgl widget.
 */
-DispWindow::DispWindow()
+DispWindow::DispWindow() :
+	m_pWindow(NULL)
 {
     QDesktopWidget *qdesk = QApplication::desktop();
     int scount = qdesk->screenCount();
@@ -242,6 +243,8 @@ DispWindow::DispWindow()
     paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+	constructionResult = ito::retOk;
+
     //set QGLFormat
     QGLFormat::OpenGLVersionFlags glVer = QGLFormat::openGLVersionFlags();
     QGLFormat fmt;
@@ -270,55 +273,57 @@ DispWindow::DispWindow()
     //    fmt.setVersion(3, 2);
     //}
     //else
-    if (glVer >= QGLFormat::OpenGL_Version_3_1)
+    if (glVer.testFlag(QGLFormat::OpenGL_Version_3_1))
     {
         fmt.setVersion(3, 1);
     }
-    else if (glVer >= QGLFormat::OpenGL_Version_3_0)
+    else if (glVer.testFlag(QGLFormat::OpenGL_Version_3_0))
     {
         fmt.setVersion(3, 0);
     }
-    else if (glVer >= QGLFormat::OpenGL_Version_2_1)
+    else if (glVer.testFlag(QGLFormat::OpenGL_Version_2_1))
     {
         fmt.setVersion(2, 1);
     }
-    else if (glVer >= QGLFormat::OpenGL_Version_2_0)
+    else if (glVer.testFlag(QGLFormat::OpenGL_Version_2_0))
     {
         fmt.setVersion(2, 0);
     }
+	else
+	{
+		constructionResult += ito::RetVal(ito::retError,0,"Supported OpenGL Version is lower than 2.0 and therefore not supported");
+	}
 
-    fmt.setDepth(0);
+	qDebug() << fmt.majorVersion();
+	qDebug() << fmt.minorVersion();
 
-    m_pWindow = new PrjWindow(m_params, fmt, NULL, NULL, Qt::Window|Qt::MSWindowsOwnDC|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);//0, 0, Qt::Window|Qt::MSWindowsOwnDC); //Qt::Window|Qt::MSWindowsOwnDC|Qt::ScrollBarAlwaysOff
-    if (m_pWindow == NULL)
-    {
-        return;
-    }
+	if (!constructionResult.containsError())
+	{
 
-    m_pWindow->setCursor(Qt::BlankCursor);
-    m_pWindow->setWindowTitle("DispWindow");
-    m_pWindow->setPos(defx0, defy0);
-//    m_pWindow->resize(defwidth, defheight);
-    m_pWindow->resize(12, 12);
-    m_pWindow->show();
 
-    bool testCon = connect(m_pWindow, SIGNAL(numberOfImagesChanged(int, int, int)), this, SLOT(numberOfImagesChanged(int, int, int)));
+		fmt.setDepth(0);
 
- //   m_pWindow->makeCurrent();
- //   const GLubyte * version = glGetString(GL_VERSION);
- //   //version = glGetString(GL_EXTENSIONS);
- //   //std::cerr << version << "\n";
+		m_pWindow = new PrjWindow(m_params, fmt, NULL, NULL, Qt::Window|Qt::MSWindowsOwnDC|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);//0, 0, Qt::Window|Qt::MSWindowsOwnDC); //Qt::Window|Qt::MSWindowsOwnDC|Qt::ScrollBarAlwaysOff
+		if (m_pWindow == NULL)
+		{
+			return;
+		}
 
-    //glClear(GL_COLOR_BUFFER_BIT);    //clear screen buffer
-    //glClearColor(0.0f, 0.0f, 1.0f, 0.0f);    //black background
+		m_pWindow->setCursor(Qt::BlankCursor);
+		m_pWindow->setWindowTitle("DispWindow");
+		m_pWindow->setPos(defx0, defy0);
+	//    m_pWindow->resize(defwidth, defheight);
+		m_pWindow->resize(12, 12);
+		m_pWindow->show();
 
- //   m_pWindow->doneCurrent();
+		connect(m_pWindow, SIGNAL(numberOfImagesChanged(int, int, int)), this, SLOT(numberOfImagesChanged(int, int, int)));
 
-//now create dock widget for this plugin
-    DockWidgetDispWindow *DispWinWid = new DockWidgetDispWindow(this);
-    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
+		//now create dock widget for this plugin
+		DockWidgetDispWindow *DispWinWid = new DockWidgetDispWindow(this);
+		Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+		QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+		createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
+	}
 
 }
 
@@ -486,114 +491,108 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         }
         else if (QString::compare(key, "gammaCol", Qt::CaseInsensitive) == 0)
         {
-            it->copyValueFrom( &(*val) );
             m_params["numimg"].setVal<int>(-1); //set dependent parameter
-            m_pWindow->setGammaPrj( val->getVal<int>() );
+			QMetaObject::invokeMethod(m_pWindow, "setGammaPrj", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()));
+			it->copyValueFrom( &(*val) );
         }
-        else
+        else if (QString::compare(key, "color", Qt::CaseInsensitive) == 0)
         {
-            if (QString::compare(key, "color", Qt::CaseInsensitive) == 0)
-            {
-                retValue += m_pWindow->setColor(val->getVal<int>());
-                if (!retValue.containsError())
-                {
-                    it->copyValueFrom(&(*val));
-                }
-            }
-            else if (QString::compare(key, "numimg", Qt::CaseInsensitive) == 0)
-            {
-                QMetaObject::invokeMethod(m_pWindow, "showImageNum", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()));
-                it->copyValueFrom(&(*val));
-            }
-            else if (QString::compare(key, "x0", Qt::CaseInsensitive) == 0)
-            {
-                QMetaObject::invokeMethod(m_pWindow, "setPos", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()), Q_ARG(int,  m_params["y0"].getVal<int>()));
-                it->copyValueFrom(&(*val));
-            }
-            else if (QString::compare(key, "y0", Qt::CaseInsensitive) == 0)
-            {
-                QMetaObject::invokeMethod(m_pWindow, "setPos", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["x0"].getVal<int>()), Q_ARG(int,  val->getVal<int>()));
-                it->copyValueFrom(&(*val));
-            }
-            else if (QString::compare(key, "xsize", Qt::CaseInsensitive) == 0)
-            {
-                QMetaObject::invokeMethod(m_pWindow, "setSize", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()), Q_ARG(int,  m_params["ysize"].getVal<int>()));
-                it->copyValueFrom(&(*val));
-            }
-            else if (QString::compare(key, "ysize", Qt::CaseInsensitive) == 0)
-            {
-                QMetaObject::invokeMethod(m_pWindow, "setSize", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["xsize"].getVal<int>()), Q_ARG(int,  val->getVal<int>()));
-                it->copyValueFrom(&(*val));
-            }
-            else if (QString::compare(key, "orientation", Qt::CaseInsensitive) == 0)
-            {
-                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-                QMetaObject::invokeMethod(m_pWindow, "configProjection", 
-                                            Qt::BlockingQueuedConnection, 
-                                            Q_ARG(int, m_params["period"].getVal<int>()), 
-                                            Q_ARG(int, m_params["phaseshift"].getVal<int>()), 
-                                            Q_ARG(int, val->getVal<int>()), 
-                                            Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-
-                retValue += locker.getSemaphore()->returnValue;
-
-                m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
-                static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
-
-                if (!retValue.containsError())
-                {
-                    it->copyValueFrom(&(*val));
-                }
-            }
-            else if (QString::compare(key, "phaseshift", Qt::CaseInsensitive) == 0)
-            {
-                
-                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-                QMetaObject::invokeMethod(m_pWindow, "configProjection", 
-                                        Qt::BlockingQueuedConnection,  
-                                        Q_ARG(int, m_params["period"].getVal<int>()),
-                                        Q_ARG(int, val->getVal<int>()),
-                                        Q_ARG(int, m_params["orientation"].getVal<int>()), 
-                                        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-
-                retValue += locker.getSemaphore()->returnValue;
-
-                m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
-                static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
-
-                if (!retValue.containsError())
-                {
-                    it->copyValueFrom(&(*val));
-                }
-            }
-            else if (QString::compare(key, "period", Qt::CaseInsensitive) == 0)
-            {
-                
-                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-                QMetaObject::invokeMethod(m_pWindow, "configProjection", 
+			QMetaObject::invokeMethod(m_pWindow, "setColor", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()));
+            it->copyValueFrom(&(*val));
+        }
+        else if (QString::compare(key, "numimg", Qt::CaseInsensitive) == 0)
+        {
+            QMetaObject::invokeMethod(m_pWindow, "showImageNum", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()));
+            it->copyValueFrom(&(*val));
+        }
+        else if (QString::compare(key, "x0", Qt::CaseInsensitive) == 0)
+        {
+            QMetaObject::invokeMethod(m_pWindow, "setPos", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()), Q_ARG(int,  m_params["y0"].getVal<int>()));
+            it->copyValueFrom(&(*val));
+        }
+        else if (QString::compare(key, "y0", Qt::CaseInsensitive) == 0)
+        {
+            QMetaObject::invokeMethod(m_pWindow, "setPos", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["x0"].getVal<int>()), Q_ARG(int,  val->getVal<int>()));
+            it->copyValueFrom(&(*val));
+        }
+        else if (QString::compare(key, "xsize", Qt::CaseInsensitive) == 0)
+        {
+            QMetaObject::invokeMethod(m_pWindow, "setSize", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()), Q_ARG(int,  m_params["ysize"].getVal<int>()));
+            it->copyValueFrom(&(*val));
+        }
+        else if (QString::compare(key, "ysize", Qt::CaseInsensitive) == 0)
+        {
+            QMetaObject::invokeMethod(m_pWindow, "setSize", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["xsize"].getVal<int>()), Q_ARG(int,  val->getVal<int>()));
+            it->copyValueFrom(&(*val));
+        }
+        else if (QString::compare(key, "orientation", Qt::CaseInsensitive) == 0)
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(m_pWindow, "configProjection", 
                                         Qt::BlockingQueuedConnection, 
-                                        Q_ARG(int, val->getVal<int>()), 
+                                        Q_ARG(int, m_params["period"].getVal<int>()), 
                                         Q_ARG(int, m_params["phaseshift"].getVal<int>()), 
-                                        Q_ARG(int, m_params["orientation"].getVal<int>()), 
+                                        Q_ARG(int, val->getVal<int>()), 
                                         Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-                retValue += locker.getSemaphore()->returnValue;
+            retValue += locker.getSemaphore()->returnValue;
 
-                m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
-                static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
+            m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
+            static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
 
-                if (!retValue.containsError())
-                {
-                    it->copyValueFrom(&(*val));
-                }
-            }
-
-            //one last thing, if the value of numimg is now greater than its maximum, reset the value to the maximum and set the value
-            if (m_params["numimg"].getVal<int>() > m_params["numimg"].getMax())
+            if (!retValue.containsError())
             {
-                m_params["numimg"].setVal<int>( m_params["numimg"].getMax() );
-                QMetaObject::invokeMethod(m_pWindow, "showImageNum", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["numimg"].getVal<int>()));
+                it->copyValueFrom(&(*val));
             }
+        }
+        else if (QString::compare(key, "phaseshift", Qt::CaseInsensitive) == 0)
+        {
+                
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(m_pWindow, "configProjection", 
+                                    Qt::BlockingQueuedConnection,  
+                                    Q_ARG(int, m_params["period"].getVal<int>()),
+                                    Q_ARG(int, val->getVal<int>()),
+                                    Q_ARG(int, m_params["orientation"].getVal<int>()), 
+                                    Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+            retValue += locker.getSemaphore()->returnValue;
+
+            m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
+            static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
+
+            if (!retValue.containsError())
+            {
+                it->copyValueFrom(&(*val));
+            }
+        }
+        else if (QString::compare(key, "period", Qt::CaseInsensitive) == 0)
+        {
+                
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(m_pWindow, "configProjection", 
+                                    Qt::BlockingQueuedConnection, 
+                                    Q_ARG(int, val->getVal<int>()), 
+                                    Q_ARG(int, m_params["phaseshift"].getVal<int>()), 
+                                    Q_ARG(int, m_params["orientation"].getVal<int>()), 
+                                    Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+            retValue += locker.getSemaphore()->returnValue;
+
+            m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
+            static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
+
+            if (!retValue.containsError())
+            {
+                it->copyValueFrom(&(*val));
+            }
+        }
+
+        //one last thing, if the value of numimg is now greater than its maximum, reset the value to the maximum and set the value
+        if (m_params["numimg"].getVal<int>() > m_params["numimg"].getMax())
+        {
+            m_params["numimg"].setVal<int>( m_params["numimg"].getMax() );
+            QMetaObject::invokeMethod(m_pWindow, "showImageNum", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["numimg"].getVal<int>()));
         }
     }
 
@@ -616,7 +615,7 @@ ito::RetVal DispWindow::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ItomSharedSemaphoreLocker lockerTemp(new ItomSharedSemaphore());
-    ito::RetVal retval = ito::retOk;
+    ito::RetVal retval = constructionResult;
 
     // mandatory and optional parameters
     if (paramsMand == NULL || paramsOpt == NULL)
@@ -681,29 +680,9 @@ ito::RetVal DispWindow::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
                                   Q_ARG(int, m_params["period"].getVal<int>()), 
                                   Q_ARG(int, m_params["phaseshift"].getVal<int>()), 
                                   Q_ARG(int, m_params["orientation"].getVal<int>()));
-        //locker.getSemaphore()->wait(-1);
-        //retval += lockerTemp.getSemaphore()->returnValue;
-    }
-    /*
-    if (!retval.containsError())
-    {
-        m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages());
-        static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
-    }
-    */
-    /*
-    m_pWindow->makeCurrent();
-    if (retval != ito::retError)
-    {
-        retval += m_pWindow->cosineInit();
-    }
-    if (retval != ito::retError)
-    {
-        retval += m_pWindow->graycodeInit();
     }
 
-    m_pWindow->doneCurrent();
-    */
+	setIdentifier(QString::number(getID()));
 
     if (waitCond)
     {

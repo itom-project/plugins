@@ -43,7 +43,7 @@ DialogDispWindow::DialogDispWindow(ito::AddInBase *grabber, PrjWindow *prjWindow
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogDispWindow::on_horizontalSlider_valueChanged(int value)
 {
-    if (!m_inEditing)
+    if (!m_inEditing && !m_firstRun)
     {
         m_inEditing = true;
         QSharedPointer<ito::ParamBase> v(new ito::ParamBase("numimg", ito::ParamBase::Int, value));
@@ -61,6 +61,9 @@ void DialogDispWindow::on_horizontalSlider_valueChanged(int value)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogDispWindow::parametersChanged(QMap<QString, ito::Param> params)
 {
+	//save the currently set parameters to m_currentParameters
+    m_currentParameters = params;
+
     if (m_firstRun)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
@@ -117,9 +120,6 @@ void DialogDispWindow::parametersChanged(QMap<QString, ito::Param> params)
             ui.comboBox_phaseshifts->setCurrentIndex(3);
         break;
     }
-    
-    //save the currently set parameters to m_currentParameters
-    m_currentParameters = params;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -27,6 +27,7 @@
 #include <QtOpenGL/qgl.h>
 #if QT_VERSION >= 0x050000
     #include <qglfunctions.h>
+	#include <qopenglvertexarrayobject.h>
 #endif
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
@@ -42,9 +43,6 @@ class PrjWindow : public QGLWidget
 
         ito::RetVal calcLUT(QVector<double> *grayvalues, QVector<unsigned char> *lut);
         ito::RetVal setLUT(QVector<unsigned char> *lut);
-        ito::RetVal setColor(const int col);
-        ito::RetVal setGamma(const int gamma);
-        ito::RetVal setGammaPrj(const int gammaCol);
 
         int getNumImages(void) const;
         int getOrientation(void) const {return m_orientation;};
@@ -68,6 +66,11 @@ class PrjWindow : public QGLWidget
             idleState = paramsValid | cosIsInit | grayIsInit,
             initFail = 128
         };
+	
+	protected:
+		
+        ito::RetVal setGamma(const int gamma);
+        ito::RetVal setGammaPrj(const int gammaCol);
 
     private:
         QGLFormat::OpenGLVersionFlags m_glVer;
@@ -91,9 +94,11 @@ class PrjWindow : public QGLWidget
         QVector<unsigned char> m_lut;
 #if QT_VERSION >= 0x050000
         QGLFunctions *m_glf;
+		QOpenGLVertexArrayObject *m_vao;
 #else
         // just a dummy pointer so we don't need to adapt the rest of the code
         char *m_glf;
+		char *m_vao;
 #endif
         void paintGL();
         void initializeGL();
@@ -132,6 +137,7 @@ class PrjWindow : public QGLWidget
     public slots:
         ito::RetVal setSize(int sizex, int sizey, bool reCalcGL = true);
         void setPos(int xpos, int ypos);
+		ito::RetVal setColor(const int col);
 
         ito::RetVal shutDown(ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal configProjection(int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond = NULL);

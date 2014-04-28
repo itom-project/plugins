@@ -50,7 +50,7 @@
     #define BUFFER_OFFSET(bytes) ((GLubyte*) NULL + (bytes))
 
     const GLint POSITION = 0;
-    GLsizei const ElementCount = 4;
+    GLsizei const ElementCount = 6; //was 4 for GL_QUAD
     
     //! fragment and vertex shaders for gl v2 and gl v3
     //! the fragment shader multiplies input vertices with the transformation matrix MVP, the
@@ -438,7 +438,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
 #endif
 
     GLint ElementSize = ElementCount * sizeof(GLint);
-    GLint ElementData[ElementCount] = {0, 1, 2, 3};
+	GLint ElementData[ElementCount] = {0, 1, 3, 1, 2, 3}; //was before: {0, 1, 2, 3};
 
     GLsizei const VertexCount = 4;
     GLsizeiptr PositionSize = VertexCount * 4 * sizeof(GLfloat);
@@ -536,6 +536,7 @@ PrjWindow::PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &f
     m_grayImgsVert(0),
     m_grayImgsHoriz(0),
     m_glf(NULL),
+	m_vao(NULL),
     ProgramName(0),
     ArrayBufferName(0),
     ElementBufferName(0),
@@ -625,6 +626,13 @@ void PrjWindow::initializeGL()
             m_isInit |= initFail;
         }
 #else
+		// Create VAO for first object to render
+		// see http://stackoverflow.com/questions/17578266/where-are-glgenvertexarrays-glbindvertexarrays-in-qt-5-1
+		m_vao = new QOpenGLVertexArrayObject( this );
+		m_vao->create();
+		m_vao->bind();
+
+
         m_glf = new QGLFunctions(context());
         if (!m_glf)
         {
@@ -755,20 +763,19 @@ void PrjWindow::paintGL()
         //!> enable the previously set up attribute
         glEnableVertexAttribArray(POSITION);
 #else
+		m_vao->bind();
+
         m_glf->glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
         m_glf->glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
-
         //!> unbind buffer
         m_glf->glBindBuffer(GL_ARRAY_BUFFER, 0);
-
         //!> bind use list
         m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-
         //!> enable the previously set up attribute
         m_glf->glEnableVertexAttribArray(POSITION);
 #endif
         //!> draw buffers
-        glDrawElements(GL_QUADS, ElementCount, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0); // GL_TRIANGLES was GL_QUADS before
 
 #if QT_VERSION < 0x050000
         //!> disable the previously set up attributes
@@ -777,7 +784,6 @@ void PrjWindow::paintGL()
         //!> disable the previously set up attributes
         m_glf->glDisableVertexAttribArray(POSITION);
 #endif
-
         glBindTexture(GL_TEXTURE_2D, 0);
 
 #if QT_VERSION < 0x050000

@@ -62,6 +62,8 @@ class DispWindow : public ito::AddInDataIO //, public DummyGrabberInterface
     private:
         PrjWindow *m_pWindow;
 
+		ito::RetVal constructionResult;
+
     protected:
         ~DispWindow();
         DispWindow();
