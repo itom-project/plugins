@@ -326,7 +326,7 @@ class BasicGPLFilters : public ito::AddInAlgo
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
-template<> static inline ito::uint8 BasicGPLFilters::pixel_luminance<ito::Rgba32>(const ito::uint8 *pixel)
+template<> /*static*/ inline ito::uint8 BasicGPLFilters::pixel_luminance<ito::Rgba32>(const ito::uint8 *pixel)
 {
     return (ito::Rgba32::fromUnsignedLong((long)*pixel)).gray();
 }
