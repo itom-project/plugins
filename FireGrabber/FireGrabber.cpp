@@ -93,9 +93,9 @@ license browse to http://www.alliedvisiontec.com. This plugin was mainly tested 
 #endif
     m_detaildescription = QObject::tr(docstring);
 #ifdef linux
-    m_author = "G. Baer, M. Gronle ITO, University Stuttgart";
+    m_author = "G. Baer, M. Gronle, ITO, University Stuttgart";
 #else
-    m_author = "A. Bielke, M. Gronle ITO, University Stuttgart";
+    m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart";
 #endif
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
