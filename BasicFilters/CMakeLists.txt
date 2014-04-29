@@ -12,7 +12,6 @@ SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
 IF(BUILD_SHARED_LIBS)
@@ -21,14 +20,10 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
-find_package(OpenCV COMPONENTS core REQUIRED)
-find_package(VisualLeakDetector QUIET)
-
-
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-FIND_PACKAGE_QT(ON LinguistTools Designer)
+FIND_PACKAGE_QT(ON Core Widgets UiTools Xml LinguistTools Designer)
+find_package(VisualLeakDetector QUIET)
 
 IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
@@ -50,13 +45,11 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${QT_QTCORE_INCLUDE_DIR}
-    ${OpenCV_DIR}/include
-    ${ITOM_SDK_INCLUDE_DIR}
+    ${ITOM_SDK_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
 LINK_DIRECTORIES(
-    ${OpenCV_DIR}/lib
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -70,18 +63,11 @@ set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
-if (NOT QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-endif (NOT QT5_FOUND)
-
 set(plugin_ui
 )
 
-if (QT5_FOUND)
-    QT5_WRAP_UI(plugin_ui_MOC ${plugin_ui})
-else (QT5_FOUND)
-    QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
-endif (QT5_FOUND)
+set(plugin_RCC
+)
 
 set(plugin_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/BasicFilters.cpp
@@ -94,20 +80,31 @@ if(MSVC)
     list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)    
 
+if (QT5_FOUND)
+    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+    QT5_WRAP_UI(plugin_ui_MOC ${plugin_UI})
+    QT5_ADD_RESOURCES(plugin_rcc_MOC ${plugin_RCC})
+else (QT5_FOUND)
+    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+    QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_UI})
+    QT4_ADD_RESOURCES(plugin_rcc_MOC ${plugin_RCC})
+endif (QT5_FOUND)
+
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
+
+#    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+#    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 if (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-    
-    qt5_use_modules(${target_name} Widgets UiTools Xml)
-else (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+    qt5_use_modules(${target_name} ${QT_COMPONENTS})
 endif (QT5_FOUND)
 
-set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
-
+#translation
+set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+
 PLUGIN_DOCUMENTATION(${target_name} basicFilters)
 
 # COPY SECTION
