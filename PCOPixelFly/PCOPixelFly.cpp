@@ -564,12 +564,11 @@ ito::RetVal PCOPixelFly::libraryVersionNumber(const QByteArray &fileName, QStrin
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PCOPixelFly::PCOChkError(int errornumber)
 {
-    ito::RetVal retValue = ito::retOk;
     int i;
 
     if(errornumber == 0)
     {
-        return retValue;
+        return ito::retOk;
     }
 
     struct error
@@ -579,85 +578,84 @@ ito::RetVal PCOPixelFly::PCOChkError(int errornumber)
     } 
 
     errors[] =
-    {    /* All Errormassages are taken from the PCO-Manual. */
-        {    0,      tr("no Error").toLatin1().data()},
-        {    -1,        tr("initialization failed, no camera connected").toLatin1().data()},
-        {    -2,        tr("timeout in any function").toLatin1().data()},
-        {    -3,        tr("function call with wrong parameter").toLatin1().data()},
-        {    -4,        tr("cannot locate PCI card or card driver").toLatin1().data()},
-        {    -5,        tr("wrong operating system").toLatin1().data()},
-        {    -6,        tr("no or wrong driver installed").toLatin1().data()},
-        {    -7,        tr("IO function failed").toLatin1().data()},
-        {    -8,        tr("reserved").toLatin1().data()},
-        {    -9,        tr("invalid camera mode").toLatin1().data()},
-        {    -10,    tr("reserved").toLatin1().data()},
-        {    -11,    tr("device is hold by another process").toLatin1().data()},
-        {    -12,    tr("error in reading or writing data to board").toLatin1().data()},
-        {    -13,    tr("wrong driver function").toLatin1().data()},
-        {    -14,    tr("reserved").toLatin1().data()},
-        {    -101,   tr("timeout in any driver function").toLatin1().data()},
-        {    -102,   tr("board is hold by an other process").toLatin1().data()},
-        {    -103,   tr("wrong boardtype").toLatin1().data()},
-        {    -104,   tr("cannot match processhandle to a board").toLatin1().data()},
-        {    -105,   tr("failed to init PCI").toLatin1().data()},
-        {    -106,   tr("no board found").toLatin1().data()},
-        {    -107,   tr("read configuratuion registers failed").toLatin1().data()},
-        {    -108,   tr("board has wrong configuration").toLatin1().data()},
-        {    -109,   tr("memory allocation error").toLatin1().data()},
-        {    -110,   tr("camera is busy").toLatin1().data()},
-        {    -111,   tr("board is not idle").toLatin1().data()},
-        {    -112,   tr("wrong parameter in function cal").toLatin1().data()},
-        {    -113,   tr("head is disconnected").toLatin1().data()},
-        {    -114,   tr("head verification failed").toLatin1().data()},
-        {    -115,   tr("board cannot work with attached head").toLatin1().data()},
-        {    -116,   tr("board initialisation FPGA failed").toLatin1().data()},
-        {    -117,   tr("board initialisation NVRAM failed").toLatin1().data()},
-        {    -120,   tr("not enough IO-buffer space for return values").toLatin1().data()},
-        {    -121,   tr("not enough IO-buffer space for return values").toLatin1().data()},
-        {    -122,   tr("Head power is switched off").toLatin1().data()},
-        {    -130,   tr("picture buffer not prepared for transfer").toLatin1().data()},
-        {    -131,   tr("picture buffer in use").toLatin1().data()},
-        {    -132,   tr("picture buffer hold by another process").toLatin1().data()},
-        {    -133,   tr("picture buffer not found").toLatin1().data()},
-        {    -134,   tr("picture buffer cannot be freed").toLatin1().data()},
-        {    -135,   tr("cannot allocate more picture buffer").toLatin1().data()},
-        {    -136,   tr("no memory left for picture buffer").toLatin1().data()},
-        {    -137,   tr("memory reserve failed").toLatin1().data()},
-        {    -138,   tr("memory commit failed").toLatin1().data()},
-        {    -139,   tr("allocate internal memory LUT failed").toLatin1().data()},
-        {    -140,   tr("allocate internal memory PAGETAB failed").toLatin1().data()},
-        {    -148,   tr("event not available").toLatin1().data()},
-        {    -149,   tr("delete event failed").toLatin1().data()},
-        {    -156,   tr("enable interrupts failed").toLatin1().data()},
-        {    -157,   tr("disable interrupts failed").toLatin1().data()},
-        {    -158,   tr("no interrupt connected to the board").toLatin1().data()},
-        {    -164,   tr("timeout in DMA").toLatin1().data()},
-        {    -165,   tr("no dma buffer found").toLatin1().data()},
-        {    -166,   tr("locking of pages failed").toLatin1().data()},
-        {    -167,   tr("unlocking of pages failed").toLatin1().data()},
-        {    -168,   tr("DMA buffersize to smal").toLatin1().data()},
-        {    -169,   tr("PCI-Bus error in DMA").toLatin1().data()},
-        {    -170,   tr("DMA is runnig, command not allowed").toLatin1().data()},
-        {    -228,   tr("get processor failed").toLatin1().data()},
-        {    -229,   tr("reserved").toLatin1().data()},
-        {    -230,   tr("wrong processor found").toLatin1().data()},
-        {    -231,   tr("wrong processor size").toLatin1().data()},
-        {    -232,   tr("wrong processor device").toLatin1().data()},
-        {    -233,   tr("read flash failed").toLatin1().data()},
-        {    -224,   tr("not grabbing").toLatin1().data()},
+    {    /* All Errormessages are taken from the PCO-Manual. */
+        {    0,      "no Error"},
+        {    -1,     "initialization failed, no camera connected"},
+        {    -2,     "timeout in any function"},
+        {    -3,     "function call with wrong parameter"},
+        {    -4,     "cannot locate PCI card or card driver"},
+        {    -5,     "wrong operating system"},
+        {    -6,     "no or wrong driver installed"},
+        {    -7,     "IO function failed"},
+        {    -8,     "reserved"},
+        {    -9,     "invalid camera mode"},
+        {    -10,    "reserved"},
+        {    -11,    "device is hold by another process"},
+        {    -12,    "error in reading or writing data to board"},
+        {    -13,    "wrong driver function"},
+        {    -14,    "reserved"},
+        {    -101,   "timeout in any driver function"},
+        {    -102,   "board is hold by an other process"},
+        {    -103,   "wrong boardtype"},
+        {    -104,   "cannot match processhandle to a board"},
+        {    -105,   "failed to init PCI"},
+        {    -106,   "no board found"},
+        {    -107,   "read configuratuion registers failed"},
+        {    -108,   "board has wrong configuration"},
+        {    -109,   "memory allocation error"},
+        {    -110,   "camera is busy"},
+        {    -111,   "board is not idle"},
+        {    -112,   "wrong parameter in function cal"},
+        {    -113,   "head is disconnected"},
+        {    -114,   "head verification failed"},
+        {    -115,   "board cannot work with attached head"},
+        {    -116,   "board initialisation FPGA failed"},
+        {    -117,   "board initialisation NVRAM failed"},
+        {    -120,   "not enough IO-buffer space for return values"},
+        {    -121,   "not enough IO-buffer space for return values"},
+        {    -122,   "Head power is switched off"},
+        {    -130,   "picture buffer not prepared for transfer"},
+        {    -131,   "picture buffer in use"},
+        {    -132,   "picture buffer hold by another process"},
+        {    -133,   "picture buffer not found"},
+        {    -134,   "picture buffer cannot be freed"},
+        {    -135,   "cannot allocate more picture buffer"},
+        {    -136,   "no memory left for picture buffer"},
+        {    -137,   "memory reserve failed"},
+        {    -138,   "memory commit failed"},
+        {    -139,   "allocate internal memory LUT failed"},
+        {    -140,   "allocate internal memory PAGETAB failed"},
+        {    -148,   "event not available"},
+        {    -149,   "delete event failed"},
+        {    -156,   "enable interrupts failed"},
+        {    -157,   "disable interrupts failed"},
+        {    -158,   "no interrupt connected to the board"},
+        {    -164,   "timeout in DMA"},
+        {    -165,   "no dma buffer found"},
+        {    -166,   "locking of pages failed"},
+        {    -167,   "unlocking of pages failed"},
+        {    -168,   "DMA buffersize to smal"},
+        {    -169,   "PCI-Bus error in DMA"},
+        {    -170,   "DMA is runnig, command not allowed"},
+        {    -228,   "get processor failed"},
+        {    -229,   "reserved"},
+        {    -230,   "wrong processor found"},
+        {    -231,   "wrong processor size"},
+        {    -232,   "wrong processor device"},
+        {    -233,   "read flash failed"},
+        {    -224,   "not grabbing"},
     };
 
     for(i = 0; i < sizeof(errors) / sizeof(errors[0]); i++)
     {
         if (errors[i].value == errornumber)
         {
-            retValue += ito::RetVal(ito::retError, 0, (char*) &(errors[i].text[0]));
-            return retValue;
+			//std::cerr << "PixelFly Debug: " << errornumber << " " << errors[i].text << "\n" << std::endl;
+            return ito::RetVal(ito::retError, errornumber, errors[i].text);
         }
     }
 
-    retValue += ito::RetVal::format(ito::retError, 0, tr("unknown error code of PCO PixelFly (%i)").toLatin1().data(), errornumber);
-    return retValue;
+    return ito::RetVal::format(ito::retError, 0, tr("unknown error code of PCO PixelFly (%i)").toLatin1().data(), errornumber);
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PCOPixelFly::PCORemoveFromList(void)
@@ -1485,59 +1483,65 @@ ito::RetVal PCOPixelFly::startDevice(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     
-    int num = 0; // In case we wand num back
-    int iRetCode = 0;
+    int num = 0; // In case we want num back
+    int iRetCode = -7;
+	int iter = 6;
     unsigned int a[5] = {0, 0, 0, 0, 0};
     DWORD status_v2;
     int result;
 
-    if (num == 0)    // Okay, there is maximal 1 Cam per Board
-    {
+	//check if camera is already started
 #if PCO_DRIVER_V2 == 1
-            if(getboardval)
-            {
-                iRetCode = getboardval(this->m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
-                result = PCC_STATUS_CAM_RUN( status_v2 );
-            }
-            else
-            {
-                iRetCode = getboardpar(this->m_hdriver, a, 20);
-                result = PCC_STATUS_CAM_RUN(  (*((dword *)a+1)) );
-            }
+	if(getboardval)
+	{
+		while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+		{
+			iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
+		}
+		result = PCC_STATUS_CAM_RUN( status_v2 );
+	}
+	else
+	{
+		while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+		{
+			iRetCode = getboardpar(m_hdriver, a, 20);
+		}
+		result = PCC_STATUS_CAM_RUN(  (*((dword *)a+1)) );
+	}
 #else
-            iRetCode = getboardpar(this->m_hdriver, a, 20);
-            result = PCC_CAM_RUN(a);
+	while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+	{
+		iRetCode = getboardpar(m_hdriver, a, 20);
+	}
+    result = PCC_CAM_RUN(a);
 #endif
-        if (iRetCode != 0)
-        {
-            retValue += PCOChkError(iRetCode);
-        }
-        else
-        {
-            //this makro is out of pccamdef.h, where you can find other usefull makros
-            if (!result)
-            {
-                iRetCode = start_camera(this->m_hdriver);
-                if (iRetCode != 0)
-                {
-                    retValue += this->PCOChkError(iRetCode);
-                }
-                if(grabberStartedCount() > 0)
-                {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("Camera was not running though running flag was != 0").toLatin1().data());
-                }
-            }
-            if (!retValue.containsError())
-            {
-                incGrabberStarted();
-            }
-        }
+    if (iRetCode != 0)
+    {
+        retValue += PCOChkError(iRetCode);
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, tr("Tried to axis camera out of allowed camera range (0..0).").toLatin1().data());
-        //retValue = ito::retError;
+        //this makro is out of pccamdef.h, where you can find other usefull makros
+        if (!result)
+        {
+			iter = 6;
+			iRetCode = -7;
+			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+			{
+				iRetCode = start_camera(m_hdriver);
+			}
+            if (iRetCode != 0)
+            {
+                retValue += PCOChkError(iRetCode);
+            }
+        }
     }
+
+	if (!retValue.containsError())
+    {
+        incGrabberStarted();
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -1551,65 +1555,71 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    int iRetCode = 0;
+    int iRetCode = -7;
     unsigned int a[5] = {0, 0, 0, 0, 0};
     DWORD status_v2;
+	int iter = 6;
 
-    int num = 0; // In case we want num back
     int result;
 
     decGrabberStarted();
 
-    if(grabberStartedCount()<1)
+    if (grabberStartedCount() < 1)
     {
-        if (num == 0)
-        {
 #if PCO_DRIVER_V2 == 1
-            if(getboardval)
-            {
-                iRetCode = getboardval(this->m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
-                result = PCC_STATUS_CAM_RUN( status_v2 );
-            }
-            else
-            {
-                iRetCode = getboardpar(this->m_hdriver, a, 20);
-                result = PCC_STATUS_CAM_RUN(  (*((dword *)a+1)) );
-            }
-#else
-            iRetCode = getboardpar(this->m_hdriver, a, 20);
-            result = PCC_CAM_RUN(a);
-#endif
-            if (iRetCode != 0)
-            {
-                retValue = this->PCOChkError(iRetCode);
-            }
-            else
-            {
-                //this makro is out of pccamdef.h, where you can find other usefull makros
-                if(result)
-                {
-                    iRetCode = stop_camera(this->m_hdriver);
-                    if (iRetCode != 0)
-                    {
-                        retValue = this->PCOChkError(iRetCode);
-                    }
-                }
-                else
-                {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("Camera was already stopped!!!").toLatin1().data());
-                }
-            }
+        if(getboardval)
+        {
+			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+			{
+				iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
+			}
+            result = PCC_STATUS_CAM_RUN( status_v2 );
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, tr("Tried to axis camera out of allowed camera range (0..0).").toLatin1().data());
-            //retValue = ito::retError;
+			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+			{
+				iRetCode = getboardpar(m_hdriver, a, 20);
+			}
+            result = PCC_STATUS_CAM_RUN(  (*((dword *)a+1)) );
+        }
+#else
+		while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+		{
+			iRetCode = getboardpar(m_hdriver, a, 20);
+		}
+        result = PCC_CAM_RUN(a);
+#endif
+        if (iRetCode != 0)
+        {
+            retValue = this->PCOChkError(iRetCode);
+        }
+        else
+        {
+            //this makro is out of pccamdef.h, where you can find other useful makros
+            if(result) //camera is running, stop it
+            {
+				iter = 6;
+				iRetCode = -7;
+				while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+				{
+					iRetCode = stop_camera(m_hdriver);
+				}
+                if (iRetCode != 0)
+                {
+                    retValue = PCOChkError(iRetCode);
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Camera was already stopped.").toLatin1().data());
+            }
         }
     }
     if(grabberStartedCount() < 0)
     {
         setGrabberStarted(0);
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Cameraflag was < 0").toLatin1().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Camera was already stopped.").toLatin1().data());
     }
 
     if (waitCond)
@@ -1617,6 +1627,7 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
          
@@ -1625,7 +1636,7 @@ ito::RetVal PCOPixelFly::acquire(const int trigger, ItomSharedSemaphore *waitCon
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    int iRetCode;
+    int iRetCode = -7;
     int triggermode = m_params["trigger_mode"].getVal<int>();
 
     if (grabberStartedCount() <= 0)
@@ -1636,20 +1647,23 @@ ito::RetVal PCOPixelFly::acquire(const int trigger, ItomSharedSemaphore *waitCon
     {
         this->m_isgrabbing = true;
         
-        retValue += this->PCOResetEvents();
-        retValue += this->PCORemoveFromList();
-        retValue += this->PCOAddToList();
+        retValue += PCOResetEvents();
+        retValue += PCORemoveFromList();
+        retValue += PCOAddToList();
         
         if (triggermode&0x01)
         {
-            if ((iRetCode = trigger_camera(this->m_hdriver)) != 0)
+			int iter = 6;
+			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+			{
+				iRetCode = trigger_camera(m_hdriver);
+			}
+            if (iRetCode != 0)
             {
-                retValue += this->PCOChkError(iRetCode);
+                retValue += PCOChkError(iRetCode);
             }
         }
-    
     }
-
 
     if (waitCond)
     {
