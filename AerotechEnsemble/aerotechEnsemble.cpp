@@ -382,6 +382,11 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
             m_params["libraryVersion"].setVal<char*>(name.data());
         }
 
+		if (!retValue.containsError())
+		{
+			retValue += checkError(EnsembleMotionWaitMode(m_pHandle, WAITTYPE_NoWait));
+		}
+
         AXISMASK availableMask;
         retValue += checkError(EnsembleInformationGetAxisMask(m_pHandle, &availableMask));
         
@@ -478,6 +483,8 @@ ito::RetVal AerotechEnsemble::init(QVector<ito::ParamBase> *paramsMand, QVector<
                     retValue += retValueTemp;
                 }
             }
+
+			
         }
     }
 
@@ -1112,7 +1119,7 @@ ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int
             return retVal;
         }
 
-        QCoreApplication::processEvents();
+        //QCoreApplication::processEvents();
 
         //short delay
         waitMutex.lock();
@@ -1131,9 +1138,9 @@ ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int
         bool bMove = false;
         retVal += doUpdatePosAndState(_axis);
 
-        for (int i = 0; i < _axis.size(); i++) 
+		foreach(const int axis, _axis)
         {
-            if (m_currentStatus[i] & ito::actuatorMoving)
+            if (m_currentStatus[axis] & ito::actuatorMoving)
             {
                 bMove = TRUE;
             }
