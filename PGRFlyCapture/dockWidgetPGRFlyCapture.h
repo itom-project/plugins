@@ -1,8 +1,8 @@
 /* ********************************************************************
-    Plugin "Ximea" for itom software
+    Plugin "PGRFlyCapture" for itom software
     URL: http://www.twip-os.com
-    Copyright (C) 2013, twip optical solutions GmbH
-	Copyright (C) 2013, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, twip optical solutions GmbH
+	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -23,41 +23,35 @@
 #ifndef DOCKWIDGETPGRFLYCAPTURE_H
 #define DOCKWIDGETPGRFLYCAPTURE_H
 
-#include "common/sharedStructures.h"
+#include "common/abstractAddInDockWidget.h"
+#include "common/addInInterface.h"
 
-#include <QtGui>
-#include <qwidget.h>
 #include <qmap.h>
 #include <qstring.h>
 
 #include "ui_dockWidgetPGRFlyCapture.h"
 
-class DockWidgetPGRFlyCapture : public QWidget
+class DockWidgetPGRFlyCapture : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetPGRFlyCapture(QMap<QString, ito::Param> params, int uniqueID);
+        DockWidgetPGRFlyCapture(ito::AddInDataIO *grabber);
         ~DockWidgetPGRFlyCapture() {};
 
     private:
         Ui::DockWidgetPGRFlyCapture ui;
-
-    signals:
-        void GainPropertiesChanged(double gain);
-        void OffsetPropertiesChanged(double offset);
-        void IntegrationPropertiesChanged(double integrationtime);
+        bool m_inEditing;
+        bool m_firstRun;
 
     public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);
-
+        void parametersChanged(QMap<QString, ito::Param> params);
+        void identifierChanged(const QString &identifier);
 
     private slots:
-        void on_spinBox_offset_editingFinished();
-        void on_horizontalSlider_offset_sliderMoved(int d);
-        void on_spinBox_gain_editingFinished();
-        void on_horizontalSlider_gain_sliderMoved(int d);
-        void on_doubleSpinBox_integration_time_editingFinished();
+        void on_spinOffset_valueChanged(int value);   
+        void on_spinGain_valueChanged(int value);
+        void on_spinIntegrationTime_valueChanged(double value);
 };
 
 #endif

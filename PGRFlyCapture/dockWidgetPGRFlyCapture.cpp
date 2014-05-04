@@ -1,8 +1,8 @@
 /* ********************************************************************
-    Plugin "Ximea" for itom software
+    Plugin "PGRFlyCapture" for itom software
     URL: http://www.twip-os.com
-    Copyright (C) 2013, twip optical solutions GmbH
-	Copyright (C) 2013, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, twip optical solutions GmbH
+	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -22,88 +22,99 @@
 
 #include "dockWidgetPGRFlyCapture.h"
 
- DockWidgetPGRFlyCapture::DockWidgetPGRFlyCapture(QMap<QString, ito::Param> params, int uniqueID)
- {
-    ui.setupUi(this); 
-    
-    char* temp = params["name"].getVal<char*>(); //borrowed reference
-//    ui.lblName->setText(temp);
-    ui.lblID->setText(QString::number(uniqueID));
 
-    valuesChanged(params);
- }
+#include <qmetaobject.h>
 
- void DockWidgetPGRFlyCapture::valuesChanged(QMap<QString, ito::Param> params)
- {
+//----------------------------------------------------------------------------------------------------------------------------------
+DockWidgetPGRFlyCapture::DockWidgetPGRFlyCapture(ito::AddInDataIO *grabber) :
+    AbstractAddInDockWidget(grabber),
+    m_inEditing(false),
+    m_firstRun(true)
+{
+    ui.setupUi(this);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPGRFlyCapture::parametersChanged(QMap<QString, ito::Param> params)
+{
+
     ui.spinBpp->setValue(params["bpp"].getVal<int>());
     ui.spinWidth->setValue(params["sizex"].getVal<int>());
     ui.spinHeight->setValue(params["sizey"].getVal<int>());
 
+    if (m_firstRun)
+    {
+        ui.spinGain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
+        ui.sliderGain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
 
-    if(!(params["gain"].getFlags() & ito::ParamBase::Readonly))
-    {
-        ui.spinBox_gain->setEnabled(true);
-    }
-    else
-    {
-        ui.spinBox_gain->setEnabled(false);
-    }
-    ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
-    ui.horizontalSlider_gain->setValue(ui.spinBox_gain->value());
+        ui.spinOffset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
+        ui.sliderOffset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
 
-    if(!(params["offset"].getFlags() & ito::ParamBase::Readonly))
-    {
-        ui.spinBox_offset->setEnabled(true);
-    }
-    else
-    {
-        ui.spinBox_offset->setEnabled(false);
-    }
-    ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
-    ui.horizontalSlider_offset->setValue(ui.spinBox_offset->value());
+        ui.spinIntegrationTime->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
 
-    if(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
-    {
-        ui.doubleSpinBox_integration_time->setEnabled(true);
+        m_firstRun = false;
     }
-    else
+    
+    if (!m_inEditing)
     {
-        ui.doubleSpinBox_integration_time->setEnabled(false);
+        m_inEditing = true;
+
+        ui.sliderGain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
+        //ui.spinGain->setValue(ui.sliderGain->value());
+
+        ui.sliderOffset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
+        //ui.spinOffset->setValue(ui.sliderOffset->value());
+
+        ui.spinIntegrationTime->setMaximum(params["integration_time"].getMax() *1000.0);
+        ui.spinIntegrationTime->setMinimum(params["integration_time"].getMin() *1000.0);
+        ui.spinIntegrationTime->setValue(params["integration_time"].getVal<double>()*1000.0);
+
+        m_inEditing = false;
     }
-
-    ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
-    ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
-    ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>()*1000.0);
- }
-
-void DockWidgetPGRFlyCapture::on_spinBox_gain_editingFinished()
-{
-    ui.horizontalSlider_gain->setValue(ui.spinBox_gain->value());
-    emit GainPropertiesChanged( ui.spinBox_gain->value()/100.0);
 }
 
-void DockWidgetPGRFlyCapture::on_horizontalSlider_gain_sliderMoved(int d)
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPGRFlyCapture::on_spinOffset_valueChanged(int value)
 {
-    ui.spinBox_gain->setValue(d);
-    emit GainPropertiesChanged(ui.spinBox_gain->value()/100.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        ui.sliderOffset->setValue(value);
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("offset",ito::ParamBase::Double,(double)value / 100.0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }
 
-void DockWidgetPGRFlyCapture::on_spinBox_offset_editingFinished()
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPGRFlyCapture::on_spinGain_valueChanged(int value)
 {
-    ui.horizontalSlider_offset->setValue(ui.spinBox_offset->value());
-    emit OffsetPropertiesChanged(ui.spinBox_offset->value()/100.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        ui.sliderGain->setValue(value);
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain",ito::ParamBase::Double,(double)value / 100.0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }
 
-void DockWidgetPGRFlyCapture::on_horizontalSlider_offset_sliderMoved(int d)
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPGRFlyCapture::on_spinIntegrationTime_valueChanged(double d)
 {
-    ui.spinBox_offset->setValue(d);
-    emit OffsetPropertiesChanged(ui.spinBox_offset->value()/100.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,d/1000.0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }
 
-void DockWidgetPGRFlyCapture::on_doubleSpinBox_integration_time_editingFinished()
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPGRFlyCapture::identifierChanged(const QString &identifier)
 {
-    emit IntegrationPropertiesChanged( ui.doubleSpinBox_integration_time->value() / 1000.0);
+    ui.lblID->setText(identifier);
 }
-
 
 

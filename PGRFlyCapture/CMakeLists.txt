@@ -23,7 +23,7 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-find_package(ITOM_SDK REQUIRED)
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
@@ -43,9 +43,6 @@ IF(PGRFLYCAP_INCLUDE_DIR)
 		ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 	ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-	# enable some qt stuff
-	#SET (QT_USE_QTXML TRUE)
-
 	# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 	IF (DEFINED CMAKE_BUILD_TYPE)
 		SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
@@ -60,7 +57,8 @@ IF(PGRFLYCAP_INCLUDE_DIR)
 		${CMAKE_CURRENT_SOURCE_DIR}
 		${QT_QTCORE_INCLUDE_DIR}
 		${OpenCV_DIR}/include
-		${ITOM_SDK_INCLUDE_DIR}
+		${ITOM_SDK_INCLUDE_DIRS}
+		${ITOM_SDK_INCLUDE_DIR}/itomWidgets
 		${VISUALLEAKDETECTOR_INCLUDE_DIR}
 		${PGRFLYCAP_INCLUDE_DIR}
 	)
@@ -80,10 +78,6 @@ IF(PGRFLYCAP_INCLUDE_DIR)
 			#${PGRFLYCAP_API_DIR}/lib
 		)
 	endif(BUILD_TARGET64)
-
-    if (NOT QT5_FOUND)
-        INCLUDE(${QT_USE_FILE})
-    endif (NOT QT5_FOUND)
 
 	set(plugin_HEADERS
 		${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
@@ -174,12 +168,11 @@ IF(PGRFLYCAP_INCLUDE_DIR)
 	ENDIF(FLYCAPTURE_LIBIOMP5MD)
 	
 	ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
+
+	TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${FLYCAPTURE_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES}) 
+
     if (QT5_FOUND)
-        TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${FLYCAPTURE_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})    
-        
         qt5_use_modules(${target_name} Widgets UiTools Xml)
-    else (QT5_FOUND)
-        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${FLYCAPTURE_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
     endif (QT5_FOUND)
     
 	#handle translations BEGIN STEP 2

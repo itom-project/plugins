@@ -206,7 +206,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSlider" name="horizontalSlider_offset">
+       <widget class="QSlider" name="sliderOffset">
         <property name="maximum">
          <number>100</number>
         </property>
@@ -222,7 +222,10 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QSpinBox" name="spinBox_offset">
+       <widget class="QSpinBox" name="spinOffset">
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
         <property name="suffix">
          <string>%</string>
         </property>
@@ -247,7 +250,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSlider" name="horizontalSlider_gain">
+       <widget class="QSlider" name="sliderGain">
         <property name="maximum">
          <number>100</number>
         </property>
@@ -263,7 +266,10 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QSpinBox" name="spinBox_gain">
+       <widget class="QSpinBox" name="spinGain">
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
         <property name="suffix">
          <string>%</string>
         </property>
@@ -288,7 +294,10 @@
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_integration_time">
+       <widget class="QDoubleSpinBox" name="spinIntegrationTime">
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
         <property name="prefix">
          <string/>
         </property>
@@ -305,7 +314,7 @@
          <double>65.000000000000000</double>
         </property>
         <property name="singleStep">
-         <double>0.001000000000000</double>
+         <double>1.000000000000000</double>
         </property>
         <property name="value">
          <double>10.000000000000000</double>
@@ -331,5 +340,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>sliderOffset</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinOffset</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>130</x>
+     <y>139</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>163</x>
+     <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sliderGain</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinGain</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>142</x>
+     <y>165</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>171</x>
+     <y>164</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

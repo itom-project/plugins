@@ -1,8 +1,8 @@
 /* ********************************************************************
-    Plugin "Ximea" for itom software
+    Plugin "PGRFlyCapture" for itom software
     URL: http://www.twip-os.com
-    Copyright (C) 2013, twip optical solutions GmbH
-	Copyright (C) 2013, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, twip optical solutions GmbH
+	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -64,12 +64,20 @@ class PGRFlyCapture : public ito::AddInGrabber
 //        ito::RetVal checkData();
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);
 
+        void dockWidgetVisibilityChanged(bool visible);
+
     public:
         friend class PGRFlyCaptureInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
+        ito::RetVal flyCapSetAndGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type, bool absControl = false, bool autoManualMode = false, bool onOff = true);
+        ito::RetVal flyCapSetAndGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type, bool absControl = false, bool autoManualMode = false, bool onOff = true);
+
+        ito::RetVal flyCapGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type, bool absControl = false, bool autoManualMode = false, bool onOff = true);
+        ito::RetVal flyCapGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type, bool absControl = false, bool autoManualMode = false, bool onOff = true);
+
         bool m_isgrabbing;
         FlyCapture2::Camera m_myCam;
         FlyCapture2::PGRGuid m_myGUID;
@@ -114,11 +122,6 @@ class PGRFlyCapture : public ito::AddInGrabber
         ito::RetVal getVal(void *dObj, ItomSharedSemaphore *waitCond);
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
         //ito::RetVal setVal(const void *dObj, const int length, ItomSharedSemaphore *waitCond);
-
-        //void dataParametersChanged(int sizex, int sizey, int bpp);
-        void GainPropertiesChanged(double gain);
-        void OffsetPropertiesChanged(double offset);
-        void IntegrationPropertiesChanged(double integrationtime);
 
 };
 

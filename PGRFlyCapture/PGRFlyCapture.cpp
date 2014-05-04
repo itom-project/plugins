@@ -1,8 +1,8 @@
 /* ********************************************************************
-    Plugin "Ximea" for itom software
+    Plugin "PGRFlyCapture" for itom software
     URL: http://www.twip-os.com
-    Copyright (C) 2013, twip optical solutions GmbH
-	Copyright (C) 2013, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, twip optical solutions GmbH
+	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -187,23 +187,7 @@ Q_EXPORT_PLUGIN2(PGRFlyCaptureinterface, PGRFlyCaptureInterface)
 */
 const ito::RetVal PGRFlyCapture::showConfDialog(void)
 {
-    dialogPGRFlyCapture *confDialog = new dialogPGRFlyCapture(this);
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    QMetaObject::invokeMethod(this, "sendParameterRequest");
-
-    if (confDialog->exec())
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-        confDialog->sendVals();
-    }
-    else
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    }
-    delete confDialog;
-
-    return ito::retOk;
+    return apiShowConfigurationDialog(this, new DialogPGRFlyCapture(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -306,11 +290,7 @@ PGRFlyCapture::PGRFlyCapture() :
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
-    DockWidgetPGRFlyCapture *dw = new DockWidgetPGRFlyCapture(m_params, getID());
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    connect(dw, SIGNAL(OffsetPropertiesChanged(double)), this, SLOT(OffsetPropertiesChanged(double)));
-    connect(dw, SIGNAL(GainPropertiesChanged(double)), this, SLOT(GainPropertiesChanged(double)));
-    connect(dw, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
+    DockWidgetPGRFlyCapture *dw = new DockWidgetPGRFlyCapture(this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -343,24 +323,23 @@ PGRFlyCapture::~PGRFlyCapture()
 ito::RetVal PGRFlyCapture::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
+    QMap<QString,ito::Param>::iterator it;
 
-    if(key == "")
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-        if (paramIt != m_params.constEnd())
-        {
-            *val = paramIt.value();
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
-        }
+        *val = it.value();
     }
 
     if (waitCond)
@@ -369,7 +348,7 @@ ito::RetVal PGRFlyCapture::getParam(QSharedPointer<ito::Param> val, ItomSharedSe
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -387,451 +366,196 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
-    int sizeX = 0, sizeY = 0;
-    FlyCapture2::Error retError;
-    char errBuff[256] = {0};
-    int running = 0; // Used to check if grabber was running bevor. In some cases grabber must be stopped to set parameter
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
+    int running = 0;
 
-    if(key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+
+    if(!retValue.containsError())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
-    else
+
+    if(!retValue.containsError())
     {
+        retValue += apiValidateParam(*it, *val, false, true);
+    }
 
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
-        if (paramIt != m_params.end())
+    if(!retValue.containsError())
+    {
+        // Adapted parameters and send out depending parameter
+        if(key == "x0" || key == "x1" ||
+            key == "y0" || key == "y1")
         {
-/*
-            if(!paramIt.key().compare("binning"))    // Binning changes different (combination of x and y) so it is a spezial case
-            {
-                if(!val->isNumeric())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("Set binning failed, wrong parameter type").toAscii().data());
-                    goto end;
-                }
-                if(paramIt->getFlags() & ito::ParamBase::Readonly && !retValue.containsWarningOrError())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("Parameter is read only, input ignored").toAscii().data());
-                    goto end;
-                }
-
-                if(!retValue.containsWarningOrError())
-                {
-                    int newbinX = val->getVal<int>()/100;
-                    int newbinY = val->getVal<int>()-newbinX *100;
-
-                    int maxbinX = (int)paramIt->getMax()/100;
-                    int maxbinY = (int)paramIt->getMax()- maxbinX * 100;
-
-                    int minbinX = (int)paramIt->getMin()/100;
-                    int minbinY = (int)paramIt->getMin()- minbinX * 100;
-
-                    if( newbinX > maxbinX)
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, tr("New value in X is larger than maximal value, input ignored").toAscii().data());
-                    }
-                    else if( newbinY > maxbinY)
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is larger than maximal value, input ignored").toAscii().data());
-                    }
-                    else if(newbinX < minbinX)
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, tr("New value in X is smaller than parameter range, input ignored").toAscii().data());
-                    }
-                    else if(newbinY < minbinY)
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is smaller than parameter range, input ignored").toAscii().data());
-                    }
-                    else
-                    {
-                        ret = myCam.setBinning(newbinX, newbinY);
-                        if(ret)
-                        {
-                            retValue += ito::RetVal(ito::retError, 0, tr("Set binning failed").toAscii().data());
-                        }
-                        ret = myCam.getBinning(newbinX, newbinY);
-                        paramIt.value().setVal<int>(newbinX*100+newbinY);
-                    }
-
-                }
-            }   // All other parameters are copied first (if possible)
+            retValue += it->copyValueFrom( &(*val) );
             
-            else */if(paramIt->getFlags() & ito::ParamBase::Readonly)
+            static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax(m_params["x1"].getVal<int>());
+            static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax(m_params["y1"].getVal<int>());
+                    
+            static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMin(m_params["x0"].getVal<int>());
+            static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMin(m_params["y0"].getVal<int>());
+
+            m_params["sizex"].setVal<int>(m_params["x1"].getVal<int>()-m_params["x0"].getVal<int>()+1);
+            m_params["sizey"].setVal<int>(m_params["y1"].getVal<int>()-m_params["y0"].getVal<int>()+1);
+        }
+        else if(key == "frame_time")
+        {
+            float value = 1.0 / val->getVal<double>();
+            retValue += flyCapSetAndGetParameter("frame_time", value, FlyCapture2::FRAME_RATE, true, false, true);
+            
+            //frame_time changes integration_time as well
+            if (!retValue.containsError())
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
-                goto end;
+                double frameTime = 1.0/value;
+                m_params["frame_time"].setVal<double>(frameTime);
+                //m_params["integration_time"].setMax(frameTime);
+                static_cast<ito::DoubleMeta*>( m_params["integration_time"].getMeta() )->setMax(frameTime);
+
+                retValue += flyCapSetAndGetParameter("integration_time", value, FlyCapture2::SHUTTER, true, false, true);
+
+                if (!retValue.containsError())
+                {
+                    m_params["integration_time"].setVal<double>(value / 1000.0);
+                }
             }
-            else if(val->isNumeric() && paramIt->isNumeric())
+        }
+        else if (key == "integration_time")
+        {
+            float value = val->getVal<double>() * 1000.0;
+            retValue += flyCapSetAndGetParameter("integration_time", value, FlyCapture2::SHUTTER, true, false, true);
+
+            if (!retValue.containsError())
             {
-                double curval = val->getVal<double>();
-                if( curval > paramIt->getMax())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
-                    goto end;
-                }
-                else if(curval < paramIt->getMin())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
-                    goto end;
-                }
-                else
-                {
-                    paramIt.value().setVal<double>(curval);
-                }
+                m_params["integration_time"].setVal<double>(value / 1000.0);
             }
-            else if (paramIt->getType() == val->getType())
+        }
+        else if (key == "gain")
+        {
+            unsigned int value = (uint)(val->getVal<double>() * (m_gainMax - m_gainMin) + m_gainMin + 0.5);
+            retValue += flyCapSetAndGetParameter("gain", value, FlyCapture2::GAIN, false, false, true);
+            
+            if (!retValue.containsError())
             {
-                retValue += paramIt.value().copyValueFrom( &(*val) );
+                double gain = (value - m_gainMin)/(m_gainMax - m_gainMin);
+                m_params["gain"].setVal<double>(gain);
+            }
+        }
+        else if (key == "offset")
+        {
+            unsigned int value = (uint)(val->getVal<double>() * (m_offsetMax - m_offsetMin) + m_offsetMin + 0.5);
+            retValue += flyCapSetAndGetParameter("offset", value, FlyCapture2::BRIGHTNESS, false, false, true);
+
+            if (!retValue.containsError())
+            {
+                double offset = (value - m_offsetMin)/(m_offsetMax - m_offsetMin);
+                m_params["offset"].setVal<double>(offset);
+            }
+        }
+        else if (key == "gamma")
+        {
+            unsigned int value = (uint)(val->getVal<int>());
+            retValue += flyCapSetAndGetParameter("gamma", value, FlyCapture2::GAMMA, false, false, true);
+
+            if (!retValue.containsError())
+            {
+                m_params["gamma"].setVal<int>(value);
+            }
+        }
+        else if (key == "sharpness")
+        {
+            unsigned int value = (uint)(val->getVal<int>());
+            retValue += flyCapSetAndGetParameter("sharpness", value, FlyCapture2::SHARPNESS, false, false, true);
+
+            if (!retValue.containsError())
+            {
+                m_params["sharpness"].setVal<int>(value);
+            }
+
+        }
+        else if (key =="exposureEV")
+        {
+            unsigned int value = (uint)(val->getVal<int>());
+            retValue += flyCapSetAndGetParameter("exposureEV", value, FlyCapture2::AUTO_EXPOSURE, false, false, true);
+
+            if (!retValue.containsError())
+            {
+                m_params["exposureEV"].setVal<int>(value);
+            }
+        }
+        else if (key == "trigger_mode")
+        {
+
+            if (grabberStartedCount() > 0)
+            {
+                running = grabberStartedCount();
+                setGrabberStarted(1);
+                retValue += stopDevice(NULL);
+            }
+
+            // The trigger must be present --> because the m_param is not readonly
+            FlyCapture2::TriggerMode triggerModeSetup;
+            m_myCam.GetTriggerMode(&triggerModeSetup);
+
+            int triggerMode = val->getVal<int>();
+                    
+            switch(triggerMode)
+            {
+                case 0: //Basic Mode
+                    m_RunSync = true;   // Force a synchronisation by delay
+                    m_RunSoftwareSync = false;  // Force synchronisation by software trigger during aquire
+                    triggerModeSetup.onOff = false;
+                    break;
+                case 1: //Hardware Trigger
+                    m_RunSync = false;
+                    m_RunSoftwareSync = false;
+                    triggerModeSetup.onOff = true; 
+                    break;
+                case 2: //Software Trigger
+                    m_RunSync = false;
+                    m_RunSoftwareSync = true;
+                    triggerModeSetup.onOff = true;
+                    break;
+                case -1: //Free run
+                    m_RunSync = false;
+                    m_RunSoftwareSync = false;
+                    triggerModeSetup.onOff = false;
+                    break;
+            }
+
+            FlyCapture2::Error retError = m_myCam.SetTriggerMode(&triggerModeSetup);
+            if (retError != FlyCapture2::PGRERROR_OK)
+            {
+                retValue += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in setParam-function: %s", retError.GetDescription());
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
-                goto end;
+                m_params["trigger"].setVal<int>(triggerMode);
             }
-
-            if(!retValue.containsError())
-            {
-
-                // Adapted parameters and send out depending parameter
-                if(!paramIt.key().compare("x0") ||
-                   !paramIt.key().compare("x1") ||
-                   !paramIt.key().compare("y0") ||
-                   !paramIt.key().compare("y1") ||
-                   !paramIt.key().compare("binning"))
-                {
-
-                    if (grabberStartedCount())
-                    {
-                        running = grabberStartedCount();
-                        setGrabberStarted(1);
-                        retValue += this->stopDevice(0);
-                    }
-                    else
-                    {
-                        setGrabberStarted(1);
-                        this->stopDevice(0);
-                    }
-
-                 /*   if(!paramIt.key().compare("binning"))
-                    {
-                        ret = myCam.getSize(sizeX, sizeY);
-                        m_params["x0"].setVal<int>(0);
-                        m_params["y0"].setVal<int>(0);
-
-                        if(sizeX > 0 && ret == 0)
-                        {
-                            m_params["x1"].setVal<int>(sizeX - 1);
-                            m_params["x1"].setMax(sizeX - 1);
-                        }
-                        if(sizeY > 0 && ret == 0)
-                        {
-                            m_params["y1"].setVal<int>(sizeY - 1);
-                            m_params["y1"].setMax(sizeY - 1);
-                        }
-
-                        m_params["sizex"].setMax(m_params["x1"].getMax()-m_params["x0"].getMin()+1);
-                        m_params["sizey"].setMax(m_params["y1"].getMax()-m_params["y0"].getMin()+1);
-                    }
-                    */
-                    //m_params["x0"].setMax(m_params["x1"].getVal<double>());
-                    //m_params["y0"].setMax(m_params["y1"].getVal<double>());
-                    static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax(m_params["x1"].getVal<int>());
-                    static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax(m_params["y1"].getVal<int>());
-                    
-
-                    //m_params["x1"].setMin(m_params["x0"].getVal<double>());
-                    //m_params["y1"].setMin(m_params["x0"].getVal<double>());
-                    static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMin(m_params["x0"].getVal<int>());
-                    static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMin(m_params["y0"].getVal<int>());
-
-                    m_params["sizex"].setVal<int>(m_params["x1"].getVal<int>()-m_params["x0"].getVal<int>()+1);
-                    m_params["sizey"].setVal<int>(m_params["y1"].getVal<int>()-m_params["y0"].getVal<int>()+1);
-                }
-                else if(!paramIt.key().compare("frame_time"))
-                {
-                    FlyCapture2::Property prop;
-                    prop.type = FlyCapture2::FRAME_RATE;
-                    prop.absControl = true;
-                    prop.autoManualMode = false;
-                    prop.onOff = true;
-                    prop.absValue = 1 / m_params["frame_time"].getVal<double>();
-                    retError = m_myCam.SetProperty( &prop );
-
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-
-                    retError = m_myCam.GetProperty( &prop );
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-                    else
-                    {
-                        double frameTime = 1.0/prop.absValue;
-                        m_params["frame_time"].setVal<double>(frameTime);
-                        //m_params["integration_time"].setMax(frameTime);
-                        static_cast<ito::DoubleMeta*>( m_params["integration_time"].getMeta() )->setMax(frameTime);
-
-                        prop.type = FlyCapture2::SHUTTER;
-                        retError = m_myCam.GetProperty( &prop );
-                        if (retError != FlyCapture2::PGRERROR_OK)
-                        {
-                            _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                            retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                        }
-                        else
-                        {
-                            m_params["integration_time"].setVal<double>(prop.absValue / 1000.0);
-                        }
-
-                    }
-                }
-                else if (!paramIt.key().compare("integration_time"))
-                {
-                    FlyCapture2::Property prop;
-                    prop.type = FlyCapture2::SHUTTER;
-                    prop.absControl = true;
-                    prop.autoManualMode = false;
-                    prop.onOff = true;
-                    prop.absValue = m_params["integration_time"].getVal<double>() * 1000.0;
-                    retError = m_myCam.SetProperty( &prop );
-
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-
-                    retError = m_myCam.GetProperty( &prop );
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-                    else
-                    {
-                        m_params["integration_time"].setVal<double>(prop.absValue / 1000.0);
-                    }
-                }
-                else if (!paramIt.key().compare("gain"))
-                {
-                    FlyCapture2::Property prop;
-                    prop.type = FlyCapture2::GAIN;
-                    prop.absControl = false;
-                    prop.autoManualMode = false;
-                    prop.onOff = true;
-                    prop.valueA = (uint)(m_params["gain"].getVal<double>() * (m_gainMax - m_gainMin) + m_gainMin + 0.5);
-                    retError = m_myCam.SetProperty( &prop );
-
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-
-                    retError = m_myCam.GetProperty( &prop );
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-                    else
-                    {
-                        double gain = (prop.valueA - m_gainMin)/(m_gainMax - m_gainMin);
-                        m_params["gain"].setVal<double>(gain);
-                    }
-                }
-                else if (!paramIt.key().compare("offset"))
-                {
-                    FlyCapture2::Property prop;
-                    prop.type = FlyCapture2::BRIGHTNESS;
-                    prop.absControl = false;
-                    prop.autoManualMode = false;
-                    prop.onOff = true;
-                    prop.absControl = false;
-
-                    prop.valueA = (uint)(m_params["offset"].getVal<double>() * (m_offsetMax - m_offsetMin) + m_offsetMin + 0.5);
-                    retError = m_myCam.SetProperty( &prop );
-
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-
-                    retError = m_myCam.GetProperty( &prop );
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-                    else
-                    {
-                        double offset = (prop.valueA - m_offsetMin)/(m_offsetMax - m_offsetMin);
-                        m_params["offset"].setVal<double>(offset);
-                    }
-                }
-                else if (!paramIt.key().compare("gamma"))
-                {
-                    FlyCapture2::Property prop;
-                    prop.type = FlyCapture2::GAMMA;
-                    prop.absControl = false;
-                    prop.autoManualMode = false;
-                    prop.onOff = true;
-                    prop.absControl = false;
-
-                    prop.valueA = (uint)m_params["gamma"].getVal<int>();
-                    retError = m_myCam.SetProperty( &prop );
-
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-
-                    retError = m_myCam.GetProperty( &prop );
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-                    else
-                    {
-                        m_params["gamma"].setVal<double>(prop.valueA);
-                    }
-                }
-                else if (!paramIt.key().compare("sharpness"))
-                {
-                    FlyCapture2::Property prop;
-                    prop.type = FlyCapture2::SHARPNESS;
-                    prop.absControl = false;
-                    prop.autoManualMode = false;
-                    prop.onOff = true;
-                    prop.absControl = false;
-
-                    prop.valueA = (uint)m_params["sharpness"].getVal<int>();
-                    retError = m_myCam.SetProperty( &prop );
-
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-
-                    retError = m_myCam.GetProperty( &prop );
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-                    else
-                    {
-                        m_params["sharpness"].setVal<double>(prop.valueA);
-                    }
-                }
-                else if (!paramIt.key().compare("exposureEV"))
-                {
-                    FlyCapture2::Property prop;
-                    prop.type = FlyCapture2::AUTO_EXPOSURE;
-                    prop.absControl = false;
-                    prop.autoManualMode = false;
-                    prop.onOff = true;
-                    prop.absControl = false;
-
-                    prop.valueA = (uint)m_params["exposureEV"].getVal<int>();
-                    retError = m_myCam.SetProperty( &prop );
-
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-
-                    retError = m_myCam.GetProperty( &prop );
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-                    else
-                    {
-                        m_params["exposureEV"].setVal<double>(prop.valueA);
-                    }
-                }
-                else if (!paramIt.key().compare("trigger_mode"))
-                {
-
-                    if (grabberStartedCount())
-                    {
-                        running = grabberStartedCount();
-                        setGrabberStarted(1);
-                        retValue += this->stopDevice(0);
-                    }
-                    else
-                    {
-                        setGrabberStarted(1);
-                        this->stopDevice(0);
-                    }
-
-                    // The trigger must be present --> because the m_param is not readonly
-                    FlyCapture2::TriggerMode triggerModeSetup;
-                    m_myCam.GetTriggerMode(&triggerModeSetup);
-
-                    int triggerMode = m_params["trigger_mode"].getVal<int>();
-                    
-                    switch(triggerMode)
-                    {
-                        case 0: //Basic Mode
-                            m_RunSync = true;   // Force a synchronisation by delay
-                            m_RunSoftwareSync = false;  // Force synchronisation by software trigger during aquire
-                            triggerModeSetup.onOff = false;
-                            break;
-                        case 1: //Hardware Trigger
-                            m_RunSync = false;
-                            m_RunSoftwareSync = false;
-                            triggerModeSetup.onOff = true; 
-                            break;
-                        case 2: //Software Trigger
-                            m_RunSync = false;
-                            m_RunSoftwareSync = true;
-                            triggerModeSetup.onOff = true;
-                            break;
-                        case -1: //Free run
-                            m_RunSync = false;
-                            m_RunSoftwareSync = false;
-                            triggerModeSetup.onOff = false;
-                            break;
-                    }
-
-                    retError = m_myCam.SetTriggerMode(&triggerModeSetup);
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        _snprintf(errBuff, 255, "Error in setParam-function: %s", retError.GetDescription());
-                        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-                    }
-                }
-            }
-            emit parametersChanged(m_params);
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            //all parameters that don't need further checks can simply be assigned
+            //to the value in m_params (the rest is already checked above)
+            retValue += it->copyValueFrom( &(*val) );
         }
     }
 
-end:
-    retValue += checkData(); //check if image must be reallocated
-
-    if (running)
+    if(!retValue.containsError())
     {
-        retValue += this->startDevice(0);
-        setGrabberStarted(running);
+        retValue += checkData(); //check if image must be reallocated
+
+        if (running)
+        {
+            retValue += startDevice(NULL);
+            setGrabberStarted(running);
+        }
+
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
 
     if (waitCond)
@@ -843,7 +567,105 @@ end:
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PGRFlyCapture::flyCapSetAndGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type, bool absControl /*= false*/, bool autoManualMode /*= false*/, bool onOff /*= true*/)
+{
+    FlyCapture2::Property prop(type);
+    prop.absControl = absControl;
+    prop.autoManualMode = autoManualMode;
+    prop.onOff = onOff;
+    prop.valueA = value;
+    FlyCapture2::Error retErr = m_myCam.SetProperty( &prop );
 
+    if (retErr != FlyCapture2::PGRERROR_OK)
+    {
+        return ito::RetVal::format(ito::retError, (int)retErr.GetType(), "Error setting parameter %s: %s", name.toLatin1().data(), retErr.GetDescription());
+    }
+
+    retErr = m_myCam.GetProperty( &prop );
+    if (retErr == FlyCapture2::PGRERROR_OK)
+    {
+        value = prop.valueA;
+    }
+    else
+    {
+        return ito::RetVal::format(ito::retError, (int)retErr.GetType(), "Error getting parameter %s: %s", name.toLatin1().data(), retErr.GetDescription());
+    }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PGRFlyCapture::flyCapSetAndGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type, bool absControl /*= false*/, bool autoManualMode /*= false*/, bool onOff /*= true*/)
+{
+    FlyCapture2::Property prop(type);
+    prop.absControl = absControl;
+    prop.autoManualMode = autoManualMode;
+    prop.onOff = onOff;
+    prop.absValue = value;
+    FlyCapture2::Error retErr = m_myCam.SetProperty( &prop );
+
+    if (retErr != FlyCapture2::PGRERROR_OK)
+    {
+        return ito::RetVal::format(ito::retError, (int)retErr.GetType(), "Error setting parameter %s: %s", name.toLatin1().data(), retErr.GetDescription());
+    }
+
+    retErr = m_myCam.GetProperty( &prop );
+    if (retErr == FlyCapture2::PGRERROR_OK)
+    {
+        value = prop.absValue;
+    }
+    else
+    {
+        return ito::RetVal::format(ito::retError, (int)retErr.GetType(), "Error getting parameter %s: %s", name.toLatin1().data(), retErr.GetDescription());
+    }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PGRFlyCapture::flyCapGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type, bool absControl /*= false*/, bool autoManualMode /*= false*/, bool onOff /*= true*/)
+{
+    FlyCapture2::Property prop(type);
+    prop.absControl = absControl;
+    prop.autoManualMode = autoManualMode;
+    prop.onOff = onOff;
+    prop.valueA = value;
+
+    FlyCapture2::Error retErr = m_myCam.GetProperty( &prop );
+    if (retErr == FlyCapture2::PGRERROR_OK)
+    {
+        value = prop.valueA;
+    }
+    else
+    {
+        return ito::RetVal::format(ito::retError, (int)retErr.GetType(), "Error getting parameter %s: %s", name.toLatin1().data(), retErr.GetDescription());
+    }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PGRFlyCapture::flyCapGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type, bool absControl /*= false*/, bool autoManualMode /*= false*/, bool onOff /*= true*/)
+{
+    FlyCapture2::Property prop(type);
+    prop.absControl = absControl;
+    prop.autoManualMode = autoManualMode;
+    prop.onOff = onOff;
+    prop.absValue = value;
+
+    FlyCapture2::Error retErr = m_myCam.GetProperty( &prop );
+    if (retErr == FlyCapture2::PGRERROR_OK)
+    {
+        value = prop.absValue;
+    }
+    else
+    {
+        return ito::RetVal::format(ito::retError, (int)retErr.GetType(), "Error getting parameter %s: %s", name.toLatin1().data(), retErr.GetDescription());
+    }
+
+    return ito::retOk;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! init method which is called by the addInManager after the initiation of a new instance of PGRFlyCapture.
@@ -1075,13 +897,13 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                         {
                             // Error
                         }
-#ifdef _DEBUG
-                        std::cout << "Read value: " << QString::number(value).toLatin1().data() << "\n";
-#endif
+//#ifdef _DEBUG
+//                        std::cout << "Read value: " << QString::number(value).toLatin1().data() << "\n";
+//#endif
                         value &= ~(0x1 << 0);
-#ifdef _DEBUG
-                        std::cout << "Wrote value: " << QString::number(value).toLatin1().data() << " from " << QString::number((0x1 << 0)).toLatin1().data() << "\n";
-#endif
+//#ifdef _DEBUG
+//                        std::cout << "Wrote value: " << QString::number(value).toLatin1().data() << " from " << QString::number((0x1 << 0)).toLatin1().data() << "\n";
+//#endif
                         retError = m_myCam.WriteRegister( k_imageDataFmtReg, value );
                         if ( retError != FlyCapture2::PGRERROR_OK )
                         {
@@ -1685,7 +1507,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             }
        */    
         m_params["camSerialNumber"].setVal<int>((int)camInfo.serialNumber);
-        m_identifier = QString("%1 (%2)").arg( camInfo.modelName ).arg( camInfo.serialNumber );
+        setIdentifier(QString("%1 (%2)").arg( camInfo.modelName ).arg( camInfo.serialNumber ));
         m_params["camModel"].setVal<char*>(camInfo.modelName, (int)strlen(camInfo.modelName));
         m_params["camVendor"].setVal<char*>(camInfo.vendorName, (int)strlen(camInfo.vendorName));
         m_params["camSensor"].setVal<char*>(camInfo.sensorInfo, (int)strlen(camInfo.sensorInfo));
@@ -2035,45 +1857,6 @@ ito::RetVal PGRFlyCapture::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if gain parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void PGRFlyCapture::GainPropertiesChanged(double gain)
-{
-    if(checkNumericParamRange(m_params["gain"], gain))
-    {
-        setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", m_params["gain"].getType(), gain)));
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if  offset parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void PGRFlyCapture::OffsetPropertiesChanged(double offset)
-{
-    setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", m_params["offset"].getType(), offset)));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if integrationtime parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void PGRFlyCapture::IntegrationPropertiesChanged(double integrationtime)
-{
-    if(checkNumericParamRange(m_params["integration_time"], integrationtime))
-    {
-        setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", m_params["integration_time"].getType(), integrationtime)));
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue(ito::retOk);
@@ -2243,6 +2026,25 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
 #endif
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PGRFlyCapture::dockWidgetVisibilityChanged(bool visible)
+{
+    if (getDockWidget())
+    {
+        QWidget *widget = getDockWidget()->widget();
+        if (visible)
+        {
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+
+            emit parametersChanged(m_params);
+        }
+        else
+        {
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
