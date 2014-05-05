@@ -63,9 +63,7 @@ class DialogPGRFlyCapture : public ito::AbstractAddInConfigDialog
         void on_buttonBox_clicked(QAbstractButton* btn);
         void on_rangeX01_valuesChanged(int minValue, int maxValue);
         void on_rangeY01_valuesChanged(int minValue, int maxValue);
-
-        void on_spinBox_binX_valueChanged(int value);
-        void on_spinBox_binY_valueChanged(int value);
+        void on_btnFullROI_clicked();
 };
 
 #endif

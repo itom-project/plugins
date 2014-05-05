@@ -31,7 +31,7 @@
 #include <qsharedpointer.h>
 #include <QTimerEvent>
 
-#define MAXPGR 5
+#define MAXPGR 10
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class PGRFlyCaptureInterface : public ito::AddInInterfaceBase
@@ -75,8 +75,10 @@ class PGRFlyCapture : public ito::AddInGrabber
         ito::RetVal flyCapSetAndGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type, bool absControl = false, bool autoManualMode = false, bool onOff = true);
         ito::RetVal flyCapSetAndGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type, bool absControl = false, bool autoManualMode = false, bool onOff = true);
 
-        ito::RetVal flyCapGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type, bool absControl = false, bool autoManualMode = false, bool onOff = true);
-        ito::RetVal flyCapGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type, bool absControl = false, bool autoManualMode = false, bool onOff = true);
+        ito::RetVal flyCapGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type);
+        ito::RetVal flyCapGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type);
+
+        ito::RetVal flyCapChangeFormat7(bool changeBpp, bool changeROI, int bpp = -1, int x0 = -1, int y0 = -1, int x1 = -1, int y1 = -1);
 
         bool m_isgrabbing;
         FlyCapture2::Camera m_myCam;
@@ -90,17 +92,22 @@ class PGRFlyCapture : public ito::AddInGrabber
         double m_offsetMax;
         double m_offsetMin;
 
-
         double m_acquireTime;    /*!< Timestamp for acquire in seconds relative to cpu ticks */
 		double m_last_acquireTime;
        
-        bool m_isInFormat7;
+        FlyCapture2::Format7ImageSettings m_currentFormat7Settings;
+        FlyCapture2::Format7PacketInfo m_currentPacketInfo;
+        FlyCapture2::Format7Info m_format7Info;
+        FlyCapture2::InterfaceType m_interfaceType;
+        bool m_hasFormat7;
 
         unsigned int GetBppFromPixelFormat( FlyCapture2::PixelFormat pixelFormat );
         bool GetPixelFormatFromVideoMode( FlyCapture2::VideoMode mode, bool stippled, FlyCapture2::PixelFormat* pixFormat);
         bool GetResolutionFromVideoMode( FlyCapture2::VideoMode mode, int &sizeX, int &sizeY);
         double GetFrameTimeFromFrameRate( FlyCapture2::FrameRate frameRate );
         FlyCapture2::FrameRate GetSuitAbleFrameRateFromFrameTime( double frameTime );
+
+        ito::RetVal checkError(const FlyCapture2::Error &error);
 
     signals:
 

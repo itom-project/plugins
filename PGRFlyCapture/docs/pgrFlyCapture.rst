@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`PGRFlyCapture`
 **License**:    :pluginlicense:`PGRFlyCapture`
 **Platforms**:  Windows, (Linux possible but yet not implemented)
-**Devices**:    PointGrey cameras supported by Fly Capture driver
+**Devices**:    Point Grey cameras (USB3) supported by Fly Capture driver. (GigE possible, but yet not implemented)
 **Author**:     :pluginauthor:`PGRFlyCapture`
 =============== ========================================================================================================
  
