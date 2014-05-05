@@ -773,10 +773,10 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             switch (m_interfaceType)
             {
                 case FlyCapture2::INTERFACE_USB2:
-                    m_params["interface"].setVal<char*>("USB2");
+                    m_params["camInterface"].setVal<char*>("USB2");
                     break;
                 case FlyCapture2::INTERFACE_USB3:
-                    m_params["interface"].setVal<char*>("USB3");
+                    m_params["camInterface"].setVal<char*>("USB3");
                     break;
                 default:
                     retVal += ito::RetVal(ito::retError, 0, "unsupported interface (GigE, IEEE1394...)");
