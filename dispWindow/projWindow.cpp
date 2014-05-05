@@ -99,7 +99,7 @@
         if (gamma == 0)                 \
         {                               \
             float c = texture2D(texture, TexCoord).r; \
-            FragColor = color * vec4(c,c,c,1.0); \
+            gl_FragColor = color * vec4(c,c,c,1.0); \
         }                               \
         else                            \
         {                               \
