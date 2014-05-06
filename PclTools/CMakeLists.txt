@@ -21,6 +21,7 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
+SET(VTK_INSTALL_EXPORT_NAME 1) #avoid that vtk directly links to an absolute Qt-library, that is located somewhere on their computer configuration.
 find_package(ITOM_SDK REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets LinguistTools)
@@ -31,7 +32,7 @@ IF(ITOM_SDK_PCL_SUPPORT)
     find_package(VTK QUIET)
     
     IF(VTK_FOUND)
-        SET(VTK_INSTALL_EXPORT_NAME 1) #avoid that vtk directly links to an absolute Qt-library, that is located somewhere on their computer configuration.
+        
         find_package(PCL 1.5.1 REQUIRED COMPONENTS common io kdtree search features segmentation filters surface) #io
         find_package(VisualLeakDetector QUIET)
 

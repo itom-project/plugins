@@ -3125,6 +3125,13 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
     bool storeShadowFaces = paramsOpt->at(3).getVal<int>() > 0;
     QString typeStr = paramsOpt->at(0).getVal<char*>();
 
+#if PCL_VERSION_COMPARE(<, 1, 7, 0)
+	if (psRows != 1 || psCols != 1)
+	{
+		return ito::RetVal(ito::retError, 0, "with a PCL < 1.7.0 trianglePixelSizeRows and trianglePixelSizeColumns must be 1");
+	}
+#endif
+
     pcl::OrganizedFastMesh<pcl::PointXYZ>::TriangulationType type;
 
     if (QString::compare(typeStr, "TRIANGLE_RIGHT_CUT") == 0)
@@ -3177,8 +3184,10 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             fastMesh.setInputCloud(pointCloud->toPointXYZConst());
             fastMesh.setTriangulationType( type );
             fastMesh.storeShadowedFaces(storeShadowFaces);
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
+#endif
             fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
         }
         break;
@@ -3189,8 +3198,10 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             fastMesh.setInputCloud(pointCloud->toPointXYZIConst());
             fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZI>::TriangulationType)type );
             fastMesh.storeShadowedFaces(storeShadowFaces);
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
+#endif
             fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
         }
         break;
@@ -3201,8 +3212,10 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             fastMesh.setInputCloud(pointCloud->toPointXYZRGBAConst());
             fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZRGBA>::TriangulationType)type );
             fastMesh.storeShadowedFaces(storeShadowFaces);
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
+#endif
             fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
         }
         break;
@@ -3213,8 +3226,10 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             fastMesh.setInputCloud(pointCloud->toPointXYZNormalConst());
             fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointNormal>::TriangulationType)type );
             fastMesh.storeShadowedFaces(storeShadowFaces);
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
+#endif
             fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
         }
         break;
@@ -3225,8 +3240,10 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             fastMesh.setInputCloud(pointCloud->toPointXYZINormalConst());
             fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZINormal>::TriangulationType)type );
             fastMesh.storeShadowedFaces(storeShadowFaces);
+ #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
+#endif
             fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
         }
         break;
@@ -3237,8 +3254,10 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             fastMesh.setInputCloud(pointCloud->toPointXYZRGBNormalConst());
             fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZRGBNormal>::TriangulationType)type );
             fastMesh.storeShadowedFaces(storeShadowFaces);
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
+#endif
             fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
         }
 
