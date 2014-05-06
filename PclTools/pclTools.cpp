@@ -3167,7 +3167,7 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
         return ito::RetVal(ito::retError, 0, "the parameters organizedCloud and meshOut must not be NULL");
     }
 
-    if (pointCloud->isOrganized() == false)
+    if (pointCloud->getType() != ito::pclInvalid && pointCloud->isOrganized() == false)
     {
         return ito::RetVal(ito::retError, 0, "the given point cloud must be organized. The height property of an organized point cloud is bigger than one.");
     }
