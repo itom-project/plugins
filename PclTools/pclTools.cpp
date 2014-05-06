@@ -42,6 +42,8 @@
 #include <pcl/common/pca.h>
 
 #include <pcl/surface/ear_clipping.h>
+#include <pcl/surface/organized_fast_mesh.h>
+#include <pcl/surface/impl/organized_fast_mesh.hpp>
 
 #include <pcl/io/impl/pcd_io.hpp>
 
@@ -203,6 +205,9 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclMeshTriangulation, PclTools::pclMeshTriangulationParams, tr("calculates polygon mesh with triangles only. This is based on the ear-clipping algorithm, the complexity is n^3 and it does not handle holes."));
     m_filterList.insert("pclMeshTriangulation", filter);
+
+    filter = new FilterDef(PclTools::pclOrganizedFastMesh, PclTools::pclOrganizedFastMeshParams, tr("creates a triangle based, polygonial mesh from an organized point cloud. The triangles are always spanned between neighboured points of the organized cloud."));
+    m_filterList.insert("pclOrganizedFastMesh", filter);
 
     if (waitCond)
     {
@@ -3071,5 +3076,174 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
     paramsMand->append(ito::Param("meshIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid point cloud of type XYZ or XYZI").toLatin1().data()));
     paramsMand->append(ito::Param("disperityMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Outpot dataObject with z-Values").toLatin1().data()));
     paramsOpt->append( ito::Param("intensityMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Outpot dataObject with intensity-Values").toLatin1().data()));
+    return retval;
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PclTools::pclOrganizedFastMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("organizedCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid, organized point cloud").toLatin1().data()));
+    paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output polygonal mesh").toLatin1().data()));
+
+    paramsOpt->clear();
+    ito::Param triangleType("triangulationType", ito::ParamBase::String | ito::ParamBase::In, "TRIANGLE_RIGHT_CUT", tr("'TRIANGLE_RIGHT_CUT': _always_ cuts a quad from top left to bottom right (default), 'TRIANGLE_LEFT_CUT': _always_ cuts a quad from top right to bottom left, 'TRIANGLE_ADAPTIVE_CUT': cuts where possible and prefers larger differences in z direction, 'QUAD_MESH': create a simple quad mesh").toLatin1().data());
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
+    sm->addItem("TRIANGLE_RIGHT_CUT");
+    sm->addItem("TRIANGLE_LEFT_CUT");
+    sm->addItem("TRIANGLE_ADAPTIVE_CUT");
+    sm->addItem("QUAD_MESH");
+    triangleType.setMeta(sm,true);
+    paramsOpt->append(triangleType);
+
+    paramsOpt->append(ito::Param("trianglePixelSizeRows", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 1, tr("Set the edge length (in pixels) used for iterating over rows when constructing the fixed mesh. Default: 1, neighboring pixels are connected").toLatin1().data()));
+    paramsOpt->append(ito::Param("trianglePixelSizeColumns", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 1, tr("Set the edge length (in pixels) used for iterating over columns when constructing the fixed mesh. Default: 1, neighboring pixels are connected").toLatin1().data()));
+    paramsOpt->append(ito::Param("storeShadowFaces", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Store shadowed faces or not (default: 1, yes).").toLatin1().data()));
+
+    return retval;
+}
+
+ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::PCLPointCloud *pointCloud = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
+    ito::PCLPolygonMesh *polygonMesh = (ito::PCLPolygonMesh*)(*paramsMand)[1].getVal<void*>();
+
+    int psRows = paramsOpt->at(1).getVal<int>();
+    int psCols = paramsOpt->at(2).getVal<int>();
+    bool storeShadowFaces = paramsOpt->at(3).getVal<int>() > 0;
+    QString typeStr = paramsOpt->at(0).getVal<char*>();
+
+    pcl::OrganizedFastMesh<pcl::PointXYZ>::TriangulationType type;
+
+    if (QString::compare(typeStr, "TRIANGLE_RIGHT_CUT") == 0)
+    {
+        type = pcl::OrganizedFastMesh<pcl::PointXYZ>::TRIANGLE_RIGHT_CUT;
+    }
+    else if (QString::compare(typeStr, "TRIANGLE_LEFT_CUT") == 0)
+    {
+        type = pcl::OrganizedFastMesh<pcl::PointXYZ>::TRIANGLE_LEFT_CUT;
+    }
+    else if (QString::compare(typeStr, "TRIANGLE_ADAPTIVE_CUT") == 0)
+    {
+        type = pcl::OrganizedFastMesh<pcl::PointXYZ>::TRIANGLE_ADAPTIVE_CUT;
+    }
+    else if (QString::compare(typeStr, "QUAD_MESH") == 0)
+    {
+        type = pcl::OrganizedFastMesh<pcl::PointXYZ>::QUAD_MESH;
+    }
+    else
+    {
+        return ito::RetVal(ito::retError, 0, "wrong triangulationType parameter.");
+    }
+
+    if (polygonMesh->valid() == false)
+    {
+        *polygonMesh = ito::PCLPolygonMesh(pcl::PolygonMesh::Ptr(new pcl::PolygonMesh()));
+    }
+
+    
+
+    if (pointCloud == NULL || polygonMesh == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, "the parameters organizedCloud and meshOut must not be NULL");
+    }
+
+    if (pointCloud->isOrganized() == false)
+    {
+        return ito::RetVal(ito::retError, 0, "the given point cloud must be organized. The height property of an organized point cloud is bigger than one.");
+    }
+
+    switch(pointCloud->getType())
+    {
+    case ito::pclInvalid:
+        retval += ito::RetVal(ito::retError, 0, "a valid organized point cloud must be given");
+        break;
+    case ito::pclXYZ: //pcl::PointXYZ, toPointXYZ
+        {
+            //create mesh
+            pcl::OrganizedFastMesh<pcl::PointXYZ> fastMesh;
+            fastMesh.setInputCloud(pointCloud->toPointXYZConst());
+            fastMesh.setTriangulationType( type );
+            fastMesh.storeShadowedFaces(storeShadowFaces);
+            fastMesh.setTrianglePixelSizeRows(psRows);
+            fastMesh.setTrianglePixelSizeColumns(psCols);
+            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+        }
+        break;
+    case ito::pclXYZI: //pcl::PointXYZI, toPointXYZI
+        {
+            //create mesh
+            pcl::OrganizedFastMesh<pcl::PointXYZI> fastMesh;
+            fastMesh.setInputCloud(pointCloud->toPointXYZIConst());
+            fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZI>::TriangulationType)type );
+            fastMesh.storeShadowedFaces(storeShadowFaces);
+            fastMesh.setTrianglePixelSizeRows(psRows);
+            fastMesh.setTrianglePixelSizeColumns(psCols);
+            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+        }
+        break;
+    case ito::pclXYZRGBA: //pcl::PointXYZRGBA, toPointXYZRGBA
+        {
+            //create mesh
+            pcl::OrganizedFastMesh<pcl::PointXYZRGBA> fastMesh;
+            fastMesh.setInputCloud(pointCloud->toPointXYZRGBAConst());
+            fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZRGBA>::TriangulationType)type );
+            fastMesh.storeShadowedFaces(storeShadowFaces);
+            fastMesh.setTrianglePixelSizeRows(psRows);
+            fastMesh.setTrianglePixelSizeColumns(psCols);
+            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+        }
+        break;
+    case ito::pclXYZNormal: //pcl::PointNormal, toPointXYZNormal
+        {
+            //create mesh
+            pcl::OrganizedFastMesh<pcl::PointNormal> fastMesh;
+            fastMesh.setInputCloud(pointCloud->toPointXYZNormalConst());
+            fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointNormal>::TriangulationType)type );
+            fastMesh.storeShadowedFaces(storeShadowFaces);
+            fastMesh.setTrianglePixelSizeRows(psRows);
+            fastMesh.setTrianglePixelSizeColumns(psCols);
+            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+        }
+        break;
+    case ito::pclXYZINormal: //pcl::PointXYZINormal, toPointXYZINormal
+        {
+            //create mesh
+            pcl::OrganizedFastMesh<pcl::PointXYZINormal> fastMesh;
+            fastMesh.setInputCloud(pointCloud->toPointXYZINormalConst());
+            fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZINormal>::TriangulationType)type );
+            fastMesh.storeShadowedFaces(storeShadowFaces);
+            fastMesh.setTrianglePixelSizeRows(psRows);
+            fastMesh.setTrianglePixelSizeColumns(psCols);
+            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+        }
+        break;
+    case ito::pclXYZRGBNormal: //pcl::PointXYZRGBNormal, toPointXYZRGBNormal
+        {
+            //create mesh
+            pcl::OrganizedFastMesh<pcl::PointXYZRGBNormal> fastMesh;
+            fastMesh.setInputCloud(pointCloud->toPointXYZRGBNormalConst());
+            fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZRGBNormal>::TriangulationType)type );
+            fastMesh.storeShadowedFaces(storeShadowFaces);
+            fastMesh.setTrianglePixelSizeRows(psRows);
+            fastMesh.setTrianglePixelSizeColumns(psCols);
+            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+        }
+
+        break;
+    }
+
     return retval;
 }
