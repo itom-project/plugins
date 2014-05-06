@@ -62,7 +62,7 @@ An example for opening port **COM 1** with 9600 bauds is:
 Parameters
 ==========
 
-These paramaters are available and can be used to configure the **serialIO** instance. Many of them are directly initialized by the
+These parameters are available and can be used to configure the **serialIO** instance. Many of them are directly initialized by the
 parameters of the constructor. During the runtime of an instance, the value of these parameters is obtained by the method *getParam*, writeable
 parameters can be changed using *setParam*.
 
