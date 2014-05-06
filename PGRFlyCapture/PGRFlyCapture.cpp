@@ -27,6 +27,7 @@
 #include "pluginVersion.h"
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
+#include <bitset>
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -206,24 +207,27 @@ PGRFlyCapture::PGRFlyCapture() :
     m_gainMax(1.0),
     m_gainMin(0.0),
     m_offsetMax(1.0),
-    m_offsetMin(0.0)
+    m_offsetMin(0.0),
+    m_extendedShutter(UNINITIALIZED)
 {
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PGRFlyCapture", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000006, 1/1.875, 1/1.875, tr("Integrationtime of CCD programmed in s").toAscii().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000006, 1/1.875, 1/1.875, tr("Integrationtime of CCD programmed in seconds.").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("frame_time", ito::ParamBase::Double, 1/240.0, 1/1.875, 1/1.875, tr("Time between two frames").toAscii().data());
+    paramVal = ito::Param("frame_time", ito::ParamBase::Double, 1/240.0, 1/1.875, 1/1.875, tr("Frame rate in seconds. This is only considered if the camera is not in an extended shutter mode. The frame_time might influence the integration time.").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("gain").toAscii().data());
+    paramVal = ito::Param("extended_shutter", ito::ParamBase::Int, 0, 1, 1, tr("1 (default): extended shutter is on (long integration times are supported and frame_time becomes invalid), 0: frames are only acquired in the pulse given by frame_time.").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.05, tr("offset mapped to brightness").toAscii().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("gain (normalized value 0..1)").toAscii().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.05, tr("offset (normalized value 0..1, mapped to PG-parameter BRIGHTNESS)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("exposureEV", ito::ParamBase::Int, 0, 1023, 480, tr("Camera brightness control (EV)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sharpness", ito::ParamBase::Int, 0, 4095, 0, tr("PGR on chip filter function").toAscii().data());
+    paramVal = ito::Param("sharpness", ito::ParamBase::Int, 0, 4095, 0, tr("Sharpness").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gamma", ito::ParamBase::Int, 500, 4095, 1024, tr("Gamma adjustment").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -245,10 +249,10 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Pixelsize in y (rows)").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 16, tr("Grabdepth of the images").toAscii().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 16, tr("bitdepth of each pixel").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("time_out", ito::ParamBase::Double, 0.1, 60.0, 60.0, tr("Timeout for acquiring images").toAscii().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.001, 60.0, 2.0, tr("Timeout for acquiring images in seconds").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, -1, 2, 0, tr("-1: Complete free run, 0: Disable trigger, 1: enable trigger mode, 2: enable software-trigger").toAscii().data());
@@ -257,8 +261,8 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("videoMode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, FlyCapture2::NUM_VIDEOMODES - 1, FlyCapture2::VIDEOMODE_FORMAT7, tr("Current video mode, default is Mode7").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("supported_frame_time", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Possible valued for the frame_time in frames per second").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
+    //paramVal = ito::Param("supported_frame_time", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Possible valued for the frame_time in frames per second").toAscii().data());
+    //m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("camSerialNumber", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("Serial number of the attachted camera").toAscii().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -403,41 +407,49 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         {
             retValue += flyCapChangeFormat7(false, true, -1, -1, -1, -1, val->getVal<int>());
         }
+        else if (key == "extended_shutter")
+        {
+            retValue += flyCapSetExtendedShutter(val->getVal<int>() > 0);
+            retValue += flyCapSynchronizeFrameRateShutter();
+        }
         else if(key == "frame_time")
         {
-            float value = 1.0 / val->getVal<double>();
-            retValue += flyCapSetAndGetParameter("frame_time", value, FlyCapture2::FRAME_RATE, true, false, true);
+            FlyCapture2::Property prop;
+            prop.type = FlyCapture2::FRAME_RATE;
+            retValue += checkError(m_myCam.GetProperty( &prop ));
             
-            //frame_time changes integration_time as well
-            if (!retValue.containsError())
+            if (retValue != ito::retError && prop.onOff == true) //if off, extended shutter is on
             {
-                double frameTime = 1.0/value;
-                m_params["frame_time"].setVal<double>(frameTime);
-                //m_params["integration_time"].setMax(frameTime);
-                static_cast<ito::DoubleMeta*>( m_params["integration_time"].getMeta() )->setMax(frameTime);
-
-                retValue += flyCapSetAndGetParameter("integration_time", value, FlyCapture2::SHUTTER, true, false, true);
-
-                if (!retValue.containsError())
-                {
-                    m_params["integration_time"].setVal<double>(value / 1000.0);
-                }
+                prop.absControl = true; //floating point
+                prop.autoManualMode = false; //manual
+                prop.onOff = true;
+                prop.absValue = 1.0 / val->getVal<double>();
+                retValue += checkError(m_myCam.SetProperty( &prop ));
             }
+
+            retValue += flyCapSynchronizeFrameRateShutter();
         }
         else if (key == "integration_time")
         {
-            float value = val->getVal<double>() * 1000.0;
-            retValue += flyCapSetAndGetParameter("integration_time", value, FlyCapture2::SHUTTER, true, false, true);
-
-            if (!retValue.containsError())
+            FlyCapture2::Property prop;
+            prop.type = FlyCapture2::SHUTTER;
+            retValue += checkError(m_myCam.GetProperty( &prop ));
+            
+            if (retValue != ito::retError)
             {
-                m_params["integration_time"].setVal<double>(value / 1000.0);
+                prop.absControl = true; //floating point
+                prop.autoManualMode = false; //manual
+                prop.onOff = true;
+                prop.absValue = val->getVal<double>() * 1000.0;
+                retValue += checkError(m_myCam.SetProperty( &prop ));
             }
+
+            retValue += flyCapSynchronizeFrameRateShutter();            
         }
         else if (key == "gain")
         {
             unsigned int value = (uint)(val->getVal<double>() * (m_gainMax - m_gainMin) + m_gainMin + 0.5);
-            retValue += flyCapSetAndGetParameter("gain", value, FlyCapture2::GAIN, false, false, true);
+            retValue += flyCapSetAndGetParameter("gain", value, FlyCapture2::GAIN, false, true);
             
             if (!retValue.containsError())
             {
@@ -448,7 +460,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         else if (key == "offset")
         {
             unsigned int value = (uint)(val->getVal<double>() * (m_offsetMax - m_offsetMin) + m_offsetMin + 0.5);
-            retValue += flyCapSetAndGetParameter("offset", value, FlyCapture2::BRIGHTNESS, false, false, true);
+            retValue += flyCapSetAndGetParameter("offset", value, FlyCapture2::BRIGHTNESS, false, true);
 
             if (!retValue.containsError())
             {
@@ -459,7 +471,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         else if (key == "gamma")
         {
             unsigned int value = (uint)(val->getVal<int>());
-            retValue += flyCapSetAndGetParameter("gamma", value, FlyCapture2::GAMMA, false, false, true);
+            retValue += flyCapSetAndGetParameter("gamma", value, FlyCapture2::GAMMA, false, true);
 
             if (!retValue.containsError())
             {
@@ -469,7 +481,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         else if (key == "sharpness")
         {
             unsigned int value = (uint)(val->getVal<int>());
-            retValue += flyCapSetAndGetParameter("sharpness", value, FlyCapture2::SHARPNESS, false, false, true);
+            retValue += flyCapSetAndGetParameter("sharpness", value, FlyCapture2::SHARPNESS, false, true);
 
             if (!retValue.containsError())
             {
@@ -480,7 +492,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         else if (key =="exposureEV")
         {
             unsigned int value = (uint)(val->getVal<int>());
-            retValue += flyCapSetAndGetParameter("exposureEV", value, FlyCapture2::AUTO_EXPOSURE, false, false, true);
+            retValue += flyCapSetAndGetParameter("exposureEV", value, FlyCapture2::AUTO_EXPOSURE, false, true);
 
             if (!retValue.containsError())
             {
@@ -537,6 +549,22 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 m_params["trigger"].setVal<int>(triggerMode);
             }
         }
+        else if (key == "timeout")
+        {
+            FlyCapture2::FC2Config pCamConfig;
+            retValue += checkError(m_myCam.GetConfiguration(&pCamConfig));
+
+            if (retValue != ito::retError)
+            {
+                pCamConfig.grabTimeout = val->getVal<double>() * 1000;
+                retValue += checkError(m_myCam.SetConfiguration(&pCamConfig));
+
+                if (retValue != ito::retError)
+                {
+                    retValue += it->copyValueFrom( &(*val) );
+                }
+            }
+        }
         else if (key == "bpp")
         {
             retValue += flyCapChangeFormat7(true, false, val->getVal<int>());
@@ -571,10 +599,10 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PGRFlyCapture::flyCapSetAndGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type, bool absControl /*= false*/, bool autoManualMode /*= false*/, bool onOff /*= true*/)
+ito::RetVal PGRFlyCapture::flyCapSetAndGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type, bool autoManualMode /*= false*/, bool onOff /*= true*/)
 {
     FlyCapture2::Property prop(type);
-    prop.absControl = absControl;
+    prop.absControl = false; //integer based
     prop.autoManualMode = autoManualMode;
     prop.onOff = onOff;
     prop.valueA = value;
@@ -599,10 +627,10 @@ ito::RetVal PGRFlyCapture::flyCapSetAndGetParameter(const QString &name, unsigne
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PGRFlyCapture::flyCapSetAndGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type, bool absControl /*= false*/, bool autoManualMode /*= false*/, bool onOff /*= true*/)
+ito::RetVal PGRFlyCapture::flyCapSetAndGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type, bool autoManualMode /*= false*/, bool onOff /*= true*/)
 {
     FlyCapture2::Property prop(type);
-    prop.absControl = absControl;
+    prop.absControl = true; //float based
     prop.autoManualMode = autoManualMode;
     prop.onOff = onOff;
     prop.absValue = value;
@@ -928,44 +956,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     if(!retVal.containsError())
     {
-        FlyCapture2:: PropertyInfo propInfo;
-        propInfo.type = FlyCapture2::FRAME_RATE;
-
-        retError = m_myCam.GetPropertyInfo( &propInfo );
-
-        if (retError != FlyCapture2::PGRERROR_OK)
-        {
-            retVal += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in init-function: %s", retError.GetDescription());
-        }
-        else
-        {
-            if(propInfo.present && propInfo.absValSupported && propInfo.manualSupported)
-            {
-                m_params["frame_time"].setMeta( new ito::DoubleMeta(1.0/propInfo.absMin, 1.0/propInfo.absMax ), true);
-
-                float val = propInfo.absMax;
-                retVal += flyCapSetAndGetParameter("frame_time", val, FlyCapture2::FRAME_RATE, true, true, true);
-
-                if (!retVal.containsError())
-                {
-                    double frameTime = 1.0/val;
-                    m_params["frame_time"].setVal<double>(frameTime);
-                    static_cast<ito::DoubleMeta*>( m_params["integration_time"].getMeta() )->setMax(frameTime);
-
-                    retVal += flyCapGetParameter("frame_time", val, FlyCapture2::FRAME_RATE);
-
-                    if (!retVal.containsError())
-                    {
-                        retVal += flyCapSetAndGetParameter("frame_time", val, FlyCapture2::FRAME_RATE, true, false, true);
-                    }
-                }
-
-            }
-            else
-            {
-                m_params["frame_time"].setFlags(ito::ParamBase::Readonly);
-            }
-        }
+        retVal += flyCapSetExtendedShutter( m_params["extended_shutter"].getVal<int>() > 0 );
     }
 
     if(!retVal.containsError())
@@ -973,47 +964,21 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         FlyCapture2:: PropertyInfo propInfo;
         propInfo.type = FlyCapture2::SHUTTER;
 
-        retError = m_myCam.GetPropertyInfo( &propInfo );
+        retVal += checkError( m_myCam.GetPropertyInfo( &propInfo ) );
 
-        if (retError != FlyCapture2::PGRERROR_OK)
-        {
-            retVal += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in init-function: %s", retError.GetDescription());
-        }
-        else
+        if (!retVal.containsError())
         {
             if(propInfo.present && propInfo.absValSupported && propInfo.manualSupported)
             {
-                //m_params["integration_time"].setMin(propInfo.absMin / 1000.0);   
-                static_cast<ito::DoubleMeta*>( m_params["integration_time"].getMeta() )->setMin(propInfo.absMin / 1000.0);
-
                 FlyCapture2::Property prop;
                 prop.type = FlyCapture2::SHUTTER;
                 prop.absControl = true;
-
-                retError = m_myCam.GetProperty( &prop );
-                if (retError != FlyCapture2::PGRERROR_OK)
-                {
-                    retVal += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in init-function: %s", retError.GetDescription());
-                }
-                else
-                {
-                    double intTime = prop.absValue / 1000.0;
-                    m_params["integration_time"].setVal<double>(intTime);
-
-                    prop.autoManualMode = false;
-                    prop.onOff = true;
-                    retError = m_myCam.SetProperty( &prop );
-
-                    if (retError != FlyCapture2::PGRERROR_OK)
-                    {
-                        retVal += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in init-function: %s", retError.GetDescription());
-                    }
-                }
+                prop.autoManualMode = false;
+                prop.onOff = true;
+                retVal += checkError(m_myCam.SetProperty( &prop )); 
             }
-            else
-            {
-                m_params["integration_time"].setFlags(ito::ParamBase::Readonly);
-            }
+            
+            retVal += flyCapSynchronizeFrameRateShutter();
         }
     }
 
@@ -1022,13 +987,9 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         FlyCapture2::PropertyInfo propInfo;
 
         propInfo.type = FlyCapture2::GAIN;
-        retError = m_myCam.GetPropertyInfo( &propInfo );
+        retVal += checkError( m_myCam.GetPropertyInfo( &propInfo ) );
 
-        if (retError != FlyCapture2::PGRERROR_OK)
-        {
-            retVal += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in init-function: %s", retError.GetDescription());
-        }
-        else
+        if (!retVal.containsError())
         {
             if(propInfo.present && propInfo.manualSupported)
             {
@@ -1043,7 +1004,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                     double gain = (valA - m_gainMin) / (m_gainMax-m_gainMin) ;
                     m_params["gain"].setVal<double>(gain);
 
-                    retVal += flyCapSetAndGetParameter("gain", valA, FlyCapture2::GAIN, false, false, true);
+                    retVal += flyCapSetAndGetParameter("gain", valA, FlyCapture2::GAIN, false, true);
                 }
             }
             else
@@ -1058,13 +1019,9 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         FlyCapture2::PropertyInfo propInfo;
 
         propInfo.type = FlyCapture2::BRIGHTNESS;
-        retError = m_myCam.GetPropertyInfo( &propInfo );
+        retVal += checkError( m_myCam.GetPropertyInfo( &propInfo ) );
 
-        if (retError != FlyCapture2::PGRERROR_OK)
-        {
-            retVal += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in init-function: %s", retError.GetDescription());
-        }
-        else
+        if (!retVal.containsError())
         {
             if(propInfo.present && propInfo.manualSupported)
             {
@@ -1079,7 +1036,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                     double offset = (valA - m_offsetMin) / (m_offsetMax - m_offsetMin) ;
                     m_params["offset"].setVal<double>(offset);
 
-                    retVal += flyCapSetAndGetParameter("offset", valA, FlyCapture2::BRIGHTNESS, false, false, true);
+                    retVal += flyCapSetAndGetParameter("offset", valA, FlyCapture2::BRIGHTNESS, false, true);
                 }
             }
             else
@@ -1095,15 +1052,10 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         FlyCapture2:: PropertyInfo propInfo;
 
         propInfo.type = FlyCapture2::GAMMA;
-        retError = m_myCam.GetPropertyInfo( &propInfo );
+        retVal += checkError( m_myCam.GetPropertyInfo( &propInfo ) );
 
-        if (retError != FlyCapture2::PGRERROR_OK)
+        if (!retVal.containsError())
         {
-            retVal += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in init-function: %s", retError.GetDescription());
-        }
-        else
-        {
-
             if(propInfo.present && propInfo.manualSupported)
             {
 
@@ -1117,7 +1069,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 {
                     m_params["gamma"].setVal<int>(valA);
                     m_params["gamma"].setMeta( new ito::IntMeta((int)propInfo.min, (int)propInfo.max), true );
-                    retVal += flyCapSetAndGetParameter("gamma", valA, FlyCapture2::GAMMA, false, false, true);
+                    retVal += flyCapSetAndGetParameter("gamma", valA, FlyCapture2::GAMMA, false, true);
                 }
             }
             else
@@ -1133,15 +1085,10 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         FlyCapture2:: PropertyInfo propInfo;
 
         propInfo.type = FlyCapture2::SHARPNESS;
-        retError = m_myCam.GetPropertyInfo( &propInfo );
+        retVal += checkError( m_myCam.GetPropertyInfo( &propInfo ) );
 
-        if (retError != FlyCapture2::PGRERROR_OK)
+        if (!retVal.containsError())
         {
-            retVal += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in init-function: %s", retError.GetDescription());
-        }
-        else
-        {
-
             if(propInfo.present && propInfo.manualSupported)
             {
 
@@ -1155,7 +1102,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 {
                     m_params["sharpness"].setVal<int>(valA);
                     m_params["sharpness"].setMeta( new ito::IntMeta((int)propInfo.min, (int)propInfo.max), true );
-                    retVal += flyCapSetAndGetParameter("sharpness", valA, FlyCapture2::SHARPNESS, false, false, true);
+                    retVal += flyCapSetAndGetParameter("sharpness", valA, FlyCapture2::SHARPNESS, false, true);
                 }
             }
             else
@@ -1171,15 +1118,10 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         FlyCapture2:: PropertyInfo propInfo;
 
         propInfo.type = FlyCapture2::AUTO_EXPOSURE;
-        retError = m_myCam.GetPropertyInfo( &propInfo );
+        retVal += checkError( m_myCam.GetPropertyInfo( &propInfo ) );
 
-        if (retError != FlyCapture2::PGRERROR_OK)
+        if (!retVal.containsError())
         {
-            retVal += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in init-function: %s", retError.GetDescription());
-        }
-        else
-        {
-
             if(propInfo.present && propInfo.manualSupported)
             {
 
@@ -1193,7 +1135,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 {
                     m_params["exposureEV"].setVal<int>(valA);
                     m_params["exposureEV"].setMeta( new ito::IntMeta((int)propInfo.min, (int)propInfo.max), true );
-                    retVal += flyCapSetAndGetParameter("exposureEV", valA, FlyCapture2::AUTO_EXPOSURE, false, false, true);
+                    retVal += flyCapSetAndGetParameter("exposureEV", valA, FlyCapture2::AUTO_EXPOSURE, false, true);
                 }
             }
             else
@@ -1203,17 +1145,12 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         }
     }
 
+    //set the camera configuration
     if(!retVal.containsError())
     {
         retError = m_myCam.GetConfiguration(&pCamConfig);
-        int timeOutMS = pCamConfig.grabTimeout;
-        timeOutMS = (int)(m_params["time_out"].getVal<double>() * 1000 + 0.5);
-        pCamConfig.grabTimeout = timeOutMS;
-        retError = m_myCam.SetConfiguration(&pCamConfig);
-        if (retError != FlyCapture2::PGRERROR_OK)
-        {
-            retVal += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in init-function: %s", retError.GetDescription());
-        }
+        pCamConfig.grabTimeout = m_params["timeout"].getVal<double>() * 1000;
+        retVal += checkError(m_myCam.SetConfiguration(&pCamConfig));
     }
 
     if(!retVal.containsError())
@@ -2219,4 +2156,208 @@ ito::RetVal PGRFlyCapture::flyCapChangeFormat7(bool changeBpp, bool changeROI, i
 
     return retValue;
 
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PGRFlyCapture::flyCapSetExtendedShutter(bool enabled)
+{
+    ito::RetVal retVal;
+
+    if (enabled && m_extendedShutter != DRAGONFLY_EXTENDED_SHUTTER && m_extendedShutter != GENERAL_EXTENDED_SHUTTER)
+    {
+        //set the extended shutter
+
+        // Check if the camera supports the FRAME_RATE property
+        FlyCapture2::PropertyInfo propInfoFrameRate;
+        propInfoFrameRate.type = FlyCapture2::FRAME_RATE;
+        retVal += checkError(m_myCam.GetPropertyInfo( &propInfoFrameRate ));
+
+        if ( propInfoFrameRate.present == true )
+        {
+            // Turn off frame rate
+
+            FlyCapture2::Property prop;
+            prop.type = FlyCapture2::FRAME_RATE;
+            retVal += checkError(m_myCam.GetProperty( &prop ));
+            
+            if (!retVal.containsError())
+            {
+                prop.autoManualMode = false;
+                prop.onOff = false;
+
+                retVal += checkError(m_myCam.SetProperty( &prop ));
+                
+                if (retVal != ito::retError)
+                {
+                    m_extendedShutter = GENERAL_EXTENDED_SHUTTER;
+                }
+            }
+        }
+        else
+        {
+            // Frame rate property does not appear to be supported.
+            // Disable the extended shutter register instead.
+            // This is only applicable for Dragonfly.
+
+            const unsigned int k_extendedShutter = 0x1028;
+            unsigned int extendedShutterRegVal = 0;
+
+            retVal += checkError(m_myCam.ReadRegister( k_extendedShutter, &extendedShutterRegVal ));
+
+            if (retVal != ito::retError)
+            {
+                std::bitset<32> extendedShutterBS((int) extendedShutterRegVal );
+                if ( extendedShutterBS[31] == true )
+                {
+                    // Set the camera into extended shutter mode
+                    retVal += checkError(m_myCam.WriteRegister( k_extendedShutter, 0x80020000 ));
+
+                    if (retVal != ito::retError)
+                    {
+                        m_extendedShutter = DRAGONFLY_EXTENDED_SHUTTER;
+                    }
+                    
+                }
+                else
+                {
+                    retVal += ito::RetVal(ito::retWarning,0,"frame rate and extended shutter are not supported. Could not set the extended shutter");
+                }
+            }
+        }
+
+        if (m_extendedShutter == UNINITIALIZED)
+        {
+            m_extendedShutter = NO_EXTENDED_SHUTTER;
+        }
+    }
+    else if (!enabled && m_extendedShutter != NO_EXTENDED_SHUTTER)
+    {
+        //disable it
+
+        if ( m_extendedShutter == GENERAL_EXTENDED_SHUTTER )
+        {
+            FlyCapture2::Property prop;
+            prop.type = FlyCapture2::FRAME_RATE;
+            retVal += checkError(m_myCam.GetProperty( &prop ));
+            
+            if (retVal != ito::retError)
+            {
+                prop.autoManualMode = true;
+                prop.onOff = true;
+
+                retVal += checkError(m_myCam.SetProperty( &prop ));
+
+                if (retVal != ito::retError)
+                {
+                    m_extendedShutter = NO_EXTENDED_SHUTTER;
+                }
+            }
+        }
+        else if ( m_extendedShutter == DRAGONFLY_EXTENDED_SHUTTER )
+        {
+            const unsigned int k_extendedShutter = 0x1028;
+            unsigned int extendedShutterRegVal = 0;
+
+            retVal += checkError(m_myCam.ReadRegister( k_extendedShutter, &extendedShutterRegVal ));
+
+            if (retVal != ito::retError)
+            {
+                std::bitset<32> extendedShutterBS((int) extendedShutterRegVal );
+                if ( extendedShutterBS[31] == true )
+                {
+                    // Set the camera into extended shutter mode
+                    retVal += checkError(m_myCam.WriteRegister( k_extendedShutter, 0x80000000 ));
+                }
+            }
+
+            if (retVal != ito::retError)
+            {
+                m_extendedShutter = NO_EXTENDED_SHUTTER;
+            }
+        }
+        else
+        {
+            //no extended shutter, disabled per default
+            m_extendedShutter = NO_EXTENDED_SHUTTER;
+        }
+
+    }
+
+    m_params["extended_shutter"].setVal<int>(m_extendedShutter == NO_EXTENDED_SHUTTER ? 0: 1);
+
+    return retVal;  
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PGRFlyCapture::flyCapSynchronizeFrameRateShutter()
+{
+    ito::RetVal retVal;
+
+    //############################
+    //  READ FRAME_RATE
+    //############################
+    FlyCapture2::PropertyInfo propInfoFrameRate;
+    propInfoFrameRate.type = FlyCapture2::FRAME_RATE;
+    retVal += checkError(m_myCam.GetPropertyInfo( &propInfoFrameRate ));
+
+    // Check if the camera supports the FRAME_RATE property
+    if (propInfoFrameRate.present)
+    {
+        static_cast<ito::DoubleMeta*>(m_params["frame_time"].getMeta())->setMin( 1.0 / propInfoFrameRate.absMax );
+        static_cast<ito::DoubleMeta*>(m_params["frame_time"].getMeta())->setMax( 1.0 / propInfoFrameRate.absMin );
+
+        //get prop FRAME_RATE
+        FlyCapture2::Property prop;
+        prop.type = FlyCapture2::FRAME_RATE;
+        retVal += checkError(m_myCam.GetProperty( &prop ));
+
+        if (retVal != ito::retError)
+        {
+            if (prop.onOff == false) //off -> extended shutter, no frame_rate
+            {
+                m_params["frame_time"].setFlags(ito::ParamBase::Readonly);
+            }
+            else
+            {
+                m_params["frame_time"].setFlags(0);
+                m_params["frame_time"].setVal<double>(1.0 / prop.absValue);
+            }
+        }
+    }
+    else
+    {
+        m_params["frame_time"].setFlags(ito::ParamBase::Readonly);
+    }
+
+
+    //############################
+    //  READ SHUTTER
+    //############################
+    FlyCapture2::PropertyInfo propInfoShutter;
+    propInfoShutter.type = FlyCapture2::SHUTTER;
+    retVal += checkError(m_myCam.GetPropertyInfo( &propInfoShutter ));
+
+    if(propInfoShutter.present && propInfoShutter.absValSupported && propInfoShutter.manualSupported)
+    {
+        m_params["integration_time"].setFlags(0);
+        static_cast<ito::DoubleMeta*>( m_params["integration_time"].getMeta() )->setMin(propInfoShutter.absMin / 1000.0);
+        static_cast<ito::DoubleMeta*>( m_params["integration_time"].getMeta() )->setMax(propInfoShutter.absMax / 1000.0);
+
+        //get prop SHUTTER
+        FlyCapture2::Property prop;
+        prop.type = FlyCapture2::SHUTTER;
+        retVal += checkError(m_myCam.GetProperty( &prop ));
+
+        if (retVal != ito::retError)
+        {
+            m_params["integration_time"].setVal<double>(prop.absValue / 1000.0);
+        }
+    }
+    else
+    {
+        m_params["integration_time"].setFlags(ito::ParamBase::Readonly);
+    }
+
+    return retVal;
 }

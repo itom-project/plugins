@@ -68,6 +68,7 @@ void DockWidgetPGRFlyCapture::parametersChanged(QMap<QString, ito::Param> params
         ui.spinIntegrationTime->setMaximum(params["integration_time"].getMax() *1000.0);
         ui.spinIntegrationTime->setMinimum(params["integration_time"].getMin() *1000.0);
         ui.spinIntegrationTime->setValue(params["integration_time"].getVal<double>()*1000.0);
+        ui.spinIntegrationTime->setDisabled(params["integration_time"].getFlags() & ito::ParamBase::Readonly);
 
         m_inEditing = false;
     }

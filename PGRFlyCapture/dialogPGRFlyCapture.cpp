@@ -91,7 +91,12 @@ void DialogPGRFlyCapture::parametersChanged(QMap<QString, ito::Param> params)
     ui.doubleSpinBox_frame_time->setMinimum(params["frame_time"].getMin()*1000);
     ui.doubleSpinBox_frame_time->setMaximum(params["frame_time"].getMax()*1000);
     ui.doubleSpinBox_frame_time->setValue(params["frame_time"].getVal<double>()*1000);
-    ui.doubleSpinBox_frame_time->setEnabled(!(params["frame_time"].getFlags() & ito::ParamBase::Readonly));
+    ui.doubleSpinBox_frame_time->setVisible(params["extended_shutter"].getVal<int>() == 0);
+    ui.label_frame_time->setVisible(params["extended_shutter"].getVal<int>() == 0);
+    ui.label_frame_time_2->setVisible(params["extended_shutter"].getVal<int>() > 0);
+    ui.label_frame_time_3->setVisible(params["extended_shutter"].getVal<int>() > 0);
+
+    ui.checkExtendedShutter->setChecked(params["extended_shutter"].getVal<int>() > 0);
 
     ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin()*1000);
     ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax()*1000);
@@ -105,12 +110,6 @@ void DialogPGRFlyCapture::parametersChanged(QMap<QString, ito::Param> params)
     dval = params["offset"].getVal<double>();
     ui.sliderOffset->setValue(dval*100.0);
     ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));             
-
-    int ival = params["binning"].getMin();
-    int ivalX = (int)(ival/100);
-    int ivalY = ival - ivalX * 100;
-
-    ival = params["bpp"].getVal<int>();
 
     ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
     
@@ -190,6 +189,15 @@ ito::RetVal DialogPGRFlyCapture::applyParameters()
         }
     }
 
+    if(ui.checkExtendedShutter->isEnabled())
+    {
+        int ival = ui.checkExtendedShutter->isChecked() ? 1 : 0;
+        if(m_currentParameters["extended_shutter"].getVal<int>() != ival)
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("extended_shutter", ito::ParamBase::Int, ival)));
+        }
+    }
+
     if(ui.doubleSpinBox_integration_time->isEnabled())
     {
         double dval = ui.doubleSpinBox_integration_time->value()/1000.0;
@@ -199,7 +207,7 @@ ito::RetVal DialogPGRFlyCapture::applyParameters()
         }
     }
 
-    if(ui.doubleSpinBox_frame_time->isEnabled())
+    if(ui.doubleSpinBox_frame_time->isVisible())
     {
         double dval = ui.doubleSpinBox_frame_time->value()/1000.0;
         if(qAbs(m_currentParameters["frame_time"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())

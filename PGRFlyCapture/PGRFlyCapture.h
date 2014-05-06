@@ -72,13 +72,24 @@ class PGRFlyCapture : public ito::AddInGrabber
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
-        ito::RetVal flyCapSetAndGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type, bool absControl = false, bool autoManualMode = false, bool onOff = true);
-        ito::RetVal flyCapSetAndGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type, bool absControl = false, bool autoManualMode = false, bool onOff = true);
+
+        enum ExtendedShutterType
+        {
+            UNINITIALIZED,
+            NO_EXTENDED_SHUTTER,
+            DRAGONFLY_EXTENDED_SHUTTER,
+            GENERAL_EXTENDED_SHUTTER
+        };
+
+        ito::RetVal flyCapSetAndGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type, bool autoManualMode = false, bool onOff = true);
+        ito::RetVal flyCapSetAndGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type, bool autoManualMode = false, bool onOff = true);
 
         ito::RetVal flyCapGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type);
         ito::RetVal flyCapGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type);
 
         ito::RetVal flyCapChangeFormat7(bool changeBpp, bool changeROI, int bpp = -1, int x0 = -1, int y0 = -1, int x1 = -1, int y1 = -1);
+        ito::RetVal flyCapSetExtendedShutter(bool enabled);
+        ito::RetVal flyCapSynchronizeFrameRateShutter();
 
         bool m_isgrabbing;
         FlyCapture2::Camera m_myCam;
@@ -91,6 +102,8 @@ class PGRFlyCapture : public ito::AddInGrabber
         double m_gainMin;
         double m_offsetMax;
         double m_offsetMin;
+
+        ExtendedShutterType m_extendedShutter;
 
         double m_acquireTime;    /*!< Timestamp for acquire in seconds relative to cpu ticks */
 		double m_last_acquireTime;
