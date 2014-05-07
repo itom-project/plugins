@@ -118,7 +118,7 @@ The development of this plugin has mainly be done using the USB 3.0 Flea3 camera
 The plugin has been compiled using the FlyCapture2 library version %1.%2.%3.%4. \n\
 \n\
 In order to compile the plugin by yourself, you need to install the FlyCapture2 SDK in 32bit or 64bit (depending on itom) and make \n\
-sure that the development files (include files and libraries) are installed as well. Then set the CMake variable PGRFLYCAP_INCLUDE_DIR \n\
+sure that the development files (include files and libraries) are installed as well (option Cross Platform Dev Files). Then set the CMake variable PGRFLYCAP_INCLUDE_DIR \n\
 to the include directory of the FlyCapture2 SDK. The depending variable PGRFYLCAP_API_DIR is then automatically set (if not, delete it and \n\
 re-configure CMake). \n\
 \n\
