@@ -87,7 +87,7 @@
 <context>
     <name>FileGrabber</name>
     <message>
-        <location filename="../FileGrabber.cpp" line="+207"/>
+        <location filename="../FileGrabber.cpp" line="+234"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -214,72 +214,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
-        <source>parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>mandatory parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>optional parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>output parameter vector is not initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <location line="+21"/>
-        <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+78"/>
-        <location line="+125"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-118"/>
-        <location line="+125"/>
-        <source>the parameter name &apos;%1&apos; is invald</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-101"/>
-        <source>array index of parameter out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <location line="+127"/>
-        <source>given index of parameter name ignored since parameter is no array type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-120"/>
-        <location line="+127"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-14"/>
-        <source>array index out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+55"/>
-        <source>invalid parameter name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../FileGrabber.cpp" line="-1077"/>
+        <location line="-1079"/>
         <source>A virtual grabber</source>
         <translation type="unfinished"></translation>
     </message>
@@ -319,7 +254,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+426"/>
+        <location line="+428"/>
         <source>Folder %1 does not contain any matching files</source>
         <translation type="unfinished"></translation>
     </message>
@@ -507,7 +442,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogFileGrabber.cpp" line="+6"/>
+        <location filename="../dialogFileGrabber.cpp" line="+28"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -518,119 +453,20 @@
     </message>
 </context>
 <context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location line="+92"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
-        <source>function execution unused in this plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+147"/>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>timer could not be set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <source>not implemented</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInGrabber</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
-        <location line="+15"/>
-        <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+118"/>
-        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

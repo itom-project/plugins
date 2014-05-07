@@ -4,7 +4,7 @@
 <context>
     <name>AerotechEnsemble</name>
     <message>
-        <location filename="../aerotechEnsemble.cpp" line="+125"/>
+        <location filename="../aerotechEnsemble.cpp" line="+150"/>
         <source>asynchronous move (1), synchronous (0) [default]</source>
         <translation>Asynchrone Fahrt (1), synchrone Fahrt (0) [Voreinstellung]</translation>
     </message>
@@ -14,7 +14,7 @@
         <translation>Geschwindigkeit jeder Achse</translation>
     </message>
     <message>
-        <location line="+450"/>
+        <location line="+457"/>
         <source>any axis is moving. Parameters cannot be set</source>
         <translation>Eine Achse verfährt gerade. Die Einstellungen konnten nicht geändert werden</translation>
     </message>
@@ -45,7 +45,7 @@
         <translation>Ein Motor verfährt gerade. Der Motor ist geblockt.</translation>
     </message>
     <message>
-        <location line="-798"/>
+        <location line="-805"/>
         <source>Ensemble error %i: %s</source>
         <translation>Ensemble-Fehler %i: %s</translation>
     </message>
@@ -71,12 +71,12 @@
         <translation>Bitte stellen Sie sicher, dass nur ein Controller angeschlossen und konfiguriert wurde</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+112"/>
         <source>Not all desired axes are connected to the controller (desired: %i, available: %i)</source>
         <translation>Nicht alle angeforderten Achsen sind mit dem Controller verbunden (angefordert: %i, verfügbar: %i)</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+179"/>
         <source>given index is out of boundary</source>
         <translation>Übergebener Index liegt außerhalb des aktuellen Bereichs</translation>
     </message>
@@ -226,7 +226,7 @@
 <context>
     <name>AerotechEnsembleInterface</name>
     <message>
-        <location line="-1213"/>
+        <location line="-1221"/>
         <source>list of axes IDs that are enabled (0..9). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]</source>
         <translation>Liste der aktiven Achsen-IDs (0..9). Die erste ID entspricht dem Index 0, die zweite ID Index 1,... [Voreinstellung: Leere Liste, alle möglichen Achsen werden verbunden]</translation>
     </message>
@@ -302,7 +302,7 @@
     </message>
     <message>
         <location/>
-        <location filename="../dockWidgetAerotechEnsemble.cpp" line="+104"/>
+        <location filename="../dockWidgetAerotechEnsemble.cpp" line="+125"/>
         <location line="+13"/>
         <source>mm</source>
         <translation></translation>
@@ -419,7 +419,7 @@
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../dialogAerotechEnsemble.cpp" line="+34"/>
+        <location filename="../dialogAerotechEnsemble.cpp" line="+57"/>
         <source>Speed</source>
         <translation>Geschwindigkeit</translation>
     </message>
@@ -456,37 +456,19 @@
     </message>
 </context>
 <context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location line="+92"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -494,63 +476,19 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
-        <translation>Diese Funktion wurde im Plugin nicht benutzt</translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+147"/>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Diese Funktion wurde im Plugin nicht benutzt</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>timer could not be set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
         <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished">Das Objekt konnte nicht aus der Listener-Liste gelöscht werden</translation>
+        <translation type="obsolete">Das Objekt konnte nicht aus der Listener-Liste gelöscht werden</translation>
     </message>
     <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
         <source>not implemented</source>
-        <translation type="unfinished">nicht implementiert</translation>
+        <translation type="obsolete">nicht implementiert</translation>
     </message>
 </context>
 </TS>

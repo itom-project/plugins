@@ -62,7 +62,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+194"/>
+        <location filename="../SerialIO.cpp" line="+219"/>
         <location line="+174"/>
         <source>invalid baud rate</source>
         <translation>Ungültige Baudrate</translation>
@@ -102,7 +102,7 @@
     </message>
     <message>
         <location line="+69"/>
-        <location line="+16"/>
+        <location line="+24"/>
         <source>could not open device</source>
         <translation>Kann Gerät nicht öffnen</translation>
     </message>
@@ -112,20 +112,20 @@
         <translation>Unbekannter Fehler beim Öffnen des COM-Ports</translation>
     </message>
     <message>
-        <location line="+63"/>
-        <location line="+35"/>
-        <location line="+57"/>
+        <location line="+68"/>
+        <location line="+36"/>
+        <location line="+58"/>
         <location line="+10"/>
-        <location line="+47"/>
-        <location line="+26"/>
         <location line="+48"/>
+        <location line="+30"/>
+        <location line="+54"/>
         <location line="+18"/>
         <source>com port not open</source>
         <translation>COM-Port nicht geöffnet</translation>
     </message>
     <message>
-        <location line="-192"/>
-        <location line="+12"/>
+        <location line="-204"/>
+        <location line="+13"/>
         <source>error reading from com port</source>
         <translation>Fehler beim Lesen vom COM-Port</translation>
     </message>
@@ -133,17 +133,17 @@
         <location line="+36"/>
         <location line="+13"/>
         <location line="+4"/>
-        <location line="+45"/>
+        <location line="+47"/>
+        <location line="+12"/>
+        <location line="+19"/>
+        <location line="+5"/>
         <location line="+10"/>
-        <location line="+17"/>
-        <location line="+4"/>
-        <location line="+8"/>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>error writing to com port</source>
         <translation>Fehler beim Schreiben auf den COM-Port</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+30"/>
         <location line="+19"/>
         <source>invalid number of buffer type (0: input, 1: output)</source>
         <translation>Ungültige Nummer des Puffertyps (0: Input, 1: Output)</translation>
@@ -155,7 +155,7 @@
         <translation>Puffer löschen war nicht erfolgreich</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+88"/>
         <source>licensed under LGPL</source>
         <translation></translation>
     </message>
@@ -163,6 +163,16 @@
         <location line="+1"/>
         <source>N.A.</source>
         <translation>K.A.</translation>
+    </message>
+    <message>
+        <location line="+280"/>
+        <source>Mandatory paramers are NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Optinal paramers are NULL</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Serialport-Interface</source>
@@ -176,11 +186,21 @@ The plugin is implemented for Windows or Linux. Parameters and initialization di
 Es wird in unterschiedlichen Plugins zur Kommunikation benutzt (z. B. &apos;MFUCtrl&apos;, &apos;Uhltisch&apos;).
 Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisierung sind betriebssystemabhängig.</translation>
     </message>
+    <message>
+        <location filename="../dialogSerialIO.cpp" line="+293"/>
+        <source>Char token not closed correctly or number to big.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Undefined error.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SerialIO</name>
     <message>
-        <location line="+56"/>
+        <location filename="../SerialIO.cpp" line="-241"/>
         <source>Serial port number of this device</source>
         <translation>Serielle Portnummer dieses Geräts</translation>
     </message>
@@ -210,9 +230,13 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation>Terminierung, wird bei setVal() automatisch hinzugefügt</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Toggle: write output buffer as block @ once or single characters</source>
-        <translation>Schalter: Schreibt Puffer als Block oder als einzelne Zeichen</translation>
+        <translation type="obsolete">Schalter: Schreibt Puffer als Block oder als einzelne Zeichen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>0 -&gt; write output buffer as block at once or single characters with delay (1..65000)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
@@ -285,22 +309,22 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation>Parameter wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+125"/>
+        <location line="+143"/>
         <source>StartDevice not necessary</source>
         <translation>&quot;StartDevice&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+14"/>
         <source>StopDevice not necessary</source>
         <translation>&quot;StopDevice&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+14"/>
         <source>Acquire not necessary</source>
         <translation>&quot;Acquire&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="-327"/>
+        <location line="-343"/>
         <source>Current baudrate in bits/s</source>
         <translation>Aktuelle Baudrate ist bits/s</translation>
     </message>
@@ -320,14 +344,18 @@ Es wird in unterschiedlichen Plugins zur Kommunikation benutzt (z. B. &apos;MFUC
 Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisierung sind betriebssystemabhängig.</translation>
     </message>
     <message>
-        <location line="-81"/>
+        <location line="-103"/>
         <source>itom-plugin for a serial port communication</source>
         <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
     <message>
-        <location line="+25"/>
         <source>The number of the serial port, starting with 1</source>
-        <translation>Die Nummer des Ports der seriellen Schnittstelle beginnt mit 1</translation>
+        <translation type="obsolete">Die Nummer des Ports der seriellen Schnittstelle beginnt mit 1</translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <source>The number of the serial port, starting with 1 (linux 0)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -355,6 +383,11 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation>Bitmaske für Flusskontrolle (für nähere Informationen siehe Docstring)</translation>
     </message>
     <message>
+        <location line="+2"/>
+        <source>0 -&gt; write output buffer as block or single characters with delay (1..65000)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Toggle parity check</source>
         <translation type="obsolete">Schalter Paritätsprüfung</translation>
     </message>
@@ -363,9 +396,8 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation type="obsolete">Bitmaske für Flusskontrolle</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Toggle: write output buffer as block or single characters</source>
-        <translation>Schalter: Schreibt Puffer als Block oder als einzelne Zeichen</translation>
+        <translation type="obsolete">Schalter: Schreibt Puffer als Block oder als einzelne Zeichen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -386,12 +418,12 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
 <context>
     <name>dialogSerialIO</name>
     <message>
-        <location filename="../dialogSerialIO.cpp" line="+211"/>
+        <location filename="../dialogSerialIO.cpp" line="-73"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location line="+142"/>
+        <location line="+143"/>
         <source>Error: malformed command string - not send</source>
         <translation>Fehler: Syntaxfehler- nicht gesendet</translation>
     </message>
@@ -566,9 +598,8 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation>Timeout</translation>
     </message>
     <message>
-        <location/>
         <source>Single char</source>
-        <translation>Einzelzeichen</translation>
+        <translation type="obsolete">Einzelzeichen</translation>
     </message>
     <message>
         <location/>
@@ -797,39 +828,41 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <source>Clear</source>
         <translation>Löschen</translation>
     </message>
+    <message>
+        <location/>
+        <source>Send Delay</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
-        <translation>Konstruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>Destructor must be overwritten</source>
-        <translation>Destruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location line="+92"/>
         <source>Constructor must be overwritten</source>
-        <translation>Konstruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Uninitialisierte Vektoren für Pflichtparameter!</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation>Uninitialisierte Vektoren für optionale Parameter!</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
         <translation>Uninitialisierte Vektoren für Ausgabeparameter!</translation>
     </message>
@@ -837,63 +870,43 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
-        <translation>Funktion &quot;Execution&quot; in diesem Plugin nicht verwendet</translation>
+        <translation type="obsolete">Funktion &quot;Execution&quot; in diesem Plugin nicht verwendet</translation>
     </message>
     <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+147"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation>Ihr Plugin hat vermutlich einen Konfigurationsdialog, doch die showConfDialog-Methode wurde nicht implementiert</translation>
+        <translation type="obsolete">Ihr Plugin hat vermutlich einen Konfigurationsdialog, doch die showConfDialog-Methode wurde nicht implementiert</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location line="+13"/>
         <source>Constructor must be overwritten</source>
-        <translation>Konstruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>Destructor must be overwritten</source>
-        <translation>Destruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location line="+15"/>
         <source>listener does not have a slot </source>
-        <translation>Listener hat keinen Slot </translation>
+        <translation type="obsolete">Listener hat keinen Slot </translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>this object already has been registered as listener</source>
-        <translation>Dieses Objekt wurde bereits als Listener registriert</translation>
+        <translation type="obsolete">Dieses Objekt wurde bereits als Listener registriert</translation>
     </message>
     <message>
-        <location line="+12"/>
         <source>timer could not be set</source>
-        <translation>Timer konnte nicht gesetzt werden</translation>
+        <translation type="obsolete">Timer konnte nicht gesetzt werden</translation>
     </message>
     <message>
-        <location line="+25"/>
         <source>the object could not been removed from the listener list</source>
-        <translation>Das Objekt konnte nicht von der Listener-Liste gelöscht werden</translation>
+        <translation type="obsolete">Das Objekt konnte nicht von der Listener-Liste gelöscht werden</translation>
     </message>
     <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
         <source>not implemented</source>
-        <translation>Nicht implementiert</translation>
+        <translation type="obsolete">Nicht implementiert</translation>
     </message>
 </context>
 </TS>

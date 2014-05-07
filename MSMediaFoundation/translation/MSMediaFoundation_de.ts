@@ -54,18 +54,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogMSMediaFoundation.cpp" line="+49"/>
+        <location filename="../dialogMSMediaFoundation.cpp" line="+46"/>
         <source>Configuration Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+135"/>
-        <source>Invalid parameter input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Error while setting parameters of plugin.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -150,7 +140,7 @@
 <context>
     <name>MSMediaFoundation</name>
     <message>
-        <location filename="../MSMediaFoundation.cpp" line="+162"/>
+        <location filename="../MSMediaFoundation.cpp" line="+173"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -275,7 +265,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+262"/>
+        <location line="+267"/>
         <source>invalid cameraNumber. Only %i cameras found</source>
         <translation type="unfinished"></translation>
     </message>
@@ -310,7 +300,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-131"/>
+        <location line="-136"/>
         <source>first pixel index in ROI (x-direction)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -345,7 +335,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+332"/>
+        <location line="+337"/>
         <source>No frame could be aquired from device %i</source>
         <translation type="unfinished"></translation>
     </message>
@@ -423,7 +413,7 @@
 <context>
     <name>MSMediaFoundationInterface</name>
     <message>
-        <location line="-1135"/>
+        <location line="-1154"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -453,24 +443,6 @@
     <message>
         <location line="+27"/>
         <source>licensed under LGPL</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1053"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

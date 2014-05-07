@@ -4,9 +4,29 @@
 <context>
     <name>DialogVistek</name>
     <message>
-        <location filename="../dialogVistek.cpp" line="+11"/>
+        <location filename="../dialogVistek.cpp" line="+50"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialog</translation>
+    </message>
+    <message>
+        <location line="+177"/>
+        <source>error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Error while setting parameters (%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Warning while setting parameters (%1)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -17,19 +37,8 @@
         <translation></translation>
     </message>
     <message>
-        <location/>
         <source>General Information</source>
-        <translation>Allgemeine Informationen</translation>
-    </message>
-    <message>
-        <location/>
-        <source>ID:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>[ID]</source>
-        <translation></translation>
+        <translation type="obsolete">Allgemeine Informationen</translation>
     </message>
     <message>
         <location/>
@@ -82,14 +91,12 @@
         <translation>Bildeigenschaften</translation>
     </message>
     <message>
-        <location/>
         <source>Width [px]:</source>
-        <translation>Breite [px]:</translation>
+        <translation type="obsolete">Breite [px]:</translation>
     </message>
     <message>
-        <location/>
         <source>Height [px]:</source>
-        <translation>Höhe [px]:</translation>
+        <translation type="obsolete">Höhe [px]:</translation>
     </message>
     <message>
         <location/>
@@ -97,25 +104,64 @@
         <translation>Kameraeigenschaften</translation>
     </message>
     <message>
-        <location/>
         <source>Exposure (s):</source>
-        <translation>Belichtung (s):</translation>
+        <translation type="obsolete">Belichtung (s):</translation>
     </message>
     <message>
         <location/>
-        <source>Gain (dB):</source>
-        <translation></translation>
+        <source>Width:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Height:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Bit depth:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Exposure:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source> s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Gain:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source> dB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Offset:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../VistekInterface.cpp" line="+78"/>
+        <location filename="../VistekInterface.cpp" line="+100"/>
         <source>SVS Vistek GigE grabber.</source>
         <translation>SVS Vistek GigE Grabber.</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+21"/>
         <source>licensed under LGPL, the necessary Vistek drivers, header files and libraries have their own license.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -129,15 +175,14 @@
         <translation type="obsolete">SVS Vistek GigE Kamera-Grabber.</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Serial Number of the SVS Vistek camera (see camera housing)</source>
-        <translation>Seriennummer der SVS Vistek-Kamera (siehe Kameragehäuse)</translation>
+        <translation type="obsolete">Seriennummer der SVS Vistek-Kamera (siehe Kameragehäuse)</translation>
     </message>
 </context>
 <context>
     <name>Vistek</name>
     <message>
-        <location filename="../Vistek.cpp" line="+84"/>
+        <location filename="../Vistek.cpp" line="+119"/>
         <source>Camera Model ID</source>
         <translation>Kameramodell ID</translation>
     </message>
@@ -172,12 +217,31 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Binning of different pixel</source>
-        <translation>Binning der unterschiedlichen Pixel</translation>
+        <location line="+17"/>
+        <source>Used streaming packet size (in bytes, more than 1500 usually only possible if you enable jumbo-frames at your network adapter)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera communication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+539"/>
+        <source>acquisition not possible, since Vistek camera has not been started.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+58"/>
+        <source>getVal of Vistek can not be executed, since no image has been acquired.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Binning of different pixel</source>
+        <translation type="obsolete">Binning der unterschiedlichen Pixel</translation>
+    </message>
+    <message>
+        <location line="-610"/>
         <source>Width of current camera frame</source>
         <translation>Breite des aktuellen Kamerabilds</translation>
     </message>
@@ -196,102 +260,47 @@
         <translation>Zeit in ms seit dem letzten Bild (Ende der Belichtung)</translation>
     </message>
     <message>
-        <location line="+47"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>Parameter is read only, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>New value is larger than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>New value is smaller than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+51"/>
-        <source>Parameter type conflict</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+261"/>
-        <source>Camera trigger failed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-334"/>
-        <source>Name of given parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-110"/>
+        <location line="-23"/>
         <source>Serial number of the camera (see camera housing)</source>
         <translation>Seriennummer der Kamera (siehe Kameragehäuse)</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+11"/>
+        <source>Offset [0.0..1.0]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Binning mode (OFF = 0 [default], HORIZONTAL = 1, VERTICAL = 2,  2x2 = 3, 3x3 = 4, 4x4 = 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>bit-depth for camera buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+171"/>
-        <source>Given parameter and m_param do not have the same type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+74"/>
+        <location line="+322"/>
         <source>No free camera found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+135"/>
+        <location line="+190"/>
         <source>StopDevice of Vistek can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
-        <source>Acquire of Vistek can not be executed, since camera has not been started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+61"/>
+        <location line="+90"/>
         <source>getVal of Vistek can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>getVal of Vistek can not be executed, since image data is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+18"/>
+        <location line="+35"/>
         <source>copy buffer during getVal of Vistek can not be executed, since no DataType unknown.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>getVal of Vistek can not be executed, since no Data has been acquired.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+33"/>
+        <location line="+57"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -301,67 +310,58 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+91"/>
+        <location line="+56"/>
         <source>Requested camera could not be selected.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Requested camera is occupied by another application.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Enforcing valid network settings failed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Selected camera could not be opened.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Binning mode set failed! Defaulting to 1x1.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+47"/>
-        <source>Streaming channel creation failed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Event creation failed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Message callback registration failed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>VistekContainer</name>
     <message>
-        <location filename="../VistekContainer.cpp" line="+85"/>
         <source>SVS Vistek: dll version mismatch.</source>
-        <translation>SVS Vistek: DLL Versionsunterschied.</translation>
+        <translation type="obsolete">SVS Vistek: DLL Versionsunterschied.</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location filename="../VistekContainer.cpp" line="+115"/>
+        <source>SVS Vistek: dll version mismatch, got: %1, expected: %2 (64bit).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>SVS Vistek: dll version mismatch, got: %1, expected: %2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
         <source>Connecting via winsock failed.</source>
         <translation>Verbindung per Winsock fehlgeschlagen.</translation>
     </message>
     <message>
-        <location line="+10"/>
         <source>Camera discovery failed.</source>
-        <translation>Kameraerkennung fehlgeschlagen.</translation>
+        <translation type="obsolete">Kameraerkennung fehlgeschlagen.</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+23"/>
         <source>No cameras detected.</source>
         <translation>Keine Kamera gefunden.</translation>
+    </message>
+</context>
+<context>
+    <name>VistekInterface</name>
+    <message>
+        <location filename="../VistekInterface.cpp" line="+5"/>
+        <source>Serial Number of the SVS Vistek camera (see camera housing)</source>
+        <translation type="unfinished">Seriennummer der SVS Vistek-Kamera (siehe Kameragehäuse)</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>used streaming packet size (-1: use maximal available packet size, else value in bytes). Try to enable jumbo-frames at your network adapter in order to realize higher packet sizes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>number of streaming buffers. Increase if you get data losses, decrease if you want to consume less memory</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -383,17 +383,7 @@
     </message>
     <message>
         <location/>
-        <source>Grabber</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>8</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>10</source>
         <translation></translation>
     </message>
     <message>
@@ -403,22 +393,7 @@
     </message>
     <message>
         <location/>
-        <source>14</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>16</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>24</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>32</source>
         <translation></translation>
     </message>
     <message>
@@ -432,138 +407,214 @@
         <translation></translation>
     </message>
     <message>
-        <location/>
-        <source>WLI-Simu</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Amplitude</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source># Frames</source>
-        <translation>Anzahl Bilder</translation>
+        <translation type="obsolete">Anzahl Bilder</translation>
     </message>
     <message>
-        <location/>
-        <source>Conf-Simu</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Z-Offset</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Bit per pixel</source>
-        <translation>Bit pro Pixel</translation>
+        <translation type="obsolete">Bit pro Pixel</translation>
     </message>
     <message>
-        <location/>
         <source>Size X</source>
-        <translation>Größe X</translation>
+        <translation type="obsolete">Größe X</translation>
     </message>
     <message>
-        <location/>
         <source>Size Y</source>
-        <translation>Größe Y</translation>
+        <translation type="obsolete">Größe Y</translation>
     </message>
     <message>
-        <location/>
         <source>Mode</source>
-        <translation>Modus</translation>
+        <translation type="obsolete">Modus</translation>
     </message>
     <message>
-        <location/>
         <source>Signal width</source>
-        <translation>Signalbreite</translation>
+        <translation type="obsolete">Signalbreite</translation>
     </message>
     <message>
-        <location/>
         <source>plain</source>
-        <translation>Ebene</translation>
+        <translation type="obsolete">Ebene</translation>
     </message>
     <message>
-        <location/>
         <source>step</source>
-        <translation>Stufen</translation>
+        <translation type="obsolete">Stufen</translation>
     </message>
     <message>
-        <location/>
         <source>sinus</source>
-        <translation>Sinus</translation>
+        <translation type="obsolete">Sinus</translation>
     </message>
     <message>
-        <location/>
         <source>Featwidth</source>
-        <translation>Breite</translation>
+        <translation type="obsolete">Breite</translation>
     </message>
     <message>
-        <location/>
         <source>Noise</source>
-        <translation>Rauschen</translation>
+        <translation type="obsolete">Rauschen</translation>
     </message>
     <message>
-        <location/>
         <source>Featheight</source>
-        <translation>Höhe</translation>
+        <translation type="obsolete">Höhe</translation>
     </message>
     <message>
-        <location/>
         <source>Step / Lambda</source>
-        <translation>Schritt / Lambda</translation>
+        <translation type="obsolete">Schritt / Lambda</translation>
     </message>
     <message>
-        <location/>
         <source>Initial phase (phi0)</source>
-        <translation>Startphase (phi0)</translation>
+        <translation type="obsolete">Startphase (phi0)</translation>
     </message>
     <message utf8="true">
-        <location/>
         <source>µm / Step</source>
-        <translation>µm / Schritt</translation>
+        <translation type="obsolete">µm / Schritt</translation>
+    </message>
+    <message>
+        <source>Signal width (FWHM)</source>
+        <translation type="obsolete">Signalbreite (FWHM)</translation>
     </message>
     <message>
         <location/>
-        <source>Signal width (FWHM)</source>
-        <translation>Signalbreite (FWHM)</translation>
+        <source>Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Serial No</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Camera IP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Manufacturer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Buffer and Binning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Bit Depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Binning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Off (0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Horizontal (1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Vertical (2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>2x2 (3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>3x3 (4)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>4x4 (5)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Integration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Exposure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source> dB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ito::AddInActuator</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
         <source>Constructor must be overwritten</source>
-        <translation>Konstruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>Destructor must be overwritten</source>
-        <translation>Destruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location line="+92"/>
         <source>Constructor must be overwritten</source>
-        <translation>Konstruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation>Nicht initialisierter Vektor für optionale Parameter!</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
         <translation>Nicht initialisierter Vektor fürAusgabeparameter!</translation>
     </message>
@@ -571,82 +622,31 @@
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
-        <translation>Die Funktion &apos;execution&apos; wurde in diesem Plugin nicht bentzt</translation>
+        <translation type="obsolete">Die Funktion &apos;execution&apos; wurde in diesem Plugin nicht bentzt</translation>
     </message>
     <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+147"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation>Das Plugin scheint einen Konfigurationsdialog zu besitzen, doch die Methode showConfDialog wurde nicht implementiert</translation>
+        <translation type="obsolete">Das Plugin scheint einen Konfigurationsdialog zu besitzen, doch die Methode showConfDialog wurde nicht implementiert</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location line="+13"/>
         <source>Constructor must be overwritten</source>
-        <translation>Konstruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>Destructor must be overwritten</source>
-        <translation>Destruktor muss überschrieben werden</translation>
+        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
         <source>timer could not be set</source>
-        <translation>Timer konnte nicht gesendet werden</translation>
+        <translation type="obsolete">Timer konnte nicht gesendet werden</translation>
     </message>
     <message>
-        <location line="+25"/>
-        <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
         <source>not implemented</source>
-        <translation>Nicht implementiert</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInGrabber</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
-        <location line="+15"/>
-        <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+118"/>
-        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Nicht implementiert</translation>
     </message>
 </context>
 </TS>

@@ -2,288 +2,9 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="de">
 <context>
-    <name>QObject</name>
+    <name>FFTWFilters</name>
     <message>
-        <location filename="../itomfilters.cpp" line="+62"/>
-        <source>ITO developed filter-functions for dateObjects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>This DLL contains several filter for the ITO-dataobject.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>LGPL with ITO itom-exception</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location line="+92"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
-        <source>function execution unused in this plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+147"/>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>timer could not be set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <source>not implemented</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>itomfilters</name>
-    <message>
-        <location filename="../itomfilters.cpp" line="+40"/>
-        <source>Flattens a z-Stack of Mx1xN or MxNx1 matrixes to NxM or MxN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Swap byte order for input image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Merge 3 or 4 color planes to a single int32-plane</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <location line="+2"/>
-        <location line="+2"/>
-        <location line="+2"/>
-        <location line="+2"/>
-        <location line="+2"/>
-        <source>DFT by FFTW</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>replaces infinite and/or nan-values by values of second matrix</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Calculate roughness (/and waviness) for 1D data object according to DIN EN ISO 11562</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Calculate meanValue of a 3D-Object stack in z-directon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <location filename="../itomspecialfilters.cpp" line="+527"/>
-        <source>Input image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <location filename="../itomspecialfilters.cpp" line="+4"/>
-        <source>Output image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../itomspecialfilters.cpp" line="-358"/>
-        <location line="+144"/>
-        <location line="+75"/>
-        <location line="+179"/>
-        <location line="+194"/>
-        <location line="+215"/>
-        <location line="+217"/>
-        <location line="+154"/>
-        <location line="+159"/>
-        <location line="+425"/>
-        <source>Error: source image ptr empty</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-1757"/>
-        <location line="+144"/>
-        <location line="+80"/>
-        <location line="+368"/>
-        <location line="+215"/>
-        <location line="+217"/>
-        <location line="+154"/>
-        <location line="+159"/>
-        <location line="+425"/>
-        <source>Error: dest image ptr empty</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-1757"/>
-        <source>Error: Input image must be 3D</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Error: one dimension of input image must be equal to 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+87"/>
-        <location line="+90"/>
-        <location line="+2010"/>
-        <source>Unknown type or type not implemented</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-2089"/>
-        <source>Flattened object from 3d to 2d</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+41"/>
-        <source>Error: Input image must be 2D</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+47"/>
-        <source>Swap byte order</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <location line="+179"/>
-        <source>Error: replace image ptr empty</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-169"/>
-        <source>source and replace image must have the same type and size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <location line="+176"/>
-        <source>Error: this filter is only usable for float or double matrices</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-79"/>
-        <source>replace NaN and infinity values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Image with values which will be used for replacement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>number of replacments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Input image with 3 or 4 uint8 planes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Output image with uint32 planes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Switch between RGBA = 0, BGRA = 1, ARGB = 2, ABGR = 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+160"/>
-        <source>Merged from multiplane color object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+21"/>
+        <location filename="../FFTWfilters.cpp" line="+162"/>
         <source>Input Object</source>
         <translation type="unfinished"></translation>
     </message>
@@ -294,57 +15,60 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>Planner flag</source>
+        <source>Planner flag, 0: estimate (default), 1: measure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+205"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+207"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+144"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <source>Error: input and output objects must have same size</source>
+        <location line="+122"/>
+        <location line="+386"/>
+        <location line="+425"/>
+        <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-459"/>
-        <location line="+216"/>
-        <source>Error: more than 2 dimensions not implemented yet</source>
+        <location line="-806"/>
+        <location line="+386"/>
+        <location line="+425"/>
+        <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-204"/>
-        <source>FFTW filter (unscaled!)</source>
+        <location line="-788"/>
+        <source>Error: source image not initilized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+216"/>
-        <source>FFTW filter backward (unscaled!)</source>
+        <location line="+11"/>
+        <source>Error: source image dimensions must not be 1xN or Nx1 for fft2D.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+146"/>
-        <location line="+155"/>
-        <location line="+637"/>
-        <location line="+73"/>
-        <source>Error: this filter is designed for 2D data. As the name says.....</source>
+        <location line="+139"/>
+        <source>Type not supported </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-856"/>
-        <location line="+155"/>
-        <source>FFTW filter forward 2D (unscaled!)</source>
+        <location line="+75"/>
+        <source>Applied 1D-fft via FFTW (unscaled!)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+0"/>
+        <source>Applied inverse 1D-fft via FFTW (unscaled!)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Applied 2D-fft via FFTW (unscaled!)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Applied inverse 2D-fft via FFTW (unscaled!)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+124"/>
         <location line="+425"/>
         <source>Error: one object must be real, the other complex</source>
         <translation type="unfinished"></translation>
@@ -378,7 +102,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+214"/>
+        <location line="+205"/>
+        <location line="+73"/>
+        <source>Error: this filter is designed for 2D data. As the name says.....</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-64"/>
         <source>FFTW filter 2D real to complex (unscaled!)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -388,79 +118,57 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+88"/>
-        <source>Error: sourceImageStack is Null-Pointer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>destinationPlane is a uninitialized dataObject!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+95"/>
-        <source>Calculated mean value in z-Direction from 3D-Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../itomsurfacealgorithms.cpp" line="+60"/>
+        <location line="+44"/>
         <source>Source object not defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>DataObject is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Input DataObject must be Nx1 or 1xN</source>
+        <location line="+8"/>
+        <source>Input DataObject must be 1xN</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+6"/>
         <source>Output object not defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Output DataObject is empty</source>
+        <location line="+14"/>
+        <source>Waviness-result must not be equal to roughness output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Output DataObject must be Nx1 or 1xN</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Define R_z or 1 pair of lambdas</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+37"/>
-        <source>R_z over 200mu</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>R_z over 200µm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+87"/>
-        <location line="+29"/>
-        <source>wrong value of m (width=m*dx)</source>
+        <source>Waviness-result must not be equal to surface input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+69"/>
-        <location line="+29"/>
-        <source>wrong value of m (width=m*dx), filter too narrow</source>
+        <source>Define R_z or 1 pair of lambdas</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+31"/>
+        <source>R_z over 200µm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+202"/>
+        <source>Roughness after gaussian filter with lambdaS %1 mm and lambdaC %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Waviness after gaussian filter with lambdaC %1 mm and lambdaF %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -472,28 +180,66 @@
     <message>
         <location line="+4"/>
         <location line="+2"/>
-        <location line="+13"/>
+        <location line="+11"/>
+        <location line="+2"/>
+        <location line="+2"/>
         <source>see Algorithm-Doc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-8"/>
-        <source>Number of steps for fft</source>
+        <location line="-10"/>
+        <source>Short wavelength to filter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Lambda_s</source>
+        <source>Wavelength to seperate between roughness and waviness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Lambda_c</source>
+        <source>Wavelength to seperate between waviness and form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Lambda_f</source>
+        <location line="+33"/>
+        <source>Warning: compatibility error between fftw_complex and ito::complex128</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location line="-1719"/>
+        <source>Wrapper for the FFTW</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>GPL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Algorithms using FFTW</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ito::AddInAlgo</name>
+    <message>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <source>uninitialized vector for mandatory parameters!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>uninitialized vector for optional parameters!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

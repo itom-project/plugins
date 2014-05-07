@@ -4,7 +4,7 @@
 <context>
     <name>BasicFilters</name>
     <message>
-        <location filename="../BasicFilters.cpp" line="+152"/>
+        <location filename="../BasicFilters.cpp" line="+180"/>
         <source>Set each pixel to the lowest value within the kernel (x ,y) using the generic mcpp filter engine</source>
         <translation type="unfinished"></translation>
     </message>
@@ -24,8 +24,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
-        <location filename="../BasicSpecialFilters.cpp" line="+523"/>
+        <location line="+31"/>
+        <location filename="../BasicSpecialFilters.cpp" line="+545"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -36,7 +36,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicGenericFilters.cpp" line="+388"/>
+        <location filename="../BasicGenericFilters.cpp" line="+410"/>
         <source>n-dim DataObject</source>
         <translation type="unfinished"></translation>
     </message>
@@ -127,18 +127,21 @@
         <location line="+144"/>
         <location line="+75"/>
         <location line="+179"/>
+        <location line="+1887"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-393"/>
+        <location line="-2280"/>
         <location line="+144"/>
         <location line="+80"/>
+        <location line="+2061"/>
+        <location line="+344"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-219"/>
+        <location line="-2624"/>
         <source>Error: Input image must be 3D</source>
         <translation type="unfinished"></translation>
     </message>
@@ -150,12 +153,13 @@
     <message>
         <location line="+87"/>
         <location line="+90"/>
-        <location line="+632"/>
+        <location line="+737"/>
+        <location line="+1399"/>
         <source>Unknown type or type not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-711"/>
+        <location line="-2215"/>
         <source>Flattened object from 3d to 2d</source>
         <translation type="unfinished"></translation>
     </message>
@@ -202,23 +206,21 @@
     </message>
     <message>
         <location line="+11"/>
-        <location line="+228"/>
         <source>Input image with 3 or 4 uint8 planes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-226"/>
-        <location line="+228"/>
+        <location line="+2"/>
         <source>Output image with uint32 planes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-225"/>
+        <location line="+3"/>
         <source>Switch between RGBA = 0, BGRA = 1, ARGB = 2, ABGR = 3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+40"/>
         <source>Error: The primary object must be of type tUInt8</source>
         <translation type="unfinished"></translation>
     </message>
@@ -228,22 +230,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+14"/>
+        <source>Input object with multiple z-planes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Output image with 1 or 2 float64 planes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Ignore invalid-Values for floating point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+3"/>
+        <source>If true, calculate standard deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+207"/>
         <source>Error: sourceImageStack is Null-Pointer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+17"/>
         <source>destinationPlane is a uninitialized dataObject!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+95"/>
+        <location line="+102"/>
         <source>Calculated mean value in z-Direction from 3D-Object</source>
         <translation type="unfinished"></translation>
     </message>
@@ -318,11 +335,204 @@
         <source>Cut 1D slice out of 2D-data from [ %2, %3] to [ %4, %5]</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+121"/>
+        <location line="+375"/>
+        <source>input image [real typed data object]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-373"/>
+        <location line="+377"/>
+        <source>destination image (inplace possible)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-375"/>
+        <location line="+377"/>
+        <source>lowest value in range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-375"/>
+        <location line="+377"/>
+        <source>highest value in range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-374"/>
+        <location line="+377"/>
+        <source>value set to clipped values (default: 0.0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-375"/>
+        <location line="+377"/>
+        <source>0: clip values outside of given range (default), 1: clip inside</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-354"/>
+        <location line="+378"/>
+        <source>Error: source image empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-373"/>
+        <location line="+383"/>
+        <source>Error: dest image empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-378"/>
+        <location line="+383"/>
+        <location line="+322"/>
+        <source>Error: source is not a matrix or image stack</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-700"/>
+        <location line="+392"/>
+        <source>Error: minValue must be smaller than maxValue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-242"/>
+        <location line="+333"/>
+        <location line="+104"/>
+        <source>unknown type or type not implemented (e.g. complex)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-428"/>
+        <location line="+436"/>
+        <source>Clipped values outside %1 : %2 to %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-432"/>
+        <location line="+436"/>
+        <source>Clipped values inside %1 : %2 to %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-271"/>
+        <source>input image [real typed data object] for comparision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>Error: comparison image empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+295"/>
+        <source>Image of type Integer or float</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>(Empty) dataObject-hanlde. Will be source type later</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Number of steps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <source>Calculated Histogramm between %1 : %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Preallocated dataObject to be filled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Geometric primitiv according to definition</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Switch between fill inside, outside or both</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Edge-Flag, currently not used</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>New value for pixels inside the geometric element</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>New value for pixels outside the geometric element</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+170"/>
+        <source>Error: geometricElement ptr empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Error: source is not a 2d matrix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error: geometricElement is not a 2d matrix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Error: geometricElement must be either float32 or float64</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <location line="+76"/>
+        <location line="+99"/>
+        <location line="+22"/>
+        <location line="+22"/>
+        <location line="+22"/>
+        <location line="+22"/>
+        <location line="+22"/>
+        <location line="+22"/>
+        <source>Error: geometric primitiv not supported for filling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-192"/>
+        <source>Error: geometricElement must be either marker-style (8x1) or primitiv-style (1x11)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Error: radii of geometricElement must not be zero</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Error: coordinates of geometricElement must be finite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+160"/>
+        <source>Error: destination object type is not suppirted for filling</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../BasicFilters.cpp" line="-117"/>
+        <location filename="../BasicFilters.cpp" line="-163"/>
         <source>ITO developed filter-functions for dateObjects</source>
         <translation type="unfinished"></translation>
     </message>
@@ -373,100 +583,20 @@
     </message>
 </context>
 <context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location line="+92"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
-        <source>function execution unused in this plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+147"/>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>timer could not be set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <source>not implemented</source>
+        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

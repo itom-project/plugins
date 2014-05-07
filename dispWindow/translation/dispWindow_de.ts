@@ -2,9 +2,157 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="de">
 <context>
+    <name>DialogDispWindow</name>
+    <message>
+        <location filename="../dialogDispWindow.ui"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Window size</source>
+        <translation type="unfinished">Fenstermaße</translation>
+    </message>
+    <message>
+        <location/>
+        <source>x0:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>y0:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>x size:</source>
+        <translation type="unfinished">x-Größe:</translation>
+    </message>
+    <message>
+        <location/>
+        <source>y size:</source>
+        <translation type="unfinished">y-Größe:</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Window settings</source>
+        <translation type="unfinished">Fenstereinstellungen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Cosine period:</source>
+        <translation type="unfinished">Cosinus-Periode:</translation>
+    </message>
+    <message>
+        <location/>
+        <source># phase shifts:</source>
+        <translation type="unfinished">Phasenschiebungen:</translation>
+    </message>
+    <message>
+        <location/>
+        <source>3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Color:</source>
+        <translation type="unfinished">Farbe:</translation>
+    </message>
+    <message>
+        <location/>
+        <source>red</source>
+        <translation type="unfinished">rot</translation>
+    </message>
+    <message>
+        <location/>
+        <source>green</source>
+        <translation type="unfinished">grün</translation>
+    </message>
+    <message>
+        <location/>
+        <source>blue</source>
+        <translation type="unfinished">blau</translation>
+    </message>
+    <message>
+        <location/>
+        <source>white</source>
+        <translation type="unfinished">weiß</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Orientation:</source>
+        <translation type="unfinished">Ausrichtung:</translation>
+    </message>
+    <message>
+        <location/>
+        <source>vertical</source>
+        <translation type="unfinished">vertikal</translation>
+    </message>
+    <message>
+        <location/>
+        <source>horizontal</source>
+        <translation type="unfinished">horizontal</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Gamma correction:</source>
+        <translation type="unfinished">Gammakorrektur:</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Show image</source>
+        <translation type="unfinished">Anzeigebild</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Image #:</source>
+        <translation type="unfinished">Bildnummer:</translation>
+    </message>
+    <message>
+        <location/>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>99</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogDispWindow.cpp" line="+69"/>
+        <source>Configuration Dialog</source>
+        <translation type="unfinished">Konfigurationsdialog</translation>
+    </message>
+    <message>
+        <location line="+140"/>
+        <source>Error while configuring projection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Warning while configuring projection</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DispWindow</name>
     <message>
-        <location filename="../dispWindow.cpp" line="+159"/>
+        <location filename="../dispWindow.cpp" line="+189"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -14,7 +162,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Count of phase shifts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -44,12 +192,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+215"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-259"/>
+        <location line="-266"/>
         <source>Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter &apos;lut&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -64,7 +212,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>x0 position of display window [px]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -89,12 +237,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+339"/>
+        <location line="+392"/>
         <source>mandatory or optional parameters vector not initialized!!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+127"/>
+        <location line="+107"/>
         <source>wrong z-size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -128,7 +276,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+92"/>
         <source>function name &apos;%s&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -136,7 +284,7 @@
 <context>
     <name>DispWindowInterface</name>
     <message>
-        <location line="-828"/>
+        <location line="-854"/>
         <source>Window for SLM/LCD-Applications</source>
         <translation type="unfinished">Fenster für SLM/LCD-Anwendungen</translation>
     </message>
@@ -171,17 +319,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>number of total phase shifts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-12"/>
+        <location line="-13"/>
         <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Lookup table</source>
         <translation type="unfinished"></translation>
     </message>
@@ -214,7 +362,7 @@
         <translation>Anzeigebild</translation>
     </message>
     <message>
-        <location filename="../dockWidgetDispWindow.cpp" line="+31"/>
+        <location filename="../dockWidgetDispWindow.cpp" line="+56"/>
         <source>phase shift %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -233,32 +381,26 @@
         <source>gray images %1</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+28"/>
-        <source>Dropped to time-out</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>An error occured while taking the dark reference.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <location line="+5"/>
-        <source>take dark reference</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-1"/>
-        <source>A warning occured while taking the dark reference.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>PrjWindow</name>
     <message>
-        <location filename="../projWindow.cpp" line="+1501"/>
+        <location filename="../projWindow.cpp" line="+1076"/>
+        <source>error out of memory (cosine init 7)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>error gen texture (cosine init)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>error gen texture (graycode / cosine init)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+624"/>
         <source>insufficient gray values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -266,319 +408,134 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/helperCommon.cpp" line="+50"/>
-        <source>parameter vector is not initialized</source>
+        <location line="-724"/>
+        <source>error out of memory (cosine init 1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>mandatory parameter vector is not initialized</source>
+        <location line="+6"/>
+        <source>error out of memory (cosine init 2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>optional parameter vector is not initialized</source>
+        <location line="+6"/>
+        <source>error out of memory (cosine init 3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>output parameter vector is not initialized</source>
+        <location line="+9"/>
+        <source>error out of memory (cosine init 4)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
-        <location line="+21"/>
-        <source>parameter &apos;%1&apos; cannot be found in given parameter vector</source>
+        <location line="+6"/>
+        <source>error out of memory (cosine init 5)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+78"/>
-        <location line="+125"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-118"/>
-        <location line="+125"/>
-        <source>the parameter name &apos;%1&apos; is invald</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-101"/>
-        <source>array index of parameter out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <location line="+127"/>
-        <source>given index of parameter name ignored since parameter is no array type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-120"/>
-        <location line="+127"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-14"/>
-        <source>array index out of bounds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+55"/>
-        <source>invalid parameter name</source>
+        <location line="+9"/>
+        <source>error out of memory (cosine init 6)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>dialogDispWindow</name>
     <message>
-        <location filename="../dialogDispWindow.ui"/>
-        <source>Dialog</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>OK</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation type="obsolete">Abbrechen</translation>
     </message>
     <message>
-        <location/>
         <source>red</source>
-        <translation>rot</translation>
+        <translation type="obsolete">rot</translation>
     </message>
     <message>
-        <location/>
         <source>green</source>
-        <translation>grün</translation>
+        <translation type="obsolete">grün</translation>
     </message>
     <message>
-        <location/>
         <source>blue</source>
-        <translation>blau</translation>
+        <translation type="obsolete">blau</translation>
     </message>
     <message>
-        <location/>
         <source>white</source>
-        <translation>weiß</translation>
+        <translation type="obsolete">weiß</translation>
     </message>
     <message>
-        <location/>
         <source>Window settings</source>
-        <translation>Fenstereinstellungen</translation>
+        <translation type="obsolete">Fenstereinstellungen</translation>
     </message>
     <message>
-        <location/>
         <source>vertical</source>
-        <translation>vertikal</translation>
+        <translation type="obsolete">vertikal</translation>
     </message>
     <message>
-        <location/>
         <source>horizontal</source>
-        <translation>horizontal</translation>
+        <translation type="obsolete">horizontal</translation>
     </message>
     <message>
-        <location/>
         <source>Show image</source>
-        <translation>Anzeigebild</translation>
+        <translation type="obsolete">Anzeigebild</translation>
     </message>
     <message>
-        <location/>
-        <source>99</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>3</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>4</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>5</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>8</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../dialogDispWindow.cpp" line="+10"/>
         <source>Configuration Dialog</source>
-        <translation>Konfigurationsdialog</translation>
+        <translation type="obsolete">Konfigurationsdialog</translation>
     </message>
     <message>
-        <location filename="../dialogDispWindow.ui"/>
         <source>Apply</source>
-        <translation>Übernehmen</translation>
+        <translation type="obsolete">Übernehmen</translation>
     </message>
     <message>
-        <location/>
         <source>Window size</source>
-        <translation>Fenstermaße</translation>
+        <translation type="obsolete">Fenstermaße</translation>
     </message>
     <message>
-        <location/>
         <source>x size:</source>
-        <translation>x-Größe:</translation>
+        <translation type="obsolete">x-Größe:</translation>
     </message>
     <message>
-        <location/>
-        <source>x0:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>y0:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>y size:</source>
-        <translation>y-Größe:</translation>
+        <translation type="obsolete">y-Größe:</translation>
     </message>
     <message>
-        <location/>
         <source>Image #:</source>
-        <translation>Bildnummer:</translation>
+        <translation type="obsolete">Bildnummer:</translation>
     </message>
     <message>
-        <location/>
-        <source>0</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Gamma correction:</source>
-        <translation>Gammakorrektur:</translation>
+        <translation type="obsolete">Gammakorrektur:</translation>
     </message>
     <message>
-        <location/>
         <source>Color:</source>
-        <translation>Farbe:</translation>
+        <translation type="obsolete">Farbe:</translation>
     </message>
     <message>
-        <location/>
         <source>Orientation:</source>
-        <translation>Ausrichtung:</translation>
+        <translation type="obsolete">Ausrichtung:</translation>
     </message>
     <message>
-        <location/>
         <source>Cosine period:</source>
-        <translation>Cosinus-Periode:</translation>
+        <translation type="obsolete">Cosinus-Periode:</translation>
     </message>
     <message>
-        <location/>
         <source># phase shifts:</source>
-        <translation>Phasenschiebungen:</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Phasenschiebungen:</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location line="+92"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
-        <source>function execution unused in this plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+147"/>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>timer could not be set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <source>not implemented</source>
+        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

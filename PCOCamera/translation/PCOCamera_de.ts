@@ -2,122 +2,9 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="de">
 <context>
-    <name>DialogPGRFlyCapture</name>
+    <name>DockWidgetPCOCamera</name>
     <message>
-        <location filename="../dialogPGRFlyCapture.ui"/>
-        <source>Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Buffer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Bits per Pixel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Integration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>ms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Gain</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Integrationtime</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Frametime</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source> %</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>extend. shutter (no fixed frame rate)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>extended shutter (long int. time, no fixed frame rate)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>x0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>x1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>y0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>y1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>x-size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source> px</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>y-size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>full ROI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dialogPGRFlyCapture.cpp" line="+48"/>
-        <source>Configuration Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>DockWidgetPGRFlyCapture</name>
-    <message>
-        <location filename="../dockWidgetPGRFlyCapture.ui"/>
+        <location filename="../dockWidgetPCOCamera.ui"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
@@ -128,12 +15,12 @@
     </message>
     <message>
         <location/>
-        <source>ID:</source>
+        <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location/>
-        <source>[ID]</source>
+        <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -148,17 +35,17 @@
     </message>
     <message>
         <location/>
-        <source> px</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location/>
         <source>Bits per Pixel:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source> px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -178,6 +65,222 @@
     </message>
     <message>
         <location/>
+        <source>%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Integrationtime</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PCOCamera</name>
+    <message>
+        <location filename="../PCOCamera.cpp" line="+186"/>
+        <source>Integrationtime of CCD programmed in s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Virtual gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Binning of different pixel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Pixelsize in x (cols)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Pixelsize in y (rows)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>First column within the region of interest (zero-based, x0 &lt; x1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>First row within the region of interest (zero-based, y0 &lt; y1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last column within the region of interest (zero-based, x0 &lt; x1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Last row within the region of interest (zero-based, y0 &lt; y1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>bits per pixel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>CCD, camera and power supply temperatures</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Desired set point temperature for cooling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Switch the IR Sensitivity of the image sensor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Pixelrate of the image sensor in MHz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Conversion factor in electrons/count</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+182"/>
+        <source>New value in X is larger than maximal value, input ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>New value in Y is larger than maximal value, input ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>New value in X is smaller than parameter range, input ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>New value in Y is smaller than parameter range, input ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+679"/>
+        <source>StopDevice of PCOCamera can not be executed, since camera has not been started.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>Acquire of PCOCamera can not be executed, since camera has not been started.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+57"/>
+        <source>data object of getVal is NULL or cast failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>Empty object handle retrieved from caller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+149"/>
+        <source>getVal of PCOCamera failed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>timeout while waiting for image from PCO Camera device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <location line="+13"/>
+        <location line="+14"/>
+        <source>getVal of PCOCamera failed, since retrived NULL-Pointer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>getVal of PCOCamera failed, since undefined bitdepth.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location line="-1353"/>
+        <source>DLL for PCO-Cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>LGPL / copyright of the external DLLs belongs to PCO</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>N.A.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>dialogPCOCamera</name>
+    <message>
+        <location filename="../dialogPCOCamera.ui"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Integration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
@@ -193,212 +296,129 @@
     </message>
     <message>
         <location/>
-        <source>%</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PGRFlyCapture</name>
-    <message>
-        <location filename="../PGRFlyCapture.cpp" line="+237"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <source>Pixelsize in x (cols)</source>
+        <source>Frametime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-8"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <source>Pixelsize in y (rows)</source>
+        <location/>
+        <source>Buffer and Binning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>-1: Complete free run, 0: Disable trigger, 1: enable trigger mode, 2: enable software-trigger</source>
+        <location/>
+        <source>Binning X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Current video mode, default is Mode7</source>
+        <location/>
+        <source>BitPerPix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-43"/>
-        <source>Integrationtime of CCD programmed in seconds.</source>
+        <location/>
+        <source>Binning Y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Frame rate in seconds. This is only considered if the camera is not in an extended shutter mode. The frame_time might influence the integration time.</source>
+        <location/>
+        <source>8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>1 (default): extended shutter is on (long integration times are supported and frame_time becomes invalid), 0: frames are only acquired in the pulse given by frame_time.</source>
+        <location/>
+        <source>10</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>gain (normalized value 0..1)</source>
+        <location/>
+        <source>12</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>offset (normalized value 0..1, mapped to PG-parameter BRIGHTNESS)</source>
+        <location/>
+        <source>14</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Camera brightness control (EV)</source>
+        <location/>
+        <source>16</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Sharpness</source>
+        <location/>
+        <source>24</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Gamma adjustment</source>
+        <location/>
+        <source>30</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>bitdepth of each pixel</source>
+        <location/>
+        <source>32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Timeout for acquiring images in seconds</source>
+        <location/>
+        <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
-        <source>Serial number of the attachted camera</source>
+        <location/>
+        <location filename="../dialogPCOCamera.cpp" line="+540"/>
+        <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Model identifier of the attachted camera</source>
+        <location/>
+        <source>X0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Name of the attachted camera vendor</source>
+        <location/>
+        <source>Y0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Identifier of the chip in attachted camera</source>
+        <location/>
+        <source>X1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Resolution of the chip in attachted camera</source>
+        <location/>
+        <source>Y1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Serial number of the firmware used in the attachted camera</source>
+        <location/>
+        <source>Set X Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Built time of the firmware used in the attachted camera</source>
+        <location/>
+        <source>XSize</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Interface of camera</source>
+        <location/>
+        <source>YSize</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Time in ms since last image (end of exposure)</source>
+        <location/>
+        <source>Set Y Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1433"/>
-        <source>retrieveData of PGRFlyCapture faield, since bitdepth %i not implemented.</source>
+        <location filename="../dialogPCOCamera.cpp" line="-531"/>
+        <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-321"/>
-        <source>StopDevice of PGRFlyCapture can not be executed, since camera has not been started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>Acquire of PGRFlyCapture can not be executed, since camera has not been started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+74"/>
-        <source>data object of getVal is NULL or cast failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>Empty object handle retrieved from caller</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+118"/>
-        <location line="+18"/>
-        <location line="+26"/>
-        <source>getVal of PGRFlyCapture failed, since retrived NULL-Pointer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>QObject</name>
-    <message>
-        <location line="-1585"/>
-        <source>Point Grey FlyCapture2 Cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>GPL / this plugin needs to link agains the FlyCapture2 SDK from Point Grey Research, that comes with its own license. The FlyCapture2 SDK contains components that are licensed under GPL.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Continuous camera number [0,10], default: -1 uses the next free camera.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Limits the bitdepth to the given level [8, 12, 16]. As default the maximum level is used (-1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Direct enable software sync if present</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
+        <location line="+618"/>
+        <location line="+14"/>
+        <source>Size (Binning changed, press apply or save)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
