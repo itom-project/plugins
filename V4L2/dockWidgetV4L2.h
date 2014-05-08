@@ -25,6 +25,7 @@
 
 #include "common/addInInterface.h"
 #include "common/abstractAddInDockWidget.h"
+#include "itomWidgets/sliderWidget.h"
 
 #include <qwidget.h>
 #include <qmap.h>
