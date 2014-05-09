@@ -97,7 +97,7 @@ namespace pcl
 
       virtual bool
       clipLineSegment3D (PointT& from, PointT& to) const;
-#if PCL_VERSION_COMPARE(>, 1, 7, 0)
+#if PCL_VERSION_COMPARE(<, 1, 7, 0)
       virtual void
       clipPlanarPolygon3D (std::vector<PointT>& polygon) const;
 

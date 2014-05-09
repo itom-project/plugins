@@ -208,7 +208,7 @@ pcl::CylinderClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point
   return false;
 }
 
-#if PCL_VERSION_COMPARE(>, 1, 7, 0)
+#if PCL_VERSION_COMPARE(<, 1, 7, 0)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * @attention untested code
