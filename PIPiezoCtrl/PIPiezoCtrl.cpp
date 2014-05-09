@@ -1338,7 +1338,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     {
         QSharedPointer<ito::Param> param(new ito::Param("port"));
         retval += m_pSer->getParam(param, NULL);
-        if (retval.containsError() || param->getVal<int>() < 1)
+        if (retval.containsError() || param->getVal<int>() < 0)
         {
             retval = ito::RetVal(ito::retError, 0, tr("Could not read port number from serial port or port number invalid").toLatin1().data());
             return retval;
