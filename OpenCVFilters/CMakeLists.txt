@@ -68,11 +68,8 @@ if (NOT QT5_FOUND)
 endif (NOT QT5_FOUND)
 
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/OpenCVFilters.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/itomCvConversions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
@@ -91,7 +88,7 @@ endif (QT5_FOUND)
 
 set(plugin_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/OpenCVFilters.cpp    
-    
+    ${CMAKE_CURRENT_SOURCE_DIR}/itomCvConversions.cpp
 )
 
 #Add version information to the plugIn-dll unter MSVC
