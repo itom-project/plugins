@@ -82,6 +82,9 @@ class DataObjectIO : public ito::AddInAlgo
         static ito::RetVal loadDataObject(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal loadDataObjectParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static ito::RetVal loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal loadDataFromTxtParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
         static ito::RetVal saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal saveNistSDFParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
@@ -136,6 +139,10 @@ class DataObjectIO : public ito::AddInAlgo
         } tInvalidHandling;
 
     private:
+
+        static ito::RetVal analyseTXTData(QFile &inFile, ito::DataObject &newObject, QChar &sperator, QChar &decimalSign, const int flags, const int ignoreLines);
+        static ito::RetVal readTXTDataBlock(QFile &inFile, ito::DataObject &newObject, const QChar &sperator, const QChar &decimalSign, const int flags, const int ignoreLines);
+
         template<typename _Tp> static ito::RetVal writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator, const double nanValue);
         template<typename _Tp> static ito::RetVal readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int flags, const char seperator);
         static ito::RetVal readNistHeader(QFile &inFile, ito::DataObject &newObject, double &zscale,const int flags);
