@@ -3433,7 +3433,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
         double meanStepY = 0.0;
         for(int i = 1; i < newYSize; i++)
         {
-            meanStepY = yCords[i] - yCords[i - 1];
+            meanStepY += yCords[i] - yCords[i - 1];
         }
 
         if(newYSize < 2)
@@ -3448,7 +3448,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
         double meanStepX = 0;
         for(int i = 1; i < newXSize; i++)
         {
-            meanStepX = xCords[i] - xCords[i - 1];
+            meanStepX += xCords[i] - xCords[i - 1];
         }
         
         if(newXSize < 2)
