@@ -28,9 +28,7 @@
 #include "pluginVersion.h"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <qsharedpointer.h>
-#if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-    #include "opencv2/calib3d/calib3d.hpp"
-#endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class OpenCVFiltersInterface
@@ -118,12 +116,16 @@ class OpenCVFilters : public ito::AddInAlgo
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
         static const char *cvFindCirclesDoc;
-        static ito::RetVal cvFindCircles(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);   /*! Function performs a "Blur-Filter" on the input object*/
-        static ito::RetVal cvFindCirclesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);   /*! Function gives back the optional and mandatory parameters for "Blur-Filter"*/
+        static ito::RetVal cvFindCircles(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal cvFindCirclesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
         static const char *cvFindChessboardCornersDoc;
         static ito::RetVal cvFindChessboardCorners(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvFindChessboardCornersParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const char *cvDrawChessboardCornersDoc;
+        static ito::RetVal cvDrawChessboardCorners(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal cvDrawChessboardCornersParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
         static const char *cvCornerSubPixDoc;
         static ito::RetVal cvCornerSubPix(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
@@ -132,6 +134,26 @@ class OpenCVFilters : public ito::AddInAlgo
         static const char *cvCalibrateCameraDoc;
         static ito::RetVal cvCalibrateCamera(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvCalibrateCameraParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const char *cvEstimateAffine3DDoc;
+        static ito::RetVal cvEstimateAffine3D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal cvEstimateAffine3DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const char *cvUndistortDoc;
+        static ito::RetVal cvUndistort(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal cvUndistortParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const char *cvUndistortPointsDoc;
+        static ito::RetVal cvUndistortPoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal cvUndistortPointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const char *cvInitUndistortRectifyMapDoc;
+        static ito::RetVal cvInitUndistortRectifyMap(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal cvInitUndistortRectifyMapParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const char *cvRemapDoc;
+        static ito::RetVal cvRemap(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal cvRemapParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 

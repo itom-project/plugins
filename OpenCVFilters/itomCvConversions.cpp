@@ -22,6 +22,8 @@
 
 #include "itomCvConversions.h"
 
+#include "common/param.h"
+
 namespace itomcv
 {
 
@@ -30,7 +32,7 @@ cv::Size getCVSizeFromParam(const ito::ParamBase &intArrayParam, bool squareSize
     ito::RetVal ret;
     cv::Size size(-1,-1);
 
-    if (intArrayParam.getType() != ito::ParamBase::IntArray)
+    if (intArrayParam.getType() != (ito::ParamBase::IntArray & ito::paramTypeMask))
     {
         ret += ito::RetVal::format(ito::retError, 0, "Parameter %s must be an integer array", intArrayParam.getName());
     }
@@ -75,11 +77,11 @@ cv::TermCriteria getCVTermCriteriaFromParam(const ito::ParamBase &intMaxCountPar
     ito::RetVal ret;
     cv::TermCriteria criteria;
 
-    if (intMaxCountParam.getType() != ito::ParamBase::Int)
+    if (intMaxCountParam.getType() != (ito::ParamBase::Int & ito::paramTypeMask))
     {
         ret += ito::RetVal::format(ito::retError, 0, "Parameter %s must be an integer", intMaxCountParam.getName());
     }
-    else if (doubleEpsParam.getType() != ito::ParamBase::Double)
+    else if (doubleEpsParam.getType() != (ito::ParamBase::Double & ito::paramTypeMask))
     {
         ret += ito::RetVal::format(ito::retError, 0, "Parameter %s must be a double", doubleEpsParam.getName());
     }
@@ -88,10 +90,10 @@ cv::TermCriteria getCVTermCriteriaFromParam(const ito::ParamBase &intMaxCountPar
         criteria.maxCount = intMaxCountParam.getVal<int>();
         criteria.epsilon = doubleEpsParam.getVal<double>();
 
-        int type = (criteria.maxCount > 0) ? cv::TermCriteria::COUNT : 0;
+        criteria.type = (criteria.maxCount > 0) ? cv::TermCriteria::COUNT : 0;
         if (criteria.epsilon > 0.0)
         {
-            type |= cv::TermCriteria::EPS;
+            criteria.type |= cv::TermCriteria::EPS;
         }
     }
 
@@ -125,7 +127,7 @@ std::vector<cv::Mat> getInputArrayOfArraysFromDataObject(const ito::DataObject *
             for (int i = 0; i < dObj->getSize(0); ++i)
             {
                 int plane = dObj->seekMat(0);
-                output.push_back( *((cv::Mat*)(dObj->get_mdata()[plane])) );
+                output.push_back( *(dObj->getCvPlaneMat(i)) );
             }
         }
         else
@@ -147,11 +149,11 @@ ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::M
 {
     ito::RetVal retval;
 
-    if (dataObjParam.getType() != ito::ParamBase::DObjPtr)
+    if (dataObjParam.getType() != (ito::ParamBase::DObjPtr & ito::paramTypeMask))
     {
         retval += ito::RetVal::format(ito::retError, 0, "Parameter %s must be a dataObject", dataObjParam.getName());
     }
-    else if (dataObjParam.getFlags() & ito::ParamBase::Out == 0)
+    else if ((dataObjParam.getFlags() & ito::ParamBase::Out) == 0)
     {
         retval += ito::RetVal::format(ito::retError, 0, "Parameter %s must be marked with out flag", dataObjParam.getName());
     }
@@ -161,16 +163,18 @@ ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::M
 
         if (dObj)
         {
+            ito::tDataType cameraMatrixType = ito::guessDataTypeFromCVMat(mat, retval);
+
             //check if dataObjParam contains one plane and if the data-pointer of the plane corresponds to the data-pointer of mat. If so, both share memory and we are done!
-            if (dObj->calcNumMats() == 1)
+            if (dObj->calcNumMats() == 1 && (dObj->getDims() == mat->dims) && dObj->getType() == cameraMatrixType)
             {
-                if ( ((cv::Mat*)(dObj->get_mdata()[dObj->seekMat(0)]))->data == mat->data)
+                cv::Mat *plane = dObj->getCvPlaneMat(0);
+                if ( plane->data == mat->data && plane->size == mat->size)
                 {
                     return retval;
                 }
             }
 
-            ito::tDataType cameraMatrixType = ito::guessDataTypeFromCVMat(mat, retval);
             if (!retval.containsError())
             {
                 *(dataObjParam.getVal<ito::DataObject*>()) = ito::DataObject(mat->dims, mat->size, cameraMatrixType, mat, 1);
