@@ -1490,6 +1490,15 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvRemap, OpenCVFilters::cvRemapParams, tr(cvRemapDoc));
     m_filterList.insert("cvRemapParams", filter);
 
+    filter = new FilterDef(OpenCVFilters::cvFindHomography, OpenCVFilters::cvFindHomographyParams, tr(cvFindHomographyDoc));
+    m_filterList.insert("cvFindHomography", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvFindFundamentalMat, OpenCVFilters::cvFindFundamentalMatParams, tr(cvFindFundamentalMatDoc));
+    m_filterList.insert("cvFindFundamentalMat", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvComputeCorrespondEpilines, OpenCVFilters::cvComputeCorrespondEpilinesParams, tr(cvComputeCorrespondEpilinesDoc));
+    m_filterList.insert("cvComputeCorrespondEpilines", filter);
+
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
     filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, tr(cvFlipUpDownDoc));

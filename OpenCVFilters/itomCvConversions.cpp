@@ -27,10 +27,10 @@
 namespace itomcv
 {
 
-cv::Size getCVSizeFromParam(const ito::ParamBase &intArrayParam, bool squareSizeIfOneElement /*= false*/, ito::RetVal *retval /*= NULL*/)
+cv::Size getCVSizeFromParam(const ito::ParamBase &intArrayParam, bool squareSizeIfOneElement /*= false*/, ito::RetVal *retval /*= NULL*/, bool returnEmptySizeIfEmpty /*= false*/)
 {
     ito::RetVal ret;
-    cv::Size size(-1,-1);
+    cv::Size size;
 
     if (intArrayParam.getType() != (ito::ParamBase::IntArray & ito::paramTypeMask))
     {
@@ -47,6 +47,10 @@ cv::Size getCVSizeFromParam(const ito::ParamBase &intArrayParam, bool squareSize
         {
             size.height = intArrayParam.getVal<int*>()[0];
             size.width = intArrayParam.getVal<int*>()[1];
+        }
+        else if (intArrayParam.getLen() == 0 && returnEmptySizeIfEmpty)
+        {
+            size = cv::Size();
         }
         else
         {
