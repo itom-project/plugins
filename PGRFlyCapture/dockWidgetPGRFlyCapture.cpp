@@ -50,7 +50,7 @@ void DockWidgetPGRFlyCapture::parametersChanged(QMap<QString, ito::Param> params
         ui.spinOffset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
         ui.sliderOffset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
 
-        ui.spinIntegrationTime->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
+        ui.spinIntegrationTime->setDisabled( params["integration_time"].getFlags() & ito::ParamBase::Readonly );
 
         m_firstRun = false;
     }
