@@ -1,3 +1,25 @@
+/* ********************************************************************
+    Plugin "PCOCamera" for itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
+
+    This file is part of a plugin for the measurement software itom.
+  
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
 #ifndef PCOCAMERA_H
 #define PCOCAMERA_H
 
@@ -12,6 +34,8 @@
 #define PCO_ERRT_H_CREATE_OBJECT
 #include "sc2_SDKStructures.h"
 #include "SC2_CamExport.h"
+
+#define PCO_NUMBER_BUFFERS 2
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class PCOCameraInterface : public ito::AddInInterfaceBase
@@ -44,21 +68,36 @@ class PCOCamera : public ito::AddInGrabber
 //        ito::RetVal checkData();
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);
 
+        void dockWidgetVisibilityChanged(bool visible);
+
     public:
         friend class PCOCameraInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
+        ito::RetVal stopCamera();
+        ito::RetVal startCamera();
+
+        struct PCOBuffer
+        {
+            short bufNr;
+            WORD* bufData;
+            bool bufQueued;
+            bool bufError;
+            HANDLE bufEvent;
+        };
+
+        PCOBuffer m_buffers[PCO_NUMBER_BUFFERS];
+
         bool m_isgrabbing;
         HANDLE m_hCamera;
 
         HANDLE m_hEvent;
         WORD m_wActSeg;
-        unsigned short m_recstate;
 
-        WORD * m_wBuf;
-        short m_curBuf;
+        //WORD *m_wBuf;
+        //short m_curBuf;
         PCO_Description m_caminfo;
 
         ito::RetVal setExposure(double exposure);
@@ -84,14 +123,6 @@ class PCOCamera : public ito::AddInGrabber
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getVal(void *dObj, ItomSharedSemaphore *waitCond);
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        //ito::RetVal setVal(const char *dObj, const int length, ItomSharedSemaphore *waitCond);
-
-        //void dataParametersChanged(int sizex, int sizey, int bpp);
-        void GainOffsetPropertiesChanged(double gain, double offset);
-        void IntegrationPropertiesChanged(double integrationtime);
-
-    private slots:
-        ito::RetVal updateCamParams(void);
 
 
 };

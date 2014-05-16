@@ -118,7 +118,13 @@
       <item row="1" column="0">
        <widget class="QSpinBox" name="spinWidth">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
         </property>
         <property name="suffix">
          <string> px</string>
@@ -137,7 +143,13 @@
       <item row="1" column="1">
        <widget class="QSpinBox" name="spinHeight">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
         </property>
         <property name="suffix">
          <string> px</string>
@@ -156,7 +168,10 @@
       <item row="1" column="2">
        <widget class="QSpinBox" name="spinBpp">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
         <property name="suffix">
          <string> bits</string>
@@ -215,6 +230,9 @@
       </item>
       <item row="0" column="2">
        <widget class="QSpinBox" name="spinBox_offset">
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
         <property name="suffix">
          <string>%</string>
         </property>
@@ -248,6 +266,9 @@
       </item>
       <item row="1" column="2">
        <widget class="QSpinBox" name="spinBox_gain">
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
         <property name="suffix">
          <string>%</string>
         </property>
@@ -268,6 +289,9 @@
       </item>
       <item row="2" column="2">
        <widget class="QDoubleSpinBox" name="doubleSpinBox_integration_time">
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
         <property name="prefix">
          <string/>
         </property>
