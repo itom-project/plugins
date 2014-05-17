@@ -78,6 +78,7 @@ class PCOCamera : public ito::AddInGrabber
     private:
         ito::RetVal stopCamera();
         ito::RetVal startCamera();
+        ito::RetVal sychronizeParameters();
 
         struct PCOBuffer
         {
