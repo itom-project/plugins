@@ -1,4 +1,4 @@
-/*************************************************************************
+/* ************************************************************************
     This file is part of fftw-plugin for ito's itom measurement software
 
     The fftw-plugin for itom is a wrapper for the FFTW package.
@@ -18,7 +18,7 @@
 
     You should have received a copy of the GNU General Public License
     along with Foobar. If not, see <http://www.gnu.org/licenses/>.
-*************************************************************************/
+************************************************************************ */
 
 /*! \file FFTWfilters.cpp
    \brief   This file contains the itomflters class and interface definitions.
