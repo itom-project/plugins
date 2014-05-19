@@ -26,6 +26,13 @@
 #include "xiApi.h"
 #include "xiExt.h"
 
+//#ifdef USE_OLD_API
+//
+//#define XI_RAW8 XI_MONO8
+//#define XI_RAW16 XI_MONO16
+//
+//#endif
+
 //pointer to camera functions
 XI_RETURN (__cdecl *pxiGetNumberDevices)(OUT PDWORD pNumberDevices);
 XI_RETURN (__cdecl *pxiOpenDevice)(IN DWORD DevId, OUT PHANDLE hDevice);

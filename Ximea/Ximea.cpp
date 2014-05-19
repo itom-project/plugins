@@ -633,7 +633,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 */
     int trigger_mode = m_params["trigger_mode"].getVal<int>();
     int trigger_mode2 = m_params["trigger_mode2"].getVal<int>();
-    int timing_mode = m_params["timing_mode"].getVal<int>();
+    //int timing_mode = m_params["timing_mode"].getVal<int>();
     float frameRate = m_params["framerate"].getVal<double>();
     //int trigger_mode = XI_TRG_OUT;    //in new api trg_out does not exist anymore, so we just use free run
     int integration_time = 2000;
@@ -786,12 +786,38 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
             else if (strcmp(paramIt.value().getName(),"hdr_enable") == 0)
             {
-                int knee1 = (int)m_params["hdr_knee1"].getVal<int>();
-                int knee2 = (int)m_params["hdr_knee2"].getVal<int>();
+                int enable = (int)m_params["hdr_enable"].getVal<int>() > 0 ? 1 : 0;
                 int intTime1 = (int)m_params["hdr_it1"].getVal<int>();
                 int intTime2 = (int)m_params["hdr_it2"].getVal<int>();
-                int enable = (int)m_params["hdr_enable"].getVal<int>();
+#ifdef USE_OLD_API
+                if(enable)
+                {
+                    integration_time += integration_time / 4;
 
+                    if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &enable, sizeof(int), xiTypeInteger)))
+                    {
+                        retValue += getErrStr(ret);
+                    }
+                    
+                    //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &knee1, sizeof(int), xiTypeInteger)))
+                    //{
+                    //    retValue += getErrStr(ret);
+                    //}
+                }
+                else
+                {
+                    if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &enable, sizeof(int), xiTypeInteger)))
+                    {
+                        retValue += getErrStr(ret);
+                    }
+                    if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
+                        retValue += getErrStr(ret);
+                }
+
+#else
+                int knee1 = (int)m_params["hdr_knee1"].getVal<int>();
+                int knee2 = (int)m_params["hdr_knee2"].getVal<int>();
+                
                 if(enable)
                 {
                     if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), xiTypeInteger)))
@@ -815,7 +841,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 {
                     retValue += getErrStr(ret);
                 }
-
+#endif
             }
             else if (strcmp(paramIt.value().getName(),"integration_time") == 0)
             {
@@ -837,16 +863,19 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
             }
+#ifndef USE_OLD_API
             else if (strcmp(paramIt.value().getName(),"trigger_mode2") == 0)
             {
                 if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
             }
+
             else if (strcmp(paramIt.value().getName(),"timing_mode") == 0)
             {
                 if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
             }
+#endif
             else if (strcmp(paramIt.value().getName(),"framerate") == 0)
             {
                 if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &frameRate, sizeof(float), xiTypeFloat)))
@@ -982,9 +1011,9 @@ end:
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
 {
-    int min;
-    int max;
-    int inc;
+    int min = std::numeric_limits<int>::max();
+    int max = 0;
+    int inc = 1;
     ito::RetVal retval;
     DWORD pSize = sizeof(int);
     XI_PRM_TYPE pType = xiTypeInteger;
@@ -999,8 +1028,10 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
     name = QByteArray(paramName) + XI_PRM_INFO_MAX;
     retval +=  getErrStr(pxiGetParam(m_handle, name.data(), &max, &pSize, &pType));
 
+#ifndef USE_OLD_API
     name = QByteArray(paramName) + XI_PRM_INFO_INCREMENT;
     retval +=  getErrStr(pxiGetParam(m_handle, name.data(), &inc, &pSize, &pType));
+#endif
 
     if (!retval.containsError())
     {
@@ -1009,10 +1040,12 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
         {
             retval += ito::RetVal::format(ito::retError,0, "xiApi-Parameter '%s' is out of allowed range [%i,%i]", paramName, min, max);
         }
+#ifndef USE_OLD_API
         else if ( (newValue - min) % inc != 0)
         {
             retval += ito::RetVal::format(ito::retError,0, "xiApi-Parameter '%s' must have an increment of %i (minimum value %i)", paramName, inc, min);
         }
+#endif
 
         if (!retval.containsError())
         {
@@ -1043,7 +1076,11 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     int integration_time = 2;
     int trigger_mode = 0;
     int trigger_mode2 = 0;
+
+#ifndef USE_OLD_API
     int timing_mode = 0;
+#endif
+
     float framerate = 30;
     float gamma = 0.0;
     float sharpness = 1.0;
@@ -1100,11 +1137,13 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             //int availableBandwidth;
             //retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_AVAILABLE_BANDWIDTH, &availableBandwidth, &pSize, &pType));
             //std::cout << "available bandwidth: " << availableBandwidth << std::endl;
+#ifndef USE_OLD_API
             if (bandwidthLimit > 0) //manually set bandwidthLimit
             {
                 retValue += setXimeaParam(XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
                 retValue += setXimeaParam(XI_PRM_LIMIT_BANDWIDTH, bandwidthLimit);
             }
+#endif
         }
 
         // Load parameterlist from XML-file
@@ -1133,10 +1172,14 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
         if (!retValue.containsError())
         {
             // Camera-exposure is set in µsec, itom uses s
-            integration_time = m_params["integration_time"].getVal<int>();
+            integration_time = (int)(m_params["integration_time"].getVal<double>() * 1000000);
             trigger_mode = m_params["trigger_mode"].getVal<int>();
             trigger_mode2 = m_params["trigger_mode2"].getVal<int>();
+
+#ifndef USE_OLD_API
             timing_mode = m_params["timing_mode"].getVal<int>();
+#endif
+
             framerate = m_params["framerate"].getVal<double>();
 
             gamma = m_params["gamma"].getVal<double>();
@@ -1146,11 +1189,15 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 retValue += getErrStr(ret);
             if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);
+
             // Though in api the dll reports not supported ...
-    //        if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
-    //            retValue += getErrStr(ret);
+            //if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
+            //    retValue += getErrStr(ret);
+
+#ifndef USE_OLD_API
             if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);
+#endif
             // Though in api the dll reports not supported ...
     //        if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &framerate, sizeof(float), xiTypeFloat)))
     //            retValue += getErrStr(ret);

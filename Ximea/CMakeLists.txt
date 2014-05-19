@@ -8,6 +8,7 @@ OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte ch
 OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
+OPTION(XIMEA_BUILD_OLD_API "Build old API-Version from 2012" OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
@@ -31,6 +32,11 @@ find_package(VisualLeakDetector QUIET)
 FIND_PATH( XIMEA_APIDIR m3Api.h CACHE PATH "XIMEA Api directory (must contain the file m3Api.h)")
 
 IF(XIMEA_APIDIR)
+
+	IF(XIMEA_BUILD_OLD_API)
+		ADD_DEFINITIONS(-DUSE_OLD_API)
+	ENDIF(XIMEA_BUILD_OLD_API)
+
     ADD_DEFINITIONS(${QT_DEFINITIONS})
     IF (BUILD_UNICODE)
         ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
