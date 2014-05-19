@@ -76,7 +76,7 @@
         <bool>true</bool>
        </property>
        <property name="title">
-        <string>Integration</string>
+        <string>Data Acquisition</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
         <item row="6" column="2" colspan="2">
