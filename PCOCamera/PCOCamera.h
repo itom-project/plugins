@@ -24,6 +24,7 @@
 #define PCOCAMERA_H
 
 #include "common/addInGrabber.h"
+
 #include "dialogPCOCamera.h"
 
 #include <qsharedpointer.h>
@@ -34,6 +35,8 @@
 #define PCO_ERRT_H_CREATE_OBJECT
 #include "sc2_SDKStructures.h"
 #include "SC2_CamExport.h"
+
+
 
 #define PCO_NUMBER_BUFFERS 2
 
