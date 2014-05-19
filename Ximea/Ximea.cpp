@@ -633,7 +633,11 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 */
     int trigger_mode = m_params["trigger_mode"].getVal<int>();
     int trigger_mode2 = m_params["trigger_mode2"].getVal<int>();
-    //int timing_mode = m_params["timing_mode"].getVal<int>();
+
+#ifndef USE_OLD_API
+    int timing_mode = m_params["timing_mode"].getVal<int>();
+#endif
+
     float frameRate = m_params["framerate"].getVal<double>();
     //int trigger_mode = XI_TRG_OUT;    //in new api trg_out does not exist anymore, so we just use free run
     int integration_time = 2000;
@@ -793,20 +797,27 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 if(enable)
                 {
                     integration_time += integration_time / 4;
-
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &enable, sizeof(int), xiTypeInteger)))
+                    //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), xiTypeInteger)))
+                    if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), xiTypeInteger)))
                     {
                         retValue += getErrStr(ret);
                     }
-                    
+                    DWORD pSize = sizeof(int);
+                    XI_PRM_TYPE pType = xiTypeInteger;
+                    retValue += getErrStr(pxiGetParam(m_handle, "hdr" XI_PRM_INFO , &enable, &pSize, &pType)); 
+
                     //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &knee1, sizeof(int), xiTypeInteger)))
+                    //if ((ret = pxiSetParam(m_handle, "hdr_ratio" , &knee1, sizeof(int), xiTypeInteger)))
                     //{
                     //    retValue += getErrStr(ret);
                     //}
+                    if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
+                        retValue += getErrStr(ret);
                 }
                 else
                 {
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &enable, sizeof(int), xiTypeInteger)))
+                    //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), xiTypeInteger)))
+                    if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), xiTypeInteger)))
                     {
                         retValue += getErrStr(ret);
                     }
