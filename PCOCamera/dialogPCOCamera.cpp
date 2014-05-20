@@ -79,7 +79,7 @@ void DialogPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
         }
         else
         {
-            for (int i = 1; i <= m_camInfo.wMaxBinHorzDESC; )
+            for (int i = 2; i <= m_camInfo.wMaxBinHorzDESC; )
             {
                 ui.comboBinningX->addItem(QString::number(i), i);
                 i <<= 1;
@@ -95,7 +95,7 @@ void DialogPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
         }
         else
         {
-            for (int i = 1; i <= m_camInfo.wMaxBinVertDESC; )
+            for (int i = 2; i <= m_camInfo.wMaxBinVertDESC; )
             {
                 ui.comboBinningY->addItem(QString::number(i), i);
                 i <<= 1;

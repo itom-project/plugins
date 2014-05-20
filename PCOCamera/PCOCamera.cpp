@@ -706,6 +706,17 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         retVal += checkError(PCO_GetCameraDescription(m_hCamera, &m_caminfo));
     }
 
+    if (!retVal.containsError())
+    {
+        if (m_caminfo.wRoiHorStepsDESC == 0) //no roi functionality available
+        {
+            m_params["x0"].setFlags(ito::ParamBase::Readonly);
+            m_params["x1"].setFlags(ito::ParamBase::Readonly);
+            m_params["y0"].setFlags(ito::ParamBase::Readonly);
+            m_params["y1"].setFlags(ito::ParamBase::Readonly);
+        }
+    }
+
 
     if(!retVal.containsError())
     {
