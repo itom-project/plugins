@@ -442,8 +442,10 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
                     WORD newSizeY = float(1 + wRoiY1 - wRoiY0) / factorY;
                     newSizeX -= (newSizeX % m_caminfo.wRoiHorStepsDESC);
                     newSizeY -= (newSizeY % m_caminfo.wRoiVertStepsDESC);
+#ifndef PCO_SDK_OLD
                     newSizeX = std::max(newSizeX, WORD(m_caminfo.wMinSizeHorzDESC));
                     newSizeY = std::max(newSizeY, WORD(m_caminfo.wMinSizeVertDESC));
+#endif
 
                     //adapt ROI to new binning, this also affects sizex, sizey
                     wRoiX0 = 1 + float(wRoiX0 - 1) / factorX;
@@ -683,6 +685,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                 case INTERFACE_SERIAL:
                     m_params["interface"].setVal<char*>("serial");
                     break;
+#ifndef PCO_SDK_OLD
                 case INTERFACE_USB3:
                     m_params["interface"].setVal<char*>("usb3");
                     break;
@@ -692,6 +695,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                 case INTERFACE_COAXPRESS:
                     m_params["interface"].setVal<char*>("coaxpress");
                     break;
+#endif
             }
         }
     }
@@ -1179,7 +1183,11 @@ ito::RetVal PCOCamera::sychronizeParameters()
 
         //x1
         im = static_cast<ito::IntMeta*>( m_params["x1"].getMeta() );
+#ifdef PCO_SDK_OLD
+        im->setMin(roiX0 + 1);
+#else
         im->setMin(roiX0 + m_caminfo.wMinSizeHorzDESC);
+#endif
         im->setMax(m_caminfo.wMaxHorzResStdDESC/binX - 1);
         im->setStepSize(m_caminfo.wRoiHorStepsDESC);
 
@@ -1190,7 +1198,11 @@ ito::RetVal PCOCamera::sychronizeParameters()
 
         //y1
         im = static_cast<ito::IntMeta*>( m_params["y1"].getMeta() );
+#ifdef PCO_SDK_OLD
+        im->setMin(roiY0 + 1);
+#else
         im->setMin(roiY0 + m_caminfo.wMinSizeVertDESC);
+#endif
         im->setMax(m_caminfo.wMaxVertResStdDESC/binY - 1);
         im->setStepSize(m_caminfo.wRoiVertStepsDESC);
 
