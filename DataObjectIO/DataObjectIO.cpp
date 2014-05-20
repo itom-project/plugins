@@ -3211,7 +3211,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
         if(flags & 0x01)
         {
 
-            if(curLine.split(sperator, QString::SplitBehavior::SkipEmptyParts).size() != 3)
+            if(curLine.split(sperator, QString::SkipEmptyParts).size() != 3)
             {
                 ret += ito::RetVal(ito::retError, 0, tr("The file is no list with 3 columns and N rows or contains invalid seperators.").toLatin1().data());
             }
@@ -3227,7 +3227,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
         }
         else
         {
-            cols = curLine.split(sperator, QString::SplitBehavior::KeepEmptyParts).size();
+            cols = curLine.split(sperator, QString::KeepEmptyParts).size();
 
             while(!inFile.atEnd() && lines < 10)
             {
