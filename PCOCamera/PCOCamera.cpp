@@ -440,8 +440,8 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 
                     WORD newSizeX = float(1 + wRoiX1 - wRoiX0) / factorX;
                     WORD newSizeY = float(1 + wRoiY1 - wRoiY0) / factorY;
-                    newSizeX -= (newSizeX % m_caminfo.wRoiHorStepsDESC);
-                    newSizeY -= (newSizeY % m_caminfo.wRoiVertStepsDESC);
+                    newSizeX -= m_caminfo.wRoiHorStepsDESC > 1 ? (newSizeX % m_caminfo.wRoiHorStepsDESC) : 0;
+                    newSizeY -= m_caminfo.wRoiVertStepsDESC > 1 ? (newSizeY % m_caminfo.wRoiVertStepsDESC) : 0;
 #ifndef PCO_SDK_OLD
                     newSizeX = std::max(newSizeX, WORD(m_caminfo.wMinSizeHorzDESC));
                     newSizeY = std::max(newSizeY, WORD(m_caminfo.wMinSizeVertDESC));
@@ -449,11 +449,11 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 
                     //adapt ROI to new binning, this also affects sizex, sizey
                     wRoiX0 = 1 + float(wRoiX0 - 1) / factorX;
-                    wRoiX0 -= ((wRoiX0-1) % m_caminfo.wRoiHorStepsDESC); //get back to given discrete step size
+                    wRoiX0 -= m_caminfo.wRoiHorStepsDESC > 1 ? ((wRoiX0-1) % m_caminfo.wRoiHorStepsDESC) : 0; //get back to given discrete step size
                     wRoiX0 = std::max((WORD)1, wRoiX0);
 
                     wRoiY0 = 1 + float(wRoiY0 - 1) / factorY;
-                    wRoiY0 -= ((wRoiY0-1) % m_caminfo.wRoiVertStepsDESC); //get back to given discrete step size
+                    wRoiY0 -= m_caminfo.wRoiVertStepsDESC > 1 ? ((wRoiY0-1) % m_caminfo.wRoiVertStepsDESC) : 0; //get back to given discrete step size
                     wRoiY0 = std::max((WORD)1, wRoiY0);
 
                     wRoiX1 = std::min(wRoiX0 + newSizeX - 1, m_caminfo.wMaxHorzResStdDESC / newbinX);
@@ -856,6 +856,25 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         m_params["bpp"].setMeta( new ito::IntMeta(bpp,bpp), true);
     }
 
+    /***********************************************************
+    ArmCamera validates settings.  
+    recorder must be turned off to ArmCamera
+    *************************************************************/
+  
+    if(!retVal.containsError())
+    {
+        WORD recstate;
+        retVal += checkError(PCO_GetRecordingState(m_hCamera, &recstate));
+        if (recstate > 0)
+        {
+            retVal += checkError(PCO_SetRecordingState(m_hCamera, 0x0000));
+            if(!retVal.containsError())
+            {
+                retVal += checkError(PCO_CancelImages(m_hCamera));
+            }
+        }
+    }
+
     retVal += sychronizeParameters();
 
     // prepare delay exposure time
@@ -1179,7 +1198,7 @@ ito::RetVal PCOCamera::sychronizeParameters()
         //x0
         im = static_cast<ito::IntMeta*>( m_params["x0"].getMeta() );
         im->setMax(roiX1 - 1);
-        im->setStepSize(m_caminfo.wRoiHorStepsDESC);
+        im->setStepSize(std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1));
 
         //x1
         im = static_cast<ito::IntMeta*>( m_params["x1"].getMeta() );
@@ -1189,12 +1208,12 @@ ito::RetVal PCOCamera::sychronizeParameters()
         im->setMin(roiX0 + m_caminfo.wMinSizeHorzDESC);
 #endif
         im->setMax(m_caminfo.wMaxHorzResStdDESC/binX - 1);
-        im->setStepSize(m_caminfo.wRoiHorStepsDESC);
+        im->setStepSize(std::max(m_caminfo.wRoiHorStepsDESC, (WORD)1));
 
         //y0
         im = static_cast<ito::IntMeta*>( m_params["y0"].getMeta() );
         im->setMax(roiY1 - 1);
-        im->setStepSize(m_caminfo.wRoiVertStepsDESC);
+        im->setStepSize(std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1));
 
         //y1
         im = static_cast<ito::IntMeta*>( m_params["y1"].getMeta() );
@@ -1204,7 +1223,7 @@ ito::RetVal PCOCamera::sychronizeParameters()
         im->setMin(roiY0 + m_caminfo.wMinSizeVertDESC);
 #endif
         im->setMax(m_caminfo.wMaxVertResStdDESC/binY - 1);
-        im->setStepSize(m_caminfo.wRoiVertStepsDESC);
+        im->setStepSize(std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1));
 
         m_params["sizex"].setVal<int>(sizeX);
         m_params["sizey"].setVal<int>(sizeY);
