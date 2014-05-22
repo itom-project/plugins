@@ -63,7 +63,7 @@ set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
-set(plugin_ui
+set(plugin_UI
 )
 
 set(plugin_RCC
