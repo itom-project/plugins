@@ -186,6 +186,9 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(BasicFilters::genericLowPassFilter, BasicFilters::genericStdParams, tr("Performs a low-pass filter with kernelsize (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("lowPassFilter", filter);
 
+    filter = new FilterDef(BasicFilters::spikeMedianFilter, BasicFilters::spikeMedianFilterStdParams, tr("Performs a median filter with kernelsize (x ,y) and pixelwise comparison of filterd image and original image to remove spikes according to delta value."));
+    m_filterList.insert("spikeMedianFilter", filter);
+
     filter = new FilterDef(BasicFilters::fillGeometricPrimitiv, BasicFilters::fillGeometricParams, tr(fillGeometricDoc));
     m_filterList.insert("fillObject", filter);
 

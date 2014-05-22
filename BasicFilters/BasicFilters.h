@@ -43,6 +43,11 @@
 
 #include <qsharedpointer.h>
 
+template<typename _Type> inline _Type myAbs(_Type val) {return 0;}
+template<> inline ito::int32 myAbs<ito::int32>(ito::int32 val) {return labs(val);}
+template<> inline ito::float32 myAbs<ito::float32>(ito::float32 val) {return fabs(val);}
+template<> inline ito::float64 myAbs<ito::float64>(ito::float64 val) {return fabs(val);}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class BasicFiltersInterface
 *   @brief ITO developed filter functions for the itom
@@ -135,6 +140,11 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal genericMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal genericLowPassFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
 
+        // Further filters using the Generic Engine
+        static ito::RetVal spikeMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
+        static ito::RetVal spikeMedianFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        // Filter 
         static ito::RetVal fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal fillGeometricParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
