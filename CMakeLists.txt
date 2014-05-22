@@ -77,6 +77,12 @@ if (PLUGIN_FireGrabber)
     ADD_SUBDIRECTORY(FireGrabber)
 endif (PLUGIN_FireGrabber)
 
+# FringeProj
+OPTION(PLUGIN_FringeProj "Build with this plugin." ON)
+if (PLUGIN_FireGrabber)
+    ADD_SUBDIRECTORY(FringeProj)
+endif (PLUGIN_FringeProj)
+
 # GenICam
 #IF (WIN32)
 #    OPTION(PLUGIN_GenICam "Build with this plugin." OFF)
