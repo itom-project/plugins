@@ -246,7 +246,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
 
     std::string imgFormat;
     imgFormat = (*paramsMand)[2].getVal<char*>();
-    int toogle = (*paramsMand)[3].getVal<int>();
+    int toggle = (*paramsMand)[3].getVal<int>();
 
     // Optional parameters (lowLimit, highLimit, colorFormat)
     double lowLimit = (*paramsOpt)[0].getVal<double>();
@@ -260,7 +260,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
         color_form = color_format;
     }
 
-    if(toogle == 2 && (fabs(lowLimit - highLimit) < std::numeric_limits<double>::epsilon() || lowLimit > highLimit))
+    if(toggle == 2 && (fabs(lowLimit - highLimit) < std::numeric_limits<double>::epsilon() || lowLimit > highLimit))
     {
         ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: lowLimit must be unequal to highLimit and smaller than highLimit").toLatin1().data());
     }
@@ -279,7 +279,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
             {
                 case ito::tUInt8:
                     {
-                        if(toogle == 0)
+                        if(toggle == 0)
                         {
                             highLimit = std::numeric_limits<ito::uint8>::max();
                             lowLimit = std::numeric_limits<ito::uint8>::min();
@@ -297,7 +297,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 break;
                 case ito::tInt8:
                     {
-                        if(toogle == 0)
+                        if(toggle == 0)
                         {
                             highLimit = std::numeric_limits<ito::uint8>::max();
                             lowLimit = std::numeric_limits<ito::uint8>::min();
@@ -315,7 +315,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 break;
                 case ito::tInt16:
                     {
-                        if(toogle == 0)
+                        if(toggle == 0)
                         {
                             highLimit = std::numeric_limits<ito::uint8>::max();
                             lowLimit = std::numeric_limits<ito::uint8>::min();
@@ -333,7 +333,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 break;
                 case ito::tUInt16:
                     {
-                        if(toogle == 0)
+                        if(toggle == 0)
                         {
                             highLimit = std::numeric_limits<ito::uint8>::max();
                             lowLimit = std::numeric_limits<ito::uint8>::min();
@@ -351,7 +351,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 break;
                 case ito::tInt32:
                     {
-                        if(toogle == 0)
+                        if(toggle == 0)
                         {
                             highLimit = std::numeric_limits<ito::uint8>::max();
                             lowLimit = std::numeric_limits<ito::uint8>::min();
@@ -373,7 +373,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
 
                 case ito::tFloat32:
                     {
-                        if(toogle == 0)
+                        if(toggle == 0)
                         {
                             highLimit = std::numeric_limits<ito::uint8>::max();
                             lowLimit = std::numeric_limits<ito::uint8>::min();
@@ -390,7 +390,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                     }
                 case ito::tFloat64:
                     {
-                        if(toogle == 0)
+                        if(toggle == 0)
                         {
                             highLimit = std::numeric_limits<ito::uint8>::max();
                             lowLimit = std::numeric_limits<ito::uint8>::min();
@@ -420,7 +420,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
     {
         if(dObj->getDims() == 2 || (dObj->getDims() > 2 && dObj->calcNumMats() == 1))   // 2D or 1x1x1x...x2D
         {
-            if(toogle == 0)
+            if(toggle == 0)
             {
                 highLimit = 255.0;
                 lowLimit = 0.0;
@@ -437,7 +437,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
             {
                 case ito::tUInt8:
                     {
-                    if(toogle == 0)
+                    if(toggle == 0)
                     {
                         highLimit = std::numeric_limits<ito::uint8>::max();
                         lowLimit = std::numeric_limits<ito::uint8>::min();
@@ -455,7 +455,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 break;
                 case ito::tInt8:
                     {
-                    if(toogle == 0)
+                    if(toggle == 0)
                     {
                         highLimit = std::numeric_limits<ito::int8>::max();
                         lowLimit = std::numeric_limits<ito::int8>::min();
@@ -473,7 +473,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 break;
                 case ito::tInt16:
                     {
-                    if(toogle == 0)
+                    if(toggle == 0)
                     {
                         highLimit = std::numeric_limits<ito::int16>::max();
                         lowLimit = std::numeric_limits<ito::int16>::min();
@@ -491,7 +491,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 break;
                 case ito::tUInt16:
                     {
-                    if(toogle == 0)
+                    if(toggle == 0)
                     {
                         highLimit = std::numeric_limits<ito::uint16>::max();
                         lowLimit = std::numeric_limits<ito::uint16>::min();
@@ -509,7 +509,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 break;
                 case ito::tInt32:
                     {
-                    if(toogle == 0)
+                    if(toggle == 0)
                     {
                         highLimit = std::numeric_limits<ito::int32>::max();
                         lowLimit = std::numeric_limits<ito::int32>::min();
@@ -531,7 +531,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
 
                 case ito::tFloat32:
                     {
-                    if(toogle == 0)
+                    if(toggle == 0)
                     {
                         highLimit = 1.0;
                         lowLimit = 0.0;
@@ -548,7 +548,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                     }
                 case ito::tFloat64:
                     {
-                    if(toogle == 0)
+                    if(toggle == 0)
                     {
                         highLimit = 1.0;
                         lowLimit = 0.0;
@@ -581,13 +581,13 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
         {
             double scaling = 1.0;
             bool doScaling = true;
-            if(toogle == 0)
+            if(toggle == 0)
             {
                 doScaling = false;
                 highLimit = 255.0;
                 lowLimit = 0.0;
             }
-            else if(toogle == 2)
+            else if(toggle == 2)
             {
                 //doScaling = true;
             }
@@ -649,13 +649,13 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
         {
             double scaling = 1.0;
             bool doScaling = true;
-            if(toogle == 0)
+            if(toggle == 0)
             {
                 doScaling = false;
                 highLimit = std::numeric_limits<ito::int32>::max();
                 lowLimit = 0.0;
             }
-            else if(toogle == 2)
+            else if(toggle == 2)
             {
                 //doScaling = true;
             }
@@ -746,13 +746,13 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
         {
             double scaling = 1.0;
             bool doScaling = true;
-            if(toogle == 0)
+            if(toggle == 0)
             {
                 doScaling = false;
                 highLimit = std::numeric_limits<ito::int32>::max();
                 lowLimit = 0.0;
             }
-            else if(toogle == 2)
+            else if(toggle == 2)
             {
                 //doScaling = true;
             }

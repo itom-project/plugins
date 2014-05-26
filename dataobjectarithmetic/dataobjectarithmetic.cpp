@@ -420,10 +420,10 @@ ito::RetVal DataObjectArithmetic::meanValue(QVector<ito::ParamBase> *paramsMand,
 
 
     ito::float64 result = 0.0;
-    bool toogleInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
+    bool toggleInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
     
 
-    retval += ito::dObjHelper::meanValue(dObj, result, toogleInf);
+    retval += ito::dObjHelper::meanValue(dObj, result, toggleInf);
 
     (*paramsOut)[0] = ParamBase("result",ParamBase::Double | ParamBase::Out, static_cast<double>(result));
 
@@ -469,7 +469,7 @@ ito::RetVal DataObjectArithmetic::devValue(QVector<ito::ParamBase> *paramsMand, 
     ito::float64 devResult = 0.0;
     
     int flag = (*paramsOpt)[0].getVal<int>();
-    bool toogleInf = (*paramsOpt)[1].getVal<int>() > 0 ? true : false;
+    bool toggleInf = (*paramsOpt)[1].getVal<int>() > 0 ? true : false;
 
     if(dObj->getDims() < 2)
     {
@@ -478,7 +478,7 @@ ito::RetVal DataObjectArithmetic::devValue(QVector<ito::ParamBase> *paramsMand, 
 
 // new Version using the SDK-minValueHelper
   
-    retval += ito::dObjHelper::devValue(dObj, flag, meanResult, devResult, toogleInf);
+    retval += ito::dObjHelper::devValue(dObj, flag, meanResult, devResult, toggleInf);
 
     (*paramsOut)[0] = ParamBase("mean",ParamBase::Double | ParamBase::Out, static_cast<double>(meanResult));
     (*paramsOut)[1] = ParamBase("dev",ParamBase::Double | ParamBase::Out, static_cast<double>(devResult));

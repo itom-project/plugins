@@ -90,7 +90,7 @@ typedef struct
     ito::int32 blackLevel; /*! balck (lower) limit as value between 0 and 255*/
     ito::int32 whiteLevel; /*! White (upper) limit as value between 0 and 255*/
     ito::int32 radiusMax;  /*! Maximum kernel size (more a rectangle) */
-    bool adaptRadius;      /*! Toogle wether kernel may be adepted between 1 and radiusMax*/
+    bool adaptRadius;      /*! Toggle wether kernel may be adepted between 1 and radiusMax*/
 } DespeckleSettings;
 
 //----------------------------------------------------------------------------------------------------------------------------------

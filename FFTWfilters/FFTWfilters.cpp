@@ -267,8 +267,8 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
    \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
                                                         [1]complex Data object out 
    \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)     
-   \param[in]       forward     toogle fft and ifft
-   \param[in]       lineWise    toogle fft-1D and fft-2D
+   \param[in]       forward     toggle fft and ifft
+   \param[in]       lineWise    toggle fft-1D and fft-2D
    \author Lyda, Boettcher
    \date 2012.03.06
 */
