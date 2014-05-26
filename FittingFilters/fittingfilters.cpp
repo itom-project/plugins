@@ -717,7 +717,7 @@ the rectangle. If this is not possible, NaN is returned as value.";
     if(retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("dataObj", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input real-valued data object (2D or ROI containing only one plane).") );
-    paramsMand->append( ito::Param("coordsSubPix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input Nx2 data object containing the sub-pixel row and column coordinates of each point (given in scale value of dataObj).") );
+    paramsMand->append( ito::Param("coordsSubPix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input Nx2 data object containing the sub-pixel (column,row) coordinates of each point (given in scale value of dataObj).") );
 
     int rect[] = {2,2};
     paramsOpt->append( ito::Param("searchRect", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "[height, width] of the search rectangle for the linear interpolation. A plane fit is executed for all finite values within the rectangle and the output value is determined based on the plane coefficients. If the size if even, its size drifts towards the trend direction given by the coordinate value.") );
@@ -773,7 +773,7 @@ the rectangle. If this is not possible, NaN is returned as value.";
             valid = true;
             xyCoords = (ito::float64*)coords.rowPtr(0,i);
 
-            dataObj.getPhysToPix2D(xyCoords[0], yPx, yInside, xyCoords[1], xPx, xInside);
+            dataObj.getPhysToPix2D(xyCoords[1], yPx, yInside, xyCoords[0], xPx, xInside);
             
             xPxRounded = qRound(xPx);
             yPxRounded = qRound(yPx);
