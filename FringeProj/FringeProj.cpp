@@ -1294,11 +1294,21 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
 
         if (bitWidth <= 8)
         {
+            if ((maxValue >> 8) > 0)
+            {
+                retVal += ito::RetVal(ito::retError, 0, "type uint8 for lut is too small for holding all values");
+            }
+
             lut = ito::DataObject(1, maxValue, ito::tUInt8);
             byteWidth = 1;
         }
         else if (bitWidth <= 16)
         {
+            if ((maxValue >> 16) > 0)
+            {
+                retVal += ito::RetVal(ito::retError, 0, "type uint16 for lut is too small for holding all values");
+            }
+
             lut = ito::DataObject(1, maxValue, ito::tUInt16);
             byteWidth = 2;
         }
@@ -1308,47 +1318,48 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
             byteWidth = 4;
         }
 
-        
-        
-        //here decValue is converted to gray (easier) and the lookup table is inversely filled
-        switch (byteWidth)
+        if (!retVal.containsError())
         {
-        case 1:
+            //here decValue is converted to gray (easier) and the lookup table is inversely filled
+            switch (byteWidth)
             {
-                ito::uint8 gcValue;
-                ito::uint8 *rowPtr = lut.rowPtr(0,0);
-                for (ito::uint8 decValue = 0; decValue < maxValue; ++decValue)
+            case 1:
                 {
-                    gcValue = binaryToGray<ito::uint8>(decValue);
-                    rowPtr[gcValue] = decValue - offset;
+                    ito::uint8 gcValue;
+                    ito::uint8 *rowPtr = lut.rowPtr(0,0);
+                    for (ito::uint8 decValue = 0; decValue < maxValue; ++decValue)
+                    {
+                        gcValue = binaryToGray<ito::uint8>(decValue);
+                        rowPtr[gcValue] = decValue - offset;
+                    }
                 }
-            }
-            break;
-        case 2:
-            {
-                ito::uint16 gcValue;
-                ito::uint16 *rowPtr = (ito::uint16*)lut.rowPtr(0,0);
-                for (ito::uint16 decValue = 0; decValue < maxValue; ++decValue)
+                break;
+            case 2:
                 {
-                    gcValue = binaryToGray<ito::uint16>(decValue);
-                    rowPtr[gcValue] = decValue - offset;
+                    ito::uint16 gcValue;
+                    ito::uint16 *rowPtr = (ito::uint16*)lut.rowPtr(0,0);
+                    for (ito::uint16 decValue = 0; decValue < maxValue; ++decValue)
+                    {
+                        gcValue = binaryToGray<ito::uint16>(decValue);
+                        rowPtr[gcValue] = decValue - offset;
+                    }
                 }
-            }
-            break;
-        case 4:
-            {
-                ito::uint32 gcValue;
-                ito::uint32 *rowPtr = (ito::uint32*)lut.rowPtr(0,0);
-                for (ito::uint32 decValue = 0; decValue < maxValue; ++decValue)
+                break;
+            case 4:
                 {
-                    gcValue = binaryToGray<ito::uint32>(decValue);
-                    rowPtr[gcValue] = decValue - offset;
+                    ito::uint32 gcValue;
+                    ito::uint32 *rowPtr = (ito::uint32*)lut.rowPtr(0,0);
+                    for (ito::uint32 decValue = 0; decValue < maxValue; ++decValue)
+                    {
+                        gcValue = binaryToGray<ito::uint32>(decValue);
+                        rowPtr[gcValue] = decValue - offset;
+                    }
                 }
+                break;
             }
-            break;
-        }
 
-        *dataObject = lut;
+            *dataObject = lut;
+        }
     }
 
     return retVal;
