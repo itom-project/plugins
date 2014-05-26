@@ -28,4 +28,4 @@ The following parameters are mandatory or optional for initializing an instance 
 Changelog
 ==========
 
-* itom setup 1.2.0: This plugin has been compiled using the XimeaAPI (m3Api) 4.0.0.5
+* itom setup 1.2.0: This plugin has been compiled using the XimeaAPI 4.0.0.5
