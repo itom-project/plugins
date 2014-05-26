@@ -77,3 +77,7 @@ For compiling this plugin, download the latest pco.sdk (pco Software-Development
 variable *PCO_SDK_DIR** to the base directory of the pco.sdk. In addition to the SDK from PCO, you need to install necessary drivers for operating your framegrabber board, the GigE connection etc. If you can open the camera in the tool CamWare from PCO, you should also be able to open it in itom.
 For GigE cameras you also need to install the PCO GigE driver and make sure that the connection is properly configured.
 
+Changelog
+==========
+
+* itom setup 1.2.0: This plugin has been compiled using pco.sdk 1.17.0.632

@@ -24,4 +24,9 @@ The following parameters are mandatory or optional for initializing an instance 
     
     .. plugininitparams::
         :plugin: AerotechEnsemble
+        
+Changelog
+==========
+
+* itom setup 1.2.0: This plugin has been compiled using the Aerotech Ensemble SDK 4.6.1.10
 

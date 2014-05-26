@@ -68,3 +68,8 @@ parameters can be changed using *setParam*. If a parameter is read-only, it is n
     Further information about the connected camera
 **timestamp**: {double}
     Time in ms since last image acquisition
+
+Changelog
+==========
+
+* itom setup 1.2.0: This plugin has been compiled using the FlyCapture 2.6.3.4

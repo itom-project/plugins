@@ -29,3 +29,8 @@ Disclaimer
 ==========
 
 The company *Vistek* is not responsible for this plugin and therefore does not provide any support.
+
+Changelog
+==========
+
+* itom setup 1.2.0: This plugin has been compiled using theSVCam GigE SDK 1.4.24.59

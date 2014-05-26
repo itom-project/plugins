@@ -25,3 +25,7 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: QCam
 
+Changelog
+==========
+
+* itom setup 1.2.0: This plugin has been compiled using the QImaging 2.0.13.1

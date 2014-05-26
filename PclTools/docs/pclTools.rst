@@ -30,3 +30,7 @@ Detailed overview about all defined filters:
 .. pluginfilterlist::
     :plugin: PclTools
 
+Changelog
+==========
+
+* itom setup 1.2.0: This plugin has been compiled using the PCL 1.6.0

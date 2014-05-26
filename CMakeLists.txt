@@ -79,7 +79,7 @@ endif (PLUGIN_FireGrabber)
 
 # FringeProj
 OPTION(PLUGIN_FringeProj "Build with this plugin." ON)
-if (PLUGIN_FireGrabber)
+if (PLUGIN_FringeProj)
     ADD_SUBDIRECTORY(FringeProj)
 endif (PLUGIN_FringeProj)
 

@@ -25,3 +25,7 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: CMU1394
 
+Changelog
+==========
+
+* itom setup 1.2.0: This plugin has been compiled using the 1394camera 6.4.6.240
