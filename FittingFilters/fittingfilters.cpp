@@ -25,6 +25,8 @@
 
 #include "fittingfilters.h"
 
+#include "DataObject/dataObjectFuncs.h"
+
 #include <omp.h>
 #include <QtCore/QtPlugin>
 #include <qstringlist.h>
@@ -33,45 +35,21 @@
 #include "pluginVersion.h"
 #include <qnumeric.h>
 
-
 using namespace ito;
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FittingFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    FittingFilters* newInst = new FittingFilters();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-    QList<QString> keyList = newInst->m_filterList.keys();
-    for (int i = 0; i < newInst->m_filterList.size(); i++)
-    {
-        newInst->m_filterList[keyList[i]]->m_pBasePlugin = this;
-    }
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(FittingFilters)
+    REGISTER_FILTERS_AND_WIDGETS
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FittingFiltersInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-       if (*addInInst)
-    {
-        FittingFilters * thisInst = qobject_cast<FittingFilters*>(*addInInst);
-        if(thisInst)
-        {
-            delete thisInst;
-            int idx = m_InstList.indexOf(*addInInst);
-            m_InstList.removeAt(idx);
-        }
-        else
-        {
-            return ito::RetVal(ito::retError, 0, tr("plugin-instance cannot be converted to class FittingFilters. Close operation failed").toLatin1().data());
-        }
-    }
-
+    REMOVE_PLUGININSTANCE(FittingFilters);
     return ito::retOk;
 }
 
@@ -150,46 +128,68 @@ RetVal FittingFilters::fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<i
 RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObjImages = static_cast<ito::DataObject*>( (*paramsMand)[0].getVal<void*>() );
+    const ito::DataObject dObjImages = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "sourceImage", ito::Range::all(), ito::Range::all(), \
+                                                                                  retval, 0, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
     char *temp = (*paramsOpt)[0].getVal<char*>();
     QString method = static_cast<char*>( temp ); //borrowed reference
 
     QStringList availableMethods = QStringList() << "leastSquareFit" << "leastSquareFitSVD";
-
-    if (dObjImages->getDims() != 2)
-    {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image must be two-dimensional.").toLatin1().data());
-    }
-
-    if(dObjImages->getType() == tComplex64 || dObjImages->getType() == tComplex128)
-    {
-        return ito::RetVal(retError, 0, tr("source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64").toLatin1().data());
-    }
 
     if(!availableMethods.contains(method, Qt::CaseInsensitive))
     {
         return ito::RetVal(retError, 0, tr("the chosen method is unknown").toLatin1().data());
     }
 
-    int index = dObjImages->seekMat(0);
-    cv::Mat *plane = reinterpret_cast<cv::Mat*>(dObjImages->get_mdata()[index]);
-
-
-    if(QString::compare(method, "leastSquareFit", Qt::CaseInsensitive) == 0)
+    if (!retval.containsError())
     {
-        double A,B,C;
-        retval += fitLeastSquarePlane(plane,A,B,C);
-        (*paramsOut)[0].setVal<double>(A);
-        (*paramsOut)[1].setVal<double>(B);
-        (*paramsOut)[2].setVal<double>(C);
-    }
-    else if(QString::compare(method, "leastSquareFitSVD", Qt::CaseInsensitive) == 0)
-    {
-        double A,B,C;
-        retval += fitLeastSquarePlaneSVD(plane,A,B,C);
-        (*paramsOut)[0].setVal<double>(A);
-        (*paramsOut)[1].setVal<double>(B);
-        (*paramsOut)[2].setVal<double>(C);
+
+        const cv::Mat *plane = dObjImages.getCvPlaneMat(0);
+
+        if(QString::compare(method, "leastSquareFit", Qt::CaseInsensitive) == 0)
+        {
+            double A,B,C;
+            switch (dObjImages.getType())
+            {
+            case ito::tUInt8:
+                retval += lsqFitPlane<ito::uint8>(plane, A, B, C);
+                break;
+            case ito::tUInt16:
+                retval += lsqFitPlane<ito::uint16>(plane, A, B, C);
+                break;
+            case ito::tUInt32:
+                retval += lsqFitPlane<ito::uint32>(plane, A, B, C);
+                break;
+            case ito::tInt8:
+                retval += lsqFitPlane<ito::int8>(plane, A, B, C);
+                break;
+            case ito::tInt16:
+                retval += lsqFitPlane<ito::int16>(plane, A, B, C);
+                break;
+            case ito::tInt32:
+                retval += lsqFitPlane<ito::int32>(plane, A, B, C);
+                break;
+            case ito::tFloat32:
+                retval += lsqFitPlane<ito::float32>(plane, A, B, C);
+                break;
+            case ito::tFloat64:
+                retval += lsqFitPlane<ito::float64>(plane, A, B, C);
+                break;
+            default:
+                retval += ito::RetVal(ito::retError, 0, "invalid data type");
+            }
+
+            (*paramsOut)[0].setVal<double>(A);
+            (*paramsOut)[1].setVal<double>(B);
+            (*paramsOut)[2].setVal<double>(C);
+        }
+        else if(QString::compare(method, "leastSquareFitSVD", Qt::CaseInsensitive) == 0)
+        {
+            double A,B,C;
+            retval += fitLeastSquarePlaneSVD(plane,A,B,C);
+            (*paramsOut)[0].setVal<double>(A);
+            (*paramsOut)[1].setVal<double>(B);
+            (*paramsOut)[2].setVal<double>(C);
+        }
     }
 
     return retval;
@@ -696,7 +696,222 @@ to parallely compute the approximations for each pixel.";
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+static char getInterpolatedValuesDoc[] = "returns the linearly interpolated values of a given input dataObject at specific 2D point coordinates. \n\
+\n\
+The given input data object must be a real valued object with two dimensions or a region of interest that only contains one plane (e.g. 1xMxN). \n\
+The point coordinates (coordsSubPix) is a Nx2 floating point data object where each row is the row and column coordinate (sub-pixel) of the desired value. The values must be given \n\
+in the coordinates of the data object (scale values).\n\
+The resulting interpolated values are returned as 'values' list. The input data object is allowed to contain non-finite values. \n\
+\n\
+For the interpolation a search rectangle whose height and width is given by 'searchRect' is centered at the rounded coordinate and a plane is robustly fitted into the valid \n\
+values that lie within the rectangle. The value is then determined using the coefficients of the fitted plane. Infinite values are ignored for the determination of the plane. \n\
+The plane is calculated by least-squares fit. If the rectangle exceeds the boundaries of the given matrix, it moved inside of the matrix such that the searched coordinate still lies within \n\
+the rectangle. If this is not possible, NaN is returned as value.";
 
+/*static*/ ito::RetVal FittingFilters::getInterpolatedValuesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("dataObj", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input real-valued data object (2D or ROI containing only one plane).") );
+    paramsMand->append( ito::Param("coordsSubPix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input Nx2 data object containing the sub-pixel row and column coordinates of each point (given in scale value of dataObj).") );
+
+    int rect[] = {2,2};
+    paramsOpt->append( ito::Param("searchRect", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "[height, width] of the search rectangle for the linear interpolation. A plane fit is executed for all finite values within the rectangle and the output value is determined based on the plane coefficients. If the size if even, its size drifts towards the trend direction given by the coordinate value.") );
+    (*paramsOpt)[0].setVal<int*>(rect, 2);
+
+    paramsOut->append( ito::Param("values", ito::ParamBase::DoubleArray | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output vector of type ito::float64 containing the interpolated values (NaN if no value could be found)"));
+
+    return retval;
+}
+
+/*static*/ ito::RetVal FittingFilters::getInterpolatedValues(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+
+    int rect[] = {2,2};
+    if (paramsOpt->at(0).getLen() != 2)
+    {
+        retval += ito::RetVal(ito::retError, 0, "searchRect must have two values");
+    }
+    else
+    {
+        int *t = paramsOpt->at(0).getVal<int*>();
+        rect[0] = t[0];
+        rect[1] = t[1];
+    }
+
+    if (rect[0] < 2 || rect[1] < 2)
+    {
+        retval += ito::RetVal(ito::retError, 0, "values of searchRect must be >= 2");
+    }
+
+    ito::DataObject dataObj = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "dataObj", ito::Range::all(), ito::Range::all(), retval, 0, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    ito::DataObject coords = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<ito::DataObject*>(), "coordsSubPix", ito::Range::all(), ito::Range(2,2), retval, ito::tFloat64, 0);
+
+    if (!retval.containsError())
+    {
+        const cv::Mat *mat = dataObj.getCvPlaneMat(0); //shallow copy, will be used to change roi's without impact to the original object
+        cv::Mat matRoi;
+        ito::float64 *xyCoords;
+        int numCoords = coords.getSize(0);
+
+        ito::float64 *val = new ito::float64[numCoords];
+
+        double yPx, xPx;
+        double xPxRounded, yPxRounded;
+        bool xInside, yInside;
+        cv::Rect roi;
+        bool valid;
+        double A,B,C;
+
+        for (int i = 0; i < numCoords; ++i)
+        {
+            valid = true;
+            xyCoords = (ito::float64*)coords.rowPtr(0,i);
+
+            dataObj.getPhysToPix2D(xyCoords[0], yPx, yInside, xyCoords[1], xPx, xInside);
+            
+            xPxRounded = qRound(xPx);
+            yPxRounded = qRound(yPx);
+
+            //at first try to find the integer based pixel coordinate of the real rectangle, then check if the rectangle is inside of the valid image area
+            roi.height = rect[0];
+            if (rect[0] % 2 == 0) //height of rect is even ('gerade')
+            {
+                roi.y = yPxRounded - (rect[0] / 2); //floor
+                if (yPx > yPxRounded) //drift versus bottom
+                {
+                    roi.y ++;
+                }
+            }
+            else //odd
+            {
+                roi.y = yPxRounded - (rect[0] / 2);
+            }
+
+            roi.width = rect[0];
+            if (rect[0] % 2 == 0) //width of rect is even ('gerade')
+            {
+                roi.x = xPxRounded - (rect[0] / 2); //floor
+                if (xPx > xPxRounded) //drift versus right side
+                {
+                    roi.x ++;
+                }
+            }
+            else //odd
+            {
+                roi.x = xPxRounded - (rect[0] / 2);
+            }
+
+            //now check for validity (a correction of half the rect size is allowed)
+            if (roi.x < 0)
+            {
+                if (roi.x < (-rect[1] / 2))
+                {
+                    valid = false;
+                }
+                else //move
+                {
+                    roi.x = 0;
+                }
+            }
+
+            if (roi.y < 0)
+            {
+                if (roi.y < (-rect[0] / 2))
+                {
+                    valid = false;
+                }
+                else //move
+                {
+                    roi.y = 0;
+                }
+            }
+
+            if (roi.x + roi.width > mat->cols)
+            {
+                int diff = std::min(rect[1] / 2, (roi.x + roi.width - mat->cols)); //mat->cols - roi.x - roi.width - 1);
+                roi.x -= diff;
+
+                if (roi.x + roi.width > mat->cols)
+                {
+                    valid = false;
+                }
+            }
+
+            if (roi.y + roi.height > mat->rows)
+            {
+                int diff = std::min(rect[0] / 2, (roi.y + roi.height - mat->rows)); //mat->rows - roi.y - roi.height - 1);
+                roi.y -= diff;
+
+                if (roi.y + roi.height > mat->rows)
+                {
+                    valid = false;
+                }
+            }
+
+            if (valid)
+            {
+                matRoi = mat->operator()(roi);
+                switch (dataObj.getType())
+                {
+                case ito::tUInt8:
+                    retval += lsqFitPlane<ito::uint8>(&matRoi, A, B, C);
+                    break;
+                case ito::tUInt16:
+                    retval += lsqFitPlane<ito::uint16>(&matRoi, A, B, C);
+                    break;
+                case ito::tUInt32:
+                    retval += lsqFitPlane<ito::uint32>(&matRoi, A, B, C);
+                    break;
+                case ito::tInt8:
+                    retval += lsqFitPlane<ito::int8>(&matRoi, A, B, C);
+                    break;
+                case ito::tInt16:
+                    retval += lsqFitPlane<ito::int16>(&matRoi, A, B, C);
+                    break;
+                case ito::tInt32:
+                    retval += lsqFitPlane<ito::int32>(&matRoi, A, B, C);
+                    break;
+                case ito::tFloat32:
+                    retval += lsqFitPlane<ito::float32>(&matRoi, A, B, C);
+                    break;
+                case ito::tFloat64:
+                    retval += lsqFitPlane<ito::float64>(&matRoi, A, B, C);
+                    break;
+                default:
+                    valid = false;
+                }
+
+                if (valid && retval == ito::retOk)
+                {
+                    val[i] = A + B * (xPx - roi.x) + C * (yPx - roi.y);
+                }
+                else
+                {
+                    val[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+                }
+            }
+            else
+            {
+                val[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+            }
+
+        }
+
+        (*paramsOut)[0].setVal<ito::float64*>(val, numCoords);
+
+        delete[] val;
+        val = NULL;
+
+    }
+
+    return retval;
+}
 
 
 
@@ -713,7 +928,7 @@ to parallely compute the approximations for each pixel.";
     \return description
     \sa (see also) keywords (comma-separated)
 */
-RetVal FittingFilters::fitLeastSquarePlaneSVD(cv::Mat *inputMatrix, double &A, double &B, double &C)
+RetVal FittingFilters::fitLeastSquarePlaneSVD(const cv::Mat *inputMatrix, double &A, double &B, double &C)
 {
     int nrOfElements = inputMatrix->cols * inputMatrix->rows;
     cv::Mat mat1 = cv::Mat(3, nrOfElements, CV_64FC1 );
@@ -768,64 +983,135 @@ RetVal FittingFilters::fitLeastSquarePlaneSVD(cv::Mat *inputMatrix, double &A, d
 
 }
 
-
+//---------------------------------------------------------------------------------------------------------------
 //this code is copied from 'm': param3d.cpp, line 168, method 'LeastSquaresPlaneWindow'
-RetVal FittingFilters::fitLeastSquarePlane(cv::Mat *inputMatrix, double &A, double &B, double &C)
+/*
+The basics of this function is the plane equation
+
+z = A + B*x + C*y, where A,B,C must be determined
+
+For each pixel i, the error is
+e_i = |z_i - A - B*x_i - C*y_i|
+
+The total error is then
+
+e = sum_{i=0}^{n-1} (e_i) for n valid pixels
+
+This error should be minimized, hence 
+de/dA != 0
+de/dB != 0
+de/dC != 0 (!= means "should be equal than")
+
+This leads to:
+sz = sum_{i=0}^{n-1}z_i for all valid pixels
+sxy = sum_{i=0}^{n-1}x_i*y_i for all valid pixels
+...
+
+And finally
+
+n*A - sz + sx*B + sy*C != 0
+sx*A - sxz + sxx*B + sxy*C != 0
+sy*A - syz + sxy*B + syy*C != 0
+
+Solve this system of linear equations and obtain A,B,C!
+*/
+template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *mat, double &A, double &B, double &C)
 {
-    cv::Mat input;
     int   i, j;
     long   n = 0;
-    double sx, sy, sz, sxz, syz, sxx, syy;
-    const double *row;
+    double sx, sy, sz, sxz, syz, sxx, syy, sxy;
+    const _Tp *row;
     double temp;
 
-    if(inputMatrix->type() != CV_64FC1)
+    if (mat->channels() > 1)
     {
-        inputMatrix->convertTo(input, CV_64FC1);
+        return ito::RetVal(ito::retError, 0, "only integer and floating point data types are allowed for lsqFitPlane");
+    }
+
+    sx=sy=sz=sxx=syy=sxz=syz=sxy=0.0;
+
+    if (std::numeric_limits<_Tp>::is_exact)
+    {
+        for (i = 0; i < mat->rows; ++i)
+        {
+            row = mat->ptr<_Tp>(i);
+
+            for (j = 0; j < mat->cols; j++)
+            {
+                temp = (double)(row[j]);
+                sxz += j*temp;
+                syz += i*temp;
+                sz  += temp;
+                sxx += j*j;
+                syy += i*i;
+                sx  += j;
+                sy  += i;
+                sxy += i*j;
+            }
+        }
+
+        n = mat->rows * mat->cols;
     }
     else
     {
-        input = *inputMatrix;
-    }
-
-    sx=sy=sz=sxx=syy=sxz=syz=0.0;
-    for (i=0; i<input.rows; i++)
-    {
-        row = input.ptr<double>(i);
-
-        for (j=0; j<input.cols; j++)
+        for (i = 0; i < mat->rows; ++i)
         {
-            temp = row[j];
-            if(!cvIsNaN(temp))
+            row = mat->ptr<_Tp>(i);
+
+            for (j = 0; j < mat->cols; j++)
             {
-               sxz += j*temp;
-               syz += i*temp;
-               sz  += temp;
-               sxx += j*j;
-               syy += i*i;
-               sx  += j;
-               sy  += i;
-               n++;
+                temp = (double)(row[j]);
+                if(!cvIsNaN(temp))
+                {
+                   sxz += j*temp;
+                   syz += i*temp;
+                   sz  += temp;
+                   sxx += j*j;
+                   syy += i*i;
+                   sx  += j;
+                   sy  += i;
+                   sxy += i*j;
+                   n++;
+                }
             }
         }
     }
 
-    if (input.dims == 2 && input.cols != 1 )
-        B = (sxz-sx*sz/n)/(sxx-sx*sx/n);
-    else
-        B = 0;
+    double denom = syy*sx*sx - 2*sx*sxy*sy + n*sxy*sxy + sxx*sy*sy - n*sxx*syy;
 
-    if (input.dims == 2 && input.rows != 1 )
-        C=(syz-sy*sz/n)/(syy-sy*sy/n);
+    if (std::abs(denom) < std::numeric_limits<double>::epsilon())
+    {
+        A = std::numeric_limits<double>::quiet_NaN();
+        B = A;
+        C = A;
+    }
     else
-        C=0;
+    {
+        if (mat->dims == 2 && mat->cols != 1)
+        {
+            B = (sxz*sy*sy + n*sxy*syz - n*syy*sxz - sx*syz*sy - sy*sxy*sz + syy*sx*sz) / denom;
+        }
+        else
+        {
+            B = 0.0;
+        }
 
-    A = sz/n-B*sx/n-C*sy/n;
+        if (mat->dims == 2 && mat->rows != 1)
+        {
+            C = (syz*sx*sx + n*sxy*sxz - n*sxx*syz - sx*sxz*sy - sx*sxy*sz + sxx*sy*sz) / denom;
+        }
+        else
+        {
+            C = 0.0;
+        }
+
+        A = (sz - B*sx - C*sy) / n;
+    }
 
     return retOk;
 }
 
-
+//---------------------------------------------------------------------------------------------------------------
 template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inputMatrix, cv::Mat *destMatrix, double A, double B, double C)
 {
     CV_DbgAssert( inputMatrix->dims == destMatrix->dims && inputMatrix->size == destMatrix->size && inputMatrix->type() == destMatrix->type() );
@@ -870,7 +1156,7 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
     return retOk;
 }
 
-
+//---------------------------------------------------------------------------------------------------------------
 /*static*/ void FittingFilters::linearRegression(VecDoub_I &x, VecDoub_I &y, VecDoub_I &w, VecDoub_O &p, Doub& residual)
 {
     /*
@@ -1013,6 +1299,9 @@ RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<it
 
     filter = new FilterDef(FittingFilters::fitPolynom1D_Z, FittingFilters::fitPolynom1D_ZParams, tr(fitPolynom1D_ZDoc));
     m_filterList.insert("fitPolynom1D_Z", filter);
+
+    filter = new FilterDef(FittingFilters::getInterpolatedValues, FittingFilters::getInterpolatedValuesParams, tr(getInterpolatedValuesDoc));
+    m_filterList.insert("getInterpolatedValues", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;

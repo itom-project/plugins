@@ -100,6 +100,9 @@ class FittingFilters : public ito::AddInAlgo
         static ito::RetVal fitPolynom1D_Z(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal fitPolynom1D_ZParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static ito::RetVal getInterpolatedValues(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal getInterpolatedValuesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
     private:
         struct Koeffizienten {
              int    gradX;
@@ -120,9 +123,10 @@ class FittingFilters : public ito::AddInAlgo
         static void OrthPolAuswerten(int anzahl, int PolyGrad, double t, double *W, double *alpha,double *beta, double *gamma);
         static double Fitwerte(double tx, double ty, struct Koeffizienten *koeff);
 
-        static ito::RetVal fitLeastSquarePlaneSVD(cv::Mat *inputMatrix, double &A, double &B, double &C);
+        static ito::RetVal fitLeastSquarePlaneSVD(const cv::Mat *inputMatrix, double &A, double &B, double &C);
         static ito::RetVal fitLeastSquarePlane(cv::Mat *inputMatrix, double &A, double &B, double &C);
         template<typename _Tp> static ito::RetVal subtractPlaneTemplate(cv::Mat *inputMatrix, cv::Mat *destMatrix, double A, double B, double C);
+        template<typename _Tp> static ito::RetVal lsqFitPlane(const cv::Mat *mat, double &A, double &B, double &C);
 
         static ito::RetVal calcPolyfitWeighted2D(const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, double reduceFactor = -1.0, const ito::DataObject *weights = NULL);
         static ito::RetVal calcPolyval2D(ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> &coefficients);
