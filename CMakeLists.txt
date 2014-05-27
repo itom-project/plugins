@@ -190,6 +190,14 @@ if (PLUGIN_SerialIO)
     ADD_SUBDIRECTORY(SerialIO)
 endif (PLUGIN_SerialIO)
 
+# ThorlabsCCS Spectrometer
+IF (WIN32)
+    OPTION(PLUGIN_ThorlabsCCS "Build with this plugin." OFF)
+    if (PLUGIN_ThorlabsCCS)
+        ADD_SUBDIRECTORY(ThorlabsCCS)
+    endif (PLUGIN_ThorlabsCCS)
+ENDIF (WIN32)
+
 # USBMotion3XIII
 IF (WIN32)
     OPTION(PLUGIN_USBMotion3XIII "Build with this plugin." ON)
