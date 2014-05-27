@@ -99,6 +99,7 @@ class PrjWindow : public QGLWidget
         // just a dummy pointer so we don't need to adapt the rest of the code
         char *m_glf;
 		char *m_vao;
+        GLuint m_VAO;
 #endif
         void paintGL();
         void initializeGL();

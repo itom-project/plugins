@@ -418,6 +418,8 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
 #if QT_VERSION < 0x050000
     glUseProgram(ProgramName);
 
+    glGenVertexArrays(1, &m_VAO);
+    glBindVertexArray(m_VAO);
     //!> Set the value of coordinate transform (MVP) uniform.
     glUniformMatrix4fv(UniformMVP, 1, GL_FALSE, &MVP[0][0]);
 
@@ -443,17 +445,17 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
     GLsizei const VertexCount = 4;
     GLsizeiptr PositionSize = VertexCount * 4 * sizeof(GLfloat);
     GLfloat PositionData[VertexCount*2][2] = {
-        {-1.0f,-1.0f},    //Vertex
+        {-1.0f, -1.0f},    //Vertex
         {0.0f, 1.0},    //Texture
 
-        {1.0f,-1.0f},    //V
+        {-1.0f, 1.0f},    //V
+        {0.0f, 0.0f},    //T
+
+        {1.0f, -1.0f},    //V
         {1.0f, 1.0f},    //T
 
         {1.0f, 1.0f},    //V
-        {1.0f, 0.0f},    //T
-
-        {-1.0f, 1.0f},    //V
-        {0.0f, 0.0f}    //T
+        {1.0f, 0.0f}    //T
     };
 
     //!> create vertex buffer on device
@@ -461,36 +463,48 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
     glGenBuffers(1, &ArrayBufferName);
     glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
 
+    glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
+
     //!> copy vertex coordinates
     glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
-    //!> unbind buffer
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+//!> unbind buffer
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     //!> generate use list on device
-    glGenBuffers(1, &ElementBufferName);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+//    glGenBuffers(1, &ElementBufferName);
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 
     //!> copy use list to device
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
     //!> unbind buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #else
     m_glf->glGenBuffers(1, &ArrayBufferName);
     m_glf->glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
 
+    m_glf->glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
     //!> copy vertex coordinates
     m_glf->glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
+
+    m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    m_glf->glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
     //!> unbind buffer
     m_glf->glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     //!> generate use list on device
-    m_glf->glGenBuffers(1, &ElementBufferName);
-    m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
+//    m_glf->glGenBuffers(1, &ElementBufferName);
+//    m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 
     //!> copy use list to device
-    m_glf->glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
+//    m_glf->glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementSize, ElementData, GL_STATIC_DRAW);
     //!> unbind buffer
-    m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//    m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #endif
 
     //!> setting up initial gamma lut with linear response for rgb
@@ -504,9 +518,11 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
 
 #if QT_VERSION < 0x050000
     glUniform3fv(UniformLut, 256, &templut[0][0]);
+    glBindVertexArray(0);
     glUseProgram(0);
 #else
     m_glf->glUniform3fv(UniformLut, 256, &templut[0][0]);
+    m_vao->release();
     m_glf->glUseProgram(0);
 #endif
 
@@ -727,62 +743,70 @@ void PrjWindow::paintGL()
     }
     else
     {
-        glClearColor(0.0f, 0.0f, 1.0f, 0.0f);    //black background
-        glClear(GL_COLOR_BUFFER_BIT);    //clear screen buffer
+        if (m_imgNum == -1)
+        {
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);    //black background
+            glClear(GL_COLOR_BUFFER_BIT);    //clear screen buffer
+        }
 
         //!> Bind shader program
 #if QT_VERSION < 0x050000
-        glUseProgram(ProgramName);
         glActiveTexture(GL_TEXTURE0);
-#else
-        m_glf->glUseProgram(ProgramName);
-//        m_glf->glActiveTexture(GL_TEXTURE0);
-#endif
+        glUseProgram(ProgramName);
+        glBindVertexArray(m_VAO);
         glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
-#if QT_VERSION < 0x050000
-        glUniform1i(UniformTexture, 0);
 #else
-        m_glf->glUniform1i(UniformTexture, 0);
+        m_glf->glActiveTexture(GL_TEXTURE0);
+        m_glf->glUseProgram(ProgramName);
+        m_vao->bind();
+        m_glf->glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
 #endif
 
+#if QT_VERSION < 0x050000
+//        glUniform1i(UniformTexture, 0);
+#else
+//        m_glf->glUniform1i(UniformTexture, 0);
+#endif
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         //!> bind vertex buffer
 #if QT_VERSION < 0x050000
-        glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-        glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
-
-        //!> unbind buffer
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        //!> bind use list
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
-
         //!> enable the previously set up attribute
         glEnableVertexAttribArray(POSITION);
+
+        glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+//        glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
+
+        //!> unbind buffer
+//        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        //!> bind use list
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 #else
 		m_vao->bind();
-
-        m_glf->glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
-        m_glf->glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
-        //!> unbind buffer
-        m_glf->glBindBuffer(GL_ARRAY_BUFFER, 0);
-        //!> bind use list
-        m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
         //!> enable the previously set up attribute
         m_glf->glEnableVertexAttribArray(POSITION);
+
+        m_glf->glBindBuffer(GL_ARRAY_BUFFER, ArrayBufferName);
+//        m_glf->glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
+        //!> unbind buffer
+//        m_glf->glBindBuffer(GL_ARRAY_BUFFER, 0);
+        //!> bind use list
+//        m_glf->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 #endif
         //!> draw buffers
-        glDrawElements(GL_TRIANGLES, ElementCount, GL_UNSIGNED_INT, 0); // GL_TRIANGLES was GL_QUADS before
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); // GL_TRIANGLES was GL_QUADS before
 
 #if QT_VERSION < 0x050000
         //!> disable the previously set up attributes
         glDisableVertexAttribArray(POSITION);
+        glBindVertexArray(0);
 #else
         //!> disable the previously set up attributes
         m_glf->glDisableVertexAttribArray(POSITION);
+        m_vao->release();
 #endif
         glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -797,14 +821,14 @@ void PrjWindow::paintGL()
 
 //draw:
     //!> flush buffers, wait for drawing to finish and jic swap the buffers (we do not have double buffering)
-//    swapBuffers();
+    swapBuffers();
     int ret = glGetError();
     if (ret)
     {
         std::cerr << "error while drawing openGl scene: " << ret << "\n";
     }
-    glFlush();
-    glFinish();
+//    glFlush();
+//    glFinish();
 
     doneCurrent();
     drawScene = 0;

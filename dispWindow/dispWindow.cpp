@@ -249,10 +249,11 @@ DispWindow::DispWindow() :
     QGLFormat::OpenGLVersionFlags glVer = QGLFormat::openGLVersionFlags();
     QGLFormat fmt;
 
-    fmt.setDoubleBuffer(0);
+    fmt.setDoubleBuffer(1);
     fmt.setOverlay(0);
     fmt.setDirectRendering(1);
     fmt.setStereo(0);
+    fmt.setSwapInterval(1);
     if (fmt.swapInterval() != -1)
     {
         fmt.setSwapInterval(0);
