@@ -104,6 +104,9 @@
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="spinIntegrationTime">
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
         <property name="suffix">
          <string> ms</string>
         </property>

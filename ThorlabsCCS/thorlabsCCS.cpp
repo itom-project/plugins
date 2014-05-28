@@ -255,8 +255,8 @@ ito::RetVal ThorlabsCCS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     if (!retValue.containsError())
     {
         //get wavelength table, length of array...
-        m_params["sizex"].setMeta(new ito::IntMeta(0, TLCCS_NUM_PIXELS-1), true);
-        m_params["sizex"].setVal<int>(TLCCS_NUM_PIXELS-1);
+        m_params["sizex"].setMeta(new ito::IntMeta(0, TLCCS_NUM_PIXELS), true);
+        m_params["sizex"].setVal<int>(TLCCS_NUM_PIXELS);
         m_params["x0"].setVal<int>(0);
         m_params["x0"].setMeta(new ito::IntMeta(0, 0), true);
         m_params["x1"].setVal<int>(TLCCS_NUM_PIXELS-1);
