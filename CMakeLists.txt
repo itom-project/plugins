@@ -7,6 +7,14 @@ OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET(ITOM_DIR "" CACHE PATH "base path to itom") 
 
+# AerotechA3200
+IF (WIN32)
+    OPTION(PLUGIN_aerotechA3200 "Build with this plugin." ON)
+    if (PLUGIN_aerotechA3200)
+            ADD_SUBDIRECTORY(AerotechA3200)
+    endif (PLUGIN_aerotechA3200)
+ENDIF (WIN32)
+
 # AerotechEnsemble
 IF (WIN32)
     OPTION(PLUGIN_aerotechEnsemble "Build with this plugin." ON)

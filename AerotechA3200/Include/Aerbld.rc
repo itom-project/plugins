@@ -1,0 +1,132 @@
+/*+++
+   Copyright (c) Aerotech Inc., 1996 - 2000
+
+   This header file is used with the Aerotech System libraries.
++++*/
+
+/*
+   This file ultimately gets included by the 960 - watch
+   out for the "//" comments.
+*/
+
+#ifndef __AERBLD_RC__
+#define __AERBLD_RC__
+
+/*
+   Version strings are as follows:
+      unidex_family.major.minor.build
+      xxx.yy.zz.uuu
+
+      i.e. 3200.01.01
+      
+   The unidex.major.minor ensure compatability
+*/
+
+/*
+   if the Major/Minor/Build numbers change UPDATE the String
+
+   The A3200_RC_VERSION_xxx macros need updated
+*/
+
+#define AER_VERSION_UNIDEX 3200
+
+#define A3200_VERSION_PRE_RELEASE   0     /* 1 if it is a pre release, 0 if it is not */
+#define A3200_VERSION_MAJOR         2     /* Don't forget to change A3200_RC_VERSION_STRING */
+#define A3200_VERSION_MINOR        19     /* Don't forget to change A3200_RC_VERSION_STRING */
+//
+#define A3200_VERSION_BUILD         9
+#define A3200_RC_VERSION_STRING   "A3200.02.19"   // this is used by all .DLLs and .OCXS (see it in NVER.EXE)
+
+#define A3200_RC_VERSION_NUM   \
+   AER_VERSION_UNIDEX,A3200_VERSION_MAJOR,A3200_VERSION_MINOR,A3200_VERSION_BUILD
+
+/* 
+   A3200_OCX_INTERNAL_xxx constants are used by the odl file and OCX for properly
+   loading  TypeLibrary in Visual C/Delphi.  Cannot just use Major and Minor,
+   The system saves 5.15 as 5.f which causes problems for Delphi.  Internal_Minor should
+   be 0..9.
+*/
+#define A3200_OCX_INTERNAL_MAJOR_VERSION   1
+#define A3200_OCX_INTERNAL_MINOR_VERSION   1
+#define A3200_OCX_INTERNAL_VERSION_NUM     1.01   /* used by .odl file */
+
+/* we will define if necessary below */
+#undef __A3200RC_INCLUDE__
+
+#ifdef __A3200_RC_OCX__
+   #define AER_VI_A3200_FileDescriptionStr "AutomatioN 3200 Series Custom Control\0"
+   #define AER_VI_A3200_InternalNameStr    "AutomatioN 3200 Series Custom Control\0"
+   #define AER_VI_A3200_ProductNameStr     "AutomatioN 3200 Series Custom Control\0"
+
+   #define __A3200RC_INCLUDE__ 1
+#endif
+/* #if __A3200_RC_OCX__ */
+
+#ifdef __A3200_RC_DLL__
+   #define AER_VI_A3200_FileDescriptionStr "AutomatioN 3200 Series Dll\0"
+   #define AER_VI_A3200_InternalNameStr    "AutomatioN 3200 Series Dll\0"
+   #define AER_VI_A3200_ProductNameStr     "AutomatioN 3200 Series Dll\0"
+
+   #define __A3200RC_INCLUDE__ 1
+#endif
+/* #if __A3200_RC_DLL__ */
+
+#ifdef __A3200_RC_EXE__
+   #define AER_VI_A3200_FileDescriptionStr "AutomatioN 3200 Series Utility\0"
+   #define AER_VI_A3200_InternalNameStr    "AutomatioN 3200 Series Utility\0"
+   #define AER_VI_A3200_ProductNameStr     "AutomatioN 3200 Series Utility\0"
+
+   #define __A3200RC_INCLUDE__ 1
+#endif
+/* #if __A3200_RC_EXE__ */
+
+#if __A3200RC_INCLUDE__
+
+#ifdef __AERBLD_H__
+   #error Include AerBld.Rc and not Header if doing resource file
+#endif
+
+#define AER_VI_CompanyNameStr          "Aerotech Inc.\0"
+#define AER_VI_LegalCopyrightStr       "Copyright © 1997-2002\0"
+#define AER_VI_A3200_OriginalFilename   "\0"
+
+VS_VERSION_INFO VERSIONINFO
+   FILEVERSION    A3200_RC_VERSION_NUM
+   PRODUCTVERSION A3200_RC_VERSION_NUM
+   FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+   FILEFLAGS 0x1L
+#else
+   FILEFLAGS 0x0L
+#endif
+   FILEOS 0x40004L
+   FILETYPE 0x2L
+   FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", AER_VI_CompanyNameStr
+            VALUE "FileDescription", AER_VI_A3200_FileDescriptionStr
+            VALUE "FileVersion", A3200_RC_VERSION_STRING
+            VALUE "InternalName", AER_VI_A3200_InternalNameStr
+            VALUE "LegalCopyright", AER_VI_CompanyNameStr
+            VALUE "OriginalFilename", AER_VI_A3200_OriginalFilename
+            VALUE "ProductName", AER_VI_A3200_ProductNameStr
+            VALUE "ProductVersion", A3200_RC_VERSION_STRING
+#ifdef __A3200_RC_OCX__
+            VALUE "OLESelfRegister", ""
+#endif
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+#endif
+/* __A3200RC_INCLUDE__ */
+                                    
+#endif
+/*  __AERBLD_RC__ */
