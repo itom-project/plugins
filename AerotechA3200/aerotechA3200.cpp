@@ -119,8 +119,6 @@ AerotechA3200::AerotechA3200() :
     qRegisterMetaType<QVector<double> >("QVector<double>");
 	//ito::tParam;    // Set up the parameter list
     m_params.insert("name", Param("name", ParamBase::String | ParamBase::In | ParamBase::Readonly, "AerotechA3200", NULL));
-    m_params.insert("communication", Param("communication", ParamBase::String | ParamBase::In | ParamBase::Readonly, "Ethernet", "type of the communication (Firewire, Ethernet)"));
-    m_params.insert("libraryVersion", Param("libraryVersion", ParamBase::String | ParamBase::In | ParamBase::Readonly, "", "Version of the A3200 C library"));
 
 	m_params.insert("async", Param("async", ParamBase::Int, 0, 1, 0, tr("asynchronous move (1), synchronous (0) [default]").toAscii().data()));
     m_async = m_params["async"].getVal<int>();
@@ -128,10 +126,10 @@ AerotechA3200::AerotechA3200() :
 
 	m_params.insert("scaleFactor", Param("scaleFactor", ParamBase::Double | ParamBase::Readonly, 0.0, 1000000.0, 0.0, tr("scale factor of connected controller, counts per metric unit").toAscii().data()));
 	
-	m_params.insert("clearoffset", Param("clearoffset", ParamBase::Double | ParamBase::Readonly, 0.0, 0.0, 0.0, tr("reset the offsets to zero, back to absolute coordinate").toAscii().data()));
-	m_params.insert("finished", Param("finished", ParamBase::Double | ParamBase::Readonly, 0.0, 1.0, 0.0, tr("check if the motion of every axis is finished").toAscii().data()));
-	m_params.insert("stop", Param("stop", ParamBase::Double | ParamBase::Readonly, 0.0, 0.0, 0.0, tr("executes an immediate stop").toAscii().data()));
-    m_params.insert("acknowledge", Param("acknowledge", ParamBase::Double | ParamBase::Readonly, 0.0, 0.0, 0.0, tr("acknowledge the errors of connected controller").toAscii().data()));
+	m_params.insert("clearoffset", Param("clearoffset", ParamBase::Int, 0, 0, 0, tr("reset the offsets to zero, back to absolute coordinate").toAscii().data()));
+	m_params.insert("finished", Param("finished", ParamBase::Int | ParamBase::Readonly, 0, 1, 0, tr("check if the motion of every axis is finished").toAscii().data()));
+	m_params.insert("stop", Param("stop", ParamBase::Int, 0, 0, 0, tr("executes an immediate stop").toAscii().data()));
+    m_params.insert("acknowledge", Param("acknowledge", ParamBase::Int, 0, 0, 0, tr("acknowledge the errors of connected controller").toAscii().data()));
 
 	m_params.insert("xenabled", Param("xenabled", ParamBase::Int, 0, 1, 0, tr("check if x-axis is enabled").toAscii().data()));
     m_params.insert("yenabled", Param("yenabled", ParamBase::Int, 0, 1, 0, tr("check if y-axis is enabled").toAscii().data()));
@@ -526,12 +524,16 @@ ito::RetVal AerotechA3200::getParam(QSharedPointer<ito::Param> val, ItomSharedSe
 		if( key == "finished")
 		{
 			//returns 0 if inpos bit is set
-			double d = 0.0;
+			DWORD d = 0;
 			d = AerMoveMWaitDone( hAerCtrl, (AXISMASK_1 | AXISMASK_2 | AXISMASK_3), AERMOVEWAIT_CHECK_ONCE , 1 );
-			if (d==0)
-				m_params["finished"].setVal<double>(1.0);
+			if (d == 0)
+            {
+				it->setVal<double>(1.0);
+            }
 			else
-				m_params["finished"].setVal<double>(0.0);
+            {
+				it->setVal<double>(0.0);
+            }
 		}
 		else if (key == "stop")
 		{
