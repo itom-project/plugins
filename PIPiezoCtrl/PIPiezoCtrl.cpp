@@ -1235,7 +1235,7 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(QByteArray questionComma
     }
     else if (!ok)
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("value could not be parsed to a double value").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("value could not be parsed to a double value").toLatin1().data());
     }
 
     return retValue;
