@@ -234,36 +234,66 @@ PIPiezoCtrl::PIPiezoCtrl() :
 ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    ito::RetVal retValue;
 
-    QString paramName;
+    QString key;
     bool hasIndex;
     int index;
     QString additionalTag;
     QByteArray answerString;
     double answerDouble;
     QVector<QPair<int, QByteArray> > lastError;
+    QMap<QString,ito::Param>::iterator it;
 
-    retValue += apiParseParamName(key, paramName, hasIndex, index, additionalTag);
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, additionalTag);
+
+    if(retValue == ito::retOk)
+    {
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
+    }
 
     if (hasIndex && index != 0)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("this motor only has one axis, therefore it is not allowed to get a parameter with index unequal to 0").toLatin1().data());
     }
-    else if (paramName == "")
+    else if(!retValue.containsError())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
-    }
-    else if (paramName == "PI_CMD")
-    {
-        if (additionalTag == "")
+        if (key == "PI_CMD")
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter PI_CMD requires the real command send to the motor after a colon-sign.").toLatin1().data());
+            if (additionalTag == "")
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("parameter PI_CMD requires the real command send to the motor after a colon-sign.").toLatin1().data());
+            }
+            else
+            {
+                retValue += PISendQuestionWithAnswerString(additionalTag.toLatin1(), answerString, 400);
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    val->setVal<char*>(answerString.data(), answerString.length());
+                }
+            }
         }
-        else
+        else if (key == "local")
         {
-            retValue += PISendQuestionWithAnswerString(additionalTag.toLatin1(), answerString, 400);
+            switch(m_ctrlType)
+            {
+            case E662Family:
+                retValue += PISendQuestionWithAnswerString("SYST:DEV:CONT?", answerString, 400);
+                break;
+            case E625Family:
+                retValue += ito::RetVal(ito::retError, 3, tr("this device has no local/remote switch").toLatin1().data());
+                break;
+            default:
+                retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toLatin1().data());
+                break;
+            }
+
             if (retValue.containsError())
             {
                 retValue += PIGetLastErrors(lastError);
@@ -271,97 +301,69 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
             }
             else
             {
-                (*val).setVal<char*>(answerString.data(), answerString.length());
+                if (answerString.contains("loc") || answerString.contains("LOC"))
+                {
+                    it->setVal<int>(1);
+                }
+                else
+                {
+                    it->setVal<int>(0);
+                }
+                *val = it.value();
             }
         }
-    }
-    else if (paramName == "local")
-    {
-        switch(m_ctrlType)
+        else if (key == "posLimitLow")
         {
-        case E662Family:
-            retValue += PISendQuestionWithAnswerString("SYST:DEV:CONT?", answerString, 400);
-            break;
-        case E625Family:
-            retValue += ito::RetVal(ito::retError, 3, tr("this device has no local/remote switch").toLatin1().data());
-            break;
-        default:
-            retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toLatin1().data());
-            break;
-        }
-
-        if (retValue.containsError())
-        {
-            retValue += PIGetLastErrors(lastError);
-            retValue += convertPIErrorsToRetVal(lastError);
-        }
-        else
-        {
-            if (answerString.contains("loc") || answerString.contains("LOC"))
+            switch(m_ctrlType)
             {
-                (*val).setVal<int>(1);
+            case E662Family:
+                retValue += PISendQuestionWithAnswerDouble("SOUR:POS:LIM:LOW?", answerDouble, 400);
+                it->setVal<double>(answerDouble/1000.0);
+                break;
+            case E625Family:
+                break;
+
+            default:
+                retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toLatin1().data());
+                break;
+            }
+            if (retValue.containsError())
+            {
+                retValue += PIGetLastErrors(lastError);
+                retValue += convertPIErrorsToRetVal(lastError);
             }
             else
             {
-                (*val).setVal<int>(0);
+                *val = it.value();
             }
         }
-    }
-    else if (paramName == "posLimitLow")
-    {
-        switch(m_ctrlType)
+        else if (key == "posLimitHigh")
         {
-        case E662Family:
-            retValue += PISendQuestionWithAnswerDouble("SOUR:POS:LIM:LOW?", answerDouble, 400);
-            m_params["posLimitLow"].setVal<double>(answerDouble/1000.0);
-            break;
-        case E625Family:
-            break;
-
-        default:
-            retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toLatin1().data());
-            break;
-        }
-        if (retValue.containsError())
-        {
-            retValue += PIGetLastErrors(lastError);
-            retValue += convertPIErrorsToRetVal(lastError);
-        }
-        else
-        {
-            *val = m_params["posLimitLow"];
-        }
-    }
-    else if (paramName == "posLimitHigh")
-    {
-        switch(m_ctrlType)
-        {
-        case E662Family:
-            retValue += PISendQuestionWithAnswerDouble("SOUR:POS:LIM:HIGH?", answerDouble, 400);
-            m_params["posLimitHigh"].setVal<double>(answerDouble/1000.0);
-            break;
-        case E625Family:
-            break;
-        default:
-            retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toLatin1().data());
-            break;
-        }
-        if (retValue.containsError())
-        {
-            retValue += PIGetLastErrors(lastError);
-            retValue += convertPIErrorsToRetVal(lastError);
+            switch(m_ctrlType)
+            {
+            case E662Family:
+                retValue += PISendQuestionWithAnswerDouble("SOUR:POS:LIM:HIGH?", answerDouble, 400);
+                it->setVal<double>(answerDouble/1000.0);
+                break;
+            case E625Family:
+                break;
+            default:
+                retValue += ito::RetVal(ito::retError, 2, tr("device type is unknown").toLatin1().data());
+                break;
+            }
+            if (retValue.containsError())
+            {
+                retValue += PIGetLastErrors(lastError);
+                retValue += convertPIErrorsToRetVal(lastError);
+            }
+            else
+            {
+                *val = it.value();
+            }
         }
         else
         {
-            *val = m_params["posLimitHigh"];
-        }
-    }
-    else
-    {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(paramName);
-        if (paramIt != m_params.constEnd())
-        {
-            *val = paramIt.value();
+            *val = it.value();
         }
     }
 
@@ -391,166 +393,159 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
-
-    QString paramName;
+    QString key;
     bool hasIndex;
     int index;
-    int value;
-    QString additionalTag;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
     QVector<QPair<int, QByteArray> > lastError;
 
-    retValue += apiParseParamName(key, paramName, hasIndex, index, additionalTag);
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    if (paramName == "")
+    if(!retValue.containsError())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
-    else if (paramName == "PI_CMD")
+
+    if(!retValue.containsError())
     {
-        if (additionalTag == "")
+        //here the new parameter is checked whether its type corresponds or can be cast into the
+        // value in m_params and whether the new type fits to the requirements of any possible
+        // meta structure.
+        retValue += apiValidateParam(*it, *val, false, true);
+    }
+
+    if(!retValue.containsError())
+    {
+        if (key == "PI_CMD")
         {
-            if (m_params["PI_CMD"].getType() == (*val).getType())
+            if (suffix == "")
             {
-                char *buf = (*val).getVal<char*>();
-                if (buf != NULL)
+                if (it->getType() == (*val).getType())
                 {
-                    additionalTag = QByteArray(buf);
+                    char *buf = (*val).getVal<char*>();
+                    if (buf != NULL)
+                    {
+                        suffix = QByteArray(buf);
+                    }
+                }
+
+                if (suffix == "")
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("parameter PI_CMD requires the real command send to the motor after a colon-sign in the parameter name or as value (second parameter of setParam method).").toLatin1().data());
                 }
             }
 
-            if (additionalTag == "")
+            if (!retValue.containsError())
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("parameter PI_CMD requires the real command send to the motor after a colon-sign in the parameter name or as value (second parameter of setParam method).").toLatin1().data());
+                retValue += PISendCommand(suffix.toLatin1());
             }
         }
-
-        if (!retValue.containsError())
+        else if (key == "local")
         {
-            retValue += PISendCommand(additionalTag.toLatin1());
-        }
-    }
-    else
-    {
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(paramName);
-        if (paramIt != m_params.end())
-        {
-
-            if (paramIt->getFlags() & ito::ParamBase::Readonly)
+            if (m_params["hasLocalRemote"].getVal<int>() > 0)
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
-                goto end;
-            }
-            else if (val->isNumeric() && paramIt->isNumeric())
-            {
-                double curval = val->getVal<double>();
-                if (curval > paramIt->getMax())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else if (curval < paramIt->getMin())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else if (paramName == "local")
-                {
-                    if (m_params["hasLocalRemote"].getVal<int>() > 0)
-                    {
-                        value = (*val).getVal<int>();
+                retValue += PISetOperationMode(val->getVal<int>() != 0);
 
-                        retValue += PISetOperationMode(value != 0);
-
-                        if (retValue.containsError())
-                        {
-                            retValue += PIGetLastErrors(lastError);
-                            retValue += convertPIErrorsToRetVal(lastError);
-                        }
-                    }
-                    else
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, tr("this device does not support the local/remote control mode switch").toLatin1().data());
-                    }
-                }
-                else if (paramName == "posLimitLow")
+                if (retValue.containsError())
                 {
-                    switch(m_ctrlType)
-                    {
-                    case E662Family:
-                        retValue += PISendCommand(QByteArray("SOUR:POS:LIM:LOW ").append(QByteArray::number((*val).getVal<double>() * 1000)));
-                        if (retValue.containsError())
-                        {
-                            retValue += PIGetLastErrors(lastError);
-                            retValue += convertPIErrorsToRetVal(lastError);
-                        }
-                        else
-                        {
-                            retValue += paramIt.value().copyValueFrom(&(*val));
-                        }
-                        break;
-                    default:
-                        retValue += paramIt.value().copyValueFrom(&(*val));
-                        break;
-                    }
-                }
-                else if (paramName == "posLimitHigh")
-                {
-                    switch(m_ctrlType)
-                    {
-                    case E662Family:
-                        retValue += PISendCommand(QByteArray("SOUR:POS:LIM:HIGH ").append(QByteArray::number((*val).getVal<double>() * 1000)));
-                        if (retValue.containsError())
-                        {
-                            retValue += PIGetLastErrors(lastError);
-                            retValue += convertPIErrorsToRetVal(lastError);
-                        }
-                        else
-                        {
-                            retValue += paramIt.value().copyValueFrom(&(*val));
-                        }
-                        break;
-                    default:
-                        retValue += paramIt.value().copyValueFrom(&(*val));
-                        break;
-                    }
-                }
-                else if(paramName == "checkFlags")
-                {
-                    paramIt.value().setVal<double>(curval);
-
-                    m_getPosInScan = m_params["checkFlags"].getVal<int>() & 1 ? true : false;
-                    m_getStatusInScan = m_params["checkFlags"].getVal<int>() & 2 ? true : false;
-                    m_useOnTarget = m_params["checkFlags"].getVal<int>() & 4 ? true : false;
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
                 }
                 else
                 {
-                    paramIt.value().setVal<double>(curval);
+                    retValue += it->copyValueFrom( &(*val) );
                 }
-            }
-            else if (paramIt->getType() == val->getType())
-            {
-                retValue += paramIt.value().copyValueFrom(&(*val));
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Given parameter and m_param do not have the same type").toLatin1().data());
-                goto end;
+                retValue += ito::RetVal(ito::retError, 0, tr("this device does not support the local/remote control mode switch").toLatin1().data());
             }
+        }
+        else if (key == "posLimitLow")
+        {
+            switch(m_ctrlType)
+            {
+            case E662Family:
+                retValue += PISendCommand(QByteArray("SOUR:POS:LIM:LOW ").append(QByteArray::number(val->getVal<double>() * 1000)));
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                }
+                break;
+            default:
+                retValue += it->copyValueFrom(&(*val));
+                break;
+            }
+        }
+        else if (key == "posLimitHigh")
+        {
+            switch(m_ctrlType)
+            {
+            case E662Family:
+                retValue += PISendCommand(QByteArray("SOUR:POS:LIM:HIGH ").append(QByteArray::number(val->getVal<double>() * 1000)));
+                if (retValue.containsError())
+                {
+                    retValue += PIGetLastErrors(lastError);
+                    retValue += convertPIErrorsToRetVal(lastError);
+                }
+                else
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                }
+                break;
+            default:
+                retValue += it->copyValueFrom(&(*val));
+                break;
+            }
+        }
+        else if(key == "checkFlags")
+        {
+            retValue += it->copyValueFrom(&(*val));
+
+            m_getPosInScan = val->getVal<int>() & 1 ? true : false;
+            m_getStatusInScan = val->getVal<int>() & 2 ? true : false;
+            m_useOnTarget = val->getVal<int>() & 4 ? true : false;
+        }
+        else if (key == "delayOffset")
+        {
+            m_delayOffset = val->getVal<double>();
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "delayProp")
+        {
+            m_delayProp = val->getVal<double>();
+            retValue += it->copyValueFrom(&(*val));
+        }
+        else if (key == "async")
+        {
+            m_async = val->getVal<int>();
+            retValue += it->copyValueFrom(&(*val));
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
+            retValue += it->copyValueFrom(&(*val));
         }
     }
-end:
-    if (waitCond) 
+
+    if(!retValue.containsError())
+    {
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+    }
+
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-    emit parametersChanged(m_params);
     return retValue;
 }
 
