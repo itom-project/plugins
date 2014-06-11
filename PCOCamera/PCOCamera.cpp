@@ -1225,7 +1225,7 @@ ito::RetVal PCOCamera::sychronizeParameters()
 #ifdef PCO_SDK_OLD
         im->setMin(roiX0 + 1);
 #else
-        im->setMin(roiX0 + m_caminfo.wMinSizeHorzDESC);
+        im->setMin(roiX0 + m_caminfo.wMinSizeHorzDESC - 2);
 #endif
         im->setMax(m_caminfo.wMaxHorzResStdDESC/binX - 1);
         im->setStepSize(std::max(m_caminfo.wRoiHorStepsDESC, (WORD)1));
@@ -1240,7 +1240,7 @@ ito::RetVal PCOCamera::sychronizeParameters()
 #ifdef PCO_SDK_OLD
         im->setMin(roiY0 + 1);
 #else
-        im->setMin(roiY0 + m_caminfo.wMinSizeVertDESC);
+        im->setMin(roiY0 + m_caminfo.wMinSizeVertDESC - 2);
 #endif
         im->setMax(m_caminfo.wMaxVertResStdDESC/binY - 1);
         im->setStepSize(std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1));
