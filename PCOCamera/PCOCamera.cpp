@@ -106,8 +106,8 @@ PCOCameraInterface::PCOCameraInterface()
     m_description = QObject::tr("DLL for PCO-Cameras");
     
     char docstring[] = \
-"The PCOCamera is a Plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000, with itom. \n\
-This plugin has for instance be tested with the camera PCO.1300. \n\
+"The PCOCamera is a plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000. \n\
+This plugin has been tested with the cameras PCO.1200s, PCO.1300 and PCO.2000. \n\
 \n\
 For compiling this plugin, set the CMake variable **PCO_SDK_DIR** to the base directory of the pco.sdk. \n\
 The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). \n\
@@ -725,10 +725,19 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         intMeta->setMin(m_caminfo.sMinCoolSetDESC);
         intMeta->setMax(m_caminfo.sMaxCoolSetDESC);
         short coolset;
-        retVal += checkError(PCO_GetCoolingSetpointTemperature(m_hCamera, &coolset));
-        if(!retVal.containsError())
+        int sensError = PCO_GetCoolingSetpointTemperature(m_hCamera, &coolset);
+
+        if ((sensError & PCO_ERROR_SDKDLL_NOTAVAILABLE) == PCO_ERROR_SDKDLL_NOTAVAILABLE)
         {
-            m_params["coolingSetPointTemperature"].setVal<int>(coolset);
+            m_params.remove("coolingSetPointTemperature");
+        }
+        else
+        {
+            retVal += checkError(sensError);
+            if(!retVal.containsError())
+            {
+                m_params["coolingSetPointTemperature"].setVal<int>(coolset);
+            }
         }
     }
 

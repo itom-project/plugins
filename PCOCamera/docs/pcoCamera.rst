@@ -15,7 +15,7 @@ Overview
 ========
 
 The PCOCamera is a plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000, with itom. It uses the SDK pco.sdk from PCO AG, Germany.
-The plugin has mainly been developed and tested using the cameras PCO.1300 and PCO.2000.
+The plugin has mainly been developed and tested using the cameras PCO.1200s, PCO.1300 and PCO.2000.
 
 The camera is always operated in a software trigger mode with a standard image size (no extended image size).
 
@@ -50,7 +50,7 @@ parameters can be changed using *setParam*.
 **temperatures**: {double}, read-only
     list containg the current CCD, camera and power supply temperatures in degree celcius
 **coolingSetPointTemperature**: {int}
-    set point for the CCD cooling control in degree celcius
+    set point for the CCD cooling control in degree celcius (only available if supported with this camera)
 **IRSensitivity**: {bool} [0,1]
     enables (True, 1) or disables (False, 0) the IR sensitivity of the image sensor, parameter is set to read-only if not available for the specific camera
 **pixelrate**: {int}
