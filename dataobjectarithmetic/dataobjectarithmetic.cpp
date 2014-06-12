@@ -1094,16 +1094,15 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(cv:
         {
             if(runDynamic)
             {
-                sw = cv::saturate_cast<_Tp>(((ito::float64)maxVal + (ito::float64)minVal) * dynamicTreshold); 
+                sw = ((ito::float64)maxVal + (ito::float64)minVal) * dynamicTreshold; 
 
                 for(cogCnt = 0; cogCnt < cogsToCalc; cogCnt++)
                 {
-                    val = (ito::float64)(*pInValue-sw);
-                    if(val > 0.0)
+                    if(*pInValue > sw)
                     {
-                        
+                        val = *pInValue - sw;
                         sumI = sumI + val;
-                        sumPxI = sumPxI + val * cogCnt;                        
+                        sumPxI = sumPxI + (ito::float64)val * (ito::float64)cogCnt;                        
                     }
                     pInValue = pInValue + stepEvalInMat;
                 }
@@ -1113,9 +1112,9 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(cv:
             {
                 for(cogCnt = 0; cogCnt < cogsToCalc; cogCnt++)
                  {
-                    val = (ito::float64)(*pInValue);
+                    val = *pInValue;
                     sumI = sumI + val;
-                    sumPxI = sumPxI + val * cogCnt;    
+                    sumPxI = sumPxI + (ito::float64)val * (ito::float64)cogCnt;    
                     pInValue = pInValue + stepEvalInMat;
                 }
             }
