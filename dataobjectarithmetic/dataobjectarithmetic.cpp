@@ -839,10 +839,10 @@ RetVal DataObjectArithmetic::centerOfGravityParams(QVector<ito::Param> *paramsMa
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* DataObjectArithmetic::centerOfGravityDoc = "This filter calculates the center of gravity within a image plane. \n\
+const char* DataObjectArithmetic::centerOfGravityDoc = "This filter calculates the center of gravity within an image plane. \n\
 The return value contains the column and row position in pixel and physical coordinates.\n\
 \n\
-The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types.\n\
+The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types.\n\
 \n";
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(cv::Mat *mat, const _Tp lowTreshold, const _Tp highTreshold, ito::float64 &xCOG, ito::float64 &yCOG)
@@ -983,8 +983,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity(QVector<ito::ParamBase> *param
 //----------------------------------------------------------------------------------------------------------------------------------
 const char* DataObjectArithmetic::centerOfGravity1DimDoc = "This filter calculates the center of gravity along y or x direction. \n\
 \n\
-The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types\n\
-\n";
+The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types.";
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObjectArithmetic::centerOfGravity1DimParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
