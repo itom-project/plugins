@@ -494,10 +494,16 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
     m_glf->glVertexAttribPointer(POSITION, 4, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
     //!> copy vertex coordinates
     m_glf->glBufferData(GL_ARRAY_BUFFER, PositionSize, PositionData, GL_STATIC_DRAW);
-
+    
+#if QT_VERSION < 0x050300
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+#else
     m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     m_glf->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     m_glf->glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+#endif
 
     //!> unbind buffer
     m_glf->glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -768,7 +774,11 @@ void PrjWindow::paintGL()
         m_glf->glActiveTexture(GL_TEXTURE0);
         m_glf->glUseProgram(ProgramName);
         m_vao->bind();
+#if QT_VERSION < 0x050300
+        glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
+#else
         m_glf->glBindTexture(GL_TEXTURE_2D, m_texture[m_imgNum]);
+#endif
 #endif
 
 #if QT_VERSION < 0x050000
