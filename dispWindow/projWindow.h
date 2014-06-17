@@ -26,7 +26,7 @@
 #define NOMINMAX        // we need this define to remove min max macros from M$ includes, otherwise we get problems within params.h
 #include <QtOpenGL/qgl.h>
 #if QT_VERSION >= 0x050000
-    #include <qglfunctions.h>
+	#include <qopenglfunctions.h>
 	#include <qopenglvertexarrayobject.h>
 #endif
 #include "common/sharedStructures.h"
@@ -93,7 +93,7 @@ class PrjWindow : public QGLWidget
         unsigned char **m_grayImgsHoriz;
         QVector<unsigned char> m_lut;
 #if QT_VERSION >= 0x050000
-        QGLFunctions *m_glf;
+        QOpenGLFunctions *m_glf;
 		QOpenGLVertexArrayObject *m_vao;
 #else
         // just a dummy pointer so we don't need to adapt the rest of the code

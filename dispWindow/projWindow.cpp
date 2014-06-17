@@ -88,7 +88,7 @@
     const char *FRAGMENT_SHADER_SOURCE = "    \
     #version 110                        \n\
                                         \
-    uniform sampler2D texture;          \
+    uniform sampler2D textureObject;          \
     uniform int gamma;                  \
     uniform mat4 color;                 \
     varying vec2 TexCoord;              \
@@ -98,12 +98,12 @@
     {                                   \
         if (gamma == 0)                 \
         {                               \
-            float c = texture2D(texture, TexCoord).r; \
+            float c = texture2D(textureObject, TexCoord).r; \
             gl_FragColor = color * vec4(c,c,c,1.0); \
         }                               \
         else                            \
         {                               \
-            int col = int(texture2D(texture, TexCoord).r * 255.0);  \
+            int col = int(texture2D(textureObject, TexCoord).r * 255.0);  \
             gl_FragColor = color * vec4(lutarr[col], 1.0);      \
         }                               \
     }                                   \
@@ -112,7 +112,7 @@
     const char *FRAGMENT_SHADER_SOURCE130 = " \
     #version 130                        \n\
                                         \
-    uniform sampler2D texture;          \
+    uniform sampler2D textureObject;          \
     uniform int gamma;                  \
     uniform mat4 color;                 \
     in vec2 TexCoord;                    \
@@ -121,18 +121,20 @@
                                         \
     void main()                            \
     {                                    \
-        if (gamma == 0)                 \
-        {                               \
-            float c = texture2D(texture, TexCoord).r; \
-            FragColor = color * vec4(c,c,c,1.0); \
-        }                               \
-        else                            \
-        {                               \
-            int col = int(texture2D(texture, TexCoord).r * 255.0);  \
-            FragColor = color * vec4(lutarr[col], 1.0);                \
-        }                               \
+		if (gamma == 0) \
+		{               \
+			float c = texture(textureObject, TexCoord).r; \
+			FragColor = color * vec4(c,c,c,1.0); \
+		}               \
+		else            \
+		{               \
+		    int col = int(texture(textureObject, TexCoord).r * 255.0);  \
+            FragColor = color * vec4(lutarr[col], 1.0);      \
+	    }           \
     }                                   \
     ";
+
+	//texture2d is deprecated since shader language 1.3 (version 130), use texture instead
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -144,6 +146,7 @@
 int PrjWindow::initOGL2(const int width, const int height)
 {
     int ret = 0;
+#if QT_VERSION < 0x050000
 
     glMatrixMode(GL_PROJECTION);                    //Projektionsmatrix wählen
     glLoadIdentity();
@@ -197,7 +200,9 @@ int PrjWindow::initOGL2(const int width, const int height)
     {
         std::cerr << "error enabeling texutres gl-window init\n";
     }
-
+#else
+	ret = -1;
+#endif
     return ret;
 }
 
@@ -263,7 +268,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
         fragVerPos[10] = '3';
         fragVerPos[11] = '0';
     }
-    else if (glVer >= 16384)
+    else if (glVer >= QGLFormat::OpenGL_Version_3_2)
     {
         vertVerPos[9] = '1';
         vertVerPos[10] = '5';
@@ -273,17 +278,17 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
         fragVerPos[10] = '5';
         fragVerPos[11] = '0';
     }
-    else if (glVer >= 8192)
+    else if (glVer >= QGLFormat::OpenGL_Version_3_1)
     {
-        vertVerPos[9] = '1';
+        /*vertVerPos[9] = '1';
         vertVerPos[10] = '4';
         vertVerPos[11] = '0';
 
         fragVerPos[9] = '1';
         fragVerPos[10] = '4';
-        fragVerPos[11] = '0';
+        fragVerPos[11] = '0';*/
     }
-    else if (glVer >= 4096)
+    else if (glVer >= QGLFormat::OpenGL_Version_3_0)
     {
         vertVerPos[9] = '1';
         vertVerPos[10] = '3';
@@ -293,7 +298,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
         fragVerPos[10] = '3';
         fragVerPos[11] = '0';
     }
-    else if (glVer >= 64)
+    else if (glVer >= QGLFormat::OpenGL_Version_2_1)
     {
         vertVerPos[9] = '1';
         vertVerPos[10] = '2';
@@ -303,7 +308,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
         fragVerPos[10] = '2';
         fragVerPos[11] = '0';
     }
-    else if (glVer >= 32)
+    else if (glVer >= QGLFormat::OpenGL_Version_2_0)
     {
         vertVerPos[9] = '1';
         vertVerPos[10] = '1';
@@ -396,13 +401,13 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
     UniformMVP = glGetUniformLocation(ProgramName, "MVP");
     UniformLut = glGetUniformLocation(ProgramName, "lutarr");
     UniformGamma = glGetUniformLocation(ProgramName, "gamma");
-    UniformTexture = glGetUniformLocation(ProgramName, "texture");
+    UniformTexture = glGetUniformLocation(ProgramName, "textureObject");
     UniformColor = glGetUniformLocation(ProgramName, "color");
 #else
     UniformMVP = m_glf->glGetUniformLocation(ProgramName, "MVP");
     UniformLut = m_glf->glGetUniformLocation(ProgramName, "lutarr");
     UniformGamma = m_glf->glGetUniformLocation(ProgramName, "gamma");
-    UniformTexture = m_glf->glGetUniformLocation(ProgramName, "texture");
+    UniformTexture = m_glf->glGetUniformLocation(ProgramName, "textureObject");
     UniformColor = m_glf->glGetUniformLocation(ProgramName, "color");
 #endif
 
@@ -632,7 +637,11 @@ void PrjWindow::initializeGL()
     // set basic parameters
     if (m_glVer < QGLFormat::OpenGL_Version_2_0 /*32*/)
     {
+#if QT_VERSION < 0x050000
         initOGL2(width(), height());
+#else
+		std::cerr << "OpenGL < 2.0 not supported with Qt5" << std::endl;
+#endif
     }
     else
     {
@@ -649,13 +658,13 @@ void PrjWindow::initializeGL()
 		m_vao->bind();
 
 
-        m_glf = new QGLFunctions(context());
+        m_glf = new QOpenGLFunctions(context()->contextHandle());
         if (!m_glf)
         {
             m_isInit |= initFail;
             ret = GL_INVALID_OPERATION;
         }
-        m_glf->initializeGLFunctions(context());
+        m_glf->initializeOpenGLFunctions();
 #endif
         if (ret == 0)
         {
