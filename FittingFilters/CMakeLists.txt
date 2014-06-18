@@ -106,7 +106,7 @@ set(plugin_ui
 
 if (QT5_FOUND)
 else (QT5_FOUND)
-    QT4_WRAP_UI_ITOM(plugin_ui_MOC ${plugin_ui})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_ui})
 endif (QT5_FOUND)
 
 set(plugin_SOURCES 
@@ -125,7 +125,7 @@ endif(MSVC)
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 #handle translations END STEP 1
 
-ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_ui_MOC} ${plugin_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
+ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 if (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${LAPACKE_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
     
