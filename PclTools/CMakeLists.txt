@@ -81,13 +81,16 @@ IF(ITOM_SDK_PCL_SUPPORT)
             ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
         )
 
-        set(plugin_UI
-        )
-
         set(plugin_SOURCES 
             ${CMAKE_CURRENT_SOURCE_DIR}/pclTools.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/random_sample_corrected.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pcl/filters/impl/cylinder_clipper3D.hpp
+        )
+		
+		set(plugin_UI
+        )
+		
+		set(plugin_RCC
         )
 
         #Add version information to the plugIn-dll unter MSVC
