@@ -1000,25 +1000,14 @@ const ito::RetVal SerialPort::getendline(char *eline)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SerialIOInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    SerialIO* newInst = new SerialIO();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(SerialIO)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SerialIOInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-        delete ((SerialIO *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(SerialIO)
    return ito::retOk;
 }
 

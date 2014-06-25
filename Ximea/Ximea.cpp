@@ -55,25 +55,14 @@ static char Initnum = 0;    /*!< Number of successfull initialized cameras */
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal XimeaInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    Ximea* newInst = new Ximea();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(Ximea)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal XimeaInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    if (*addInInst)
-    {
-        delete ((Ximea *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-    }
-
+    REMOVE_PLUGININSTANCE(Ximea)
     return ito::retOk;
 }
 

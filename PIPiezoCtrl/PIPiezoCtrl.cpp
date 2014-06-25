@@ -48,12 +48,7 @@
 */
 ito::RetVal PIPiezoCtrlInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    PIPiezoCtrl* newInst = new PIPiezoCtrl();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(PIPiezoCtrl)
     return ito::retOk;
 }
 
@@ -66,13 +61,7 @@ ito::RetVal PIPiezoCtrlInterface::getAddInInst(ito::AddInBase **addInInst)
 */
 ito::RetVal PIPiezoCtrlInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-        delete ((PIPiezoCtrl *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(PIPiezoCtrl)
    return ito::retOk;
 }
 

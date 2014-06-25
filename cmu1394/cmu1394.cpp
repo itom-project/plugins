@@ -58,25 +58,14 @@ static HINSTANCE dll = NULL;
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal CMU1394Interface::getAddInInst(ito::AddInBase **addInInst)
 {
-    CMU1394* newInst = new CMU1394();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(CMU1394)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal CMU1394Interface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-      delete ((CMU1394 *)*addInInst);
-      int idx = m_InstList.indexOf(*addInInst);
-      m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(CMU1394)
    return ito::retOk;
 }
 

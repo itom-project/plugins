@@ -57,25 +57,14 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMotorInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    DummyMotor* newInst = new DummyMotor();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(DummyMotor)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMotorInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    if (*addInInst)
-    {
-        delete ((DummyMotor *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-    }
-
+    REMOVE_PLUGININSTANCE(DummyMotor)
     return ito::retOk;
 }
 

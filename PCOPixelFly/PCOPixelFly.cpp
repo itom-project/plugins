@@ -64,25 +64,14 @@ static  HINSTANCE g_libpcocnv = NULL;    /*!< Handle to the pcocnv.dll in .\plug
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PCOPixelFlyInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    PCOPixelFly* newInst = new PCOPixelFly();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(PCOPixelFly)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PCOPixelFlyInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    if (*addInInst)
-    {
-        delete ((PCOPixelFly *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-    }
-
+    REMOVE_PLUGININSTANCE(PCOPixelFly)
     return ito::retOk;
 }
 

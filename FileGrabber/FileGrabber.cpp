@@ -70,12 +70,7 @@ Q_DECLARE_METATYPE(ito::DataObject)
 */
 ito::RetVal FileGrabberInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    FileGrabber* newInst = new FileGrabber();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(FileGrabber)
     return ito::retOk;
 }
 
@@ -88,13 +83,7 @@ ito::RetVal FileGrabberInterface::getAddInInst(ito::AddInBase **addInInst)
 */
 ito::RetVal FileGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-      delete ((FileGrabber *)*addInInst);
-      int idx = m_InstList.indexOf(*addInInst);
-      m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(FileGrabber)
    return ito::retOk;
 }
 

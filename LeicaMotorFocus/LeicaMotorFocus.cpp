@@ -101,25 +101,14 @@ enum lmfStatus {
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocusInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    LeicaMotorFocus* newInst = new LeicaMotorFocus();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(LeicaMotorFocus)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocusInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-        delete ((LeicaMotorFocus *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-   }
-
+    REMOVE_PLUGININSTANCE(LeicaMotorFocus)
    return ito::retOk;
 }
 

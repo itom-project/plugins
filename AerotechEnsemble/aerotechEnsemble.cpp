@@ -37,30 +37,15 @@ using namespace ito;
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechEnsembleInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    ito::RetVal retValue(ito::retOk);
-
-    AerotechEnsemble* newInst = new AerotechEnsemble();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
-    return retValue;
+    NEW_PLUGININSTANCE(AerotechEnsemble)
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechEnsembleInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    RetVal retValue(retOk);
-
-    if (*addInInst)
-    {
-        delete ((AerotechEnsemble *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-    }
-
-    return retValue;
+    REMOVE_PLUGININSTANCE(AerotechEnsemble)
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

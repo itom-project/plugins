@@ -47,41 +47,15 @@ int NTHREADS = 2;
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FFTWFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    FFTWFilters* newInst = new FFTWFilters();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    //fill basePlugin-pointer of every registered filter
-    QHashIterator<QString, ito::AddInAlgo::FilterDef *> i(newInst->m_filterList);
-    while (i.hasNext()) 
-    {
-        i.next();
-        i.value()->m_pBasePlugin = this;
-    }
-
-    //fill basePlugin-pointer of every registered algo widget
-    QHashIterator<QString, ito::AddInAlgo::AlgoWidgetDef *> j(newInst->m_algoWidgetList);
-    while (j.hasNext()) 
-    {
-        j.next();
-        j.value()->m_pBasePlugin = this;
-    }
-    
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(FFTWFilters)
+    REGISTER_FILTERS_AND_WIDGETS
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FFTWFiltersInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    if (*addInInst)
-    {
-        delete ((FFTWFilters *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-    }
-
+    REMOVE_PLUGININSTANCE(FFTWFilters)
     return ito::retOk;
 }
 

@@ -228,25 +228,14 @@ Q_DECLARE_METATYPE(ito::DataObject)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVGrabberInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    OpenCVGrabber* newInst = new OpenCVGrabber();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(OpenCVGrabber)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-      delete ((OpenCVGrabber *)*addInInst);
-      int idx = m_InstList.indexOf(*addInInst);
-      m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(OpenCVGrabber)
    return ito::retOk;
 }
 

@@ -52,12 +52,7 @@
 */
 ito::RetVal VistekInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    Vistek* newInst = new Vistek();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(Vistek)
     return ito::retOk;
 }
 
@@ -70,13 +65,7 @@ ito::RetVal VistekInterface::getAddInInst(ito::AddInBase **addInInst)
 */
 ito::RetVal VistekInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-      delete ((Vistek *)*addInInst);
-      int idx = m_InstList.indexOf(*addInInst);
-      m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(Vistek)
    return ito::retOk;
 }
 

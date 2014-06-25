@@ -52,13 +52,7 @@
 */
 ito::RetVal GWInstekPSPInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    GWInstekPSP* newInst = new GWInstekPSP();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-    //m_refCount++;
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(GWInstekPSP)
     return ito::retOk;
 }
 
@@ -71,14 +65,7 @@ ito::RetVal GWInstekPSPInterface::getAddInInst(ito::AddInBase **addInInst)
 */
 ito::RetVal GWInstekPSPInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-        delete ((GWInstekPSP *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-        //m_refCount--;
-   }
-
+   REMOVE_PLUGININSTANCE(GWInstekPSP)
    return ito::retOk;
 }
 

@@ -65,12 +65,7 @@ Q_DECLARE_METATYPE(ito::DataObject)
 */
 ito::RetVal PGRFlyCaptureInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    PGRFlyCapture* newInst = new PGRFlyCapture();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(PGRFlyCapture)
     return ito::retOk;
 }
 
@@ -83,13 +78,7 @@ ito::RetVal PGRFlyCaptureInterface::getAddInInst(ito::AddInBase **addInInst)
 */
 ito::RetVal PGRFlyCaptureInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-      delete ((PGRFlyCapture *)*addInInst);
-      int idx = m_InstList.indexOf(*addInInst);
-      m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(PGRFlyCapture)
    return ito::retOk;
 }
 

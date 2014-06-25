@@ -50,25 +50,14 @@ int FireGrabber::m_numberOfInstances = 0;  // initialization
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabberInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    FireGrabber* newInst = new FireGrabber();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(FireGrabber)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-      delete ((FireGrabber *)*addInInst);
-      int idx = m_InstList.indexOf(*addInInst);
-      m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(FireGrabber)
    return ito::retOk;
 }
 
