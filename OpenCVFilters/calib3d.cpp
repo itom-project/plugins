@@ -696,7 +696,7 @@ Those pixels in the destination image, for which there is no correspondent pixel
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input (distorted) image") );
+    paramsMand->append( ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input (distorted) image (all datatypes)") );
     paramsMand->append( ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output (corrected) image that has the same size and type as source") );
     paramsMand->append( ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]") );
     paramsMand->append( ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements.") );
@@ -707,22 +707,29 @@ Those pixels in the destination image, for which there is no correspondent pixel
 /*static*/ ito::RetVal OpenCVFilters::cvUndistort(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject source = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(), "source", ito::Range::all(), ito::Range::all(), retval, 0, 5, ito::tUInt8, ito::tUInt16, ito::tInt16, ito::tFloat32, ito::tFloat64);
-
-    ito::DataObject *destination = paramsMand->at(1).getVal<ito::DataObject*>();
-    if (!destination)
-    {
-        retval += ito::RetVal(ito::retError, 0, "'destionation' must not be NULL");
-    }
     
     ito::DataObject cameraMatrix = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<const ito::DataObject*>(), "cameraMatrix", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
     ito::DataObject distCoeffs = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(3).getVal<const ito::DataObject*>(), "distCoeffs", ito::Range(1,1), ito::Range(4,8), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
     
     ito::DataObject newCameraMatrix = paramsOpt->at(0).getVal<void*>() ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(0).getVal<const ito::DataObject*>(), "newCameraMatrix", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64) : cameraMatrix;
 
+    ito::DataObject *destination = paramsMand->at(1).getVal<ito::DataObject*>();
+    if (!destination)
+    {
+        retval += ito::RetVal(ito::retError, 0, "'destination' must not be NULL");
+    }
+
+    const ito::DataObject *source = paramsMand->at(0).getVal<const ito::DataObject*>();
+    const ito::DataObject sourceSqueezed = source->squeeze();
+
+    if (sourceSqueezed.getDims() != 2)
+    {
+        retval += ito::RetVal(ito::retError, 0, "source data object must be two dimensional");
+    }
+        
     if (!retval.containsError())
     {
-        const cv::Mat *src = source.getCvPlaneMat(0);
+        const cv::Mat *src = sourceSqueezed.getCvPlaneMat(0);
         cv::Mat dst;
 
         try
@@ -738,12 +745,9 @@ Those pixels in the destination image, for which there is no correspondent pixel
         {
             retval += itomcv::setOutputArrayToDataObject((*paramsMand)[1], &dst);
         }
-
     }
 
     return retval;
-
-    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
