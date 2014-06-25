@@ -44,38 +44,15 @@ using namespace ito;
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmeticInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    DataObjectArithmetic* newInst = new DataObjectArithmetic();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-    QList<QString> keyList = newInst->m_filterList.keys();
-    for (int i = 0; i < newInst->m_filterList.size(); i++)
-    {
-        newInst->m_filterList[keyList[i]]->m_pBasePlugin = this;
-    }
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(DataObjectArithmetic)
+    REGISTER_FILTERS_AND_WIDGETS
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmeticInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    if (*addInInst)
-    {
-        DataObjectArithmetic * thisInst = qobject_cast<DataObjectArithmetic*>(*addInInst);
-        if(thisInst)
-        {
-            delete thisInst;
-            int idx = m_InstList.indexOf(*addInInst);
-            m_InstList.removeAt(idx);
-        }
-        else
-        {
-            return ito::RetVal(ito::retError, 0, tr("plugin-instance cannot be converted to class DataObjectArithmetic. Close operation failed").toLatin1().data());
-        }
-    }
-
+    REMOVE_PLUGININSTANCE(DataObjectArithmetic)
     return ito::retOk;
 }
 

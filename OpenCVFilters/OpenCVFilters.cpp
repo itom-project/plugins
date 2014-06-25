@@ -49,30 +49,15 @@ int NTHREADS = 1;
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    OpenCVFilters* newInst = new OpenCVFilters();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-    QList<QString> keyList = newInst->m_filterList.keys();
-    for (int i = 0; i < newInst->m_filterList.size(); i++)
-    {
-        newInst->m_filterList[keyList[i]]->m_pBasePlugin = this;
-    }
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(OpenCVFilters)
+    REGISTER_FILTERS_AND_WIDGETS
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFiltersInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    if (*addInInst)
-    {
-        delete ((OpenCVFilters *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-    }
-
+    REMOVE_PLUGININSTANCE(OpenCVFilters)
     return ito::retOk;
 }
 

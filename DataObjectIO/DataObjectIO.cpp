@@ -42,30 +42,15 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectIOInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    DataObjectIO* newInst = new DataObjectIO();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-    QList<QString> keyList = newInst->m_filterList.keys();
-    for (int i = 0; i < newInst->m_filterList.size(); i++)
-    {
-        newInst->m_filterList[keyList[i]]->m_pBasePlugin = this;
-    }
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(DataObjectIO)
+    REGISTER_FILTERS_AND_WIDGETS
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectIOInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    if (*addInInst)
-    {
-        delete ((DataObjectIO *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-    }
-
+    REMOVE_PLUGININSTANCE(DataObjectIO)
     return ito::retOk;
 }
 
