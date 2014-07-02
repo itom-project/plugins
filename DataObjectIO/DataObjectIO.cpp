@@ -2915,10 +2915,10 @@ ito::RetVal DataObjectIO::loadDataFromTxtParams(QVector<ito::Param> *paramsMand,
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source file name").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("ignoreLines", ito::ParamBase::Int | ito::ParamBase::In, 0, 0, std::numeric_limits<int>::max(), tr("Ignore the first n-lines.").toLatin1().data());
+        param = ito::Param("ignoreLines", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("Ignore the first n-lines.").toLatin1().data());
         paramsOpt->append(param);
 
-        param = ito::Param("asMatrix", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("(1) Try to interprete list elements with 3 elements per row as a matrix or (0) load as written.").toLatin1().data());
+        param = ito::Param("asMatrix", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("(1) Try to interprete list elements with 3 elements per row as a matrix or (0) load as written.").toLatin1().data());
         paramsOpt->append(param);
 
         param = ito::Param("seperatorSign", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Uses this as the seperator between elements. If NULL, try to guess.").toLatin1().data());
@@ -2984,8 +2984,8 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
         }
 
         ito::float64 zscale(0.0);
-        ret += analyseTXTData(dataIn, *dObjDst, speratorSign, decimalSign, 1, ignoreLines);
-        if(!ret.containsError())ret += readTXTDataBlock(dataIn, *dObjDst, speratorSign, decimalSign, 1, ignoreLines);
+        ret += analyseTXTData(dataIn, *dObjDst, speratorSign, decimalSign, readFlag, ignoreLines);
+        if(!ret.containsError())ret += readTXTDataBlock(dataIn, *dObjDst, speratorSign, decimalSign, readFlag, ignoreLines);
     }
 
     if(dataIn.isOpen())
@@ -3214,7 +3214,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
         {
             cols = curLine.split(sperator, QString::KeepEmptyParts).size();
 
-            while(!inFile.atEnd() && lines < 10)
+            while(!inFile.atEnd())
             {
                 inFile.readLine();
                 lines++;
