@@ -529,10 +529,12 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
 
 #if QT_VERSION < 0x050000
     glUniform3fv(UniformLut, 256, &templut[0][0]);
+    glUniform1i(UniformGamma, m_gamma);
     glBindVertexArray(0);
     glUseProgram(0);
 #else
     m_glf->glUniform3fv(UniformLut, 256, &templut[0][0]);
+    m_glf->glUniform1i(UniformGamma, m_gamma);
     m_vao->release();
     m_glf->glUseProgram(0);
 #endif
@@ -584,9 +586,17 @@ PrjWindow::PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &f
     m_color = params["color"].getVal<int>();
 
     m_lut.resize(256);
-    for (int i = 0; i < 256; i++)
+    if (params["lut"].getLen() == 256)
     {
-        m_lut[i] = i;
+        memcpy(m_lut.data(), params["lut"].getVal<char*>(), 256 * sizeof(char));
+    }
+    else
+    {
+        //initialize m_lut with default values (1:1 relation)
+        for (int i = 0; i < 256; i++)
+        {
+            m_lut[i] = i;
+        }
     }
 }
 
@@ -628,13 +638,6 @@ PrjWindow::~PrjWindow()
     m_lut.clear();
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-/*
-void PrjWindow::paintEvent(QPaintEvent *pevent)
-{
-    paintGL();
-}
-*/
 //----------------------------------------------------------------------------------------------------------------------------------
 void PrjWindow::initializeGL()
 {
@@ -748,10 +751,10 @@ void PrjWindow::paintGL()
         glPixelTransferi(GL_MAP_COLOR, GL_TRUE);
 
         glBegin(GL_QUADS);
-            glTexCoord2f(0, 1); glVertex3i(0, 0, 0);
-            glTexCoord2f(1, 1); glVertex3i(width, 0, 0);
-            glTexCoord2f(1, 0); glVertex3i(width, height, 0);
-            glTexCoord2f(0, 0); glVertex3i(0, height, 0);
+        glTexCoord2f(0, 1); glVertex3i(0, 0, 0);
+        glTexCoord2f(1, 1); glVertex3i(width, 0, 0);
+        glTexCoord2f(1, 0); glVertex3i(width, height, 0);
+        glTexCoord2f(0, 0); glVertex3i(0, height, 0);
         glEnd();
 
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -1750,61 +1753,9 @@ void PrjWindow::setPos(int xpos, int ypos)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::calcLUT(QVector<double> *grayvalues, QVector<unsigned char> *lut)
+void PrjWindow::setLUT(QVector<unsigned char> &lut)
 {
-    ito::RetVal retval = ito::retOk;
-
-    if (grayvalues->size() < 64)
-    {
-        retval = ito::RetVal(ito::retError, 0, tr("insufficient gray values").toLatin1().data());
-    }
-
-    double minval = 10000;
-    double maxval = -1;
-
-    //calc min and max grayvalue, which has been given to this method as parameter
-    for (int gval = 0; gval < grayvalues->size(); gval++)
-    {
-        if (grayvalues->at(gval) < minval)
-            minval = grayvalues->at(gval);
-        if (grayvalues->at(gval) > maxval)
-            maxval = grayvalues->at(gval);
-    }
-
-    //normGVals is vector where the contrast of each gray value is stored (normalized gray value: 0<=value<=1)
-    QVector<double> normGVals;
-    normGVals.resize(grayvalues->size());
-    for (int gval = 0; gval < grayvalues->size(); gval++)
-    {
-        normGVals[gval] = (grayvalues->at(gval) - minval) / (maxval - minval);
-    }
-
-    lut->resize(256);
-    double fak = 255.0 / (double)normGVals.size();
-    for (int gval = 0; gval < 256; gval++)
-    {
-        double val = gval / 255.0;
-        for (int n = 1; n < normGVals.size(); n++)
-        {
-            if ((normGVals[n - 1] <= val) && (normGVals[n] >= val))
-            {
-                (*lut)[gval] = floor((n + (val - normGVals[n - 1]) / (normGVals[n] - normGVals[n - 1])) * fak + 0.5);
-            }
-        }
-    }
-    normGVals.clear();
-    (*lut)[0] = 0;
-    (*lut)[255] = 255;
-
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::setLUT(QVector<unsigned char> *lut)
-{
-    m_lut.clear();
-    m_lut = *lut;
-    ito::RetVal retval = ito::retOk;
+    m_lut = lut;
 
     //!> setting up initial gamma lut with linear response for rgb
     GLfloat templut[256][3];
@@ -1834,9 +1785,31 @@ ito::RetVal PrjWindow::setLUT(QVector<unsigned char> *lut)
     doneCurrent();
     m_isInit |= oldval;
 
-    paintGL();
+    //for opengl < 2.0:
+    /*GLfloat *par, *pag, *pab;
 
-    return retval;
+    par = (GLfloat*)calloc(256, sizeof(GLfloat));
+    pag = (GLfloat*)calloc(256, sizeof(GLfloat));
+    pab = (GLfloat*)calloc(256, sizeof(GLfloat));
+
+    for (float i = 0; i < 256; i++)
+    {
+        par[(int)i] = m_lut[i] / 255.0;
+        pag[(int)i] = m_lut[i] / 255.0;
+        pab[(int)i] = m_lut[i] / 255.0;
+    }
+
+    //glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &glval);
+
+    glPixelMapfv(GL_PIXEL_MAP_I_TO_G, 256, pag);
+    glPixelMapfv(GL_PIXEL_MAP_I_TO_R, 256, par);
+    glPixelMapfv(GL_PIXEL_MAP_I_TO_B, 256, pab);
+
+    free(par);
+    free(pag);
+    free(pab);*/
+
+    paintGL();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1955,141 +1928,32 @@ ito::RetVal PrjWindow::setColor(const int col)
     return retval;
 }
 
-////----------------------------------------------------------------------------------------------------------------------------------
-//ito::RetVal PrjWindow::setOrientation(const int orient)
-//{
-//    ito::RetVal retval = ito::retOk;
-//
-//    if (orient <= 0)
-//    {
-//        m_orientation = 0;
-//        if (m_imgNum < 0)
-//        {
-//            m_imgNum = 0;
-//        }
-//        else if (m_imgNum >= m_phaShift + m_grayBitsVert + 2)
-//        {
-//            m_imgNum = m_phaShift + m_grayBitsVert + 1;
-//        }
-//    }
-//    else
-//    {
-//        m_orientation = 1;
-//        if (m_imgNum < m_phaShift + m_grayBitsVert + 2)
-//        {
-//            m_imgNum = m_phaShift + m_grayBitsVert + 2;
-//        }
-//        else if (m_imgNum >=  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 2)
-//        {
-//            m_imgNum =  m_phaShift + m_grayBitsVert + 2 + m_phaShift + m_grayBitsHoriz + 1;
-//        }
-//    }
-//
-//    paintGL();
-//
-//    return retval;
-//}
-
 //----------------------------------------------------------------------------------------------------------------------------------
-/*ito::RetVal PrjWindow::setPhaseShift(const int phaseshift)
+ito::RetVal PrjWindow::enableGammaCorrection(bool enabled)
 {
     ito::RetVal retval = ito::retOk;
+
+    m_gamma = enabled ? 1 : 0;
+
     int oldval = m_isInit;
     m_isInit &= ~paramsValid;
-    Sleep(100);
-
     makeCurrent();
-    retval += cosineExit();
-    retval += graycodeExit();
-
-    m_phaShift = phaseshift;
-    retval += setupProjection();
-
-    retval += cosineInit();
-    retval += graycodeInit();
+#if QT_VERSION < 0x050000
+    //!> Bind the program for use
+    glUseProgram(ProgramName);
+    glUniform1i(UniformGamma, m_gamma);
+    //!> Bind the program for use
+    glUseProgram(0);
+#else
+    //!> Bind the program for use
+    m_glf->glUseProgram(ProgramName);
+    //!> Set the value of color calculation (initially white)
+    m_glf->glUniform1i(UniformGamma, m_gamma);
+    //!> Bind the program for use
+    m_glf->glUseProgram(0);
+#endif
     doneCurrent();
     m_isInit |= oldval;
-
-    paintGL();
-
-    return retval;
-}*/
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::setGamma(const int gamma)
-{
-    ito::RetVal retval = ito::retOk;
-
-    if (gamma)
-    {
-        m_gamma = 1;
-    }
-    else
-    {
-        m_gamma = 0;
-    }
-
-    if (m_glVer >= QGLFormat::OpenGL_Version_2_0 /*32*/)
-    {
-        //!> setting up initial gamma lut with linear response for rgb
-        GLfloat templut[257][3];
-        for (int col = 0; col < 256; col++)
-        {
-            templut[col][0] = m_lut[col] / 255.0;
-            templut[col][1] = m_lut[col] / 255.0;
-            templut[col][2] = m_lut[col] / 255.0;
-        }
-
-        int oldval = m_isInit;
-        m_isInit &= ~paramsValid;
-        makeCurrent();
-#if QT_VERSION < 0x050000
-        //!> Bind the program for use
-        glUseProgram(ProgramName);
-        glUniform3fv(UniformLut, 256, &templut[0][0]);
-        //!> Set the value of color calculation (initially white)
-        glUniform1i(UniformGamma, m_gamma);
-        //int ret = glGetError();
-        //!> Bind the program for use
-        glUseProgram(0);
-#else
-        //!> Bind the program for use
-        m_glf->glUseProgram(ProgramName);
-        m_glf->glUniform3fv(UniformLut, 256, &templut[0][0]);
-        //!> Set the value of color calculation (initially white)
-        m_glf->glUniform1i(UniformGamma, m_gamma);
-        //int ret = glGetError();
-        //!> Bind the program for use
-        m_glf->glUseProgram(0);
-#endif
-        doneCurrent();
-        m_isInit |= oldval;
-    }
-    else
-    {
-        GLfloat *par, *pag, *pab;
-
-        par = (GLfloat*)calloc(256, sizeof(GLfloat));
-        pag = (GLfloat*)calloc(256, sizeof(GLfloat));
-        pab = (GLfloat*)calloc(256, sizeof(GLfloat));
-
-        for (float i = 0; i < 256; i++)
-        {
-            par[(int)i] = m_lut[i] / 255.0;
-            pag[(int)i] = m_lut[i] / 255.0;
-            pab[(int)i] = m_lut[i] / 255.0;
-        }
-
-    //    glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, &glval);
-
-        glPixelMapfv(GL_PIXEL_MAP_I_TO_G, 256, pag);
-        glPixelMapfv(GL_PIXEL_MAP_I_TO_R, 256, par);
-        glPixelMapfv(GL_PIXEL_MAP_I_TO_B, 256, pab);
-
-        free(par);
-        free(pag);
-        free(pab);
-    }
 
     paintGL();
 

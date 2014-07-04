@@ -38,6 +38,8 @@
 
 #include "pluginVersion.h"
 
+Q_DECLARE_METATYPE(QVector<unsigned char>)
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DispWindowInterface::getAddInInst(ito::AddInBase **addInInst)
@@ -111,14 +113,8 @@ require this library.";
     paramVal = ito::Param("phaseshift", ito::ParamBase::Int, 3, 8, 4, tr("number of total phase shifts").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
-    unsigned char * lutVals = (unsigned char*)malloc(256 * sizeof(unsigned char));
-    for (int n = 0; n < 256; n++)
-    {
-        lutVals[n] = n;
-    }
-    paramVal = ito::Param("lut", ito::ParamBase::CharArray, 256, reinterpret_cast<char*>(lutVals), tr("Lookup table").toLatin1().data());
+    paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table for a gamma correction with 256 values. If given, the gamma correction will be enabled (default: off) and the projected values are then modified with lut[value].").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    free(lutVals);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -184,6 +180,7 @@ DispWindow::DispWindow() :
 
 
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
+    qRegisterMetaType<QVector<unsigned char> >("QVector<unsigned char>&");
 
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>() << ito::Param("meanGrayValues", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("mean grey values from intensity calibration").toLatin1().data());
@@ -234,14 +231,19 @@ DispWindow::DispWindow() :
     paramVal = ito::Param("numgraybits", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 80, 0, tr("Number of different images: Phaseshift + GrayCode + 2").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("gamma", ito::ParamBase::Int, 0, 1, 0, tr("0: disable, 1: enable; default disable").toLatin1().data());
+    paramVal = ito::Param("gamma", ito::ParamBase::Int, 0, 1, 0, tr("0: disable gamma correction, 1: enable gamma correction; default disable (see also 'lut')").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("gammaCol", ito::ParamBase::Int, 0, 255, 127, NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table").toLatin1().data());
+    paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table for a gamma correction with 256 values. The gamma correction itself is en-/disabled via parameter 'gamma'. If enabled, the value to display is modified by lut[value]. Per default the lut is a 1:1 relation.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+
+    //initialize m_lut with default values (1:1 relation)
+    char lut[256];
+    for (int i = 0; i < 256; ++i) lut[i] = i;
+    m_params["lut"].setVal<char*>(lut, 256);
 
 	constructionResult = ito::retOk;
 
@@ -460,15 +462,10 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 }
                 else
                 {
-                    QVector<unsigned char> lutVals;
-                    unsigned char *gwptr = (unsigned char*)val->getVal<char*>();
-                    lutVals.reserve(256);
-                    for (int n = 0; n < 256; n++)
-                    {
-                        lutVals.append(gwptr[n]);
-                    }
-                    m_pWindow->setLUT(&lutVals);
-                    it->setVal<char *>(val->getVal<char*>(), 256);
+                    QVector<unsigned char> lutVals(256);
+                    memcpy(lutVals.data(), val->getVal<char*>(), 256 * sizeof(unsigned char));
+                    QMetaObject::invokeMethod(m_pWindow, "setLUT", Qt::BlockingQueuedConnection, Q_ARG(QVector<unsigned char>&, lutVals));
+                    it->setVal<char*>(val->getVal<char*>(), 256);
                 }
             }
             else
@@ -486,9 +483,14 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     unsigned char *gwptr = (unsigned char*)it->getVal<char*>(); //stored values in m_params
                     gwptr[index] = (unsigned char)val->getVal<char>();
                     memcpy( lutVals.data(), gwptr, sizeof(unsigned char) * lutLen );
-                    m_pWindow->setLUT(&lutVals);
+                    QMetaObject::invokeMethod(m_pWindow, "setLUT", Qt::BlockingQueuedConnection, Q_ARG(QVector<unsigned char>&, lutVals));
                 }
             }
+        }
+        else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
+        {
+            QMetaObject::invokeMethod(m_pWindow, "enableGammaCorrection", Qt::BlockingQueuedConnection, Q_ARG(bool, val->getVal<int>() > 0));
+			it->copyValueFrom( &(*val) );
         }
         else if (QString::compare(key, "gammaCol", Qt::CaseInsensitive) == 0)
         {
@@ -661,7 +663,6 @@ ito::RetVal DispWindow::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         {
             ysize = m_params["ysize"].getVal<int>();
         }
-        //QMetaObject::invokeMethod(m_pWindow, "setSize", Qt::BlockingQueuedConnection, Q_ARG(int, xsize), Q_ARG(int, ysize));
 
         if ((*paramsOpt)[4].getVal<int>() != 12)
         {
@@ -681,6 +682,24 @@ ito::RetVal DispWindow::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
                                   Q_ARG(int, m_params["period"].getVal<int>()), 
                                   Q_ARG(int, m_params["phaseshift"].getVal<int>()), 
                                   Q_ARG(int, m_params["orientation"].getVal<int>()));
+
+        int lutLen = paramsOpt->at(6).getLen();
+        if (lutLen > 0)
+        {
+            if (lutLen != 256)
+            {
+                retval += ito::RetVal(ito::retError, 0, "you need to pass a lut with 256 values");
+            }
+            else
+            {
+                QVector<unsigned char> lutVals(256);
+                memcpy(lutVals.data(), paramsOpt->at(6).getVal<char*>(), 256 * sizeof(unsigned char));
+                m_params["lut"].setVal<char*>(paramsOpt->at(6).getVal<char*>(), 256);
+                QMetaObject::invokeMethod(m_pWindow, "setLUT", Q_ARG(QVector<unsigned char>&, lutVals));
+                m_params["gamma"].setVal<int>(1);
+                QMetaObject::invokeMethod(m_pWindow, "enableGammaCorrection", Q_ARG(bool, true));
+            }
+        }
     }
 
 	setIdentifier(QString::number(getID()));
@@ -891,6 +910,62 @@ const ito::RetVal DispWindow::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogDispWindow(this, m_pWindow));
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DispWindow::interpolateLUT(QVector<double> &grayvalues, QVector<unsigned char> &lut)
+{
+    ito::RetVal retval = ito::retOk;
+
+    if (grayvalues.size() < 64)
+    {
+        retval = ito::RetVal(ito::retError, 0, tr("insufficient gray values").toLatin1().data());
+    }
+
+    double minval = 10000;
+    double maxval = -1;
+
+    //calc min and max grayvalue, which has been given to this method as parameter
+    for (int gval = 0; gval < grayvalues.size(); gval++)
+    {
+        if (grayvalues[gval] < minval)
+        {
+            minval = grayvalues[gval];
+        }
+        if (grayvalues[gval] > maxval)
+        {
+            maxval = grayvalues[gval];
+        }
+    }
+
+    //normGVals is vector where the contrast of each gray value is stored (normalized gray value: 0<=value<=1)
+    QVector<double> normGVals;
+    normGVals.resize(grayvalues.size());
+    for (int gval = 0; gval < grayvalues.size(); gval++)
+    {
+        normGVals[gval] = (grayvalues[gval] - minval) / (maxval - minval);
+    }
+
+    lut.resize(256);
+    double fak = 255.0 / (double)normGVals.size();
+    for (int gval = 0; gval < 256; gval++)
+    {
+        double val = gval / 255.0;
+        for (int n = 1; n < normGVals.size(); n++)
+        {
+            if ((normGVals[n - 1] <= val) && (normGVals[n] >= val))
+            {
+                lut[gval] = floor((n + (val - normGVals[n - 1]) / (normGVals[n] - normGVals[n - 1])) * fak + 0.5);
+            }
+        }
+    }
+    normGVals.clear();
+    lut[0] = 0;
+    lut[255] = 255;
+
+    return retval;
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DispWindow::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
 {
@@ -916,12 +991,11 @@ ito::RetVal DispWindow::execFunc(const QString funcName, QSharedPointer<QVector<
             {
                 grayVals.append(value[n]);
             }
-            retValue += m_pWindow->calcLUT(&grayVals, &lutVals);
-            if (retValue != ito::retError)
+            retValue += interpolateLUT(grayVals, lutVals);
+            if (!retValue.containsError())
             {
-                retValue += m_pWindow->setLUT(&lutVals);
+                QMetaObject::invokeMethod(m_pWindow, "setLUT", Qt::BlockingQueuedConnection, Q_ARG(QVector<unsigned char>&, lutVals));
                 retValue += m_params["lut"].setVal<char*>((char*)lutVals.data(),256);
-                //retValue += paramIt->copyValueFrom(&(*val)); //store given gray-vals in parameter "calclut"
             }
         }
     }

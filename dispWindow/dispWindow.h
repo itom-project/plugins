@@ -68,6 +68,8 @@ class DispWindow : public ito::AddInDataIO //, public DummyGrabberInterface
         ~DispWindow();
         DispWindow();
 
+        ito::RetVal interpolateLUT(QVector<double> &grayvalues, QVector<unsigned char> &lut);
+
     public:
         friend class DispWindowInterface;
         const ito::RetVal showConfDialog(void);
