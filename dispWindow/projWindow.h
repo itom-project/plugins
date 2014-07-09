@@ -41,9 +41,6 @@ class PrjWindow : public QGLWidget
         PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &format, QWidget *parent = 0, const QGLWidget *shareWidget = 0, Qt::WindowFlags f = 0);
         ~PrjWindow();
 
-        ito::RetVal calcLUT(QVector<double> *grayvalues, QVector<unsigned char> *lut);
-        ito::RetVal setLUT(QVector<unsigned char> *lut);
-
         int getNumImages(void) const;
         int getOrientation(void) const {return m_orientation;};
         int getPhaseShift(void) const  {return m_phaShift;};
@@ -67,9 +64,7 @@ class PrjWindow : public QGLWidget
             initFail = 128
         };
 	
-	protected:
-		
-        ito::RetVal setGamma(const int gamma);
+    protected:
         ito::RetVal setGammaPrj(const int gammaCol);
 
     private:
@@ -104,8 +99,6 @@ class PrjWindow : public QGLWidget
         void paintGL();
         void initializeGL();
         void resizeGL(int width, int height);
-//        void paintEvent(QPaintEvent *pevent);
-//        void resizeEvent(QResizeEvent *pevent);
 
         GLuint ProgramName;
         GLuint ArrayBufferName;
@@ -124,10 +117,6 @@ class PrjWindow : public QGLWidget
             GLint &UniformTexture, GLint &UniformColor, GLuint &ArrayBufferName, GLuint &ElementBufferName);
         int initOGL2(const int width, const int height);
 
-        //ito::RetVal setPeriod(const int period);
-        //ito::RetVal setPhaseShift(const int phaseshift);
-        //ito::RetVal setOrientation(const int orient);
-
         // Deleter Function
         ito::RetVal cosineExit();
         ito::RetVal graycodeExit();
@@ -144,8 +133,6 @@ class PrjWindow : public QGLWidget
         ito::RetVal configProjection(int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal configProjectionFull(int xpos, int sizex, int ypos, int sizey, int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond = NULL);
 
-        //ito::RetVal setOrientation(const int orient);
-
         void enableInit() { if (!(m_isInit & paramsValid)) m_isInit |= paramsValid; };
         void disableInit() { m_isInit &= ~paramsValid; };
 
@@ -157,6 +144,9 @@ class PrjWindow : public QGLWidget
         ito::RetVal showImageNum(const int num);
 
         ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = NULL);
+
+        ito::RetVal enableGammaCorrection(bool enabled); //en/disables gamma correction based on the lut values (per default, the lut values are a 1:1 relation)
+        void setLUT(QVector<unsigned char> &lut); //transfers the lut values for possible gamma correction to the opengl buffer
 
     private slots:
 
