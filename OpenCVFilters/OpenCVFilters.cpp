@@ -1078,29 +1078,63 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
 
-    if(dObjImages->getDims() > 2)
+    if(dObjImages->getDims() > 3)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
     }
 
-    int ysize = dObjImages->getSize(0);
-    int xsize = dObjImages->getSize(1);
+    int ysize = dObjImages->getSize(dObjImages->getDims() - 2);
+    int xsize = dObjImages->getSize(dObjImages->getDims() - 1);
+    int planes = 0;
+    if(dObjImages->getDims() > 1)
+    {
+        planes = dObjImages->getSize(dObjImages->getDims() - 3);
+    }
 
-    retval += ito::dObjHelper::verify2DDataObject(dObjImages, "srcImage", ysize, ysize, xsize, xsize,  7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    if(!retval.containsError())
+    {
+        retval += ito::dObjHelper::verifyDataObjectType(dObjImages, "srcImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    }
+
+    //if(planes > 0)
+    //{
+    //    retval += ito::dObjHelper::verify3DDataObject(dObjImages, "srcImage", planes, planes, ysize, ysize, xsize, xsize,  1, dObjImages->getType());
+    //}
+    //else
+    //{
+    //    retval += ito::dObjHelper::verify2DDataObject(dObjImages, "srcImage", ysize, ysize, xsize, xsize,  1, dObjImages->getType());
+    //}
 
     if(!retval.containsError())
     {
         if(dObjDst != dObjImages)
         {
-            ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjDst, "destImage", ysize, ysize, xsize, xsize,  1, dObjImages->getType());
-            if(tRetval.containsError())
+            if(planes > 0)
             {
-                destTemp = ito::DataObject(ysize, xsize, dObjImages->getType());
+                    ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjDst, "destImage", planes, planes, ysize, ysize, xsize, xsize,  1, dObjImages->getType());
+                    if(tRetval.containsError())
+                    {
+                        int sizes[3] = {planes, ysize, xsize};
+                        destTemp = ito::DataObject(3, sizes, dObjImages->getType());
+                    }
+                    else
+                    {
+                        destTemp = *dObjDst;
+                        overWrite = false;
+                    }
             }
             else
             {
-                destTemp = *dObjDst;
-                overWrite = false;
+                    ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjDst, "destImage", ysize, ysize, xsize, xsize,  1, dObjImages->getType());
+                    if(tRetval.containsError())
+                    {
+                        destTemp = ito::DataObject(ysize, xsize, dObjImages->getType());
+                    }
+                    else
+                    {
+                        destTemp = *dObjDst;
+                        overWrite = false;
+                    }            
             }
         }
         else
