@@ -45,7 +45,7 @@ DockWidgetUSBMotion3XIII::DockWidgetUSBMotion3XIII(ito::AddInActuator *actuator)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetUSBMotion3XIII::basicInformationChanged(QString name, QString id, QString axis, QVector<bool> available)
+void DockWidgetUSBMotion3XIII::basicInformationChanged(QString name, QString id, QString axis, QVector<bool> available, const int *axisUnits)
 {
 //    ui.lblName->setText(name);
     ui.lblID->setText(id);
@@ -69,6 +69,23 @@ void DockWidgetUSBMotion3XIII::basicInformationChanged(QString name, QString id,
     ui.btn_relMinus2->setVisible(available[1]);
     ui.btn_relPlus3->setVisible(available[2]);
     ui.btn_relMinus3->setVisible(available[2]);
+
+    if ((axisUnits[0] != axisUnits[1]) || (axisUnits[0] != axisUnits[2]))
+    {
+        ui.spinStepSize->setSuffix("°/mm");
+    }
+    else
+    {
+        ui.spinStepSize->setSuffix(axisUnits[0] == 0 ? "°" : "mm");
+    }
+
+    ui.doubleSpinBox_actpos_x->setSuffix(axisUnits[0] == 0 ? "°" : "mm");
+    ui.doubleSpinBox_actpos_y->setSuffix(axisUnits[1] == 0 ? "°" : "mm");
+    ui.doubleSpinBox_actpos_z->setSuffix(axisUnits[2] == 0 ? "°" : "mm");
+
+    ui.doubleSpinBox_tarpos_x->setSuffix(axisUnits[0] == 0 ? "°" : "mm");
+    ui.doubleSpinBox_tarpos_y->setSuffix(axisUnits[1] == 0 ? "°" : "mm");
+    ui.doubleSpinBox_tarpos_z->setSuffix(axisUnits[2] == 0 ? "°" : "mm");
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

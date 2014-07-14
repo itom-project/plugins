@@ -71,7 +71,7 @@ class DockWidgetUSBMotion3XIII : public QWidget
         void setRelTargetDegree(unsigned int axisNo, double relStepDegree);
 
     public slots:
-        void basicInformationChanged(QString name, QString id, QString axis, QVector<bool> available);
+        void basicInformationChanged(QString name, QString id, QString axis, QVector<bool> available, const int *axisUnits);
         void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition); //!< slot to receive information about status and position changes.
         void targetChanged(QVector<double> targetPositions);
 
