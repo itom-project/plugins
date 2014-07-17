@@ -128,9 +128,6 @@ class USBMotion3XIII : public ito::AddInActuator
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
 
-        void setAbsTargetDegree(double target1, double target2, double target3);
-        void setRelTargetDegree(unsigned int axisNo, double relStepDegree);
-
     private slots:
         void dockWidgetVisibilityChanged( bool visible );
 };

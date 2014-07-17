@@ -403,7 +403,7 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
     m_params.insert( "coilCurrentThreshold3", Param("coilCurrentThreshold3", ParamBase::Double, 0.0, 10000.0, 5.0, tr("threshold acceleration for distinction between coilCurrentHigh and coilCurrentLow").toLatin1().data()));
     m_params.insert( "axisEnabled3", Param("axisEnabled3", ParamBase::Int, 0, 1, 1, tr("determine if motor 3 is enabled (1) or disabled (0). If disabled, this motor is manually moveable").toLatin1().data()));
 	m_params.insert( "microSteps3", Param("microSteps3", ParamBase::Int, 1, 64, 1, tr("micro steps for motor 3 [1,2,4,8,16,32,64]").toLatin1().data()));
-    m_params.insert( "switchSettings2", Param("switchSettings2", ParamBase::Int, 0, 15, 0, tr("bitmask of switch settings (bit 1: DISABLE_STOP_L, bit 2: DISABLE_STOP_R, bit 3: SOFT_STOP, bit 4: REF_RnL").toLatin1().data()));
+    m_params.insert( "switchSettings3", Param("switchSettings3", ParamBase::Int, 0, 15, 0, tr("bitmask of switch settings (bit 1: DISABLE_STOP_L, bit 2: DISABLE_STOP_R, bit 3: SOFT_STOP, bit 4: REF_RnL").toLatin1().data()));
 
 
     m_currentPos.fill(0.0,3);
@@ -418,9 +418,6 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
 
    //Marc: connect(this, SIGNAL(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)), USBMotion3XIIIWid, SLOT(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)));
    //Marc: connect(this, SIGNAL(targetsChanged(QVector<bool>, QVector<double>)), USBMotion3XIIIWid, SLOT(targetsChanged(QVector<bool>, QVector<double>)));
-   
-   connect(USBMotion3XIIIWid, SIGNAL(setAbsTargetDegree(double, double, double)), this, SLOT(setAbsTargetDegree(double, double, double)));
-   connect(USBMotion3XIIIWid, SIGNAL(setRelTargetDegree(unsigned int, double)), this, SLOT(setRelTargetDegree(unsigned int, double)));
 
    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -730,6 +727,11 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         }
     }
 
+    if (!retValue.containsError())
+    {
+        emit parametersChanged(m_params);
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -741,31 +743,24 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 
         if (USBMotion3XIIIWid)
         {
-            temp = m_params["name"].getVal<char*>(); //borrowed reference
-            QString name = temp;
-            temp = m_params["serialNumber"].getVal<char*>(); //borrowed reference
-            QString id = temp;
+            QString id = m_params["serialNumber"].getVal<char*>(); //borrowed reference
+            setIdentifier(id);
 
             QString axis = "";
-            QVector<bool> available = QVector<bool>() << false << false << false;
             if (m_availableAxis.contains(0)) 
             {
                 axis.append("x (0) ");
-                available[0] = true;
             }
             if (m_availableAxis.contains(1)) 
             {
                 axis.append("y (1) ");
-                available[1] = true;
             }
             if (m_availableAxis.contains(2)) 
             {
                 axis.append("z (2) ");
-                available[2] = true;
             }
 
-
-            QMetaObject::invokeMethod(USBMotion3XIIIWid, "basicInformationChanged", Q_ARG(QString,name), Q_ARG(QString,id), Q_ARG(QString,axis), Q_ARG(QVector<bool>,available), Q_ARG(int*,m_axisUnit));
+            QMetaObject::invokeMethod(USBMotion3XIIIWid, "basicInformationChanged", Q_ARG(QString,axis), Q_ARG(int*,m_axisUnit));
         }
     }
 
@@ -1929,41 +1924,6 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
     }
 
     return retVal;
-}
-
-//---------------------------------------------------------------------------------------------------------------------------------- 
-void USBMotion3XIII::setAbsTargetDegree(double target1, double target2, double target3)
-{
-    QVector<int> axis;
-    QVector<double> pos;
-
-    for (int i=0 ; i<3; i++)
-    {
-        if (m_availableAxis.contains(i))
-        {
-            axis.append(i);
-            switch(i)
-            {
-            case 0:
-                pos.append(target1);
-                break;
-            case 1:
-                pos.append(target2);
-                break;
-            case 2:
-                pos.append(target3);
-                break;
-            }
-        }
-    }
-
-    setPosAbs(axis,pos,NULL);
-}
-
-//---------------------------------------------------------------------------------------------------------------------------------- 
-void USBMotion3XIII::setRelTargetDegree(unsigned int axisNo, double relStepDegree)
-{
-    setPosRel(axisNo, relStepDegree, NULL);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
