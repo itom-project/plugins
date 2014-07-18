@@ -2281,6 +2281,7 @@ ito::RetVal PrjWindow::configProjectionFull(int xpos, int sizex, int ypos, int s
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     QFileInfo finfo(filename);
     QDir filepath(finfo.canonicalPath());
