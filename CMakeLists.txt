@@ -91,6 +91,12 @@ if (PLUGIN_FringeProj)
     ADD_SUBDIRECTORY(FringeProj)
 endif (PLUGIN_FringeProj)
 
+# glDisplay
+OPTION(PLUGIN_GLDisplay "Build with this plugin." OFF)
+if (PLUGIN_GLDisplay)
+    ADD_SUBDIRECTORY(glDisplay)
+endif (PLUGIN_GLDisplay)
+
 # GenICam
 #IF (WIN32)
 #    OPTION(PLUGIN_GenICam "Build with this plugin." OFF)
