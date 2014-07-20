@@ -106,18 +106,28 @@ void main(void) \
     TexCoord = textureCoordinate; \
 }";
 
-const char *FRAGMENT_SHADER = " \
-#version 130                        \n\
+const char *FRAGMENT_SHADER = "     \
+#version 130                      \n\
 \
-uniform sampler2D textureObject;          \
-uniform vec4 color; \
-in vec2 TexCoord;                    \
+uniform sampler2D textureObject;    \
+uniform vec4 color;                 \
+uniform int gamma;                  \
+in vec2 TexCoord;                   \
+uniform vec3 lutarr[256];           \
 \
 out vec4 fragColor; \
 \
 void main(void) \
 { \
-    fragColor = color * texture(textureObject, TexCoord); \
+    if (gamma == 0) \
+	{               \
+		fragColor = color * texture(textureObject, TexCoord); \
+	}               \
+	else            \
+	{               \
+		int col = int(texture(textureObject, TexCoord).r * 255.0);  \
+        fragColor = color * vec4(lutarr[col], 1.0);      \
+	}           \
 }";
 
 	//texture2d is deprecated since shader language 1.3 (version 130), use texture instead
@@ -147,6 +157,8 @@ void GLWindow::initializeGL()
     // I read that ATI cards need this before MipMapping.
     glEnable(GL_TEXTURE_2D);
 
+    glActiveTexture(0);
+
     qglClearColor(Qt::white);
 
     shaderProgram.addShaderFromSourceCode(QGLShader::Vertex, VERTEX_SHADER);
@@ -171,6 +183,7 @@ void GLWindow::initializeGL()
     shaderProgram.setUniformValue("gamma", 0);
     shaderProgram.setUniformValueArray("lutarr", &templut[0][0], 256, 3);
     shaderProgram.setUniformValue("color", QColor(Qt::white));
+    shaderProgram.setUniformValue("gamma", 0);
     shaderProgram.release();
 
     /*m_vertices << QVector3D(-1, -1, 0) << QVector3D(1,1,0) << QVector3D(-1,1,0) <<
@@ -181,7 +194,6 @@ void GLWindow::initializeGL()
 
     m_vertices << QVector3D(-1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, -1, 0) << QVector3D(1, 1, 0);
     m_textureCoordinates << QVector2D(0,1) << QVector2D(0,0) << QVector2D(1,1) << QVector2D(1,0);
-
     
 }
 
@@ -193,7 +205,11 @@ void GLWindow::resizeGL(int width, int height)
         height = 1;
     }
 
+    makeCurrent();
+
     glViewport(0, 0, width, height);
+
+    doneCurrent();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -203,19 +219,17 @@ void GLWindow::paintGL()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shaderProgram.bind();
-    //shaderProgram.setUniformValue("color", QColor(Qt::white));
-    shaderProgram.setAttributeArray("vertex", m_vertices.constData());
-    shaderProgram.enableAttributeArray("vertex");
 
     if (m_textures.size() > 0)
     {
+        shaderProgram.setAttributeArray("vertex", m_vertices.constData());
+        shaderProgram.enableAttributeArray("vertex");
+
         m_currentTexture = qBound(0, m_currentTexture, m_textures.size() - 1);
         const TextureItem &item = m_textures[m_currentTexture];
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, item.texture);
-        checkGLError();
-        glActiveTexture(0);        
         checkGLError();
         
         if (item.textureWrapS == 0)
@@ -241,7 +255,7 @@ void GLWindow::paintGL()
         checkGLError();
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glPixelTransferi(GL_MAP_COLOR, GL_TRUE);
+        //glPixelTransferi(GL_MAP_COLOR, GL_TRUE);
         checkGLError();
 
         double scaleX = size.width() / item.width;
@@ -265,7 +279,6 @@ void GLWindow::paintGL()
         shaderProgram.enableAttributeArray("textureCoordinate");
         checkGLError();
 
-        //glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         checkGLError();
     
@@ -273,6 +286,9 @@ void GLWindow::paintGL()
         shaderProgram.disableAttributeArray("textureCoordinate");
 
         glBindTexture(GL_TEXTURE_2D, 0);
+        checkGLError();
+
+        glActiveTexture(0);        
         checkGLError();
     }
 
@@ -282,6 +298,8 @@ void GLWindow::paintGL()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, ItomSharedSemaphore *waitCond)
 {
+    makeCurrent();
+
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
 
@@ -318,6 +336,8 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
 
     if (!retval.containsError())
     {
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  //black background
+        glClear(GL_COLOR_BUFFER_BIT);          //clear screen buffer
 
         image = QImage(width, height, QImage::Format_ARGB32);
 
@@ -337,6 +357,9 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
             }
             TextureItem item;
             item.texture = bindTexture(image, GL_TEXTURE_2D);
+            qDebug() << glIsTexture(item.texture);
+            glBindTexture(GL_TEXTURE_2D, 0);
+
             item.textureMagFilter = GL_NEAREST;
             item.textureMinFilter = GL_NEAREST;
             item.textureWrapS = 0; //GL_REPEAT;
@@ -450,6 +473,8 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
 
     *nrOfTotalTextures = m_textures.size();
 
+    doneCurrent();
+
     updateGL();
 
     if (waitCond)
@@ -498,9 +523,11 @@ ito::RetVal GLWindow::grabFramebuffer(const QString &filename, ItomSharedSemapho
 ito::RetVal GLWindow::setColor(const QColor &color)
 {
     ito::RetVal retval;
+    makeCurrent();
     shaderProgram.bind();
     shaderProgram.setUniformValue("color", color);
     shaderProgram.release();
+    doneCurrent();
     updateGL();
     return retval;
 }
@@ -509,7 +536,9 @@ ito::RetVal GLWindow::setColor(const QColor &color)
 ito::RetVal GLWindow::setClearColor(const QColor &color)
 {
     ito::RetVal retval;
+    makeCurrent();
     qglClearColor(color);
+    doneCurrent();
     updateGL();
     return retval;
 }
@@ -553,7 +582,62 @@ ito::RetVal GLWindow::checkGLError()
 //---------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GLWindow::setCurrentTexture(const int index)
 {
+    makeCurrent();
     m_currentTexture = qBound(0, index, m_textures.size()-1);
+    doneCurrent();
     updateGL();
     return ito::retOk;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GLWindow::setPos(const int &x, const int &y)
+{
+    move(x, y);
+    return ito::retOk;
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GLWindow::setSize(const int &height, const int &width)
+{
+    ito::RetVal retval;
+
+    resize(width, height);
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GLWindow::enableGammaCorrection(bool enabled)
+{
+    ito::RetVal retval;
+    makeCurrent();
+    shaderProgram.bind();
+    shaderProgram.setUniformValue("gamma", enabled ? 1 : 0);
+    shaderProgram.release();
+    doneCurrent();
+    updateGL();
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void GLWindow::setLUT(QVector<unsigned char> &lut)
+{
+    makeCurrent();
+
+    //!> setting up initial gamma lut with linear response for rgb
+    GLfloat templut[256][3];
+    for (int col = 0; col < 256; col++)
+    {
+        templut[col][0] = lut[col] / 255.0;
+        templut[col][1] = lut[col] / 255.0;
+        templut[col][2] = lut[col] / 255.0;
+    }
+
+    shaderProgram.bind();
+    shaderProgram.setUniformValueArray("lutarr", &templut[0][0], 256, 3);
+    shaderProgram.release();
+
+    doneCurrent();
+
+    updateGL();
 }

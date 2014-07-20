@@ -86,6 +86,10 @@ public slots:
     ito::RetVal setClearColor(const QColor &color);
     ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal setCurrentTexture(const int index);
+    ito::RetVal setPos(const int &x, const int &y);
+    ito::RetVal setSize(const int &height, const int &width);
+    ito::RetVal enableGammaCorrection(bool enabled); //en/disables gamma correction based on the lut values (per default, the lut values are a 1:1 relation)
+    void setLUT(QVector<unsigned char> &lut); //transfers the lut values for possible gamma correction to the opengl buffer
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
