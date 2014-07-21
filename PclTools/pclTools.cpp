@@ -54,6 +54,7 @@
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/sample_consensus/sac_model_cylinder.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/passthrough.h>
@@ -188,6 +189,13 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclFitCylinder, PclTools::pclFitCylinderParams, tr("fits a cylindrical model to the given input point cloud using a RANSAC based fit (must have normals defined)."));
     m_filterList.insert("pclFitCylinder", filter);
+
+    filter = new FilterDef(PclTools::pclDistanceToModel, PclTools::pclDistanceToModelParams, tr("Calculates the distances of points of a point cloud to a given model."));
+    m_filterList.insert("pclDistanceToModel", filter);
+    
+    filter = new FilterDef(PclTools::pclFitSphere, PclTools::pclFitSphereParams, tr("fits a spherical model to the given input point cloud using a RANSAC based fit (must have normals defined)."));
+    m_filterList.insert("pclFitSphere", filter);
+
 
     filter = new FilterDef(PclTools::pclEstimateNormals, PclTools::pclEstimateNormalsParams, tr("estimates normal vectors to the given input point cloud and returns the normal-enhanced representation of the input point cloud"));
     m_filterList.insert("pclEstimateNormals", filter);
@@ -1210,6 +1218,310 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
     paramsOut->data()[1].setVal<double*>(vec, 3);
     paramsOut->data()[2].setVal<double>(coefficients_cylinder->values[6]); //radius
     paramsOut->data()[3].setVal<int>(inliers_cylinder->indices.size());
+
+    return retval;
+#endif  
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclDistanceToModelParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with distances").toLatin1().data()));
+    paramsMand->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("point on cylinder symmetrie axis").toLatin1().data()));
+    paramsMand->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("symmetrie axis of cylinder").toLatin1().data()));
+    paramsMand->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::In, NULL, tr("cylinder radius").toLatin1().data()));
+
+    paramsOpt->clear();
+    paramsOut->clear();
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclDistanceToModel(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+    QVector<ito::ParamBase> mands = (*paramsMand);
+    QVector<ito::ParamBase> opts = (*paramsOpt);
+    QVector<ito::ParamBase> outs = (*paramsOut);
+
+#if PCL_VERSION_COMPARE(<, 1, 7, 0)
+    return ito::RetVal(ito::retError, 0, tr("pclDistanceToModel not implemented for PCL 1.6.1 or lower").toLatin1().data());
+#else
+    //read params from mandatory and optional params
+    ito::PCLPointCloud *pclIn = (ito::PCLPointCloud*)mands[0].getVal<void*>();
+    if (pclIn == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("input point cloud must not be NULL").toLatin1().data());
+    }
+
+    ito::PCLPointCloud *pclOut = (ito::PCLPointCloud*)mands[1].getVal<void*>();
+    if (pclIn == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("output point cloud must not be NULL").toLatin1().data());
+    }
+
+    Eigen::VectorXf coefficients_cylinder;
+//    pcl::ModelCoefficients::Ptr coefficients_cylinder;
+    coefficients_cylinder.resize(7);
+    if (mands[2].getLen() != 3)
+    {
+        return ito::RetVal(ito::retError, 0, tr("cylinder axis point must contain x, y, z values").toLatin1().data());
+    }
+    double *cylPt = (double*)mands[2].getVal<void*>();
+    coefficients_cylinder[0] = cylPt[0];
+    coefficients_cylinder[1] = cylPt[1];
+    coefficients_cylinder[2] = cylPt[2];
+
+    if (mands[3].getLen() != 3)
+    {
+        return ito::RetVal(ito::retError, 0, tr("cylinder axis must contain x, y, z values").toLatin1().data());
+    }
+    double *cylAx = (double*)mands[3].getVal<void*>();
+    coefficients_cylinder[3] = cylAx[0];
+    coefficients_cylinder[4] = cylAx[1];
+    coefficients_cylinder[5] = cylAx[2];
+
+    coefficients_cylinder[6] = mands[4].getVal<double>();
+    std::vector<double> distances;
+
+    switch(pclIn->getType())
+    {
+        case ito::pclInvalid:
+            return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not allowed").toLatin1().data());
+        //case ito::pclXYZ: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
+        //    {
+        //        pcl::SACSegmentation<pcl::PointXYZ> seg;
+
+        //        // Create the segmentation object for cylinder segmentation and set all the parameters
+        //        seg.setOptimizeCoefficients (optimizeCoefficients);
+        //        seg.setModelType (pcl::SACMODEL_CYLINDER);
+        //        seg.setMethodType (pcl::SAC_RANSAC);
+        //        seg.setMaxIterations (maxIterations);
+        //        seg.setDistanceThreshold (distanceThreshold);
+        //        seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
+        //        seg.setInputCloud (pclIn->toPointXYZ());
+
+        //        // Obtain the cylinder inliers and coefficients
+        //        seg.segment (*inliers_cylinder, *coefficients_cylinder);
+        //    }
+        //    break;
+        case ito::pclXYZNormal:
+            {
+                pcl::SampleConsensusModelCylinder<pcl::PointNormal, pcl::PointNormal> *scModelCyl;
+                pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pclIn->toPointXYZNormal();
+                scModelCyl = new pcl::SampleConsensusModelCylinder<pcl::PointNormal, pcl::PointNormal>(pclSrc);
+                scModelCyl->setInputNormals(pclSrc);
+                scModelCyl->getDistancesToModel(coefficients_cylinder, distances);
+                
+                *pclOut = *pclIn;
+                pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
+                for (int np = 0; np < distances.size(); np++)
+                {
+                    pclDists->at(np).z = distances.at(np);
+                }
+                delete scModelCyl;
+            }
+            break;
+        case ito::pclXYZINormal:
+            {
+                pcl::SampleConsensusModelCylinder<pcl::PointXYZINormal, pcl::PointXYZINormal> *scModelCyl;
+                pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclSrc = pclIn->toPointXYZINormal();
+                scModelCyl = new pcl::SampleConsensusModelCylinder<pcl::PointXYZINormal, pcl::PointXYZINormal>(pclSrc);
+                scModelCyl->setInputNormals(pclSrc);
+                scModelCyl->getDistancesToModel(coefficients_cylinder, distances);
+
+                *pclOut = *pclIn;
+                pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
+
+                for (int np = 0; np < distances.size(); np++)
+                {
+                    pclDists->at(np).z = distances.at(np);
+                }
+                delete scModelCyl;
+            }
+            break;
+        case ito::pclXYZRGBNormal:
+            {
+                pcl::SampleConsensusModelCylinder<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> *scModelCyl;
+                pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclSrc = pclIn->toPointXYZRGBNormal();
+                scModelCyl = new pcl::SampleConsensusModelCylinder<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>(pclSrc);
+                scModelCyl->setInputNormals(pclSrc);
+                scModelCyl->getDistancesToModel(coefficients_cylinder, distances);
+                
+                *pclOut = *pclIn;
+                pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
+                
+                for (int np = 0; np < distances.size(); np++)
+                {
+                    pclDists->at(np).z = distances.at(np);
+                }
+                delete scModelCyl;
+            }
+            break;
+        default:
+            return ito::RetVal(ito::retError, 0, tr("point cloud must have normal vectors defined.").toLatin1().data());
+    }
+
+    return retval;
+#endif  
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitSphereParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
+
+    paramsOpt->clear();
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting center point of spehre").toLatin1().data()));
+    paramsOut->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting fitted radius of sphere").toLatin1().data()));
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitSphere(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+    QVector<ito::ParamBase> mands = (*paramsMand);
+    QVector<ito::ParamBase> opts = (*paramsOpt);
+    QVector<ito::ParamBase> outs = (*paramsOut);
+
+    //read params from mandatory and optional params
+    ito::PCLPointCloud *pclIn = (ito::PCLPointCloud*)mands[0].getVal<void*>();
+    if (pclIn == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("point cloud must not be NULL").toLatin1().data());
+    }
+
+    if (mands[1].getLen() != 2)
+    {
+        return ito::RetVal(ito::retError, 0, tr("radiusLimits must contain of 2 entries").toLatin1().data());
+    }
+
+#if PCL_VERSION_COMPARE(<, 1, 7, 0)
+    return ito::RetVal(ito::retError, 0, tr("pclFitSphere not implemented for PCL 1.6.1 or lower").toLatin1().data());
+#else
+    double *radiusLimits = mands[1].getVal<double*>();
+    double normalDistanceWeight = opts[0].getVal<double>();
+    int maxIterations = opts[1].getVal<int>();
+    double distanceThreshold = opts[2].getVal<double>();
+    bool optimizeCoefficients = (opts[3].getVal<int>() > 0);
+    double probability = opts[4].getVal<double>();
+
+    pcl::ModelCoefficients::Ptr coefficientsSphere (new pcl::ModelCoefficients);
+    pcl::PointIndices::Ptr inliersSphere (new pcl::PointIndices);
+
+    switch(pclIn->getType())
+    {
+    case ito::pclInvalid:
+        return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not allowed").toLatin1().data());
+    case ito::pclXYZNormal:
+        {
+            pcl::SACSegmentationFromNormals<pcl::PointNormal, pcl::PointNormal> seg(true); 
+
+            // Create the segmentation object for sphere segmentation and set all the parameters
+            seg.setOptimizeCoefficients (optimizeCoefficients);
+            seg.setModelType (pcl::SACMODEL_SPHERE);
+            seg.setMethodType (pcl::SAC_RANSAC);
+            seg.setNormalDistanceWeight (normalDistanceWeight);
+            seg.setMaxIterations (maxIterations);
+            seg.setDistanceThreshold (distanceThreshold);
+            seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
+            seg.setInputCloud (pclIn->toPointXYZNormal());
+            seg.setInputNormals (pclIn->toPointXYZNormal());
+            seg.setProbability (probability);
+
+            // Obtain the sphere inliers and coefficients
+            seg.segment (*inliersSphere, *coefficientsSphere);
+        }
+        break;
+    case ito::pclXYZINormal:
+        {
+            pcl::SACSegmentationFromNormals<pcl::PointXYZINormal, pcl::PointXYZINormal> seg(true); 
+
+            // Create the segmentation object for sphere segmentation and set all the parameters
+            seg.setOptimizeCoefficients (optimizeCoefficients);
+            seg.setModelType (pcl::SACMODEL_SPHERE);
+            seg.setMethodType (pcl::SAC_RANSAC);
+            seg.setNormalDistanceWeight (normalDistanceWeight);
+            seg.setMaxIterations (maxIterations);
+            seg.setDistanceThreshold (distanceThreshold);
+            seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
+            seg.setInputCloud (pclIn->toPointXYZINormal());
+            seg.setInputNormals (pclIn->toPointXYZINormal());
+            seg.setProbability (probability);
+
+            // Obtain the sphere inliers and coefficients
+            seg.segment (*inliersSphere, *coefficientsSphere);
+        }
+        break;
+    case ito::pclXYZRGBNormal:
+        {
+            pcl::SACSegmentationFromNormals<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> seg(true); 
+
+            // Create the segmentation object for sphere segmentation and set all the parameters
+            seg.setOptimizeCoefficients (optimizeCoefficients);
+            seg.setModelType (pcl::SACMODEL_SPHERE);
+            seg.setMethodType (pcl::SAC_RANSAC);
+            seg.setNormalDistanceWeight (normalDistanceWeight);
+            seg.setMaxIterations (maxIterations);
+            seg.setDistanceThreshold (distanceThreshold);
+            seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
+            seg.setInputCloud (pclIn->toPointXYZRGBNormal());
+            seg.setInputNormals (pclIn->toPointXYZRGBNormal());
+            seg.setProbability (probability);
+
+            // Obtain the sphere inliers and coefficients
+            seg.segment (*inliersSphere, *coefficientsSphere);          
+            
+        }
+        break;
+    default:
+        return ito::RetVal(ito::retError, 0, tr("point cloud must have normal vectors defined.").toLatin1().data());
+    }
+
+    if (inliersSphere->indices.size() == 0)
+    {
+        return ito::RetVal(ito::retError, 0, tr("no spherical model could be fit to given point cloud").toLatin1().data());
+    }
+
+    // sphereCoefficients are centerX, centerY, centerZ, radius
+
+    double points[] = { coefficientsSphere->values[0], coefficientsSphere->values[1], coefficientsSphere->values[2] };
+
+    paramsOut->data()[0].setVal<double*>(points, 3); // Positions
+    paramsOut->data()[1].setVal<double>(coefficientsSphere->values[3]); //radius
+    paramsOut->data()[2].setVal<int>(inliersSphere->indices.size());
 
     return retval;
 #endif  
