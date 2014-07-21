@@ -33,7 +33,7 @@
 	#include <qopenglfunctions.h>
 	#include <qopenglvertexarrayobject.h>
 #else
-    #include <qglfunctions.h>
+    //#include <qglfunctions.h>  //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
     #include <qglshaderprogram.h>
     #include <qglfunctions.h>
 #endif
@@ -44,7 +44,7 @@
 #include "common/sharedStructuresQt.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class GLWindow : public QGLWidget, protected QGLFunctions
+class GLWindow : public QGLWidget //, protected QGLFunctions
 {
     Q_OBJECT
 

@@ -51,46 +51,6 @@
 //! the fragment shader multiplies input vertices with the transformation matrix MVP, the
 //! fragment shader calculates the texture pixel (and color) for each pixel. In addition a 
 //! gamma correction can be applied using a simple lookup vektor (lutarr)
-
-const char *VERTEX_SHADER_SOURCE130 = "  \
-#version 130                    \n\
-                                \
-uniform mat4 MVP;               \
-in vec4 position;               \
-out vec2 TexCoord;              \
-                                \
-void main()                     \
-{                                \
-    gl_Position = MVP * vec4(position.xy, 0.0, 1.0);    \
-    TexCoord = position.zw;     \
-}                               \
-";
-
-const char *FRAGMENT_SHADER_SOURCE130 = " \
-#version 130                        \n\
-                                    \
-uniform sampler2D textureObject;          \
-uniform int gamma;                  \
-uniform mat4 color;                 \
-in vec2 TexCoord;                    \
-uniform vec3 lutarr[256];           \
-out vec4 FragColor;                    \
-                                    \
-void main()                            \
-{                                    \
-	if (gamma == 0) \
-	{               \
-		float c = texture(textureObject, TexCoord).r; \
-		FragColor = color * vec4(c,c,c,1.0); \
-	}               \
-	else            \
-	{               \
-		int col = int(texture(textureObject, TexCoord).r * 255.0);  \
-        FragColor = color * vec4(lutarr[col], 1.0);      \
-	}           \
-}                                   \
-";
-
 const char *VERTEX_SHADER = " \
 #version 130                        \n\
 \
@@ -149,7 +109,8 @@ GLWindow::~GLWindow()
 //----------------------------------------------------------------------------------------------------------------------------------
 void GLWindow::initializeGL()
 {
-    initializeGLFunctions();
+    //initializeGLFunctions(this->context());
+
     glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
 
@@ -157,7 +118,7 @@ void GLWindow::initializeGL()
     // I read that ATI cards need this before MipMapping.
     glEnable(GL_TEXTURE_2D);
 
-    glActiveTexture(0);
+    //glActiveTexture(0); //https://bugreports.qt-project.org/browse/QTBUG-27408
 
     qglClearColor(Qt::white);
 
@@ -185,12 +146,6 @@ void GLWindow::initializeGL()
     shaderProgram.setUniformValue("color", QColor(Qt::white));
     shaderProgram.setUniformValue("gamma", 0);
     shaderProgram.release();
-
-    /*m_vertices << QVector3D(-1, -1, 0) << QVector3D(1,1,0) << QVector3D(-1,1,0) <<
-        QVector3D(-1,-1,0) << QVector3D(1,-1,0) << QVector3D(1,1,0);*/
-
-    /*m_textureCoordinates << QVector2D(0,0) << QVector2D(5,5) << QVector2D(0,5) <<
-        QVector2D(0,0) << QVector2D(5,0) << QVector2D(5,5);*/
 
     m_vertices << QVector3D(-1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, -1, 0) << QVector3D(1, 1, 0);
     m_textureCoordinates << QVector2D(0,1) << QVector2D(0,0) << QVector2D(1,1) << QVector2D(1,0);
@@ -228,7 +183,7 @@ void GLWindow::paintGL()
         m_currentTexture = qBound(0, m_currentTexture, m_textures.size() - 1);
         const TextureItem &item = m_textures[m_currentTexture];
 
-        glActiveTexture(GL_TEXTURE0);
+        //glActiveTexture(GL_TEXTURE0); //https://bugreports.qt-project.org/browse/QTBUG-27408
         glBindTexture(GL_TEXTURE_2D, item.texture);
         checkGLError();
         
@@ -286,9 +241,9 @@ void GLWindow::paintGL()
         shaderProgram.disableAttributeArray("textureCoordinate");
 
         glBindTexture(GL_TEXTURE_2D, 0);
-        checkGLError();
+        checkGLError(); //opengl error is normal!
 
-        glActiveTexture(0);        
+        //glActiveTexture(0); //https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
         checkGLError();
     }
 

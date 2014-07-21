@@ -92,7 +92,7 @@ if (PLUGIN_FringeProj)
 endif (PLUGIN_FringeProj)
 
 # glDisplay
-OPTION(PLUGIN_GLDisplay "Build with this plugin." OFF)
+OPTION(PLUGIN_GLDisplay "Build with this plugin." ON)
 if (PLUGIN_GLDisplay)
     ADD_SUBDIRECTORY(glDisplay)
 endif (PLUGIN_GLDisplay)

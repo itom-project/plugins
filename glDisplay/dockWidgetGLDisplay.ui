@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>180</width>
-    <height>91</height>
+    <width>257</width>
+    <height>105</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -107,7 +107,27 @@
        <number>3</number>
       </property>
       <item>
-       <widget class="QComboBox" name="comboBox"/>
+       <widget class="QSlider" name="sliderIdx">
+        <property name="maximum">
+         <number>10</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="invertedAppearance">
+         <bool>false</bool>
+        </property>
+        <property name="tickPosition">
+         <enum>QSlider::NoTicks</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblIdx">
+        <property name="text">
+         <string>0 of 0</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
