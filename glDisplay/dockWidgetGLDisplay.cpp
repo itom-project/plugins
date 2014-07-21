@@ -30,10 +30,7 @@
 DockWidgetGLDisplay::DockWidgetGLDisplay(ito::AddInDataIO *GLDisplay) :
     AbstractAddInDockWidget(GLDisplay),
     m_inEditing(false),
-    m_firstRun(true),
-    m_curNumPhaseShifts(-1),
-    m_curNumGrayCodes(-1),
-    m_numimgChangeInProgress(false)
+    m_numTextures(0)
 {
     ui.setupUi(this); 
  }
@@ -41,54 +38,17 @@ DockWidgetGLDisplay::DockWidgetGLDisplay(ito::AddInDataIO *GLDisplay) :
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetGLDisplay::parametersChanged(QMap<QString, ito::Param> params)
 {
-    int tempNumPhaseShifts = params["phaseshift"].getVal<int>();
-    int tempNumGrayCodes = params["numgraybits"].getVal<int>();
-
-    if (m_firstRun || tempNumPhaseShifts != m_curNumPhaseShifts || tempNumGrayCodes != m_curNumGrayCodes)
-    {
-        m_curNumPhaseShifts = params["phaseshift"].getVal<int>();
-        m_curNumGrayCodes = params["numgraybits"].getVal<int>();
-
-        ui.comboBox->clear();
-
-        for (int x = 0; x < tempNumPhaseShifts; x++)
-        {
-            ui.comboBox->addItem(tr("phase shift %1").arg(x + 1), 0);
-        }
-
-        ui.comboBox->addItem(tr("black"), 0);
-        ui.comboBox->addItem(tr("white"), 0);
-
-        for (int x = 0; x < tempNumGrayCodes; x++)
-        {
-            ui.comboBox->addItem(tr("gray images %1").arg(x + 1), 0);
-        }
-
-        m_curNumPhaseShifts = tempNumPhaseShifts ;
-        m_curNumGrayCodes = tempNumGrayCodes;
-
-        m_firstRun = false;
-    }
+    m_numTextures = params["numImages"].getVal<int>();
 
     if (!m_inEditing)
     {
         m_inEditing = true;
         //check the value of all given parameters and adjust your widgets according to them (value only should be enough)
 
-        ui.comboBox->setCurrentIndex(params["numimg"].getVal<int>());
+        ui.lblIdx->setText( QString("%1 of %2").arg(params["currentIdx"].getVal<int>()).arg(m_numTextures-1));
+        ui.sliderIdx->setMaximum(m_numTextures-1);
+        ui.sliderIdx->setValue(params["currentIdx"].getVal<int>());
 
-        m_inEditing = false;
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetGLDisplay::on_comboBox_currentIndexChanged(int index)
-{
-    if (!m_inEditing)
-    {
-        m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("numimg",ito::ParamBase::Int,index));
-        setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
 }
@@ -97,4 +57,18 @@ void DockWidgetGLDisplay::on_comboBox_currentIndexChanged(int index)
 void DockWidgetGLDisplay::identifierChanged(const QString &identifier)
 {
     ui.lblID->setText(identifier);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetGLDisplay::on_sliderIdx_valueChanged(int index)
+{
+    ui.lblIdx->setText( QString("%1 of %2").arg(index).arg(m_numTextures-1));
+
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("currentIdx",ito::ParamBase::Int,index));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }

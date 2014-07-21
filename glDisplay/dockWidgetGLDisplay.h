@@ -45,12 +45,8 @@ class DockWidgetGLDisplay : public ito::AbstractAddInDockWidget
     private:
         Ui::DockWidgetGLDisplay ui;
 
-        int m_curNumPhaseShifts;
-        int m_curNumGrayCodes;
-        bool m_numimgChangeInProgress;
-
+        int m_numTextures;
         bool m_inEditing;
-        bool m_firstRun;
 
     signals:
 
@@ -59,7 +55,7 @@ class DockWidgetGLDisplay : public ito::AbstractAddInDockWidget
         void identifierChanged(const QString &identifier);
         
     private slots:
-        void on_comboBox_currentIndexChanged(int index);
+        void on_sliderIdx_valueChanged(int index);
 };
 
 #endif
