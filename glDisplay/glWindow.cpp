@@ -122,8 +122,13 @@ void GLWindow::initializeGL()
 
     qglClearColor(Qt::white);
 
+#if QT_VERSION >= 0x050000
+    shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, VERTEX_SHADER);
+    shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment, FRAGMENT_SHADER);
+#else
     shaderProgram.addShaderFromSourceCode(QGLShader::Vertex, VERTEX_SHADER);
     shaderProgram.addShaderFromSourceCode(QGLShader::Fragment, FRAGMENT_SHADER);
+#endif
     shaderProgram.link();
 
     QMatrix4x4 unityMatrix;

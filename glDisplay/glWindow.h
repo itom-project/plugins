@@ -31,7 +31,8 @@
 
 #if QT_VERSION >= 0x050000
 	#include <qopenglfunctions.h>
-	#include <qopenglvertexarrayobject.h>
+	//#include <qopenglvertexarrayobject.h>
+    #include <qopenglshaderprogram.h>
 #else
     //#include <qglfunctions.h>  //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
     #include <qglshaderprogram.h>
@@ -72,7 +73,11 @@ protected:
     ito::RetVal checkGLError();
 
 private:
+#if QT_VERSION >= 0x050000
+    QOpenGLShaderProgram shaderProgram;
+#else
     QGLShaderProgram shaderProgram;
+#endif
     QVector<QVector3D> m_vertices;
     QVector<QVector2D> m_textureCoordinates;
 
