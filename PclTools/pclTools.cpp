@@ -1248,6 +1248,15 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ double PclTools::pointToLineDist(const float inPt[3], const float modelCoefficients[7])
+{
+    Eigen::Vector4f linePt  (modelCoefficients[0], modelCoefficients[1], modelCoefficients[2], 0);
+    Eigen::Vector4f lineDir (modelCoefficients[3], modelCoefficients[4], modelCoefficients[5], 0);
+    Eigen::Vector4f pt (inPt[0], inPt[1], inPt[2], 0);
+    return sqrt(pcl::sqrPointToLineDistance (pt, linePt, lineDir));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclDistanceToModel(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
@@ -1294,7 +1303,8 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
     coefficients_cylinder[5] = cylAx[2];
 
     coefficients_cylinder[6] = mands[4].getVal<double>();
-    std::vector<double> distances;
+    float *cylCoeff = coefficients_cylinder.data();
+//    std::vector<double> distances;
 
     switch(pclIn->getType())
     {
@@ -1319,55 +1329,55 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
         //    break;
         case ito::pclXYZNormal:
             {
-                pcl::SampleConsensusModelCylinder<pcl::PointNormal, pcl::PointNormal> *scModelCyl;
+//                pcl::SampleConsensusModelCylinder<pcl::PointNormal, pcl::PointNormal> *scModelCyl;
                 pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pclIn->toPointXYZNormal();
-                scModelCyl = new pcl::SampleConsensusModelCylinder<pcl::PointNormal, pcl::PointNormal>(pclSrc);
-                scModelCyl->setInputNormals(pclSrc);
-                scModelCyl->getDistancesToModel(coefficients_cylinder, distances);
+//                scModelCyl = new pcl::SampleConsensusModelCylinder<pcl::PointNormal, pcl::PointNormal>(pclSrc);
+//                scModelCyl->setInputNormals(pclSrc);
+//                scModelCyl->getDistancesToModel(coefficients_cylinder, distances);
                 
                 *pclOut = *pclIn;
                 pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
-                for (int np = 0; np < distances.size(); np++)
+                for (int np = 0; np < pclOut->size(); np++)
                 {
-                    pclDists->at(np).z = distances.at(np);
+                    pclDists->at(np).z = pointToLineDist(pclSrc->at(np).data, cylCoeff) - cylCoeff[6];
                 }
-                delete scModelCyl;
+//                delete scModelCyl;
             }
             break;
         case ito::pclXYZINormal:
             {
-                pcl::SampleConsensusModelCylinder<pcl::PointXYZINormal, pcl::PointXYZINormal> *scModelCyl;
+//                pcl::SampleConsensusModelCylinder<pcl::PointXYZINormal, pcl::PointXYZINormal> *scModelCyl;
                 pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclSrc = pclIn->toPointXYZINormal();
-                scModelCyl = new pcl::SampleConsensusModelCylinder<pcl::PointXYZINormal, pcl::PointXYZINormal>(pclSrc);
-                scModelCyl->setInputNormals(pclSrc);
-                scModelCyl->getDistancesToModel(coefficients_cylinder, distances);
+//                scModelCyl = new pcl::SampleConsensusModelCylinder<pcl::PointXYZINormal, pcl::PointXYZINormal>(pclSrc);
+//                scModelCyl->setInputNormals(pclSrc);
+//                scModelCyl->getDistancesToModel(coefficients_cylinder, distances);
 
                 *pclOut = *pclIn;
                 pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
 
-                for (int np = 0; np < distances.size(); np++)
+                for (int np = 0; np < pclOut->size(); np++)
                 {
-                    pclDists->at(np).z = distances.at(np);
+                    pclDists->at(np).z = pointToLineDist(pclSrc->at(np).data, cylCoeff) - cylCoeff[6];
                 }
-                delete scModelCyl;
+//                delete scModelCyl;
             }
             break;
         case ito::pclXYZRGBNormal:
             {
-                pcl::SampleConsensusModelCylinder<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> *scModelCyl;
+//                pcl::SampleConsensusModelCylinder<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> *scModelCyl;
                 pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclSrc = pclIn->toPointXYZRGBNormal();
-                scModelCyl = new pcl::SampleConsensusModelCylinder<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>(pclSrc);
-                scModelCyl->setInputNormals(pclSrc);
-                scModelCyl->getDistancesToModel(coefficients_cylinder, distances);
+//                scModelCyl = new pcl::SampleConsensusModelCylinder<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal>(pclSrc);
+//                scModelCyl->setInputNormals(pclSrc);
+//                scModelCyl->getDistancesToModel(coefficients_cylinder, distances);
                 
                 *pclOut = *pclIn;
                 pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
                 
-                for (int np = 0; np < distances.size(); np++)
+                for (int np = 0; np < pclOut->size(); np++)
                 {
-                    pclDists->at(np).z = distances.at(np);
+                    pclDists->at(np).z = pointToLineDist(pclSrc->at(np).data, cylCoeff) - cylCoeff[6];
                 }
-                delete scModelCyl;
+//                delete scModelCyl;
             }
             break;
         default:

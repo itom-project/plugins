@@ -156,6 +156,8 @@ class PclTools : public ito::AddInAlgo
             return 0;
         }
 
+        static double pointToLineDist(const float pt[3], const float modelCoefficients[7]);
+
     public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal close(ItomSharedSemaphore *waitCond);
