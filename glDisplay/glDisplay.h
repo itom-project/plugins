@@ -74,7 +74,7 @@ class GLDisplay : public ito::AddInDataIO //, public DummyGrabberInterface
     public:
         friend class GLDisplayInterface;
         const ito::RetVal showConfDialog(void);
-        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
+        int hasConfDialog(void) { return 0; }; //!< indicates that this plugin has got a configuration dialog
 
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);

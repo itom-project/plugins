@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 #include "dockWidgetGLDisplay.h"
-#include "GLDisplay.h"
+#include "glDisplay.h"
 
 #include <qmessagebox.h>
 //#include "common/addInInterface.h"
