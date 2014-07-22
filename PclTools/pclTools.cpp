@@ -1380,12 +1380,19 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
     }
 
     ito::PCLPointCloud *pclOut = (ito::PCLPointCloud*)mands[1].getVal<void*>();
-    if (pclIn == NULL)
+    if (pclOut == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("output point cloud must not be NULL").toLatin1().data());
     }
 
-    int modelType = mands[3].getVal<int>();
+    if(pclOut == pclIn)
+    {
+        if((pclIn->getType() != ito::pclXYZINormal) && (pclIn->getType() != ito::pclXYZNormal) && (pclIn->getType() != ito::pclXYZRGBNormal))
+            return ito::RetVal(ito::retError, 0, tr("Inplace operation only supported for pclXYZNormal, pclXYZIRGBNormal or pclXYZINormal").toLatin1().data());
+    
+    }
+
+    int modelType = mands[2].getVal<int>();
     int distanceType = 0;
 
     Eigen::Vector4f linePt;
@@ -1448,24 +1455,69 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
             }
 
         }
+        break;
     }
 
     switch(pclIn->getType())
     {
         case ito::pclInvalid:
             return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not allowed").toLatin1().data());
-        //case ito::pclXYZ: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
-        //    {
-        //        pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pclIn->toPointXYZ();
-        //        
-        //        *pclOut = *pclIn;
-        //        pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZ();
-        //        for (int np = 0; np < pclOut->size(); np++)
-        //        {
-        //            pclDists->at(np).z = pointToLineDist(pclSrc->at(np).data, cylCoeff) - cylCoeff[6];
-        //        }
-        //    }
-        //    break;
+        case ito::pclXYZ: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
+            {
+                pcl::PointCloud<pcl::PointXYZ>::Ptr pclSrc = pclIn->toPointXYZ();
+                
+                *pclOut = ito::PCLPointCloud(ito::pclXYZNormal);
+                pclOut->resize(pclSrc->size());
+
+                pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
+
+
+                if(distanceType == 0)
+                {
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }                
+                }
+                else if(distanceType == 1)
+                {
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }                     
+                }
+                else if(distanceType == 2)
+                {
+                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }                     
+                }
+                else if(distanceType == 3)
+                {
+                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }                    
+                }
+            }
+            break;
         case ito::pclXYZNormal:
             {
                 pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pclIn->toPointXYZNormal();
@@ -1476,9 +1528,9 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
                 if(distanceType == 0)
                 {
                     for (int np = 0; np < pclOut->size(); np++)
-                    {     
+                    {                       
                         curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        pclDists->at(np).z = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }                
                 }
                 else if(distanceType == 1)
@@ -1486,23 +1538,141 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
                     for (int np = 0; np < pclOut->size(); np++)
                     {     
                         curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        pclDists->at(np).z = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }                     
                 }
                 else if(distanceType == 2)
                 {
                     pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
                     for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        pclDists->at(np).z = pcl::euclideanDistance(pclSrc->at(np), center);
+                    {   
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }                     
                 }
                 else if(distanceType == 3)
                 {
+                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {    
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }                    
+                }
+            }
+            break;
+        case ito::pclXYZI:
+            {
+                pcl::PointCloud<pcl::PointXYZI>::Ptr pclSrc = pclIn->toPointXYZI();
+
+                *pclOut = ito::PCLPointCloud(ito::pclXYZINormal);
+                pclOut->resize(pclSrc->size());
+
+                pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
+
+                if(distanceType == 0)
+                {
                     for (int np = 0; np < pclOut->size(); np++)
                     {     
-                        pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                        pclDists->at(np).z = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                        pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                    }                
+                }
+                else if(distanceType == 1)
+                {
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                        pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                    }                     
+                }
+                else if(distanceType == 2)
+                {
+                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                        pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                    }                     
+                }
+                else if(distanceType == 3)
+                {
+                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                        pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                    }                    
+                }
+            }
+            break;
+        case ito::pclXYZRGBA:
+            {
+                pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pclSrc = pclIn->toPointXYZRGBA();
+
+                *pclOut = ito::PCLPointCloud(ito::pclXYZRGBNormal);
+                pclOut->resize(pclSrc->size());
+
+                pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
+
+                if(distanceType == 0)
+                {
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {     
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                        pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                    }                
+                }
+                else if(distanceType == 1)
+                {
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                        pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                    }                     
+                }
+                else if(distanceType == 2)
+                {
+                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                        pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                    }                     
+                }
+                else if(distanceType == 3)
+                {
+                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
+                    for (int np = 0; np < pclOut->size(); np++)
+                    {
+                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                        pclDists->at(np).rgba = pclSrc->at(np).rgba;
                     }                    
                 }
             }
@@ -1510,6 +1680,7 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
         case ito::pclXYZINormal:
             {
                 pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclSrc = pclIn->toPointXYZINormal();
+
                 *pclOut = *pclIn;
                 pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
 
@@ -1518,7 +1689,7 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
                     for (int np = 0; np < pclOut->size(); np++)
                     {     
                         curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        pclDists->at(np).z = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }                
                 }
                 else if(distanceType == 1)
@@ -1526,7 +1697,7 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
                     for (int np = 0; np < pclOut->size(); np++)
                     {     
                         curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        pclDists->at(np).z = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }                     
                 }
                 else if(distanceType == 2)
@@ -1534,15 +1705,16 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
                     pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
                     for (int np = 0; np < pclOut->size(); np++)
                     {     
-                        pclDists->at(np).z = pcl::euclideanDistance(pclSrc->at(np), center);
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }                     
                 }
                 else if(distanceType == 3)
                 {
+                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
                     for (int np = 0; np < pclOut->size(); np++)
                     {     
-                        pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                        pclDists->at(np).z = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                        
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }                    
                 }
             }
@@ -1552,6 +1724,7 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
                 pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclSrc = pclIn->toPointXYZRGBNormal();
                 
                 *pclOut = *pclIn;
+
                 pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
                 
                 if(distanceType == 0)
@@ -1559,7 +1732,7 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
                     for (int np = 0; np < pclOut->size(); np++)
                     {     
                         curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        pclDists->at(np).z = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }                
                 }
                 else if(distanceType == 1)
@@ -1567,7 +1740,7 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
                     for (int np = 0; np < pclOut->size(); np++)
                     {     
                         curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        pclDists->at(np).z = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }                     
                 }
                 else if(distanceType == 2)
@@ -1575,15 +1748,15 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
                     pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
                     for (int np = 0; np < pclOut->size(); np++)
                     {     
-                        pclDists->at(np).z = pcl::euclideanDistance(pclSrc->at(np), center);
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }                     
                 }
                 else if(distanceType == 3)
                 {
+                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
                     for (int np = 0; np < pclOut->size(); np++)
                     {     
-                        pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                        pclDists->at(np).z = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }                    
                 }
             }
