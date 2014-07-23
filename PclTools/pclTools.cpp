@@ -1387,13 +1387,6 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
         return ito::RetVal(ito::retError, 0, tr("output point cloud must not be NULL").toLatin1().data());
     }
 
-    if(pclOut == pclIn)
-    {
-        if((pclIn->getType() != ito::pclXYZINormal) && (pclIn->getType() != ito::pclXYZNormal) && (pclIn->getType() != ito::pclXYZRGBNormal))
-            return ito::RetVal(ito::retError, 0, tr("Inplace operation only supported for pclXYZNormal, pclXYZIRGBNormal or pclXYZINormal").toLatin1().data());
-    
-    }
-
     int modelType = mands[2].getVal<int>();
     int distanceType = 0;
 
@@ -1402,8 +1395,6 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
 
     Eigen::Vector4f lineDir;
     lineDir[3] = 0.0f;
-
-
 
     float radius = cv::saturate_cast<float>(opts[2].getVal<double>());
 
@@ -1461,495 +1452,607 @@ const char* PclTools::pclDistanceToModelDOC = "\n\
 
     float floatNAN = std::numeric_limits<float>::quiet_NaN();
 
-    //#if (USEOMP)
-    //#pragma omp parallel num_threads(NTHREADS)
-    //{
-    //#endif  
+    bool overwriteInput = false; //real inplace was possible
+    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
+
+    switch(pclIn->getType())
+    {
+        default:
+        case ito::pclInvalid:
+            return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not defined or point cloud invalid").toLatin1().data());
+        case ito::pclXYZ:
+        {
+            if (pclIn == pclOut)
+            {
+                pclOut = new ito::PCLPointCloud(ito::pclXYZNormal);
+                pclOut->resize(pclIn->size());
+                overwriteInput = true;
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(ito::pclXYZNormal);
+                pclOut->resize(pclIn->size());
+            }
+        }
+        break;
+        case ito::pclXYZI:
+        {
+            if (pclIn == pclOut)
+            {
+                pclOut = new ito::PCLPointCloud(ito::pclXYZINormal);
+                pclOut->resize(pclIn->size());
+                overwriteInput = true;
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(ito::pclXYZINormal);
+                pclOut->resize(pclIn->size());
+            }
+        }
+        break;
+        case ito::pclXYZRGBA:
+        {
+            if (pclIn == pclOut)
+            {
+                pclOut = new ito::PCLPointCloud(ito::pclXYZRGBNormal);
+                pclOut->resize(pclIn->size());
+                overwriteInput = true;
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(ito::pclXYZRGBNormal);
+                pclOut->resize(pclIn->size());
+            }
+        }
+        break;
+        case ito::pclXYZNormal:
+        case ito::pclXYZINormal:
+        case ito::pclXYZRGBNormal:
+        {
+            if (pclIn == pclOut)
+            {
+                *pclOut = *pclIn;
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(*pclIn);
+            }
+        }
+        break;
+    }
+
+    #if (USEOMP)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+    #endif  
     
     Eigen::Vector4f curPt;
     curPt[3] = 0.0f;
 
     switch(pclIn->getType())
     {
-        case ito::pclInvalid:
-            return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not allowed").toLatin1().data());
-        case ito::pclXYZ: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
-            {
-                pcl::PointCloud<pcl::PointXYZ>::Ptr pclSrc = pclIn->toPointXYZ();
-                
-                *pclOut = ito::PCLPointCloud(ito::pclXYZNormal);
-                pclOut->resize(pclSrc->size());
-
-                pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
-
-
-                if(distanceType == 0)
-                {
-
-                    //#if (USEOMP)
-                    //#pragma omp for schedule(guided)
-                    //#endif     
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                
-                }
-                else if(distanceType == 1)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                     
-                }
-                else if(distanceType == 2)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                     
-                }
-                else if(distanceType == 3)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                    
-                }
-            }
-            break;
-        case ito::pclXYZNormal:
-            {
-                pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pclIn->toPointXYZNormal();
-                
-                *pclOut = *pclIn;
-                pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
-
-                if(distanceType == 0)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {                       
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                
-                }
-                else if(distanceType == 1)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                     
-                }
-                else if(distanceType == 2)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {   
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                     
-                }
-                else if(distanceType == 3)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {    
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                    
-                }
-            }
-            break;
-        case ito::pclXYZI:
-            {
-                pcl::PointCloud<pcl::PointXYZI>::Ptr pclSrc = pclIn->toPointXYZI();
-
-                *pclOut = ito::PCLPointCloud(ito::pclXYZINormal);
-                pclOut->resize(pclSrc->size());
-
-                pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
-
-                if(distanceType == 0)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                        pclDists->at(np).intensity = pclSrc->at(np).intensity;
-                    }                
-                }
-                else if(distanceType == 1)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                        pclDists->at(np).intensity = pclSrc->at(np).intensity;
-                    }                     
-                }
-                else if(distanceType == 2)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                        pclDists->at(np).intensity = pclSrc->at(np).intensity;
-                    }                     
-                }
-                else if(distanceType == 3)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                        pclDists->at(np).intensity = pclSrc->at(np).intensity;
-                    }                    
-                }
-            }
-            break;
-        case ito::pclXYZRGBA:
-            {
-                pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pclSrc = pclIn->toPointXYZRGBA();
-
-                *pclOut = ito::PCLPointCloud(ito::pclXYZRGBNormal);
-                pclOut->resize(pclSrc->size());
-
-                pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
-
-                if(distanceType == 0)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                        pclDists->at(np).rgba = pclSrc->at(np).rgba;
-                    }                
-                }
-                else if(distanceType == 1)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                        pclDists->at(np).rgba = pclSrc->at(np).rgba;
-                    }                     
-                }
-                else if(distanceType == 2)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                        pclDists->at(np).rgba = pclSrc->at(np).rgba;
-                    }                     
-                }
-                else if(distanceType == 3)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {
-                        memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
-                        memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                        pclDists->at(np).rgba = pclSrc->at(np).rgba;
-                    }                    
-                }
-            }
-            break;
-        case ito::pclXYZINormal:
-            {
-                pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclSrc = pclIn->toPointXYZINormal();
-
-                *pclOut = *pclIn;
-                pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
-
-                if(distanceType == 0)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                
-                }
-                else if(distanceType == 1)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                     
-                }
-                else if(distanceType == 2)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                     
-                }
-                else if(distanceType == 3)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                    
-                }
-            }
-            break;
-        case ito::pclXYZRGBNormal:
-            {
-                pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclSrc = pclIn->toPointXYZRGBNormal();
-                
-                *pclOut = *pclIn;
-
-                pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
-                
-                if(distanceType == 0)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                
-                }
-                else if(distanceType == 1)
-                {
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                     
-                }
-                else if(distanceType == 2)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                     
-                }
-                else if(distanceType == 3)
-                {
-                    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
-                    for (int np = 0; np < pclOut->size(); np++)
-                    {     
-                        if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
-                        {
-                            pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
-                        }
-                        else
-                        {
-                            pclDists->at(np).curvature = floatNAN;
-                        }
-                    }                    
-                }
-            }
-            break;
         default:
-            return ito::RetVal(ito::retError, 0, tr("point cloud must have normal vectors defined.").toLatin1().data());
+        case ito::pclInvalid:
+            retval += ito::RetVal(ito::retError, 0, tr("invalid point cloud type or type not allowed").toLatin1().data());
+            break;
+        case ito::pclXYZ: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
+        {
+            pcl::PointCloud<pcl::PointXYZ>::Ptr pclSrc = pclIn->toPointXYZ();
+            pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
+
+            if(distanceType == 0)
+            {
+
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                    
+            }
+        }
+        break;
+        case ito::pclXYZNormal:
+        {
+            pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pclIn->toPointXYZNormal();
+            pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
+
+            if(distanceType == 0)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {                       
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {   
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {    
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                    
+            }
+        }
+        break;
+        case ito::pclXYZI:
+        {
+            pcl::PointCloud<pcl::PointXYZI>::Ptr pclSrc = pclIn->toPointXYZI();
+            pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
+
+            if(distanceType == 0)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                }                    
+            }
+        }
+        break;
+        case ito::pclXYZRGBA:
+        {
+            pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pclSrc = pclIn->toPointXYZRGBA();
+            pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
+
+            if(distanceType == 0)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                }                    
+            }
+        }
+        break;
+        case ito::pclXYZINormal:
+        {
+            pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclSrc = pclIn->toPointXYZINormal();
+            pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
+
+            if(distanceType == 0)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                        
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                    
+            }
+        }
+        break;
+        case ito::pclXYZRGBNormal:
+        {
+            pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclSrc = pclIn->toPointXYZRGBNormal();
+            pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
+                
+            if(distanceType == 0)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                    
+            }
+        }
+        break;
     }
 
-    //#if (USEOMP)
-    //}
-    //#endif
+    #if (USEOMP)
+    }
+    #endif
+
+    if (!retval.containsError() && overwriteInput)
+    {
+        (*pclIn) = (*pclOut); //here: pclOut is a new, temporary point cloud, pclIn is the given argument pclIn AND pclOut!
+        delete pclOut;
+    }
 
     return retval;
 #endif  
