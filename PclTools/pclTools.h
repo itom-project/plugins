@@ -25,6 +25,11 @@
 
 #include "common/addInInterface.h"
 
+#ifdef USEOPENMP
+    #define USEOMP 1
+#else
+    #define USEOMP 0
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class PclToolsInterface
