@@ -393,8 +393,13 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
 
     //acquire test image in order to get knownledge about camera's abilities
     //camRetVal = m_pCam->grab();
-    //camRetVal = m_pCam->retrieve(m_pDataMatBuffer);
-    camRetVal = m_pCam->read(m_pDataMatBuffer);
+    camRetVal = m_pCam->retrieve(m_pDataMatBuffer);
+    if(!camRetVal)
+    {
+        Sleep(100);
+        camRetVal = m_pCam->retrieve(m_pDataMatBuffer);
+    }
+    //camRetVal = m_pCam->read(m_pDataMatBuffer);
     if(camRetVal)
     {
         m_imgChannels = m_pDataMatBuffer.channels();
