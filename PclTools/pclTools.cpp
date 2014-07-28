@@ -4047,6 +4047,7 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
+
 // ---------------------------------------------------------------------- DO NOT ADD FILTER BELOW THIS!!! -----------------------------------------------------------
 ito::RetVal PclTools::close(ItomSharedSemaphore *waitCond)
 {
@@ -4062,4 +4063,5 @@ ito::RetVal PclTools::close(ItomSharedSemaphore *waitCond)
 
     return retval;
 }
+
 // ---------------------------------------------------------------------- DO NOT ADD FILTER BELOW THIS!!! -----------------------------------------------------------
