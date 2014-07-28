@@ -83,6 +83,9 @@
 
 int NTHREADS = 2;
 
+#define CIRCLE3D_LIMIT_NORMAL 0
+#define PLANE_LIMIT_NORMAL 0
+
 //PCL_INSTANTIATE_RandomSampleCorrected(pcl::PointXYZ)
     //template class pcl::RandomSampleCorrected<T>;
 
@@ -872,8 +875,8 @@ bool PclTools::checkFitWithOutNormals(const int &fitObj)
 {
     switch(fitObj)
     {
-        //case pcl::SACMODEL_PLANE:
-        //case pcl::SACMODEL_LINE:
+        case pcl::SACMODEL_PLANE:
+        case pcl::SACMODEL_LINE:
         //case pcl::SACMODEL_STICK:
         case pcl::SACMODEL_CIRCLE2D:
         case pcl::SACMODEL_CIRCLE3D:
@@ -891,8 +894,8 @@ bool PclTools::checkFitNormals(const int &fitObj)
 {
     switch(fitObj)
     {
-        //case pcl::SACMODEL_PLANE:
-        //case pcl::SACMODEL_LINE:
+        case pcl::SACMODEL_PLANE:
+        case pcl::SACMODEL_LINE:
         //case pcl::SACMODEL_STICK:
         case pcl::SACMODEL_CIRCLE2D:
         case pcl::SACMODEL_CIRCLE3D:
@@ -1028,16 +1031,14 @@ const char* PclTools::transformAffineDOC = "\n\
         return ito::RetVal(ito::retError, 0, tr("point cloud must not be NULL").toLatin1().data());
     }
 
-    if (mands[1].getLen() != 2)
-    {
-        return ito::RetVal(ito::retError, 0, tr("radiusLimits must contain of 2 entries").toLatin1().data());
-    }
-
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
     return ito::RetVal(ito::retError, 0, tr("pclFitCylinder not implemented for PCL 1.6.1 or lower").toLatin1().data());
 #else
 
     double *radiusLimits = NULL;
+    double *normalAxis = NULL;
+    double orientationAngle = M_PI;
+
     double normalDistanceWeight = 0.0;
     int maxIterations = 0;
     double distanceThreshold = 0.0;
@@ -1046,10 +1047,12 @@ const char* PclTools::transformAffineDOC = "\n\
 
     bool doGenericOutPut = false;
 
+    bool useRadius = false;
+    bool useAxis = false;
+
     switch(fitType)
     {
-        case pcl::SACMODEL_PLANE:
-        case pcl::SACMODEL_LINE:
+
         case pcl::SACMODEL_CONE:
         case pcl::SACMODEL_TORUS:
         case pcl::SACMODEL_PARALLEL_LINE:
@@ -1063,18 +1066,95 @@ const char* PclTools::transformAffineDOC = "\n\
         case pcl::SACMODEL_NORMAL_PARALLEL_PLANE:
         case pcl::SACMODEL_STICK:
         default:
-            return ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(fitType))).toLatin1().data());
-        case pcl::SACMODEL_CIRCLE2D:
-        case pcl::SACMODEL_CIRCLE3D:
-        case pcl::SACMODEL_CYLINDER:
-        case pcl::SACMODEL_SPHERE:
+            retval += ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(fitType))).toLatin1().data());
+            break;
+        case pcl::SACMODEL_PLANE:
+        case pcl::SACMODEL_LINE:
             doGenericOutPut = false;
-            radiusLimits = mands[1].getVal<double*>();
+
+#if PLANE_LIMIT_NORMAL
+            normalAxis = opts[0].getVal<double*>();
+            if(normalAxis == NULL || opts[0].getLen() < 1)
+            {
+                useAxis = false;
+            }
+            else if(opts[0].getLen() < 3)
+            {
+                useAxis = false;
+                retval += ito::RetVal(ito::retError, 0, tr("(normal-)axis vector must have at 3 entries").toLatin1().data());
+            }
+            else
+            {
+                useAxis = true;
+            }
+            orientationAngle = opts[1].getVal<double>();
+            normalDistanceWeight = opts[2].getVal<double>();
+            maxIterations = opts[3].getVal<int>();
+            distanceThreshold = opts[4].getVal<double>();
+            optimizeCoefficients = (opts[5].getVal<int>() > 0);
+            probability = opts[6].getVal<double>();
+#else
+            useAxis = false;
             normalDistanceWeight = opts[0].getVal<double>();
             maxIterations = opts[1].getVal<int>();
             distanceThreshold = opts[2].getVal<double>();
             optimizeCoefficients = (opts[3].getVal<int>() > 0);
             probability = opts[4].getVal<double>();
+#endif
+
+            useRadius = false;
+            break;
+#if CIRCLE3D_LIMIT_NORMAL
+        case pcl::SACMODEL_CIRCLE3D:
+            doGenericOutPut = false;
+            radiusLimits = mands[1].getVal<double*>();
+            if(radiusLimits == NULL || mands[1].getLen() != 2)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("Radius limit must have 2 entries").toLatin1().data());
+            }
+
+            normalAxis = opts[0].getVal<double*>();
+            if(normalAxis == NULL || opts[0].getLen() < 1)
+            {
+                useAxis = false;
+            }
+            else if(opts[0].getLen() != 3)
+            {
+                useAxis = false;
+                retval += ito::RetVal(ito::retError, 0, tr("(normal-)axis vector must have 3 entries").toLatin1().data());
+            }
+            else
+            {
+                useAxis = true;
+            }
+            orientationAngle = opts[1].getVal<double>();
+
+            normalDistanceWeight = opts[2].getVal<double>();
+            maxIterations = opts[3].getVal<int>();
+            distanceThreshold = opts[4].getVal<double>();
+            optimizeCoefficients = (opts[5].getVal<int>() > 0);
+            probability = opts[6].getVal<double>();
+            useRadius = true;
+        break;
+#else
+        case pcl::SACMODEL_CIRCLE3D:
+#endif // CIRCLE3D_LIMIT_NORMAL --> in theory circle 3D should accept a limit on the normal vector but this constrain has no effect!
+        case pcl::SACMODEL_CIRCLE2D:
+        case pcl::SACMODEL_CYLINDER:
+        case pcl::SACMODEL_SPHERE:
+            doGenericOutPut = false;
+            radiusLimits = mands[1].getVal<double*>();
+            if(radiusLimits == NULL || mands[1].getLen() != 2)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("Radius limit must have 2 entries").toLatin1().data());
+            }
+
+            normalDistanceWeight = opts[0].getVal<double>();
+            maxIterations = opts[1].getVal<int>();
+            distanceThreshold = opts[2].getVal<double>();
+            optimizeCoefficients = (opts[3].getVal<int>() > 0);
+            probability = opts[4].getVal<double>();
+            useRadius = true;
         break;
 
         case -1: //  This is for generic fitting
@@ -1084,17 +1164,71 @@ const char* PclTools::transformAffineDOC = "\n\
             switch(fitType)
             {
                 default:
-                    return ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(fitType))).toLatin1().data());
-                case pcl::SACMODEL_CIRCLE2D:
+                    retval += ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(fitType))).toLatin1().data());
+                    break;
+                
+                case pcl::SACMODEL_PLANE:
+                case pcl::SACMODEL_LINE:
+#if PLANE_LIMIT_NORMAL
+                    normalAxis = opts[1].getVal<double*>();
+                    if(normalAxis == NULL || opts[1].getLen() < 1)
+                    {
+                        useAxis = false;
+                    }
+                    else if(opts[1].getLen() != 3)
+                    {
+                        useAxis = false;
+                        retval += ito::RetVal(ito::retError, 0, tr("(normal-)axis vector must have 3 entries").toLatin1().data());
+                    }
+                    else
+                    {
+                        useAxis = true;
+                    }
+                    orientationAngle = opts[2].getVal<double>();
+#else
+                    useAxis = false;
+#endif
+                    normalDistanceWeight = opts[3].getVal<double>();
+                    maxIterations = opts[4].getVal<int>();
+                    distanceThreshold = opts[5].getVal<double>();
+                    optimizeCoefficients = (opts[6].getVal<int>() > 0);
+                    probability = opts[7].getVal<double>();
+                    useRadius = false;
+                    break;
+
                 case pcl::SACMODEL_CIRCLE3D:
-                case pcl::SACMODEL_CYLINDER:
+#if CIRCLE3D_LIMIT_NORMAL
+                    normalAxis = opts[1].getVal<double*>();
+                    if(normalAxis == NULL || opts[1].getLen() < 1)
+                    {
+                        useAxis = false;
+                    }
+                    else if(opts[1].getLen() != 3)
+                    {
+                        useAxis = false;
+                        retval += ito::RetVal(ito::retError, 0, tr("(normal-)axis vector must have 3 entries").toLatin1().data());
+                    }
+                    else
+                    {
+                        useAxis = true;
+                    }
+                    orientationAngle = opts[2].getVal<double>();
+#endif
+                case pcl::SACMODEL_CIRCLE2D:
                 case pcl::SACMODEL_SPHERE:
+                case pcl::SACMODEL_CYLINDER:
                     radiusLimits = opts[0].getVal<double*>();
-                    normalDistanceWeight = opts[1].getVal<double>();
-                    maxIterations = opts[2].getVal<int>();
-                    distanceThreshold = opts[3].getVal<double>();
-                    optimizeCoefficients = (opts[4].getVal<int>() > 0);
-                    probability = opts[5].getVal<double>();
+                    if(radiusLimits == NULL || opts[0].getLen() != 2)
+                    {
+                        retval += ito::RetVal(ito::retError, 0, tr("Radius limit must have 2 entries").toLatin1().data());
+                    }
+                    
+                    normalDistanceWeight = opts[3].getVal<double>();
+                    maxIterations = opts[4].getVal<int>();
+                    distanceThreshold = opts[5].getVal<double>();
+                    optimizeCoefficients = (opts[6].getVal<int>() > 0);
+                    probability = opts[7].getVal<double>();
+                    useRadius = true;
                 break;
             }
 
@@ -1105,224 +1239,319 @@ const char* PclTools::transformAffineDOC = "\n\
     pcl::ModelCoefficients::Ptr fitCoefficients (new pcl::ModelCoefficients);
     pcl::PointIndices::Ptr fitInliers (new pcl::PointIndices);
 
-    switch(pclIn->getType())
+    if(!retval.containsError())
     {
-    case ito::pclInvalid:
-        return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not allowed").toLatin1().data());
-    case ito::pclXYZ: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
-        {
 
-            if(!checkFitWithOutNormals(fitType))
+        switch(pclIn->getType())
+        {
+        case ito::pclInvalid:
+            retval += ito::RetVal(ito::retError, 0, tr("invalid point cloud type not allowed").toLatin1().data());
+            break;
+        case ito::pclXYZ: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
             {
-                return ito::RetVal(ito::retError, 0, tr("Can not fit the supposed type to object without normals defined.").toLatin1().data());
+
+                if(!checkFitWithOutNormals(fitType))
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("Can not fit the supposed type to object without normals defined.").toLatin1().data());
+                }
+                else
+                {
+                    pcl::SACSegmentation<pcl::PointXYZ> seg;
+
+                    // Create the segmentation object for cylinder segmentation and set all the parameters
+                    seg.setOptimizeCoefficients (optimizeCoefficients);
+                    seg.setModelType (fitType);
+                    seg.setMethodType (pcl::SAC_RANSAC);
+                    seg.setMaxIterations (maxIterations);
+                    seg.setDistanceThreshold (distanceThreshold);
+
+                    if(useRadius)
+                        seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
+
+                    if(useAxis)
+                    {
+                        seg.setEpsAngle(orientationAngle);
+                        Eigen::Vector3f normalV(normalAxis[0], normalAxis[1], normalAxis[2]);
+                        seg.setAxis(normalV);
+                    }
+
+                    seg.setInputCloud (pclIn->toPointXYZ());
+                    seg.setProbability (probability);
+
+                    // Obtain the cylinder inliers and coefficients
+                    seg.segment (*fitInliers, *fitCoefficients);
+                }
             }
-
-            pcl::SACSegmentation<pcl::PointXYZ> seg;
-
-            // Create the segmentation object for cylinder segmentation and set all the parameters
-            seg.setOptimizeCoefficients (optimizeCoefficients);
-            seg.setModelType (fitType);
-            seg.setMethodType (pcl::SAC_RANSAC);
-            seg.setMaxIterations (maxIterations);
-            seg.setDistanceThreshold (distanceThreshold);
-            seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
-            seg.setInputCloud (pclIn->toPointXYZ());
-            seg.setProbability (probability);
-            // Obtain the cylinder inliers and coefficients
-            seg.segment (*fitInliers, *fitCoefficients);
-        }
-        break;
-    case ito::pclXYZI: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
-        {
-
-            if(!checkFitWithOutNormals(fitType))
+            break;
+        case ito::pclXYZI: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
             {
-                return ito::RetVal(ito::retError, 0, tr("Can not fit the supposed type to object without normals defined.").toLatin1().data());
-            }
 
-            pcl::SACSegmentation<pcl::PointXYZI> seg;
+                if(!checkFitWithOutNormals(fitType))
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("Can not fit the supposed type to object without normals defined.").toLatin1().data());
+                }
+                else
+                {
 
-            // Create the segmentation object for cylinder segmentation and set all the parameters
-            seg.setOptimizeCoefficients (optimizeCoefficients);
-            seg.setModelType (fitType);
-            seg.setMethodType (pcl::SAC_RANSAC);
-            seg.setMaxIterations (maxIterations);
-            seg.setDistanceThreshold (distanceThreshold);
-            seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
-            seg.setInputCloud (pclIn->toPointXYZI());
-            seg.setProbability (probability);
-            // Obtain the cylinder inliers and coefficients
-            seg.segment (*fitInliers, *fitCoefficients);
-        }
-        break;
-    case ito::pclXYZRGBA: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
-        {
+                    pcl::SACSegmentation<pcl::PointXYZI> seg;
 
-            if(!checkFitWithOutNormals(fitType))
-            {
-                return ito::RetVal(ito::retError, 0, tr("Can not fit the supposed type to object without normals defined.").toLatin1().data());
-            }
-
-            pcl::SACSegmentation<pcl::PointXYZRGBA> seg;
-
-            // Create the segmentation object for cylinder segmentation and set all the parameters
-            seg.setOptimizeCoefficients (optimizeCoefficients);
-            seg.setModelType (fitType);
-            seg.setMethodType (pcl::SAC_RANSAC);
-            seg.setMaxIterations (maxIterations);
-            seg.setDistanceThreshold (distanceThreshold);
-            seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
-            seg.setInputCloud (pclIn->toPointXYZRGBA());
-            seg.setProbability (probability);
-            // Obtain the cylinder inliers and coefficients
-            seg.segment (*fitInliers, *fitCoefficients);
-        }
-        break;
-    case ito::pclXYZNormal:
-        {
-            pcl::SACSegmentationFromNormals<pcl::PointNormal, pcl::PointNormal> seg(true); 
-
-            // Create the segmentation object for cylinder / spherical segmentation and set all the parameters
-            seg.setOptimizeCoefficients (optimizeCoefficients);
-            seg.setModelType (fitType);
-            seg.setMethodType (pcl::SAC_RANSAC);
-            seg.setNormalDistanceWeight (normalDistanceWeight);
-            seg.setMaxIterations (maxIterations);
-            seg.setDistanceThreshold (distanceThreshold);
-            seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
-            seg.setInputCloud (pclIn->toPointXYZNormal());
-            seg.setInputNormals (pclIn->toPointXYZNormal());
-            seg.setProbability (probability);
-
-            // Obtain the cylinder inliers and coefficients
-            seg.segment (*fitInliers, *fitCoefficients);
-        }
-        break;
-    case ito::pclXYZINormal:
-        {
-            pcl::SACSegmentationFromNormals<pcl::PointXYZINormal, pcl::PointXYZINormal> seg(true); 
-
-            // Create the segmentation object for cylinder / spherical segmentation and set all the parameters
-            seg.setOptimizeCoefficients (optimizeCoefficients);
-            seg.setModelType (fitType);
-            seg.setMethodType (pcl::SAC_RANSAC);
-            seg.setNormalDistanceWeight (normalDistanceWeight);
-            seg.setMaxIterations (maxIterations);
-            seg.setDistanceThreshold (distanceThreshold);
-            seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
-            seg.setInputCloud (pclIn->toPointXYZINormal());
-            seg.setInputNormals (pclIn->toPointXYZINormal());
-            seg.setProbability (probability);
-
-            // Obtain the cylinder inliers and coefficients
-            seg.segment (*fitInliers, *fitCoefficients);
-        }
-        break;
-    case ito::pclXYZRGBNormal:
-        {
-            pcl::SACSegmentationFromNormals<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> seg(true); 
-
-            // Create the segmentation object for cylinder / spherical segmentation and set all the parameters
-            seg.setOptimizeCoefficients (optimizeCoefficients);
-            seg.setModelType (fitType);
-            seg.setMethodType (pcl::SAC_RANSAC);
-            seg.setNormalDistanceWeight (normalDistanceWeight);
-            seg.setMaxIterations (maxIterations);
-            seg.setDistanceThreshold (distanceThreshold);
-            seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
-            seg.setInputCloud (pclIn->toPointXYZRGBNormal());
-            seg.setInputNormals (pclIn->toPointXYZRGBNormal());
-            seg.setProbability (probability);
-
-            // Obtain the cylinder inliers and coefficients
-            seg.segment (*fitInliers, *fitCoefficients);           
+                    // Create the segmentation object for cylinder segmentation and set all the parameters
+                    seg.setOptimizeCoefficients (optimizeCoefficients);
+                    seg.setModelType (fitType);
+                    seg.setMethodType (pcl::SAC_RANSAC);
+                    seg.setMaxIterations (maxIterations);
+                    seg.setDistanceThreshold (distanceThreshold);
             
+                    if(useRadius)
+                        seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
+
+                    if(useAxis)
+                    {
+                        seg.setEpsAngle(orientationAngle);
+                        Eigen::Vector3f normalV(normalAxis[0], normalAxis[1], normalAxis[2]);
+                        seg.setAxis(normalV);
+                    }
+
+                    seg.setInputCloud (pclIn->toPointXYZI());
+                    seg.setProbability (probability);
+                    // Obtain the cylinder inliers and coefficients
+                    seg.segment (*fitInliers, *fitCoefficients);
+                }
+            }
+            break;
+        case ito::pclXYZRGBA: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
+            {
+
+                if(!checkFitWithOutNormals(fitType))
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("Can not fit the supposed type to object without normals defined.").toLatin1().data());
+                }
+                else
+                {
+
+                    pcl::SACSegmentation<pcl::PointXYZRGBA> seg;
+
+                    // Create the segmentation object for cylinder segmentation and set all the parameters
+            
+                    seg.setOptimizeCoefficients (optimizeCoefficients);
+                    seg.setModelType (fitType);
+                    seg.setMethodType (pcl::SAC_RANSAC);
+                    seg.setMaxIterations (maxIterations);
+                    seg.setDistanceThreshold (distanceThreshold);
+
+                    if(useRadius)
+                        seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
+
+                    if(useAxis)
+                    {
+                        seg.setEpsAngle(orientationAngle);
+                        Eigen::Vector3f normalV(normalAxis[0], normalAxis[1], normalAxis[2]);
+                        seg.setAxis(normalV);
+                    }
+
+                    seg.setInputCloud (pclIn->toPointXYZRGBA());
+                    seg.setProbability (probability);
+                    // Obtain the cylinder inliers and coefficients
+                    seg.segment (*fitInliers, *fitCoefficients);
+                }
+            }
+            break;
+        case ito::pclXYZNormal:
+            {
+                pcl::SACSegmentationFromNormals<pcl::PointNormal, pcl::PointNormal> seg(true); 
+
+                // Create the segmentation object for cylinder / spherical segmentation and set all the parameters
+                seg.setOptimizeCoefficients (optimizeCoefficients);
+                seg.setModelType (fitType);
+                seg.setMethodType (pcl::SAC_RANSAC);
+                seg.setNormalDistanceWeight (normalDistanceWeight);
+                seg.setMaxIterations (maxIterations);
+                seg.setDistanceThreshold (distanceThreshold);
+
+                if(useRadius)
+                    seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
+                if(useAxis)
+                {
+                    seg.setEpsAngle(orientationAngle);
+                    Eigen::Vector3f normalV(normalAxis[0], normalAxis[1], normalAxis[2]);
+                    seg.setAxis(normalV);
+                }
+                seg.setInputCloud (pclIn->toPointXYZNormal());
+                seg.setInputNormals (pclIn->toPointXYZNormal());
+                seg.setProbability (probability);
+
+                // Obtain the cylinder inliers and coefficients
+                seg.segment (*fitInliers, *fitCoefficients);
+            }
+            break;
+        case ito::pclXYZINormal:
+            {
+                pcl::SACSegmentationFromNormals<pcl::PointXYZINormal, pcl::PointXYZINormal> seg(true); 
+
+                // Create the segmentation object for cylinder / spherical segmentation and set all the parameters
+                seg.setOptimizeCoefficients (optimizeCoefficients);
+                seg.setModelType (fitType);
+                seg.setMethodType (pcl::SAC_RANSAC);
+                seg.setNormalDistanceWeight (normalDistanceWeight);
+                seg.setMaxIterations (maxIterations);
+                seg.setDistanceThreshold (distanceThreshold);
+
+                if(useRadius)
+                    seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
+                if(useAxis)
+                {
+                    seg.setEpsAngle(orientationAngle);
+                    Eigen::Vector3f normalV(normalAxis[0], normalAxis[1], normalAxis[2]);
+                    seg.setAxis(normalV);
+                }
+                seg.setInputCloud (pclIn->toPointXYZINormal());
+                seg.setInputNormals (pclIn->toPointXYZINormal());
+                seg.setProbability (probability);
+
+                // Obtain the cylinder inliers and coefficients
+                seg.segment (*fitInliers, *fitCoefficients);
+            }
+            break;
+        case ito::pclXYZRGBNormal:
+            {
+                pcl::SACSegmentationFromNormals<pcl::PointXYZRGBNormal, pcl::PointXYZRGBNormal> seg(true); 
+
+                // Create the segmentation object for cylinder / spherical segmentation and set all the parameters
+                seg.setOptimizeCoefficients (optimizeCoefficients);
+                seg.setModelType (fitType);
+                seg.setMethodType (pcl::SAC_RANSAC);
+                seg.setNormalDistanceWeight (normalDistanceWeight);
+                seg.setMaxIterations (maxIterations);
+                seg.setDistanceThreshold (distanceThreshold);
+
+                if(useRadius)
+                    seg.setRadiusLimits (std::min(radiusLimits[0], radiusLimits[1]), std::max(radiusLimits[0], radiusLimits[1]));
+                if(useAxis)
+                {
+                    seg.setEpsAngle(orientationAngle);
+                    Eigen::Vector3f normalV(normalAxis[0], normalAxis[1], normalAxis[2]);
+                    seg.setAxis(normalV);
+                }
+                seg.setInputCloud (pclIn->toPointXYZRGBNormal());
+                seg.setInputNormals (pclIn->toPointXYZRGBNormal());
+                seg.setProbability (probability);
+
+                // Obtain the cylinder inliers and coefficients
+                seg.segment (*fitInliers, *fitCoefficients);           
+            
+            }
+            break;
+        default:
+            retval += ito::RetVal(ito::retError, 0, tr("point cloud must have normal vectors defined.").toLatin1().data());
+            break;
         }
-        break;
-    default:
-        return ito::RetVal(ito::retError, 0, tr("point cloud must have normal vectors defined.").toLatin1().data());
     }
 
-    if (fitInliers->indices.size() == 0)
+    if (!retval.containsError() && fitInliers->indices.size() == 0)
     {
-        return ito::RetVal(ito::retError, 0, tr("no model could be fit to given point cloud").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("no model could be fit to given point cloud").toLatin1().data());
     }
 
-    if(doGenericOutPut)
+    if(!retval.containsError())
     {
-        int numOfCoeffs = fitCoefficients->values.size();
-        double *result = (double*)calloc(numOfCoeffs, sizeof(double));
-        if(!result)
+        if(doGenericOutPut)
         {
-            retval += ito::RetVal(ito::retError, 0, (tr("Could not alloced result vector").arg(QString::number(fitType))).toLatin1().data());
+            int numOfCoeffs = fitCoefficients->values.size();
+            double *result = (double*)calloc(numOfCoeffs, sizeof(double));
+            if(!result)
+            {
+                retval += ito::RetVal(ito::retError, 0, (tr("Could not alloced result vector").arg(QString::number(fitType))).toLatin1().data());
+            }
+            else
+            {
+                for(int i = 0; i < numOfCoeffs; i++)
+                {
+                    result[i] = fitCoefficients->values[i];
+                }
+                paramsOut->data()[0].setVal<double*>(result, numOfCoeffs); // Positions
+
+                free(result);
+                result = NULL;
+            }
+        
         }
         else
         {
-            for(int i = 0; i < numOfCoeffs; i++)
+            switch(fitType)
             {
-                result[i] = fitCoefficients->values[i];
-            }
-            paramsOut->data()[0].setVal<double*>(result, numOfCoeffs); // Positions
+                default:
+                    retval += ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(fitType))).toLatin1().data());
+                    break;
+                case pcl::SACMODEL_PLANE:
+                {
+                    double vec[] = { fitCoefficients->values[0], fitCoefficients->values[1], fitCoefficients->values[2] };
 
-            free(result);
-            result = NULL;
-        }
-        
-    }
-    else
-    {
-        switch(fitType)
-        {
-            default:
-                return ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(fitType))).toLatin1().data());
-            case pcl::SACMODEL_CYLINDER:
-            {
-                double points[] = { fitCoefficients->values[0], fitCoefficients->values[1], fitCoefficients->values[2] };
-                double vec[] = { fitCoefficients->values[3], fitCoefficients->values[4], fitCoefficients->values[5] };
-
-                paramsOut->data()[0].setVal<double*>(points, 3);
-                paramsOut->data()[1].setVal<double*>(vec, 3);
-                paramsOut->data()[2].setVal<double>(fitCoefficients->values[6]); //radius
-                paramsOut->data()[3].setVal<int>(fitInliers->indices.size());
+                    paramsOut->data()[0].setVal<double*>(vec, 3);
+                    paramsOut->data()[1].setVal<double>(fitCoefficients->values[3]);
+                    paramsOut->data()[2].setVal<int>(fitInliers->indices.size());
             
-                break;
-            }
-            case pcl::SACMODEL_SPHERE:
-            {
-                // sphereCoefficients are centerX, centerY, centerZ, radius
+                    break;
+                }
+                case pcl::SACMODEL_LINE:
+                {
+                    double points[] = { fitCoefficients->values[0], fitCoefficients->values[1], fitCoefficients->values[2] };
+                    double vec[] = { fitCoefficients->values[3], fitCoefficients->values[4], fitCoefficients->values[5] };
 
-                double points[] = { fitCoefficients->values[0], fitCoefficients->values[1], fitCoefficients->values[2] };
+                    paramsOut->data()[0].setVal<double*>(points, 3);
+                    paramsOut->data()[1].setVal<double*>(vec, 3);
+                    paramsOut->data()[2].setVal<int>(fitInliers->indices.size());
+            
+                    break;
+                }
+                case pcl::SACMODEL_CYLINDER:
+                {
+                    double points[] = { fitCoefficients->values[0], fitCoefficients->values[1], fitCoefficients->values[2] };
+                    double vec[] = { fitCoefficients->values[3], fitCoefficients->values[4], fitCoefficients->values[5] };
 
-                paramsOut->data()[0].setVal<double*>(points, 3); // Positions
-                paramsOut->data()[1].setVal<double>(fitCoefficients->values[3]); //radius
-                paramsOut->data()[2].setVal<int>(fitInliers->indices.size());
-                break;
-            }
-            case pcl::SACMODEL_CIRCLE2D:
-            {
-                // sphereCoefficients are centerX, centerY, centerZ, radius
+                    paramsOut->data()[0].setVal<double*>(points, 3);
+                    paramsOut->data()[1].setVal<double*>(vec, 3);
+                    paramsOut->data()[2].setVal<double>(fitCoefficients->values[6]); //radius
+                    paramsOut->data()[3].setVal<int>(fitInliers->indices.size());
+            
+                    break;
+                }
+                case pcl::SACMODEL_SPHERE:
+                {
+                    // sphereCoefficients are centerX, centerY, centerZ, radius
 
-                double points[] = { fitCoefficients->values[0], fitCoefficients->values[1]};
+                    double points[] = { fitCoefficients->values[0], fitCoefficients->values[1], fitCoefficients->values[2] };
 
-                paramsOut->data()[0].setVal<double*>(points, 2); // Positions
-                paramsOut->data()[1].setVal<double>(fitCoefficients->values[2]); //radius
-                paramsOut->data()[2].setVal<int>(fitInliers->indices.size());
-                break;
-            }
-            case pcl::SACMODEL_CIRCLE3D:
-            {
-                // sphereCoefficients are centerX, centerY, centerZ, radius
+                    paramsOut->data()[0].setVal<double*>(points, 3); // Positions
+                    paramsOut->data()[1].setVal<double>(fitCoefficients->values[3]); //radius
+                    paramsOut->data()[2].setVal<int>(fitInliers->indices.size());
+                    break;
+                }
+                case pcl::SACMODEL_CIRCLE2D:
+                {
+                    // sphereCoefficients are centerX, centerY, centerZ, radius
 
-                double points[] = { fitCoefficients->values[0], fitCoefficients->values[1], fitCoefficients->values[2] };
-                double normal[] = { fitCoefficients->values[4], fitCoefficients->values[5], fitCoefficients->values[6] };
-                paramsOut->data()[0].setVal<double*>(points, 3); // Positions
-                paramsOut->data()[1].setVal<double*>(normal, 3); // Positions
-                paramsOut->data()[2].setVal<double>(fitCoefficients->values[3]); //radius
+                    double points[] = { fitCoefficients->values[0], fitCoefficients->values[1]};
+
+                    paramsOut->data()[0].setVal<double*>(points, 2); // Positions
+                    paramsOut->data()[1].setVal<double>(fitCoefficients->values[2]); //radius
+                    paramsOut->data()[2].setVal<int>(fitInliers->indices.size());
+                    break;
+                }
+                case pcl::SACMODEL_CIRCLE3D:
+                {
+                    // sphereCoefficients are centerX, centerY, centerZ, radius
+
+                    double points[] = { fitCoefficients->values[0], fitCoefficients->values[1], fitCoefficients->values[2] };
+                    double normal[] = { fitCoefficients->values[4], fitCoefficients->values[5], fitCoefficients->values[6] };
+                    paramsOut->data()[0].setVal<double*>(points, 3); // Positions
+                    paramsOut->data()[1].setVal<double*>(normal, 3); // Positions
+                    paramsOut->data()[2].setVal<double>(fitCoefficients->values[3]); //radius
                 
-                paramsOut->data()[3].setVal<int>(fitInliers->indices.size());
-                break;
-            }
-        }    
+                    paramsOut->data()[3].setVal<int>(fitInliers->indices.size());
+                    break;
+                }
+            }    
+        }
     }
     return retval;
 #endif  
@@ -1350,10 +1579,12 @@ const char* PclTools::pclFitModelDOC = "\n\
     paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, pcl::SACMODEL_PLANE, tr("Model type according to enum pcl::SacModel").toLatin1().data()));
     paramsOpt->clear();
     paramsOpt->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
+    paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation").toLatin1().data()));
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
     paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
-    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
     paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
 
     paramsOut->clear();
@@ -1393,7 +1624,7 @@ const char* PclTools::pclFitCylinderDOC = "\n\
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
     paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
-    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
     paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
 
     paramsOut->clear();
@@ -1436,7 +1667,7 @@ const char* PclTools::pclFitSphereDOC = "\n\
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
     paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
-    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
     paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
 
     paramsOut->clear();
@@ -1478,7 +1709,7 @@ const char* PclTools::pclFitCircle2DDOC = "\n\
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
     paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
-    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
     paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
 
     paramsOut->clear();
@@ -1517,10 +1748,14 @@ const char* PclTools::pclFitCircle3DDOC = "\n\
     paramsMand->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
 
     paramsOpt->clear();
+#if CIRCLE3D_LIMIT_NORMAL
+    paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation").toLatin1().data()));
+#endif
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
     paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
-    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
     paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
 
     paramsOut->clear();
@@ -1535,6 +1770,96 @@ const char* PclTools::pclFitCircle3DDOC = "\n\
 /*static*/ ito::RetVal PclTools::pclFitCircle3D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_CIRCLE3D);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitPlaneDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+
+    paramsOpt->clear();
+#if PLANE_LIMIT_NORMAL
+    paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation").toLatin1().data()));
+#endif
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting normal vector").toLatin1().data()));
+    paramsOut->append(ito::Param("value", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting last value of Hessesche Form").toLatin1().data()));
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_PLANE);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitLineDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitLineParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+
+    paramsOpt->clear();
+#if PLANE_LIMIT_NORMAL
+    paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("axis to fit to [x, y, z]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation").toLatin1().data()));
+#endif
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on the line").toLatin1().data()));
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data())); 
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitLine(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_LINE);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4546,8 +4871,14 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::pclFitCircle2D, PclTools::pclFitCircle2DParams, tr("fits a planar circle model to the given input point cloud using a RANSAC based fit Internally wrapped to pclFitModelGeneric but with adapted output."));
     m_filterList.insert("pclFitCircle2D", filter);
 
-    filter = new FilterDef(PclTools::pclFitCircle3D, PclTools::pclFitCircle3DParams, tr("fits a spherical model to the given input point cloud using a RANSAC based fit. Internally wrapped to pclFitModelGeneric but with adapted output."));
+    filter = new FilterDef(PclTools::pclFitCircle3D, PclTools::pclFitCircle3DParams, tr("fits a 3D-circle model to the given input point cloud using a RANSAC based fit. Internally wrapped to pclFitModelGeneric but with adapted output."));
     m_filterList.insert("pclFitCircle3D", filter);
+
+    filter = new FilterDef(PclTools::pclFitLine, PclTools::pclFitLineParams, tr("fits a line model to the given input point cloud using a RANSAC based fit. Internally wrapped to pclFitModelGeneric but with adapted output."));
+    m_filterList.insert("pclFitLine", filter);
+
+    filter = new FilterDef(PclTools::pclFitPlane, PclTools::pclFitPlaneParams, tr("fits a plane model to the given input point cloud using a RANSAC based fit. Internally wrapped to pclFitModelGeneric but with adapted output."));
+    m_filterList.insert("pclFitPlane", filter);
 
     filter = new FilterDef(PclTools::pclDistanceToModel, PclTools::pclDistanceToModelParams, tr("Calculates the distances of points of a point cloud to a given model."));
     m_filterList.insert("pclDistanceToModel", filter);
