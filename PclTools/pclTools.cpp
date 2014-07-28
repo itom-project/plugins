@@ -85,6 +85,7 @@ int NTHREADS = 2;
 
 #define CIRCLE3D_LIMIT_NORMAL 0
 #define PLANE_LIMIT_NORMAL 0
+#define CONE_LIMIT_NORMAL 0
 
 //PCL_INSTANTIATE_RandomSampleCorrected(pcl::PointXYZ)
     //template class pcl::RandomSampleCorrected<T>;
@@ -901,6 +902,7 @@ bool PclTools::checkFitNormals(const int &fitObj)
         case pcl::SACMODEL_CIRCLE3D:
         case pcl::SACMODEL_SPHERE:
         case pcl::SACMODEL_CYLINDER:
+        case pcl::SACMODEL_CONE:
         //case pcl::SACMODEL_PARALLEL_LINE:
         //case pcl::SACMODEL_PERPENDICULAR_PLANE:
         //case pcl::SACMODEL_PARALLEL_PLANE:
@@ -1034,7 +1036,7 @@ const char* PclTools::transformAffineDOC = "\n\
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
     return ito::RetVal(ito::retError, 0, tr("pclFitCylinder not implemented for PCL 1.6.1 or lower").toLatin1().data());
 #else
-
+    double *angleLimits = NULL;
     double *radiusLimits = NULL;
     double *normalAxis = NULL;
     double orientationAngle = M_PI;
@@ -1049,11 +1051,12 @@ const char* PclTools::transformAffineDOC = "\n\
 
     bool useRadius = false;
     bool useAxis = false;
+    bool useOpenAngle = false;
 
     switch(fitType)
     {
 
-        case pcl::SACMODEL_CONE:
+        
         case pcl::SACMODEL_TORUS:
         case pcl::SACMODEL_PARALLEL_LINE:
         case pcl::SACMODEL_PERPENDICULAR_PLANE:
@@ -1067,6 +1070,48 @@ const char* PclTools::transformAffineDOC = "\n\
         case pcl::SACMODEL_STICK:
         default:
             retval += ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(fitType))).toLatin1().data());
+            break;
+        case pcl::SACMODEL_CONE:
+            doGenericOutPut = false;
+            useOpenAngle = true;
+
+            angleLimits = mands[1].getVal<double*>();
+            if(angleLimits == NULL || mands[1].getLen() != 2)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("Angle limit must have 2 entries").toLatin1().data());
+            }
+
+#if CONE_LIMIT_NORMAL
+            normalAxis = opts[0].getVal<double*>();
+            if(normalAxis == NULL || opts[0].getLen() < 1)
+            {
+                useAxis = false;
+            }
+            else if(opts[0].getLen() < 3)
+            {
+                useAxis = false;
+                retval += ito::RetVal(ito::retError, 0, tr("(normal-)axis vector must have at 3 entries").toLatin1().data());
+            }
+            else
+            {
+                useAxis = true;
+            }
+            orientationAngle = opts[1].getVal<double>();
+            normalDistanceWeight = opts[2].getVal<double>();
+            maxIterations = opts[3].getVal<int>();
+            distanceThreshold = opts[4].getVal<double>();
+            optimizeCoefficients = (opts[5].getVal<int>() > 0);
+            probability = opts[6].getVal<double>();
+#else
+            useAxis = false;
+            normalDistanceWeight = opts[0].getVal<double>();
+            maxIterations = opts[1].getVal<int>();
+            distanceThreshold = opts[2].getVal<double>();
+            optimizeCoefficients = (opts[3].getVal<int>() > 0);
+            probability = opts[4].getVal<double>();
+#endif
+
+            useRadius = false;
             break;
         case pcl::SACMODEL_PLANE:
         case pcl::SACMODEL_LINE:
@@ -1376,6 +1421,10 @@ const char* PclTools::transformAffineDOC = "\n\
                     Eigen::Vector3f normalV(normalAxis[0], normalAxis[1], normalAxis[2]);
                     seg.setAxis(normalV);
                 }
+                if(useOpenAngle)
+                {
+                    seg.setMinMaxOpeningAngle(angleLimits[0], angleLimits[1]);
+                }
                 seg.setInputCloud (pclIn->toPointXYZNormal());
                 seg.setInputNormals (pclIn->toPointXYZNormal());
                 seg.setProbability (probability);
@@ -1404,6 +1453,10 @@ const char* PclTools::transformAffineDOC = "\n\
                     Eigen::Vector3f normalV(normalAxis[0], normalAxis[1], normalAxis[2]);
                     seg.setAxis(normalV);
                 }
+                if(useOpenAngle)
+                {
+                    seg.setMinMaxOpeningAngle(angleLimits[0], angleLimits[1]);
+                }
                 seg.setInputCloud (pclIn->toPointXYZINormal());
                 seg.setInputNormals (pclIn->toPointXYZINormal());
                 seg.setProbability (probability);
@@ -1431,6 +1484,10 @@ const char* PclTools::transformAffineDOC = "\n\
                     seg.setEpsAngle(orientationAngle);
                     Eigen::Vector3f normalV(normalAxis[0], normalAxis[1], normalAxis[2]);
                     seg.setAxis(normalV);
+                }
+                if(useOpenAngle)
+                {
+                    seg.setMinMaxOpeningAngle(angleLimits[0], angleLimits[1]);
                 }
                 seg.setInputCloud (pclIn->toPointXYZRGBNormal());
                 seg.setInputNormals (pclIn->toPointXYZRGBNormal());
@@ -1550,6 +1607,18 @@ const char* PclTools::transformAffineDOC = "\n\
                     paramsOut->data()[3].setVal<int>(fitInliers->indices.size());
                     break;
                 }
+                case pcl::SACMODEL_CONE:
+                {
+                    double points[] = { fitCoefficients->values[0], fitCoefficients->values[1], fitCoefficients->values[2] };
+                    double vec[] = { fitCoefficients->values[3], fitCoefficients->values[4], fitCoefficients->values[5] };
+
+                    paramsOut->data()[0].setVal<double*>(points, 3);
+                    paramsOut->data()[1].setVal<double*>(vec, 3);
+                    paramsOut->data()[2].setVal<double>(fitCoefficients->values[6]); //opening angle
+                    paramsOut->data()[3].setVal<int>(fitInliers->indices.size());
+
+                    break;
+                }
             }    
         }
     }
@@ -1580,7 +1649,7 @@ const char* PclTools::pclFitModelDOC = "\n\
     paramsOpt->clear();
     paramsOpt->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
     paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
-    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
     paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
@@ -1750,7 +1819,7 @@ const char* PclTools::pclFitCircle3DDOC = "\n\
     paramsOpt->clear();
 #if CIRCLE3D_LIMIT_NORMAL
     paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
-    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
 #endif
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
@@ -1796,7 +1865,7 @@ const char* PclTools::pclFitPlaneDOC = "\n\
     paramsOpt->clear();
 #if PLANE_LIMIT_NORMAL
     paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
-    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
 #endif
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
@@ -1806,7 +1875,7 @@ const char* PclTools::pclFitPlaneDOC = "\n\
 
     paramsOut->clear();
     paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting normal vector").toLatin1().data()));
-    paramsOut->append(ito::Param("value", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting last value of Hessesche Form").toLatin1().data()));
+    paramsOut->append(ito::Param("value", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting last value of Hesse Form").toLatin1().data()));
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
     return retval;
 }
@@ -1841,7 +1910,7 @@ const char* PclTools::pclFitLineDOC = "\n\
     paramsOpt->clear();
 #if PLANE_LIMIT_NORMAL
     paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("axis to fit to [x, y, z]").toLatin1().data()));
-    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
 #endif
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
@@ -1860,6 +1929,55 @@ const char* PclTools::pclFitLineDOC = "\n\
 /*static*/ ito::RetVal PclTools::pclFitLine(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_LINE);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitConeDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitConeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("angularLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("opening angle limits in radiant [min, max]").toLatin1().data()));
+
+    paramsOpt->clear();
+#if CONE_LIMIT_NORMAL
+    paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("axis to fit to [x, y, z]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+#endif
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on the line").toLatin1().data()));
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data())); 
+    paramsOut->append(ito::Param("openingAgle", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting opening angle in radiant").toLatin1().data())); 
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitCone(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_CONE);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4879,6 +4997,9 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclFitPlane, PclTools::pclFitPlaneParams, tr("fits a plane model to the given input point cloud using a RANSAC based fit. Internally wrapped to pclFitModelGeneric but with adapted output."));
     m_filterList.insert("pclFitPlane", filter);
+
+    filter = new FilterDef(PclTools::pclFitCone, PclTools::pclFitConeParams, tr("fits a conical model to the given input point cloud using a RANSAC based fit (must have normals defined). Internally wrapped to pclFitModelGeneric but with adapted output."));
+    m_filterList.insert("pclFitCone", filter);
 
     filter = new FilterDef(PclTools::pclDistanceToModel, PclTools::pclDistanceToModelParams, tr("Calculates the distances of points of a point cloud to a given model."));
     m_filterList.insert("pclDistanceToModel", filter);
