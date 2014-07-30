@@ -25,8 +25,7 @@ ENDIF(BUILD_SHARED_LIBS)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
-find_package(OpenCV COMPONENTS core REQUIRED)
+FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
 find_package(VisualLeakDetector QUIET)
 
 IF(WIN32)
@@ -58,8 +57,6 @@ IF(PGRFLYCAP_INCLUDE_DIR)
     INCLUDE_DIRECTORIES(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${QT_QTCORE_INCLUDE_DIR}
-        ${OpenCV_DIR}/include
         ${ITOM_SDK_INCLUDE_DIRS}
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
         ${VISUALLEAKDETECTOR_INCLUDE_DIR}
@@ -85,26 +82,19 @@ IF(PGRFLYCAP_INCLUDE_DIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/PGRFlyCapture.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     )
-
-    if (NOT QT5_FOUND)
-        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-    endif (NOT QT5_FOUND)
-
-    set(plugin_ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogPGRFlyCapture.ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPGRFlyCapture.ui
-    )
-
-    if (QT5_FOUND)
-        QT5_WRAP_UI(plugin_UI_MOC ${plugin_ui})
-    else (QT5_FOUND)
-        QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_ui})
-    endif (QT5_FOUND)
-
+    
     set(plugin_SOURCES 
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogPGRFlyCapture.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPGRFlyCapture.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/PGRFlyCapture.cpp
+    )
+
+    set(plugin_UI
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogPGRFlyCapture.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPGRFlyCapture.ui
+    )
+    
+    set(plugin_RCC
     )
 
     #Add version information to the plugIn-dll unter MSVC
@@ -112,26 +102,27 @@ IF(PGRFLYCAP_INCLUDE_DIR)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)
 
-    #handle translations BEGIN STEP 1
-    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
-    set (TRANSLATION_OUTPUT_FILES)
-    set (TRANSLATIONS_FILES)
+    if (QT5_FOUND)
+        #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+        QT5_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
+    else (QT5_FOUND)
+        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+        QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+        QT4_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
+    endif (QT5_FOUND)
 
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-    #handle translations END STEP 1
     
     IF(UNIX)
         FIND_LIBRARY(FLYCAPTURE_LIBRARY NAMES libflycapture flycapture PATHS /usr/lib NO_DEFAULT_PATH)
     ELSE(UNIX)
         IF(MSVC10)
             find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v100"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH)
-            #SET(FLYCAPTURE_LIBRARY "FlyCapture2_v100")
         ELSEIF(MSVC9)
             find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2_v90"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH)
-            #SET(FLYCAPTURE_LIBRARY "FlyCapture2_v90")
         ELSE(MSVC10)
             find_library(FLYCAPTURE_LIBRARY NAMES "FlyCapture2"  PATHS ${PGR_LIBDIR_HINT} NO_DEFAULT_PATH)
-            #SET(FLYCAPTURE_LIBRARY "FlyCapture2")
         ENDIF(MSVC10)
     ENDIF(UNIX)
     
@@ -144,13 +135,10 @@ IF(PGRFLYCAP_INCLUDE_DIR)
     IF(WIN32)
         IF(MSVC10)
             find_file(FLYCAPTURE_BINARY "FlyCapture2_v100.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH)
-            #SET(FLYCAPTURE_LIBRARY "FlyCapture2_v100")
         ELSEIF(MSVC9)
             find_file(FLYCAPTURE_BINARY "FlyCapture2_v90.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH)
-            #SET(FLYCAPTURE_LIBRARY "FlyCapture2_v90")
         ELSE(MSVC10)
             find_file(FLYCAPTURE_BINARY "FlyCapture2.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH)
-            #SET(FLYCAPTURE_LIBRARY "FlyCapture2")
         ENDIF(MSVC10)
     
         find_file(FLYCAPTURE_LIBIOMP5MD "libiomp5md.dll"  PATHS ${PGR_BINDIR_HINT} NO_DEFAULT_PATH)
@@ -169,39 +157,17 @@ IF(PGRFLYCAP_INCLUDE_DIR)
     ENDIF(WIN32)
     
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
-
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${FLYCAPTURE_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES}) 
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${FLYCAPTURE_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES}) 
 
     if (QT5_FOUND)
-    qt5_use_modules(${target_name} Widgets UiTools Xml)
+        qt5_use_modules(${target_name} ${QT_COMPONENTS})
     endif (QT5_FOUND)
     
-    #handle translations BEGIN STEP 2
-    if (UPDATE_TRANSLATIONS)
-        if (QT5_FOUND)
-            QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})        
-        else (QT5_FOUND)
-            QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-        endif (QT5_FOUND)
-        
-        add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-        add_dependencies(${target_name} _${target_name}_translation)
-        
-        if (QT5_FOUND)
-            QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-        else (QT5_FOUND)
-            QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-        endif (QT5_FOUND)
-    else (UPDATE_TRANSLATIONS)
-        if (QT5_FOUND)
-            QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-        else (QT5_FOUND)
-            QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-        endif (QT5_FOUND)
-    endif (UPDATE_TRANSLATIONS)
-    #handle translations END STEP 2
+    PLUGIN_DOCUMENTATION(${target_name} pgrFlyCapture)
     
-        PLUGIN_DOCUMENTATION(${target_name} pgrFlyCapture)
+    #translation
+    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+    PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
     # COPY SECTION
     set(COPY_SOURCES "")
