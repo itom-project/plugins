@@ -66,6 +66,7 @@
 
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/surface/organized_fast_mesh.h>
+#include <pcl/surface/simplification_remove_unused_vertices.h>
 #include <pcl/surface/impl/organized_fast_mesh.hpp>
 
 #include <pcl/io/impl/pcd_io.hpp>
@@ -4940,6 +4941,70 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
     return retval;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclSimplifyMeshDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PclTools::pclSimplifyMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("meshIn", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("Valid, organized point cloud").toLatin1().data()));
+    paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output polygonal mesh").toLatin1().data()));
+
+    paramsOpt->clear();
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of deleted elements").toLatin1().data()));
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PclTools::pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+#if PCL_VERSION_COMPARE(<, 1, 7, 0)
+	retval += ito::RetVal(ito::retError, 0, "Only tested / implemented for version 1.7.0");
+	
+#else
+    ito::PCLPolygonMesh *meshIn = (ito::PCLPolygonMesh*)(*paramsMand)[0].getVal<void*>();
+    ito::PCLPolygonMesh *meshOut = (ito::PCLPolygonMesh*)(*paramsMand)[1].getVal<void*>();
+
+    if (meshIn == NULL || meshOut == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, "the parameters meshIn and meshOut must not be NULL.");
+    }
+
+    if (meshIn->valid() == false)
+    {
+        return ito::RetVal(ito::retError, 0, "the input mesh must be valid.");
+    }
+
+    if (meshOut->valid() == false && meshOut->valid() == false)
+    {
+        *meshOut = ito::PCLPolygonMesh(pcl::PolygonMesh::Ptr(new pcl::PolygonMesh()));
+    }
+
+    std::vector<int> deletedOnes;
+
+    pcl::surface::SimplificationRemoveUnusedVertices cleaner;
+    cleaner.simplify(*(meshIn->polygonMesh()), *(meshOut->polygonMesh()), deletedOnes);
+
+    paramsOut->data()[0].setVal<int>(deletedOnes.size());
+#endif
+    return retval;
+}
+
 // ---------------------------------------------------------------------- DO NOT ADD FILTER BELOW THIS!!! -----------------------------------------------------------
 /** initialize filter functions within this addIn
 *    @param [in]    paramsMand    mandatory parameters that have to passed to the addIn on initialization
@@ -5045,6 +5110,9 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclOrganizedFastMesh, PclTools::pclOrganizedFastMeshParams, tr("creates a triangle based, polygonial mesh from an organized point cloud. The triangles are always spanned between neighboured points of the organized cloud."));
     m_filterList.insert("pclOrganizedFastMesh", filter);
+
+    filter = new FilterDef(PclTools::pclSimplifyMesh, PclTools::pclSimplifyMeshParams, tr("Used SimplificationRemoveUnusedVertices from the PCL to simplify a pcl mesh."));
+    m_filterList.insert("pclSimplifyMesh", filter);
 
     if (waitCond)
     {
