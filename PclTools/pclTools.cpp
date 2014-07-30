@@ -44,6 +44,7 @@
 
 #if PCL_VERSION_COMPARE(>,1,5,1)
     #include <pcl/io/ply_io.h>
+
 #endif
 
 #include <pcl/io/vtk_io.h>
@@ -66,8 +67,13 @@
 
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/surface/organized_fast_mesh.h>
-#include <pcl/surface/simplification_remove_unused_vertices.h>
+
 #include <pcl/surface/impl/organized_fast_mesh.hpp>
+
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
+    #include <pcl/surface/simplification_remove_unused_vertices.h>
+    #include <pcl/surface/poisson.h>
+#endif
 
 #include <pcl/io/impl/pcd_io.hpp>
 
@@ -4990,7 +4996,7 @@ ito::RetVal PclTools::pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVect
         return ito::RetVal(ito::retError, 0, "the input mesh must be valid.");
     }
 
-    if (meshOut->valid() == false && meshOut->valid() == false)
+    if (meshOut->valid() == false)
     {
         *meshOut = ito::PCLPolygonMesh(pcl::PolygonMesh::Ptr(new pcl::PolygonMesh()));
     }
@@ -5001,6 +5007,100 @@ ito::RetVal PclTools::pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVect
     cleaner.simplify(*(meshIn->polygonMesh()), *(meshOut->polygonMesh()), deletedOnes);
 
     paramsOut->data()[0].setVal<int>(deletedOnes.size());
+#endif
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclPoissonDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PclTools::pclPoissonParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("organized", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid point cloud").toLatin1().data()));
+    //paramsMand->append(ito::Param("meshIn", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("Valid, organized point cloud").toLatin1().data()));
+    paramsMand->append(ito::Param("meshOut", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output polygonal mesh").toLatin1().data()));
+
+    paramsOpt->clear();
+    paramsOpt->append(ito::Param("treeDepth", ito::ParamBase::Int | ito::ParamBase::In , 1, 100, 8, tr("Depth of the octTree to reconstruct.").toLatin1().data()));
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+#if PCL_VERSION_COMPARE(<, 1, 7, 0)
+	retval += ito::RetVal(ito::retError, 0, "Only tested / implemented for version 1.7.0");
+	
+#else
+    ito::PCLPointCloud *cloudIn = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
+    ito::PCLPolygonMesh *meshOut = (ito::PCLPolygonMesh*)(*paramsMand)[1].getVal<void*>();
+
+    int depth = (int)(*paramsOpt)[0].getVal<int>();
+    int degree = -1;
+
+    if (cloudIn == NULL || meshOut == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, "the parameters meshIn and meshOut must not be NULL.");
+    }
+
+    if (cloudIn->empty())
+    {
+        return ito::RetVal(ito::retError, 0, "the input point cloud must be valid.");
+    }
+
+    *meshOut = ito::PCLPolygonMesh(pcl::PolygonMesh::Ptr(new pcl::PolygonMesh()));
+
+    switch(cloudIn->getType())
+    {
+        default:
+        case ito::pclInvalid:
+            return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not defined or point cloud invalid").toLatin1().data());
+        case ito::pclXYZNormal:
+        {
+            pcl::Poisson<pcl::PointNormal> meshCleaner;
+            meshCleaner.setDepth(depth);
+            meshCleaner.setInputCloud(cloudIn->toPointXYZNormal());
+            if(degree > 0 ) meshCleaner.setDegree(degree);
+            meshCleaner.reconstruct(*(meshOut->polygonMesh()));
+        }
+        break;
+        case ito::pclXYZINormal:
+        {
+            pcl::Poisson<pcl::PointXYZINormal> meshCleaner;
+            meshCleaner.setDepth(depth);
+            meshCleaner.setInputCloud(cloudIn->toPointXYZINormal());
+            if(degree > 0 ) meshCleaner.setDegree(degree);
+            meshCleaner.reconstruct(*(meshOut->polygonMesh()));
+        }
+        break;
+        case ito::pclXYZRGBNormal:
+        {
+            pcl::Poisson<pcl::PointXYZRGBNormal> meshCleaner;
+            meshCleaner.setDepth(depth);
+            meshCleaner.setInputCloud(cloudIn->toPointXYZRGBNormal());
+            if(degree > 0 ) meshCleaner.setDegree(degree);
+            meshCleaner.reconstruct(*(meshOut->polygonMesh()));
+        }
+        break;
+
+    }
+
 #endif
     return retval;
 }
@@ -5113,6 +5213,9 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclSimplifyMesh, PclTools::pclSimplifyMeshParams, tr("Used SimplificationRemoveUnusedVertices from the PCL to simplify a pcl mesh."));
     m_filterList.insert("pclSimplifyMesh", filter);
+
+    filter = new FilterDef(PclTools::pclPoisson, PclTools::pclPoissonParams, tr("Uses pcl::Poisson-filter to reduce a mesh / estimate the surface of an object."));
+    m_filterList.insert("pclSurfaceByPoisson", filter);
 
     if (waitCond)
     {
