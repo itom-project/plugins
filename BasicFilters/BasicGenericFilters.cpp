@@ -1984,11 +1984,13 @@ ito::RetVal BasicFilters::spikeMedianFilterStdParams(QVector<ito::Param> *params
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::DataObject &compObj, ito::DataObject *outObj, const _cType delta, const _Type newValue)
+template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::DataObject *scrObj, const ito::DataObject &compObj, ito::DataObject *outObj, const _cType delta, const _Type newValue, const bool noCopyNeeded)
 {
     _Type *compRowPtr = NULL;
+    _Type *scrRowPtr = NULL;
     _Type *dstRowPtr = NULL;
 
+    cv::Mat *scrMat;
     cv::Mat *compMat;
     cv::Mat *dstMat;
 
@@ -1998,20 +2000,45 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
     {
         for(int plane = 0; plane < z_length; plane++)
         {
+            scrMat = (cv::Mat*)(scrObj->get_mdata()[scrObj->seekMat(plane)]);
             compMat = (cv::Mat*)(compObj.get_mdata()[compObj.seekMat(plane)]);
             dstMat = (cv::Mat*)(outObj->get_mdata()[outObj->seekMat(plane)]);
-
-            for(int y = 0; y < compMat->rows; y++)
+            
+            if(noCopyNeeded)
             {
-                compRowPtr = compMat->ptr<_Type>(y);
-                dstRowPtr = dstMat->ptr<_Type>(y);
-                for(int x = 0; x < compMat->cols; x++)
+                for(int y = 0; y < compMat->rows; y++)
                 {
-                    if(myAbs((_cType)(compRowPtr[x]) - (_cType)(dstRowPtr[x])) > delta)
+                    scrRowPtr = scrMat->ptr<_Type>(y);
+                    compRowPtr = compMat->ptr<_Type>(y);
+                    dstRowPtr = dstMat->ptr<_Type>(y);
+                    for(int x = 0; x < compMat->cols; x++)
                     {
-                        dstRowPtr[x] = newValue;
-                    }
-                }            
+                        if(myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
+                        {
+                            dstRowPtr[x] = newValue;
+                        }
+                    }            
+                }
+            }
+            else
+            {
+                for(int y = 0; y < compMat->rows; y++)
+                {
+                    scrRowPtr = scrMat->ptr<_Type>(y);
+                    compRowPtr = compMat->ptr<_Type>(y);
+                    dstRowPtr = dstMat->ptr<_Type>(y);
+                    for(int x = 0; x < compMat->cols; x++)
+                    {
+                        if(myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
+                        {
+                            dstRowPtr[x] = newValue;
+                        }
+                        else
+                        {
+                            dstRowPtr[x] = scrRowPtr[x];
+                        }
+                    }            
+                }
             }
         }
     }
@@ -2019,20 +2046,45 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
     {
         for(int plane = 0; plane < z_length; plane++)
         {
+            scrMat = (cv::Mat*)(scrObj->get_mdata()[scrObj->seekMat(plane)]);
             compMat = (cv::Mat*)(compObj.get_mdata()[compObj.seekMat(plane)]);
             dstMat = (cv::Mat*)(outObj->get_mdata()[outObj->seekMat(plane)]);
 
-            for(int y = 0; y < compMat->rows; y++)
+            if(noCopyNeeded)
             {
-                compRowPtr = compMat->ptr<_Type>(y);
-                dstRowPtr = dstMat->ptr<_Type>(y);
-                for(int x = 0; x < compMat->cols; x++)
+                for(int y = 0; y < compMat->rows; y++)
                 {
-                    if(ito::dObjHelper::isFinite(dstRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(dstRowPtr[x])) > delta)
+                    scrRowPtr = scrMat->ptr<_Type>(y);
+                    compRowPtr = compMat->ptr<_Type>(y);
+                    dstRowPtr = dstMat->ptr<_Type>(y);
+                    for(int x = 0; x < compMat->cols; x++)
                     {
-                        dstRowPtr[x] = newValue;
-                    }
-                }            
+                        if(ito::dObjHelper::isFinite(scrRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
+                        {
+                            dstRowPtr[x] = newValue;
+                        }
+                    }            
+                }
+            }
+            else
+            {
+                for(int y = 0; y < compMat->rows; y++)
+                {
+                    scrRowPtr = scrMat->ptr<_Type>(y);
+                    compRowPtr = compMat->ptr<_Type>(y);
+                    dstRowPtr = dstMat->ptr<_Type>(y);
+                    for(int x = 0; x < compMat->cols; x++)
+                    {
+                        if(ito::dObjHelper::isFinite(scrRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
+                        {
+                            dstRowPtr[x] = newValue;
+                        }
+                        else
+                        {
+                            dstRowPtr[x] = scrRowPtr[x];
+                        }
+                    }            
+                }
             }
         }    
     }
@@ -2057,6 +2109,8 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
 
     ito::DataObject tempFilterObject;
 
+    bool noCopyNeeded = false;
+
     if(!dObjSrc)    // Report error if input object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
@@ -2072,7 +2126,7 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
 
     if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
     {
-        // Nothing
+        noCopyNeeded = true;
     }
     else if(ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
     {
@@ -2202,7 +2256,7 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
             ito::int32 deltaVal = cv::saturate_cast<ito::int32>(deltaValue);
             deltaCasted = (ito::float64)(deltaVal);
 
-            SpikeCompBlock<ito::int8, ito::int32>(tempFilterObject, dObjDst, deltaVal, newVal);
+            SpikeCompBlock<ito::int8, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
         }
         break;
         case ito::tUInt8:
@@ -2213,7 +2267,7 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
             ito::int32 deltaVal = cv::saturate_cast<ito::int32>(deltaValue);
             deltaCasted = (ito::float64)(deltaVal);
 
-            SpikeCompBlock<ito::uint8, ito::int32>(tempFilterObject, dObjDst, deltaVal, newVal);
+            SpikeCompBlock<ito::uint8, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
         }
         break;
         case ito::tInt16:
@@ -2224,7 +2278,7 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
             ito::int32 deltaVal = cv::saturate_cast<ito::int32>(deltaValue);
             deltaCasted = (ito::float64)(deltaVal);
 
-            SpikeCompBlock<ito::int16, ito::int32>(tempFilterObject, dObjDst, deltaVal, newVal);
+            SpikeCompBlock<ito::int16, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
         }
         break;
         case ito::tUInt16:
@@ -2234,7 +2288,7 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
 
             ito::int32 deltaVal = cv::saturate_cast<ito::int32>(deltaValue);
             deltaCasted = (ito::float64)(deltaVal);
-            SpikeCompBlock<ito::uint16, ito::int32>(tempFilterObject, dObjDst, deltaVal, newVal);
+            SpikeCompBlock<ito::uint16, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
         }
         break;
         case ito::tInt32:
@@ -2245,7 +2299,7 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
             ito::int32 deltaVal = cv::saturate_cast<ito::int32>(deltaValue);
             deltaCasted = (ito::int32)(deltaVal);
 
-            SpikeCompBlock<ito::int32, ito::int32>(tempFilterObject, dObjDst, deltaVal, newVal);
+            SpikeCompBlock<ito::int32, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
         }
         break;
         case ito::tFloat32:
@@ -2263,14 +2317,14 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
 
             ito::float32 deltaVal = cv::saturate_cast<ito::float32>(deltaValue);
             deltaCasted = (ito::float32)(deltaVal);
-            SpikeCompBlock<ito::float32, ito::float32>(tempFilterObject, dObjDst, deltaVal, newVal);
+            SpikeCompBlock<ito::float32, ito::float32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
         }
         break;
         case ito::tFloat64:
         {
             newValueCasted = newValue;
             deltaCasted = deltaValue;
-            SpikeCompBlock<ito::float64, ito::float64>(tempFilterObject, dObjDst, deltaValue, newValue);
+            SpikeCompBlock<ito::float64, ito::float64>(dObjSrc, tempFilterObject, dObjDst, deltaValue, newValue, noCopyNeeded);
         }
         break;
     }

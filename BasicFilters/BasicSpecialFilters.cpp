@@ -1734,9 +1734,9 @@ ito::RetVal BasicFilters::clipValueFilterParams(QVector<ito::Param> *paramsMand,
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("input image [real typed data object]").toLatin1().data());
+    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input image [real typed data object]").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr, NULL, tr("destination image (inplace possible)").toLatin1().data());
+    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination image (inplace possible)").toLatin1().data());
     paramsMand->append(param);
     param = ito::Param("minValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("lowest value in range").toLatin1().data());
     paramsMand->append(param);
