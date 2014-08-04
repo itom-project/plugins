@@ -45,7 +45,9 @@ class DockWidgetCMU1394 : public QWidget
         char updating;
 
     signals:
-        void changeParameters(QMap<QString, ito::ParamBase> params);
+//        void changeParameters(QMap<QString, ito::ParamBase> params);
+        void OffsetPropertiesChanged(double offset);
+        void GainPropertiesChanged(double gain);
 
     public slots:
         void valuesChanged(QMap<QString, ito::Param> params);
