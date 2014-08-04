@@ -384,7 +384,10 @@ The algorithm performs the following steps: \n\
 \n\
 1. Compute the initial intrinsic parameters (the option only available for planar calibration patterns) or read them from the input parameters. The distortion coefficients are all set to zeros initially unless some of CV_CALIB_FIX_K? are specified. \n\
 2. Estimate the initial camera pose as if the intrinsic parameters have been already known. This is done using solvePnP() . \n\
-3. Run the global Levenberg-Marquardt optimization algorithm to minimize the reprojection error, that is, the total sum of squared distances between the observed feature points imagePoints and the projected (using the current estimates for camera parameters and the poses) object points objectPoints. See projectPoints() for details.";
+3. Run the global Levenberg-Marquardt optimization algorithm to minimize the reprojection error, that is, the total sum of squared distances between the observed feature points imagePoints and the projected (using the current estimates for camera parameters and the poses) object points objectPoints. See projectPoints() for details. \n\
+\n\
+If the reprojectionError is NaN, one or both of the matrices objectPoints or imagePoints probabily contains any NaN-value after truncation. Remember that this algorithm truncates objectPoints and imagePoints \n\
+before using it in the way that for each view, the last rows are cut where either the value in the first column of objectPoints or imagePoints is non-finite.";
 /*static*/ ito::RetVal OpenCVFilters::cvCalibrateCameraParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -392,8 +395,8 @@ The algorithm performs the following steps: \n\
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("objectPoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "[NrOfViews x NrOfPoints x 3] float32 matrix with the coordinates of all points in object space (coordinate system of calibration pattern)..") );
-    paramsMand->append( ito::Param("imagePoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "[NrOfViews x NrOfPoints x 2] float32 matrix with the pixel coordinates (u,v) of the corresponding plane in each view.") );
+    paramsMand->append( ito::Param("objectPoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "[NrOfViews x NrOfPoints x 3] float32 matrix with the coordinates of all points in object space (coordinate system of calibration pattern).. Non-finite rows at the end of each matrix-plane will be truncated.") );
+    paramsMand->append( ito::Param("imagePoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "[NrOfViews x NrOfPoints x 2] float32 matrix with the pixel coordinates (u,v) of the corresponding plane in each view. Non-finite rows at the end of each matrix-plane will be truncated.") );
     paramsMand->append( ito::Param("imageSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "[width,height] of the camera image (in pixels)") );
 
     paramsMand->append( ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output 3x3 float64 camera patrix. If flags CV_CALIB_USE_INTRINSIC_GUESS and/or CV_CALIB_FIX_ASPECT_RATIO are specified, this matrix must be initialized with right values and is unchanged") );
@@ -467,19 +470,20 @@ The algorithm performs the following steps: \n\
         std::vector<cv::Mat> objectPoints_ = itomcv::getInputArrayOfArraysFromDataObject(objectPoints);
         std::vector<cv::Mat> imagePoints_ = itomcv::getInputArrayOfArraysFromDataObject(imagePoints);
 
-        //adjust rois of objectPoints_ and imagePoints_ such that cols with non-finite values in the first row are truncated at the end
-        cv::Mat* mat;
+        //adjust rois of objectPoints_ and imagePoints_ such that rows with non-finite values in the first column are truncated at the end
+        cv::Mat *mat1, *mat2;
         int truncates;
 
-        //objectPoints_
+        //truncate imagePoints_ and objectPoints_ (assumption: both have the same size and the last rows in each matrix are truncated whose one of the items in the first column is non-finite)
         for (int i = 0; i < objectPoints_.size(); ++i)
         {
-            mat = &(objectPoints_[i]);
+            mat1 = &(objectPoints_[i]);
+            mat2 = &(imagePoints_[i]);
             truncates = 0;
 
-            for (int r = mat->rows - 1; r >= 0; --r)
+            for (int r = mat1->rows - 1; r >= 0; --r)
             {
-                if (!qIsFinite(mat->ptr<ito::float32>(r)[0]))
+                if (!qIsFinite(mat1->ptr<ito::float32>(r)[0]) || !qIsFinite(mat2->ptr<ito::float32>(r)[0]))
                 {
                     ++truncates;
                 }
@@ -489,28 +493,8 @@ The algorithm performs the following steps: \n\
                 }
             }
 
-            mat->adjustROI(0,truncates,0,0);
-        }
-
-        //imagePoints_
-        for (int i = 0; i < imagePoints_.size(); ++i)
-        {
-            mat = &(imagePoints_[i]);
-            truncates = 0;
-
-            for (int r = mat->rows - 1; r >= 0; --r)
-            {
-                if (!qIsFinite(mat->ptr<ito::float32>(r)[0]))
-                {
-                    ++truncates;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            mat->adjustROI(0,truncates,0,0);
+            mat1->adjustROI(0,-truncates,0,0);
+            mat2->adjustROI(0,-truncates,0,0);
         }
 
         std::vector<cv::Mat> rvecs, tvecs;
@@ -525,32 +509,8 @@ The algorithm performs the following steps: \n\
             distCoeffs_ = *(distCoeffs->getCvPlaneMat(0));
         }
 
-        //FUNCTION CALL
         try
         {
-            //std::vector<std::vector<cv::Point3f> > objectPoints__;
-            //std::vector<std::vector<cv::Point2f> > imagePoints__;
-            //objectPoints__.resize( objectPoints_.size() );
-            //imagePoints__.resize( imagePoints_.size() );
-
-            //cv::Mat temp;
-            //for (int i = 0; i < imagePoints_.size(); ++i)
-            //{
-            //    temp = objectPoints_[i];
-
-            //    for (int r = 0; r < temp.rows; ++r)
-            //    {
-            //        objectPoints__[i].push_back( cv::Point3f(temp.row(r)) );
-            //    }
-
-            //    temp = imagePoints_[i];
-
-            //    for (int r = 0; r < temp.rows; ++r)
-            //    {
-            //        imagePoints__[i].push_back( cv::Point2f(temp.row(r)) );
-            //    }
-            //}
-
             (*paramsOut)[0].setVal<double>(cv::calibrateCamera(objectPoints_, imagePoints_, imageSize, cameraMatrix_, distCoeffs_, rvecs, tvecs, flags, criteria));
         }
         catch (cv::Exception &exc)
