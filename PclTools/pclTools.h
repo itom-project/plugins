@@ -196,6 +196,10 @@ class PclTools : public ito::AddInAlgo
         static ito::RetVal pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal pclSimplifyMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const char *pclPoissonDOC;
+        static ito::RetVal pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal pclPoissonParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
     protected:
         //static int savePolygonFileSTLB(const std::string &file_name, const pcl::PolygonMesh& mesh);
 

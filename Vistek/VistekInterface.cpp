@@ -121,7 +121,7 @@ For a robust data communication please install the SVGigE FilterDriver and enabl
     p = ito::Param("streamingPacketSize", ito::ParamBase::Int | ito::ParamBase::In, -1, 16000, -1, tr("used streaming packet size (-1: use maximal available packet size, else value in bytes). Try to enable jumbo-frames at your network adapter in order to realize higher packet sizes").toLatin1().data());
     m_initParamsOpt << p;
 
-    p = ito::Param("streamingBuffers", ito::ParamBase::Int | ito::ParamBase::In, 3, 300, 100, tr("number of streaming buffers. Increase if you get data losses, decrease if you want to consume less memory").toLatin1().data());
+    p = ito::Param("streamingBuffers", ito::ParamBase::Int | ito::ParamBase::In, 1, 300, 3, tr("number of streaming buffers. Increase if you get data losses, decrease if you want to consume less memory").toLatin1().data());
     m_initParamsOpt << p;
 }
 

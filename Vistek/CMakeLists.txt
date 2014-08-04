@@ -21,10 +21,9 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-find_package(ITOM_SDK REQUIRED)
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
-find_package(OpenCV COMPONENTS core REQUIRED)
+FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
 find_package(VisualLeakDetector QUIET)
 
 IF (BUILD_UNICODE)
@@ -53,14 +52,11 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${ITOM_SDK_INCLUDE_DIRS}
+	${ITOM_SDK_INCLUDE_DIR}/itomWidgets
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogVistek.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetVistek.h
     ${CMAKE_CURRENT_SOURCE_DIR}/SVGigE.h
@@ -102,20 +98,12 @@ if(MSVC)
     list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
-#handle translations BEGIN STEP 1
-set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
-set (TRANSLATION_OUTPUT_FILES)
-set (TRANSLATIONS_FILES)
-
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-#handle translations END STEP 1
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 if (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
-else (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
 endif (QT5_FOUND)
 
 #translation

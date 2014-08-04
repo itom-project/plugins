@@ -23,42 +23,35 @@
 #ifndef DOCKWIDGETVISTEK_H
 #define DOCKWIDGETVISTEK_H
 
-#include <QtGui>
-#include <qwidget.h>
+#include "common/abstractAddInDockWidget.h"
+#include "common/addInInterface.h"
+
 #include <qmap.h>
 #include <qstring.h>
 
 #include "ui_dockWidgetVistek.h"
-#include "common/sharedStructures.h"
 
-#include "Vistek.h"
-
-class DockWidgetVistek : public QWidget
+class DockWidgetVistek : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetVistek();
+        DockWidgetVistek(ito::AddInDataIO *grabber);
         ~DockWidgetVistek() {};
 
     private:
         Ui::DockWidgetVistek ui;
         bool m_inEditing;
-        float m_exposureStep;
-
-    signals:
-        void GainPropertyChanged(double gain);
-        void OffsetPropertyChanged(double gain);
-        void ExposurePropertyChanged(double gain);
+        bool m_firstRun;
 
     public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);
-        void propertiesChanged(float gainIncrement, float exposureIncrement, VistekFeatures features);
+        void parametersChanged(QMap<QString, ito::Param> params);
+        void identifierChanged(const QString &identifier) {};
 
     private slots:
-        void on_exposureSpinBox_valueChanged(double val);
-        void on_gainSpinBox_valueChanged(double val);
-        void on_offsetSpinBox_valueChanged(double val);
+        void on_sliderExposure_valueChanged(double value);   
+        void on_sliderGain_valueChanged(double value);
+        void on_sliderOffset_valueChanged(double value);
 };
 
 #endif

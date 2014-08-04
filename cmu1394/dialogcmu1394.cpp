@@ -36,49 +36,70 @@ dialogCMU1394::dialogCMU1394()
 */
 int dialogCMU1394::setVals(QMap<QString, ito::Param> *paramVals)
 {
+    return 0;
     QVariant qvar;
 
     double dgain = 0.0;
     int inttemp =0;
     double dtemp = 0.0;
     
-    setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-    // added by itobiege, Mar. 2013, but not tested!
+    if(paramVals->keys().contains("name"))
+    {
+        setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+        // added by itobiege, Mar. 2013, but not tested!
+    }
 
-    inttemp = ((*paramVals)["x0"]).getVal<int>();    
-    ui.spinBox_x0->setValue(inttemp);
-    inttemp = (int)((*paramVals)["x0"]).getMax(); 
-    ui.spinBox_x0->setMaximum(inttemp);
-    inttemp = (int)((*paramVals)["x0"]).getMin(); 
-    ui.spinBox_x0->setMinimum(inttemp);
+    if(paramVals->keys().contains("x0"))
+    {
+        inttemp = ((*paramVals)["x0"]).getVal<int>();    
+        ui.spinBox_x0->setValue(inttemp);
+        inttemp = (int)((*paramVals)["x0"]).getMax(); 
+        ui.spinBox_x0->setMaximum(inttemp);
+        inttemp = (int)((*paramVals)["x0"]).getMin(); 
+        ui.spinBox_x0->setMinimum(inttemp);
+    }
     
-    inttemp = ((*paramVals)["sizex"]).getVal<int>();    
-    ui.spinBox_xsize->setValue(inttemp);
-    inttemp = (int)((*paramVals)["sizex"]).getMax(); 
-    ui.spinBox_xsize->setMaximum(inttemp);
-    inttemp = (int)((*paramVals)["sizex"]).getMin(); 
-    ui.spinBox_xsize->setMinimum(inttemp);
+    if(paramVals->keys().contains("sizex"))
+    {
+        inttemp = ((*paramVals)["sizex"]).getVal<int>();    
+        ui.spinBox_xsize->setValue(inttemp);
+        inttemp = (int)((*paramVals)["sizex"]).getMax(); 
+        ui.spinBox_xsize->setMaximum(inttemp);
+        inttemp = (int)((*paramVals)["sizex"]).getMin(); 
+        ui.spinBox_xsize->setMinimum(inttemp);
+    }
 
-    inttemp = ((*paramVals)["y0"]).getVal<int>();    
-    ui.spinBox_y0->setValue(inttemp);
-    inttemp = (int)((*paramVals)["y0"]).getMax(); 
-    ui.spinBox_y0->setMaximum(inttemp);
-    inttemp = (int)((*paramVals)["y0"]).getMin(); 
-    ui.spinBox_y0->setMinimum(inttemp);
+    if(paramVals->keys().contains("y0"))
+    {
+        inttemp = ((*paramVals)["y0"]).getVal<int>();    
+        ui.spinBox_y0->setValue(inttemp);
+        inttemp = (int)((*paramVals)["y0"]).getMax(); 
+        ui.spinBox_y0->setMaximum(inttemp);
+        inttemp = (int)((*paramVals)["y0"]).getMin(); 
+        ui.spinBox_y0->setMinimum(inttemp);
+    }
 
-    inttemp = ((*paramVals)["sizey"]).getVal<int>();    
-    ui.spinBox_ysize->setValue(inttemp);
-    inttemp = (int)((*paramVals)["sizey"]).getMax(); 
-    ui.spinBox_ysize->setMaximum(inttemp);
-    inttemp = (int)((*paramVals)["sizey"]).getMin(); 
-    ui.spinBox_ysize->setMinimum(inttemp);
+    if(paramVals->keys().contains("sizey"))
+    {
+        inttemp = ((*paramVals)["sizey"]).getVal<int>();    
+        ui.spinBox_ysize->setValue(inttemp);
+        inttemp = (int)((*paramVals)["sizey"]).getMax(); 
+        ui.spinBox_ysize->setMaximum(inttemp);
+        inttemp = (int)((*paramVals)["sizey"]).getMin(); 
+        ui.spinBox_ysize->setMinimum(inttemp);
+    }
 
-    dtemp = ((*paramVals)["offset"]).getVal<double>();
-    ui.doubleSpinBox_offset->setValue(dtemp);   
+    if(paramVals->keys().contains("offset"))
+    {
+        dtemp = ((*paramVals)["offset"]).getVal<double>();
+        ui.doubleSpinBox_offset->setValue(dtemp);   
+    }
 
-    dgain = ((*paramVals)["gain"]).getVal<double>();
-    ui.doubleSpinBox_gain->setValue(dgain); 
-
+    if(paramVals->keys().contains("gain"))
+    {
+        dgain = ((*paramVals)["gain"]).getVal<double>();
+        ui.doubleSpinBox_gain->setValue(dgain); 
+    }
     return 0;
 }
 
@@ -98,24 +119,39 @@ int dialogCMU1394::getVals(QMap<QString, ito::Param> *paramVals)
     int inttemp = 0;
     double dtemp = 0.0;
 
-    inttemp = ui.spinBox_x0->value();
-    ((*paramVals)["x0"]).setVal<int>(inttemp);
-    
-    inttemp = ui.spinBox_xsize->value();
-    ((*paramVals)["sizex"]).setVal<int>(inttemp);
+    if(paramVals->keys().contains("x0"))
+    {
+        inttemp = ui.spinBox_x0->value();
+        ((*paramVals)["x0"]).setVal<int>(inttemp);
+    }
 
-    inttemp = ui.spinBox_y0->value();
-    ((*paramVals)["y0"]).setVal<int>(inttemp);
+    if(paramVals->keys().contains("sizex"))
+    {
+        inttemp = ui.spinBox_xsize->value();
+        ((*paramVals)["sizex"]).setVal<int>(inttemp);
+    }
 
-    inttemp = ui.spinBox_ysize->value();
-    ((*paramVals)["sizey"]).setVal<int>(inttemp);
-   
-    dtemp = ui.doubleSpinBox_offset->value();
-    ((*paramVals)["offset"]).setVal<double>(dtemp);
+    if(paramVals->keys().contains("y0"))
+    {
+        inttemp = ui.spinBox_y0->value();
+        ((*paramVals)["y0"]).setVal<int>(inttemp);
+    }
+    if(paramVals->keys().contains("sizey"))
+    {
+        inttemp = ui.spinBox_ysize->value();
+        ((*paramVals)["sizey"]).setVal<int>(inttemp);
+    }
 
-    dtemp = ui.doubleSpinBox_gain->value();
-    ((*paramVals)["gain"]).setVal<double>(dtemp);
-
+    if(paramVals->keys().contains("offset"))
+    {
+        dtemp = ui.doubleSpinBox_offset->value();
+        ((*paramVals)["offset"]).setVal<double>(dtemp);
+    }
+    if(paramVals->keys().contains("gain"))
+    {
+        dtemp = ui.doubleSpinBox_gain->value();
+        ((*paramVals)["gain"]).setVal<double>(dtemp);
+    }
     return 0;
 }
 //----------------------------------------------------------------------------------------------------------------------------------

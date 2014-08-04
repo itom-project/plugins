@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 #include "fittingfilters.h"
-
+#include "DataObject\dataObjectFuncs.h"
 #include <qvariant.h>
 #include <qnumeric.h>
 
@@ -44,10 +44,10 @@ ito::RetVal FittingFilters::fitPolynom2DParams(QVector<ito::Param> *paramsMand, 
     paramsOpt->clear();
     paramsOut->clear();
 
-    param = Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toLatin1().data());
+    param = Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object").toLatin1().data());
     paramsMand->append(param);
 
-    param = Param("fittedImage", ParamBase::DObjPtr, NULL, tr("destination data object with fitted values").toLatin1().data());
+    param = Param("fittedImage", ParamBase::DObjPtr | ParamBase::In | ParamBase::Out , NULL, tr("destination data object with fitted values").toLatin1().data());
     paramsMand->append(param);
 
     param = Param("gradX", ParamBase::Int, NULL, tr("number of polynoms in x-direction").toLatin1().data());
@@ -64,7 +64,7 @@ ito::RetVal FittingFilters::fitPolynom2DParams(QVector<ito::Param> *paramsMand, 
 
     return retval;
 }
-
+//---------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
@@ -76,14 +76,25 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
 
     int fillNaNValues = static_cast<int>( (*paramsOpt)[0].getVal<int>() );
 
-    if (dObjImages->getDims() != 2)
-    {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image must be two-dimensional.").toLatin1().data());
-    }    
+    retval = ito::dObjHelper::verify2DDataObject(dObjImages, "sourceImage", gradY + 1, std::numeric_limits<short>::max(), 
+                                                                            gradX + 1, std::numeric_limits<short>::max(),
+                                                                            8,
+                                                                            tUInt8 , tInt8 , tUInt16 , tInt16 , tUInt32 , tInt32 , tFloat32 , tFloat64);
 
-    if(!( dObjImages->getType() & (tUInt8 | tInt8 | tUInt16 | tInt16 | tUInt32 | tInt32 | tFloat32 | tFloat64)))
+    if(retval.containsError())
     {
-        return ito::RetVal(retError, 0, tr("source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64").toLatin1().data());
+        if(retval != NULL && dObjImages->getDims() == 3)
+        {
+            retval = ito::dObjHelper::verify3DDataObject(dObjImages, "sourceImage", 1, 1,
+                                                                                    gradY + 1, std::numeric_limits<short>::max(), 
+                                                                                    gradX + 1, std::numeric_limits<short>::max(),
+                                                                                    8,
+                                                                                    tUInt8 , tInt8 , tUInt16 , tInt16 , tUInt32 , tInt32 , tFloat32 , tFloat64);
+        }
+        if(retval.containsError())
+        {
+            return retval;
+        }
     }
 
     if(dObjDst == NULL)

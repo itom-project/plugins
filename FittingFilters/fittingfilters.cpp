@@ -211,8 +211,8 @@ RetVal FittingFilters::subtractPlaneParams(QVector<ito::Param> *paramsMand, QVec
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    *paramsMand << Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toLatin1().data());
-    *paramsMand << Param("destinationImage", ParamBase::DObjPtr, NULL, tr("destination image data object").toLatin1().data());
+    *paramsMand << Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object").toLatin1().data());
+    *paramsMand << Param("destinationImage", ParamBase::DObjPtr | ParamBase::In | ParamBase::Out, NULL, tr("destination image data object").toLatin1().data());
     *paramsMand << Param("A", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter A of regression plane z = A + Bx + Cy, which is subtracted").toLatin1().data());
     *paramsMand << Param("B", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter B of regression plane z = A + Bx + Cy, which is subtracted").toLatin1().data());
     *paramsMand << Param("C", ParamBase::Double, 0.0, ito::DoubleMeta::all(), tr("Parameter C of regression plane z = A + Bx + Cy, which is subtracted").toLatin1().data());

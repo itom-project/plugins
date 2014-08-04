@@ -55,6 +55,8 @@ static signed char InitList[MAX1394 + 1];
 static char Initnum=0;
 static HINSTANCE dll = NULL;
 
+int NTHREADS = 2;
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal CMU1394Interface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -97,13 +99,16 @@ of this plugin.";
    ito::Param paramVal = ito::Param("Format", ito::ParamBase::Int, 0, 2, 0, tr("Formattype for the camera, first index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.").toLatin1().data());
    m_initParamsMand.append(paramVal);
 
-   paramVal = ito::Param("Mode", ito::ParamBase::Int, 0, 5, 0, tr("Modetype for the camera, second index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.").toLatin1().data());
+   paramVal = ito::Param("Mode", ito::ParamBase::Int, 0, 7, 0, tr("Modetype for the camera, second index of struct VIDEO_MODE_DESCRIPTOR. See CMU documentation.").toLatin1().data());
    m_initParamsMand.append(paramVal);
 
-   paramVal = ito::Param("Rate", ito::ParamBase::Int, 0, 8, 0, tr("Rate (fps) for the camera (1: 3.75, 2: 7.5, 3: 15, 4: 30, 5: 60, 6: 120). For more information see tableQPP of CMU.").toLatin1().data());
+   paramVal = ito::Param("Rate", ito::ParamBase::Int, 0, 6, 0, tr("Rate (fps) for the camera (1: 3.75, 2: 7.5, 3: 15, 4: 30, 5: 60, 6: 120). For more information see tableQPP of CMU.").toLatin1().data());
    m_initParamsMand.append(paramVal);
 
    paramVal = ito::Param("CameraNumber", ito::ParamBase::Int, -1, MAX1394 - 1, -1, tr("Camera number (-1 for auto)").toLatin1().data());
+   m_initParamsOpt.append(paramVal);
+
+   paramVal = ito::Param("swapByteOrder", ito::ParamBase::Int, 0, 1, 0, tr("swap byte order for 16bit data").toLatin1().data());
    m_initParamsOpt.append(paramVal);
 
    return;
@@ -140,6 +145,7 @@ of this plugin.";
           //  {1600,1200,COLOR_CODE_Y16}
        // }
     //};
+    NTHREADS  = QThread::idealThreadCount();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -155,6 +161,95 @@ CMU1394Interface::~CMU1394Interface()
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal CMU1394::copyObjBytesSwapped(ito::DataObject *extDObj, uchar *src, int sizeX, int sizeY)
+{
+    ito::RetVal retval(ito::retOk);
+
+    if ((extDObj->calcNumMats() != 1) || (extDObj->getSize(extDObj->getDims() - 1) != sizeX) || (extDObj->getSize(extDObj->getDims() - 2) != sizeY))
+    {
+        retval = ito::RetVal(ito::retError,0,"Error in copyFromData2D. Size of Buffer unequal size of DataObject");
+        return retval;
+    }
+    
+    //retval = checkType(src); // This is bullshit because this type is anytype and src is always uchar!!!!
+    //if (retval != ito::retOk)
+    //   return retval;
+
+    cv::Mat *cvMat = ((cv::Mat *)extDObj->get_mdata()[extDObj->seekMat(0)]);
+
+    if (cvMat->elemSize() !=  sizeof(ito::uint16))
+        return retval;
+
+#if (USEOMP)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+#endif
+    uchar *srcPtr = src;
+#if (USEOMP)
+    #pragma omp for schedule(guided)
+#endif
+    for (int y = 0; y < sizeY; y++)
+    {
+        uchar *dstPtr = cvMat->ptr(y);
+        for (int x = 0; x < sizeX; x++)
+        {
+            dstPtr[x * 2 + 1] = srcPtr[x * 2];
+            dstPtr[x * 2] = srcPtr[x * 2 + 1];
+        }
+        srcPtr = src + sizeX * y * 2;
+    }
+#if (USEOMP)
+    }
+#endif
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal CMU1394::copyObjBytesSwapped(ito::DataObject *extDObj, uchar *src, int sizeX, int sizeY, int maxSizeX, int x0, int y0)
+{
+    ito::RetVal retval(ito::retOk);
+
+    if ((extDObj->calcNumMats() != 1) || (extDObj->getSize(extDObj->getDims() - 1) != sizeX) || (extDObj->getSize(extDObj->getDims() - 2) != sizeY))
+    {
+        retval = ito::RetVal(ito::retError,0,"Error in copyFromData2D. Size of Buffer unequal size of DataObject");
+        return retval;
+    }
+    
+    //retval = checkType(src); // This is bullshit because this type is anytype and src is always uchar!!!!
+    //if (retval != ito::retOk)
+    //   return retval;
+
+    cv::Mat *cvMat = ((cv::Mat *)extDObj->get_mdata()[extDObj->seekMat(0)]);
+
+    if (cvMat->elemSize() !=  sizeof(ito::uint16))
+        return retval;
+
+#if (USEOMP)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+#endif
+    uchar *srcPtr = src;
+
+#if (USEOMP)
+    #pragma omp for schedule(guided)
+#endif
+    for (int y = 0; y < sizeY - y0; y++)
+    {
+        uchar *dstPtr = cvMat->ptr(y);
+        for (int x = 0; x < sizeX - x0; x++)
+        {
+            dstPtr[x * 2 + 1] = srcPtr[x0 + x * 2];
+            dstPtr[x * 2] = srcPtr[x0 + x * 2 + 1];
+        }
+        srcPtr = src + sizeX * y * 2;
+    }
+#if (USEOMP)
+    }
+#endif
+    return retval;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal CMU1394::showConfDialog(void)
 {
@@ -235,10 +330,15 @@ CMU1394::CMU1394() :  AddInGrabber(), m_saveParamsOnClose(false),
     paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, 0, 2, 0, tr("Set Triggermode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("swapByteOrder", ito::ParamBase::Int, 0, 1, 0, tr("Swap byte order for 16bit images").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     //now create dock widget for this plugin
     DockWidgetCMU1394 *cmuwdg = new DockWidgetCMU1394(m_params, getID());
     connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), cmuwdg, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    connect(cmuwdg, SIGNAL(changeParameters(QMap<QString, ito::ParamBase>)), this, SLOT(updateParameters(QMap<QString, ito::ParamBase>)));
+//    connect(cmuwdg, SIGNAL(changeParameters(QMap<QString, ito::ParamBase>)), this, SLOT(updateParameters(QMap<QString, ito::ParamBase>)));
+    connect(cmuwdg, SIGNAL(OffsetPropertiesChanged(double)), this, SLOT(OffsetPropertiesChanged(double)));
+    connect(cmuwdg, SIGNAL(GainPropertiesChanged(double)), this, SLOT(GainPropertiesChanged(double)));
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -416,6 +516,10 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                     m_pC1394offset->SetValue(offsoldVal, 0);
                 }
             }
+            else if(!key.compare("swapByteOrder"))
+            {
+                m_swapBO = val->getVal<int>() > 0 ? 1: 0;
+            }
             else 
             {
                 if (grabberStartedCount())
@@ -490,7 +594,7 @@ end:
 
     if (!retValue.containsWarningOrError())
     {
-        emit parametersChanged(m_params);
+//        emit parametersChanged(m_params);
     }
 
     if (waitCond) 
@@ -532,6 +636,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 
     m_iCamNumber = (*paramsOpt)[0].getVal<int>();
     m_params["CamNumber"].setVal<int>(m_iCamNumber);
+    m_swapBO = (*paramsOpt)[1].getVal<int>();
 
     Initnum++;  // So count up the init-number
 
@@ -618,55 +723,94 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     {
         switch(m_iFireWire_VideoFormat)
         {
+/*
+            format : 0, modes 0 - 7:
+	        {
+		        {160 ,120 ,COLOR_CODE_YUV444},
+		        {320 ,240 ,COLOR_CODE_YUV422},
+		        {640 ,480 ,COLOR_CODE_YUV411},
+		        {640 ,480 ,COLOR_CODE_YUV422},
+		        {640 ,480 ,COLOR_CODE_RGB8},
+		        {640 ,480 ,COLOR_CODE_Y8},
+		        {640 ,480 ,COLOR_CODE_Y16},
+		        {0   ,0   ,COLOR_CODE_MAX}
+	        }
+*/
             case 0:
             {
                 switch(m_iFireWire_VideoMode)
                 {
-                    case 4:
-                        maxxsize = 640; maxysize = 480; bpp = 16;
-                        break;
                     case 5:
                         maxxsize = 640; maxysize = 480; bpp = 8;
-                        break;
+                    break;
+                    case 6:
+                        maxxsize = 640; maxysize = 480; bpp = 16;
+                    break;
                 }
                 break;
             }
             case 1:
             {
+/*
+                videoFormat 1: , mode 0 - 7:
+                {
+		            {800 ,600 ,COLOR_CODE_YUV422},
+		            {800 ,600 ,COLOR_CODE_RGB8},
+		            {800 ,600 ,COLOR_CODE_Y8},
+		            {1024,768 ,COLOR_CODE_YUV422},
+		            {1024,768 ,COLOR_CODE_RGB8},
+		            {1024,768 ,COLOR_CODE_Y8},
+		            {800 ,600 ,COLOR_CODE_Y16},
+		            {1024,768 ,COLOR_CODE_Y16}
+	            }
+*/
                 switch(m_iFireWire_VideoMode)
                 {
-                    case 1:
-                        maxxsize = 800; maxysize = 600; bpp = 16;
-                        break;
                     case 2:
                         maxxsize = 800; maxysize = 600; bpp = 8;
-                        break;
-                    case 4:
-                        maxxsize = 1024; maxysize = 768; bpp = 16;
-                        break;
+                    break;
                     case 5:
                         maxxsize = 1024; maxysize = 768; bpp = 8;
-                        break;
+                    break;
+                    case 6:
+                        maxxsize = 800; maxysize = 600; bpp = 16;
+                    break;
+                    case 7:
+                        maxxsize = 1024; maxysize = 768; bpp = 16;
+                    break;
                 }
                 break;
             }
 
             case 2:
             {
+/*
+                VideoFromat 2: , mode 0 - 7:
+                {
+		            {1280,960 ,COLOR_CODE_YUV422},
+		            {1280,960 ,COLOR_CODE_RGB8},
+		            {1280,960 ,COLOR_CODE_Y8},
+		            {1600,1200,COLOR_CODE_YUV422},
+		            {1600,1200,COLOR_CODE_RGB8},
+		            {1600,1200,COLOR_CODE_Y8},
+		            {1280,960 ,COLOR_CODE_Y16},
+		            {1600,1200,COLOR_CODE_Y16}
+	            }
+*/
                 switch(m_iFireWire_VideoMode)
                 {
-                    case 1:
-                        maxxsize = 1280; maxysize = 960; bpp = 8;
-                        break;
                     case 2:
                         maxxsize = 1280; maxysize = 960; bpp = 8;
-                        break;
-                    case 4:
-                        maxxsize = 1600; maxysize = 1200; bpp = 16;
-                        break;
+                    break;
                     case 5:
                         maxxsize = 1600; maxysize = 1200; bpp = 8;
-                        break;
+                    break;
+                    case 6:
+                        maxxsize = 1280; maxysize = 960; bpp = 16;
+                    break;
+                    case 7:
+                        maxxsize = 1600; maxysize = 1200; bpp = 16;
+                    break;
                 }
                 break;
             }
@@ -1087,13 +1231,35 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
                     if (curxsize == maxxsize)
                     {
                         lsrcstrpos = y0 * maxxsize;
-                        if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, curysize);
-                        if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, curysize);
+                        cbuf += lsrcstrpos;
+                        if (m_swapBO)
+                        {
+                            if(copyExternal)
+                                retValue += copyObjBytesSwapped(externalDataObject, (uchar*)cbuf, maxxsize, curysize);
+                            if(!copyExternal || hasListeners)
+                                retValue += copyObjBytesSwapped(&m_data, (uchar*)cbuf, maxxsize, curysize);
+                        }
+                        else
+                        {
+                            if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, curysize);
+                            if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, curysize);
+                        }
                     }
                     else
                     {
-                        if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
-                        if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
+                        if (m_swapBO)
+                        {
+                            lsrcstrpos = y0 * maxxsize;
+                            if(copyExternal)
+                                retValue += copyObjBytesSwapped(externalDataObject, (uchar*)cbuf, curxsize, curysize, maxxsize, x0, y0);
+                            if(!copyExternal || hasListeners)
+                                retValue += copyObjBytesSwapped(&m_data, (uchar*)cbuf, curxsize, curysize, maxxsize, x0, y0);
+                        }
+                        else
+                        {
+                            if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
+                            if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
+                        }
                     }
                     break;
                 }
@@ -1185,5 +1351,18 @@ void CMU1394::updateParameters(QMap<QString, ito::ParamBase> params)
         setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase(param1)), NULL);
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void CMU1394::OffsetPropertiesChanged(double offset)
+{ 
+    setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, offset)), NULL);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void CMU1394::GainPropertiesChanged(double gain)
+{ 
+    setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, gain)), NULL);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // 1394
