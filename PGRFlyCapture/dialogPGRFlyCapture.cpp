@@ -201,7 +201,7 @@ ito::RetVal DialogPGRFlyCapture::applyParameters()
     if(ui.doubleSpinBox_integration_time->isEnabled())
     {
         double dval = ui.doubleSpinBox_integration_time->value()/1000.0;
-        if(qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
+        if(qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= 1e-6) //the smallest range is 1musec, given by the number of decimals of the spin box. //std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
         }
