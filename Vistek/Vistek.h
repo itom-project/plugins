@@ -63,13 +63,13 @@ class Vistek : public ito::AddInGrabber
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
-        enum AcquisitionStatus { asNoImageAcquired, asWaitingForTransfer, asImageReady, asTimeout, asConnectionLost, asOtherError };
+        enum AcquisitionStatus { asNoImageAcquired = 0, asWaitingForTransfer = 1, asImageReady = 2, asTimeout = 3, asConnectionLost = 4, asOtherError = 5 };
 
         VistekFeatures m_features;
 
         struct AcquiredImage
         {
-            AcquisitionStatus status;
+            int /*AcquisitionStatus*/ status;
             int sizex;
             int sizey;
             int dataID;
@@ -122,9 +122,6 @@ class Vistek : public ito::AddInGrabber
         void updateTimestamp();
 
     private slots:
-        void ExposurePropertyChanged(double exposure);
-        void GainPropertyChanged(double gain);
-        void OffsetPropertyChanged(double offset);
 
         void dockWidgetVisibilityChanged(bool visible);
 };

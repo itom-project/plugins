@@ -129,7 +129,7 @@ ito::RetVal VistekContainer::initCameraContainer()
                 m_camClient = CameraContainer_create(SVGigETL_TypeFilter);
                 if(m_camClient == SVGigE_NO_CLIENT)
                 {
-                    std::cout << "connecting failed.\n" << std::endl;
+                    std::cout << "connecting via FilterDriver failed.\n" << std::endl;
                     std::cout << "Trying to connect via winsock ... " << std::endl;
                     m_camClient = CameraContainer_create(SVGigETL_TypeWinsock);
                     if(m_camClient == SVGigE_NO_CLIENT)
@@ -204,9 +204,9 @@ ito::RetVal VistekContainer::initCameraContainer()
     \sa getInstance
 */
 VistekContainer::VistekContainer(void) :
-    m_initialized(false)
+    m_initialized(false),
+    m_camClient(SVGigE_NO_CLIENT)
 {
-    m_camClient = SVGigE_NO_CLIENT;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -216,6 +216,11 @@ VistekContainer::VistekContainer(void) :
 */
 VistekContainer::~VistekContainer(void)
 {
+    if (m_camClient)
+    {
+        CameraContainer_delete(m_camClient);
+        m_camClient = SVGigE_NO_CLIENT;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

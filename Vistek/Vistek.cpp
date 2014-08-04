@@ -42,6 +42,7 @@
 #include <qmetaobject.h>
 #include "dockWidgetVistek.h"
 #include <qelapsedtimer.h>
+#include <qthread.h>
 
 
 VistekContainer* VistekContainer::m_pVistekContainer = NULL;
@@ -155,7 +156,7 @@ Vistek::Vistek(QObject *parent) :
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
-    DockWidgetVistek *dw = new DockWidgetVistek();
+    DockWidgetVistek *dw = new DockWidgetVistek(this);
     
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -752,12 +753,18 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
     }
     else
     {   
+        /*bool isReadoutTransfer;
+        StreamingChannel_getReadoutTransfer(m_streamingChannel, &isReadoutTransfer);
+        qDebug() << "isReadoutTransfer" << isReadoutTransfer;*/
+        /*float ftimeout;
+        StreamingChannel_getChannelTimeout(m_streamingChannel, &ftimeout);
+        qDebug() << "timeout" << ftimeout;*/
+
         int timeout = 0;
         while(m_acquiredImage.status == asWaitingForTransfer)
         {
             if (timeout > 2000)
             {
-                std::cout<<"timeout\n";
                 m_acquiredImage.status = asTimeout;
                 break;
             }
@@ -792,9 +799,26 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
         {
             retValue += ito::RetVal(ito::retError,0,"timeout while retrieving image");
         }
-        else if (m_acquiredImage.status == asOtherError)
+        else if (m_acquiredImage.status >= asOtherError)
         {
-            retValue += ito::RetVal(ito::retError,0,"error while retrieving the image");
+            int offset = m_acquiredImage.status - asOtherError;
+            switch (offset)
+            {
+                case SVGigE_SIGNAL_FRAME_COMPLETED: retValue += ito::RetVal(ito::retError,1, "new image available, transfer was successful"); break;
+                case SVGigE_SIGNAL_FRAME_ABANDONED: retValue += ito::RetVal(ito::retError,2, "an image could not be completed in time and was therefore abandoned"); break;
+                case SVGigE_SIGNAL_END_OF_EXPOSURE: retValue += ito::RetVal(ito::retError,3, "end of exposure is currently mapped to transfer started"); break;
+                case SVGigE_SIGNAL_BANDWIDTH_EXCEEDED: retValue += ito::RetVal(ito::retError,4, "available network bandwidth has been exceeded"); break;
+                case SVGigE_SIGNAL_OLD_STYLE_DATA_PACKETS: retValue += ito::RetVal(ito::retError,5, "driver problem due to old-style driver behavior (prior to 2003, not WDM driver)"); break;
+                case SVGigE_SIGNAL_TEST_PACKET: retValue += ito::RetVal(ito::retError,6, "a test packet arrived"); break;
+                case SVGigE_SIGNAL_CAMERA_IMAGE_TRANSFER_DONE: retValue += ito::RetVal(ito::retError,7, "the camera has finished an image transfer"); break;
+                case SVGigE_SIGNAL_CAMERA_CONNECTION_LOST: retValue += ito::RetVal(ito::retError,8, "connection to camera got lost"); break;
+                case SVGigE_SIGNAL_MULTICAST_MESSAGE: retValue += ito::RetVal(ito::retError,9, "an exceptional situation occurred during a multicast transmission"); break;
+                case SVGigE_SIGNAL_FRAME_INCOMPLETE: retValue += ito::RetVal(ito::retError,10, "a frame could not be properly completed"); break;
+                case SVGigE_SIGNAL_MESSAGE_FIFO_OVERRUN: retValue += ito::RetVal(ito::retError,11, "a next entry was put into the message FIFO before the old one was released"); break;
+                case SVGigE_SIGNAL_CAMERA_SEQ_DONE: retValue += ito::RetVal(ito::retError,12, "the camera has finished a shutter sequence"); break;
+                case SVGigE_SIGNAL_CAMERA_TRIGGER_VIOLATION: retValue += ito::RetVal(ito::retError,13, "the camera detected a trigger violation"); break;
+                default: retValue += ito::RetVal(ito::retError, 0, "any error occurred"); break;
+            }
         }
         else if (m_acquiredImage.status == asConnectionLost)
         {
@@ -1054,12 +1078,6 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
         std::cout << "done!\n" << std::endl;
 
         retval += startStreamAndRegisterCallbacks();
-
-        DockWidgetVistek *dw = qobject_cast<DockWidgetVistek*>(getDockWidget()->widget());
-        if (dw)
-        {
-            QMetaObject::invokeMethod(dw, "propertiesChanged", Q_ARG(float, m_gainIncrement), Q_ARG(float, m_exposureIncrement), Q_ARG(VistekFeatures, m_features));
-        }
     }
 
     return retval;
@@ -1227,24 +1245,20 @@ ito::RetVal Vistek::startStreamAndRegisterCallbacks()
             // Register messages
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_FRAME_COMPLETED);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_START_OF_TRANSFER);
-            /*Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_TRIGGER_VIOLATION);
-            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_FRAME_ABANDONED);
-            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_END_OF_EXPOSURE);*/
-
-            /*Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_FRAME_COMPLETED);
+            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_TRIGGER_VIOLATION);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_FRAME_ABANDONED);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_END_OF_EXPOSURE);
-            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_START_OF_TRANSFER);
+
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_BANDWIDTH_EXCEEDED);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_OLD_STYLE_DATA_PACKETS);
-            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_TEST_PACKET);*/
+            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_TEST_PACKET);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_IMAGE_TRANSFER_DONE);
-            /*Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_CONNECTION_LOST);
+            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_CONNECTION_LOST);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_MULTICAST_MESSAGE);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_FRAME_INCOMPLETE);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_MESSAGE_FIFO_OVERRUN);
             Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_SEQ_DONE);
-            */Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_TRIGGER_VIOLATION);
+            Stream_addMessageType(m_streamingChannel,m_eventID,SVGigE_SIGNAL_CAMERA_TRIGGER_VIOLATION);
 
             // Register message callback
             std::cout << "Registering message callback ..." << std::endl;
@@ -1287,39 +1301,15 @@ void Vistek::dockWidgetVisibilityChanged(bool visible)
         DockWidgetVistek *dw = qobject_cast<DockWidgetVistek*>(getDockWidget()->widget());
         if (visible)
         {
-            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            connect(dw, SIGNAL(ExposurePropertyChanged(double)), this, SLOT(ExposurePropertyChanged(double)));
-            connect(dw, SIGNAL(GainPropertyChanged(double)), this, SLOT(GainPropertyChanged(double)));
-            connect(dw, SIGNAL(OffsetPropertyChanged(double)), this, SLOT(OffsetPropertyChanged(double)));
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
 
             emit parametersChanged(m_params);
         }
         else
         {
-            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            disconnect(dw, SIGNAL(ExposurePropertyChanged(double)), this, SLOT(ExposurePropertyChanged(double)));
-            disconnect(dw, SIGNAL(GainPropertyChanged(double)), this, SLOT(GainPropertyChanged(double)));
-            disconnect(dw, SIGNAL(OffsetPropertyChanged(double)), this, SLOT(OffsetPropertyChanged(double)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
         }
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void Vistek::ExposurePropertyChanged(double exposure)
-{
-    setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("exposure", ito::ParamBase::Double, exposure)));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void Vistek::GainPropertyChanged(double gain)
-{
-    setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, gain)));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void Vistek::OffsetPropertyChanged(double offset)
-{
-    setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, offset)));
 }
 
 
@@ -1342,7 +1332,7 @@ SVGigE_RETURN __stdcall DataCallback(Image_handle data, void* context)
         }
         else
         {
-            v->m_acquiredImage.status = Vistek::asOtherError;
+            v->m_acquiredImage.status = Vistek::asOtherError + Image_getSignalType(data);
         }
         v->m_acquiredImage.sizex = -1;
         v->m_acquiredImage.sizey = -1;
