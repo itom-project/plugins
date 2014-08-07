@@ -28,8 +28,8 @@ FIND_PACKAGE_QT(ON Widgets LinguistTools)
 
 IF(ITOM_SDK_PCL_SUPPORT)
     find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
-    find_package(OpenCV REQUIRED)
-    find_package(VTK QUIET)
+    find_package(OpenCV COMPONENTS core REQUIRED)
+    find_package(VTK COMPONENTS vtkIOCore QUIET)
     
     IF(VTK_FOUND)
         
