@@ -23,6 +23,14 @@ IF (WIN32)
     endif (PLUGIN_aerotechEnsemble)
 ENDIF (WIN32)
 
+# AVTVimba
+IF (WIN32)
+    OPTION(PLUGIN_AVTVimba "Build with this plugin." OFF)
+    if (PLUGIN_AVTVimba)
+            ADD_SUBDIRECTORY(AVTVimba)
+    endif (PLUGIN_AVTVimba)
+ENDIF (WIN32)
+
 # cmu1394
 IF (WIN32)
     OPTION(PLUGIN_cmu1394 "Build with this plugin." ON)
