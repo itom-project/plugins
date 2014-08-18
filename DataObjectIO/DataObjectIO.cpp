@@ -2582,6 +2582,14 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
 
     if(!ret.containsError())
     {
+        if(image.cols == 0 || image.rows == 0)
+        {
+            ret += ito::RetVal(ito::retError, 0, "Error while reading image. Probably, the bit depth, compression... is not supported");
+        }
+    }
+
+    if(!ret.containsError())
+    {
         int imageType = 0;
 
         switch(image.type())
@@ -2603,7 +2611,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                 else return ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toLatin1().data());
                 break;
             default:
-                return ito::RetVal(ito::retError,0,tr("Color format of the file is currently not compatible with itom. Wait for next itom version.").toLatin1().data());
+                return ito::RetVal(ito::retError,0,tr("Format of the image is currently not supported by itom.").toLatin1().data());
         }
 
         tempObject = ito::DataObject(image.rows, image.cols, imageType);

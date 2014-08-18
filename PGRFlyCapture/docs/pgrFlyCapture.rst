@@ -6,7 +6,7 @@
 **Summary**:    :pluginsummary:`PGRFlyCapture`
 **Type**:       :plugintype:`PGRFlyCapture`
 **License**:    :pluginlicense:`PGRFlyCapture`
-**Platforms**:  Windows, (Linux possible but yet not implemented)
+**Platforms**:  Windows, Linux
 **Devices**:    Point Grey cameras (USB3) supported by Fly Capture driver. (GigE possible, but yet not implemented)
 **Author**:     :pluginauthor:`PGRFlyCapture`
 =============== ========================================================================================================
@@ -16,6 +16,8 @@ Overview
 
 .. pluginsummaryextended::
     :plugin: PGRFlyCapture
+    
+This plugin has mainly been tested with cameras of type Flea3 and Grasshopper3.
 
 Initialization
 ==============
@@ -73,3 +75,9 @@ Changelog
 ==========
 
 * itom setup 1.2.0: This plugin has been compiled using the FlyCapture 2.6.3.4
+
+Linux
+======
+
+For linux, please consider the document "Using Linux with USB 3.0", published by Point Grey as technical application note TAN2012007. Starting the camera crashed (or came to a timeout when
+calling *startDevice* for cameras with an image size bigger than 2MB if the notes in section **Configuration USBFS** are not considered.

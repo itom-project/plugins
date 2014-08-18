@@ -66,6 +66,8 @@ class PGRFlyCapture : public ito::AddInGrabber
 
         void dockWidgetVisibilityChanged(bool visible);
 
+        ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+
     public:
         friend class PGRFlyCaptureInterface;
         const ito::RetVal showConfDialog(void);
@@ -96,6 +98,7 @@ class PGRFlyCapture : public ito::AddInGrabber
         FlyCapture2::PGRGuid m_myGUID;
         int m_camIdx;
         int m_colorCam;
+        bool m_colouredOutput;
         bool m_RunSync;
         bool m_RunSoftwareSync;
         double m_gainMax;

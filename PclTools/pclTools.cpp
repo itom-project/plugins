@@ -64,6 +64,7 @@
 #include <pcl/filters/random_sample.h>
 #include "random_sample_corrected.h" //corrected version for errornous version of random_sample filter in pcl 1.6.0
 #include <pcl/common/pca.h>
+#include <pcl/filters/project_inliers.h>
 
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/surface/organized_fast_mesh.h>
@@ -2769,6 +2770,378 @@ SACMODEL_STICK = 17 \n\
 #endif  
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclProjectOnModelParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with distances").toLatin1().data()));
+    paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Model type according to enum pcl::SacModel").toLatin1().data()));
+
+    paramsOpt->clear();
+    paramsOpt->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("point on cylinder symmetrie axis").toLatin1().data()));
+    paramsOpt->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("symmetrie axis of cylinder").toLatin1().data()));
+    paramsOpt->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::In, (double)(-std::numeric_limits<float>::max()), (double)(std::numeric_limits<float>::max()), 0.0, tr("cylinder radius").toLatin1().data()));
+
+    paramsOut->clear();
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclProjectOnModelDOC = "\n\
+\n\
+\n\
+Possible types are: \n\
+--------------------\n\
+SACMODEL_PLANE = 0, \n\
+SACMODEL_LINE = 1, \n\
+SACMODEL_CIRCLE2D = 2, \n\
+SACMODEL_CIRCLE3D = 3, \n\
+SACMODEL_SPHERE = 4, \n\
+SACMODEL_CYLINDER = 5, \n\
+SACMODEL_CONE = 6, \n\
+SACMODEL_TORUS = 7, \n\
+SACMODEL_PARALLEL_LINE = 8, \n\
+SACMODEL_PERPENDICULAR_PLANE = 9, \n\
+SACMODEL_PARALLEL_LINES = 10, \n\
+SACMODEL_NORMAL_PLANE = 11, \n\
+SACMODEL_NORMAL_SPHERE = 12, \n\
+SACMODEL_REGISTRATION = 13, \n\
+SACMODEL_REGISTRATION_2D = 14, \n\
+SACMODEL_PARALLEL_PLANE = 15, \n\
+SACMODEL_NORMAL_PARALLEL_PLANE = 16, \n\
+SACMODEL_STICK = 17 \n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclProjectOnModel(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+    QVector<ito::ParamBase> mands = (*paramsMand);
+    QVector<ito::ParamBase> opts = (*paramsOpt);
+    QVector<ito::ParamBase> outs = (*paramsOut);
+
+#if PCL_VERSION_COMPARE(<, 1, 7, 0)
+    return ito::RetVal(ito::retError, 0, tr("pclDistanceToModel not implemented for PCL 1.6.1 or lower").toLatin1().data());
+#else
+    //read params from mandatory and optional params
+    ito::PCLPointCloud *pclIn = (ito::PCLPointCloud*)mands[0].getVal<void*>();
+    if (pclIn == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("input point cloud must not be NULL").toLatin1().data());
+    }
+
+    ito::PCLPointCloud *pclOut = (ito::PCLPointCloud*)mands[1].getVal<void*>();
+    if (pclOut == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("output point cloud must not be NULL").toLatin1().data());
+    }
+
+    int modelType = mands[2].getVal<int>();
+
+    Eigen::Vector4f linePt;
+    linePt[3] = 0.0f;
+
+    Eigen::Vector4f lineDir;
+    lineDir[3] = 0.0f;
+
+    float radius = cv::saturate_cast<float>(opts[2].getVal<double>());
+    // Create a set of planar coefficients with X=Y=0,Z=1
+    pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
+
+    switch(modelType)
+    {
+        default:
+        case pcl::SACMODEL_LINE:
+        case pcl::SACMODEL_CIRCLE2D:
+        case pcl::SACMODEL_CIRCLE3D:
+        {
+            return ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(modelType))).toLatin1().data());
+        }
+
+        case pcl::SACMODEL_PLANE:
+        {
+            double* value = NULL;
+            coefficients->values.resize (4);
+
+            if(opts[1].getLen() < 3 || (value = (double*)(opts[1].getVal<void*>())) == NULL)
+            {
+                return ito::RetVal(ito::retError, 0, (tr("Plane model must have [nx,ny,nz] and d. [nx,ny,nz] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
+            }
+            else
+            {
+                coefficients->values[0] = cv::saturate_cast<float>(value[0]);
+                coefficients->values[1] = cv::saturate_cast<float>(value[1]);
+                coefficients->values[2] = cv::saturate_cast<float>(value[2]);
+            }
+            coefficients->values[3] = opts[2].getVal<double>();
+        }
+        break;
+
+        case pcl::SACMODEL_SPHERE:
+        {
+            double* value = NULL;
+            coefficients->values.resize (4);
+
+            if(opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
+            {
+                return ito::RetVal(ito::retError, 0, (tr("Spherical model must have [x,y,z] and r. [x,y,z] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
+            }
+            else
+            {
+                coefficients->values[0] = cv::saturate_cast<float>(value[0]);
+                coefficients->values[1] = cv::saturate_cast<float>(value[1]);
+                coefficients->values[2] = cv::saturate_cast<float>(value[2]);
+            }
+            coefficients->values[3] = opts[2].getVal<double>();
+        }
+        break;
+
+        case pcl::SACMODEL_CYLINDER:
+        {
+            double* value = NULL;
+            coefficients->values.resize (7);
+
+            if(opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
+            {
+                return ito::RetVal(ito::retError, 0, (tr("Cylinder model must have 7 parameters, [x,y,z], [dx, dy, dz] and r. [x,y,z] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
+            }
+            else
+            {
+                coefficients->values[0] = cv::saturate_cast<float>(value[0]);
+                coefficients->values[1] = cv::saturate_cast<float>(value[1]);
+                coefficients->values[2] = cv::saturate_cast<float>(value[2]);
+            }
+
+            if(opts[1].getLen() < 3 || (value = (double*)(opts[1].getVal<void*>())) == NULL)
+            {
+                return ito::RetVal(ito::retError, 0, (tr("Cylinder model must have [x,y,z], [dx, dy, dz] and r. [dx,dy,dz] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
+            }
+            else
+            {
+                coefficients->values[3] = cv::saturate_cast<float>(value[0]);
+                coefficients->values[4] = cv::saturate_cast<float>(value[1]);
+                coefficients->values[5] = cv::saturate_cast<float>(value[2]);
+            }
+
+            coefficients->values[6] = opts[2].getVal<double>();
+        }
+        break;
+
+        case pcl::SACMODEL_CONE:
+        case pcl::SACMODEL_TORUS:
+        case pcl::SACMODEL_PARALLEL_LINE:
+        case pcl::SACMODEL_PERPENDICULAR_PLANE:
+        case pcl::SACMODEL_PARALLEL_LINES:
+        case pcl::SACMODEL_NORMAL_PLANE:
+        case pcl::SACMODEL_NORMAL_SPHERE:
+        case pcl::SACMODEL_REGISTRATION:
+        case pcl::SACMODEL_REGISTRATION_2D:
+        case pcl::SACMODEL_PARALLEL_PLANE:
+        case pcl::SACMODEL_NORMAL_PARALLEL_PLANE:
+        case pcl::SACMODEL_STICK:
+        {
+            return ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(modelType))).toLatin1().data());
+        }
+    }
+
+    float floatNAN = std::numeric_limits<float>::quiet_NaN();
+
+    bool overwriteInput = false; //real inplace was possible
+//    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
+
+    switch(pclIn->getType())
+    {
+        default:
+        case ito::pclInvalid:
+            return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not defined or point cloud invalid").toLatin1().data());
+        case ito::pclXYZ:
+        {
+            if (pclIn == pclOut)
+            {
+                pclOut = new ito::PCLPointCloud(ito::pclXYZ);
+                pclOut->resize(pclIn->size());
+                overwriteInput = true;
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(ito::pclXYZ);
+                pclOut->resize(pclIn->size());
+            }
+        }
+        break;
+        case ito::pclXYZI:
+        {
+            if (pclIn == pclOut)
+            {
+                pclOut = new ito::PCLPointCloud(ito::pclXYZI);
+                pclOut->resize(pclIn->size());
+                overwriteInput = true;
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(ito::pclXYZI);
+                pclOut->resize(pclIn->size());
+            }
+        }
+        break;
+        case ito::pclXYZRGBA:
+        {
+            if (pclIn == pclOut)
+            {
+                pclOut = new ito::PCLPointCloud(ito::pclXYZRGBA);
+                pclOut->resize(pclIn->size());
+                overwriteInput = true;
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(ito::pclXYZRGBA);
+                pclOut->resize(pclIn->size());
+            }
+        }
+        break;
+        case ito::pclXYZNormal:
+        case ito::pclXYZINormal:
+        case ito::pclXYZRGBNormal:
+        {
+            if (pclIn == pclOut)
+            {
+                //*pclOut = *pclIn;
+                //Do nothing
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(*pclIn);
+            }
+        }
+        break;
+    }
+
+    #if (USEOMP)
+    #pragma omp parallel num_threads(NTHREADS)
+    {
+    #endif  
+    
+    Eigen::Vector4f curPt;
+    curPt[3] = 0.0f;
+
+    switch(pclIn->getType())
+    {
+        default:
+        case ito::pclInvalid:
+            retval += ito::RetVal(ito::retError, 0, tr("invalid point cloud type or type not allowed").toLatin1().data());
+        break;
+
+        case ito::pclXYZ: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
+        {
+            pcl::PointCloud<pcl::PointXYZ>::Ptr pclSrc = pclIn->toPointXYZ();
+            pcl::PointCloud<pcl::PointXYZ>::Ptr pclDists = pclOut->toPointXYZ();
+
+            // Create the filtering object
+            pcl::ProjectInliers<pcl::PointXYZ> proj;
+            proj.setModelType(modelType);
+            proj.setInputCloud(pclSrc);
+            proj.setModelCoefficients(coefficients);
+            proj.filter(*pclDists);
+        }
+        break;
+        
+        case ito::pclXYZNormal:
+        {
+            pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pclIn->toPointXYZNormal();
+            pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
+
+            // Create the filtering object
+            pcl::ProjectInliers<pcl::PointNormal> proj;
+            proj.setModelType(modelType);
+            proj.setInputCloud(pclSrc);
+            proj.setModelCoefficients(coefficients);
+            proj.filter(*pclDists);
+        }
+        break;
+        
+        case ito::pclXYZI:
+        {
+            pcl::PointCloud<pcl::PointXYZI>::Ptr pclSrc = pclIn->toPointXYZI();
+            pcl::PointCloud<pcl::PointXYZI>::Ptr pclDists = pclOut->toPointXYZI();
+
+            // Create the filtering object
+            pcl::ProjectInliers<pcl::PointXYZI> proj;
+            proj.setModelType(modelType);
+            proj.setInputCloud(pclSrc);
+            proj.setModelCoefficients(coefficients);
+            proj.filter(*pclDists);
+        }
+        break;
+        
+        case ito::pclXYZRGBA:
+        {
+            pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pclSrc = pclIn->toPointXYZRGBA();
+            pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pclDists = pclOut->toPointXYZRGBA();
+
+            // Create the filtering object
+            pcl::ProjectInliers<pcl::PointXYZRGBA> proj;
+            proj.setModelType(modelType);
+            proj.setInputCloud(pclSrc);
+            proj.setModelCoefficients(coefficients);
+            proj.filter(*pclDists);
+        }
+        break;
+        
+        case ito::pclXYZINormal:
+        {
+            pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclSrc = pclIn->toPointXYZINormal();
+            pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
+
+            // Create the filtering object
+            pcl::ProjectInliers<pcl::PointXYZINormal> proj;
+            proj.setModelType(modelType);
+            proj.setInputCloud(pclSrc);
+            proj.setModelCoefficients(coefficients);
+            proj.filter(*pclDists);
+        }
+        break;
+        
+        case ito::pclXYZRGBNormal:
+        {
+            pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclSrc = pclIn->toPointXYZRGBNormal();
+            pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
+                
+            // Create the filtering object
+            pcl::ProjectInliers<pcl::PointXYZRGBNormal> proj;
+            proj.setModelType(modelType);
+            proj.setInputCloud(pclSrc);
+            proj.setModelCoefficients(coefficients);
+            proj.filter(*pclDists);
+        }
+        break;
+    }
+
+    #if (USEOMP)
+    }
+    #endif
+
+    if (!retval.containsError() && overwriteInput)
+    {
+        (*pclIn) = (*pclOut); //here: pclOut is a new, temporary point cloud, pclIn is the given argument pclIn AND pclOut!
+        delete pclOut;
+    }
+
+    return retval;
+#endif  
+}
+
+
 //------------------------------------------------------------------------------------------------------------------------------
 const char* PclTools::pclEstimateNormalsDOC = "\n\
 \n\
@@ -4792,6 +5165,7 @@ ito::RetVal PclTools::pclOrganizedFastMeshParams(QVector<ito::Param> *paramsMand
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -4974,6 +5348,7 @@ ito::RetVal PclTools::pclSimplifyMeshParams(QVector<ito::Param> *paramsMand, QVe
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -5039,6 +5414,7 @@ ito::RetVal PclTools::pclPoissonParams(QVector<ito::Param> *paramsMand, QVector<
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -5168,6 +5544,9 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclDistanceToModel, PclTools::pclDistanceToModelParams, tr("Calculates the distances of points of a point cloud to a given model."));
     m_filterList.insert("pclDistanceToModel", filter);
+
+    filter = new FilterDef(PclTools::pclProjectOnModel, PclTools::pclProjectOnModelParams, tr("Projects points onto a given model."));
+    m_filterList.insert("pclProjectOnModel", filter);
 
     filter = new FilterDef(PclTools::pclEstimateNormals, PclTools::pclEstimateNormalsParams, tr("estimates normal vectors to the given input point cloud and returns the normal-enhanced representation of the input point cloud"));
     m_filterList.insert("pclEstimateNormals", filter);

@@ -41,6 +41,12 @@
 #include "./cmu1394/include/1394Camera.h"
 #endif
 
+#ifdef USEOPENMP
+    #define USEOMP 1
+#else
+    #define USEOMP 0
+#endif
+
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    CMU1394 
@@ -74,6 +80,8 @@ class CMU1394 : public ito::AddInGrabber
 //        ito::RetVal checkData(void);    /*!< Check if objekt has to be reallocated */
 
     private:
+        ito::RetVal copyObjBytesSwapped(ito::DataObject *extDObj, uchar *inpBuffer, int sizeX, int sizeY);
+        ito::RetVal copyObjBytesSwapped(ito::DataObject *extDObj, uchar *inpBuffer, int sizeX, int sizeY, int maxSizeX, int x0, int y0);
 
         BOOL m_saveParamsOnClose; /*!< Check if the parameters shoudl be saved on close */
         BOOL m_isgrabbing; /*!< Check if acquire was called */    
@@ -82,6 +90,7 @@ class CMU1394 : public ito::AddInGrabber
         int m_iFireWire_VideoMode;
         int m_iFireWire_VideoRate;
         int m_iFireWire_VideoFormat;
+        int m_swapBO;
 
         C1394Camera *m_ptheCamera;
         C1394CameraControl *m_pC1394gain, *m_pC1394offset, *m_pC1394autoexp;
@@ -115,6 +124,12 @@ class CMU1394 : public ito::AddInGrabber
         
         //! Retrieve new offset and new gain and give them to the camera dll
         void updateParameters(QMap<QString, ito::ParamBase> params);
+
+        //! Slot to synchronize this plugin with dockingwidget
+        void GainPropertiesChanged(double gain);
+
+        //! Slot to synchronize this plugin with dockingwidget
+        void OffsetPropertiesChanged(double offset);
 
     private slots:
 

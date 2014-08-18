@@ -125,11 +125,17 @@ This plugin automatically copies the necessary FlyCapture2 DLLs to the lib-folde
     
     m_initParamsMand.clear();
 
-    ito::Param param("cameraNumber", ito::ParamBase::Int, -1, 10, -1, QObject::tr("Continuous camera number [0,10], default: -1 uses the next free camera.").toAscii().data());
+    ito::Param param("cameraNumber", ito::ParamBase::Int, -1, 10, -1, QObject::tr("Continuous camera number [0,10], default: -1 uses the next free camera.").toLatin1().data());
     m_initParamsOpt.append(param);
-    param = ito::Param("bppLimit", ito::ParamBase::Int, -1, 16, -1, QObject::tr("Limits the bitdepth to the given level [8, 12, 16]. As default the maximum level is used (-1)").toAscii().data());
+    param = ito::Param("bppLimit", ito::ParamBase::Int, -1, 16, -1, QObject::tr("Limits the bitdepth to the given level [8, 12, 16]. As default the maximum level is used (-1)").toLatin1().data());
     m_initParamsOpt.append(param);
-    param = ito::Param("forceSync", ito::ParamBase::Int, 0, 1, 0, QObject::tr("Direct enable software sync if present").toAscii().data());
+    param = ito::Param("forceSync", ito::ParamBase::Int, 0, 1, 0, QObject::tr("Direct enable software sync if present").toLatin1().data());
+    m_initParamsOpt.append(param);
+    
+    param = ito::Param("colorMode", ito::ParamBase::String, "gray", tr("colorMode: 'gray' (default) or 'color' if color camera. In color mode, bpp is limited to 8 per color.").toLatin1().data());
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "gray");
+    sm->addItem("color");
+    param.setMeta(sm, true);
     m_initParamsOpt.append(param);
 
     memset(InitList, -1, (MAXPGR + 1) * sizeof(signed char));
@@ -197,87 +203,95 @@ PGRFlyCapture::PGRFlyCapture() :
     m_gainMin(0.0),
     m_offsetMax(1.0),
     m_offsetMin(0.0),
-    m_extendedShutter(UNINITIALIZED)
+    m_extendedShutter(UNINITIALIZED),
+    m_colouredOutput(false)
 {
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PGRFlyCapture", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000006, 1/1.875, 1/1.875, tr("Integrationtime of CCD programmed in seconds.").toAscii().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000006, 1/1.875, 1/1.875, tr("Integrationtime of CCD programmed in seconds.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("frame_time", ito::ParamBase::Double, 1/240.0, 1/1.875, 1/1.875, tr("Frame rate in seconds. This is only considered if the camera is not in an extended shutter mode. The frame_time might influence the integration time.").toAscii().data());
+    paramVal = ito::Param("frame_time", ito::ParamBase::Double, 1/240.0, 1/1.875, 1/1.875, tr("Frame rate in seconds. This is only considered if the camera is not in an extended shutter mode. The frame_time might influence the integration time.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("extended_shutter", ito::ParamBase::Int, 0, 1, 1, tr("1 (default): extended shutter is on (long integration times are supported and frame_time becomes invalid), 0: frames are only acquired in the pulse given by frame_time.").toAscii().data());
+    paramVal = ito::Param("extended_shutter", ito::ParamBase::Int, 0, 1, 1, tr("1 (default): extended shutter is on (long integration times are supported and frame_time becomes invalid), 0: frames are only acquired in the pulse given by frame_time.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("gain (normalized value 0..1)").toAscii().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("gain (normalized value 0..1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.05, tr("offset (normalized value 0..1, mapped to PG-parameter BRIGHTNESS)").toAscii().data());
+    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.05, tr("offset (normalized value 0..1, mapped to PG-parameter BRIGHTNESS)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("exposureEV", ito::ParamBase::Int, 0, 1023, 480, tr("Camera brightness control (EV)").toAscii().data());
+    paramVal = ito::Param("exposureEV", ito::ParamBase::Int, 0, 1023, 480, tr("Camera brightness control (EV)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sharpness", ito::ParamBase::Int, 0, 4095, 0, tr("Sharpness").toAscii().data());
+    paramVal = ito::Param("sharpness", ito::ParamBase::Int, 0, 4095, 0, tr("Sharpness").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gamma", ito::ParamBase::Int, 500, 4095, 1024, tr("Gamma adjustment").toAscii().data());
+    paramVal = ito::Param("gamma", ito::ParamBase::Int, 500, 4095, 1024, tr("Gamma adjustment").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //binning is GigE only
 
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toAscii().data());
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Pixelsize in x (cols)").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("Pixelsize in y (rows)").toAscii().data());
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Pixelsize in x (cols)").toAscii().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Pixelsize in x (cols)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Pixelsize in y (rows)").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 16, tr("bitdepth of each pixel").toAscii().data());
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.001, 60.0, 2.0, tr("Timeout for acquiring images in seconds").toAscii().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Pixelsize in x (cols)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, -1, 2, 0, tr("-1: Complete free run, 0: Disable trigger, 1: enable trigger mode, 2: enable software-trigger").toAscii().data());
+    paramVal = ito::Param("colorMode", ito::ParamBase::String | ito::ParamBase::Readonly, "gray", tr("colorMode: 'gray' (default) or 'color' if color camera").toLatin1().data());
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "gray");
+    sm->addItem("color");
+    paramVal.setMeta(sm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("videoMode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, FlyCapture2::NUM_VIDEOMODES - 1, FlyCapture2::VIDEOMODE_FORMAT7, tr("Current video mode, default is Mode7").toAscii().data());
+
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 16, tr("bitdepth of each pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    //paramVal = ito::Param("supported_frame_time", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Possible valued for the frame_time in frames per second").toAscii().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.001, 60.0, 2.0, tr("Timeout for acquiring images in seconds").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, -1, 2, 0, tr("-1: Complete free run, 0: Disable trigger, 1: enable trigger mode, 2: enable software-trigger").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("videoMode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, FlyCapture2::NUM_VIDEOMODES - 1, FlyCapture2::VIDEOMODE_FORMAT7, tr("Current video mode, default is Mode7").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    //paramVal = ito::Param("supported_frame_time", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Possible valued for the frame_time in frames per second").toLatin1().data());
     //m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camSerialNumber", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("Serial number of the attachted camera").toAscii().data());
+    paramVal = ito::Param("camSerialNumber", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("Serial number of the attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camModel", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Model identifier of the attachted camera").toAscii().data());
+    paramVal = ito::Param("camModel", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Model identifier of the attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camVendor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Name of the attachted camera vendor").toAscii().data());
+    paramVal = ito::Param("camVendor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Name of the attachted camera vendor").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camSensor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Identifier of the chip in attachted camera").toAscii().data());
+    paramVal = ito::Param("camSensor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Identifier of the chip in attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camResolution", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Resolution of the chip in attachted camera").toAscii().data());
+    paramVal = ito::Param("camResolution", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Resolution of the chip in attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camFirmwareVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Serial number of the firmware used in the attachted camera").toAscii().data());
+    paramVal = ito::Param("camFirmwareVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Serial number of the firmware used in the attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camFirmwareBuildTime", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Built time of the firmware used in the attachted camera").toAscii().data());
+    paramVal = ito::Param("camFirmwareBuildTime", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Built time of the firmware used in the attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camInterface", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Interface of camera").toAscii().data());
+    paramVal = ito::Param("camInterface", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Interface of camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("timestamp", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 10000000.0, 0.0, tr("Time in ms since last image (end of exposure)").toAscii().data());
+	paramVal = ito::Param("timestamp", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 10000000.0, 0.0, tr("Time in ms since last image (end of exposure)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
@@ -709,6 +723,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     m_camIdx = (*paramsOpt)[0].getVal<int>();    // the first parameter in optional list is for the camera index
     int limitBPP = (*paramsOpt)[1].getVal<int>();    // the second parameter in optional list is for the max BPP
     bool startSyncronized = (*paramsOpt)[2].getVal<int>();    // the third parameter in optional list handels synchronisation
+    QString colorMode = paramsOpt->at(3).getVal<char*>();
 
     Initnum++;
         
@@ -813,6 +828,19 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         if (!retVal.containsError())
         {
             m_colorCam = camInfo.isColorCamera;
+
+            if (!m_colorCam && QString::compare(colorMode, "gray", Qt::CaseInsensitive) != 0)
+            {
+                retVal += ito::RetVal(ito::retError, 0, "parameter 'colorMode' must be 'gray' if a monochrome camera is connected");
+            }
+            else if (QString::compare(colorMode, "gray", Qt::CaseInsensitive) == 0)
+            {
+                m_colouredOutput = false;
+            }
+            else
+            {
+                m_colouredOutput = true;
+            }
         }
     }
 
@@ -864,22 +892,38 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 m_params["videoMode"].setVal<int>(FlyCapture2::VIDEOMODE_FORMAT7);
                 m_currentFormat7Settings.mode = FlyCapture2::MODE_0;
 
-                if((FlyCapture2::PIXEL_FORMAT_MONO8 | FlyCapture2::PIXEL_FORMAT_RAW8) & m_format7Info.pixelFormatBitField)
+                if (m_colouredOutput)
                 {
-                    minBpp = std::min(minBpp, 8);
-                    maxBpp = std::max(maxBpp, 8);
-                }
+                    if (FlyCapture2::PIXEL_FORMAT_BGRU & m_format7Info.pixelFormatBitField)
+                    {
+                        minBpp = std::min(minBpp, 8);
+                        maxBpp = std::max(maxBpp, 8);
+                    }
 
-                if((FlyCapture2::PIXEL_FORMAT_MONO12 | FlyCapture2::PIXEL_FORMAT_RAW12) & m_format7Info.pixelFormatBitField)
-                {
-                    minBpp = std::min(minBpp, 12);
-                    maxBpp = std::max(maxBpp, 12);
+                    if ((FlyCapture2::PIXEL_FORMAT_BGRU & m_format7Info.pixelFormatBitField) == 0)
+                    {
+                        retVal += ito::RetVal(ito::retError, 0, "colorMode 'rgb' requested, but the camera does not support one of the implemented formats RGB");
+                    }
                 }
-
-                if((FlyCapture2::PIXEL_FORMAT_MONO16 | FlyCapture2::PIXEL_FORMAT_RAW16) & m_format7Info.pixelFormatBitField)
+                else
                 {
-                    minBpp = std::min(minBpp, 16);
-                    maxBpp = std::max(maxBpp, 16);
+                    if((FlyCapture2::PIXEL_FORMAT_MONO8 | FlyCapture2::PIXEL_FORMAT_RAW8) & m_format7Info.pixelFormatBitField)
+                    {
+                        minBpp = std::min(minBpp, 8);
+                        maxBpp = std::max(maxBpp, 8);
+                    }
+
+                    if((FlyCapture2::PIXEL_FORMAT_MONO12 | FlyCapture2::PIXEL_FORMAT_RAW12) & m_format7Info.pixelFormatBitField)
+                    {
+                        minBpp = std::min(minBpp, 12);
+                        maxBpp = std::max(maxBpp, 12);
+                    }
+
+                    if((FlyCapture2::PIXEL_FORMAT_MONO16 | FlyCapture2::PIXEL_FORMAT_RAW16) & m_format7Info.pixelFormatBitField)
+                    {
+                        minBpp = std::min(minBpp, 16);
+                        maxBpp = std::max(maxBpp, 16);
+                    }
                 }
                     
                 if(limitBPP <= 8 || maxBpp <= 8)
@@ -895,8 +939,11 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                     desiredBpp = 16;
                 }
 
-                flyCapChangeFormat7(true, false, desiredBpp);
-                pixelFormat = m_currentFormat7Settings.pixelFormat;
+                if (!retVal.containsError())
+                {
+                    flyCapChangeFormat7(true, false, desiredBpp);
+                    pixelFormat = m_currentFormat7Settings.pixelFormat;
+                }
             }
         }
         else
@@ -1203,30 +1250,8 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         }
         else
         {
-            if(m_colorCam)
-            {
-                if(curBpp <25)
-                {
-                    m_params["bpp"].setVal<int>(24);
-                    m_params["bpp"].setMeta( new ito::IntMeta(24,24), true );
-                }
-                else if (curBpp <33)
-                {
-                    m_params["bpp"].setVal<int>(30);  
-                    m_params["bpp"].setMeta( new ito::IntMeta(30,30), true );
-                }
-                else
-                {
-                    m_params["bpp"].setVal<int>(48); 
-                    m_params["bpp"].setMeta( new ito::IntMeta(48,48), true );
-                }
-            }
-            else
-            {
-                m_params["bpp"].setVal<int>(curBpp);   
-                m_params["bpp"].setMeta( new ito::IntMeta(minBpp,maxBpp,4), true );
-            }
-        
+            m_params["bpp"].setVal<int>(curBpp);   
+            m_params["bpp"].setMeta( new ito::IntMeta(minBpp,maxBpp,4), true );
         }
     }
 
@@ -1389,7 +1414,7 @@ ito::RetVal PGRFlyCapture::stopDevice(ItomSharedSemaphore *waitCond)
     }
     else if(grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retError, 1001, tr("StopDevice of PGRFlyCapture can not be executed, since camera has not been started.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 1001, tr("StopDevice of PGRFlyCapture can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -1423,7 +1448,7 @@ ito::RetVal PGRFlyCapture::acquire(const int trigger, ItomSharedSemaphore *waitC
 
     if(grabberStartedCount() <= 0)
     {
-        retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of PGRFlyCapture can not be executed, since camera has not been started.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of PGRFlyCapture can not be executed, since camera has not been started.").toLatin1().data());
     }
     else
     {
@@ -1497,7 +1522,7 @@ ito::RetVal PGRFlyCapture::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     {
         if(dObj == NULL)
         {
-            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toLatin1().data());
         }
         else
         {
@@ -1537,7 +1562,7 @@ ito::RetVal PGRFlyCapture::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if(!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
     else
     {
@@ -1646,21 +1671,39 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
         //    }
         //}
 
-        if(bpp <= 8)
+        if(bpp <= 8 && !m_colouredOutput)
         {
             retValue += checkError(pImage.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &convertedImage));
 
             if (!retValue.containsError())
             {
-                ito::uint8 *cbuf=(ito::uint8*)pImage.GetData();
+                ito::uint8 *cbuf=(ito::uint8*)convertedImage.GetData();
                 if(cbuf == NULL)
                 {
-                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
                 }
                 else 
                 {
                     if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
                     if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                }
+            }
+        }
+        else if(bpp <= 8 && m_colouredOutput)
+        {
+            retValue += checkError(pImage.Convert(FlyCapture2::PIXEL_FORMAT_BGRU, &convertedImage));
+
+            if (!retValue.containsError())
+            {
+                ito::Rgba32 *cbuf=(ito::Rgba32*)convertedImage.GetData();
+                if(cbuf == NULL)
+                {
+                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                }
+                else 
+                {
+                    if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::Rgba32>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                    if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::Rgba32>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
                 }
             }
         }
@@ -1673,7 +1716,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                 ito::uint16 *cbuf=(ito::uint16*)convertedImage.GetData();
                 if(cbuf == NULL)
                 {
-                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
                 }
                 else
                 {
@@ -1699,7 +1742,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                 ito::uint16 *cbuf=(ito::uint16*)convertedImage.GetData();
                 if(cbuf == NULL)
                 {
-                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
                 }
                 else
                 {
@@ -1894,10 +1937,16 @@ unsigned int PGRFlyCapture::GetBppFromPixelFormat( FlyCapture2::PixelFormat pixe
     {
         case FlyCapture2::PIXEL_FORMAT_MONO8:
         case FlyCapture2::PIXEL_FORMAT_RAW8:
+        case FlyCapture2::PIXEL_FORMAT_411YUV8:
+        case FlyCapture2::PIXEL_FORMAT_422YUV8:
+        case FlyCapture2::PIXEL_FORMAT_422YUV8_JPEG:
+        case FlyCapture2::PIXEL_FORMAT_444YUV8:
+        case FlyCapture2::PIXEL_FORMAT_BGR:
+        case FlyCapture2::PIXEL_FORMAT_BGRU:
+        case FlyCapture2::PIXEL_FORMAT_RGBU:
             return 8;
             break;
 
-        case FlyCapture2::PIXEL_FORMAT_411YUV8:
         case FlyCapture2::PIXEL_FORMAT_MONO12:
         case FlyCapture2::PIXEL_FORMAT_RAW12:
             return 12;
@@ -1905,26 +1954,11 @@ unsigned int PGRFlyCapture::GetBppFromPixelFormat( FlyCapture2::PixelFormat pixe
 
         case FlyCapture2::PIXEL_FORMAT_MONO16:
         case FlyCapture2::PIXEL_FORMAT_S_MONO16:
-        case FlyCapture2::PIXEL_FORMAT_422YUV8:
         case FlyCapture2::PIXEL_FORMAT_RAW16:
-            return 16;
-            break;
-
-        case FlyCapture2::PIXEL_FORMAT_444YUV8:
-        case FlyCapture2::PIXEL_FORMAT_RGB8:
-        case FlyCapture2::PIXEL_FORMAT_BGR:
-            return 24;
-            break;
-
-        case FlyCapture2::PIXEL_FORMAT_BGRU:
-        case FlyCapture2::PIXEL_FORMAT_RGBU:
-            return 32;
-            break;
-
-        case FlyCapture2::PIXEL_FORMAT_S_RGB16:
         case FlyCapture2::PIXEL_FORMAT_RGB16:
+        case FlyCapture2::PIXEL_FORMAT_S_RGB16:
         case FlyCapture2::PIXEL_FORMAT_BGR16:
-            return 48;
+            return 16;
             break;
 
         default:
@@ -2004,7 +2038,14 @@ ito::RetVal PGRFlyCapture::flyCapChangeFormat7(bool changeBpp, bool changeROI, i
             case -1:
                 break; //unchanged
             case 8:
-                f7ImageSettings.pixelFormat = FlyCapture2::PIXEL_FORMAT_MONO8;
+                if (m_colouredOutput)
+                {
+                    f7ImageSettings.pixelFormat = FlyCapture2::PIXEL_FORMAT_BGRU;
+                }
+                else
+                {
+                    f7ImageSettings.pixelFormat = FlyCapture2::PIXEL_FORMAT_MONO8;
+                }
                 break;
             case 12:
                 f7ImageSettings.pixelFormat = FlyCapture2::PIXEL_FORMAT_MONO12;
@@ -2349,4 +2390,63 @@ ito::RetVal PGRFlyCapture::flyCapSynchronizeFrameRateShutter()
     }
 
     return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PGRFlyCapture::checkData(ito::DataObject *externalDataObject)
+{
+    int futureHeight = m_params["sizey"].getVal<int>();
+    int futureWidth = m_params["sizex"].getVal<int>();
+    int futureType;
+
+    int bpp = m_params["bpp"].getVal<int>();
+    if (bpp <= 8)
+    {
+        if (m_colouredOutput)
+        {
+            futureType = ito::tRGBA32;
+        }
+        else
+        {
+            futureType = ito::tUInt8;
+        }
+    }
+    else if (bpp <= 16)
+    {
+        futureType = ito::tUInt16;
+    }
+    else if (bpp <= 32)
+    {
+        futureType = ito::tInt32;
+    }
+    else 
+    {
+        futureType = ito::tFloat64;
+    }
+
+    if (externalDataObject == NULL)
+    {
+        if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+        {
+            m_data = ito::DataObject(futureHeight,futureWidth,futureType);
+        }
+    }
+    else
+    {
+        int dims = externalDataObject->getDims();
+        if (externalDataObject->getDims() == 0)
+        {
+            *externalDataObject = ito::DataObject(futureHeight,futureWidth,futureType);
+        }
+        else if (externalDataObject->calcNumMats () > 1)
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());            
+        }
+        else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
+        }
+    }
+
+    return ito::retOk;
 }

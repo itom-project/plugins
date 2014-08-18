@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 #include "fittingfilters.h"
-#include "DataObject\dataObjectFuncs.h"
+#include "DataObject/dataObjectFuncs.h"
 #include <qvariant.h>
 #include <qnumeric.h>
 

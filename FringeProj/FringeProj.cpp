@@ -677,15 +677,15 @@ ito::RetVal FringeProj::calcCiMapParams(QVector<ito::Param> *paramsMand, QVector
 
     if(!retval.containsError())
     {
-        param = ito::Param("images", ito::ParamBase::DObjPtr, NULL, tr("Continous 3D-image stack (uint8 or uint16)").toLatin1().data());
+        param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Continous 3D-image stack (uint8 or uint16)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("contThres", ito::ParamBase::Double, 0.0, 65535.0, 10.0, tr("Threshold for contrast. Only pixels with ((bright-dark) > contThres) will be considered").toLatin1().data());
+        param = ito::Param("contThres", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 10.0, tr("Threshold for contrast. Only pixels with ((bright-dark) > contThres) will be considered").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("brightUpperLimit", ito::ParamBase::Double, 0.0, 65535.0, 65535.0, tr("Pixels with bright image > brightUpperLimit will be set to invalid (-10)").toLatin1().data());
+        param = ito::Param("brightUpperLimit", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 65535.0, tr("Pixels with bright image > brightUpperLimit will be set to invalid (-10)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("darkLowerLimit", ito::ParamBase::Double, 0.0, 65535.0, 10.0, tr("Pixels with dark image < darkLowerLimit will be set to invalid (-10)").toLatin1().data());
+        param = ito::Param("darkLowerLimit", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 10.0, tr("Pixels with dark image < darkLowerLimit will be set to invalid (-10)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("ciMap", ito::ParamBase::DObjPtr, NULL, tr("2D-Output object [int16, 2pi-phase-index (>=0) or -10 for invalid]").toLatin1().data());
+        param = ito::Param("ciMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("2D-Output object [int16, 2pi-phase-index (>=0) or -10 for invalid]").toLatin1().data());
         paramsMand->append(param);
 
         param = ito::Param("safetyFactor", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("Intensity values that lie in a band around the mean value (bright+dark)/2 will be ignored. The width of the band is given by safetyFactor*(bright-dark)").toLatin1().data());
@@ -708,7 +708,7 @@ ito::RetVal FringeProj::calcCiMap(QVector<ito::ParamBase> *paramsMand, QVector<i
     ito::RetVal retval = ito::retOk;
     int ret = 0;
 
-    ito::DataObject *dObjImages = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+    const ito::DataObject *dObjImages = (*paramsMand)[0].getVal<const ito::DataObject*>();
     if (!dObjImages || !dObjImages->getContinuous() || (dObjImages->getDims() != 3))
     {
         return ito::RetVal(ito::retError, 0, tr("image memory used by calcPhaseMap4 must be continuous!").toLatin1().data());
@@ -716,7 +716,7 @@ ito::RetVal FringeProj::calcCiMap(QVector<ito::ParamBase> *paramsMand, QVector<i
     double contThreas = (*paramsMand)[1].getVal<double>();
     double brightUpperLimit = (*paramsMand)[2].getVal<double>();
     double darkLowerLimit = (*paramsMand)[3].getVal<double>();
-    ito::DataObject *dObjCiMap = (ito::DataObject*)(*paramsMand)[4].getVal<void*>();
+    ito::DataObject *dObjCiMap = (*paramsMand)[4].getVal<ito::DataObject*>();
 
     double safetyFactor = paramsOpt->at(0).getVal<double>();
 
@@ -914,15 +914,15 @@ ito::RetVal FringeProj::calcPhaseMapNParams(QVector<ito::Param> *paramsMand, QVe
 
     if(!retval.containsError())
     {
-        param = ito::Param("images", ito::ParamBase::DObjPtr, NULL, tr("N x Y x X continous image stack").toLatin1().data());
+        param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("N x Y x X continous image stack").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("contThreas", ito::ParamBase::Double, 0.0, 65535.0, 10.0, tr("Contrast threashold (val < threas = invalid)").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("overExp", ito::ParamBase::Double, 0.0, 65535.0, 255.0, tr("Value for overexposured pixels").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("phasePhase", ito::ParamBase::DObjPtr, NULL, tr("Wrapped phase result").toLatin1().data());
+        param = ito::Param("phasePhase", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Wrapped phase result").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("modulationMap", ito::ParamBase::DObjPtr, NULL, tr("Map with intensity modulation").toLatin1().data());
+        param = ito::Param("modulationMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Map with intensity modulation").toLatin1().data());
         paramsMand->append(param);
     }
 
@@ -942,15 +942,15 @@ ito::RetVal FringeProj::calcPhaseMapN(QVector<ito::ParamBase> *paramsMand, QVect
     ito::RetVal retval = ito::retOk;
     int ret = 0;
 
-    ito::DataObject *dObjImages = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+    const ito::DataObject *dObjImages = (*paramsMand)[0].getVal<const ito::DataObject*>();
     if (!dObjImages || !dObjImages->getContinuous() || (dObjImages->getDims() != 3))
     {
         return ito::RetVal(ito::retError, 0, tr("image memory used by calcPhaseMap4 must be continuous!").toLatin1().data());
     }
     double contThreas = (*paramsMand)[1].getVal<double>();
     double overExp = (*paramsMand)[2].getVal<double>();
-    ito::DataObject *dObjPhaseMap = (ito::DataObject*)(*paramsMand)[3].getVal<void*>();
-    ito::DataObject *dObjModMap = (ito::DataObject*)(*paramsMand)[4].getVal<void*>();
+    ito::DataObject *dObjPhaseMap = (*paramsMand)[3].getVal<ito::DataObject*>();
+    ito::DataObject *dObjModMap = (*paramsMand)[4].getVal<ito::DataObject*>();
     struct tvArray3D *images = new tvArray3D;
     struct tFloatArray2D *phaseMap = new tFloatArray2D, *modulationMap = new tFloatArray2D;
     images->vals = (void*)(((cv::Mat *)dObjImages->get_mdata()[dObjImages->seekMat(0)])->data);
@@ -1027,17 +1027,17 @@ ito::RetVal FringeProj::unwrapPhaseGrayParams(QVector<ito::Param> *paramsMand, Q
 
     if(!retval.containsError())
     {
-        param = ito::Param("contThreas", ito::ParamBase::Double, 0.0, 65535.0, 10.0, tr("Contrast threashold (val < threas = invalid)").toLatin1().data());
+        param = ito::Param("contThreas", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 10.0, tr("Contrast threashold (val < threas = invalid)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("maxPha", ito::ParamBase::Double, 0.0, 65535.0, 65535.0, tr("Highest possible unwrapped phase").toLatin1().data());
+        param = ito::Param("maxPha", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 65535.0, tr("Highest possible unwrapped phase").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("ciMap", ito::ParamBase::DObjPtr, NULL, tr("2D Inputobject from evaluated Graycode (int16)").toLatin1().data());
+        param = ito::Param("ciMap", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D Inputobject from evaluated Graycode (int16)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("rawPhase", ito::ParamBase::DObjPtr, NULL, tr("2D Raw (wrapped) phase (float32) (NaN is represented -10, else [-pi,pi])").toLatin1().data());
+        param = ito::Param("rawPhase", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D Raw (wrapped) phase (float32) (NaN is represented -10, else [-pi,pi])").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("modulationMap", ito::ParamBase::DObjPtr, NULL, tr("2D Modulation map from phase evaluation (float32)").toLatin1().data());
+        param = ito::Param("modulationMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("2D Modulation map from phase evaluation (float32)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("phaseMap", ito::ParamBase::DObjPtr, NULL, tr("Absolute height value (result) [float32] range: [0,maxPha] or NaN for invalid phases").toLatin1().data());
+        param = ito::Param("phaseMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Absolute height value (result) [float32] range: [0,maxPha] or NaN for invalid phases").toLatin1().data());
         paramsMand->append(param);
     }
 
@@ -1059,10 +1059,10 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
 
     double contThreas = (*paramsMand)[0].getVal<double>();
     double maxPha = (*paramsMand)[1].getVal<double>();
-    ito::DataObject *dObjCiMap = (ito::DataObject*)(*paramsMand)[2].getVal<void*>();
-    ito::DataObject *dObjRawPhase = (ito::DataObject*)(*paramsMand)[3].getVal<void*>();
-    ito::DataObject *dObjModMap = (ito::DataObject*)(*paramsMand)[4].getVal<void*>();
-    ito::DataObject *dObjPhaseMap = (ito::DataObject*)(*paramsMand)[5].getVal<void*>();
+    const ito::DataObject *dObjCiMap = (*paramsMand)[2].getVal<const ito::DataObject*>();
+    const ito::DataObject *dObjRawPhase = (*paramsMand)[3].getVal<const ito::DataObject*>();
+    const ito::DataObject *dObjModMap = (*paramsMand)[4].getVal<const ito::DataObject*>();
+    ito::DataObject *dObjPhaseMap = (*paramsMand)[5].getVal<ito::DataObject*>();
 
     if (!dObjCiMap || !dObjCiMap->getContinuous() || (dObjCiMap->getDims() != 2)
         || !dObjRawPhase || !dObjRawPhase->getContinuous() || (dObjRawPhase->getDims() != 2)
@@ -1158,11 +1158,11 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
         paramsMand->append(param);
         param = ito::Param("yMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("2D y-map (float32)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("scale", ito::ParamBase::Double, 0.0, 65535.0, 10.0, tr("Base-Scaling value (mm/px)").toLatin1().data());
+        param = ito::Param("scale", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 10.0, tr("Base-Scaling value (mm/px)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("dLateral", ito::ParamBase::Double, -65535.0, 65535.0, 0.0, tr("Lateral-shift per disparity value (mm/mm)").toLatin1().data());
+        param = ito::Param("dLateral", ito::ParamBase::Double | ito::ParamBase::In, -65535.0, 65535.0, 0.0, tr("Lateral-shift per disparity value (mm/mm)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("shiftInXNotY", ito::ParamBase::Int, 0, 1, 0, tr("0: lateral shift in y-direction, 1: in x-direction").toLatin1().data());
+        param = ito::Param("shiftInXNotY", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("0: lateral shift in y-direction, 1: in x-direction").toLatin1().data());
         paramsMand->append(param);
     }
 
