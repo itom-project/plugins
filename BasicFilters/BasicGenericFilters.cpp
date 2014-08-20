@@ -2003,12 +2003,12 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
     
     this->m_bufsize = this->m_kernelSizeX * this->m_kernelSizeY;
 
-    this->m_pRowKernel = new ito::float64[this->m_kernelSizeY];
-    this->m_pColKernel = new ito::float64[this->m_kernelSizeX];
+    this->m_pRowKernel = new ito::float64[this->m_kernelSizeX];
+    this->m_pColKernel = new ito::float64[this->m_kernelSizeY];
 
     if(this->m_kernelSizeY == 1)
     {
-        m_pRowKernel[0] = 1.0;
+        m_pColKernel[0] = 1.0;
     }
     else
     {
@@ -2016,24 +2016,24 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
         ito::float64 norm = 1 / sqrt( 2.0 * M_PI * sigSQR);
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
-            this->m_pRowKernel[y] =  norm * exp( pow( (ito::float64)(y - this->m_AnchorY), 2) * -0.5 / sigSQR ); 
+            this->m_pColKernel[y] =  norm * exp( pow( (ito::float64)(y - this->m_AnchorY), 2) * -0.5 / sigSQR ); 
         }
         norm = 0.0;
 
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
-            norm +=  this->m_pRowKernel[y]; 
+            norm +=  this->m_pColKernel[y]; 
         }
 
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
-            this->m_pRowKernel[y] /=  norm; 
+            this->m_pColKernel[y] /=  norm; 
         }
     }
 
     if(this->m_kernelSizeX == 1)
     {
-        m_pColKernel[0] = 1.0;
+        m_pRowKernel[0] = 1.0;
     }
     else
     {
@@ -2041,7 +2041,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
         ito::float64 norm = 1 / sqrt( 2.0 * M_PI * sigSQR);
         for(int x = 0; x < this->m_kernelSizeX; x++)
         {
-            this->m_pColKernel[x] =  norm * exp( pow( (ito::float64)(x - this->m_AnchorX), 2) * -0.5 / sigSQR ); 
+            this->m_pRowKernel[x] =  norm * exp( pow( (ito::float64)(x - this->m_AnchorX), 2) * -0.5 / sigSQR ); 
         }
         norm = 0.0;
 
@@ -2056,7 +2056,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
         }  
     }
 
-    if(this->m_pColKernel != NULL && this->m_pColKernel != NULL)
+    if(this->m_pColKernel != NULL && this->m_pRowKernel != NULL)
     {
         this->m_initilized = true;
     }
@@ -2133,7 +2133,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 
                 for(ito::int32 xk = 0; xk < this->m_kernelSizeX; xk++)
                 {
-                    this->m_pInLinesFiltered[y][x] += ((ito::float64) this->m_pInLines[y][x + xk]) * this->m_pColKernel[xk];
+                    this->m_pInLinesFiltered[y][x] += ((ito::float64) this->m_pInLines[y][x + xk]) * this->m_pRowKernel[xk];
                 }
             }
         }
@@ -2141,10 +2141,10 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
     else
     { 
         
-        if(true)
-        {
-            #pragma omp barrier
-        }
+        //if(true)
+        //{
+        //    #pragma omp barrier
+        //}
 
         //#if (USEOMP)
         //#pragma omp master
@@ -2171,7 +2171,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 
             for(ito::int32 xk = 0; xk < this->m_kernelSizeX; xk++)
             {
-                this->m_pInLinesFiltered[kernelLastY][x] += ((ito::float64) this->m_pInLines[kernelLastY][x + xk]) * this->m_pColKernel[xk];
+                this->m_pInLinesFiltered[kernelLastY][x] += ((ito::float64) this->m_pInLines[kernelLastY][x + xk]) * this->m_pRowKernel[xk];
             }
         }
 
@@ -2196,13 +2196,14 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 
         for(ito::int32 yk = 0; yk < this->m_kernelSizeY; yk++)
         {
-            this->m_pOutLine[x] += cv::saturate_cast<_Tp>(this->m_pInLinesFiltered[yk][x] * this->m_pRowKernel[yk]);
+            this->m_pOutLine[x] += cv::saturate_cast<_Tp>(this->m_pInLinesFiltered[yk][x] * this->m_pColKernel[yk]);
         }
     }
     
     #if (USEOMP)
     }
     #endif
+
     //return ito::retOk;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2222,11 +2223,11 @@ ito::RetVal BasicFilters::genericGaussianParams(QVector<ito::Param> *paramsMand,
         paramsMand->append(param);
         param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("n-dim DataObject of type sourceImage").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("sigmaX", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 101.0, 0.84, tr("Standard deviation in x direction").toLatin1().data());
+        param = ito::Param("sigmaX", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 5000.0, 0.84, tr("Standard deviation in x direction").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("epsilonX", ito::ParamBase::Double | ito::ParamBase::In, 0.00001, 1.0, 0.001, tr("Stop condition in x-direction, kernel values less than epsilon are ignored").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("sigmaY", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 101.0, 0.84, tr("Standard deviation in x direction").toLatin1().data());
+        param = ito::Param("sigmaY", ito::ParamBase::Double | ito::ParamBase::In, 0.1, 5000.0, 0.84, tr("Standard deviation in x direction").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("epsilonY", ito::ParamBase::Double | ito::ParamBase::In, 0.00001, 1.0, 0.001, tr("Stop condition in y-direction, kernel values less than epsilon are ignored").toLatin1().data());
         paramsMand->append(param);
