@@ -66,6 +66,7 @@ IF(ITOM_SDK_PCL_SUPPORT)
             ${EIGEN_INCLUDE_DIR}
             ${FLANN_INCLUDE_DIRS}
             ${Boost_INCLUDE_DIR}
+            ${VTK_INCLUDE_DIR}
         )
 
         LINK_DIRECTORIES(
