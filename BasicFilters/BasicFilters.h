@@ -140,6 +140,9 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal genericMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal genericLowPassFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
 
+        static ito::RetVal genericGaussianEpsilonParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        static ito::RetVal genericGaussianEpsilonFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
+
         static ito::RetVal genericGaussianParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
         static ito::RetVal genericGaussianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
 
@@ -328,15 +331,26 @@ template<typename _Tp> class GaussianFilter : public GenericFilterEngine<_Tp>
 
     public:
         explicit GaussianFilter(ito::DataObject *in, 
-            ito::DataObject *out, 
-            ito::int32 roiX0, 
-            ito::int32 roiY0, 
-            ito::int32 roiXSize, 
-            ito::int32 roiYSize, 
-            ito::float64 sigmaSizeX, 
-            ito::float64 epsilonSizeX,
-            ito::float64 sigmaSizeY, 
-            ito::float64 epsilonSizeY);
+                                ito::DataObject *out, 
+                                ito::int32 roiX0, 
+                                ito::int32 roiY0, 
+                                ito::int32 roiXSize, 
+                                ito::int32 roiYSize, 
+                                ito::float64 sigmaSizeX, 
+                                ito::float64 epsilonSizeX,
+                                ito::float64 sigmaSizeY, 
+                                ito::float64 epsilonSizeY);
+
+        explicit GaussianFilter(ito::DataObject *in, 
+                                ito::DataObject *out, 
+                                ito::int32 roiX0, 
+                                ito::int32 roiY0, 
+                                ito::int32 roiXSize, 
+                                ito::int32 roiYSize,
+                                ito::int32 kernelSizeX,
+                                ito::int32 kernelSizeY,
+                                ito::float64 sigmaSizeX, 
+                                ito::float64 sigmaSizeY);
 
         ~GaussianFilter();
 
