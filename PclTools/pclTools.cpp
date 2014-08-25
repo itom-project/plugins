@@ -722,34 +722,42 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
         type = "obj";
     }
 
-    //check point cloud
-    if (type == "obj")
-    {
-        ret = pcl::io::saveOBJFile(filename_, *(polygonMesh->polygonMesh()));
-    }
-    else if (type == "stl")
-    {
-        ret = pcl::io::savePolygonFileSTL(filename_, *(polygonMesh->polygonMesh()));
-    }
-    else if (type == "ply")
-    {
-        ret = pcl::io::savePolygonFilePLY(filename_, *(polygonMesh->polygonMesh()));
-    }
-    else if (type == "vtk")
-    {
-        ret = pcl::io::savePolygonFileVTK(filename_, *(polygonMesh->polygonMesh()));
-    }
+	if (polygonMesh->valid() == false)
+	{
+		retval += ito::RetVal(ito::retError, 0, tr("invalid polygon mesh cannot be saved").toLatin1().data());
+	}
+	
+	if (!retval.containsError())
+	{
+	//check point cloud
+		if (type == "obj")
+		{
+			ret = pcl::io::saveOBJFile(filename_, *(polygonMesh->polygonMesh()));
+		}
+		else if (type == "stl")
+		{
+			ret = pcl::io::savePolygonFileSTL(filename_, *(polygonMesh->polygonMesh()));
+		}
+		else if (type == "ply")
+		{
+			ret = pcl::io::savePolygonFilePLY(filename_, *(polygonMesh->polygonMesh()));
+		}
+		else if (type == "vtk")
+		{
+			ret = pcl::io::savePolygonFileVTK(filename_, *(polygonMesh->polygonMesh()));
+		}
     
 #if PCL_VERSION_COMPARE(>=,1,7,0)
-        if (ret < 0)
-        {
-            retval += ito::RetVal(ito::retError, 0, tr("error while saving polygon mesh (internal error of method in point cloud library").toLatin1().data());
-        }
+		if (ret < 0)
+		{
+			retval += ito::RetVal(ito::retError, 0, tr("error while saving polygon mesh (internal error of method in point cloud library").toLatin1().data());
+		}
 #else
     //uncommented since huge polygon meshes result in a buffer overflow of int.
     // bug in PCL version 1.6 or below. see: http://dev.pointclouds.org/issues/974, fixed in current trunk leading to any version bigger than the binary of 1.6
     /**/
 #endif
+	}
 
     return retval;
 }
