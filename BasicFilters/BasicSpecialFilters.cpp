@@ -2448,7 +2448,7 @@ ito::RetVal BasicFilters::calcHistParams(QVector<ito::Param> *paramsMand, QVecto
 
     param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Image of type Integer or float").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr, NULL, tr("(Empty) dataObject-hanlde. Will be source type later").toLatin1().data());
+    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("(Empty) dataObject-hanlde. Will be source type later").toLatin1().data());
     paramsMand->append(param);
     param = ito::Param("Steps", ito::ParamBase::Int, 0, 2048, 0, tr("Number of steps").toLatin1().data());
     paramsOpt->append(param);
