@@ -1189,6 +1189,302 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvRotP90Doc = "This filter rotates the image by 90° count clock wise. \n\
+\n\
+This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The \
+result is contained in the destination object\n\
+\n\
+It is allowed to let the filter work pseudo inplace if you give the same input than destination data object, else the output data object is verified \
+if it fits to the size and type of the source data object and if not a new one is allocated.\n";
+const char* OpenCVFilters::cvRotM90Doc = "This filter rotates the image by 90° clock wise. \n\
+\n\
+This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The \
+result is contained in the destination object\n\
+\n\
+It is allowed to let the filter work pseudo inplace if you give the same input than destination data object, else the output data object is verified \
+if it fits to the size and type of the source data object and if not a new one is allocated.\n";
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvRotP90(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * paramsOut)
+{
+    return cvRotate(paramsMand, paramsOpt, paramsOut, false);
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvRotM90(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * paramsOut)
+{
+    return cvRotate(paramsMand, paramsOpt, paramsOut, true);
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/, bool rotClw)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *dObjImages = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
+
+    ito::DataObject destTemp;
+
+    bool overWrite = true;
+
+    if (!dObjImages)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
+    }
+
+    if (!dObjDst)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
+    }
+
+    if(dObjImages->getDims() > 3)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
+    }
+
+    int ysize = dObjImages->getSize(dObjImages->getDims() - 2);
+    int xsize = dObjImages->getSize(dObjImages->getDims() - 1);
+    int planes = 0;
+    if(dObjImages->getDims() > 2)
+    {
+        planes = dObjImages->getSize(dObjImages->getDims() - 3);
+    }
+
+    if(!retval.containsError())
+    {
+        retval += ito::dObjHelper::verifyDataObjectType(dObjImages, "srcImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    }
+
+    if(!retval.containsError())
+    {
+        if(dObjDst != dObjImages)
+        {
+            if(planes > 0)
+            {
+                ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjDst, "destImage", planes, planes, xsize, xsize, ysize, ysize, 1, dObjImages->getType());
+                if(tRetval.containsError())
+                {
+                    int sizes[3] = {planes, xsize, ysize};
+                    destTemp = ito::DataObject(3, sizes, dObjImages->getType());
+                }
+                else
+                {
+                    destTemp = *dObjDst;
+                    overWrite = false;
+                }
+            }
+            else
+            {
+                ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjDst, "destImage", xsize, xsize, ysize, ysize, 1, dObjImages->getType());
+                if(tRetval.containsError())
+                {
+                    destTemp = ito::DataObject(xsize, ysize, dObjImages->getType());
+                }
+                else
+                {
+                    destTemp = *dObjDst;
+                    overWrite = false;
+                }            
+            }
+        }
+        else
+        {
+            if(planes > 0)
+            {
+                int sizes[3] = {planes, xsize, ysize};
+                destTemp = ito::DataObject(3, sizes, dObjImages->getType());
+            }
+            else
+            {
+                destTemp = ito::DataObject(xsize, ysize, dObjImages->getType());          
+            }
+        }
+    }
+
+    if(!retval.containsError())
+    {
+        int z_length = dObjImages->calcNumMats();
+
+        cv::Mat *cvMatIn = NULL;
+        cv::Mat *cvMatOut = NULL;
+
+        for (int z = 0; z < z_length; z++)
+        {
+            cvMatIn = (cv::Mat*)dObjImages->get_mdata()[dObjImages->seekMat(z)];
+            cvMatOut = (cv::Mat*)destTemp.get_mdata()[dObjImages->seekMat(z)];
+            try
+            {
+                cv::transpose(*cvMatIn, *cvMatOut);
+                cv::flip(*cvMatOut, *cvMatOut, rotClw ? 0 : 1);
+            }
+            catch (cv::Exception &exc)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
+                break;
+            }
+        }
+    }
+
+    if(!retval.containsError())
+    {
+        dObjImages->copyAxisTagsTo(destTemp);
+        dObjImages->copyTagMapTo(destTemp);
+
+        bool check;
+        destTemp.setAxisDescription(dObjImages->getDims() - 2, dObjImages->getAxisDescription(dObjDst->getDims() - 1, check)); 
+        destTemp.setAxisDescription(dObjImages->getDims() - 1, dObjImages->getAxisDescription(dObjDst->getDims() - 2, check)); 
+
+        destTemp.setAxisUnit(dObjImages->getDims() - 2, dObjImages->getAxisUnit(dObjDst->getDims() - 1, check)); 
+        destTemp.setAxisUnit(dObjImages->getDims() - 1, dObjImages->getAxisUnit(dObjDst->getDims() - 2, check)); 
+
+        destTemp.setAxisOffset(dObjImages->getDims() - 2, dObjImages->getAxisOffset(dObjDst->getDims() - 1)); 
+        destTemp.setAxisOffset(dObjImages->getDims() - 1, dObjImages->getAxisOffset(dObjDst->getDims() - 2)); 
+
+        destTemp.setAxisScale(dObjImages->getDims() - 2, dObjImages->getAxisOffset(dObjDst->getDims() - 1)); 
+        destTemp.setAxisScale(dObjImages->getDims() - 1, dObjImages->getAxisOffset(dObjDst->getDims() - 2)); 
+
+        if(overWrite)
+        {
+            *dObjDst = destTemp;
+        }
+
+        QString msg = rotClw ? tr("Rotated object by 90° clockwise with cvRotateM90-Filter") : tr("Rotated object by 90° counter clockwise with cvRotateP90-Filter");
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
+    }
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* OpenCVFilters::cvRot180Doc = "This filter rotates the image by 180°. \n\
+\n\
+This filter applies the flip method cvFlip from OpenCV horizontally and vertically to rotate the object. The \
+result is contained in the destination object\n\
+\n\
+It is allowed to let the filter work inplace if you give the same input than destination data object, else the output data object is verified \
+if it fits to the size and type of the source data object and if not a new one is allocated.\n";
+
+ito::RetVal OpenCVFilters::cvRot180(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *dObjImages = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
+
+    ito::DataObject destTemp;
+
+    bool overWrite = true;
+
+    if (!dObjImages)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
+    }
+
+    if (!dObjDst)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
+    }
+
+    if(dObjImages->getDims() > 3)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
+    }
+
+    int ysize = dObjImages->getSize(dObjImages->getDims() - 2);
+    int xsize = dObjImages->getSize(dObjImages->getDims() - 1);
+    int planes = 0;
+    if(dObjImages->getDims() > 1)
+    {
+        planes = dObjImages->getSize(dObjImages->getDims() - 3);
+    }
+
+    if(!retval.containsError())
+    {
+        retval += ito::dObjHelper::verifyDataObjectType(dObjImages, "srcImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    }
+
+    if(!retval.containsError())
+    {
+        if(dObjDst != dObjImages)
+        {
+            if(planes > 0)
+            {
+                ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjDst, "destImage", planes, planes, ysize, ysize, xsize, xsize,  1, dObjImages->getType());
+                if(tRetval.containsError())
+                {
+                    int sizes[3] = {planes, ysize, xsize};
+                    destTemp = ito::DataObject(3, sizes, dObjImages->getType());
+                }
+                else
+                {
+                    destTemp = *dObjDst;
+                    overWrite = false;
+                }
+            }
+            else
+            {
+                ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjDst, "destImage", ysize, ysize, xsize, xsize,  1, dObjImages->getType());
+                if(tRetval.containsError())
+                {
+                    destTemp = ito::DataObject(ysize, xsize, dObjImages->getType());
+                }
+                else
+                {
+                    destTemp = *dObjDst;
+                    overWrite = false;
+                }            
+            }
+        }
+        else
+        {
+            //destDataPhase = ito::DataObject( ysize, xsize, ito::tFloat64);
+            destTemp = *dObjDst;
+            overWrite = false;
+        }
+    }
+
+    if(!retval.containsError())
+    {
+        int z_length = dObjImages->calcNumMats();
+
+        cv::Mat *cvMatIn = NULL;
+        cv::Mat *cvMatOut = NULL;
+
+        for (int z = 0; z < z_length; z++)
+        {
+            cvMatIn = (cv::Mat*)dObjImages->get_mdata()[dObjImages->seekMat(z)];
+            cvMatOut = (cv::Mat*)destTemp.get_mdata()[dObjImages->seekMat(z)];
+            try
+            {
+                cv::flip(*cvMatIn, *cvMatOut, 1);
+                cv::flip(*cvMatOut, *cvMatOut, 0);
+            }
+            catch (cv::Exception &exc)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
+                break;
+            }
+        }
+    }
+
+    if(!retval.containsError())
+    {
+        if(overWrite)
+        {
+            *dObjDst = destTemp;
+        }
+
+        if (dObjDst != dObjImages)
+        {
+            dObjImages->copyAxisTagsTo(*dObjDst);
+            dObjImages->copyTagMapTo(*dObjDst);
+        }
+
+        QString msg = tr("Rotated object by 180° using cvRotate180-Filter");
+        dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 const char* OpenCVFilters::cvRemoveSpikesDoc = "Set single spikes at measurement edges to a new value. \n\
 \n\
 This filter creates a binary mask for the input object. The value of mask(y,x) will be 1 if value of input(y,x) is within the specified range and is finite.\
@@ -1525,6 +1821,15 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
 
     filter = new FilterDef(OpenCVFilters::cvFlipLeftRight, OpenCVFilters::stdParams2Objects, tr(cvFlipLeftRightDoc));
     m_filterList.insert("cvFlipLeftRight", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvRotP90, OpenCVFilters::stdParams2Objects, tr(cvRotP90Doc));
+    m_filterList.insert("cvRotateP90", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvRotM90, OpenCVFilters::stdParams2Objects, tr(cvRotM90Doc));
+    m_filterList.insert("cvRotateM90", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvRot180, OpenCVFilters::stdParams2Objects, tr(cvRot180Doc));
+    m_filterList.insert("cvRotate180", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
