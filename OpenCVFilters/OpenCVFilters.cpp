@@ -1155,7 +1155,7 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
         for (int z = 0; z < z_length; z++)
         {
             cvMatIn = (cv::Mat*)dObjImages->get_mdata()[dObjImages->seekMat(z)];
-            cvMatOut = (cv::Mat*)destTemp.get_mdata()[dObjImages->seekMat(z)];
+            cvMatOut = (cv::Mat*)destTemp.get_mdata()[destTemp.seekMat(z)];
             try
             {
                 cv::flip(*cvMatIn, *cvMatOut, colsIfTrue ? 1 : 0);
@@ -1309,7 +1309,7 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
         for (int z = 0; z < z_length; z++)
         {
             cvMatIn = (cv::Mat*)dObjImages->get_mdata()[dObjImages->seekMat(z)];
-            cvMatOut = (cv::Mat*)destTemp.get_mdata()[dObjImages->seekMat(z)];
+            cvMatOut = (cv::Mat*)destTemp.get_mdata()[destTemp.seekMat(z)];
             try
             {
                 cv::transpose(*cvMatIn, *cvMatOut);
@@ -1329,17 +1329,17 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
         dObjImages->copyTagMapTo(destTemp);
 
         bool check;
-        destTemp.setAxisDescription(dObjImages->getDims() - 2, dObjImages->getAxisDescription(dObjDst->getDims() - 1, check)); 
-        destTemp.setAxisDescription(dObjImages->getDims() - 1, dObjImages->getAxisDescription(dObjDst->getDims() - 2, check)); 
+        destTemp.setAxisDescription(destTemp.getDims() - 2, dObjImages->getAxisDescription(dObjImages->getDims() - 1, check)); 
+        destTemp.setAxisDescription(destTemp.getDims() - 1, dObjImages->getAxisDescription(dObjImages->getDims() - 2, check)); 
 
-        destTemp.setAxisUnit(dObjImages->getDims() - 2, dObjImages->getAxisUnit(dObjDst->getDims() - 1, check)); 
-        destTemp.setAxisUnit(dObjImages->getDims() - 1, dObjImages->getAxisUnit(dObjDst->getDims() - 2, check)); 
+        destTemp.setAxisUnit(destTemp.getDims() - 2, dObjImages->getAxisUnit(dObjImages->getDims() - 1, check)); 
+        destTemp.setAxisUnit(destTemp.getDims() - 1, dObjImages->getAxisUnit(dObjImages->getDims() - 2, check)); 
 
-        destTemp.setAxisOffset(dObjImages->getDims() - 2, dObjImages->getAxisOffset(dObjDst->getDims() - 1)); 
-        destTemp.setAxisOffset(dObjImages->getDims() - 1, dObjImages->getAxisOffset(dObjDst->getDims() - 2)); 
+        destTemp.setAxisOffset(destTemp.getDims() - 2, dObjImages->getAxisOffset(dObjImages->getDims() - 1)); 
+        destTemp.setAxisOffset(destTemp.getDims() - 1, dObjImages->getAxisOffset(dObjImages->getDims() - 2)); 
 
-        destTemp.setAxisScale(dObjImages->getDims() - 2, dObjImages->getAxisOffset(dObjDst->getDims() - 1)); 
-        destTemp.setAxisScale(dObjImages->getDims() - 1, dObjImages->getAxisOffset(dObjDst->getDims() - 2)); 
+        destTemp.setAxisScale(destTemp.getDims() - 2, dObjImages->getAxisOffset(dObjImages->getDims() - 1)); 
+        destTemp.setAxisScale(destTemp.getDims() - 1, dObjImages->getAxisOffset(dObjImages->getDims() - 2)); 
 
         if(overWrite)
         {
@@ -1450,7 +1450,7 @@ ito::RetVal OpenCVFilters::cvRot180(QVector<ito::ParamBase> *paramsMand, QVector
         for (int z = 0; z < z_length; z++)
         {
             cvMatIn = (cv::Mat*)dObjImages->get_mdata()[dObjImages->seekMat(z)];
-            cvMatOut = (cv::Mat*)destTemp.get_mdata()[dObjImages->seekMat(z)];
+            cvMatOut = (cv::Mat*)destTemp.get_mdata()[destTemp.seekMat(z)];
             try
             {
                 cv::flip(*cvMatIn, *cvMatOut, 1);
