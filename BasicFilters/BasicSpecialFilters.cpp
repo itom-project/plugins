@@ -2437,7 +2437,85 @@ template<typename _Tp> ito::RetVal HistogrammBlock(cv::Mat *planeIn, cv::Mat *hi
     }
     return ito::retOk;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\detail This function calculates a the histogram for a plane
+   \param[in]   planeIn  Inputplane
+   \param[in|out]   histOut   Preallocated histogramm buffer
+   \param[in]   min   Lowest value in this histogramm
+   \param[in]   max   Highest value in this histogramm
+   \author ITO
+   \sa  mcppfilters::calcHistParams, mcppfilters::calcHistFilter
+   \date
+*/
+template<> ito::RetVal HistogrammBlock<ito::Rgba32>(cv::Mat *planeIn, cv::Mat *histOut, double min, double max)
+{
+    ito::int32 * rowPtrOutR = (ito::int32*)histOut->ptr(2);
+    ito::int32 * rowPtrOutG = (ito::int32*)histOut->ptr(1);
+    ito::int32 * rowPtrOutB = (ito::int32*)histOut->ptr(0);
+    ito::int32 * rowPtrOutGray = (ito::int32*)histOut->ptr(3);
 
+    memset(rowPtrOutR, 0, histOut->cols * sizeof(ito::int32));
+    memset(rowPtrOutG, 0, histOut->cols * sizeof(ito::int32));
+    memset(rowPtrOutB, 0, histOut->cols * sizeof(ito::int32));
+    memset(rowPtrOutGray, 0, histOut->cols * sizeof(ito::int32));
+    
+    ito::int32 x, y;
+    ito::float64 indexfaktor = (histOut->cols - 1) / (max - min);
+
+    for (y = 0; y < planeIn->rows; y++)
+    {
+        #if (USEOMP)
+        #pragma omp parallel num_threads(NTHREADS)
+        {
+        #endif
+        ito::int32 index;
+        const ito::Rgba32* rowPtrIn;
+
+        rowPtrIn = (ito::Rgba32*)planeIn->ptr(y);
+        #if (USEOMP)
+        #pragma omp for schedule(guided)
+        #endif
+        for (x = 0; x < planeIn->cols; x++)
+        {
+            index = static_cast<ito::int32>((rowPtrIn[x].r - min) * indexfaktor);
+            if(index >= 0 && index < histOut->cols)
+            {
+                #if (USEOMP)
+                #pragma omp atomic
+                #endif
+                rowPtrOutR[index]++;
+            }
+            index = static_cast<ito::int32>((rowPtrIn[x].g - min) * indexfaktor);
+            if(index >= 0 && index < histOut->cols)
+            {
+                #if (USEOMP)
+                #pragma omp atomic
+                #endif
+                rowPtrOutG[index]++;
+            }
+            index = static_cast<ito::int32>((rowPtrIn[x].b - min) * indexfaktor);
+            if(index >= 0 && index < histOut->cols)
+            {
+                #if (USEOMP)
+                #pragma omp atomic
+                #endif
+                rowPtrOutB[index]++;
+            }
+            index = static_cast<ito::int32>((rowPtrIn[x].gray() - min) * indexfaktor);
+            if(index >= 0 && index < histOut->cols)
+            {
+                #if (USEOMP)
+                #pragma omp atomic
+                #endif
+                rowPtrOutGray[index]++;
+            }
+        }
+        #if (USEOMP)
+        }
+        #endif
+    }
+    return ito::retOk;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::calcHistParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
@@ -2491,6 +2569,8 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
     double minVal = 0;
     bool recalcMinMax = false;
 
+    int rows = 1;
+
     switch(dObjImages->getType())
     {
         case ito::tInt8:
@@ -2498,6 +2578,8 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
             minVal = -128;
             maxVal = 127;
             break;
+        case ito::tRGBA32:
+            rows = 4;
         case ito::tUInt8:
             hbins = 256;
             minVal = 0;
@@ -2534,7 +2616,7 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
         sizesVector[i] = dObjImages->getSize(i);
     }
 
-    sizesVector[dObjImages->getDims()-2] = 1;
+    sizesVector[dObjImages->getDims()-2] = rows;
     sizesVector[dObjImages->getDims()-1] = hbins;
 
     ito::DataObject dObjDestination(dObjImages->getDims(), sizesVector, ito::tInt32);
@@ -2588,6 +2670,9 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
             break;
             case ito::tFloat64:
                 HistogrammBlock<ito::float64>(cvMatIn, cvMatOut, minVal, maxVal);
+            break;
+            case ito::tRGBA32:
+                HistogrammBlock<ito::Rgba32>(cvMatIn, cvMatOut, minVal, maxVal);
             break;
         }
     }
