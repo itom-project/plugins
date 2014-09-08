@@ -1542,7 +1542,7 @@ const char* PclTools::transformAffineDOC = "\n\
                     result[i] = fitCoefficients->values[i];
                 }
                 paramsOut->data()[0].setVal<double*>(result, numOfCoeffs); // Positions
-
+                paramsOut->data()[1].setVal<int>(fitInliers->indices.size());
                 free(result);
                 result = NULL;
             }
@@ -1681,6 +1681,122 @@ const char* PclTools::pclFitModelDOC = "\n\
 /*static*/ ito::RetVal PclTools::pclFitModel(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, -1);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitModelDObjDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitModelDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = pclFitModelParams(paramsMand,paramsOpt,paramsOut);
+/*
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+*/
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->first() = ito::Param("dataObjIn", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input dataObject (const)").toLatin1().data());
+    paramsMand->append(ito::Param("randomSamples", ito::ParamBase::Int | ito::ParamBase::In, 256, 65356, 65356, tr("Number of random samples or all if >65355").toLatin1().data()));
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitModelDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    if(ito::ITOM_API_FUNCS == NULL || apiFilterCall == NULL || apiFilterParam == NULL || apiFilterParamBase == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("The api-functions are not defined. Init of filter failed").toLatin1().data());
+    }
+
+    QVector<ito::ParamBase> tmpParamsMand;
+    tmpParamsMand.clear();
+
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *inputObjct = (ito::DataObject*)((*paramsMand)[0].getVal<void*>());
+    if(inputObjct == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Input DataObject must not be NULL").toLatin1().data());
+    }
+
+    ito::PCLPointCloud tmpCloud;
+
+    ito::PCLPointCloud *tmpCloudFilter = NULL; 
+
+    bool deleteOnClose = false;
+
+    try
+    {
+        ito::pclHelper::pointCloudFromDisparity(inputObjct, tmpCloud, true);
+    }
+    catch(std::bad_alloc exc)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Could not allocated new pointcloud").toLatin1().data());
+    }
+
+    if((*paramsMand)[1].getVal<int>() != pcl::SACMODEL_SPHERE)
+    {
+        QVector<ito::ParamBase> estNormMand;
+        QVector<ito::ParamBase> estNormOpt;
+        QVector<ito::ParamBase> estNormOut;
+
+        retval += apiFilterParamBase("pclEstimateNormals", &estNormMand, &estNormOpt, &estNormOut);
+        if(!retval.containsError())
+        {
+            estNormMand[0].setVal<void*>(&tmpCloud);
+            estNormMand[1].setVal<void*>(&tmpCloud);
+            retval += pclEstimateNormals(&estNormMand, &estNormOpt, &estNormOut);
+        }
+    }
+
+    int nrOfPoints = (*paramsMand)[2].getVal<int>();
+
+    if(!retval.containsError())
+    {
+
+        if(nrOfPoints < 65356)
+        {
+            tmpCloudFilter = new ito::PCLPointCloud();
+
+            QVector<ito::ParamBase> estRndMand;
+            QVector<ito::ParamBase> estRndOpt;
+            QVector<ito::ParamBase> estRndOut;
+
+            retval += apiFilterParamBase("pclRandomSample", &estRndMand, &estRndOpt, &estRndOut);
+            if(!retval.containsError())
+            {
+                estRndMand[0].setVal<void*>(&tmpCloud);
+                estRndMand[1].setVal<void*>(tmpCloudFilter);
+                estRndMand[2].setVal<int>(nrOfPoints);
+                retval += pclRandomSample(&estRndMand, &estRndOpt, &estRndOut);
+            }
+            deleteOnClose = true;
+
+        }
+        else
+        {
+            tmpCloudFilter = &tmpCloud;
+        }
+    }
+
+    if(!retval.containsError())
+    {
+        tmpParamsMand.append(ito::ParamBase("pointCloudIn", ito::ParamBase::PointCloudPtr));
+        tmpParamsMand[0].setVal<void*>(tmpCloudFilter);
+        tmpParamsMand.append(ito::ParamBase("modelType", ito::ParamBase::Int, (*paramsMand)[1].getVal<int>()));
+        retval += pclFitModelGeneric(&tmpParamsMand, paramsOpt, paramsOut, -1);
+    }
+
+    if(tmpCloudFilter && deleteOnClose) delete tmpCloudFilter;
+
+    return retval;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -3191,6 +3307,8 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
     int kSearch = (*paramsOpt)[0].getVal<int>();
     double *viewPoint = (*paramsOpt)[1].getVal<double*>();
 
+    double noViewPoint[3] = {0.0, 0.0, 1.0};
+
     if (pclIn == NULL || pclOut == NULL)
     {
         retval += ito::RetVal(ito::retError, 0, tr("point cloud must not be NULL").toLatin1().data());
@@ -3947,7 +4065,7 @@ const char* PclTools::pclRandomSampleDOC = "\n\
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid input point cloud").toLatin1().data()));
     paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with removed NaN values").toLatin1().data()));
-    paramsMand->append(ito::Param("nrOfPoints", ito::ParamBase::Int | ito::ParamBase::In, 1, 10000000, 10000, tr("number of randomly picked points").toLatin1().data()));
+    paramsMand->append(ito::Param("nrOfPoints", ito::ParamBase::Int | ito::ParamBase::In, 1, std::numeric_limits<ito::uint16>::max(), 10000, tr("number of randomly picked points").toLatin1().data()));
     
     return retval;
 }
@@ -5528,6 +5646,9 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclFitModel, PclTools::pclFitModelParams, tr("fits a model of type pcl::SAC_MODEL to the given input point cloud using a RANSAC based fit (some types must have normals defined).\nInternally wrapped to pclFitModelGeneric.\nSee http://docs.pointclouds.org/1.7.0/group__sample__consensus.html for detailes"));
     m_filterList.insert("pclFitModel", filter);
+
+    filter = new FilterDef(PclTools::pclFitModelDObj, PclTools::pclFitModelDObjParams, tr("fits a model of type pcl::SAC_MODEL to the given input dataObject using a RANSAC based fit.\nInternally wrapped to pclFitModelGeneric.\nSee http://docs.pointclouds.org/1.7.0/group__sample__consensus.html for detailes"));
+    m_filterList.insert("pclFitModelDObj", filter);
 
     filter = new FilterDef(PclTools::pclFitCylinder, PclTools::pclFitCylinderParams, tr("fits a cylindrical model to the given input point cloud using a RANSAC based fit (must have normals defined). Internally wrapped to pclFitModelGeneric but with adapted output."));
     m_filterList.insert("pclFitCylinder", filter);
