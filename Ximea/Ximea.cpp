@@ -847,6 +847,12 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             {
                 if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
+                DWORD varSize = sizeof(int);
+                XI_PRM_TYPE varType = xiTypeInteger;
+                if ((ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, &varSize, &varType)))
+                    retValue += getErrStr(ret);
+                else
+                    m_params["integration_time"].setVal<double>(integration_time / 1.0e6);
             }
             else if (strcmp(paramIt.value().getName(),"sharpness") == 0)
             {
