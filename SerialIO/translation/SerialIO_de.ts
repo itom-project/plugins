@@ -167,12 +167,12 @@
     <message>
         <location line="+280"/>
         <source>Mandatory paramers are NULL</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pflichtparameter ist NULL</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Optinal paramers are NULL</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Optionaler Parameter ist NULL</translation>
     </message>
     <message>
         <source>Serialport-Interface</source>
@@ -189,12 +189,12 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location filename="../dialogSerialIO.cpp" line="+293"/>
         <source>Char token not closed correctly or number to big.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Undefined error.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Unbekannter Fehler.</translation>
     </message>
 </context>
 <context>
@@ -236,7 +236,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="+2"/>
         <source>0 -&gt; write output buffer as block at once or single characters with delay (1..65000)</source>
-        <translation type="unfinished"></translation>
+        <translation>0 -&gt; Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -251,22 +251,22 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="+7"/>
         <source>Clears the input buffer of serial port</source>
-        <translation>Löscht den Input-Puffer der seriellen Schnittstelle</translation>
+        <translation>Löscht den Eingabepuffer der seriellen Schnittstelle</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Clears the output buffer of serial port</source>
-        <translation>Löscht den Output-Puffer der seriellen Schnittstelle</translation>
+        <translation>Löscht den Ausgabepuffer der seriellen Schnittstelle</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Clears input (0) or output (1) buffer</source>
-        <translation>Löscht den Input- (0) oder Output- (1) Puffer</translation>
+        <translation>Löscht den Eingabe- (0) oder Ausgabe- (1) Puffer</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Clears the input or output buffer of serial port</source>
-        <translation>Löscht den Input- oder Output-Puffer der seriellen Schnittstelle</translation>
+        <translation>Löscht den Eingabe- oder Ausgabepuffer der seriellen Schnittstelle</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -355,7 +355,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="+45"/>
         <source>The number of the serial port, starting with 1 (linux 0)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nummer der seriellen Portnummer, beginnend mit 1 (bei Linux mit 0)</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -385,7 +385,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="+2"/>
         <source>0 -&gt; write output buffer as block or single characters with delay (1..65000)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">0 -&gt; Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
     </message>
     <message>
         <source>Toggle parity check</source>
@@ -831,7 +831,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location/>
         <source>Send Delay</source>
-        <translation type="unfinished"></translation>
+        <translation>Verzögerung</translation>
     </message>
 </context>
 <context>
