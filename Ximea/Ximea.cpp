@@ -136,56 +136,58 @@ Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnCl
 
    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Ximea", NULL);
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 4.0, 0.005, tr("Integrationtime of CCD programmed in s").toAscii().data());
+   paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 4.0, 0.005, tr("Integrationtime of CCD programmed in s").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("gain in dB").toAscii().data());
+   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("gain in dB").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Currently not used").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
-   paramVal = ito::Param("gamma", ito::ParamBase::Double, 0.3, 1.0, 1.0, tr("gamma").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("sharpness").toAscii().data());
+   paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Currently not used").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 1, tr("Enable hdr mode").toAscii().data());
+   paramVal = ito::Param("gamma", ito::ParamBase::Double, 0.3, 1.0, 1.0, tr("gamma").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_knee1", ito::ParamBase::Int, 0, 100, 40, tr("").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_knee2", ito::ParamBase::Int, 0, 100, 60, tr("").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_it1", ito::ParamBase::Int, 0, 100, 50, tr("").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_it2", ito::ParamBase::Int, 0, 100, 75, tr("").toAscii().data());
+   paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("sharpness").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1279, 0, tr("Startvalue for ROI").toAscii().data());
+   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 1, tr("Enable hdr mode").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Startvalue for ROI").toAscii().data());
+   paramVal = ito::Param("hdr_knee1", ito::ParamBase::Int, 0, 100, 40, tr("").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1279, 1279, tr("Stopvalue for ROI").toAscii().data());
+   paramVal = ito::Param("hdr_knee2", ito::ParamBase::Int, 0, 100, 60, tr("").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1023, 1023, tr("Stopvalue for ROI").toAscii().data());
+   paramVal = ito::Param("hdr_it1", ito::ParamBase::Int, 0, 100, 50, tr("").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1280, tr("ROI-Size in x").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1024, tr("ROI-Size in y").toAscii().data());
+   paramVal = ito::Param("hdr_it2", ito::ParamBase::Int, 0, 100, 75, tr("").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("Grabdepth in bpp").toAscii().data());
+   paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1279, 0, tr("Startvalue for ROI").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Startvalue for ROI").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1279, 1279, tr("Stopvalue for ROI").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1023, 1023, tr("Stopvalue for ROI").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1280, tr("ROI-Size in x").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1024, tr("ROI-Size in y").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 202, 101, tr("Activate 2x2 binning").toAscii().data());
+   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("Grabdepth in bpp").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, 0, 4, 0, tr("Set Triggermode, 0: free run, 1: ext. rising edge, 2: ext. falling edge, 3: software").toAscii().data());
+
+   paramVal = ito::Param("binning", ito::ParamBase::Int, 1, 4, 1, tr("1x1 (1), 2x2 (2) or 4x4 (4) binning if available. See param binning type for setting the way binning is executed.").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("trigger_mode2", ito::ParamBase::Int, 0, 3, 1, tr("Set Triggermode2, 0: single image, 1: frame duration, 2: burst, 3: burst with frame duration").toAscii().data());
+   paramVal = ito::Param("binning_type", ito::ParamBase::Int, 0, 1, 0, tr("type of binning if binning is enabled. 0: pixels are interpolated, 1: pixels are skipped (faster)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("timing_mode", ito::ParamBase::Int, 0, 1, 1, tr("Acquisition timing: 0: free run, 1: by frame rate").toAscii().data());
+   paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, 0, 4, 0, tr("Set Triggermode, 0: free run, 1: ext. rising edge, 2: ext. falling edge, 3: software").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("framerate", ito::ParamBase::Double, 0.0, 1000.0, 60.0, tr("Set Triggermode, currently not implemented").toAscii().data());
+   paramVal = ito::Param("trigger_mode2", ito::ParamBase::Int, 0, 3, 1, tr("Set Triggermode2, 0: single image, 1: frame duration, 2: burst, 3: burst with frame duration").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("camNumber", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Number / ximea-internal IDX of this camera").toAscii().data());
+   paramVal = ito::Param("timing_mode", ito::ParamBase::Int, 0, 1, 1, tr("Acquisition timing: 0: free run, 1: by frame rate").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("framerate", ito::ParamBase::Double, 0.0, 1000.0, 60.0, tr("Set Triggermode, currently not implemented").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("camNumber", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Number / ximea-internal IDX of this camera").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
@@ -227,210 +229,210 @@ ito::RetVal Ximea::getErrStr(const int error)
         break;
         //errors from m3Api.h
         case 1:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid handle").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid handle").toLatin1().data());
         break;
         case 2:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Register read error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Register read error").toLatin1().data());
         break;
         case 3:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Register write error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Register write error").toLatin1().data());
         break;
         case 4:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing resources error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing resources error").toLatin1().data());
         break;
         case 5:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing channel error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing channel error").toLatin1().data());
         break;
         case 6:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing bandwith error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing bandwith error").toLatin1().data());
         break;
         case 7:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Read block error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Read block error").toLatin1().data());
         break;
         case 8:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Write block error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Write block error").toLatin1().data());
         break;
         case 9:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): No image").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): No image").toLatin1().data());
         break;
         case 10:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Timeout").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Timeout").toLatin1().data());
         break;
         case 11:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid arguments supplied").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid arguments supplied").toLatin1().data());
         break;
         case 12:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Not supported").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Not supported").toLatin1().data());
         break;
         case 13:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Attach buffers error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Attach buffers error").toLatin1().data());
         break;
         case 14:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Overlapped result").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Overlapped result").toLatin1().data());
         break;
         case 15:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Memory allocation error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Memory allocation error").toLatin1().data());
         break;
         case 16:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context is NULL").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context is NULL").toLatin1().data());
         break;
         case 17:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context is non zero").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context is non zero").toLatin1().data());
         break;
         case 18:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context exists").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context exists").toLatin1().data());
         break;
         case 19:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Too many devices connected").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Too many devices connected").toLatin1().data());
         break;
         case 20:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Camera context error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Camera context error").toLatin1().data());
         break;
         case 21:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Unknown hardware").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Unknown hardware").toLatin1().data());
         break;
         case 22:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid TM file").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid TM file").toLatin1().data());
         break;
         case 23:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid TM tag").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid TM tag").toLatin1().data());
         break;
         case 24:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Incomplete TM").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Incomplete TM").toLatin1().data());
         break;
         case 25:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Bus reset error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Bus reset error").toLatin1().data());
         break;
         case 26:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Not implemented").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Not implemented").toLatin1().data());
         break;
         case 27:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too bright").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too bright").toLatin1().data());
         break;
         case 28:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too dark").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too dark").toLatin1().data());
         break;
         case 29:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Gain is too low").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Gain is too low").toLatin1().data());
         break;
         case 30:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid bad pixel list").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid bad pixel list").toLatin1().data());
         break;
         case 31:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Bad pixel list realloc error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Bad pixel list realloc error").toLatin1().data());
         break;
         case 32:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid pixel list").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid pixel list").toLatin1().data());
         break;
         case 33:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid Flash File System").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid Flash File System").toLatin1().data());
         break;
         case 34:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid profile").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid profile").toLatin1().data());
         break;
         case 35:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid bad pixel list").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid bad pixel list").toLatin1().data());
         break;
         case 36:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid buffer").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid buffer").toLatin1().data());
         break;
         case 38:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid data").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid data").toLatin1().data());
         break;
         case 39:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Timing generator is busy").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Timing generator is busy").toLatin1().data());
         break;
         case 40:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Wrong operation open/write/read/close").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Wrong operation open/write/read/close").toLatin1().data());
         break;
         case 41:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Acquisition already started").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Acquisition already started").toLatin1().data());
         break;
         case 42:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Old version of device driver installed to the system").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Old version of device driver installed to the system").toLatin1().data());
         break;
         case 43:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): To get error code please call GetLastError function").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): To get error code please call GetLastError function").toLatin1().data());
         break;
         case 44:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Data can't be processed").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Data can't be processed").toLatin1().data());
         break;
         case 45:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Error occured and acquisition has been stoped or didn't start").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Error occured and acquisition has been stoped or didn't start").toLatin1().data());
         break;
         case 46:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Acquisition has been stoped with error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Acquisition has been stoped with error").toLatin1().data());
         break;
         case 47:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Input ICC profile missed or corrupted").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Input ICC profile missed or corrupted").toLatin1().data());
         break;
         case 48:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Output ICC profile missed or corrupted").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Output ICC profile missed or corrupted").toLatin1().data());
         break;
         case 49:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Device not ready to operate").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Device not ready to operate").toLatin1().data());
         break;
         case 50:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too contrast").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too contrast").toLatin1().data());
         break;
         case 51:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Module already initialized").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Module already initialized").toLatin1().data());
         break;
         case 52:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Application doesn't enough privileges(one or more applications opened)").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Application doesn't enough privileges(one or more applications opened)").toLatin1().data());
         break;
         case 53:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): installed driver incompatible with current software").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): installed driver incompatible with current software").toLatin1().data());
         break;
         case 54:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): TM file was not loaded successfully from resources").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): TM file was not loaded successfully from resources").toLatin1().data());
         break;
         case 55:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Device has been reseted, abnormal initial state").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Device has been reseted, abnormal initial state").toLatin1().data());
         break;
         case 56:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): No Devices found").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): No Devices found").toLatin1().data());
         break;
         case 57:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Resource (device) or function  locked by mutex").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Resource (device) or function  locked by mutex").toLatin1().data());
         break;
 
         //errors from xiApi.h
         case 100:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): unknown parameter").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): unknown parameter").toLatin1().data());
         break;
         case 101:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter value").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter value").toLatin1().data());
         break;
         case 103:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter type").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter type").toLatin1().data());
         break;
         case 104:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter size").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter size").toLatin1().data());
         break;
         case 105:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): input buffer too small").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): input buffer too small").toLatin1().data());
         break;
         case 106:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): parameter info not supported").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): parameter info not supported").toLatin1().data());
         break;
         case 107:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): parameter info not supported").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): parameter info not supported").toLatin1().data());
         break;
         case 108:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): data format not supported").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): data format not supported").toLatin1().data());
         break;
         case 109:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): read only parameter").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): read only parameter").toLatin1().data());
         break;
         case 110:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): no devices found").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): no devices found").toLatin1().data());
         break;
         case 111:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): this camera does not support currently available bandwidth").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): this camera does not support currently available bandwidth").toLatin1().data());
         break;
         default:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): unknown error code").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): unknown error code").toLatin1().data());
         break;
     }
 }
@@ -459,7 +461,7 @@ ito::RetVal Ximea::LoadLib(void)
         //ximeaLib = LoadLibrary("./plugins/Ximea/m3apiX64.dll");
         if (!ximeaLib)
         {
-            return ito::RetVal(ito::retError, 0, tr("LoadLibrary(\"m3apiX64.dll\")").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("LoadLibrary(\"m3apiX64.dll\")").toLatin1().data());
         }
 #else
 #if UNICODE
@@ -469,59 +471,59 @@ ito::RetVal Ximea::LoadLib(void)
 #endif
         if (!ximeaLib)
         {
-            return ito::RetVal(ito::retError, 0, tr("LoadLibrary(\"./plugins/Ximea/m3api.dll\")").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("LoadLibrary(\"./plugins/Ximea/m3api.dll\")").toLatin1().data());
         }
 #endif
 #endif
 
 #if linux
         if ((pxiGetNumberDevices = (XI_RETURN(*)(PDWORD)) dlsym(ximeaLib, "xiGetNumberDevices")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toLatin1().data());
 
         if ((pxiOpenDevice = (XI_RETURN(*)(DWORD,PHANDLE)) dlsym(ximeaLib, "xiOpenDevice")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiOpenDevice").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiOpenDevice").toLatin1().data());
 
         if ((pxiCloseDevice = (XI_RETURN(*)(HANDLE)) dlsym(ximeaLib, "xiCloseDevice")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiCloseDevice").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiCloseDevice").toLatin1().data());
 
         if ((pxiStartAcquisition = (XI_RETURN(*)(HANDLE)) dlsym(ximeaLib, "xiStartAcquisition")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStartAcquisition").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStartAcquisition").toLatin1().data());
 
         if ((pxiStopAcquisition = (XI_RETURN(*)(HANDLE)) dlsym(ximeaLib, "xiStopAcquisition")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStopAcquisition").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStopAcquisition").toLatin1().data());
 
         if ((pxiGetImage = (XI_RETURN(*)(HANDLE,DWORD,LPXI_IMG)) dlsym(ximeaLib, "xiGetImage")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetImage").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetImage").toLatin1().data());
 
         if ((pxiSetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD,XI_PRM_TYPE)) dlsym(ximeaLib, "xiSetParam")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiSetParam").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiSetParam").toLatin1().data());
 
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) dlsym(ximeaLib, "xiGetParam")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 #else
         if ((pxiGetNumberDevices = (XI_RETURN(*)(PDWORD)) GetProcAddress(ximeaLib, "xiGetNumberDevices")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toLatin1().data());
 
         if ((pxiOpenDevice = (XI_RETURN(*)(DWORD,PHANDLE)) GetProcAddress(ximeaLib, "xiOpenDevice")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiOpenDevice").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiOpenDevice").toLatin1().data());
 
         if ((pxiCloseDevice = (XI_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "xiCloseDevice")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiCloseDevice").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiCloseDevice").toLatin1().data());
 
         if ((pxiStartAcquisition = (XI_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "xiStartAcquisition")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStartAcquisition").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStartAcquisition").toLatin1().data());
 
         if ((pxiStopAcquisition = (XI_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "xiStopAcquisition")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStopAcquisition").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStopAcquisition").toLatin1().data());
 
         if ((pxiGetImage = (XI_RETURN(*)(HANDLE,DWORD,LPXI_IMG)) GetProcAddress(ximeaLib, "xiGetImage")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetImage").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetImage").toLatin1().data());
 
         if ((pxiSetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD,XI_PRM_TYPE)) GetProcAddress(ximeaLib, "xiSetParam")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiSetParam").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiSetParam").toLatin1().data());
 
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) GetProcAddress(ximeaLib, "xiGetParam")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 #endif
     }
 
@@ -557,25 +559,26 @@ ito::RetVal Ximea::LoadLib(void)
 */
 ito::RetVal Ximea::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+	ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
+    QMap<QString,ito::Param>::iterator it;
 
-    if(key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-        if (paramIt != m_params.constEnd())
-        {
-            *val = paramIt.value();
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
-        }
+        *val = it.value();
     }
 
     if (waitCond)
@@ -584,7 +587,7 @@ ito::RetVal Ximea::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore 
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -598,411 +601,468 @@ ito::RetVal Ximea::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore 
 */
 ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
 {
-    ItomSharedSemaphoreLocker locker(waitCond);
+	ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-
-    int maxxsize = 0;
-    int maxysize = 0;
-    int x0old = m_params["x0"].getVal<int>();
-    int y0old = m_params["y0"].getVal<int>();
-    int x1old = m_params["x1"].getVal<int>();
-    int y1old = m_params["y1"].getVal<int>();
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
 
     int running = 0;
-    int bin = 1;
-    float gain = 0.0f, sharpness = 0.0f, gamma = 0.0f;
-    int bitppix = 10;
-    int bitppix_old = m_params["bpp"].getVal<int>();
-    int shift = 0;
-
-/*
-    int trigger_mode = XI_TRG_OFF;
-    int trigger_mode2 = XI_TRG_SEL_EXPOSURE_ACTIVE;
-    int timing_mode = XI_ACQ_TIMING_MODE_FRAME_RATE;
-*/
-    int trigger_mode = m_params["trigger_mode"].getVal<int>();
-    int trigger_mode2 = m_params["trigger_mode2"].getVal<int>();
-
-#ifndef USE_OLD_API
-    int timing_mode = m_params["timing_mode"].getVal<int>();
-#endif
-
-    float frameRate = m_params["framerate"].getVal<double>();
+    
     //int trigger_mode = XI_TRG_OUT;    //in new api trg_out does not exist anymore, so we just use free run
-    int integration_time = 2000;
     XI_RETURN ret;
 
-    QString key = val->getName();
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    if(key == "")    // Check if the key is valied
+    if(!retValue.containsError())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
-    else    // key valid so go on
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);    // try to find the parameter in the parameter list
+        //here the new parameter is checked whether its type corresponds or can be cast into the
+        // value in m_params and whether the new type fits to the requirements of any possible
+        // meta structure.
+        retValue += apiValidateParam(*it, *val, false, true);
+    }
 
-        if (paramIt != m_params.end()) // Okay the camera has this parameter so go on
+    if(!retValue.containsError())
+    {
+		if (grabberStartedCount())
         {
+            running = grabberStartedCount();
+            setGrabberStarted(1);
+            retValue += this->stopDevice(0);
+        }
+        else //todo: why this?
+        {
+            setGrabberStarted(1);
+            this->stopDevice(0);
+        }
 
-            if (grabberStartedCount())
+		
+        Sleep(5); //todo: why this?
+
+        if (QString::compare(key, "bpp", Qt::CaseInsensitive) == 0)
+        {
+			int bitppix = val->getVal<int>();
+
+            if ((bitppix != 8) && (bitppix != 10))
             {
-                running = grabberStartedCount();
-                setGrabberStarted(1);
-                retValue += this->stopDevice(0);
+                retValue += ito::RetVal(ito::retError, 0, tr("bpp must be 8 or 10.").toLatin1().data());
             }
-            else
+            else if (bitppix == 8)
             {
-                setGrabberStarted(1);
-                this->stopDevice(0);
-            }
-
-            if(paramIt->getFlags() & ito::ParamBase::Readonly)
-            {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
-                goto end;
-            }
-            else if(val->isNumeric() && paramIt->isNumeric())
-            {
-                double curval = val->getVal<double>();
-                if( curval > paramIt->getMax())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
-                    goto end;
-                }
-                else if(curval < paramIt->getMin())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
-                    goto end;
-                }
-                else
-                {
-                    paramIt.value().setVal<double>(curval);
-                }
-            }
-            else if (paramIt->getType() == val->getType())
-            {
-                retValue += paramIt.value().copyValueFrom( &(*val) );
-            }
-            else
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
-                goto end;
-            }
-
-            Sleep(5);
-
-            integration_time = (int)(m_params["integration_time"].getVal<double>() * 1000000);
-            trigger_mode = m_params["trigger_mode"].getVal<int>();
-
-            bin = m_params["binning"].getVal<int>();
-            gain = (int)(m_params["gain"].getVal<double>() * 10 + 0.5);
-
-            gamma = (float)m_params["gamma"].getVal<double>();
-            sharpness = (float)m_params["sharpness"].getVal<double>();
-
-            bitppix = (int) m_params["bpp"].getVal<int>();
-
-            if (strcmp(paramIt.value().getName(),"bpp") == 0)
-            {
-                if ((bitppix != 8) && (bitppix != 10))
-                {
-                    m_params["bpp"].setVal<int>(bitppix_old);
-                    retValue += ito::RetVal(ito::retError, 0, tr("Tried to set invalid Bits per Pixe").toAscii().data());
-                    return retValue;
-                }
-                if (bitppix == 8)
-                {
-                    int bpp = XI_RAW8;
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-                else
-                {
-                    int bpp = XI_RAW16;
-                    //int bpp = XI_MONO16;
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-            }
-            else if (strcmp(paramIt.value().getName(),"binning") == 0)
-            {
-                int curxsize;
-                int curysize;
-                int xbin = (int)(bin / 100);
-                int ybin = bin - xbin * 100;
-                if(xbin != ybin)
-                {
-                    retValue = ito::RetVal(ito::retWarning, 0, tr("Set binning faild. Must be 101 or 202.").toAscii().data());
-                    goto end;
-                }
-
-                if ((ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING, &ybin, sizeof(int), xiTypeInteger)))
+                int bpp = XI_RAW8;
+                if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
+            }
+            else
+            {
+                int bpp = XI_RAW16;
+                //int bpp = XI_MONO16;
+                if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
+                    retValue += getErrStr(ret);
+            }
 
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+        }
+        else if (QString::compare(key, "binning", Qt::CaseInsensitive) == 0)
+        {
+			int bin = val->getVal<int>(); //requested binning value from user
+            int curxsize;
+            int curysize;
+            if(bin != 1 && bin != 2 && bin != 4)
+            {
+                retValue = ito::RetVal(ito::retError, 0, tr("Binning value must be 1, 2 or 4 (depending on supported binning values)").toLatin1().data());
+            }
+			else
+			{
+				if ((ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING, &bin, sizeof(int), xiTypeInteger)))
+					retValue += getErrStr(ret);
+
+				if (!retValue.containsError())
+				{
+					it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+
+					DWORD pSize = sizeof(int);
+					XI_PRM_TYPE pType = xiTypeInteger;
+
+					int maxxsize, maxysize;
+
+					ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &maxxsize, &pSize, &pType);
+					ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &maxysize, &pSize, &pType);
+					ret = pxiGetParam(m_handle, XI_PRM_WIDTH, &curxsize, &pSize, &pType);
+					ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &curysize, &pSize, &pType);
+
+					maxxsize = (int)(maxxsize / (bin));
+					maxysize = (int)(maxysize / (bin));
+
+					static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax(maxxsize);
+					static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax(maxysize);
+					m_params["sizex"].setVal(curxsize);
+					m_params["sizey"].setVal(curysize);
+
+					m_params["x0"].setMeta( new ito::IntMeta(0,maxxsize-1), true );
+					m_params["y0"].setMeta( new ito::IntMeta(0,maxysize-1), true );
+					m_params["x0"].setVal<int>(0);
+					m_params["y0"].setVal<int>(0);
+
+					m_params["x1"].setMeta( new ito::IntMeta(1,maxxsize-1), true );
+					m_params["y1"].setMeta( new ito::IntMeta(1,maxysize-1), true );
+					m_params["x1"].setVal<int>(curxsize-1);
+					m_params["y1"].setVal<int>(curysize-1);
+				}
+			}
+        }
+		else if (QString::compare(key, "binning_type", Qt::CaseInsensitive) == 0)
+		{
+			int type = val->getVal<int>();
+			if ((ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING_TYPE, &type, sizeof(int), xiTypeInteger)))
+			{
+				retValue += getErrStr(ret);
+			}
+		}
+        else if (QString::compare(key, "hdr_enable", Qt::CaseInsensitive) == 0)
+        {
+            int enable = val->getVal<int>() > 0 ? 1 : 0;
+            int intTime1 = (int)m_params["hdr_it1"].getVal<int>();
+            int intTime2 = (int)m_params["hdr_it2"].getVal<int>();
+#ifdef USE_OLD_API
+            if(enable)
+            {
+                integration_time += integration_time / 4;
+                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), xiTypeInteger)))
+                {
+                    retValue += getErrStr(ret);
+                }
                 DWORD pSize = sizeof(int);
                 XI_PRM_TYPE pType = xiTypeInteger;
+                retValue += getErrStr(pxiGetParam(m_handle, "hdr" XI_PRM_INFO , &enable, &pSize, &pType)); 
 
-                ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &maxxsize, &pSize, &pType);
-                ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &maxysize, &pSize, &pType);
-                ret = pxiGetParam(m_handle, XI_PRM_WIDTH, &curxsize, &pSize, &pType);
-                ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &curysize, &pSize, &pType);
-
-                maxxsize = (int)(maxxsize / (xbin));
-                maxysize = (int)(maxysize / (ybin));
-
-                static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax(maxxsize);
-                static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax(maxysize);
-                //m_params["sizex"].setMax(maxxsize);
-                //m_params["sizey"].setMax(maxysize);
-                m_params["sizex"].setVal(curxsize);
-                m_params["sizey"].setVal(curysize);
-
-                m_params["x0"].setMeta( new ito::IntMeta(0,maxxsize-1), true );
-                m_params["y0"].setMeta( new ito::IntMeta(0,maxysize-1), true );
-                /*m_params["x0"].setMin(0);
-                m_params["y0"].setMin(0);
-                m_params["x0"].setMax(maxxsize-1);
-                m_params["y0"].setMax(maxysize-1);*/
-                m_params["x0"].setVal<int>(0);
-                m_params["y0"].setVal<int>(0);
-
-                m_params["x1"].setMeta( new ito::IntMeta(0,maxxsize-1), true );
-                m_params["y1"].setMeta( new ito::IntMeta(0,maxysize-1), true );
-               /* m_params["x1"].setMax(maxxsize-1);
-                m_params["y1"].setMax(maxysize-1);
-                m_params["x1"].setMin(0);
-                m_params["y1"].setMin(0);*/
-                m_params["x1"].setVal<int>(curxsize-1);
-                m_params["y1"].setVal<int>(curysize-1);
-            }
-
-            else if (strcmp(paramIt.value().getName(),"hdr_enable") == 0)
-            {
-                int enable = (int)m_params["hdr_enable"].getVal<int>() > 0 ? 1 : 0;
-                int intTime1 = (int)m_params["hdr_it1"].getVal<int>();
-                int intTime2 = (int)m_params["hdr_it2"].getVal<int>();
-#ifdef USE_OLD_API
-                if(enable)
-                {
-                    integration_time += integration_time / 4;
-                    //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), xiTypeInteger)))
-                    if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                    DWORD pSize = sizeof(int);
-                    XI_PRM_TYPE pType = xiTypeInteger;
-                    retValue += getErrStr(pxiGetParam(m_handle, "hdr" XI_PRM_INFO , &enable, &pSize, &pType)); 
-
-                    //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &knee1, sizeof(int), xiTypeInteger)))
-                    //if ((ret = pxiSetParam(m_handle, "hdr_ratio" , &knee1, sizeof(int), xiTypeInteger)))
-                    //{
-                    //    retValue += getErrStr(ret);
-                    //}
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-                else
-                {
-                    //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), xiTypeInteger)))
-                    if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-
-#else
-                int knee1 = (int)m_params["hdr_knee1"].getVal<int>();
-                int knee2 = (int)m_params["hdr_knee2"].getVal<int>();
-                
-                if(enable)
-                {
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                    else if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT2 , &knee2, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                    else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T1 , &intTime1, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                    else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T2, &intTime2, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                }
-                if ((ret = pxiSetParam(m_handle, XI_PRM_HDR, &enable, sizeof(int), xiTypeInteger)))
-                {
-                    retValue += getErrStr(ret);
-                }
-#endif
-            }
-            else if (strcmp(paramIt.value().getName(),"integration_time") == 0)
-            {
+                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &knee1, sizeof(int), xiTypeInteger)))
+                //if ((ret = pxiSetParam(m_handle, "hdr_ratio" , &knee1, sizeof(int), xiTypeInteger)))
+                //{
+                //    retValue += getErrStr(ret);
+                //}
                 if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
-                DWORD varSize = sizeof(int);
-                XI_PRM_TYPE varType = xiTypeInteger;
-                if ((ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, &varSize, &varType)))
-                    retValue += getErrStr(ret);
-                else
-                    m_params["integration_time"].setVal<double>(integration_time / 1.0e6);
             }
-            else if (strcmp(paramIt.value().getName(),"sharpness") == 0)
+            else
             {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat)))
+                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), xiTypeInteger)))
+                {
                     retValue += getErrStr(ret);
-            }
-            else if (strcmp(paramIt.value().getName(),"gamma") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
-                    retValue += getErrStr(ret);
-            }    
-            else if (strcmp(paramIt.value().getName(),"trigger_mode") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
-            }
-#ifndef USE_OLD_API
-            else if (strcmp(paramIt.value().getName(),"trigger_mode2") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
+                }
+                if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
             }
 
-            else if (strcmp(paramIt.value().getName(),"timing_mode") == 0)
+#else
+            int knee1 = (int)m_params["hdr_knee1"].getVal<int>();
+            int knee2 = (int)m_params["hdr_knee2"].getVal<int>();
+                
+            if(enable)
             {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), xiTypeInteger)))
+                {
                     retValue += getErrStr(ret);
+                }
+                else if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT2 , &knee2, sizeof(int), xiTypeInteger)))
+                {
+                    retValue += getErrStr(ret);
+                }
+                else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T1 , &intTime1, sizeof(int), xiTypeInteger)))
+                {
+                    retValue += getErrStr(ret);
+                }
+                else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T2, &intTime2, sizeof(int), xiTypeInteger)))
+                {
+                    retValue += getErrStr(ret);
+                }
             }
+            if ((ret = pxiSetParam(m_handle, XI_PRM_HDR, &enable, sizeof(int), xiTypeInteger)))
+            {
+                retValue += getErrStr(ret);
+            }
+
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
 #endif
-            else if (strcmp(paramIt.value().getName(),"framerate") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &frameRate, sizeof(float), xiTypeFloat)))
-                    retValue += getErrStr(ret);
-            }
-            else if (strcmp(paramIt.value().getName(),"gain") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_GAIN, &gain, sizeof(float), xiTypeFloat)))
-                    retValue += getErrStr(ret);
-            }
-            else if (strcmp(paramIt.value().getName(),"x1") == 0)
-            {
-                int size = m_params["x1"].getVal<int>() - m_params["x0"].getVal<int>() + 1;
+        }
+        else if (QString::compare(key, "integration_time", Qt::CaseInsensitive) == 0)
+        {
+			int integration_time = secToMusec(val->getVal<double>());
+            if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);
+				
+			DWORD varSize = sizeof(int);
+			XI_PRM_TYPE varType = xiTypeInteger;
+			if ((ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, &varSize, &varType)))
+				retValue += getErrStr(ret);
+			else
+				m_params["integration_time"].setVal<double>(musecToSec(integration_time));
 
-                if(size % 2 != 0)
-                {
-                    retValue = ito::RetVal(ito::retWarning, 0, tr("Size must be multiply of 2").toAscii().data());
-                    m_params["x1"].setVal<int>(x1old);
-                    goto end;
-                }
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+        }
+        else if (QString::compare(key, "sharpness", Qt::CaseInsensitive) == 0)
+        {
+			float sharpness = (float)val->getVal<double>();
+            if ((ret = pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat)))
+                retValue += getErrStr(ret);
 
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+        }
+        else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
+        {
+			float gamma = (float)val->getVal<double>();
+            if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
+                retValue += getErrStr(ret);
+
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+        }    
+        else if (QString::compare(key, "trigger_mode", Qt::CaseInsensitive) == 0)
+        {
+			int trigger_mode = val->getVal<int>();
+            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);
+
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+        }
+#ifndef USE_OLD_API
+        else if (QString::compare(key, "trigger_mode2", Qt::CaseInsensitive) == 0)
+        {
+			int trigger_mode2 = val->getVal<int>();
+            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);
+
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+        }
+
+        else if (QString::compare(key, "timing_mode", Qt::CaseInsensitive) == 0)
+        {
+#ifndef USE_OLD_API
+			int timing_mode = val->getVal<int>();
+
+            if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);
+
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+#else
+			retValue += ito::retVal(ito::retError, 0, "timing_mode can only be changed with old Ximea API");
+#endif
+        }
+#endif
+        else if (QString::compare(key, "framerate", Qt::CaseInsensitive) == 0)
+        {
+			float frameRate = val->getVal<double>();
+            if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &frameRate, sizeof(float), xiTypeFloat)))
+                retValue += getErrStr(ret);
+
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+        }
+        else if (QString::compare(key, "gain", Qt::CaseInsensitive) == 0)
+        {
+			float gain = (int)(val->getVal<double>() * 10 + 0.5);
+            if ((ret = pxiSetParam(m_handle, XI_PRM_GAIN, &gain, sizeof(float), xiTypeFloat)))
+                retValue += getErrStr(ret);
+
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+        }
+        else if (QString::compare(key, "x1", Qt::CaseInsensitive) == 0)
+        {
+            int size = val->getVal<int>() - m_params["x0"].getVal<int>() + 1;
+			XI_PRM_TYPE intType = xiTypeInteger;
+			DWORD intSize = sizeof(int);
+
+            if(size % 2 != 0)
+            {
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Size must be multiple of 2").toLatin1().data());
+            }
+			else if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
+            {
+                retValue += getErrStr(ret);
+            }
+
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+				ito::IntMeta* meta = static_cast<ito::IntMeta*>(m_params["x0"].getMeta());
+				m_params["sizex"].setVal<int>(size);
+				//get max value of offset again in order to consider possible step sizes... depending on the current size
+				pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_INCREMENT, &size, &intSize, &intType);
+				meta->setMax(it->getVal<int>() - size + 1);
+			}
+        }
+        else if (QString::compare(key, "y1", Qt::CaseInsensitive) == 0)
+        {
+			int size = val->getVal<int>() - m_params["y0"].getVal<int>() + 1;
+			XI_PRM_TYPE intType = xiTypeInteger;
+			DWORD intSize = sizeof(int);
+
+            if(size % 2 != 0)
+            {
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Size must be multiple of 2").toLatin1().data());
+            }
+			else if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
+            {
+                retValue += getErrStr(ret);
+            }
+
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+				ito::IntMeta* meta = static_cast<ito::IntMeta*>(m_params["y0"].getMeta());
+				m_params["sizey"].setVal<int>(size);
+				//get max value of offset again in order to consider possible step sizes... depending on the current size
+				pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_INCREMENT, &size, &intSize, &intType);
+				meta->setMax(it->getVal<int>() - size + 1);
+			}
+        }
+        else if (QString::compare(key, "x0", Qt::CaseInsensitive) == 0)
+        {
+			int x0old = m_params["x0"].getVal<int>();
+            int offset = val->getVal<int>();
+            int maxsize = m_params["sizex"].getMax();
+            int size = m_params["x1"].getVal<int>() - offset + 1;
+
+            if (size % 2 != 0)
+            {
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Size must be multiple of 2").toLatin1().data());
+            }
+			else if (x0old < offset)
+            {
+                //m_params["sizex"].setVal<int>(size);
                 if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
-                {
                     retValue += getErrStr(ret);
-                }
-                else
-                {
-                    static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax( m_params["x1"].getVal<int>() );
-                    //m_params["x0"].setMax(m_params["x1"].getVal<int>());
-                    m_params["sizex"].setVal<int>(size);
-                }
+                if (!retValue.containsError())
+				{
+					if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset, sizeof(int), xiTypeInteger)))
+					retValue += getErrStr(ret);
+				}
             }
-            else if (strcmp(paramIt.value().getName(),"y1") == 0)
+            else
             {
-                int size = m_params["y1"].getVal<int>() - m_params["y0"].getVal<int>() + 1;
+                if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset, sizeof(int), xiTypeInteger)))
+                    retValue += getErrStr(ret);
+				if (!retValue.containsError())
+				{
+					if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
+						retValue += getErrStr(ret);
+				}
+            }
+
+			if (!retValue.containsError())
+			{
+				XI_PRM_TYPE intType = xiTypeInteger;
+				DWORD intSize = sizeof(int);
+
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+				ito::IntMeta* meta = static_cast<ito::IntMeta*>(m_params["x1"].getMeta());
+				m_params["sizex"].setVal<int>(size);
+				//get min value of height again in order to consider possible step sizes... depending on the current size
+				pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MIN, &size, &intSize, &intType);
+				meta->setMin(val->getVal<int>() + size - 1);
+			}
+        }
+        else if (QString::compare(key, "y0", Qt::CaseInsensitive) == 0)
+        {
+			int y0old = m_params["y0"].getVal<int>();
+            int offset = val->getVal<int>();
+            int maxsize = m_params["sizey"].getMax();
+            int size = m_params["y1"].getVal<int>() - offset + 1;
+
+            if (size % 2 != 0)
+            {
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Size must be multiple of 2").toLatin1().data());
+            }
+			else if (y0old < offset)
+            {
                 if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
-                else
-                {
-                    static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax( m_params["y1"].getVal<int>() );
-                    //m_params["y0"].setMax(m_params["y1"].getVal<int>());
-                    m_params["sizey"].setVal<int>(size);
-                }
+				if (!retValue.containsError())
+				{
+					if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset, sizeof(int), xiTypeInteger)))
+						retValue += getErrStr(ret);
+				}
             }
-            else if (strcmp(paramIt.value().getName(),"x0") == 0)
+            else
             {
-                int offset = m_params["x0"].getVal<int>();
-                int maxsize = m_params["sizex"].getMax();
-                int size = m_params["x1"].getVal<int>() - offset + 1;
-
-                if(size % 2 != 0)
-                {
-                    retValue = ito::RetVal(ito::retWarning, 0, tr("Size must be multiply of 2").toAscii().data());
-                    m_params["x0"].setVal<int>(x0old);
-                    goto end;
-                }
-
-                if (x0old < offset)
-                {
-                    m_params["sizex"].setVal<int>(size);
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-                else
-                {
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-
-                m_params["sizex"].setVal<int>(size);
-                //m_params["x1"].setMin(m_params["x0"].getVal<int>());
-                static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMin( m_params["x0"].getVal<int>() );
-
+                if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset, sizeof(int), xiTypeInteger)))
+                    retValue += getErrStr(ret);
+				if (!retValue.containsError())
+				{
+					if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
+						retValue += getErrStr(ret);
+				}
             }
-            else if (strcmp(paramIt.value().getName(),"y0") == 0)
-            {
-                int offset = m_params["y0"].getVal<int>();
-                int size = m_params["y1"].getVal<int>() - offset + 1;
-                
-                if (y0old < offset)
-                {
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-                else
-                {
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);                    
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-                m_params["sizey"].setVal<int>(size);
-                //m_params["y1"].setMin(m_params["y0"].getVal<int>());
-                static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMin( m_params["y0"].getVal<int>() );
-            }
+
+			if (!retValue.containsError())
+			{
+				XI_PRM_TYPE intType = xiTypeInteger;
+				DWORD intSize = sizeof(int);
+
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+				ito::IntMeta* meta = static_cast<ito::IntMeta*>(m_params["y1"].getMeta());
+				m_params["sizey"].setVal<int>(size);
+				//get min value of height again in order to consider possible step sizes... depending on the current size
+				pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MIN, &size, &intSize, &intType);
+				meta->setMin(val->getVal<int>() + size - 1);
+			}
         }
-        else
-        {
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Parameter not found").toAscii().data());
-        }
+		else
+		{
+			it->copyValueFrom(&(*val));
+		}
+        
     }
 
-end:
-
-    retValue += checkData();
-
-    if (running)
+	if (running)
     {
         retValue += this->startDevice(0);
         setGrabberStarted(running);
     }
 
-    if (!retValue.containsWarningOrError())
+    if(!retValue.containsError())
     {
-        emit parametersChanged(m_params);
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+		retValue += checkData();
     }
 
     if (waitCond)
@@ -1011,7 +1071,7 @@ end:
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1070,16 +1130,17 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     ito::RetVal retValue(ito::retOk);
     int iCamNumber = (*paramsOpt)[0].getVal<int>();
     int bandwidthLimit = paramsOpt->at(2).getVal<int>(); //0 auto bandwidth calculation
-    int maxxsize = 0;
-    int maxysize = 0;
-    int curxsize = 0;
-    int curysize = 0;
-    int x0 = 0;
-    int y0 = 0;
+    //int maxxsize = 0;
+    //int maxysize = 0;
+    //int curxsize = 0;
+    //int curysize = 0;
+    //int x0 = 0;
+    //int y0 = 0;
     int bitppix = 10;
     XI_RETURN ret;
 
-    int integration_time = 2;
+    int integration_time;
+	int int_value, int_value_min, int_value_max, int_value_step;
     int trigger_mode = 0;
     int trigger_mode2 = 0;
 
@@ -1097,7 +1158,9 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     int loadPrev = (*paramsOpt)[1].getVal<int>();
 
     DWORD pSize = sizeof(int);
+	DWORD intSize = sizeof(int);
     XI_PRM_TYPE pType = xiTypeInteger;
+	XI_PRM_TYPE intType = xiTypeInteger;
     XI_PRM_TYPE strType = xiTypeString;
 
     retValue += LoadLib();
@@ -1108,7 +1171,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
     if( ++InitList[iCamNumber] > 1)    // It does not matter if the rest works or not. The close command will fix this anyway
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized. Try with another camera number").toAscii().data());
+        retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized. Try with another camera number").toLatin1().data());
     }
     else
     {
@@ -1117,7 +1180,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
         {
             m_handle = NULL;
             retValue += getErrStr(ret);
-            retValue += ito::RetVal(ito::retError, 0, tr("Unable open camera").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Unable open camera").toLatin1().data());
         }
         else
         {
@@ -1178,7 +1241,34 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
         if (!retValue.containsError())
         {
             // Camera-exposure is set in µsec, itom uses s
-            integration_time = (int)(m_params["integration_time"].getVal<double>() * 1000000);
+			ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE XI_PRM_INFO_MIN, &int_value_min, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE XI_PRM_INFO_MAX, &int_value_max, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE XI_PRM_INFO_INCREMENT, &int_value_step, &intSize, &intType);
+			if (int_value_step == 0)
+			{
+				int_value_step = int_value_max - int_value_min;
+			}
+
+			m_params["integration_time"].setMeta(new ito::DoubleMeta(musecToSec(int_value_min), musecToSec(int_value_max), musecToSec(int_value_step)), true);
+
+			//check if default integration_time in m_params (from xml file) is valid and try to set it
+			integration_time = secToMusec(m_params["integration_time"].getVal<double>());
+			pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, intSize, intType);
+			ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, &intSize, &intType);
+			m_params["integration_time"].setVal<double>(musecToSec(integration_time));
+
+			// binning
+			ret = pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING, &int_value, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING XI_PRM_INFO_MIN, &int_value_min, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING XI_PRM_INFO_MAX, &int_value_max, &intSize, &intType);
+			m_params["binning"].setVal<int>(int_value);
+			m_params["binning"].setMeta(new ito::IntMeta(int_value_min, int_value_max), true);
+
+			//binning type
+			ret = pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING_TYPE, &int_value, &intSize, &intType);
+			m_params["binning_type"].setVal<int>(int_value);
+
+			//trigger
             trigger_mode = m_params["trigger_mode"].getVal<int>();
             trigger_mode2 = m_params["trigger_mode2"].getVal<int>();
 
@@ -1191,8 +1281,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             gamma = m_params["gamma"].getVal<double>();
             sharpness = m_params["sharpness"].getVal<double>();
 
-            if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
-                retValue += getErrStr(ret);
+            /*if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);*/
             if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);
 
@@ -1234,12 +1324,13 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
         if (!retValue.containsError())
         {
-        
+			//TODO: why should the default values of x0,x1,y0,y1 be set to the camera without knowning the size and abilities of the chip?
+			//why not asking the chip for its current roi and adapting x0,x1,y0,y1 depending on this? therefore we uncommented the following part
 
-            ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &maxxsize, &pSize, &pType);
-            ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &maxysize, &pSize, &pType);
+            //ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &maxxsize, &pSize, &pType);
+            //ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &maxysize, &pSize, &pType);
 
-            curxsize = m_params["sizex"].getVal<int>();
+            /*curxsize = m_params["sizex"].getVal<int>();
             curysize = m_params["sizey"].getVal<int>();
             x0 = m_params["x0"].getVal<int>();
             y0 = m_params["y0"].getVal<int>();
@@ -1264,35 +1355,62 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 y0 = 0;
                 if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &y0, sizeof(int), xiTypeInteger)))
                     retValue += getErrStr(ret);
-            }
+            }*/
 
-            ret = pxiGetParam(m_handle, XI_PRM_WIDTH, &curxsize, &pSize, &pType);
-            ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &curysize, &pSize, &pType);
-            ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X, &x0, &pSize, &pType);
-            ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y, &y0, &pSize, &pType);
-            //m_params["sizex"].setMax(maxxsize);
-            //m_params["sizey"].setMax(maxysize);
-            static_cast<ito::IntMeta*>(m_params["sizex"].getMeta())->setMax(maxxsize);
-            static_cast<ito::IntMeta*>(m_params["sizey"].getMeta())->setMax(maxysize);
-            m_params["sizex"].setVal(curxsize);
-            m_params["sizey"].setVal(curysize);
-            //m_params["x0"].setMax(maxxsize-1);
-            //m_params["y0"].setMax(maxysize-1);
-            static_cast<ito::IntMeta*>(m_params["x0"].getMeta())->setMax(maxxsize-1);
-            static_cast<ito::IntMeta*>(m_params["y0"].getMeta())->setMax(maxysize-1);
-            m_params["x0"].setVal<int>(x0);
-            m_params["y0"].setVal<int>(y0);
+			int offset, offsetMin, offsetMax, offsetInc;
+			int size, sizeMin, sizeMax, sizeInc;
 
-            //m_params["x1"].setMax(maxxsize-1);
-            //m_params["y1"].setMax(maxysize-1);
-            static_cast<ito::IntMeta*>(m_params["x1"].getMeta())->setMax(maxxsize-1);
-            static_cast<ito::IntMeta*>(m_params["y1"].getMeta())->setMax(maxysize-1);
-            m_params["x1"].setVal<int>(curxsize - x0 + 1);
-            m_params["y1"].setVal<int>(curysize - y0 + 1);
-            //m_params["x1"].setMin(x0);
-            //m_params["y1"].setMin(y0);
-            static_cast<ito::IntMeta*>(m_params["x1"].getMeta())->setMin(x0);
-            static_cast<ito::IntMeta*>(m_params["y1"].getMeta())->setMin(y0);
+			//obtain current offsetX and width values
+			ret = pxiGetParam(m_handle, XI_PRM_WIDTH, &size, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MIN, &sizeMin, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &sizeMax, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_INCREMENT, &sizeInc, &intSize, &intType);
+			if (sizeInc == 0)
+			{
+				sizeInc = sizeMax - sizeMin;
+			}
+
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X, &offset, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_MIN, &offsetMin, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_MAX, &offsetMax, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_INCREMENT, &offsetInc, &intSize, &intType);
+			if (offsetInc == 0)
+			{
+				offsetInc = offsetMax - offsetMin;
+			}
+
+			m_params["x0"].setVal<int>(offset);
+			m_params["x0"].setMeta(new ito::IntMeta(offsetMin, sizeMax - sizeMin, offsetInc), true);
+			m_params["x1"].setVal<int>(offset + size - 1);
+			m_params["x1"].setMeta(new ito::IntMeta(offset + sizeMin - 1, sizeMax - 1, sizeInc), true);
+			m_params["sizex"].setVal<int>(size);
+			m_params["sizex"].setMeta(new ito::IntMeta(sizeMin, sizeMax, sizeInc), true);
+
+			//obtain current offsetY and height values
+			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &size, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MIN, &sizeMin, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &sizeMax, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_INCREMENT, &sizeInc, &intSize, &intType);
+			if (sizeInc == 0)
+			{
+				sizeInc = sizeMax - sizeMin;
+			}
+
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y, &offset, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_MIN, &offsetMin, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_MAX, &offsetMax, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_INCREMENT, &offsetInc, &intSize, &intType);
+			if (offsetInc == 0)
+			{
+				offsetInc = offsetMax - offsetMin;
+			}
+
+			m_params["y0"].setVal<int>(offset);
+			m_params["y0"].setMeta(new ito::IntMeta(offsetMin, sizeMax - sizeMin, offsetInc), true);
+			m_params["y1"].setVal<int>(offset + size - 1);
+			m_params["y1"].setMeta(new ito::IntMeta(offset + sizeMin - 1, sizeMax - 1, sizeInc), true);
+			m_params["sizey"].setVal<int>(size);
+			m_params["sizey"].setMeta(new ito::IntMeta(sizeMin, sizeMax, sizeInc), true); 
         }
 
         if (!retValue.containsError())
@@ -1351,7 +1469,7 @@ ito::RetVal Ximea::close(ItomSharedSemaphore *waitCond)
 
     if (this->m_handle == NULL)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Camera handle deleted before closing procedure").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Camera handle deleted before closing procedure").toLatin1().data());
         goto endclose;
     }
 
@@ -1383,7 +1501,7 @@ endclose:
     }
     else
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("DLLs not unloaded due to still living instances of Ximea-Cams").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("DLLs not unloaded due to still living instances of Ximea-Cams").toLatin1().data());
     }
 
     if (waitCond)
@@ -1442,7 +1560,7 @@ ito::RetVal Ximea::stopDevice(ItomSharedSemaphore *waitCond)
     }
     if(grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Cameraflag was < 0").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Cameraflag was < 0").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -1463,7 +1581,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() <= 0)
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toAscii().data());
+        retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toLatin1().data());
 
         m_isgrabbing &= ~Ximea::grabberGrabbed;
         m_isgrabbing |= Ximea::grabberGrabbed;
@@ -1473,7 +1591,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         XI_RETURN ret;
         if(m_isgrabbing & Ximea::grabberGrabbed)
         {
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal. This acquire was ignored.").toAscii().data());
+            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal. This acquire was ignored.").toLatin1().data());
         }
         else
         {
@@ -1530,11 +1648,11 @@ ito::RetVal Ximea::retrieveData(ito::DataObject *externalDataObject)
 
     if (!(this->m_isgrabbing & Ximea::grabberRunning))
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without starting device").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without starting device").toLatin1().data());
     }
     else if (!(this->m_isgrabbing & Ximea::grabberGrabbed))
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
     }
     else if (this->m_isgrabbing & Ximea::grabberGrabError)
     {
@@ -1617,7 +1735,7 @@ ito::RetVal Ximea::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if(!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
     else
     {
@@ -1738,3 +1856,43 @@ void Ximea::IntegrationPropertiesChanged(double integrationtime)
         setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", m_params["integration_time"].getType(), integrationtime)));
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//ito::RetVal Ximea::adjustROIMeta(bool horizontalNotVertical)
+//{
+//	if (horizontalNotVertical)
+//	{
+//	}
+//	else
+//	{
+//		//obtain current offsetY and height values
+//		//in order to get the full offset and height range, we first need to resize the height to the minimum value
+//		//then get the offset ranges and finally reset the height to the previous value.
+//		ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &size, &intSize, &intType);
+//		ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MIN, &sizeMin, &intSize, &intType);
+//		ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &sizeMax, &intSize, &intType);
+//		ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_INCREMENT, &sizeInc, &intSize, &intType);
+//		if (sizeInc == 0)
+//		{
+//			sizeInc = sizeMax - sizeMin;
+//		}
+//
+//		ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &sizeMin, intSize, intType); //temporary reset
+//		ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y, &offset, &intSize, &intType);
+//		ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_MIN, &offsetMin, &intSize, &intType);
+//		ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_MAX, &offsetMax, &intSize, &intType);
+//		ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_INCREMENT, &offsetInc, &intSize, &intType);
+//		if (offsetInc == 0)
+//		{
+//			offsetInc = offsetMax - offsetMin;
+//		}
+//		ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, intSize, intType); //reset to previous value
+//
+//		m_params["y0"].setVal<int>(offset);
+//		m_params["y0"].setMeta(new ito::IntMeta(offsetMin, offsetMax, offsetInc), true);
+//		m_params["y1"].setVal<int>(offset + size - 1);
+//		m_params["y1"].setMeta(new ito::IntMeta(offset + sizeMin - 1, sizeMax - 1, sizeInc), true);
+//		m_params["sizey"].setVal<int>(size);
+//		m_params["sizey"].setMeta(new ito::IntMeta(sizeMin, sizeMax, sizeInc), true); 
+//	}
+//}

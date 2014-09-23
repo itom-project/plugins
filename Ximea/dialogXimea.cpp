@@ -209,35 +209,24 @@ int dialogXimea::getVals(QMap<QString, ito::Param> *paramVals)
         if(!strcmp(param.getName(), "binning"))
         {
             int ival = param.getMin();
-            int ivalX = (int)(ival/100);
-            int ivalY = ival - ivalX * 100;
 
-            ui.spinBox_binX->setMinimum(ivalX);
-            ui.spinBox_binY->setMinimum(ivalY);
+            ui.spinBox_bin->setMinimum(ival);
 
             ival = param.getMax();
-            ivalX = (int)(ival/100);
-            ivalY = ival - ivalX * 100;
 
-            ui.spinBox_binX->setMaximum(ivalX);
-            ui.spinBox_binY->setMaximum(ivalY);
+            ui.spinBox_bin->setMaximum(ival);
 
             ival = param.getVal<int>();
-            ivalX = (int)(ival/100);
-            ivalY = ival - ivalX * 100;
 
-            ui.spinBox_binX->setValue(ivalX);
-            ui.spinBox_binY->setValue(ivalY);
+            ui.spinBox_bin->setValue(ival);
 
             if(!(param.getFlags() & ito::ParamBase::Readonly))
             {
-                ui.spinBox_binX->setEnabled(true);
-                ui.spinBox_binY->setEnabled(true);
+                ui.spinBox_bin->setEnabled(true);
             }
             else
             {
-                ui.spinBox_binX->setEnabled(false);
-                ui.spinBox_binY->setEnabled(false);
+                ui.spinBox_bin->setEnabled(false);
             }
         }
 
@@ -312,9 +301,9 @@ int dialogXimea::sendVals()
     QVector<QSharedPointer<ito::ParamBase> > outVector;
 
 
-    if((ui.spinBox_binX->isEnabled() || ui.spinBox_binY->isEnabled()))
+    if((ui.spinBox_bin->isEnabled()))
     {
-        int ival = ui.spinBox_binX->value() *100 + ui.spinBox_binY->value();
+        int ival = ui.spinBox_bin->value();
         if((m_paramsVals["binning"].getVal<int>() !=  ival))
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, ival)));

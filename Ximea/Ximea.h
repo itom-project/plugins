@@ -62,6 +62,8 @@ class Ximea : public ito::AddInGrabber
 
         ito::RetVal setXimeaParam(const char *paramName, int newValue);
 
+		//ito::RetVal adjustROIMeta(bool horizontalNotVertical);
+
     private:
 
         enum grabState
@@ -71,6 +73,27 @@ class Ximea : public ito::AddInGrabber
             grabberGrabbed = 0x02,
             grabberGrabError = 0x04
         };
+
+		struct RoiMeta
+		{
+			int offsetXMin;
+			int offsetXMax;
+			int offsetXStep;
+			int offsetYMin;
+			int offsetYMax;
+			int offsetYStep;
+			int widthMin;
+			int widthMax;
+			int widthStep;
+			int heightMin;
+			int heightMax;
+			int heightStep;
+		};
+
+		inline double musecToSec(int musec) { return (double)musec * 1.0e-6; }
+		inline int secToMusec(double sec) { return (int)(sec * 1.0e6); }
+
+		RoiMeta m_roiMeta;
 
         ito::RetVal LoadLib();
         ito::RetVal getErrStr(const int error);

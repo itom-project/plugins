@@ -440,12 +440,12 @@
        </sizepolicy>
       </property>
       <property name="text">
-       <string>Binning X</string>
+       <string>Binning</string>
       </property>
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QSpinBox" name="spinBox_binX">
+     <widget class="QSpinBox" name="spinBox_bin">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -490,32 +490,6 @@
      <widget class="QSpinBox" name="spinBox_bpp">
       <property name="enabled">
        <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_binning_2">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Binning Y</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QSpinBox" name="spinBox_binY">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="minimum">
-       <number>1</number>
-      </property>
-      <property name="maximum">
-       <number>4</number>
       </property>
      </widget>
     </item>
