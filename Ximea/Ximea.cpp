@@ -30,6 +30,8 @@
 
 #include "common/sharedFunctionsQt.h"
 
+#include "common/helperCommon.h"
+
 #if linux
     #include <dlfcn.h>
     #include <unistd.h>
@@ -129,10 +131,26 @@ const ito::RetVal Ximea::showConfDialog(void)
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnClose(false), m_handle(NULL), m_isgrabbing(0), m_acqRetVal(ito::retOk)
+Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnClose(false), m_handle(NULL), m_isgrabbing(0), m_acqRetVal(ito::retOk), m_pvShadingSettings(NULL)
 {
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
+
+    //register exec functions
+    QVector<ito::Param> pMand = QVector<ito::Param>();
+    QVector<ito::Param> pOpt = QVector<ito::Param>() 
+                               << ito::Param("darkValue", ito::ParamBase::Int, 0, 65355, 1, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
+                               << ito::Param("whiteValue", ito::ParamBase::Int, 0, 65355, 1, tr("White Image, if null, empty image will be generated").toLatin1().data());
+    QVector<ito::Param> pOut = QVector<ito::Param>();
+    registerExecFunc("initializeShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
+    
+    pOpt = QVector<ito::Param>() << ito::Param("darkImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
+                                 << ito::Param("whiteImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data());
+    registerExecFunc("updateShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
+    registerExecFunc("calculateShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
+    pOpt.clear();
+
+    //end register exec functions
 
    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Ximea", NULL);
    m_params.insert(paramVal.getName(), paramVal);
@@ -189,7 +207,8 @@ Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnCl
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("camNumber", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Number / ximea-internal IDX of this camera").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-
+   paramVal = ito::Param("badPixel", ito::ParamBase::Int, 0, 1, 1, tr("Enable bad pixel correction").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
     //now create dock widget for this plugin
     DockWidgetXimea *XI = new DockWidgetXimea(m_params, getID());
 
@@ -500,6 +519,15 @@ ito::RetVal Ximea::LoadLib(void)
 
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) dlsym(ximeaLib, "xiGetParam")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
+
+        if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) dlsym(ximeaLib, "mmUpdateFrameShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
+
+        if ((pCalculateShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) dlsym(ximeaLib, "mmCalculateShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());
+
+        if ((pInitializeShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) dlsym(ximeaLib, "mmInitializeShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 #else
         if ((pxiGetNumberDevices = (XI_RETURN(*)(PDWORD)) GetProcAddress(ximeaLib, "xiGetNumberDevices")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toLatin1().data());
@@ -524,6 +552,15 @@ ito::RetVal Ximea::LoadLib(void)
 
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) GetProcAddress(ximeaLib, "xiGetParam")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
+
+        if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) GetProcAddress(ximeaLib, "mmUpdateFrameShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
+
+        if ((pCalculateShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());
+
+        if ((pInitializeShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) GetProcAddress(ximeaLib, "mmInitializeShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 #endif
     }
 
@@ -731,6 +768,27 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 				retValue += getErrStr(ret);
 			}
 		}
+        else if (QString::compare(key, "badPixel", Qt::CaseInsensitive) == 0 )
+        {
+            int enable = val->getVal<int>() > 0 ? 1 : 0;
+            int maxVal = 0;
+            int curVal = 0;
+            DWORD pSize = sizeof(int);
+            XI_PRM_TYPE pType = xiTypeInteger;
+
+            if ((ret = pxiSetParam(m_handle, XI_PRM_BPC, &enable, sizeof(int), xiTypeInteger)))
+            {
+                retValue += getErrStr(ret);
+            }
+            if (ret = pxiGetParam(m_handle, XI_PRM_BPC, &curVal, &pSize, &pType))
+            {
+                retValue += getErrStr(ret);
+            }
+            else
+            {
+                m_params["badPixel"].setVal(curVal);
+            }
+        }
         else if (QString::compare(key, "hdr_enable", Qt::CaseInsensitive) == 0)
         {
             int enable = val->getVal<int>() > 0 ? 1 : 0;
@@ -815,10 +873,6 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			else
 				m_params["integration_time"].setVal<double>(musecToSec(integration_time));
 
-			if (!retValue.containsError())
-			{
-				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
-			}
         }
         else if (QString::compare(key, "sharpness", Qt::CaseInsensitive) == 0)
         {
@@ -1320,6 +1374,17 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 m_params["bpp"].setVal<int>(8);
             else
                 m_params["bpp"].setVal<int>(12);
+        }
+
+        if (!retValue.containsError())
+        {
+            int maxVal = 0;
+            int curVal = 0;
+            ret = pxiGetParam(m_handle, XI_PRM_BPC XI_PRM_INFO_MAX, &maxVal, &pSize, &pType);
+            ret = pxiGetParam(m_handle, XI_PRM_BPC, &curVal, &pSize, &pType);
+
+            static_cast<ito::IntMeta*>(m_params["badPixel"].getMeta())->setMax(maxVal);
+            m_params["badPixel"].setVal(curVal);
         }
 
         if (!retValue.containsError())
@@ -1896,3 +1961,107 @@ void Ximea::IntegrationPropertiesChanged(double integrationtime)
 //		m_params["sizey"].setMeta(new ito::IntMeta(sizeMin, sizeMax, sizeInc), true); 
 //	}
 //}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retValue = ito::retOk;
+    ito::ParamBase *param1 = NULL;
+    ito::ParamBase *param2 = NULL;
+
+    if(m_pvShadingSettings == NULL)
+    {
+        m_pvShadingSettings = (void*) new MMSHADING();
+        ((LPMMSHADING)m_pvShadingSettings)->shCX = 0;
+        ((LPMMSHADING)m_pvShadingSettings)->shCX = 0;
+        ((LPMMSHADING)m_pvShadingSettings)->lpMul = NULL;
+        ((LPMMSHADING)m_pvShadingSettings)->lpSub = NULL;
+    }
+
+    LPMMSHADING shading = (LPMMSHADING)m_pvShadingSettings;
+
+
+    if (funcName == "initializeShading")
+    {
+        param1 = ito::getParamByName(&(*paramsOpt), "darkValue", &retValue);
+        param2 = ito::getParamByName(&(*paramsOpt), "whiteValue", &retValue);
+
+        if (!retValue.containsError())
+        {
+            int ret = pInitializeShading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), param1->getVal<int>(), param2->getVal<int>());
+            if(ret != MM40_OK)
+            {
+                retValue += ito::RetVal(ito::retError, ret, tr("mmInitializeShading failed").toLatin1().data());
+            }
+        }
+    }
+    else if (funcName == "updateShading")
+    {    
+        param1 = ito::getParamByName(&(*paramsOpt), "darkImage", &retValue);
+        param2 = ito::getParamByName(&(*paramsOpt), "whiteImage", &retValue);       
+
+        if (!retValue.containsError())
+        {
+            int ret = pUpdateFrameShading(m_handle, shading, shading);
+            if(ret != MM40_OK)
+            {
+                retValue += ito::RetVal(ito::retError, ret, tr("mmInitializeShading failed").toLatin1().data());
+            }
+            
+        }
+    }
+    else if (funcName == "calculateShading")
+    {    
+        param1 = ito::getParamByName(&(*paramsOpt), "darkImage", &retValue);
+        param2 = ito::getParamByName(&(*paramsOpt), "whiteImage", &retValue);              
+
+        cv::Mat_<WORD> darkMat;
+        cv::Mat_<WORD> whiteMat;
+
+        darkMat.ones(cv::Size(this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>()));
+        whiteMat.zeros(cv::Size(this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>()));
+
+        ito::DataObject* darkObj = (ito::DataObject*)(param1->getVal<void*>());
+        ito::DataObject* whiteObj = (ito::DataObject*)(param2->getVal<void*>());
+
+        if(darkObj && darkObj->getType() == ito::tUInt16 && darkObj->getDims() == 2 && darkObj->getSize(0) == darkMat.rows && darkObj->getSize(1) == darkMat.cols)
+        {
+            for(int y = 0; y < darkMat.rows; y++)
+            {
+                memcpy(darkMat.ptr(y), darkObj->rowPtr(0,y), 2 * darkMat.cols);
+            }
+        }
+        if(whiteObj && whiteObj->getType() == ito::tUInt16 && whiteObj->getDims() == 2 && whiteObj->getSize(0) == whiteMat.rows && whiteObj->getSize(1) == whiteMat.cols)
+        {
+            for(int y = 0; y < darkMat.rows; y++)
+            {
+                memcpy(whiteMat.ptr(y), whiteObj->rowPtr(0,y), 2 * whiteMat.cols);
+            }
+        }
+
+        LPWORD pBlack = darkMat.ptr<WORD>();
+        LPWORD pWhite = whiteMat.ptr<WORD>();
+
+        if (!retValue.containsError())
+        {
+            int ret = pCalculateShading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), pBlack, pWhite); 
+            if(ret != MM40_OK)
+            {
+                retValue += ito::RetVal(ito::retError, ret, tr("mmInitializeShading failed").toLatin1().data());
+            }
+            
+        }
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("function name '%1' does not exist").arg(funcName.toLatin1().data()).toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+    }
+
+    return retValue;
+}

@@ -24,7 +24,9 @@
 #define XIMEAFUNCSIMPORT_H
 
 #include "xiApi.h"
-#include "xiExt.h"
+//#include "xiExt.h"
+
+#include "m3Api.h"
 
 //#ifdef USE_OLD_API
 //
@@ -42,5 +44,10 @@ XI_RETURN (__cdecl *pxiStopAcquisition)(IN HANDLE hDevice);
 XI_RETURN (__cdecl *pxiGetImage)(IN HANDLE hDevice, IN DWORD timeout, OUT LPXI_IMG img);
 XI_RETURN (__cdecl *pxiSetParam)(IN HANDLE hDevice, const char* prm, void* val, DWORD size, XI_PRM_TYPE type);
 XI_RETURN (__cdecl *pxiGetParam)(IN HANDLE hDevice, const char* prm, void* val, DWORD * size, XI_PRM_TYPE * type);
+
+
+MM40_RETURN (__cdecl *pUpdateFrameShading)(IN HANDLE hDevice, IN HANDLE hFieldBuffer, IN LPMMSHADING lpSahding);
+MM40_RETURN (__cdecl *pCalculateShading)(IN HANDLE hDevice, INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, LPWORD pBlack, LPWORD pWhite );
+MM40_RETURN (__cdecl *pInitializeShading)(IN HANDLE hDevice, INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, WORD wOff, WORD wMul);
 
 #endif
