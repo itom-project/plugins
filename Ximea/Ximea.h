@@ -27,6 +27,36 @@
 #include "dialogXimea.h"
 #include <qsharedpointer.h>
 
+struct SoftwareShading
+{
+    SoftwareShading()
+    {
+        valid = false;
+        active = false;
+        x0 = 0;
+        y0 = 0;
+        xsize = 0;
+        ysize = 0;
+        sub = NULL;
+        mul = NULL;
+    }
+    ~SoftwareShading()
+    {
+        active = false;
+        if(sub) delete sub;
+        if(mul) delete mul;
+    }
+    bool valid;
+    bool active;
+    int x0;
+    int y0;
+    int xsize;
+    int ysize;
+    ito::uint16 *sub;
+    ito::uint16 *mul;
+
+};
+
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    Ximea
@@ -84,6 +114,9 @@ class Ximea : public ito::AddInGrabber
 #endif
 
         void* m_pvShadingSettings;
+
+        SoftwareShading m_shading;
+
 
         int m_isgrabbing;
         ito::RetVal m_acqRetVal;
