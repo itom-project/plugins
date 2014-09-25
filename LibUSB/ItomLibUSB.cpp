@@ -97,16 +97,16 @@ The setVal and getVal functions will write and read on the specified endpoint.";
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("This plugin can be used for raw / lowlevel comminication with USB-devices");  
 
-    ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x1cbe, tr("The vendor id of the device to connect to").toAscii().data());
+    ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x1cbe, tr("The vendor id of the device to connect to").toLatin1().data());
     m_initParamsMand.append(paramVal);
-    paramVal = ito::Param("ProdictID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x0003, tr("The product id of the device to connect to").toAscii().data());
+    paramVal = ito::Param("ProdictID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x0003, tr("The product id of the device to connect to").toLatin1().data());
     m_initParamsMand.append(paramVal);
-    paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 127, 1, tr("The endpoint to communicate with.").toAscii().data());
+    paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 127, 1, tr("The endpoint to communicate with.").toLatin1().data());
     m_initParamsMand.append(paramVal);
     
-    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toAscii().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("enableDebug", ito::ParamBase::Int, 0, 5, 0, tr("Initialised 'debug'-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget").toAscii().data());
+    paramVal = ito::Param("enableDebug", ito::ParamBase::Int, 0, 5, 0, tr("Initialised 'debug'-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     return;
@@ -142,11 +142,11 @@ ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NU
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "ItomUSBDevice", NULL);
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toAscii().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 5, 0, tr("If true, all out and inputs are written to dockingWidget").toAscii().data());
+    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 5, 0, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 255, 1, tr("If true, all out and inputs are written to dockingWidget").toAscii().data());
+    paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 255, 1, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //register exec functions
@@ -156,7 +156,7 @@ ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NU
     registerExecFunc("clearInputBuffer", pMand, pOpt, pOut, tr("Clears the input buffer of serial port"));
     registerExecFunc("clearOutputBuffer", pMand, pOpt, pOut, tr("Clears the output buffer of serial port"));
 
-    pMand << ito::Param("bufferType", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Clears input (0) or output (1) buffer").toAscii().data());
+    pMand << ito::Param("bufferType", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Clears input (0) or output (1) buffer").toLatin1().data());
     registerExecFunc("clearBuffer", pMand, pOpt, pOut, tr("Clears the input or output buffer of serial port"));
 
     //now create dock widget for this plugin
@@ -203,7 +203,7 @@ ito::RetVal ItomUSBDevice::getParam(QSharedPointer<ito::Param> val, ItomSharedSe
 
     if (key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -214,7 +214,7 @@ ito::RetVal ItomUSBDevice::getParam(QSharedPointer<ito::Param> val, ItomSharedSe
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
     if (waitCond)
@@ -236,7 +236,7 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
     if (key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -247,7 +247,7 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
             if ( /*paramIt->getFlags() & ito::ParamBase::Readonly*/ true)    //check read-only
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
                 goto end;
             }
             else if (val->isNumeric() && paramIt->isNumeric())
@@ -255,12 +255,12 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 double curval = val->getVal<double>();
                 if (curval > paramIt->getMax())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else if (curval < paramIt->getMin())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else
@@ -274,7 +274,7 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
                 goto end;
             }
 
@@ -285,7 +285,7 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("Parameter not found").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Parameter not found").toLatin1().data());
         }
     }
     emit parametersChanged(m_params);
@@ -321,7 +321,7 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     // mandatory parameters
     if (paramsMand == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("Mandatory paramers are NULL").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("Mandatory paramers are NULL").toLatin1().data());
     }
     else
     {
@@ -330,7 +330,7 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     // optional parameters
     if (paramsOpt == NULL)
     {
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("Optinal paramers are NULL").toAscii().data());
+        retval = ito::RetVal(ito::retError, 0, QObject::tr("Optinal paramers are NULL").toLatin1().data());
     }
     else
     {
@@ -588,7 +588,7 @@ ito::RetVal ItomUSBDevice::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ItomUSBDevice::startDevice(ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("StartDevice not necessary").toAscii().data());
+    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("StartDevice not necessary").toLatin1().data());
 
     if (waitCond)
     {
@@ -602,7 +602,7 @@ ito::RetVal ItomUSBDevice::startDevice(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ItomUSBDevice::stopDevice(ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("StopDevice not necessary").toAscii().data());
+    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("StopDevice not necessary").toLatin1().data());
 
     if (waitCond)
     {
@@ -616,7 +616,7 @@ ito::RetVal ItomUSBDevice::stopDevice(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ItomUSBDevice::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("Acquire not necessary").toAscii().data());
+    ito::RetVal retval = ito::RetVal(ito::retWarning, 0, tr("Acquire not necessary").toLatin1().data());
 
     if (waitCond)
     {
