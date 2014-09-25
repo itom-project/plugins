@@ -82,6 +82,9 @@ class Ximea : public ito::AddInGrabber
 #else
         HANDLE m_handle;
 #endif
+
+        void* m_pvShadingSettings;
+
         int m_isgrabbing;
         ito::RetVal m_acqRetVal;
     signals:
@@ -119,6 +122,9 @@ class Ximea : public ito::AddInGrabber
 
         //! Slot to synchronize this plugin with dockingwidget
         void IntegrationPropertiesChanged(double integrationtime);
+
+        //! Slot to run special function
+        ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);
 
     private slots:
 

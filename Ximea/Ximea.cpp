@@ -30,6 +30,8 @@
 
 #include "common/sharedFunctionsQt.h"
 
+#include "common/helperCommon.h"
+
 #if linux
     #include <dlfcn.h>
     #include <unistd.h>
@@ -129,65 +131,82 @@ const ito::RetVal Ximea::showConfDialog(void)
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnClose(false), m_handle(NULL), m_isgrabbing(0), m_acqRetVal(ito::retOk)
+Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnClose(false), m_handle(NULL), m_isgrabbing(0), m_acqRetVal(ito::retOk), m_pvShadingSettings(NULL)
 {
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
 
+    //register exec functions
+    QVector<ito::Param> pMand = QVector<ito::Param>();
+    QVector<ito::Param> pOpt = QVector<ito::Param>() 
+                               << ito::Param("darkValue", ito::ParamBase::Int, 0, 65355, 1, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
+                               << ito::Param("whiteValue", ito::ParamBase::Int, 0, 65355, 1, tr("White Image, if null, empty image will be generated").toLatin1().data());
+    QVector<ito::Param> pOut = QVector<ito::Param>();
+    registerExecFunc("initializeShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
+    
+    pOpt = QVector<ito::Param>() << ito::Param("darkImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
+                                 << ito::Param("whiteImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data());
+    registerExecFunc("updateShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
+    registerExecFunc("calculateShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
+    pOpt.clear();
+
+    //end register exec functions
+
    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Ximea", NULL);
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 4.0, 0.005, tr("Integrationtime of CCD programmed in s").toAscii().data());
+   paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 4.0, 0.005, tr("Integrationtime of CCD programmed in s").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("gain in dB").toAscii().data());
+   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("gain in dB").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Currently not used").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
-   paramVal = ito::Param("gamma", ito::ParamBase::Double, 0.3, 1.0, 1.0, tr("gamma").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("sharpness").toAscii().data());
+   paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Currently not used").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 1, tr("Enable hdr mode").toAscii().data());
+   paramVal = ito::Param("gamma", ito::ParamBase::Double, 0.3, 1.0, 1.0, tr("gamma").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_knee1", ito::ParamBase::Int, 0, 100, 40, tr("").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_knee2", ito::ParamBase::Int, 0, 100, 60, tr("").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_it1", ito::ParamBase::Int, 0, 100, 50, tr("").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_it2", ito::ParamBase::Int, 0, 100, 75, tr("").toAscii().data());
+   paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("sharpness").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1279, 0, tr("Startvalue for ROI").toAscii().data());
+   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 1, tr("Enable hdr mode").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Startvalue for ROI").toAscii().data());
+   paramVal = ito::Param("hdr_knee1", ito::ParamBase::Int, 0, 100, 40, tr("").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1279, 1279, tr("Stopvalue for ROI").toAscii().data());
+   paramVal = ito::Param("hdr_knee2", ito::ParamBase::Int, 0, 100, 60, tr("").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1023, 1023, tr("Stopvalue for ROI").toAscii().data());
+   paramVal = ito::Param("hdr_it1", ito::ParamBase::Int, 0, 100, 50, tr("").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1280, tr("ROI-Size in x").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1024, tr("ROI-Size in y").toAscii().data());
+   paramVal = ito::Param("hdr_it2", ito::ParamBase::Int, 0, 100, 75, tr("").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("Grabdepth in bpp").toAscii().data());
+   paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1279, 0, tr("Startvalue for ROI").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Startvalue for ROI").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1279, 1279, tr("Stopvalue for ROI").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1023, 1023, tr("Stopvalue for ROI").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1280, tr("ROI-Size in x").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1024, tr("ROI-Size in y").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 202, 101, tr("Activate 2x2 binning").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, 0, 4, 0, tr("Set Triggermode, 0: free run, 1: ext. rising edge, 2: ext. falling edge, 3: software").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("trigger_mode2", ito::ParamBase::Int, 0, 3, 1, tr("Set Triggermode2, 0: single image, 1: frame duration, 2: burst, 3: burst with frame duration").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("timing_mode", ito::ParamBase::Int, 0, 1, 1, tr("Acquisition timing: 0: free run, 1: by frame rate").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("framerate", ito::ParamBase::Double, 0.0, 1000.0, 60.0, tr("Set Triggermode, currently not implemented").toAscii().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("camNumber", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Number / ximea-internal IDX of this camera").toAscii().data());
+   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("Grabdepth in bpp").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
+   paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 202, 101, tr("Activate 2x2 binning").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, 0, 4, 0, tr("Set Triggermode, 0: free run, 1: ext. rising edge, 2: ext. falling edge, 3: software").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("trigger_mode2", ito::ParamBase::Int, 0, 3, 1, tr("Set Triggermode2, 0: single image, 1: frame duration, 2: burst, 3: burst with frame duration").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("timing_mode", ito::ParamBase::Int, 0, 1, 1, tr("Acquisition timing: 0: free run, 1: by frame rate").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("framerate", ito::ParamBase::Double, 0.0, 1000.0, 60.0, tr("Set Triggermode, currently not implemented").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("camNumber", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Number / ximea-internal IDX of this camera").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("badPixel", ito::ParamBase::Int, 0, 1, 1, tr("Enable bad pixel correction").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
     //now create dock widget for this plugin
     DockWidgetXimea *XI = new DockWidgetXimea(m_params, getID());
 
@@ -227,210 +246,210 @@ ito::RetVal Ximea::getErrStr(const int error)
         break;
         //errors from m3Api.h
         case 1:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid handle").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid handle").toLatin1().data());
         break;
         case 2:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Register read error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Register read error").toLatin1().data());
         break;
         case 3:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Register write error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Register write error").toLatin1().data());
         break;
         case 4:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing resources error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing resources error").toLatin1().data());
         break;
         case 5:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing channel error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing channel error").toLatin1().data());
         break;
         case 6:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing bandwith error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing bandwith error").toLatin1().data());
         break;
         case 7:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Read block error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Read block error").toLatin1().data());
         break;
         case 8:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Write block error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Write block error").toLatin1().data());
         break;
         case 9:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): No image").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): No image").toLatin1().data());
         break;
         case 10:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Timeout").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Timeout").toLatin1().data());
         break;
         case 11:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid arguments supplied").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid arguments supplied").toLatin1().data());
         break;
         case 12:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Not supported").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Not supported").toLatin1().data());
         break;
         case 13:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Attach buffers error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Attach buffers error").toLatin1().data());
         break;
         case 14:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Overlapped result").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Overlapped result").toLatin1().data());
         break;
         case 15:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Memory allocation error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Memory allocation error").toLatin1().data());
         break;
         case 16:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context is NULL").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context is NULL").toLatin1().data());
         break;
         case 17:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context is non zero").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context is non zero").toLatin1().data());
         break;
         case 18:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context exists").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context exists").toLatin1().data());
         break;
         case 19:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Too many devices connected").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Too many devices connected").toLatin1().data());
         break;
         case 20:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Camera context error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Camera context error").toLatin1().data());
         break;
         case 21:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Unknown hardware").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Unknown hardware").toLatin1().data());
         break;
         case 22:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid TM file").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid TM file").toLatin1().data());
         break;
         case 23:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid TM tag").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid TM tag").toLatin1().data());
         break;
         case 24:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Incomplete TM").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Incomplete TM").toLatin1().data());
         break;
         case 25:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Bus reset error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Bus reset error").toLatin1().data());
         break;
         case 26:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Not implemented").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Not implemented").toLatin1().data());
         break;
         case 27:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too bright").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too bright").toLatin1().data());
         break;
         case 28:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too dark").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too dark").toLatin1().data());
         break;
         case 29:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Gain is too low").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Gain is too low").toLatin1().data());
         break;
         case 30:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid bad pixel list").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid bad pixel list").toLatin1().data());
         break;
         case 31:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Bad pixel list realloc error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Bad pixel list realloc error").toLatin1().data());
         break;
         case 32:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid pixel list").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid pixel list").toLatin1().data());
         break;
         case 33:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid Flash File System").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid Flash File System").toLatin1().data());
         break;
         case 34:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid profile").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid profile").toLatin1().data());
         break;
         case 35:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid bad pixel list").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid bad pixel list").toLatin1().data());
         break;
         case 36:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid buffer").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid buffer").toLatin1().data());
         break;
         case 38:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid data").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid data").toLatin1().data());
         break;
         case 39:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Timing generator is busy").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Timing generator is busy").toLatin1().data());
         break;
         case 40:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Wrong operation open/write/read/close").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Wrong operation open/write/read/close").toLatin1().data());
         break;
         case 41:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Acquisition already started").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Acquisition already started").toLatin1().data());
         break;
         case 42:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Old version of device driver installed to the system").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Old version of device driver installed to the system").toLatin1().data());
         break;
         case 43:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): To get error code please call GetLastError function").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): To get error code please call GetLastError function").toLatin1().data());
         break;
         case 44:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Data can't be processed").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Data can't be processed").toLatin1().data());
         break;
         case 45:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Error occured and acquisition has been stoped or didn't start").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Error occured and acquisition has been stoped or didn't start").toLatin1().data());
         break;
         case 46:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Acquisition has been stoped with error").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Acquisition has been stoped with error").toLatin1().data());
         break;
         case 47:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Input ICC profile missed or corrupted").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Input ICC profile missed or corrupted").toLatin1().data());
         break;
         case 48:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Output ICC profile missed or corrupted").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Output ICC profile missed or corrupted").toLatin1().data());
         break;
         case 49:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Device not ready to operate").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Device not ready to operate").toLatin1().data());
         break;
         case 50:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too contrast").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too contrast").toLatin1().data());
         break;
         case 51:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Module already initialized").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Module already initialized").toLatin1().data());
         break;
         case 52:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Application doesn't enough privileges(one or more applications opened)").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Application doesn't enough privileges(one or more applications opened)").toLatin1().data());
         break;
         case 53:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): installed driver incompatible with current software").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): installed driver incompatible with current software").toLatin1().data());
         break;
         case 54:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): TM file was not loaded successfully from resources").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): TM file was not loaded successfully from resources").toLatin1().data());
         break;
         case 55:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Device has been reseted, abnormal initial state").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Device has been reseted, abnormal initial state").toLatin1().data());
         break;
         case 56:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): No Devices found").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): No Devices found").toLatin1().data());
         break;
         case 57:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Resource (device) or function  locked by mutex").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Resource (device) or function  locked by mutex").toLatin1().data());
         break;
 
         //errors from xiApi.h
         case 100:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): unknown parameter").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): unknown parameter").toLatin1().data());
         break;
         case 101:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter value").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter value").toLatin1().data());
         break;
         case 103:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter type").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter type").toLatin1().data());
         break;
         case 104:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter size").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter size").toLatin1().data());
         break;
         case 105:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): input buffer too small").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): input buffer too small").toLatin1().data());
         break;
         case 106:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): parameter info not supported").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): parameter info not supported").toLatin1().data());
         break;
         case 107:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): parameter info not supported").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): parameter info not supported").toLatin1().data());
         break;
         case 108:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): data format not supported").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): data format not supported").toLatin1().data());
         break;
         case 109:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): read only parameter").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): read only parameter").toLatin1().data());
         break;
         case 110:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): no devices found").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): no devices found").toLatin1().data());
         break;
         case 111:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): this camera does not support currently available bandwidth").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): this camera does not support currently available bandwidth").toLatin1().data());
         break;
         default:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): unknown error code").toAscii().data());
+            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): unknown error code").toLatin1().data());
         break;
     }
 }
@@ -459,7 +478,7 @@ ito::RetVal Ximea::LoadLib(void)
         //ximeaLib = LoadLibrary("./plugins/Ximea/m3apiX64.dll");
         if (!ximeaLib)
         {
-            return ito::RetVal(ito::retError, 0, tr("LoadLibrary(\"m3apiX64.dll\")").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("LoadLibrary(\"m3apiX64.dll\")").toLatin1().data());
         }
 #else
 #if UNICODE
@@ -469,59 +488,77 @@ ito::RetVal Ximea::LoadLib(void)
 #endif
         if (!ximeaLib)
         {
-            return ito::RetVal(ito::retError, 0, tr("LoadLibrary(\"./plugins/Ximea/m3api.dll\")").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("LoadLibrary(\"./plugins/Ximea/m3api.dll\")").toLatin1().data());
         }
 #endif
 #endif
 
 #if linux
         if ((pxiGetNumberDevices = (XI_RETURN(*)(PDWORD)) dlsym(ximeaLib, "xiGetNumberDevices")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toLatin1().data());
 
         if ((pxiOpenDevice = (XI_RETURN(*)(DWORD,PHANDLE)) dlsym(ximeaLib, "xiOpenDevice")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiOpenDevice").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiOpenDevice").toLatin1().data());
 
         if ((pxiCloseDevice = (XI_RETURN(*)(HANDLE)) dlsym(ximeaLib, "xiCloseDevice")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiCloseDevice").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiCloseDevice").toLatin1().data());
 
         if ((pxiStartAcquisition = (XI_RETURN(*)(HANDLE)) dlsym(ximeaLib, "xiStartAcquisition")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStartAcquisition").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStartAcquisition").toLatin1().data());
 
         if ((pxiStopAcquisition = (XI_RETURN(*)(HANDLE)) dlsym(ximeaLib, "xiStopAcquisition")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStopAcquisition").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStopAcquisition").toLatin1().data());
 
         if ((pxiGetImage = (XI_RETURN(*)(HANDLE,DWORD,LPXI_IMG)) dlsym(ximeaLib, "xiGetImage")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetImage").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetImage").toLatin1().data());
 
         if ((pxiSetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD,XI_PRM_TYPE)) dlsym(ximeaLib, "xiSetParam")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiSetParam").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiSetParam").toLatin1().data());
 
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) dlsym(ximeaLib, "xiGetParam")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
+
+        if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) dlsym(ximeaLib, "mmUpdateFrameShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
+
+        if ((pCalculateShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) dlsym(ximeaLib, "mmCalculateShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());
+
+        if ((pInitializeShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) dlsym(ximeaLib, "mmInitializeShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 #else
         if ((pxiGetNumberDevices = (XI_RETURN(*)(PDWORD)) GetProcAddress(ximeaLib, "xiGetNumberDevices")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toLatin1().data());
 
         if ((pxiOpenDevice = (XI_RETURN(*)(DWORD,PHANDLE)) GetProcAddress(ximeaLib, "xiOpenDevice")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiOpenDevice").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiOpenDevice").toLatin1().data());
 
         if ((pxiCloseDevice = (XI_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "xiCloseDevice")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiCloseDevice").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiCloseDevice").toLatin1().data());
 
         if ((pxiStartAcquisition = (XI_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "xiStartAcquisition")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStartAcquisition").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStartAcquisition").toLatin1().data());
 
         if ((pxiStopAcquisition = (XI_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "xiStopAcquisition")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStopAcquisition").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiStopAcquisition").toLatin1().data());
 
         if ((pxiGetImage = (XI_RETURN(*)(HANDLE,DWORD,LPXI_IMG)) GetProcAddress(ximeaLib, "xiGetImage")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetImage").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetImage").toLatin1().data());
 
         if ((pxiSetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD,XI_PRM_TYPE)) GetProcAddress(ximeaLib, "xiSetParam")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiSetParam").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiSetParam").toLatin1().data());
 
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) GetProcAddress(ximeaLib, "xiGetParam")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
+
+        if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) GetProcAddress(ximeaLib, "mmUpdateFrameShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
+
+        if ((pCalculateShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());
+
+        if ((pInitializeShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) GetProcAddress(ximeaLib, "mmInitializeShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 #endif
     }
 
@@ -563,7 +600,7 @@ ito::RetVal Ximea::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore 
 
     if(key == "")
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
     }
     else
     {
@@ -574,7 +611,7 @@ ito::RetVal Ximea::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore 
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
         }
     }
 
@@ -636,7 +673,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
     if(key == "")    // Check if the key is valied
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
     }
     else    // key valid so go on
     {
@@ -659,7 +696,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
             if(paramIt->getFlags() & ito::ParamBase::Readonly)
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toAscii().data());
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
                 goto end;
             }
             else if(val->isNumeric() && paramIt->isNumeric())
@@ -667,12 +704,12 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 double curval = val->getVal<double>();
                 if( curval > paramIt->getMax())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else if(curval < paramIt->getMin())
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
                 else
@@ -686,7 +723,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toAscii().data());
+                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
                 goto end;
             }
 
@@ -708,7 +745,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 if ((bitppix != 8) && (bitppix != 10))
                 {
                     m_params["bpp"].setVal<int>(bitppix_old);
-                    retValue += ito::RetVal(ito::retError, 0, tr("Tried to set invalid Bits per Pixe").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("Tried to set invalid Bits per Pixe").toLatin1().data());
                     return retValue;
                 }
                 if (bitppix == 8)
@@ -733,7 +770,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 int ybin = bin - xbin * 100;
                 if(xbin != ybin)
                 {
-                    retValue = ito::RetVal(ito::retWarning, 0, tr("Set binning faild. Must be 101 or 202.").toAscii().data());
+                    retValue = ito::RetVal(ito::retWarning, 0, tr("Set binning faild. Must be 101 or 202.").toLatin1().data());
                     goto end;
                 }
 
@@ -776,7 +813,27 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 m_params["x1"].setVal<int>(curxsize-1);
                 m_params["y1"].setVal<int>(curysize-1);
             }
+            else if (strcmp(paramIt.value().getName(),"badPixel") == 0)
+            {
+                int enable = m_params["badPixel"].getVal<int>() > 0 ? 1 : 0;
+                int maxVal = 0;
+                int curVal = 0;
+                DWORD pSize = sizeof(int);
+                XI_PRM_TYPE pType = xiTypeInteger;
 
+                if ((ret = pxiSetParam(m_handle, XI_PRM_BPC, &enable, sizeof(int), xiTypeInteger)))
+                {
+                    retValue += getErrStr(ret);
+                }
+                if (ret = pxiGetParam(m_handle, XI_PRM_BPC, &curVal, &pSize, &pType))
+                {
+                    retValue += getErrStr(ret);
+                }
+                else
+                {
+                    m_params["badPixel"].setVal(curVal);
+                }
+            }
             else if (strcmp(paramIt.value().getName(),"hdr_enable") == 0)
             {
                 int enable = (int)m_params["hdr_enable"].getVal<int>() > 0 ? 1 : 0;
@@ -898,7 +955,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
                 if(size % 2 != 0)
                 {
-                    retValue = ito::RetVal(ito::retWarning, 0, tr("Size must be multiply of 2").toAscii().data());
+                    retValue = ito::RetVal(ito::retWarning, 0, tr("Size must be multiply of 2").toLatin1().data());
                     m_params["x1"].setVal<int>(x1old);
                     goto end;
                 }
@@ -934,7 +991,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
                 if(size % 2 != 0)
                 {
-                    retValue = ito::RetVal(ito::retWarning, 0, tr("Size must be multiply of 2").toAscii().data());
+                    retValue = ito::RetVal(ito::retWarning, 0, tr("Size must be multiply of 2").toLatin1().data());
                     m_params["x0"].setVal<int>(x0old);
                     goto end;
                 }
@@ -986,7 +1043,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         }
         else
         {
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Parameter not found").toAscii().data());
+            retValue = ito::RetVal(ito::retWarning, 0, tr("Parameter not found").toLatin1().data());
         }
     }
 
@@ -1108,7 +1165,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
     if( ++InitList[iCamNumber] > 1)    // It does not matter if the rest works or not. The close command will fix this anyway
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized. Try with another camera number").toAscii().data());
+        retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized. Try with another camera number").toLatin1().data());
     }
     else
     {
@@ -1117,7 +1174,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
         {
             m_handle = NULL;
             retValue += getErrStr(ret);
-            retValue += ito::RetVal(ito::retError, 0, tr("Unable open camera").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Unable open camera").toLatin1().data());
         }
         else
         {
@@ -1232,6 +1289,17 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 m_params["bpp"].setVal<int>(12);
         }
 
+        if (!retValue.containsError())
+        {
+            int maxVal = 0;
+            int curVal = 0;
+            ret = pxiGetParam(m_handle, XI_PRM_BPC XI_PRM_INFO_MAX, &maxVal, &pSize, &pType);
+            ret = pxiGetParam(m_handle, XI_PRM_BPC, &curVal, &pSize, &pType);
+
+            static_cast<ito::IntMeta*>(m_params["badPixel"].getMeta())->setMax(maxVal);
+            m_params["badPixel"].setVal(curVal);
+        }
+        
         if (!retValue.containsError())
         {
         
@@ -1351,7 +1419,7 @@ ito::RetVal Ximea::close(ItomSharedSemaphore *waitCond)
 
     if (this->m_handle == NULL)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Camera handle deleted before closing procedure").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Camera handle deleted before closing procedure").toLatin1().data());
         goto endclose;
     }
 
@@ -1383,7 +1451,7 @@ endclose:
     }
     else
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("DLLs not unloaded due to still living instances of Ximea-Cams").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("DLLs not unloaded due to still living instances of Ximea-Cams").toLatin1().data());
     }
 
     if (waitCond)
@@ -1442,7 +1510,7 @@ ito::RetVal Ximea::stopDevice(ItomSharedSemaphore *waitCond)
     }
     if(grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Cameraflag was < 0").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Cameraflag was < 0").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -1463,7 +1531,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() <= 0)
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toAscii().data());
+        retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toLatin1().data());
 
         m_isgrabbing &= ~Ximea::grabberGrabbed;
         m_isgrabbing |= Ximea::grabberGrabbed;
@@ -1473,7 +1541,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         XI_RETURN ret;
         if(m_isgrabbing & Ximea::grabberGrabbed)
         {
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal. This acquire was ignored.").toAscii().data());
+            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal. This acquire was ignored.").toLatin1().data());
         }
         else
         {
@@ -1530,11 +1598,11 @@ ito::RetVal Ximea::retrieveData(ito::DataObject *externalDataObject)
 
     if (!(this->m_isgrabbing & Ximea::grabberRunning))
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without starting device").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without starting device").toLatin1().data());
     }
     else if (!(this->m_isgrabbing & Ximea::grabberGrabbed))
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toAscii().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
     }
     else if (this->m_isgrabbing & Ximea::grabberGrabError)
     {
@@ -1617,7 +1685,7 @@ ito::RetVal Ximea::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if(!dObj)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
     else
     {
@@ -1737,4 +1805,109 @@ void Ximea::IntegrationPropertiesChanged(double integrationtime)
     {
         setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", m_params["integration_time"].getType(), integrationtime)));
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > /*paramsOut*/, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retValue = ito::retOk;
+    ito::ParamBase *param1 = NULL;
+    ito::ParamBase *param2 = NULL;
+
+    if(m_pvShadingSettings == NULL)
+    {
+        m_pvShadingSettings = (void*) new MMSHADING();
+        ((LPMMSHADING)m_pvShadingSettings)->shCX = 0;
+        ((LPMMSHADING)m_pvShadingSettings)->shCX = 0;
+        ((LPMMSHADING)m_pvShadingSettings)->lpMul = NULL;
+        ((LPMMSHADING)m_pvShadingSettings)->lpSub = NULL;
+    }
+
+    LPMMSHADING shading = (LPMMSHADING)m_pvShadingSettings;
+
+
+    if (funcName == "initializeShading")
+    {
+        param1 = ito::getParamByName(&(*paramsOpt), "darkValue", &retValue);
+        param2 = ito::getParamByName(&(*paramsOpt), "whiteValue", &retValue);
+
+        if (!retValue.containsError())
+        {
+            int ret = pInitializeShading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), param1->getVal<int>(), param2->getVal<int>());
+            if(ret != MM40_OK)
+            {
+                retValue += ito::RetVal(ito::retError, ret, tr("mmInitializeShading failed").toLatin1().data());
+            }
+        }
+    }
+    else if (funcName == "updateShading")
+    {    
+        param1 = ito::getParamByName(&(*paramsOpt), "darkImage", &retValue);
+        param2 = ito::getParamByName(&(*paramsOpt), "whiteImage", &retValue);       
+
+        if (!retValue.containsError())
+        {
+            int ret = pUpdateFrameShading(m_handle, shading, shading);
+            if(ret != MM40_OK)
+            {
+                retValue += ito::RetVal(ito::retError, ret, tr("mmInitializeShading failed").toLatin1().data());
+            }
+            
+        }
+    }
+    else if (funcName == "calculateShading")
+    {    
+        param1 = ito::getParamByName(&(*paramsOpt), "darkImage", &retValue);
+        param2 = ito::getParamByName(&(*paramsOpt), "whiteImage", &retValue);              
+
+        cv::Mat_<WORD> darkMat;
+        cv::Mat_<WORD> whiteMat;
+
+        darkMat.ones(cv::Size(this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>()));
+        whiteMat.zeros(cv::Size(this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>()));
+
+        ito::DataObject* darkObj = (ito::DataObject*)(param1->getVal<void*>());
+        ito::DataObject* whiteObj = (ito::DataObject*)(param2->getVal<void*>());
+
+        if(darkObj && darkObj->getType() == ito::tUInt16 && darkObj->getDims() == 2 && darkObj->getSize(0) == darkMat.rows && darkObj->getSize(1) == darkMat.cols)
+        {
+            for(int y = 0; y < darkMat.rows; y++)
+            {
+                memcpy(darkMat.ptr(y), darkObj->rowPtr(0,y), 2 * darkMat.cols);
+            }
+        }
+        if(whiteObj && whiteObj->getType() == ito::tUInt16 && whiteObj->getDims() == 2 && whiteObj->getSize(0) == whiteMat.rows && whiteObj->getSize(1) == whiteMat.cols)
+        {
+            for(int y = 0; y < darkMat.rows; y++)
+            {
+                memcpy(whiteMat.ptr(y), whiteObj->rowPtr(0,y), 2 * whiteMat.cols);
+            }
+        }
+
+        LPWORD pBlack = darkMat.ptr<WORD>();
+        LPWORD pWhite = whiteMat.ptr<WORD>();
+
+        if (!retValue.containsError())
+        {
+            int ret = pCalculateShading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), pBlack, pWhite); 
+            if(ret != MM40_OK)
+            {
+                retValue += ito::RetVal(ito::retError, ret, tr("mmInitializeShading failed").toLatin1().data());
+            }
+            
+        }
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("function name '%1' does not exist").arg(funcName.toLatin1().data()).toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+        waitCond->deleteSemaphore();
+    }
+
+    return retValue;
 }
