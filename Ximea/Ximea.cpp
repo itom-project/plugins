@@ -140,12 +140,25 @@ Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnCl
     QVector<ito::Param> pMand = QVector<ito::Param>()
                                << ito::Param("darkImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
                                << ito::Param("whiteImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data())
-                               << ito::Param("x0", ito::ParamBase::Int, 0, 1280, 0, tr("Position of ROI in x").toLatin1().data())
-                               << ito::Param("y0", ito::ParamBase::Int, 0, 1024, 0, tr("Position of ROI in y").toLatin1().data());
+                               << ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1280, 0, tr("Position of ROI in x").toLatin1().data())
+                               << ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1024, 0, tr("Position of ROI in y").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>();
 
     QVector<ito::Param> pOut = QVector<ito::Param>();
-    registerExecFunc("initializeShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
+    registerExecFunc("initializeShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction. At the moment you can only use one set of data which will be rescaled each time"));
+
+    pMand = QVector<ito::Param>()
+            << ito::Param("illumination", ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 0, tr("Current intensity value").toLatin1().data());
+    pOpt = QVector<ito::Param>();
+    pOut = QVector<ito::Param>();
+    registerExecFunc("updateShading", pMand, pOpt, pOut, tr("Change value of the shading correction"));
+
+    pMand = QVector<ito::Param>()
+            << ito::Param("integration_time", ito::ParamBase::Double, 0.016, 0.134, 0.033, tr("Integrationtime of CCD programmed in s").toLatin1().data())
+            << ito::Param("shadingCorrectionFaktor", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("Corresponding values for shading correction").toLatin1().data());
+    pOpt = QVector<ito::Param>();
+    pOut = QVector<ito::Param>();
+    registerExecFunc("shadingCorrectionValues", pMand, pOpt, pOut, tr("Change value of the shading correction"));
     /*
     pMand = QVector<ito::Param>();
     pOpt = QVector<ito::Param>() << ito::Param("darkImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
@@ -1612,8 +1625,15 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
                 ptrDst += img.width - m_shading.xsize;
                 for(int x = 0; x < m_shading.xsize; x++)
                 {
-                    *ptrDst -= *ptrSub;
-                    *ptrDst *= *ptrMul;
+                    if(*ptrSub > *ptrDst)
+                    {
+                        *ptrDst = 0;
+                    }
+                    else
+                    {
+                        *ptrDst -= *ptrSub;
+                        //*ptrDst *= *ptrMul;
+                    }
                     ptrDst++;
                     ptrMul++;
                     ptrSub++;
@@ -1875,8 +1895,51 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
 
     LPMMSHADING shading = (LPMMSHADING)m_pvShadingSettings;
     */
+    
+    int illm = 0;
 
-    if (funcName == "initializeShading")
+    if (funcName == "updateShading")
+    {    
+        param1 = ito::getParamByName(&(*paramsMand), "illumination", &retValue);
+
+        if (!retValue.containsError())
+        {
+            illm = param1->getVal<int>();
+            updateShadingCorrection(illm);
+        }
+    }
+    else if (funcName == "shadingCorrectionValues")
+    {    
+        param1 = ito::getParamByName(&(*paramsMand), "integration_time", &retValue);
+        param2 = ito::getParamByName(&(*paramsMand), "shadingCorrectionFaktor", &retValue);
+        int intTime = 0;
+        if (!retValue.containsError())
+        {
+            intTime = (int)(param1->getVal<double>() * 1000);
+            if(param2->getLen() < 20)
+            {
+                retValue += ito::RetVal(ito::retError, 1, tr("Fill shading correction factor failed").toLatin1().data());
+            }
+
+            
+        }
+
+        if (!retValue.containsError())
+        {
+            QVector<QPointF> newVals(10);
+            double* dptr = param2->getVal<double*>();
+            newVals[0] = QPointF(0.0, 1.0);
+            for(int i = 1; i < 10; i ++)
+            {
+                newVals[i].setX(dptr[i*2]);
+                newVals[i].setY(dptr[i*2+1]);
+            }
+            m_shading.m_correction.insert(intTime, newVals);
+        }
+
+        
+    }
+    else if (funcName == "initializeShading")
     {
 
         param1 = ito::getParamByName(&(*paramsMand), "darkImage", &retValue);
@@ -1919,8 +1982,15 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
             {
                 m_shading.valid = true;
                 m_shading.active = true;
+                if(m_shading.mul != NULL) delete m_shading.mul;
+                if(m_shading.sub != NULL) delete m_shading.sub;
+                if(m_shading.subBase != NULL) delete m_shading.subBase;
+                if(m_shading.mulBase != NULL) delete m_shading.mulBase;
+
                 m_shading.mul = new ito::uint16[whiteObj->getSize(0)*whiteObj->getSize(1)];
                 m_shading.sub = new ito::uint16[whiteObj->getSize(0)*whiteObj->getSize(1)];
+                m_shading.mulBase = new ito::uint16[whiteObj->getSize(0)*whiteObj->getSize(1)];
+                m_shading.subBase = new ito::uint16[whiteObj->getSize(0)*whiteObj->getSize(1)];
                 m_shading.x0 = x0;
                 m_shading.y0 = y0;
                 m_shading.xsize = whiteObj->getSize(1);
@@ -1932,14 +2002,13 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
                     for(int x = 0; x < m_shading.xsize; x++)
                     {
                         
-                        m_shading.sub[y*m_shading.xsize + x] = whitePtr[x];
-                        m_shading.mul[y*m_shading.xsize + x] = darkPtr[y];
-                    }  
-                }            
-            
+                        m_shading.subBase[y*m_shading.xsize + x] = whitePtr[x];
+                        m_shading.mulBase[y*m_shading.xsize + x] = darkPtr[x];
+                    }
+                }
+                updateShadingCorrection(0);
             }
         }
-
         /*
         if (!retValue.containsError())
         {
@@ -2034,4 +2103,37 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
     }
 
     return retValue;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+void Ximea::updateShadingCorrection(int value)
+{
+
+    QPointF correction(0.0, 1.0);
+
+    if(!m_shading.valid)
+        return;
+    value = value < 0 ? 0 : value > 9 ? 9 : value;
+    int intTime = (int)(m_params["integration_time"].getVal<double>() * 1000);
+    if(m_shading.m_correction.contains(intTime) && m_shading.m_correction[intTime].size() > value)
+        correction = m_shading.m_correction[intTime][value];
+
+    float x = correction.x();
+    float y = correction.y();
+    for(int px = 0; px < m_shading.ysize * m_shading.xsize; px++)
+    {
+        m_shading.sub[px] = m_shading.subBase[px] * x;
+        m_shading.mul[px] = 1.0;
+    }
+
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+void Ximea::activateShadingCorrection(bool enable)
+{
+    if(!m_shading.valid)
+    {
+        m_shading.active == false;
+        return;
+    }
+    m_shading.active = enable;
+    return;
 }
