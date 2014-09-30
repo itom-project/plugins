@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 #ifndef UEYE_VERSION_CODE
-#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 41, 0)
+#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 40, 0)
 #endif
 
 

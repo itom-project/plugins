@@ -60,7 +60,8 @@ IDSInterface::IDSInterface(QObject *parent)
 
     char docstring[] = \
         "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
-- UI145xSE-C (colored, USB2). \n\
+- UI145xSE-C (colored, USB2) \n\
+- UI124xSE-M (monochrome, USB2). \n\
 \n\
 The plugin has been compiled using the IDS library version %1.%2. \n\
 \n\
@@ -77,6 +78,13 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
     m_aboutThis = tr( "N.A." );  
 
     ito::Param param( "camera_id", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, tr("Camera ID of the camera to open (0: the next free camera will opened [default], 1-254: else)").toLatin1().data());
+    m_initParamsOpt.append(param);
+
+    param = ito::Param("color_mode", ito::ParamBase::String, "auto", tr("initial color model of camera ('gray', 'color' or 'auto' (default)). 'color' is only possible for color cameras").toLatin1().data());
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "auto");
+    sm->addItem("gray");
+    sm->addItem("color");
+    param.setMeta(sm,true);
     m_initParamsOpt.append(param);
     
 
@@ -131,8 +139,10 @@ ito::RetVal IDSInterface::checkVersionConsistency()
     //check consistency of library version vs. dll-version:
     const unsigned int dllVersion = is_GetDLLVersion();
     const unsigned int libVersion = UEYE_VERSION_CODE;
+    int dllMinor = get<16,8>(dllVersion);
+    if (dllMinor == 41) dllMinor = 40; //the 4.41 version internally still has the library minor version 40!
 
-    if (get<24,8>(dllVersion) != get<24,8>(libVersion) || get<16,8>(dllVersion) != get<16,8>(libVersion)) //build is ignored: || get<0,16>(dllVersion) != get<0,16>(libVersion))
+    if (get<24,8>(dllVersion) != get<24,8>(libVersion) || dllMinor != get<16,8>(libVersion)) //build is ignored: || get<0,16>(dllVersion) != get<0,16>(libVersion))
     {
         return ito::RetVal::format(ito::retError, 0, "IDS library version mismatch. Expected version %i.%i.%i, got %i.%i.%i", \
             get<24,8>(libVersion), get<16,8>(libVersion), get<0,16>(libVersion), \

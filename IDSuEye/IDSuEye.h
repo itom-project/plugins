@@ -32,11 +32,11 @@ class IDSuEye : public ito::AddInGrabber
             sExposure = 2, 
             sBinning = 4,
             sRoi = 8,
-            sMasterGain = 16,
+            sGain = 16,
             sOffset = 32,
             sTriggerMode = 64,
             sBppAndColorMode = 128,
-            sAll = sPixelClock | sExposure | sBinning | sRoi | sMasterGain | sOffset | sTriggerMode | sBppAndColorMode };
+            sAll = sPixelClock | sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sBppAndColorMode };
 
         struct MemoryStruct {
             int width;
@@ -51,6 +51,9 @@ class IDSuEye : public ito::AddInGrabber
 
         ito::RetVal synchronizeCameraSettings(int what = sAll);
         ito::RetVal loadSensorInfo();
+        ito::RetVal setMinimumFrameRate();
+
+        IS_POINT_2D m_monochromeBitDepthRange;
 
         HIDS m_camera;
         IS_RANGE_S32 m_blacklevelRange; //range for the offset

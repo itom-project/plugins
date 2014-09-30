@@ -140,7 +140,7 @@ set(plugin_HEADERS
     #${CMAKE_CURRENT_SOURCE_DIR}/Camera.h
     #${CMAKE_CURRENT_SOURCE_DIR}/ColorMode.h
     #${CMAKE_CURRENT_SOURCE_DIR}/DialogIDS.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetIDS.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetIDS.h
     #${CMAKE_CURRENT_SOURCE_DIR}/FormatID.h
     #${CMAKE_CURRENT_SOURCE_DIR}/IDSCameras.h
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSuEye.h
@@ -154,7 +154,7 @@ set(plugin_SOURCES
     #${CMAKE_CURRENT_SOURCE_DIR}/Camera.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/ColorMode.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/DialogIDS.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetIDS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetIDS.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/IDSCameras.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSuEye.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSInterface.cpp
@@ -169,7 +169,7 @@ if(MSVC)
 endif(MSVC)
 
 set(plugin_UI
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogIDS.ui
+    #${CMAKE_CURRENT_SOURCE_DIR}/dialogIDS.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetIDS.ui
 )
 
