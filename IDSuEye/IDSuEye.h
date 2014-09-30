@@ -1,3 +1,25 @@
+/* ********************************************************************
+    Plugin "IDSuEye" for itom software
+    URL: http://www.bitbucket.org/itom/plugins
+    Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
+	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+
+    This file is part of a plugin for the measurement software itom.
+  
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
 #ifndef IDSUEYE_H
 #define IDSUEYE_H
 
@@ -24,7 +46,8 @@ class IDSuEye : public ito::AddInGrabber
 
     public:
         friend class IDSInterface;
-        int hasConfDialog(void) { return 0; }; //!< indicates that this plugin has got a configuration dialog
+        const ito::RetVal showConfDialog(void);
+        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
         enum SyncParams { 

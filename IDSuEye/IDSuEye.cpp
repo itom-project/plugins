@@ -1,3 +1,25 @@
+/* ********************************************************************
+    Plugin "IDSuEye" for itom software
+    URL: http://www.bitbucket.org/itom/plugins
+    Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
+	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+
+    This file is part of a plugin for the measurement software itom.
+  
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
 #include "IDSuEye.h"
 #include "pluginVersion.h"
 
@@ -7,6 +29,7 @@
 #include <qmetaobject.h>
 
 #include "DockWidgetIDS.h"
+#include "DialogIDS.h"
 
 #include "common/helperCommon.h"
 
@@ -44,7 +67,12 @@ IDSuEye::IDSuEye() :
     
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Gain (normalized value 0..1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain_boost_enabled", ito::ParamBase::Int, 0, 1, 0, tr("enables / disables an aditional analog hardware gain (gain boost). Readonly if not supported.").toLatin1().data());
+    paramVal = ito::Param("gain_rgb", ito::ParamBase::DoubleArray, NULL, tr("RGB-gain values (normalized value 0..1)").toLatin1().data());
+    double rgbGain[] = {0.5, 0.5, 0.5};
+    paramVal.setVal<double*>(rgbGain,3);
+    paramVal.setMeta(new ito::DoubleMeta(0.0,1.0), true);
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gain_boost_enabled", ito::ParamBase::Int, 0, 1, 0, tr("enables / disables an additional analog hardware gain (gain boost). Readonly if not supported.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Offset (leads to blacklevel offset) (normalized value 0..1). Readonly if not adjustable.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -546,14 +574,44 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         }
         else if (key == "gain")
         {
-            if (m_sensorInfo.nColorMode & IS_COLORMODE_MONOCHROME)
+            retValue += checkError(is_SetHardwareGain(m_camera, qRound(val->getVal<double>()*100.0), IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER));
+
+            if (!retValue.containsError())
             {
-                retValue += checkError(is_SetHardwareGain(m_camera, qRound(val->getVal<double>()*100.0), IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER));
+                retValue += synchronizeCameraSettings(sGain);
+            }
+        }
+        else if (key == "gain_rgb")
+        {
+            if (hasIndex)
+            {
+                switch (index)
+                {
+                case 0:
+                    retValue += checkError(is_SetHardwareGain(m_camera, IS_IGNORE_PARAMETER, qRound(val->getVal<double>()*100.0), IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER));
+                    break;
+                case 1:
+                    retValue += checkError(is_SetHardwareGain(m_camera, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, qRound(val->getVal<double>()*100.0), IS_IGNORE_PARAMETER));
+                    break;
+                case 2:
+                    retValue += checkError(is_SetHardwareGain(m_camera, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, qRound(val->getVal<double>()*100.0)));
+                    break;
+                default:
+                    retValue += ito::RetVal(ito::retError, 0, "index of gain_rgb must be between 0..2");
+                }
+            }
+            else if (val->getLen() != 3)
+            {
+                retValue += ito::RetVal(ito::retError, 0, "gain_rgb must have three values for red, green and blue gain");
             }
             else
             {
-                retValue += checkError(is_SetHardwareGain(m_camera, IS_IGNORE_PARAMETER, qRound(val->getVal<double>()*100.0), qRound(val->getVal<double>()*100.0), qRound(val->getVal<double>()*100.0)));
+                double *vals = val->getVal<double*>();
+                retValue += checkError(is_SetHardwareGain(m_camera, IS_IGNORE_PARAMETER, qRound(vals[0]*100.0), IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER));
+                retValue += checkError(is_SetHardwareGain(m_camera, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, qRound(vals[1]*100.0), IS_IGNORE_PARAMETER));
+                retValue += checkError(is_SetHardwareGain(m_camera, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, qRound(vals[2]*100.0)));
             }
+
             if (!retValue.containsError())
             {
                 retValue += synchronizeCameraSettings(sGain);
@@ -639,7 +697,30 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         }
         else if (key == "bpp")
         {
-            //todo
+            if (strcmp(m_params["color_mode"].getVal<char*>(),"color")==0)
+            {
+                retValue += ito::RetVal(ito::retError, 0, "bpp cannot be changed if color_mode is 'color'");
+            }
+            else
+            {
+                switch (val->getVal<int>())
+                {
+                case 8:
+                    retValue += checkError(is_SetColorMode(m_camera, IS_CM_MONO8));
+                    break;
+                case 10:
+                    retValue += checkError(is_SetColorMode(m_camera, IS_CM_MONO10));
+                    break;
+                case 12:
+                    retValue += checkError(is_SetColorMode(m_camera, IS_CM_MONO12));
+                    break;
+                case 16:
+                    retValue += checkError(is_SetColorMode(m_camera, IS_CM_MONO16));
+                    break;
+                default:
+                    retValue += ito::RetVal(ito::retError, 0, "unsupported bitdepth for gray value color mode");
+                }
+            }
 
             if (!retValue.containsError())
             {
@@ -664,6 +745,9 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                     break;
                 case 12:
                     retValue += checkError(is_SetColorMode(m_camera, IS_CM_MONO12));
+                    break;
+                case 16:
+                    retValue += checkError(is_SetColorMode(m_camera, IS_CM_MONO16));
                     break;
                 default:
                     retValue += ito::RetVal(ito::retError, 0, "unsupported bitdepth for gray value color mode");
@@ -1135,18 +1219,23 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             if (uintVal & IS_EXPOSURE_CAP_LONG_EXPOSURE)
             {
                 is_Exposure(m_camera, IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_ENABLE, (void*)&uintVal, sizeof(uintVal));
-                it->setMeta(new ito::IntMeta(0,0),true);
-                it->setVal<int>(uintVal);
+                it2->setFlags(0);
+                it2->setVal<int>(uintVal);
                 if (uintVal > 0) //enabled, get range
                 {
                     is_Exposure(m_camera, IS_EXPOSURE_CMD_GET_LONG_EXPOSURE_RANGE, (void*)dVal3, sizeof(dVal3));
                     it->setMeta(new ito::DoubleMeta(dVal3[0] * 1.0e-3, dVal3[1] * 1.0e-3, dVal3[2] * 1.0e-3), true);
+                }
+                else
+                {
+                    it2->setMeta(new ito::IntMeta(0,0),true);
                 }
             }
             else
             {
                 it2->setVal<int>(0);
                 it2->setMeta(new ito::IntMeta(0,0),true);
+                it2->setFlags(ito::ParamBase::Readonly);
             }
         }
         else
@@ -1195,10 +1284,10 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             int currentY1 = size.s32Y + offset.s32Y - 1;
             it = m_params.find("sizex");
             it->setVal<int>(size.s32X);
-            it->setMeta(new ito::IntMeta(sizeMin.s32X, sizeMax.s32X, sizeInc.s32X), true);
+            it->setMeta(new ito::IntMeta(sizeMin.s32X, sizeMax.s32X + offset.s32X, sizeInc.s32X), true);
             it = m_params.find("sizey");
             it->setVal<int>(size.s32Y);
-            it->setMeta(new ito::IntMeta(sizeMin.s32Y, sizeMax.s32Y, sizeInc.s32Y), true);
+            it->setMeta(new ito::IntMeta(sizeMin.s32Y, sizeMax.s32Y + offset.s32Y, sizeInc.s32Y), true);
             it = m_params.find("x0");
             it->setVal<int>(offset.s32X);
             //x0 max is one smaller than the current x1 value, considering the increment value
@@ -1233,20 +1322,36 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
     {
         //get pixelclock and ranges
         it = m_params.find("gain");
+        it->setVal<double>((double)is_SetHardwareGain(m_camera, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) / 100.0);
         if (m_sensorInfo.nColorMode & IS_COLORMODE_MONOCHROME)
         {
-            it->setVal<double>((double)is_SetHardwareGain(m_camera, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) / 100.0);
+            it->setFlags(0);
         }
         else
         {
-            it->setVal<double>((double)is_SetHardwareGain(m_camera, IS_GET_GREEN_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) / 100.0);
+            it->setFlags(ito::ParamBase::Readonly);
+        }
+
+        it = m_params.find("gain_rgb");
+        double rgbGain[] = {0.0,0.0,0.0};
+        rgbGain[0] = is_SetHardwareGain(m_camera, IS_GET_RED_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) / 100.0;
+        rgbGain[1] = is_SetHardwareGain(m_camera, IS_GET_GREEN_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) / 100.0;
+        rgbGain[2] = is_SetHardwareGain(m_camera, IS_GET_BLUE_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) / 100.0;
+        it->setVal<double*>(rgbGain, 3);
+        if (m_sensorInfo.nColorMode & IS_COLORMODE_BAYER)
+        {
+            it->setFlags(0);
+        }
+        else
+        {
+            it->setFlags(ito::ParamBase::Readonly);
         }
 
         it = m_params.find("gain_boost_enabled");
-        if (is_SetGainBoost(m_camera, IS_GET_SUPPORTED_GAINBOOST))
+        if (is_SetGainBoost(m_camera, IS_GET_SUPPORTED_GAINBOOST) == IS_SET_GAINBOOST_ON)
         {
             it->setFlags(0);
-            int activated = is_SetGainBoost(m_camera, IS_SET_GAINBOOST_ON);
+            int activated = is_SetGainBoost(m_camera, IS_GET_GAINBOOST);
             it->setVal<int>( activated == IS_SET_GAINBOOST_ON ? 1 : 0 );
         }
         else
@@ -1286,6 +1391,7 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             if (capabilities & IS_BLACKLEVEL_CAP_SET_AUTO_BLACKLEVEL)
             {
                 it->setMeta(new ito::IntMeta(0,1), true);
+                it->setFlags(0);
                 retTemp += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_MODE, (void*)&val2, sizeof(val2)));
                 if (!retTemp.containsError())
                 {
@@ -1294,8 +1400,14 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             }
             else
             {
-                it->setMeta(new ito::IntMeta(0,0), true);
-                it->setVal<int>(0);
+                it->setFlags(ito::ParamBase::Readonly);
+                retTemp += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_MODE, (void*)&val2, sizeof(val2)));
+                if (!retTemp.containsError())
+                {
+                    int v = val2 == IS_AUTO_BLACKLEVEL_ON ? 1 : 0;
+                    it->setVal<int>( v );
+                    it->setMeta(new ito::IntMeta(v,v), true);                    
+                }
             }
         }
     }
@@ -1633,4 +1745,10 @@ ito::RetVal IDSuEye::setMinimumFrameRate()
         m_params["frame_rate"].setVal<double>(minFps);
     }
     return retVal;
+}
+
+//----------------------------------------------------------------------------------------
+const ito::RetVal IDSuEye::showConfDialog(void)
+{
+    return apiShowConfigurationDialog(this, new DialogIDS(this));
 }

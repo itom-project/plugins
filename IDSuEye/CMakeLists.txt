@@ -137,28 +137,19 @@ LINK_DIRECTORIES(
 #
 #################################################################
 set(plugin_HEADERS
-    #${CMAKE_CURRENT_SOURCE_DIR}/Camera.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/ColorMode.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/DialogIDS.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/DialogIDS.h
     ${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetIDS.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/FormatID.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/IDSCameras.h
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSuEye.h
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSInterface.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/ParamIDs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 	#add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
 
 set(plugin_SOURCES
-    #${CMAKE_CURRENT_SOURCE_DIR}/Camera.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/ColorMode.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/DialogIDS.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/DialogIDS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetIDS.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/IDSCameras.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSuEye.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSInterface.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/ParamIDs.cpp
 	#add further source files here
 )
 
@@ -169,7 +160,7 @@ if(MSVC)
 endif(MSVC)
 
 set(plugin_UI
-    #${CMAKE_CURRENT_SOURCE_DIR}/dialogIDS.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/dialogIDS.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetIDS.ui
 )
 

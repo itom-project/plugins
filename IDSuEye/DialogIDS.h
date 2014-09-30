@@ -20,41 +20,50 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETIDSUEYE_H
-#define DOCKWIDGETIDSUEYE_H
+#ifndef DIALOGIDS_H
+#define DIALOGIDS_H
 
-#include "common/abstractAddInDockWidget.h"
-#include "common/addInInterface.h"
+#include "common/param.h"
+#include "common/retVal.h"
+#include "common/sharedStructuresQt.h"
+#include "common/abstractAddInConfigDialog.h"
 
-#include <qmap.h>
+#include "ui_dialogIDS.h"
+
 #include <qstring.h>
+#include <qmap.h>
+#include <qabstractbutton.h>
 
-#include "ui_dockWidgetIDS.h"
 
-class DockWidgetIDS : public ito::AbstractAddInDockWidget
+namespace ito
+{
+    class AddInBase; //forward declaration
+}
+
+class DialogIDS : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
     public:
-        DockWidgetIDS(ito::AddInDataIO *grabber);
-        ~DockWidgetIDS() {};
+        DialogIDS(ito::AddInBase *grabber);
+        ~DialogIDS() {};
+
+        ito::RetVal applyParameters();
 
     private:
-        Ui::DockWidgetIDS ui;
-        bool m_inEditing;
+        void enableDialog(bool enabled);
         bool m_firstRun;
-        QMap<QString, ito::Param> m_currentParams;
+
+        Ui::DialogIDS ui;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
-        void identifierChanged(const QString &identifier) {};
 
     private slots:
-        void on_sliderExposure_valueChanged(double value);   
-        void on_sliderGain_valueChanged(double value);
-        void on_sliderOffset_valueChanged(double value);
+        void on_buttonBox_clicked(QAbstractButton* btn);
+        void on_rangeX01_valuesChanged(int minValue, int maxValue);
+        void on_rangeY01_valuesChanged(int minValue, int maxValue);
+        void on_btnFullROI_clicked();
 };
 
 #endif
-
-
