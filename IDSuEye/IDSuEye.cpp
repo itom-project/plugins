@@ -155,6 +155,11 @@ ito::RetVal IDSuEye::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     HIDS camera_id = static_cast<HIDS>(paramsOpt->at(0).getVal<int>());
     QString init_color_mode = paramsOpt->at(1).getVal<char*>();
 
+    if (paramsOpt->at(2).getVal<int>() > 0)
+    {
+        is_SetErrorReport(0, IS_ENABLE_ERR_REP);
+    }
+
     bool valid_camera_id = false;
 
     if (camera_id > 0) //we first need to check whether the desired camera is not in use yet

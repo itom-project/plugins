@@ -108,6 +108,9 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
     sm->addItem("color");
     param.setMeta(sm,true);
     m_initParamsOpt.append(param);
+
+    param = ito::Param( "debug_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If debug_mode is 1, message boxes from the uEye driver will appear in case of an error (default: off, 0)").toLatin1().data());
+    m_initParamsOpt.append(param);
     
 
     //the following part would modify the meta information of the initialization parameter, but it requires to open the IDS dll even if it is not used.
