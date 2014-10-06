@@ -210,7 +210,7 @@ Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnCl
    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("Grabdepth in bpp").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("binning", ito::ParamBase::Int, 1, 4, 1, tr("1x1 (1), 2x2 (2) or 4x4 (4) binning if available. See param binning type for setting the way binning is executed.").toLatin1().data());
+   paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("1x1 (101), 2x2 (202) or 4x4 (404) binning if available. See param binning type for setting the way binning is executed.").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("binning_type", ito::ParamBase::Int, 0, 1, 0, tr("type of binning if binning is enabled. 0: pixels are interpolated, 1: pixels are skipped (faster)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
@@ -755,12 +755,13 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			int bin = val->getVal<int>(); //requested binning value from user
             int curxsize;
             int curysize;
-            if(bin != 1 && bin != 2 && bin != 4)
+            if(bin != 101 && bin != 202 && bin != 404)
             {
-                retValue = ito::RetVal(ito::retError, 0, tr("Binning value must be 1, 2 or 4 (depending on supported binning values)").toLatin1().data());
+                retValue = ito::RetVal(ito::retError, 0, tr("Binning value must be 101 (1x1), 202 (2x2) or 404 (4x4) (depending on supported binning values)").toLatin1().data());
             }
 			else
 			{
+				bin = (bin % 100); //101 -> 1, 202 -> 2, 404 -> 4
 				if ((ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING, &bin, sizeof(int), xiTypeInteger)))
 					retValue += getErrStr(ret);
 
@@ -1353,8 +1354,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			ret = pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING, &int_value, &intSize, &intType);
 			ret = pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING XI_PRM_INFO_MIN, &int_value_min, &intSize, &intType);
 			ret = pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING XI_PRM_INFO_MAX, &int_value_max, &intSize, &intType);
-			m_params["binning"].setVal<int>(int_value);
-			m_params["binning"].setMeta(new ito::IntMeta(int_value_min, int_value_max), true);
+			m_params["binning"].setVal<int>(int_value * 101); //1 -> 101, 2 -> 202, 4 -> 404
+			m_params["binning"].setMeta(new ito::IntMeta(int_value_min * 101, int_value_max * 101), true);
 
 			//binning type
 			ret = pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING_TYPE, &int_value, &intSize, &intType);
@@ -2285,7 +2286,7 @@ void Ximea::activateShadingCorrection(bool enable)
 {
     if(!m_shading.valid)
     {
-        m_shading.active == false;
+        m_shading.active = false; //TODO: here was m_shading.active == false before. This should be = instead ???
         return;
     }
     m_shading.active = enable;

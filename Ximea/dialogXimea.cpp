@@ -304,6 +304,7 @@ int dialogXimea::sendVals()
     if((ui.spinBox_bin->isEnabled()))
     {
         int ival = ui.spinBox_bin->value();
+		ival = ival * 101; //1 -> 101, 2 -> 202, 4 -> 404...
         if((m_paramsVals["binning"].getVal<int>() !=  ival))
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, ival)));
