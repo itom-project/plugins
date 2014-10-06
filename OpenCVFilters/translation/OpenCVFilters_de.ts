@@ -4,7 +4,7 @@
 <context>
     <name>OpenCVFilters</name>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="+156"/>
+        <location filename="../OpenCVFilters.cpp" line="+142"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -16,23 +16,27 @@
     <message>
         <location line="+14"/>
         <location line="+367"/>
-        <location line="+171"/>
-        <location line="+242"/>
-        <location line="+466"/>
+        <location line="+292"/>
+        <location line="+256"/>
+        <location line="+157"/>
+        <location line="+147"/>
+        <location filename="../calib3d.cpp" line="+86"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1241"/>
+        <location line="-1214"/>
         <location line="+367"/>
-        <location line="+172"/>
-        <location line="+241"/>
-        <location line="+466"/>
+        <location line="+292"/>
+        <location line="+256"/>
+        <location line="+157"/>
+        <location line="+147"/>
+        <location filename="../calib3d.cpp" line="+6"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1207"/>
+        <location line="-1180"/>
         <source>Error: pointer of input and output objects are equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -44,12 +48,12 @@
     <message>
         <location line="+45"/>
         <location line="+273"/>
-        <location line="+413"/>
+        <location line="+292"/>
         <source>Error: source is not a matrix or image stack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-367"/>
+        <location line="-246"/>
         <source>Error: anchor should be &apos;int8&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -57,14 +61,17 @@
         <location line="-194"/>
         <location line="+17"/>
         <location line="+204"/>
-        <location line="+375"/>
-        <location line="+479"/>
+        <location line="+254"/>
+        <location line="+303"/>
+        <location line="+155"/>
+        <location line="+141"/>
         <location line="+202"/>
+        <location filename="../calib3d.cpp" line="+426"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1037"/>
+        <location line="-1036"/>
         <source>Unknown or unexpected CV-Datatype recived.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -154,7 +161,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location filename="../calib3d.cpp" line="-470"/>
         <source>Must be 8bit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -194,7 +201,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+93"/>
+        <location filename="../OpenCVFilters.cpp" line="+58"/>
         <source>Input Object handle, must be a single plane</source>
         <translation type="unfinished"></translation>
     </message>
@@ -215,12 +222,12 @@
     </message>
     <message>
         <location line="+39"/>
-        <location line="+584"/>
+        <location line="+704"/>
         <source>Error: kernel must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-579"/>
+        <location line="-699"/>
         <source>Error: kernelsize &gt; 3 and object is not uint8</source>
         <translation type="unfinished"></translation>
     </message>
@@ -235,7 +242,29 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+519"/>
+        <location line="+199"/>
+        <location line="+157"/>
+        <location line="+147"/>
+        <source>Error: nDim-stacks not supported yet, only 2D and 3D.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-38"/>
+        <source>Rotated object by 90° clockwise with cvRotateM90-Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Rotated object by 90° counter clockwise with cvRotateP90-Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+131"/>
+        <source>Rotated object by 180° using cvRotate180-Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
         <source>sourceObject must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -255,12 +284,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-314"/>
-        <source>Error: nDim-stacks not supported yet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+67"/>
+        <location line="-543"/>
         <source>Flipped left/rigth with cvFlip-Filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -273,7 +297,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1398"/>
+        <location line="-1101"/>
         <source>Wrapped algorithms from OpenCV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -285,24 +309,6 @@
     <message>
         <location line="+1"/>
         <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

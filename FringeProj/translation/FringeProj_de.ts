@@ -4,7 +4,7 @@
 <context>
     <name>FringeProj</name>
     <message>
-        <location filename="../FringeProj.cpp" line="+589"/>
+        <location filename="../FringeProj.cpp" line="+631"/>
         <source>Calculate the indexmap for graycode image stack</source>
         <translation type="unfinished"></translation>
     </message>
@@ -29,17 +29,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+37"/>
         <source>Continous 3D-image stack (uint8 or uint16)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Threshold for contrast. Only pixels with (bright-dark &gt; contThres) will be considered</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Pixels with bright image &gt; brightUpperLimit will be set to invalid (-10)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -54,14 +49,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
-        <location line="+106"/>
-        <location line="+119"/>
+        <location line="+26"/>
+        <location line="+109"/>
+        <location line="+125"/>
         <source>image memory used by calcPhaseMap4 must be continuous!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-198"/>
+        <location line="-204"/>
         <location line="+7"/>
         <source>error calling CalcCIMap</source>
         <translation type="unfinished"></translation>
@@ -77,20 +72,34 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <location line="+119"/>
+        <location line="+127"/>
         <location line="+111"/>
         <source>Contrast threashold (val &lt; threas = invalid)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-228"/>
-        <location line="+119"/>
+        <location line="-234"/>
+        <location line="+125"/>
         <source>Value for overexposured pixels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-117"/>
+        <location line="-239"/>
+        <source>Threshold for contrast. Only pixels with ((bright-dark) &gt; contThres) will be considered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Intensity values that lie in a band around the mean value (bright+dark)/2 will be ignored. The width of the band is given by safetyFactor*(bright-dark)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+103"/>
+        <source>Contrast threshold (val &lt; threas = invalid)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>Wrapped phase result (float32, [-pi..pi] or -10 for invalid)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -100,21 +109,21 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+41"/>
         <source>wrong number of images! calcPhaseMap4 needs four 90deg phase shifted images!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+25"/>
         <location line="+7"/>
         <location line="+109"/>
         <location line="+7"/>
-        <location line="+126"/>
+        <location line="+134"/>
         <source>error calling calcPhaseMap4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-237"/>
+        <location line="-245"/>
         <source>image stack must have format uint8 or uint16</source>
         <translation type="unfinished"></translation>
     </message>
@@ -179,12 +188,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+22"/>
         <source>input dataObject differ in size!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+49"/>
         <source>2D disparity map (float32)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -222,7 +231,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-590"/>
+        <location line="-615"/>
         <source>Algorithms used for fringe projection (phase shifting and Gray code)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -232,106 +241,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>ito internal, do not copy</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location line="+92"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
-        <source>uninitialized vector for mandatory parameters!</source>
+        <location line="+5"/>
+        <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
-        <source>function execution unused in this plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+147"/>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>timer could not be set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <source>not implemented</source>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

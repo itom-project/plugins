@@ -4,7 +4,7 @@
 <context>
     <name>CMU1394</name>
     <message>
-        <location filename="../cmu1394.cpp" line="+182"/>
+        <location filename="../cmu1394.cpp" line="+266"/>
         <source>Please run stopDevice() and shut down live data before configuration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -74,7 +74,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+3"/>
+        <source>Swap byte order for 16bit images</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -109,7 +114,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+52"/>
         <source>Camera has no trigger feature</source>
         <translation type="unfinished"></translation>
     </message>
@@ -134,7 +139,7 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+64"/>
         <source>Maximal number of CMU1394 grabber already running</source>
         <translation type="unfinished"></translation>
     </message>
@@ -164,7 +169,7 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+141"/>
         <source>PtGrey Kamera:illegaler Camera Mode! Only: 0)
 </source>
         <translation type="unfinished"></translation>
@@ -242,7 +247,7 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+68"/>
         <source>F Wrong picture Type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -255,7 +260,7 @@ time out!</source>
 <context>
     <name>CMU1394Interface</name>
     <message>
-        <location line="-1055"/>
+        <location line="-1219"/>
         <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -277,6 +282,11 @@ time out!</source>
     <message>
         <location line="+3"/>
         <source>Camera number (-1 for auto)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>swap byte order for 16bit data</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -321,7 +331,7 @@ time out!</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../cmu1394.cpp" line="-28"/>
+        <location filename="../cmu1394.cpp" line="-31"/>
         <source>Firewire via generic CMU-Driver</source>
         <translation type="unfinished"></translation>
     </message>
@@ -414,7 +424,7 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogcmu1394.cpp" line="+45"/>
+        <location filename="../dialogcmu1394.cpp" line="+48"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -427,7 +437,7 @@ time out!</source>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

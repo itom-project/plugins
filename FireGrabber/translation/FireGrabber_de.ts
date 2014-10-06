@@ -4,7 +4,7 @@
 <context>
     <name>FireGrabber</name>
     <message>
-        <location filename="../FireGrabber.cpp" line="+163"/>
+        <location filename="../FireGrabber.cpp" line="+152"/>
         <source>vendor ID of the camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -224,7 +224,7 @@
 <context>
     <name>dialogFireGrabber</name>
     <message>
-        <location filename="../dialogFireGrabber.cpp" line="+7"/>
+        <location filename="../dialogFireGrabber.cpp" line="+29"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -252,7 +252,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

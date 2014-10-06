@@ -4,19 +4,19 @@
 <context>
     <name>DataObjectArithmetic</name>
     <message>
-        <location filename="../dataobjectarithmetic.cpp" line="+132"/>
+        <location filename="../dataobjectarithmetic.cpp" line="+109"/>
         <location line="+12"/>
         <location line="+3"/>
         <location line="+13"/>
         <location line="+157"/>
         <location line="+121"/>
         <location line="+388"/>
-        <location line="+168"/>
+        <location line="+167"/>
         <source>source image data object for operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-860"/>
+        <location line="-859"/>
         <location line="+16"/>
         <location line="+14"/>
         <source>result of calculation. This param can be int or double</source>
@@ -124,23 +124,23 @@
         <location line="+109"/>
         <location line="+7"/>
         <location line="+327"/>
-        <location line="+247"/>
+        <location line="+245"/>
         <source>Error: source image is NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-342"/>
+        <location line="-340"/>
         <source>type not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+16"/>
-        <location line="+172"/>
+        <location line="+171"/>
         <source>Ingnore values lower than lowTreshold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-170"/>
+        <location line="-169"/>
         <source>Ingnore values above highTreshold</source>
         <translation type="unfinished"></translation>
     </message>
@@ -166,23 +166,23 @@
     </message>
     <message>
         <location line="+75"/>
-        <location line="+247"/>
+        <location line="+245"/>
         <source>Error: source image is not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-229"/>
+        <location line="-227"/>
         <source>Error: source image must not have multiple planes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+34"/>
-        <location line="+349"/>
+        <location line="+347"/>
         <source>Unknown type or type not implemented for phase shifting evaluation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-316"/>
+        <location line="-315"/>
         <source>destination image data object for operation, will contain evaluated COG</source>
         <translation type="unfinished"></translation>
     </message>
@@ -202,7 +202,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+158"/>
         <source>Error: destination COG image is NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -220,12 +220,7 @@
 <context>
     <name>DataObjectArithmeticInterface</name>
     <message>
-        <location line="-1098"/>
-        <source>plugin-instance cannot be converted to class DataObjectArithmetic. Close operation failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
+        <location line="-1067"/>
         <source>Arithmetic algorithms filters.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -246,7 +241,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

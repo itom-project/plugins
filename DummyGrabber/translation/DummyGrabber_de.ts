@@ -4,84 +4,36 @@
 <context>
     <name>DockWidgetDummyGrabber</name>
     <message>
-        <location filename="../dockWidgetDummyGrabber.ui"/>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>General Information</source>
-        <translation>Allgemeine Informationen</translation>
+        <translation type="obsolete">Allgemeine Informationen</translation>
     </message>
     <message>
-        <location/>
-        <source>ID:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>[ID]</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Image Dimensions</source>
-        <translation>Bild</translation>
+        <translation type="obsolete">Bild</translation>
     </message>
     <message>
-        <location/>
         <source>Width:</source>
-        <translation>Breite:</translation>
+        <translation type="obsolete">Breite:</translation>
     </message>
     <message>
-        <location/>
-        <source> px</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Height:</source>
-        <translation>Höhe:</translation>
+        <translation type="obsolete">Höhe:</translation>
     </message>
     <message>
-        <location/>
         <source>Bits per Pixel:</source>
-        <translation>Bits pro Pixel:</translation>
+        <translation type="obsolete">Bits pro Pixel:</translation>
     </message>
     <message>
-        <location/>
         <source> bits</source>
-        <translation> Bits</translation>
+        <translation type="obsolete"> Bits</translation>
     </message>
     <message>
-        <location/>
         <source>Integration</source>
-        <translation>Belichtung</translation>
+        <translation type="obsolete">Belichtung</translation>
     </message>
     <message>
-        <location/>
-        <source>Offset</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Gain</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Integrationtime</source>
-        <translation>Belichtungszeit</translation>
-    </message>
-    <message>
-        <location/>
-        <source>ms</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>%</source>
-        <translation></translation>
+        <translation type="obsolete">Belichtungszeit</translation>
     </message>
 </context>
 <context>
@@ -320,149 +272,44 @@
 <context>
     <name>dialogDummyGrabber</name>
     <message>
-        <location filename="../dialogDummyGrabber.ui"/>
-        <source>Dialog</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Buffer and Binning</source>
-        <translation>Puffer und Binning</translation>
+        <translation type="obsolete">Puffer und Binning</translation>
     </message>
     <message>
-        <location/>
-        <source>Binning X</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>BitPerPix</source>
-        <translation>BitProPix</translation>
+        <translation type="obsolete">BitProPix</translation>
     </message>
     <message>
-        <location/>
-        <source>Binning Y</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>8</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>10</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>12</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>14</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>16</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>24</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>30</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>32</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Apply</source>
-        <translation>Übernehmen</translation>
+        <translation type="obsolete">Übernehmen</translation>
     </message>
     <message>
-        <location/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation type="obsolete">Abbrechen</translation>
     </message>
     <message>
-        <location/>
         <source>Integration</source>
-        <translation>Belichtung</translation>
+        <translation type="obsolete">Belichtung</translation>
     </message>
     <message>
-        <location/>
-        <source>Offset</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>%</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Gain</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Integrationtime</source>
-        <translation>Belichtungszeit</translation>
+        <translation type="obsolete">Belichtungszeit</translation>
     </message>
     <message>
-        <location/>
-        <source>ms</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Frametime</source>
-        <translation>Zeitrahmen</translation>
+        <translation type="obsolete">Zeitrahmen</translation>
     </message>
     <message>
-        <location/>
         <source>Size</source>
-        <translation>Größe</translation>
+        <translation type="obsolete">Größe</translation>
     </message>
     <message>
-        <location/>
-        <source>Y0</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>X0</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>X1</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Y1</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>XSize</source>
-        <translation>X-Größe</translation>
+        <translation type="obsolete">X-Größe</translation>
     </message>
     <message>
-        <location/>
         <source>YSize</source>
-        <translation>Y-Größe</translation>
+        <translation type="obsolete">Y-Größe</translation>
     </message>
     <message>
         <location filename="../dialogDummyGrabber.cpp" line="+31"/>
@@ -476,35 +323,21 @@
         <translation>RIO (Binning wurde geändert, auf Übernehmen oder Speichern klicken)</translation>
     </message>
     <message>
-        <location filename="../dialogDummyGrabber.ui"/>
-        <source>OK</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>x-size</source>
-        <translation>X-Größe</translation>
+        <translation type="obsolete">X-Größe</translation>
     </message>
     <message>
-        <location/>
-        <source>0</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>y-size</source>
-        <translation>Y-Größe</translation>
+        <translation type="obsolete">Y-Größe</translation>
     </message>
     <message>
-        <location/>
-        <location filename="../dialogDummyGrabber.cpp" line="-101"/>
+        <location line="-101"/>
         <source>Region of Interest (ROI)</source>
         <translation>Bildausschnitt (ROI)</translation>
     </message>
     <message>
-        <location/>
         <source>reset to full size</source>
-        <translation>Vollbild</translation>
+        <translation type="obsolete">Vollbild</translation>
     </message>
 </context>
 <context>
@@ -525,7 +358,7 @@
         <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
