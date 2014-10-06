@@ -2286,7 +2286,7 @@ void Ximea::activateShadingCorrection(bool enable)
 {
     if(!m_shading.valid)
     {
-        m_shading.active = false; //TODO: here was m_shading.active == false before. This should be = instead ???
+        m_shading.active = false;
         return;
     }
     m_shading.active = enable;
