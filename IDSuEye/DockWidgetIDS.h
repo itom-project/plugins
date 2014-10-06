@@ -52,6 +52,9 @@ class DockWidgetIDS : public ito::AbstractAddInDockWidget
     private slots:
         void on_sliderExposure_valueChanged(double value);   
         void on_sliderGain_valueChanged(double value);
+        void on_sliderGainRed_valueChanged(double value);
+        void on_sliderGainGreen_valueChanged(double value);
+        void on_sliderGainBlue_valueChanged(double value);
         void on_sliderOffset_valueChanged(double value);
 };
 

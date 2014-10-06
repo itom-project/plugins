@@ -81,9 +81,10 @@ IDSInterface::IDSInterface(QObject *parent)
     
 
     char docstring[] = \
-        "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
+ "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
 - UI145xSE-C (colored, USB2) \n\
 - UI124xSE-M (monochrome, USB2). \n\
+- UI337xCP-C (colored, USB3) \n\
 \n\
 The plugin has been compiled using the IDS library version %1.%2. \n\
 \n\
@@ -111,23 +112,6 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
 
     param = ito::Param( "debug_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If debug_mode is 1, message boxes from the uEye driver will appear in case of an error (default: off, 0)").toLatin1().data());
     m_initParamsOpt.append(param);
-    
-
-    //the following part would modify the meta information of the initialization parameter, but it requires to open the IDS dll even if it is not used.
-    /*ito::RetVal retval = checkVersionConsistency();
-    if (!retval.containsError())
-    {
-        ito::StringMeta *camerasSelectionValues = new ito::StringMeta( ito::StringMeta::String );
-        IDSCameras &rCameras = IDSCameras::getInstance( );
-        IDSCameras::iterator it = rCameras.begin();
-        while (it != rCameras.end())
-        {
-            QString id = (*it)->getID().getNumericID();
-            camerasSelectionValues->addItem(id.toLatin1().data());
-            ++it;
-        }
-        param.setMeta(camerasSelectionValues, true);
-    }*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -164,21 +148,21 @@ ito::RetVal IDSInterface::checkVersionConsistency()
     //check consistency of library version vs. dll-version:
     const unsigned int dllVersion = is_GetDLLVersion();
     const unsigned int libVersion = UEYE_VERSION_CODE;
-    int dllMinor = get<16,8>(dllVersion);
-    if (dllMinor == 41) dllMinor = 40; //the 4.41 version internally still has the library minor version 40!
 
-    if (get<24,8>(dllVersion) != get<24,8>(libVersion) || dllMinor != get<16,8>(libVersion)) //build is ignored: || get<0,16>(dllVersion) != get<0,16>(libVersion))
+    //the IDS support said that the binary compatibility between different driver versions is
+    //given if the major and the 'ten' digit of the minor is the same. The build can be ignored.
+    if ((get<24,8>(dllVersion) != get<24,8>(libVersion)) || (static_cast<int>(get<16,8>(dllVersion) / 10) != static_cast<int>(get<16,8>(libVersion) / 10)))
     {
-        return ito::RetVal::format(ito::retError, 0, "IDS library version mismatch. Expected version %i.%i.%i, got %i.%i.%i", \
-            get<24,8>(libVersion), get<16,8>(libVersion), get<0,16>(libVersion), \
-            get<24,8>(dllVersion), get<16,8>(dllVersion), get<0,16>(dllVersion));
+        return ito::RetVal::format(ito::retError, 0, "IDS library version mismatch. Expected version %i.%i.xx, got %i.%i.xx", \
+            get<24,8>(libVersion), get<16,8>(libVersion), \
+            get<24,8>(dllVersion), get<16,8>(dllVersion));
     }
 
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class IDSInterface with the name IDSuEye as plugin for the Qt-System (see Qt-DOC)
+// this macro registers the class IDSInterface with the name IDSuEye as plugin for the Qt-System (see Qt-DOC)
 #if QT_VERSION < 0x050000
     Q_EXPORT_PLUGIN2(IDSuEye, IDSInterface)
 #endif
