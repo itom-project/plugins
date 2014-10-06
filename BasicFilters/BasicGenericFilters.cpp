@@ -100,7 +100,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
     memcpy((void*)&buf[a], (void*)&(plane->ptr<_Tp>(y)[x]), dx * sizeof(_Tp));
     //memcpy((void*)&buf[a], (_Tp*)&((plane->ptr(y))[x]), dx * sizeof(_Tp));
 
-    lastval =- kern;
+    lastval = -kern;
 
 /*
     memset(inv, 1, dx);   // must be one to not use invalid stuff
@@ -177,7 +177,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
 template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito::int32 y0, ito::int32 dx, ito::float32 *buf, ito::int8 *inv, const ito::int32 kern, const ito::float64 /*invalid*/ )
 {
     ito::int32 a = 0, b = 0, i, k;
-    ito::float32 v, w;
+    ito::float32 v, w, vTemp = 0;
     ito::int32 lastval, max;
     ito::int32 x = x0; 
     ito::int32 y = y0;
@@ -216,7 +216,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     //memcpy((void*)&buf[a], (_Tp*)&((plane->ptr(y))[x]), dx * sizeof(_Tp));
     memcpy((void*)&buf[a], (void*)&(plane->ptr<ito::float32>(y)[x]), dx * sizeof(ito::float32));
 
-    lastval =- kern;
+    lastval = -kern;
 
     // Do the invalid check for each pixel
  
@@ -226,11 +226,12 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
         {
             inv[i + a] = 1;
             lastval = i + a;
+            vTemp = buf[i + a];
         }
         else
         {
             max = kern;
-            v = 0;
+            v = vTemp;
             if (i + a - lastval < max)
             {
                 max = i + a - lastval;
@@ -288,7 +289,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
 template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito::int32 y0, ito::int32 dx, ito::float64 *buf, ito::int8 *inv, const ito::int32 kern, const ito::float64 /*invalid*/ )
 {
     ito::int32 a = 0, b = 0, i, k;
-    ito::float64 v, w;
+    ito::float64 v, w, vTemp = 0;
     ito::int32 lastval, max;
     ito::int32 x = x0; 
     ito::int32 y = y0;
@@ -327,7 +328,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
     //memcpy((void*)&buf[a], (_Tp*)&((plane->ptr(y))[x]), dx * sizeof(_Tp));
     memcpy((void*)&buf[a], (void*)&(plane->ptr<ito::float64>(y)[x]), dx * sizeof(ito::float64));
 
-    lastval =- kern;
+    lastval = -kern;
 
     // Do the invalid check for each pixel
  
@@ -337,15 +338,17 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
         {
             inv[i + a] = 1;
             lastval = i + a;
+            vTemp = buf[i + a];
         }
         else
         {
             max = kern;
-            v = 0;
+            v = vTemp;
             if (i + a - lastval < max)
             {
                 max = i + a - lastval;
                 v = buf[lastval];
+                
             }
             for (k = 1; k < max; ++k /*k++*/)
             {

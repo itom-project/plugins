@@ -1163,7 +1163,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
            yscale = document->Record1().Axes().CY().Increment().get();
        if (document->Record1().Axes().CY().Offset().present())
            yoffset = document->Record1().Axes().CY().Offset().get() / yscale;
-       dObj->setAxisScale(dObj->getDims() - 2, xscale);
+       dObj->setAxisScale(dObj->getDims() - 2, yscale * 1000.0);
        dObj->setAxisOffset(dObj->getDims() - 2, yoffset);
 
        // we currently do not support v/zscale and offset so if they are not standard we have to
