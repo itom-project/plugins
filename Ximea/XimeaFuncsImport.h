@@ -48,6 +48,9 @@ XI_RETURN (__cdecl *pxiGetParam)(IN HANDLE hDevice, const char* prm, void* val, 
 
 MM40_RETURN (__cdecl *pUpdateFrameShading)(IN HANDLE hDevice, IN HANDLE hFieldBuffer, IN LPMMSHADING lpSahding);
 MM40_RETURN (__cdecl *pCalculateShading)(IN HANDLE hDevice, INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, LPWORD pBlack, LPWORD pWhite );
+MM40_RETURN (__cdecl *pCalculateShadingRaw)(INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, LPWORD pBlack, LPWORD pWhite );
 MM40_RETURN (__cdecl *pInitializeShading)(IN HANDLE hDevice, INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, WORD wOff, WORD wMul);
+MM40_RETURN (__cdecl *pProcessFrame)(IN HANDLE hDevice);
 
+MM40_RETURN (__cdecl *pSetShadingRaw)(IN LPMMSHADING lpSahding);
 #endif

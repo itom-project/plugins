@@ -111,6 +111,12 @@ if (PLUGIN_GWInstekPSP)
     ADD_SUBDIRECTORY(GWInstekPSP)
 endif (PLUGIN_GWInstekPSP)
 
+# IDSuEye
+OPTION(PLUGIN_IDSuEye "Build with this plugin." OFF)
+if (PLUGIN_IDSuEye)
+    ADD_SUBDIRECTORY(IDSuEye)
+endif (PLUGIN_IDSuEye)
+
 # BasicFilters
 OPTION(PLUGIN_BasicFilters "Build with this plugin." ON)
 if (PLUGIN_BasicFilters)

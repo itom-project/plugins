@@ -3314,6 +3314,14 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
         retval += ito::RetVal(ito::retError, 0, tr("point cloud must not be NULL").toLatin1().data());
     }
 
+    bool areTheSame = false;
+
+    if(pclIn == pclOut)
+    {
+        // Houston we have a problem
+        areTheSame = true;
+    }
+
     if (viewPoint && (*paramsOpt)[1].getLen() != 3)
     {
         retval += ito::RetVal(ito::retError, 0, tr("view point must be empty or a double list with three elements.").toLatin1().data());
@@ -3334,13 +3342,25 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
             break;
         case ito::pclXYZ:
             {
+
+                pcl::PointCloud<pcl::PointXYZ> *srcTempPCL = NULL;
+                if(areTheSame)
+                {
+                    srcTempPCL = new pcl::PointCloud<pcl::PointXYZ>();
+                    pcl::copyPointCloud(*(pclIn->toPointXYZ()), *srcTempPCL);
+                }
+                else
+                {
+                    srcTempPCL = pclIn->toPointXYZ().get();
+                }
+
                 *pclOut = ito::PCLPointCloud(ito::pclXYZNormal);
 
                 pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> ne(nr_threads);
                 pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
 
                 ne.setSearchMethod(tree);
-                ne.setInputCloud(pclIn->toPointXYZ());
+                ne.setInputCloud(srcTempPCL->makeShared());
                 if (kSearch > 0)
                 {
                     ne.setKSearch(kSearch);
@@ -3351,18 +3371,36 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
                 }
                 ne.compute(*normals);
 
-                pcl::concatenateFields(*(pclIn->toPointXYZ()), *normals, *(pclOut->toPointXYZNormal()));
+
+                pcl::concatenateFields(*(srcTempPCL), *normals, *(pclOut->toPointXYZNormal()));
+
+                if(areTheSame)
+                {
+                    delete srcTempPCL;
+                }
+                              
             }
             break;
         case ito::pclXYZI:
             {
-                *pclOut = ito::PCLPointCloud(ito::pclXYZINormal);
-
                 pcl::NormalEstimationOMP<pcl::PointXYZI, pcl::Normal> ne(nr_threads);
                 pcl::search::KdTree<pcl::PointXYZI>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZI> ());
 
+                pcl::PointCloud<pcl::PointXYZI> *srcTempPCL = NULL;
+                if(areTheSame)
+                {
+                    srcTempPCL = new pcl::PointCloud<pcl::PointXYZI>();
+                    pcl::copyPointCloud(*(pclIn->toPointXYZI()), *srcTempPCL);
+                }
+                else
+                {
+                    srcTempPCL = pclIn->toPointXYZI().get();
+                }
+
+                *pclOut = ito::PCLPointCloud(ito::pclXYZINormal);
+
                 ne.setSearchMethod(tree);
-                ne.setInputCloud(pclIn->toPointXYZI());
+                ne.setInputCloud(srcTempPCL->makeShared());
                 if (kSearch > 0)
                 {
                     ne.setKSearch(kSearch);
@@ -3373,18 +3411,30 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
                 }
                 ne.compute(*normals);
 
-                pcl::concatenateFields(*(pclIn->toPointXYZI()), *normals, *(pclOut->toPointXYZINormal()));
+                
+                pcl::concatenateFields(*(srcTempPCL), *normals, *(pclOut->toPointXYZINormal()));
+
+                if(areTheSame)
+                {
+                    delete srcTempPCL;
+                }
+
             }
             break;
         case ito::pclXYZRGBA:
             {
+
+                //the alpha value of rgba will be omitted
+                pcl::PointCloud<pcl::PointXYZRGB> rgbCloud;
+                pcl::copyPointCloud(*(pclIn->toPointXYZRGBA()), rgbCloud);
+
                 *pclOut = ito::PCLPointCloud(ito::pclXYZRGBNormal);
 
-                pcl::NormalEstimationOMP<pcl::PointXYZRGBA, pcl::Normal> ne(nr_threads);
-                pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBA> ());
+                pcl::NormalEstimationOMP<pcl::PointXYZRGB, pcl::Normal> ne(nr_threads);
+                pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGB> ());
 
                 ne.setSearchMethod(tree);
-                ne.setInputCloud(pclIn->toPointXYZRGBA());
+                ne.setInputCloud(rgbCloud.makeShared());
                 if (kSearch > 0)
                 {
                     ne.setKSearch(kSearch);
@@ -3395,9 +3445,7 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
                 }
                 ne.compute(*normals);
 
-                //the alpha value of rgba will be omitted
-                pcl::PointCloud<pcl::PointXYZRGB> rgbCloud;
-                pcl::copyPointCloud(*(pclIn->toPointXYZRGBA()), rgbCloud);
+
                 retval += ito::RetVal(ito::retWarning, 0, tr("the alpha values of the input point cloud cannot be copied to the output point cloud [not supported]").toLatin1().data());
                 pcl::concatenateFields(rgbCloud, *normals, *(pclOut->toPointXYZRGBNormal()));
             }

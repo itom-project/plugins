@@ -181,6 +181,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
     ito::int32 lastval, max;
     ito::int32 x = x0; 
     ito::int32 y = y0;
+    ito::int32 validCnt = 1;
 
     //bool check = ito::dObjHelper::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());    
     // Check if y colidates with image boarder
@@ -220,6 +221,15 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
 
     // Do the invalid check for each pixel
  
+    for(i = 0; i < dx; i++)
+    {
+        if (ito::dObjHelper::isFinite<ito::float32>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
+        {
+            vTemp = buf[i + a];
+            break;
+        }
+    }
+
     for (i = 0; i < dx; ++i)
     {
         if (ito::dObjHelper::isFinite<ito::float32>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
@@ -232,6 +242,7 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
         {
             max = kern;
             v = vTemp;
+            validCnt = 1;
             if (i + a - lastval < max)
             {
                 max = i + a - lastval;
@@ -244,7 +255,8 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
                 if (ito::dObjHelper::isFinite<ito::float32>(buf[i + a + k]))
                 {
                     max = k;
-                    v = buf[i + a + k];
+                    v += buf[i + a + k];
+                    validCnt++;
                     break;
                 }
             }
@@ -255,21 +267,26 @@ template<> void Get<ito::float32>(cv::Mat *plane, const ito::int32 x0, const ito
                     w = plane->at<ito::float32>(y + k, i + x);
                     if (ito::dObjHelper::isFinite<ito::float32>(w))
                     {
-                        v = w;
+                        v += w;
+                        validCnt ++;
                         break;
                     }
                 }
+            }
+            for (k = 1; k < max; ++k)
+            {
                 if ((y - k >= 0) && (y - k < plane->rows))
                 {
                     w = plane->at<ito::float32>(y - k, i + x);
                     if (ito::dObjHelper::isFinite<ito::float32>(w))
                     {
-                        v = w;
+                        v += w;
+                        validCnt++;
                         break;
                     }
                 }
             }
-            buf[i + a] = v;
+            buf[i + a] = v/validCnt;
         }
     }    
 
@@ -293,6 +310,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
     ito::int32 lastval, max;
     ito::int32 x = x0; 
     ito::int32 y = y0;
+    ito::int32 validCnt = 1;
 
     //bool check = ito::dObjHelper::isFinite(invalid) && (invalid < std::numeric_limits<ito::int32>::max()) && (invalid > std::numeric_limits<ito::int32>::min());    
     // Check if y colidates with image boarder
@@ -331,7 +349,16 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
     lastval = -kern;
 
     // Do the invalid check for each pixel
- 
+    // First previll the default kernel value for this line
+    for(i = 0; i < dx; i++)
+    {
+        if (ito::dObjHelper::isFinite<ito::float64>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
+        {
+            vTemp = buf[i + a];
+            break;
+        }
+    }
+
     for (i = 0; i < dx; ++i)
     {
         if (ito::dObjHelper::isFinite<ito::float64>(buf[i + a]) /*|| buf[i + a] == invalidInt*/)
@@ -344,6 +371,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
         {
             max = kern;
             v = vTemp;
+            validCnt = 1;
             if (i + a - lastval < max)
             {
                 max = i + a - lastval;
@@ -357,7 +385,8 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
                 if (ito::dObjHelper::isFinite<ito::float64>(buf[i + a + k]))
                 {
                     max = k;
-                    v = buf[i + a + k];
+                    v += buf[i + a + k];
+                    validCnt++;
                     break;
                 }
             }
@@ -368,21 +397,26 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
                     w = plane->at<ito::float64>(y + k, i + x);
                     if (ito::dObjHelper::isFinite<ito::float64>(w))
                     {
-                        v = w;
+                        v += w;
+                        validCnt ++;
                         break;
                     }
                 }
+            }
+            for (k = 1; k < max; ++k /*k++*/)
+            {
                 if ((y - k >= 0) && (y - k < plane->rows))
                 {
                     w = plane->at<ito::float64>(y - k, i + x);
                     if (ito::dObjHelper::isFinite<ito::float64>(w))
                     {
-                        v = w;
+                        v += w;
+                        validCnt ++;
                         break;
                     }
                 }
             }
-            buf[i + a] = v;
+            buf[i + a] = v / validCnt;
         }
     }    
 

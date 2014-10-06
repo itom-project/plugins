@@ -101,30 +101,30 @@ QCam::QCam() :
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "QCam", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Integration time of CCD programmed in s").toAscii().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Integration time of CCD programmed in s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain").toAscii().data());
+	paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Offset").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1391, 0, tr("first pixel of ROI in x-direction").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("first pixel of ROI in y-direction").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1391, 1391, tr("last pixel of ROI in x-direction").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1039, 1039, tr("last pixel of ROI in y-direction").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1340, 1040, tr("width of ROI").toAscii().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1340, 1040, tr("height of ROI").toAscii().data());
+    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Offset").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 8, tr("bit depth per pixel").toAscii().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1391, 0, tr("first pixel of ROI in x-direction").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("first pixel of ROI in y-direction").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1391, 1391, tr("last pixel of ROI in x-direction").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1039, 1039, tr("last pixel of ROI in y-direction").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1340, 1040, tr("width of ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1340, 1040, tr("height of ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 8, tr("bit depth per pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	paramVal = ito::Param("cooled", ito::ParamBase::Int, 0, 1, 1, tr("CCD cooler").toAscii().data());
+	paramVal = ito::Param("cooled", ito::ParamBase::Int, 0, 1, 1, tr("CCD cooler").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -772,7 +772,7 @@ ito::RetVal QCam::stopDevice(ItomSharedSemaphore *waitCond)
     
 	if(grabberStartedCount() < 0)
 	{
-		retValue += ito::RetVal(ito::retWarning, 0, tr("camera has already stopped").toAscii().data());
+		retValue += ito::RetVal(ito::retWarning, 0, tr("camera has already stopped").toLatin1().data());
 		setGrabberStarted(0);
 	}
 
@@ -793,7 +793,7 @@ ito::RetVal QCam::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
 	if (grabberStartedCount() <= 0)
 	{
-		retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toAscii().data());
+		retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toLatin1().data());
 	}
 	else
 	{
@@ -959,7 +959,7 @@ ito::RetVal QCam::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     if(!dObj)
 	{
-        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
     else
     {
