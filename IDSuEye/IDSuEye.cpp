@@ -425,35 +425,32 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
     if(!retValue.containsError())
     {
-        if (1)
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION < 0x010300
+        //old style api, round the incoming double value to the allowed step size.
+        //in a new itom api, this is automatically done by a new api function.
+        if (val->getType() == ito::ParamBase::Double || val->getType() == ito::ParamBase::Int)
         {
-            //old style api, round the incoming double value to the allowed step size.
-            //in a new itom api, this is automatically done by a new api function.
-            if (val->getType() == ito::ParamBase::Double || val->getType() == ito::ParamBase::Int)
+            double value = val->getVal<double>();
+            if (it->getType() == ito::ParamBase::Double)
             {
-                double value = val->getVal<double>();
-                if (it->getType() == ito::ParamBase::Double)
+                ito::DoubleMeta *meta = (ito::DoubleMeta*)it->getMeta();
+                if (meta)
                 {
-                    ito::DoubleMeta *meta = (ito::DoubleMeta*)it->getMeta();
-                    if (meta)
+                    double step = meta->getStepSize();
+                    if (step != 0.0)
                     {
-                        double step = meta->getStepSize();
-                        if (step != 0.0)
-                        {
-                            int multiple = qRound((value - meta->getMin()) / step);
-                            value = meta->getMin() + multiple * step;
-                            value = qBound(meta->getMin(), value, meta->getMax());
-                            val->setVal<double>(value);
-                        }
+                        int multiple = qRound((value - meta->getMin()) / step);
+                        value = meta->getMin() + multiple * step;
+                        value = qBound(meta->getMin(), value, meta->getMax());
+                        val->setVal<double>(value);
                     }
                 }
             }
-            retValue += apiValidateParam(*it, *val, false, true);
         }
-        else
-        {
-            //retValue += apiValidateAndCastParam(*it, *val, false, true, true);
-        }
+        retValue += apiValidateParam(*it, *val, false, true);
+#else
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
+#endif
     }
 
     if(!retValue.containsError())
