@@ -722,7 +722,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Observed point coordinates (2xN) float32") );
+    paramsMand->append( ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Observed point coordinates (Nx2) float32") );
     paramsMand->append( ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output (corrected) image that has the same size and type as source") );
     paramsMand->append( ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]") );
     paramsMand->append( ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements.") );
@@ -734,7 +734,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 /*static*/ ito::RetVal OpenCVFilters::cvUndistortPoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(2,2), ito::Range(1,INT_MAX), retval, 0, 1, ito::tFloat32);
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(1,INT_MAX), ito::Range(2,2), retval, 0, 1, ito::tFloat32);
 
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {
@@ -744,9 +744,9 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
     ito::DataObject cameraMatrix = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<const ito::DataObject*>(), "cameraMatrix", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
     ito::DataObject distCoeffs = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(3).getVal<const ito::DataObject*>(), "distCoeffs", ito::Range(1,1), ito::Range(4,8), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
 
-    ito::DataObject R = paramsOpt->at(0).getVal<void*>() ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(), "R", ito::Range(3,3), \
+    ito::DataObject R = paramsOpt->at(0).getVal<void*>() ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(0).getVal<const ito::DataObject*>(), "R", ito::Range(3,3), \
         ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64) : ito::DataObject();
-    ito::DataObject P = paramsOpt->at(0).getVal<void*>() ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(), "P", ito::Range(3,4), \
+    ito::DataObject P = paramsOpt->at(1).getVal<void*>() ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(1).getVal<const ito::DataObject*>(), "P", ito::Range(3,4), \
         ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64) : ito::DataObject();
 
     if (!retval.containsError())
@@ -755,21 +755,23 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
         
         try
         {
+            cv::Mat src_ = src.getCvPlaneMat(0)->reshape(2,0); //rows remain unchanged, 2 cols become 2 channels.
+
             if (R.getDims() == 0 && P.getDims() == 0)
             {
-                cv::undistortPoints(*(src.getCvPlaneMat(0)), dst, *(cameraMatrix.getCvPlaneMat(0)), *(distCoeffs.getCvPlaneMat(0)));
+                cv::undistortPoints(src_, dst, *(cameraMatrix.getCvPlaneMat(0)), *(distCoeffs.getCvPlaneMat(0)));
             }
             else if (P.getDims() != 0 && R.getDims() != 0)
             {
-                cv::undistortPoints(*(src.getCvPlaneMat(0)), dst, *(cameraMatrix.getCvPlaneMat(0)), *(distCoeffs.getCvPlaneMat(0)), *(R.getCvPlaneMat(0)), *(P.getCvPlaneMat(0)));
+                cv::undistortPoints(src_, dst, *(cameraMatrix.getCvPlaneMat(0)), *(distCoeffs.getCvPlaneMat(0)), *(R.getCvPlaneMat(0)), *(P.getCvPlaneMat(0)));
             }
             else if (P.getDims() == 0)
             {
-                cv::undistortPoints(*(src.getCvPlaneMat(0)), dst, *(cameraMatrix.getCvPlaneMat(0)), *(distCoeffs.getCvPlaneMat(0)), *(R.getCvPlaneMat(0)));
+                cv::undistortPoints(src_, dst, *(cameraMatrix.getCvPlaneMat(0)), *(distCoeffs.getCvPlaneMat(0)), *(R.getCvPlaneMat(0)));
             }
             else //R.getDims() == 0)
             {
-                cv::undistortPoints(*(src.getCvPlaneMat(0)), dst, *(cameraMatrix.getCvPlaneMat(0)), *(distCoeffs.getCvPlaneMat(0)), cv::noArray(), *(R.getCvPlaneMat(0)));
+                cv::undistortPoints(src_, dst, *(cameraMatrix.getCvPlaneMat(0)), *(distCoeffs.getCvPlaneMat(0)), cv::noArray(), *(P.getCvPlaneMat(0)));
             }
         }
         catch (cv::Exception exc)
@@ -820,7 +822,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
         retval += ito::RetVal(ito::retError, 0, "map1 or map2 are NULL");
     }
 
-    ito::DataObject R = paramsOpt->at(0).getVal<void*>() ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(), "R", ito::Range(3,3), \
+    ito::DataObject R = paramsOpt->at(0).getVal<void*>() ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(0).getVal<const ito::DataObject*>(), "R", ito::Range(3,3), \
         ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64) : ito::DataObject();
 
     ito::DataObject cameraMatrixNew = (paramsOpt->at(1).getVal<void*>()) ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(1).getVal<const ito::DataObject*>(), "cameraMatrixNew", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64) : cameraMatrix;
@@ -913,7 +915,7 @@ indices in a table of interpolation coefficients.";
     }
 
     ito::DataObject map1 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<ito::DataObject*>(),"map1", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, 0, 2, ito::tUInt16, ito::tFloat32);
-    ito::DataObject map2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<ito::DataObject*>(),"map2", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, 0, 2, ito::tUInt16, ito::tFloat32);
+    ito::DataObject map2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(3).getVal<ito::DataObject*>(),"map2", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, 0, 2, ito::tUInt16, ito::tFloat32);
 
     int interpolation = paramsOpt->at(0).getVal<int>();
     int borderType = paramsOpt->at(1).getVal<int>();
