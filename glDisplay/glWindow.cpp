@@ -557,7 +557,7 @@ ito::RetVal GLWindow::setPos(const int &x, const int &y)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GLWindow::setSize(const int &height, const int &width)
+ito::RetVal GLWindow::setSize(const int &width, const int &height)
 {
     ito::RetVal retval;
 

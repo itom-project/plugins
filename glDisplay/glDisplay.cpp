@@ -67,7 +67,24 @@ GLDisplayInterface::GLDisplayInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"...";
+"This plugin displays a frameless window that displays one or multiple arrays using OpenGL technology. \n\
+Each array is then created as texture, where the horizontal and vertical wrap property can be chosen individually. \n\
+OpenGL allows a fast switch between all created textures. \n\
+\n\
+Per default, the window is either displayed in a second screen (fullscreen) or if only one screen is available - \n\
+placed as small window in the top left corner of the main screen. Otherwise chose an appropriate x0, y0, xsize and ysize \n\
+parameter at initialization. \n\
+\n\
+In order to assign textures, use the exec-function 'addTextures' and pass a 2d or 3d dataObject, where in the latter case \n\
+every plane of the 3d dataObject is registered as single texture. Create the tags 'wrapT', 'wrapS', 'MinFilter' or 'MagFilter' \n\
+to control the repeatability of every texture or its interpolation method. \n\
+\n\
+Allowed values for these tags are: \n\
+\n\
+* 'MagFilter' (interpolation used when the texture is smaller than the window size): 'GL_NEAREST' (default) or 'GL_LINEAR' \n\
+* 'MinFilter' (interpolation used when the texture is bigger than the window size): 'GL_NEAREST' (default), 'GL_LINEAR', 'GL_LINEAR_MIPMAP_NEAREST', 'GL_NEAREST_MIPMAP_NEAREST', 'GL_LINEAR_MIPMAP_LINEAR' \n\
+* 'wrapT' (vertical scaling mode): 'GL_REPEAT' (default), 'SCALED', 'GL_MIRRORED_REPEAT, 'GL_CLAMP_TO_EDGE' \n\
+* 'wrapS' (horizontal scaling mode): 'GL_REPEAT' (default), 'SCALED', 'GL_MIRRORED_REPEAT', 'GL_CLAMP_TO_EDGE'";
 
     m_description = tr("Frameless window to display images using OpenGL");
     m_detaildescription = QObject::tr(docstring);
@@ -82,9 +99,9 @@ GLDisplayInterface::GLDisplayInterface()
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("y0", ito::ParamBase::Int, -4096, 4096, 0, tr("y0 position of window").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("xsize", ito::ParamBase::Int, 1, 4096, 256, tr("height of window").toLatin1().data());
+    paramVal = ito::Param("xsize", ito::ParamBase::Int, 0, 4096, 0, tr("height of window, if 0 (default) the window is positioned in the second screen or gets a default width of 100px if no second screen is available.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("ysize", ito::ParamBase::Int, 1, 4096, 256, tr("width of window").toLatin1().data());
+    paramVal = ito::Param("ysize", ito::ParamBase::Int, 0, 4096, 0, tr("width of window, if 0 (default) the window is positioned in the second screen or gets a default height of 100px if no second screen is available.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table for a gamma correction with 256 values. If given, the gamma correction will be enabled (default: off) and the projected values are then modified with lut[value].").toLatin1().data());
@@ -499,39 +516,32 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     if (!retval.containsError())
     {
         int x0, y0, xsize, ysize;
-        if ((x0 = (*paramsOpt)[0].getVal<int>()) != 0)
-        {
-            m_params["x0"].setVal<int>(x0);
-        }
-        else
-        {
-            x0 = m_params["x0"].getVal<int>();
-        }
+        ito::IntMeta *roiMeta;
 
-        if ((y0 = (*paramsOpt)[1].getVal<int>()) != 0)
+        if (paramsOpt->at(2).getVal<int>() > 0 && paramsOpt->at(3).getVal<int>() > 0)
         {
+            roiMeta = (ito::IntMeta*)(m_params["x0"].getMeta());
+            x0 = paramsOpt->at(0).getVal<int>();
+            x0 = qBound<int>(roiMeta->getMin(), x0, roiMeta->getMax());
+
+            roiMeta = (ito::IntMeta*)(m_params["y0"].getMeta());
+            y0 = paramsOpt->at(1).getVal<int>();
+            y0 = qBound<int>(roiMeta->getMin(), y0, roiMeta->getMax());
+
+            roiMeta = (ito::IntMeta*)(m_params["xsize"].getMeta());
+            xsize = paramsOpt->at(2).getVal<int>();
+            xsize = qBound<int>(roiMeta->getMin(), xsize, roiMeta->getMax());
+
+            roiMeta = (ito::IntMeta*)(m_params["ysize"].getMeta());
+            ysize = paramsOpt->at(3).getVal<int>();
+            ysize = qBound<int>(roiMeta->getMin(), ysize, roiMeta->getMax());
+
+            m_params["x0"].setVal<int>(x0);
             m_params["y0"].setVal<int>(y0);
-        }
-        else
-        {
-            y0 = m_params["y0"].getVal<int>();
-        }
-    
-        if ((xsize = (*paramsOpt)[2].getVal<int>()) != 3)
-        {
             m_params["xsize"].setVal<int>(xsize);
-        }
-        else
-        {
-            xsize = m_params["xsize"].getVal<int>();
-        }
-        if ((ysize = (*paramsOpt)[3].getVal<int>()) != 3)
-        {
             m_params["ysize"].setVal<int>(ysize);
-        }
-        else
-        {
-            ysize = m_params["ysize"].getVal<int>();
+            QMetaObject::invokeMethod(m_pWindow, "setPos", Q_ARG(int, x0), Q_ARG(int, y0));
+            QMetaObject::invokeMethod(m_pWindow, "setSize", Q_ARG(int, xsize), Q_ARG(int, ysize));
         }
 
         int lutLen = paramsOpt->at(4).getLen();
