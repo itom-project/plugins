@@ -105,7 +105,18 @@ FittingFilters::~FittingFilters()
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-static char fitPlaneDoc[] = "fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy)";
+static char fitPlaneDoc[] = \
+"fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy) \n\
+\n\
+This fit can be executed by different fit strategies: \n\
+- leastSquareFit minimizes the sum of  the squared distances of all valid points to the plane (direct solution)\n\
+- leastSquareFitSVD does the same using a svd algorithm \n\
+- leastMedianFit minimizes the median of the absolute distances of all valid points to the plane \n\
+\n\
+The probability values are only important for the least median fit and determine the number of iterations for the \n\
+a random search using the equation \n\
+\n\
+iterations >= ceil(log(allowedErrorProbability)/log(1-validPointProbability)))";
 
 RetVal FittingFilters::fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -116,7 +127,14 @@ RetVal FittingFilters::fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<i
 
     paramsMand->append( Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object").toLatin1().data()) );
 
-    paramsOpt->append( Param("method", ParamBase::String | ParamBase::In, "leastSquareFit", tr("fitting method (leastSquareFit [default], leastSquareFitSVD)").toLatin1().data()) );
+    paramsOpt->append( Param("method", ParamBase::String | ParamBase::In, "leastSquareFit", tr("fitting method (leastSquareFit [default], leastSquareFitSVD, leastMedianFit)").toLatin1().data()) );
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "leastSquareFit");
+    sm->addItem("leastSquareFitSVD");
+    sm->addItem("leastMedianFit");
+    (*paramsOpt)[0].setMeta(sm,true);
+
+    paramsOpt->append( Param("validPointProbability", ParamBase::Double | ParamBase::In, 0.0, 0.999999, 0.2, tr("probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFit)").toLatin1().data()) );
+    paramsOpt->append( Param("allowedErrorProbability", ParamBase::Double | ParamBase::In, 0.0000001, 1.0, 0.001, tr("allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFit)").toLatin1().data()) );
 
     *paramsOut << Param("A", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Parameter A of regression plane z = A + Bx + Cy").toLatin1().data());
     *paramsOut << Param("B", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Parameter B of regression plane z = A + Bx + Cy").toLatin1().data());
@@ -133,16 +151,8 @@ RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito
     char *temp = (*paramsOpt)[0].getVal<char*>();
     QString method = static_cast<char*>( temp ); //borrowed reference
 
-    QStringList availableMethods = QStringList() << "leastSquareFit" << "leastSquareFitSVD";
-
-    if(!availableMethods.contains(method, Qt::CaseInsensitive))
-    {
-        return ito::RetVal(retError, 0, tr("the chosen method is unknown").toLatin1().data());
-    }
-
     if (!retval.containsError())
     {
-
         const cv::Mat *plane = dObjImages.getCvPlaneMat(0);
 
         if(QString::compare(method, "leastSquareFit", Qt::CaseInsensitive) == 0)
@@ -186,6 +196,45 @@ RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito
         {
             double A,B,C;
             retval += fitLeastSquarePlaneSVD(plane,A,B,C);
+            (*paramsOut)[0].setVal<double>(A);
+            (*paramsOut)[1].setVal<double>(B);
+            (*paramsOut)[2].setVal<double>(C);
+        }
+        else if(QString::compare(method, "leastMedianFit", Qt::CaseInsensitive) == 0)
+        {
+            double alarm_rate = paramsOpt->at(2).getVal<double>();
+            double valid_probability = paramsOpt->at(1).getVal<double>();
+            double A,B,C;
+            switch (dObjImages.getType())
+            {
+            case ito::tUInt8:
+                retval += lmedsFitPlane<ito::uint8>(plane, A, B, C, valid_probability, alarm_rate);
+                break;
+            case ito::tUInt16:
+                retval += lmedsFitPlane<ito::uint16>(plane, A, B, C, valid_probability, alarm_rate);
+                break;
+            case ito::tUInt32:
+                retval += lmedsFitPlane<ito::uint32>(plane, A, B, C, valid_probability, alarm_rate);
+                break;
+            case ito::tInt8:
+                retval += lmedsFitPlane<ito::int8>(plane, A, B, C, valid_probability, alarm_rate);
+                break;
+            case ito::tInt16:
+                retval += lmedsFitPlane<ito::int16>(plane, A, B, C, valid_probability, alarm_rate);
+                break;
+            case ito::tInt32:
+                retval += lmedsFitPlane<ito::int32>(plane, A, B, C, valid_probability, alarm_rate);
+                break;
+            case ito::tFloat32:
+                retval += lmedsFitPlane<ito::float32>(plane, A, B, C, valid_probability, alarm_rate);
+                break;
+            case ito::tFloat64:
+                retval += lmedsFitPlane<ito::float64>(plane, A, B, C, valid_probability, alarm_rate);
+                break;
+            default:
+                retval += ito::RetVal(ito::retError, 0, "invalid data type");
+            }
+
             (*paramsOut)[0].setVal<double>(A);
             (*paramsOut)[1].setVal<double>(B);
             (*paramsOut)[2].setVal<double>(C);
@@ -723,6 +772,14 @@ the rectangle. If this is not possible, NaN is returned as value.";
     paramsOpt->append( ito::Param("searchRect", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "[height, width] of the search rectangle for the linear interpolation. A plane fit is executed for all finite values within the rectangle and the output value is determined based on the plane coefficients. If the size if even, its size drifts towards the trend direction given by the coordinate value.") );
     (*paramsOpt)[0].setVal<int*>(rect, 2);
 
+    paramsOpt->append( Param("method", ito::ParamBase::String | ParamBase::In, "LeastSquares", tr("LeastSquares (default), LMedS (Least median of squares)").toLatin1().data()));
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "LeastSquares");
+    sm->addItem("LMedS");
+    (*paramsOpt)[1].setMeta(sm,true);
+
+    paramsOpt->append( Param("validPointProbability", ParamBase::Double | ParamBase::In, 0.0, 0.999999, 0.2, tr("probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFit)").toLatin1().data()) );
+    paramsOpt->append( Param("allowedErrorProbability", ParamBase::Double | ParamBase::In, 0.0000001, 1.0, 0.001, tr("allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFit)").toLatin1().data()) );
+
     paramsOut->append( ito::Param("values", ito::ParamBase::DoubleArray | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output vector of type ito::float64 containing the interpolated values (NaN if no value could be found)"));
 
     return retval;
@@ -748,6 +805,10 @@ the rectangle. If this is not possible, NaN is returned as value.";
     {
         retval += ito::RetVal(ito::retError, 0, "values of searchRect must be >= 2");
     }
+
+    bool lmeds = (QString::compare("LMedS", paramsOpt->at(1).getVal<char*>(), Qt::CaseInsensitive) == 0); //least median of squares or least squares fit
+    double validPointProbability = paramsOpt->at(2).getVal<double>();
+    double allowedErrorProbability = paramsOpt->at(3).getVal<double>();
 
     ito::DataObject dataObj = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "dataObj", ito::Range::all(), ito::Range::all(), retval, 0, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
     ito::DataObject coords = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<ito::DataObject*>(), "coordsSubPix", ito::Range::all(), ito::Range(2,2), retval, ito::tFloat64, 0);
@@ -857,34 +918,70 @@ the rectangle. If this is not possible, NaN is returned as value.";
             if (valid)
             {
                 matRoi = mat->operator()(roi);
-                switch (dataObj.getType())
+
+                if (!lmeds)
                 {
-                case ito::tUInt8:
-                    retval += lsqFitPlane<ito::uint8>(&matRoi, A, B, C);
-                    break;
-                case ito::tUInt16:
-                    retval += lsqFitPlane<ito::uint16>(&matRoi, A, B, C);
-                    break;
-                case ito::tUInt32:
-                    retval += lsqFitPlane<ito::uint32>(&matRoi, A, B, C);
-                    break;
-                case ito::tInt8:
-                    retval += lsqFitPlane<ito::int8>(&matRoi, A, B, C);
-                    break;
-                case ito::tInt16:
-                    retval += lsqFitPlane<ito::int16>(&matRoi, A, B, C);
-                    break;
-                case ito::tInt32:
-                    retval += lsqFitPlane<ito::int32>(&matRoi, A, B, C);
-                    break;
-                case ito::tFloat32:
-                    retval += lsqFitPlane<ito::float32>(&matRoi, A, B, C);
-                    break;
-                case ito::tFloat64:
-                    retval += lsqFitPlane<ito::float64>(&matRoi, A, B, C);
-                    break;
-                default:
-                    valid = false;
+                    switch (dataObj.getType())
+                    {
+                    case ito::tUInt8:
+                        retval += lsqFitPlane<ito::uint8>(&matRoi, A, B, C);
+                        break;
+                    case ito::tUInt16:
+                        retval += lsqFitPlane<ito::uint16>(&matRoi, A, B, C);
+                        break;
+                    case ito::tUInt32:
+                        retval += lsqFitPlane<ito::uint32>(&matRoi, A, B, C);
+                        break;
+                    case ito::tInt8:
+                        retval += lsqFitPlane<ito::int8>(&matRoi, A, B, C);
+                        break;
+                    case ito::tInt16:
+                        retval += lsqFitPlane<ito::int16>(&matRoi, A, B, C);
+                        break;
+                    case ito::tInt32:
+                        retval += lsqFitPlane<ito::int32>(&matRoi, A, B, C);
+                        break;
+                    case ito::tFloat32:
+                        retval += lsqFitPlane<ito::float32>(&matRoi, A, B, C);
+                        break;
+                    case ito::tFloat64:
+                        retval += lsqFitPlane<ito::float64>(&matRoi, A, B, C);
+                        break;
+                    default:
+                        valid = false;
+                    }
+                }
+                else
+                {
+                    switch (dataObj.getType())
+                    {
+                    case ito::tUInt8:
+                        retval += lmedsFitPlane<ito::uint8>(&matRoi, A, B, C, validPointProbability, allowedErrorProbability);
+                        break;
+                    case ito::tUInt16:
+                        retval += lmedsFitPlane<ito::uint16>(&matRoi, A, B, C, validPointProbability, allowedErrorProbability);
+                        break;
+                    case ito::tUInt32:
+                        retval += lmedsFitPlane<ito::uint32>(&matRoi, A, B, C, validPointProbability, allowedErrorProbability);
+                        break;
+                    case ito::tInt8:
+                        retval += lmedsFitPlane<ito::int8>(&matRoi, A, B, C, validPointProbability, allowedErrorProbability);
+                        break;
+                    case ito::tInt16:
+                        retval += lmedsFitPlane<ito::int16>(&matRoi, A, B, C, validPointProbability, allowedErrorProbability);
+                        break;
+                    case ito::tInt32:
+                        retval += lmedsFitPlane<ito::int32>(&matRoi, A, B, C, validPointProbability, allowedErrorProbability);
+                        break;
+                    case ito::tFloat32:
+                        retval += lmedsFitPlane<ito::float32>(&matRoi, A, B, C, validPointProbability, allowedErrorProbability);
+                        break;
+                    case ito::tFloat64:
+                        retval += lmedsFitPlane<ito::float64>(&matRoi, A, B, C, validPointProbability, allowedErrorProbability);
+                        break;
+                    default:
+                        valid = false;
+                    }
                 }
 
                 if (valid && retval == ito::retOk)
@@ -1109,6 +1206,207 @@ template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *ma
     }
 
     return retOk;
+}
+
+//---------------------------------------------------------------------------------------------------------------
+//The probability values valid_probability and alarm_rate are used to determine the number of iterations.
+//They are defined as follows (see Marco Zuliani, RANSAC for Dummies, vision.ece.ucsb.edu/~zuliani):
+//
+// For a ransac plane fit, many randomly chosen minimum sample sets MSS (here with 3 points each) needs to
+// be selected from the entire data set. valid_probability is the probability that one of those sets contains
+// no outlier points. The probability to have an invalid MSS is then (1 - valid_probability).
+// If we have iter iterations, the probability to only have MSSs with at least one outlier each, tends to zero and is
+//                                   (1 - valid_probability)^iter
+// The alarm_rate indicates the maximum probability level to finally obtain a wrong result. Hence,
+//                                  alarm_rate >= (1 - valid_probability)^iter
+// The number of iterations iter is then
+//                     iter >= ceil(log(alarm_rate) / (log(1- valid_probability))
+//
+// this version of the least median fits randomly selects three points from the plane, determines the plane out of
+// these three points and determines the distance from every point to the plane. Finally the plane is chosen
+// whose median of all distances is minimum.
+template<typename _Tp> static ito::RetVal FittingFilters::lmedsFitPlane(const cv::Mat *mat, double &A, double &B, double &C, const double &valid_probability, const double &alarm_rate)
+{
+    if (mat->channels() > 1)
+    {
+        return ito::RetVal(ito::retError, 0, "only integer and floating point data types are allowed for lsqFitPlane");
+    }
+    if (mat->rows * mat->cols < 4)
+    {
+        return ito::RetVal(ito::retError, 0, "a plane fit can only be done with at least 3 points");
+    }
+
+    ito::RetVal retval;
+    int iter = std::ceil( std::log(alarm_rate) / std::log(1. - valid_probability) );
+    iter = std::max(3, iter);
+    double minimum_distance = std::numeric_limits<double>::max();
+    cv::Vec3d best_normal;
+    double best_distance;
+
+    cv::RNG random((uint64)cv::getTickCount() ^ 0xa8e5f936);
+
+    int rows[3];
+    int cols[3];
+    cv::Vec3d p1, p2, p3; //three points of plane
+    cv::Vec3d normal;
+    double d;
+    std::vector<double> distanceBucket;
+    distanceBucket.resize(mat->rows * mat->cols);
+    int bucketIdx = 0;
+    _Tp *rowPtr;
+    double medianDistance;
+
+    for (int i = 0; i < iter; ++i)
+    {
+        retval += getRandomValidMinimalSampleSet<_Tp>(mat, random, 3, rows, cols);
+
+        if (retval.containsError())
+        {
+            break;
+        }
+
+        //calculate plane from three randomly chosen values (Hesse: normal * point = d)
+        p1[0] = cols[0]; p1[1] = rows[0]; p1[2] = mat->at<_Tp>(rows[0],cols[0]);
+        p2[0] = cols[1]; p2[1] = rows[1]; p2[2] = mat->at<_Tp>(rows[1],cols[1]);
+        p3[0] = cols[2]; p3[1] = rows[2]; p3[2] = mat->at<_Tp>(rows[2],cols[2]);
+        normal = (p2-p1).cross(p3-p1);
+        normal = normal / cv::norm(normal);
+        if (normal[2] < 0) normal *= -1;
+        d = p1.dot(normal);
+        //
+
+        //determine all distances to the plane and save it in distanceBucket
+        bucketIdx = 0;
+
+        for (int r = 0; r < mat->rows; ++r)
+        {
+            rowPtr = (_Tp*)(mat->ptr(r));
+            p1[1] = (double)r;
+
+            if (std::numeric_limits<_Tp>::is_exact)
+            {
+                for (int c = 0; c < mat->cols; ++c)
+                {
+                    p1[0] = (double)c;
+                    p1[2] = (double)rowPtr[c];
+                    distanceBucket[bucketIdx++] = std::abs((normal.dot(p1)) - d);
+                }
+            }
+            else
+            {
+                for (int c = 0; c < mat->cols; ++c)
+                {
+                    if (!cvIsNaN(rowPtr[c]))
+                    {
+                        p1[0] = (double)c;
+                        p1[2] = (double)rowPtr[c];
+                        distanceBucket[bucketIdx++] = std::abs((normal.dot(p1)) - d);
+                    }
+                }
+            }
+        }
+
+        std::sort(distanceBucket.begin(), distanceBucket.begin() + bucketIdx);
+        medianDistance = distanceBucket[bucketIdx / 2];
+
+        if (medianDistance < minimum_distance)
+        {
+            minimum_distance = medianDistance;
+            best_normal = normal;
+            best_distance = d;
+        }
+
+    }
+
+    if (!retval.containsError())
+    {
+        if (std::numeric_limits<double>::max() - minimum_distance < 1.0)
+        {
+            return ito::RetVal(ito::retError, 0, "plane fit failed.");
+        }
+
+        A = best_distance / best_normal[2];
+        B = -best_normal[0] / best_normal[2];
+        C = -best_normal[1] / best_normal[2];
+    }
+
+    return ito::retOk;
+
+}
+
+//---------------------------------------------------------------------------------------------------------------
+//returns numSamples pairs of unique (rows,cols) within mat (only valid values) that are randomly chosen.
+//If the algorithm does not find the required number of unique and valid points after maxIter, an error is returned.
+//rows and cols must be allocated with at least numSamples values. rng must be initialized with seed value.
+template<typename _Tp> static ito::RetVal FittingFilters::getRandomValidMinimalSampleSet(const cv::Mat *mat, cv::RNG &rng, int numSamples, int *rows, int *cols, int maxIter /*= 1000*/)
+{
+    int nrOfValues = mat->rows * mat->cols;
+    int iter = 0;
+    int nd = 0; //next digit
+    int uni;
+
+    //first use rows to save continuous index. this is finally split into rows and cols.
+
+    if (std::numeric_limits<_Tp>::is_exact)
+    {
+        while (nd < numSamples && iter < maxIter)
+        {
+            uni = rows[nd++] = rng.uniform(0, nrOfValues);
+
+            //check that the new index is not already available in previous indexes
+            for (int i = 0; i < (nd - 1); ++i)
+            {
+                if (uni == rows[i]) //duplicate
+                {
+                    nd--;
+                    break;
+                }
+            }
+
+            iter++;
+        }
+    }
+    else
+    {
+        int r,c;
+
+        while (nd < numSamples && iter < maxIter)
+        {
+            uni = rng.uniform(0, nrOfValues);
+            c = uni % mat->cols;
+            r = (uni - c) / mat->cols;
+            
+            if (!cvIsNaN(mat->at<_Tp>(r,c)))
+            {
+                rows[nd++] = uni;
+
+                //check that the new index is not already available in previous indexes
+                for (int i = 0; i < (nd - 1); ++i)
+                {
+                    if (uni == rows[i]) //duplicate
+                    {
+                        nd--;
+                        break;
+                    }
+                }
+            }
+
+            iter++;
+        }
+    }
+
+    if (nd == numSamples)
+    {
+        //get rows,cols from continuous index
+        for (int i = 0; i < numSamples; ++i)
+        {
+            cols[i] = rows[i] % mat->cols;
+            rows[i] = (rows[i] - cols[i]) / mat->cols;
+        }
+
+        return ito::retOk;
+    }
+    return ito::RetVal(ito::retError, 0, "no valid minimal sample set could be found");
 }
 
 //---------------------------------------------------------------------------------------------------------------
