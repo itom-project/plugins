@@ -2284,11 +2284,11 @@ ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaph
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     QFileInfo finfo(filename);
-    QDir filepath(finfo.canonicalPath());
-    
+    QDir filepath(finfo.absolutePath());
+
     if (filepath.exists() == false)
     {
-        retval += ito::RetVal::format(ito::retError,0,"folder '%s' does not exist", finfo.canonicalPath().toLatin1().data());
+        retval += ito::RetVal::format(ito::retError,0,"folder '%s' does not exist", finfo.absolutePath().toLatin1().data());
     }
     else
     {
@@ -2298,7 +2298,7 @@ ito::RetVal PrjWindow::grabFramebuffer(const QString &filename, ItomSharedSemaph
 
         if (!ok)
         {
-            retval += ito::RetVal(ito::retError,0,"error while saving grabbed framebuffer");
+            retval += ito::RetVal::format(ito::retError,0,"error while saving grabbed framebuffer to '%s'", filepath.absoluteFilePath( finfo.fileName() ).toLatin1().data());
         }
     }
 
