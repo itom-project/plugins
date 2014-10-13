@@ -1236,5 +1236,257 @@ Line coefficients are defined up to a scale. They are normalized so that a_i^2+b
 //}
 
 
+////----------------------------------------------------------------------------------------------------------------------------------
+
+/*static*/ const char *OpenCVFilters::cvFlannBasedMatcherDoc = "This function uses the nearest search methods to find the best matching points. Matching methods by means of Flann matcher. \n\
+This includes some nearest neighbour algorithms to calculate the distance between two points. \n\
+An optional drawing method can be applied to draw the best matching points from the drawMatches function in opencv. \n\
+It is possible to draw only good matches between keypoints. Draw only good matches whose distance is less than 3*min_dist. ";
+
+/*static*/ ito::RetVal OpenCVFilters::cvFlannBasedMatcherParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError())
+    {
+        printf("error while executing some methods");
+        return retval;
+    }
+    
+    param = ito::Param("first_descriptors", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input parameter - (n x 128) float32 data object of descriptors from first image (queryDescriptors). These descriptors can be computed from sift/surf algorithms.");
+    paramsMand->append(param);
+    param = ito::Param("second_descriptors", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input parameter - (n x 128) float32 data object of descriptors from second image (trainDescriptors). These descriptors can be computed from sift/surf algorithms.");
+    paramsMand->append(param);
+    param = ito::Param("Matching_descriptor", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output parameter - (n x 4) float32 data object of Matching descriptor vectors using FLANN matcher. Every row contains the values (queryIdx,trainIdx,imgIdx,distance)");    
+    paramsMand->append(param);
+
+    // Optional Parameters
+    param = ito::Param("min_dist", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, "Optional input parameter - Minimum distance between two pair of points to calculate the best matching.");
+    paramsOpt->append(param);
+    paramsOpt->append( ito::Param("first_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Optional input parameter - first image to draw the matching points") );
+    paramsOpt->append( ito::Param("second_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Optional input parameter - second image to draw the matching points") );
+    paramsOpt->append( ito::Param("first_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Optional input parameter - corresponding key points of the first image (n x 7) float32 data object") );
+    paramsOpt->append( ito::Param("second_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Optional input parameter - corresponding key points of the second image (n x 7) float32 data object") );
+    paramsOpt->append( ito::Param("outImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional output parameter - Output image with good matches points on it") );
+    paramsOpt->append( ito::Param("first_best_matches_points", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional output parameter - (m x 2) float32 data object of best matching points from first image. each row includes (x and y coordinates), and m is the number of best matching points ") );
+    paramsOpt->append( ito::Param("second_best_matches_points", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional output parameter - (m x 2) float32 data object of best matching points from second image. each row includes (x and y coordinates), and m is the number of best matching points") );
+    paramsOpt->append( ito::Param("goodmatches", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional output parameter - (m x 4) float32 data object of good matching descriptor vectors using FLANN matcher. Every row contains the values (queryIdx,trainIdx,imgIdx,distance)") );
+        return retval;
+}
+
+
+/*static*/ ito::RetVal OpenCVFilters::cvFlannBasedMatcher(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    double min_dist = paramsOpt->at(0).getVal<double>(); // Default value is 0.
+    //ito::DataObject *descriptor1 = paramsMand->at(0).getVal<ito::DataObject*>();
+    //ito::DataObject *descriptor2 = paramsMand->at(1).getVal<ito::DataObject*>();
+    ito::DataObject *matchesOut = paramsMand->at(2).getVal<ito::DataObject*>();
+    ito::DataObject descriptor1 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"first_descriptors", ito::Range(0,INT_MAX), ito::Range(128,128), retval, ito::tFloat32, 0);
+    ito::DataObject descriptor2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<ito::DataObject*>(),"second_descriptors", ito::Range(0,INT_MAX), ito::Range(128,128), retval, ito::tFloat32, 0);
+
+
+    if (!paramsMand->at(0).getVal<ito::DataObject*>())
+    {
+        retval += ito::RetVal(ito::retError, 0, "The descriptors of the first image is empty");
+    }
+    
+    if (!paramsMand->at(1).getVal<ito::DataObject*>())
+    {
+        retval += ito::RetVal(ito::retError, 0, "The descriptors of the second image is empty");
+    }
+
+    if (!retval.containsError())
+    {
+        cv::FlannBasedMatcher matcher;
+        std::vector< cv::DMatch > Dmatches;
+        cv::Mat matches;
+        try
+        {        
+            matcher.match(*(descriptor1.getCvPlaneMat(0)), *(descriptor2.getCvPlaneMat(0)),Dmatches);
+        }
+        catch (cv::Exception exc)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+        }
+
+        if (!retval.containsError())
+        {
+                ito::DataObject mtc(Dmatches.size(),4,ito::tFloat32);  // DataObject declaration
+                ito::float32 *rowPtr = NULL;
+
+                for (int row = 0; row < Dmatches.size(); ++row)
+                {
+                    rowPtr = (ito::float32*)mtc.rowPtr(0,row);
+                    rowPtr[0] = Dmatches[row].queryIdx;
+                    rowPtr[1] = Dmatches[row].trainIdx;
+                    rowPtr[2] = Dmatches[row].imgIdx;
+                    rowPtr[3] = Dmatches[row].distance;
+                }
+                *matchesOut = mtc;
+         }
+
+        if (min_dist != 0.0 && paramsOpt->at(1).getVal<ito::DataObject*>() && paramsOpt->at(2).getVal<ito::DataObject*>() && paramsOpt->at(3).getVal<ito::DataObject*>() && paramsOpt->at(4).getVal<ito::DataObject*>() && paramsOpt->at(5).getVal<ito::DataObject*>() && paramsOpt->at(6).getVal<ito::DataObject*>() && paramsOpt->at(7).getVal<ito::DataObject*>() && paramsOpt->at(8).getVal<ito::DataObject*>())
+        {
+            std::vector<cv::KeyPoint> first_keypoints;
+            std::vector<cv::KeyPoint> second_keypoints;
+            double max_dist=0;
+            const ito::DataObject *first_image = paramsOpt->at(1).getVal<const ito::DataObject*>();
+            retval += ito::dObjHelper::verify2DDataObject(first_image, "image", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tUInt8);
+            const ito::DataObject *second_image = paramsOpt->at(2).getVal<const ito::DataObject*>();
+            retval += ito::dObjHelper::verify2DDataObject(second_image, "image", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tUInt8);
+
+            //const ito::DataObject first_keypoints = paramsOpt->at(3).getVal<const ito::DataObject*>();
+
+            
+            // conversion of DataObject to the keypoints data type being a n x 7 float32 data object with n keypoints. 
+            //Every row contains the values (pt_x,pt_y,size,angle,response,octave,id)") );
+
+            if (!retval.containsError())
+                {
+                const ito::DataObject first_keypoints_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(3).getVal<const ito::DataObject*>(),"first_keypoints", ito::Range(0,INT_MAX), ito::Range(7,7), retval, ito::tFloat32, 0);
+                const ito::float32 *rowPtr = NULL;
+                first_keypoints.reserve(first_keypoints_.getSize(0));
+                for (int i = 0; i < first_keypoints_.getSize(0); ++i)
+                {
+                    rowPtr = (const ito::float32*)(first_keypoints_.rowPtr(0, i));
+                    cv::KeyPoint keyPt1;
+                    keyPt1.pt.x = rowPtr[0];
+                    keyPt1.pt.y = rowPtr[1];
+                    keyPt1.size = rowPtr[2];
+                    keyPt1.angle = rowPtr[3];
+                    keyPt1.response = rowPtr[4];
+                    keyPt1.octave = rowPtr[5];
+                    keyPt1.class_id = rowPtr[6];
+                    first_keypoints.push_back(keyPt1);
+                }
+            }
+
+
+            if (!retval.containsError())
+                {
+                const ito::DataObject second_keypoints_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(4).getVal<const ito::DataObject*>(),"second_keypoints", ito::Range(0,INT_MAX), ito::Range(7,7), retval, ito::tFloat32, 0);
+                const ito::float32 *rowPtr = NULL;
+                second_keypoints.reserve(second_keypoints_.getSize(0));
+                for (int i = 0; i < second_keypoints_.getSize(0); ++i)
+                {
+                    rowPtr = (const ito::float32*)(second_keypoints_.rowPtr(0, i));
+                    cv::KeyPoint keyPt2;
+                    keyPt2.pt.x = rowPtr[0];
+                    keyPt2.pt.y = rowPtr[1];
+                    keyPt2.size = rowPtr[2];
+                    keyPt2.angle = rowPtr[3];
+                    keyPt2.response = rowPtr[4];
+                    keyPt2.octave = rowPtr[5];
+                    keyPt2.class_id = rowPtr[6];
+                    second_keypoints.push_back(keyPt2);
+                }
+            }
+
+                //const ito::DataObject second_keypoints = paramsOpt->at(4).getVal<const ito::DataObject*>();
+                
+            ito::DataObject *outImg = paramsOpt->at(5).getVal<ito::DataObject*>();
+            retval += ito::dObjHelper::verify2DDataObject(outImg, "image", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tUInt8);
+
+
+            for(int i = 0 ; i < descriptor1.getSize(0); i++ )  
+                {    
+                    double dist_cal = Dmatches[i].distance;
+                    if( dist_cal < min_dist ) min_dist = dist_cal;
+                    if( dist_cal > max_dist ) max_dist = dist_cal;
+                }
+            //-- Draw only "good" matches (i.e. whose distance is less than 3*min_dist )
+                std::vector< cv::DMatch > good_matches;
+
+                for ( int i = 0 ; i < descriptor1.getSize(0); i++ ) 
+                { 
+                if( Dmatches[i].distance < 2*min_dist )
+                     { 
+                        good_matches.push_back( Dmatches[i]); 
+                     }
+                }
+
+            ito::DataObject *goodmatchesOut = paramsOpt->at(8).getVal<ito::DataObject*>();
+            if (!retval.containsError())
+                {
+                        ito::DataObject mtc_good(good_matches.size(),4,ito::tFloat32);  // DataObject declaration
+                        ito::float32 *rowPtr = NULL;
+
+                        for (int row = 0; row < good_matches.size(); ++row)
+                        {
+                            rowPtr = (ito::float32*)mtc_good.rowPtr(0,row);
+                            rowPtr[0] = good_matches[row].queryIdx;
+                            rowPtr[1] = good_matches[row].trainIdx;
+                            rowPtr[2] = good_matches[row].imgIdx;
+                            rowPtr[3] = good_matches[row].distance;
+                        }
+                        *goodmatchesOut = mtc_good;
+                 }
+                //cv::Mat img_matches;
+    /*            cv::Mat img_matches;
+                const cv::Scalar& matchcolor = cv::Scalar::all(-1);
+                const cv::Scalar& singlePointColor=cv::Scalar::all(-1),
+                const cv::vector<cv::vector<char> >& matchesMask=cv::vector<cv::vector<char> >();
+                int flags= cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS;
+
+                cv::drawMatches( *(first_image->getCvPlaneMat(0)), first_keypoints, *(second_image->getCvPlaneMat(0)), second_keypoints,
+                good_matches, *(outImg) , matchcolor, singlePointColor,
+                                    matchesMask, flags); */
+
+        /*    cv::drawMatches( *(first_image->getCvPlaneMat(0)), first_keypoints, 
+                             *(second_image->getCvPlaneMat(0)), second_keypoints,
+                             good_matches, *(outImg->getCvPlaneMat(0)), cv::Scalar::all(-1), cv::Scalar::all(-1),
+                   cv::vector<char>(), cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);*/
+
+            //if (!retval.containsError())
+            //{
+            //    retval += itomcv::setOutputArrayToDataObject((*paramsOpt)[5], &img_matches);
+            //}
+
+        
+            ito::DataObject *first_good_matching = paramsOpt->at(6).getVal<ito::DataObject*>();
+            ito::DataObject *second_good_matching = paramsOpt->at(7).getVal<ito::DataObject*>();
+            //ito::DataObject first = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(6).getVal<ito::DataObject*>(),"first", ito::Range(0,INT_MAX), ito::Range(2,2), retval, ito::tFloat32, 0);
+            //ito::DataObject second = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(7).getVal<ito::DataObject*>(),"second", ito::Range(0,INT_MAX), ito::Range(2,2), retval, ito::tFloat32, 0);
+            //-- Localize the object and get the best matches keypoints
+
+
+            if (first_good_matching != NULL)
+            {
+            ito::DataObject first_best_keypts(good_matches.size(),2,ito::tFloat32);   
+            ito::float32 *rowPtr = NULL;
+                for (int row = 0; row < good_matches.size(); ++row)
+                {
+                    rowPtr = (ito::float32*)first_best_keypts.rowPtr(0,row);
+                    rowPtr[0] = first_keypoints[good_matches[row].queryIdx ].pt.x;
+                    rowPtr[1] = first_keypoints[good_matches[row].queryIdx ].pt.y;    
+                }
+
+            *first_good_matching = first_best_keypts;
+            }
+
+            if(second_good_matching !=NULL)
+            {
+
+            ito::DataObject second_best_keypts(good_matches.size(),2,ito::tFloat32);   
+            ito::float32 *rowPtr = NULL;
+                for (int row = 0; row < good_matches.size(); ++row)
+                {
+                    rowPtr = (ito::float32*)second_best_keypts.rowPtr(0,row);
+                    rowPtr[0] = second_keypoints[good_matches[row].trainIdx ].pt.x;
+                    rowPtr[1] = second_keypoints[good_matches[row].trainIdx ].pt.y;    
+                }
+
+            *second_good_matching = second_best_keypts;
+            }
+
+            } 
+            }
+
+    return retval;
+}
+
+
 
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)

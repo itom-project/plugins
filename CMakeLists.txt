@@ -156,6 +156,12 @@ if (PLUGIN_OpenCVFilters)
     ADD_SUBDIRECTORY(OpenCVFilters)
 endif (PLUGIN_OpenCVFilters)
 
+# OpenCVFilters(nonfree)
+OPTION(PLUGIN_OpenCVFilters_Nonfree "Build with this plugin." ON)
+if (PLUGIN_OpenCVFilters_Nonfree)
+    ADD_SUBDIRECTORY(OpenCVFiltersNonFree)
+endif (PLUGIN_OpenCVFilters_Nonfree)
+
 # OpenCVGrabber
 OPTION(PLUGIN_OpenCVGrabber "Build with this plugin." ON)
 if (PLUGIN_OpenCVGrabber)

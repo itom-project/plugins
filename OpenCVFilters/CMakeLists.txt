@@ -25,7 +25,7 @@ find_package(ITOM_SDK REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
 
-find_package(OpenCV COMPONENTS core calib3d imgproc REQUIRED)
+find_package(OpenCV COMPONENTS core calib3d flann features2d imgproc REQUIRED)
 find_package(VisualLeakDetector QUIET)
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
