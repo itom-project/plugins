@@ -90,6 +90,7 @@ set(plugin_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/OpenCVFilters.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/itomCvConversions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/calib3d.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/features2d.cpp
 )
 
 #Add version information to the plugIn-dll unter MSVC

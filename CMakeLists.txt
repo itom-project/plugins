@@ -157,7 +157,7 @@ if (PLUGIN_OpenCVFilters)
 endif (PLUGIN_OpenCVFilters)
 
 # OpenCVFilters(nonfree)
-OPTION(PLUGIN_OpenCVFilters_Nonfree "Build with this plugin." ON)
+OPTION(PLUGIN_OpenCVFilters_Nonfree "Build with this plugin." OFF)
 if (PLUGIN_OpenCVFilters_Nonfree)
     ADD_SUBDIRECTORY(OpenCVFiltersNonFree)
 endif (PLUGIN_OpenCVFilters_Nonfree)

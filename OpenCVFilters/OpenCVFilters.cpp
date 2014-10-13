@@ -1817,6 +1817,9 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvFlannBasedMatcher, OpenCVFilters::cvFlannBasedMatcherParams, tr(cvFlannBasedMatcherDoc));
     m_filterList.insert("cvFlannBasedMatcher", filter);
 
+    filter = new FilterDef(OpenCVFilters::cvDrawKeypoints, OpenCVFilters::cvDrawKeypointsParams, tr(cvDrawKeypointsDoc));
+    m_filterList.insert("cvDrawKeypoints", filter);
+
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
     filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, tr(cvFlipUpDownDoc));

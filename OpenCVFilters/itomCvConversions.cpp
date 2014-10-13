@@ -23,6 +23,7 @@
 #include "itomCvConversions.h"
 
 #include "common/param.h"
+#include "DataObject/dataObjectFuncs.h"
 
 namespace itomcv
 {
@@ -202,6 +203,101 @@ ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::M
     }
 
     return retval;
+}
+
+std::vector<cv::KeyPoint> getKeypointsFromParam(const ito::ParamBase &keypointParam, const char* name, ito::RetVal *retval /*= NULL*/)
+{
+    ito::RetVal retval_;
+    std::vector<cv::KeyPoint> kpts;
+    const ito::DataObject *input = keypointParam.getVal<const ito::DataObject*>();
+    if (input->getDims() > 0)
+    {
+        const ito::DataObject keypoints = ito::dObjHelper::squeezeConvertCheck2DDataObject(keypointParam.getVal<const ito::DataObject*>(), name, ito::Range(0,INT_MAX), ito::Range(7,7), retval_, ito::tFloat32, 0);
+        const ito::float32 *rowPtr = NULL;
+
+        if (!retval_.containsError())
+        {
+            kpts.reserve(keypoints.getSize(0));
+
+            for (int i = 0; i < keypoints.getSize(0); ++i)
+            {
+                rowPtr = (const ito::float32*)(keypoints.rowPtr(0, i));
+                cv::KeyPoint keyPt1;
+                keyPt1.pt.x = rowPtr[0];
+                keyPt1.pt.y = rowPtr[1];
+                keyPt1.size = rowPtr[2];
+                keyPt1.angle = rowPtr[3];
+                keyPt1.response = rowPtr[4];
+                keyPt1.octave = rowPtr[5];
+                keyPt1.class_id = rowPtr[6];
+                kpts.push_back(keyPt1);
+            }
+        }
+    }
+
+    if (retval) *retval += retval_;
+
+    return kpts;
+}
+
+cv::Mat getBGRMatFromRGBA32DataObject(const ito::DataObject &obj, ito::RetVal *retval /*= NULL*/)
+{
+    ito::RetVal ret;
+    cv::Mat bgr;
+    if (obj.getType() != ito::tRGBA32 || obj.getDims() != 2)
+    {
+        ret += ito::RetVal(ito::retError, 0, "data object must have two dimensions and type RGBA32");
+    }
+    else
+    {
+        const cv::Mat_<ito::Rgba32> *rgbaMat = (cv::Mat_<ito::Rgba32>*)(obj.getCvPlaneMat(0));
+        cv::Mat bgra;
+        rgbaMat->convertTo(bgra, CV_8UC4);
+        bgr = cv::Mat( bgra.rows, bgra.cols, CV_8UC3 );
+
+        // forming an array of matrices is a quite efficient operation,
+        // because the matrix data is not copied, only the headers
+        // rgba[0] -> bgr[2], rgba[1] -> bgr[1],
+        // rgba[2] -> bgr[0], rgba[3] -> alpha[0]
+        int from_to[] = { 0,0, 1,1, 2,2 };
+        cv::mixChannels( &bgra, 1, &bgr, 1, from_to, 3 );
+    }
+
+    if (retval)
+    {
+        *retval += ret;
+    }
+
+    return bgr;
+}
+
+ito::DataObject getRGBA32DataObjectFromBGRMat(const cv::Mat &mat, ito::RetVal *retval /*= NULL*/)
+{
+    ito::RetVal ret;
+    ito::DataObject result;
+    cv::Mat bgra(mat.rows, mat.cols, CV_8UC4);
+    cv::Mat bgra2;
+    cv::Mat alpha = cv::Mat( mat.rows, mat.cols, CV_8UC1 );
+    alpha.setTo(255);
+
+    // forming an array of matrices is a quite efficient operation,
+    // because the matrix data is not copied, only the headers
+    // rgba[0] -> bgr[2], rgba[1] -> bgr[1],
+    // rgba[2] -> bgr[0], rgba[3] -> alpha[0]
+    cv::Mat in[] = {mat, alpha};
+    int from_to[] = { 0,0, 1,1, 2,2, 3,3 };
+    cv::mixChannels( in, 2, &bgra, 1, from_to, 4 );
+    bgra.convertTo(bgra2, cv::DataType<ito::Rgba32>::type);
+
+    const int sizes[] = {bgra2.rows, bgra2.cols};
+    result = ito::DataObject(2, sizes, ito::tRGBA32, &bgra2, 1);
+
+    if (retval)
+    {
+        *retval += ret;
+    }
+
+    return result;
 }
 
 } //end namespace itomcv
