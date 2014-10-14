@@ -73,9 +73,6 @@ class OpenCVFiltersNonFree : public ito::AddInAlgo
         static const char *cvSiftDetectorDescriptorExtractorDoc;
         static ito::RetVal cvSiftDetectorDescriptorExtractor(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvSiftDetectorDescriptorExtractorParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
-
-        
-
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
         

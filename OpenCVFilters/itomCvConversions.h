@@ -36,8 +36,8 @@ namespace itomcv
     std::vector<cv::Mat> getInputArrayOfArraysFromDataObject(const ito::DataObject *dObj, ito::RetVal *retval = NULL);
     ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::Mat* mat);
     std::vector<cv::KeyPoint> getKeypointsFromParam(const ito::ParamBase &keypointParam, const char* name, ito::RetVal *retval = NULL);
+    std::vector<cv::DMatch> getDMatchesFromParam(const ito::ParamBase &dmatchesParam, const char* name, ito::RetVal *retval = NULL);
     cv::Mat getBGRMatFromRGBA32DataObject(const ito::DataObject &obj, ito::RetVal *retval = NULL);
-    ito::DataObject getRGBA32DataObjectFromBGRMat(const cv::Mat &mat, ito::RetVal *retval = NULL);
 } //end namespace itomcv
 
 #endif // ITOMCVCONVERSIONS_H

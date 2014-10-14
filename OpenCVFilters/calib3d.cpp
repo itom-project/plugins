@@ -475,7 +475,7 @@ before using it in the way that for each view, the last rows are cut where eithe
         int truncates;
 
         //truncate imagePoints_ and objectPoints_ (assumption: both have the same size and the last rows in each matrix are truncated whose one of the items in the first column is non-finite)
-        for (int i = 0; i < objectPoints_.size(); ++i)
+        for (std::vector<cv::Mat>::size_type i = 0; i < objectPoints_.size(); ++i)
         {
             mat1 = &(objectPoints_[i]);
             mat2 = &(imagePoints_[i]);
