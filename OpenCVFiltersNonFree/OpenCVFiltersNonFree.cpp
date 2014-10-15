@@ -143,14 +143,13 @@ reference: David G. Lowe, \"Distinctive image features from scale-invariant key 
     if (!retval.containsError())
     {
         cv::SIFT detector;
-        cv::SiftDescriptorExtractor extractor;
         std::vector<cv::KeyPoint> keypoints;
         cv::Mat descriptors;
 
         try
         {
             detector.detect(*(image->getCvPlaneMat(0)), keypoints);
-            extractor.compute(*(image->getCvPlaneMat(0)),keypoints, descriptors);
+            detector.compute(*(image->getCvPlaneMat(0)),keypoints, descriptors);
 
         }
         catch (cv::Exception exc)
