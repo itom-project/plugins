@@ -179,9 +179,9 @@ class OpenCVFilters : public ito::AddInAlgo
         static ito::RetVal cvDrawKeypoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvDrawKeypointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
-        static const char *cvdrawMatcherDoc;
-        static ito::RetVal cvdrawMatcher(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
-        static ito::RetVal cvdrawMatcherParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        static const char *cvDrawMatcherDoc;
+        static ito::RetVal cvDrawMatcher(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal cvDrawMatcherParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 

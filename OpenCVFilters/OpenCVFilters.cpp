@@ -1820,7 +1820,7 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvDrawKeypoints, OpenCVFilters::cvDrawKeypointsParams, tr(cvDrawKeypointsDoc));
     m_filterList.insert("cvDrawKeypoints", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvdrawMatcher, OpenCVFilters::cvdrawMatcherParams, tr(cvdrawMatcherDoc));
+    filter = new FilterDef(OpenCVFilters::cvDrawMatcher, OpenCVFilters::cvDrawMatcherParams, tr(cvDrawMatcherDoc));
     m_filterList.insert("cvDrawMatcher", filter);
 
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
