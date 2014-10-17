@@ -23,15 +23,16 @@
 #include "dialogPIPiezoCtrl.h"
 #include "PIPiezoCtrl.h"
 
-#include "common/addInInterface.h"
 
 #include <qmetaobject.h>
 #include <qdialogbuttonbox.h>
-#include <qmessagebox.h>
+#include <qsharedpointer.h>
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogPIPiezoCtrl::DialogPIPiezoCtrl(ito::AddInActuator *motor) : m_pPIPiezo(motor)
+DialogPIPiezoCtrl::DialogPIPiezoCtrl(ito::AddInBase *grabber) :
+    AbstractAddInConfigDialog(grabber),
+    m_firstRun(true)
 {
     ui.setupUi(this);
 
@@ -77,23 +78,11 @@ void DialogPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
 
-    m_actualParameters = params;
+    m_currentParameters = params;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogPIPiezoCtrl::checkParameters()
-{
-    ito::RetVal retValue(ito::retOk);
-    if (ui.dblSpinPosLimitHigh->value() < ui.dblSpinPosLimitLow->value())
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("the upper position limit must be higher than the lower one").toLatin1().data());
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogPIPiezoCtrl::sendParameters()
+ito::RetVal DialogPIPiezoCtrl::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
@@ -102,70 +91,46 @@ ito::RetVal DialogPIPiezoCtrl::sendParameters()
     //only send parameters which are changed
 
     int i = ui.comboMode->currentIndex() > 0 ? 1 : 0;
-    if (m_actualParameters["local"].getVal<int>() != i)
+    if (m_currentParameters["local"].getVal<int>() != i)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("local", ito::ParamBase::Int, i)));
     }
     
     i = ui.checkAsync->isChecked() ? 1 : 0;
-    if (m_actualParameters["async"].getVal<int>() != i)
+    if (m_currentParameters["async"].getVal<int>() != i)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, i)));
     }
 
-    double v = ui.dblSpinPosLimitHigh->value() / 1000.0;
-    if (m_actualParameters["posLimitHigh"].getVal<double>() != v)
+    double v_high = ui.dblSpinPosLimitHigh->value() / 1000.0;
+    double v_low = ui.dblSpinPosLimitLow->value() / 1000.0;
+    if (v_high < v_low)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("posLimitHigh", ito::ParamBase::Double, v)));
+        std::swap(v_high,v_low);
+    }
+    if (m_currentParameters["posLimitHigh"].getVal<double>() != v_high)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("posLimitHigh", ito::ParamBase::Double, v_high)));
     }
 
-    v = ui.dblSpinPosLimitLow->value() / 1000.0;
-    if (m_actualParameters["posLimitLow"].getVal<double>() != v)
+    if (m_currentParameters["posLimitLow"].getVal<double>() != v_low)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("posLimitLow", ito::ParamBase::Double, v)));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("posLimitLow", ito::ParamBase::Double, v_low)));
     }
 
-    v = ui.spinDelayOffset->value() / 1000.0;
-    if (m_actualParameters["delayOffset"].getVal<double>() != v)
+    double v = ui.spinDelayOffset->value() / 1000.0;
+    if (m_currentParameters["delayOffset"].getVal<double>() != v)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayOffset", ito::ParamBase::Double, v)));
     }
 
     v = ui.spinDelayProp->value();
-    if (m_actualParameters["delayProp"].getVal<double>() != v)
+    if (m_currentParameters["delayProp"].getVal<double>() != v)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayProp", ito::ParamBase::Double, v)));
     }
 
-    if (m_pPIPiezo)
-    {
-        if (values.size() > 0)
-        {
-            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(m_pPIPiezo, "setParamVector", Q_ARG(const QVector< QSharedPointer<ito::ParamBase> >, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-
-            while(!success)
-            {
-                if (locker.getSemaphore()->wait(PLUGINWAIT) == true)
-                {
-                    success = true;
-                }
-                if (!m_pPIPiezo->isAlive())
-                {
-                    break;
-                }
-            }
-
-            if (!success)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("timeout while setting parameters of plugin.").toLatin1().data());
-            }
-        }
-    }
-    else
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("plugin instance not defined.").toLatin1().data());
-    }
+    retValue += setPluginParameters(values, msgLevelWarningAndError);
 
     return retValue;
 }
@@ -181,44 +146,13 @@ void DialogPIPiezoCtrl::on_buttonBox_clicked(QAbstractButton* btn)
     {
         reject(); //close dialog with reject
     }
-    else //ApplyRole or AcceptRole
+    else if (role == QDialogButtonBox::AcceptRole)
     {
-        retValue += checkParameters();
-        if (retValue.containsError())
-        {
-            QMessageBox msgBox(this);
-            QString text = tr("Invalid parameter input");
-            msgBox.setText(text);
-            msgBox.setIcon(QMessageBox::Critical);
-            if (retValue.errorMessage()) //if no error message indicates, this is NULL
-            {
-                msgBox.setInformativeText(retValue.errorMessage());
-            }
-
-            msgBox.exec();
-        }
-        else
-        {
-            retValue += sendParameters();
-
-            if (retValue.containsError())
-            {
-                QMessageBox msgBox(this);
-                QString text = tr("Error while setting parameters of plugin.");
-                msgBox.setText(text);
-                msgBox.setIcon(QMessageBox::Critical);
-                if (retValue.errorMessage()) //if no error message indicates, this is NULL
-                {
-                    msgBox.setInformativeText(retValue.errorMessage());
-                }
-
-                msgBox.exec();
-            }
-            else if (role == QDialogButtonBox::AcceptRole)
-            {
-                accept(); //close dialog with accept
-            }
-        }
+        accept(); //AcceptRole
+    }
+    else
+    {
+        applyParameters(); //ApplyRole
     }
 }
 

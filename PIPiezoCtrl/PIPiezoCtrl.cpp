@@ -34,6 +34,9 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
+#include <qtimer.h>
+#include <qwaitcondition.h>
+#include <qdatetime.h>
 
 #define PIDELAY 2
 #define PI_READTIMEOUT 256
@@ -122,17 +125,7 @@ PI controller. Therefore don't mix stages and controllers but only use the origi
 */
 const ito::RetVal PIPiezoCtrl::showConfDialog(void)
 {
-    DialogPIPiezoCtrl *confDialog = new DialogPIPiezoCtrl(this);
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-    //connect(confDialog, SIGNAL(sendParamVector(const QVector< QSharedPointer<ito::tParam> >,ItomSharedSemaphore*)), this, SLOT(setParamVector(const QVector<QSharedPointer<ito::tParam> >,ItomSharedSemaphore*)));
-
-    QMetaObject::invokeMethod(this, "sendParameterRequest"); //requests plugin to send recent parameter map to dialog
-    
-    confDialog->exec();
-    delete confDialog;
-    confDialog = NULL;
-    return ito::retOk;
+    return apiShowConfigurationDialog(this, new DialogPIPiezoCtrl(this));
 }
 
 
@@ -1666,21 +1659,21 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
 //---------------------------------------------------------------------------------------------------------------------------------- 
 void PIPiezoCtrl::dockWidgetVisibilityChanged(bool visible)
 {
-    if (m_dockWidget)
+    if (getDockWidget())
     {
         if (visible)
         {
-            connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), m_dockWidget, SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-            connect(this, SIGNAL(targetChanged(QVector<double>)), m_dockWidget, SLOT(targetChanged(QVector<double>)));
-            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), m_dockWidget, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-
+            QObject::connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)),getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
+            QObject::connect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
             emit parametersChanged(m_params);
+            requestStatusAndPosition(true,true);
         }
         else
         {
-            disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), m_dockWidget, SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-            disconnect(this, SIGNAL(targetChanged(QVector<double>)), m_dockWidget, SLOT(targetChanged(QVector<double>)));
-            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), m_dockWidget, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+            QObject::disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), getDockWidget()->widget(), SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            QObject::disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)),getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
+            QObject::disconnect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
         }
     }
 }
