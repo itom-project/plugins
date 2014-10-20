@@ -202,6 +202,12 @@ if (PLUGIN_PIPiezoCtrl)
     ADD_SUBDIRECTORY(PIPiezoCtrl)
 endif (PLUGIN_PIPiezoCtrl)
 
+# PI_GCS2
+OPTION(PLUGIN_PI_GCS2 "Build with this plugin." OFF)
+if (PLUGIN_PI_GCS2)
+    ADD_SUBDIRECTORY(PI_GCS2)
+endif (PLUGIN_PI_GCS2)
+
 # QCam
 OPTION(PLUGIN_QCam "Build with this plugin." OFF)
 if (PLUGIN_QCam)

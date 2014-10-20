@@ -24,12 +24,8 @@
 #define ITOM_IMPORT_PLOTAPI
 
 #include "PIPiezoCtrl.h"
+
 #include "pluginVersion.h"
-//#ifdef __linux__
-//    #include <unistd.h>
-//#else
-//    #include <windows.h>
-//#endif
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -41,76 +37,11 @@
 #define PIDELAY 2
 #define PI_READTIMEOUT 256
 
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/*!
-    \detail creates new instance of PIPiezoCtrlInterface and returns the instance-pointer
-    \param [in,out] addInInst is a double pointer of type ito::AddInBase. The newly created PIPiezoCtrlInterface-instance is stored in *addInInst
-    \return retOk
-    \sa PIPiezoCtrl
-*/
-ito::RetVal PIPiezoCtrlInterface::getAddInInst(ito::AddInBase **addInInst)
-{
-    NEW_PLUGININSTANCE(PIPiezoCtrl)
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/*!
-    \detail Closes an instance of of PIPiezoCtrlInterface. This instance is given by parameter addInInst.
-    \param [in] double pointer to the instance which should be deleted.
-    \return retOk
-    \sa PIPiezoCtrl
-*/
-ito::RetVal PIPiezoCtrlInterface::closeThisInst(ito::AddInBase **addInInst)
-{
-   REMOVE_PLUGININSTANCE(PIPiezoCtrl)
-   return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail defines the plugin type (typeActuator) and sets the plugins object name. Theplugin is initialized (e.g. by a Python call) 
-    with mandatory or optional parameters (m_initParamsMand and m_initParamsOpt).
-*/
-PIPiezoCtrlInterface::PIPiezoCtrlInterface()
-{
-    m_type = ito::typeActuator;
-    setObjectName("PIPiezoCtrl");
-
-    m_description = QObject::tr("PI Piezos E662, E-816, E-621, E-625, E665");
-
-    //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
-"The PIPiezoCtrl is an itom-plugin, which can be used to communicate with PI piezo-controllers.\
-Different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662) are implemented.\n\
-\n\
-It has been tested with different Piefocs and Piezo-stages. This system needs a serial port, which differs depending on the controller type. \
-The parameters of the serial port (besides port number) are set automatically during initialization. \n\
-\n\
-WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding \
-PI controller. Therefore don't mix stages and controllers but only use the original, calibrated combination.";
-    m_detaildescription = QObject::tr(docstring);
-
-    m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
-    m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");    
-    
-    ito::Param paramVal("serial", ito::ParamBase::HWRef, NULL, tr("An opened serial port (the right communcation parameters will be set by this piezo-controller).").toLatin1().data());
-    paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
-    m_initParamsMand.append(paramVal);
-
-    paramVal = ito::Param("keepSerialConfig", ito::ParamBase::Int, 0, 1, 0, tr("If 1 the current configuration of the given serial port is kept, else 0 [default].").toLatin1().data());
-    m_initParamsOpt.append(paramVal);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class PIPiezoCtrlInterface with the name PIPiezoCtrlInterface as plugin for the Qt-System (see Qt-DOC)
-#if QT_VERSION < 0x050000
-    Q_EXPORT_PLUGIN2(PIPiezoCtrlInterface, PIPiezoCtrlInterface)
+#ifdef GCS2
+    #include "PI_GCS2_DLL.h"
+    #include <iostream>
 #endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -137,7 +68,11 @@ const ito::RetVal PIPiezoCtrl::showConfDialog(void)
 */
 PIPiezoCtrl::PIPiezoCtrl() :
     AddInActuator(),
+#ifdef GCS2
+    m_deviceID(-1),
+#else
     m_pSer(NULL),
+#endif
     m_delayAfterSendCommandMS(0),
     m_dockWidget(NULL),
     m_getStatusInScan(true),
@@ -154,10 +89,10 @@ PIPiezoCtrl::PIPiezoCtrl() :
     m_hasHardwarePositionLimit = false;
     m_posLimitLow = -std::numeric_limits<double>::max();
     m_posLimitHigh = std::numeric_limits<double>::max();
-    m_ctrlType = Unknown;
+    m_ctrlType = EUnknown;
     m_numAxis = 1;
 
-    paramVal = ito::Param("ctrlType", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Current type of controller, e.g. E-662, E-665, ...").toLatin1().data());
+    paramVal = ito::Param("ctrlType", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Current type of controller, e.g. E-662, E-665, E-753...").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("ctrlName", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("device information string").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -550,13 +485,96 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     int keepSerialConfig = paramsOpt->at(0).getVal<int>(); //0: PIIdentifyAndInitializeSystem will overwrite the parameters of the serial device [default], else: let it like it is!
 
-//    m_pSer = qobject_cast<ito::AddInDataIO*>(reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>()));
-//    if (m_pSer)
-//    {
+#if GCS2
+    PI_SetErrorCheck(m_deviceID, FALSE);
+
+    QByteArray connectionType = paramsMand->at(0).getVal<char*>();
+    QByteArray deviceName = paramsMand->at(1).getVal<char*>();
+    int baudrate = paramsOpt->at(0).getVal<int>();
+
+    if (connectionType == "RS232")
+    {
+        if (baudrate > 0)
+        {
+#if linux
+            m_deviceID = PI_ConnectRS232ByDevName(deviceName, baudrate);
+#else
+            bool ok;
+            int port = deviceName.toInt(&ok);
+            if (ok)
+            {
+                m_deviceID = PI_ConnectRS232(port, baudrate);
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "deviceName could not be parsed to a valid COM-port number");
+            }
+#endif
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "for RS232 connections, you need to indiciate a valid baudrate");
+        }
+    }
+    else if (connectionType == "TCPIP")
+    {
+        if (deviceName == "")
+        {
+            char buffer[1024];
+            buffer[1023] = '\0';
+            PI_EnumerateTCPIPDevices(buffer, 1024, "");
+            std::cout << "Connected PI-TCP/IP devices\n------------------------------\n" << buffer << std::endl;
+            retval += ito::RetVal(ito::retError, 0, "initialization breaked since list of TCP/IP devices has been printed");
+        }
+        else
+        {
+            m_deviceID = PI_ConnectTCPIPByDescription(deviceName);
+        }
+    }
+    else if (connectionType == "USB")
+    {
+        if (deviceName == "")
+        {
+            char buffer[1024];
+            buffer[1023] = '\0';
+            PI_EnumerateUSB(buffer, 1024, "");
+            std::cout << "Connected PI-USB devices\n------------------------------\n" << buffer << std::endl;
+            retval += ito::RetVal(ito::retError, 0, "initialization breaked since list of USB devices has been printed");
+        }
+        else if (baudrate > 0)
+        {
+            m_deviceID = PI_ConnectUSBWithBaudRate(deviceName, baudrate);
+        }
+        else
+        {
+            m_deviceID = PI_ConnectUSB(deviceName);
+        }
+    }
+    else
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "unknown connectionType '%s'", connectionType.data());
+    }
+
+    if (!retval.containsError() && m_deviceID == -1)
+    {
+        QVector< QPair<int, QByteArray> > lastErrors;
+        retval += PIGetLastErrors(lastErrors);
+        retval = convertPIErrorsToRetVal(lastErrors);
+    }
+
+#else
     if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
     {
         m_pSer = (ito::AddInDataIO *)(*paramsMand)[0].getVal<void *>();
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toLatin1().data());
+    }
+#endif
 
+    if (!retval.containsError())
+    {
         retval += PIIdentifyAndInitializeSystem(keepSerialConfig);
         if (!retval.containsError())
         {
@@ -565,14 +583,9 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             retval += requestStatusAndPosition(true, false);
         }
 
-		m_getPosInScan = m_params["checkFlags"].getVal<int>() & 1 ? true : false;
-		m_getStatusInScan = m_params["checkFlags"].getVal<int>() & 2 ? true : false;
-		m_useOnTarget = m_params["checkFlags"].getVal<int>() & 4 ? true : false;
-
-    }
-    else
-    {
-        retval += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toLatin1().data());
+	    m_getPosInScan = m_params["checkFlags"].getVal<int>() & 1 ? true : false;
+	    m_getStatusInScan = m_params["checkFlags"].getVal<int>() & 2 ? true : false;
+	    m_useOnTarget = m_params["checkFlags"].getVal<int>() & 4 ? true : false;
     }
 
     if (waitCond)
@@ -580,6 +593,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
@@ -597,6 +611,14 @@ ito::RetVal PIPiezoCtrl::close(ItomSharedSemaphore *waitCond)
     ito::RetVal retval = ito::retOk;
 
     retval += PISetOperationMode(true); //reset to local mode
+
+#ifdef GCS2
+    if (m_deviceID >= 0)
+    {
+        PI_CloseConnection(m_deviceID);
+        m_deviceID = -1;
+    }
+#endif
 
     if (waitCond)
     {
@@ -981,6 +1003,14 @@ ito::RetVal PIPiezoCtrl::PICheckStatus(void)
 */
 ito::RetVal PIPiezoCtrl::PIDummyRead(void) /*!< reads buffer of serial port without delay in order to clear it */
 {
+#ifdef GCS2
+    int size;
+    while (PI_GcsGetAnswerSize(m_deviceID, &size) && size > 0)
+    {
+        QByteArray answer(size+1, Qt::Uninitialized);
+        PI_GcsGetAnswer(m_deviceID, answer.data(), size);
+    }
+#else
     int bufsize = 50;
     QSharedPointer<int> len(new int);
     *len = bufsize;
@@ -990,26 +1020,27 @@ ito::RetVal PIPiezoCtrl::PIDummyRead(void) /*!< reads buffer of serial port with
         m_pSer->getVal(buffer, len, NULL);
     }
     while(*len > 0);
-    
-
-    //QSharedPointer<QVector<ito::ParamBase> > pMand(new QVector<ito::ParamBase>());
-    //m_pSer->execFunc("clearInputBuffer", pMand, pMand, pMand, NULL);
+#endif  
 
     return ito::retOk;
 }
 
+//--------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutMS)
 {
     ito::RetVal retValue = ito::retOk;
     QTime timer;
-    QByteArray endline;
+    
     bool done = false;
+
+#ifndef GCS2
     int buflen = 100;
     QSharedPointer<int> curBufLen(new int);
     QSharedPointer<char> curBuf(new char[buflen]);
     result = "";
     int curFrom = 0;
     int pos = 0;
+    QByteArray endline;
     
     QSharedPointer<ito::Param> param(new ito::Param("endline"));
     retValue += m_pSer->getParam(param, NULL);
@@ -1029,6 +1060,7 @@ ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutM
     {
         retValue += ito::RetVal(ito::retError, 0, tr("could not read endline parameter from serial port").toLatin1().data());
     }
+#endif
 
     if (!retValue.containsError())
     {
@@ -1037,6 +1069,24 @@ ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutM
 
         while(!done && !retValue.containsError())
         {
+#ifdef GCS2
+            int size;
+            if (PI_GcsGetAnswerSize(m_deviceID, &size))
+            {
+                if (size > 0)
+                {
+                    QByteArray answer(size+1, Qt::Uninitialized);
+                    if (PI_GcsGetAnswer(m_deviceID, answer.data(), size))
+                    {
+                        result += answer;
+                    }
+                }
+                else
+                {
+                    done = true;
+                }
+            }
+#else
             *curBufLen = buflen;
             retValue += m_pSer->getVal(curBuf, curBufLen, NULL);
 
@@ -1052,6 +1102,7 @@ ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutM
                     result = result.left(pos);   
                 }
             }
+#endif
 
             //qDebug() << "readString. done: "<<done<<", tempResult: "<<result;
 
@@ -1068,16 +1119,43 @@ ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutM
     return retValue;
 }
 
+//--------------------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastErrors)
 {
     bool errorAvailable = true;
     ito::RetVal retValue(ito::retOk);
+    int errorNo;
+    lastErrors.clear();
+
+
+#ifdef GCS2
+
+    char errorMessage[512];
+
+    while (errorAvailable && !retValue.containsError())
+    {
+        errorNo = PI_GetError(m_deviceID);
+
+        errorAvailable = (errorNo != 0);
+
+        if (errorAvailable)
+        {
+            if (PI_TranslateError(errorNo, errorMessage, 512))
+            {
+                lastErrors.append(QPair<int,QByteArray>(errorNo,errorMessage));
+            }
+            else
+            {
+                lastErrors.append(QPair<int,QByteArray>(-1000,"unknown error"));
+            }
+        }
+    }
+#else
+
     QByteArray buffer;
     QByteArray errorText;
     int readSigns;
     int pos;
-    int errorNo;
-    lastErrors.clear();
     bool ok;
 
     while(errorAvailable && !retValue.containsError())
@@ -1167,13 +1245,23 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
             }
         }
     }
+#endif
 
     return retValue;
 }
 
+//-----------------------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::PISendCommand(QByteArray command)
 {
-    ito::RetVal retVal = m_pSer->setVal(command.data(), command.length(), NULL);
+    ito::RetVal retVal;
+#ifdef GCS2
+    if (!PI_GcsCommandset(m_deviceID, command.data()))
+    {
+        retVal += ito::RetVal(ito::retError, 0, "error while sending command");
+    }
+#else
+    retVal += m_pSer->setVal(command.data(), command.length(), NULL);
+#endif
     if (m_delayAfterSendCommandMS > 0)
     {
         QMutex mutex;
@@ -1185,6 +1273,7 @@ ito::RetVal PIPiezoCtrl::PISendCommand(QByteArray command)
     return retVal;
 }
 
+//-----------------------------------------------------------------------
 /*!
     \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string. 
             If string is invalid, val is not set and error-message is reported
@@ -1218,6 +1307,7 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(QByteArray questionComma
     return retValue;
 }
 
+//-------------------------------------------------------------------
 /*!
     \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string. 
             If string is invalid, val is not set and error-message is reported
@@ -1242,6 +1332,7 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerString(QByteArray questionComma
     return retValue;
 }
 
+//---------------------------------------------------------
 ito::RetVal PIPiezoCtrl::convertPIErrorsToRetVal(QVector<QPair<int,QByteArray> > &lastErrors)
 {
     if (lastErrors.size() > 0)
@@ -1260,6 +1351,7 @@ ito::RetVal PIPiezoCtrl::convertPIErrorsToRetVal(QVector<QPair<int,QByteArray> >
     return ito::retOk;
 }
 
+//------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 {
     ito::RetVal retval = ito::retOk;
@@ -1269,6 +1361,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
 //    retval += PIDummyRead();
 
+#ifndef GCS2
     //set serial settings
     if (keepSerialConfig == 0)
     {
@@ -1279,6 +1372,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,108)),NULL);
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\n")),NULL);
     }
+#endif
 
     //1. try to read *idn? in order to indentify device
     retval += PISendQuestionWithAnswerString("*idn?", answer, 500);
@@ -1296,6 +1390,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     if (retval.containsError() || answer.length() < 5)
     {
         retval = ito::retOk;
+#ifndef GCS2
         if (keepSerialConfig == 0)
         {
             //try to set baudrate to 115200
@@ -1303,6 +1398,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 			retval += PIDummyRead();
             retval += PISendQuestionWithAnswerString("*idn?", answer, 1000);
         }
+#endif
         m_delayAfterSendCommandMS = 5; //small delay after sendCommands (else sometimes the controller does not understand the commands)
     }
 
@@ -1313,6 +1409,9 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     }
     else
     {
+#ifdef GCS2
+        m_params["comPort"].setVal<int>(-1);
+#else
         QSharedPointer<ito::Param> param(new ito::Param("port"));
         retval += m_pSer->getParam(param, NULL);
         if (retval.containsError() || param->getVal<int>() < 0)
@@ -1324,6 +1423,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         {
             m_params["comPort"].setVal<int>(param->getVal<int>()); 
         }
+#endif
     }
 
     //clear error-queue
@@ -1412,6 +1512,37 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         retval += convertPIErrorsToRetVal(lastErrors);
 
     }
+    else if (answer.contains("E-753"))
+    {
+        m_ctrlType = E625Family;
+
+        m_params["ctrlType"].setVal<char*>("E753");
+        m_params["hasOnTargetFlag"].setVal<int>(1.0);
+
+        m_AbsPosCmd = "MOV 1";
+        m_RelPosCmd = "MVR 1";
+        m_PosQust = "POS? 1";
+
+        m_params["hasLocalRemote"].setVal<int>(0.0);
+        m_hasHardwarePositionLimit = false;
+
+        //set remote mode
+        PISetOperationMode(false);
+
+        retval += PISendCommand("SVO 1 1"); //activates servo
+        double minmaxpos;
+        retval += this->PISendQuestionWithAnswerDouble("TMX? 1", minmaxpos, 1000); 
+        m_params["posLimitHigh"].setVal<double>(minmaxpos / 1000.0);
+        retval += this->PISendQuestionWithAnswerDouble("TMN? 1", minmaxpos, 1000);
+        m_params["posLimitLow"].setVal<double>(0.0 / 1000.0);
+
+        m_params["ctrlName"].setVal<char*>(answer.data(),answer.length());
+        answer = "unknown";
+        m_params["piezoName"].setVal<char*>(answer.data(),answer.length());
+
+        retval += PIGetLastErrors(lastErrors);
+        retval += convertPIErrorsToRetVal(lastErrors);
+    }
 
     return retval;
 }
@@ -1424,12 +1555,9 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
 {
     ito::RetVal retValue(ito::retOk);
 
-    if (m_ctrlType == Unknown)
+    switch (m_ctrlType)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("controller device unknown").toLatin1().data());
-    }
-    else if (m_ctrlType == E662Family)
-    {
+    case E662Family:
         if (localNotRemote)
         {
             m_params["local"].setVal<int>(1);
@@ -1440,10 +1568,13 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
             m_params["local"].setVal<int>(0);
             retValue += PISendCommand("SYST:DEV:CONT REM");
         }
-    }
-    else if (m_ctrlType == E625Family)
-    {
-        //no support for that
+        break;
+    case E625Family:
+    case E753Family:
+        //not supported for this types
+        break;
+    default:
+        retValue += ito::RetVal(ito::retError, 0, tr("controller device unknown").toLatin1().data());
     }
 
     return retValue;
@@ -1580,7 +1711,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
     return retval;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*axis*/ /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
 {
     ito::RetVal retVal(ito::retOk);

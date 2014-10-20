@@ -64,19 +64,28 @@ class PIPiezoCtrl : public ito::AddInActuator
         PIPiezoCtrl();
 
     public:
+#ifdef GCS2
+        friend class PI_GCS2Interface;
+#else
         friend class PIPiezoCtrlInterface;
+#endif
         const ito::RetVal showConfDialog(void);    /*!<shows the configuration dialog*/
         int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
 
     private:
 
-        enum tControllerType { E662Family, E625Family, Unknown };
+        enum tControllerType { E662Family, E625Family, E753Family, EUnknown };
 
         bool m_useOnTarget;
         bool m_getStatusInScan;
         bool m_getPosInScan;
 
+#ifdef GCS2
+        int m_deviceID;
+#else
         ito::AddInDataIO *m_pSer;
+#endif
+
         double m_scale; //! in steps per mm
         int m_numAxis;
         int m_async;
@@ -143,44 +152,6 @@ class PIPiezoCtrl : public ito::AddInActuator
 
     private slots:
         void dockWidgetVisibilityChanged( bool visible );
-};
-
-//----------------------------------------------------------------------------------------------------------------------------------
- /**
-  *\class    PIPiezoCtrlInterface 
-  *
-  *\brief    Interface-Class for PIPiezoCtrlInterface-Class
-  *
-  *    \sa    AddInActuator, PIPiezoCtrl
-  *    \date    11.10.2010
-  *    \author    Wolfram Lyda
-  * \warning    NA
-  *
-  */
-class PIPiezoCtrlInterface : public ito::AddInInterfaceBase
-{
-    Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
-    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
-#endif
-    Q_INTERFACES(ito::AddInInterfaceBase)
-    PLUGIN_ITOM_API
-
-    protected:
-
-    public:
-        PIPiezoCtrlInterface();
-        ~PIPiezoCtrlInterface() {};
-        ito::RetVal getAddInInst(ito::AddInBase **addInInst);
-
-    private:
-        ito::RetVal closeThisInst(ito::AddInBase **addInInst);
-        //! auto-increment, static instance counter for all PIPiezoCtrl instances
-        static int m_instCounter;
-
-    signals:
-
-    public slots:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

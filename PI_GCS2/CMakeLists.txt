@@ -1,4 +1,4 @@
-SET (target_name PIPiezoCtrl)
+SET (target_name PI_GCS2)
 
 project(${target_name})
 
@@ -36,6 +36,8 @@ IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
+ADD_DEFINITIONS(-DGCS2)
+
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
@@ -51,32 +53,43 @@ INCLUDE_DIRECTORIES(
     ${QT_QTCORE_INCLUDE_DIR}
     ${ITOM_SDK_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/gcs2/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl
 )
 
-LINK_DIRECTORIES(
-)
+if (WIN32)
+    IF(BUILD_TARGET64)
+        LINK_DIRECTORIES(
+            ${CMAKE_CURRENT_SOURCE_DIR}/gcs2/win64
+        )
+        SET(PI_GCS2_LIBRARY "PI_GCS2_DLL_x64")
+    ELSE()
+        LINK_DIRECTORIES(
+            ${CMAKE_CURRENT_SOURCE_DIR}/gcs2/win32
+        )
+        SET(PI_GCS2_LIBRARY "PI_GCS2_DLL")
+    ENDIF()
+endif (WIN32)
+
 
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogPIPiezoCtrl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPIPiezoCtrl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/PIPiezoCtrl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/PIPiezoCtrlInterface.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/dialogPIPiezoCtrl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/dockWidgetPIPiezoCtrl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/PIPiezoCtrl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/PI_GCS2Interface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
 set(plugin_UI
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogPIPiezoCtrl.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPIPiezoCtrl.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/dialogPIPiezoCtrl.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/dockWidgetPIPiezoCtrl.ui
 )
 
 set(plugin_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogPIPiezoCtrl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPIPiezoCtrl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PIPiezoCtrl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/PIPiezoCtrlInterface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/dialogPIPiezoCtrl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/dockWidgetPIPiezoCtrl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../PIPiezoCtrl/PIPiezoCtrl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PI_GCS2Interface.cpp
 )
 
 set(plugin_RCC
@@ -103,7 +116,7 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${PI_GCS2_LIBRARY})
 if (QT5_FOUND)
     qt5_use_modules(${target_name} Widgets UiTools Xml)
 endif (QT5_FOUND)
@@ -112,7 +125,7 @@ endif (QT5_FOUND)
 set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
-PLUGIN_DOCUMENTATION(${target_name} piPiezoCtrl)
+PLUGIN_DOCUMENTATION(${target_name} piGCS2)
 
 # COPY SECTION
 set(COPY_SOURCES "")
