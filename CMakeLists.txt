@@ -150,6 +150,12 @@ if (PLUGIN_MSMediaFoundation)
 endif (PLUGIN_MSMediaFoundation)
 ENDIF(WIN32)
 
+# NewportSMC100
+OPTION(PLUGIN_NEWPORT_SMC100 "Build with this plugin." OFF)
+if (PLUGIN_NEWPORT_SMC100)
+    ADD_SUBDIRECTORY(NewportSMC100)
+endif (PLUGIN_NEWPORT_SMC100)
+
 # OpenCVFilters
 OPTION(PLUGIN_OpenCVFilters "Build with this plugin." ON)
 if (PLUGIN_OpenCVFilters)
