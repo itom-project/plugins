@@ -33,7 +33,7 @@ class SMC100Interface : public ito::AddInInterfaceBase
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
     Q_INTERFACES(ito::AddInInterfaceBase)
-    PLUGIN_ITOM_ASMC
+    PLUGIN_ITOM_API
 
     protected:
 

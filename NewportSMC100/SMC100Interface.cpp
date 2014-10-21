@@ -81,6 +81,8 @@ The parameters of the serial port (besides port number) are set automatically du
     paramVal.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(paramVal);
 
+    m_initParamsMand.append(ito::Param("numAxes", ito::ParamBase::Int, 1, 31, 1, tr("number of connected axes").toLatin1().data()));
+
     paramVal = ito::Param("keepSerialConfig", ito::ParamBase::Int, 0, 1, 0, tr("If 1 the current configuration of the given serial port is kept, else 0 [default].").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 }

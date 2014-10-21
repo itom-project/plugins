@@ -59,7 +59,6 @@ class SMC100 : public ito::AddInActuator
         double m_scale; //! in steps per mm
         int m_numAxis;
         int m_async;
-        int m_delayAfterSendCommandMS;
         double m_delayProp; //s
         double m_delayOffset; //s
         bool m_hasHardwarePositionLimit;
@@ -67,21 +66,21 @@ class SMC100 : public ito::AddInActuator
         double m_posLimitHigh;
 
         QVector<int> m_addresses;
+        QVector<QString> m_ids;
+
+        QSharedPointer<ito::Param> endlineParam;
 
         ito::RetVal SMCDummyRead(void); /*!< reads buffer of serial port without delay in order to clear it */
-        ito::RetVal SMCGetLastErrors( QVector<QPair<int,QByteArray> > &lastErrors );
-        ito::RetVal SMCSendCommandInt(const QByteArray &cmd, int value, int axis = -1);
-        ito::RetVal SMCSendCommandVoid(const QByteArray &cmd, int axis = -1);
-        ito::RetVal SMCReadString(QByteArray &result, int &len, int timeoutMS);
-        ito::RetVal SMCSendQuestionWithAnswerDouble( QByteArray questionCommand, double &answer, int timeoutMS );
-        ito::RetVal SMCSendQuestionWithAnswerString( QByteArray questionCommand, QByteArray &answer, int timeoutMS );
-        ito::RetVal SMCIdentifyAndInitializeSystem(int keepSerialConfig);
-        ito::RetVal convertSMCErrorsToRetVal( QVector<QPair<int,QByteArray> > &lastErrors );
-        ito::RetVal SMCSetOperationMode(bool localNotRemote);
+        ito::RetVal SMCSendCommand(const QByteArray &cmd, bool checkError, int axis = -1);
+        ito::RetVal SMCReadString(QByteArray &result, int &len, int timeoutMS, bool checkError, int axis = -1);
+        ito::RetVal SMCSendQuestionWithAnswerDouble(const QByteArray &questionCommand, double &answer, int timeoutMS, bool checkError, int axis = -1);
+        ito::RetVal SMCSendQuestionWithAnswerString(const QByteArray &questionCommand, QByteArray &answer, int timeoutMS, bool checkError, int axis = -1);
+
+
         ito::RetVal SMCSetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
         ito::RetVal SMCCheckStatus(void);
 
-        ito::RetVal checkError(const ito::RetVal &retval);
+        ito::RetVal SMCCheckError(int axis = -1);
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
         
