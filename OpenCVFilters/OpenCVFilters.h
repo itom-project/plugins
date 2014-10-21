@@ -113,6 +113,15 @@ class OpenCVFilters : public ito::AddInAlgo
         static ito::RetVal cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);   /*! Function removes spikes using dilateration and erodation filter*/
         static ito::RetVal cvRemoveSpikesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);   /*! Function gives back the parameter for the remove spike function*/
 
+        static const char * cvSplitChannelsDoc;
+        static ito::RetVal cvSplitChannels(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);   /*! Function performs a "Blur-Filter" on the input object*/
+        static ito::RetVal cvSplitChannelsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);   /*! Function gives back the optional and mandatory parameters for "Blur-Filter"*/
+
+        static const char * cvMergeChannelsDoc;
+        static ito::RetVal cvMergeChannels(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);   /*! Function performs a "Blur-Filter" on the input object*/
+        static ito::RetVal cvMergeChannelsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);   /*! Function gives back the optional and mandatory parameters for "Blur-Filter"*/
+
+
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
         static const char *cvFindCirclesDoc;

@@ -1732,8 +1732,161 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+const char * OpenCVFilters::cvSplitChannelsDoc = "Converts a rgba32 data object (with four channels blue, green, red, alpha) into \n\
+an output data object of type 'uint8' and a shape that has one dimension more than the input object and the first dimension is equal to 4. \n\
+The four color components are then distributed into the 4 planes of the first dimension. \n\
+\n\
+For instance a 4x5x3, rgba32 data objects leads to a 4x4x5x3 uint8 data object.";
+ito::RetVal OpenCVFilters::cvSplitChannelsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("rgbaObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "rgba32 data object with any shape") );
+    paramsMand->append( ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "uint8 data object with new shape [4,shape] where shape is the original shape. The inserted 4 dimensions represent the color components (b,g,r,alpha) of the source object.") );
+    return retval;
+}
+
+ito::RetVal OpenCVFilters::cvSplitChannels(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retVal;
+    const ito::DataObject *rgbaObject = paramsMand->at(0).getVal<const ito::DataObject*>();
+
+    if (!rgbaObject || rgbaObject->getType() != ito::tRGBA32)
+    {
+        retVal += ito::RetVal(ito::retError, 0, "rgbaObject must be of type 'rgba32'");
+    }
+
+    if (!retVal.containsError())
+    {
+        if (rgbaObject->getDims() > 0)
+        {
+            int dims = rgbaObject->getDims();
+            int planes = rgbaObject->calcNumMats();
+            int *newShape = new int[dims+1];
+            newShape[0] = 4;
+            for (int i = 0; i < dims; ++i)
+            {
+                newShape[i+1] = rgbaObject->getSize(i);
+            }
+
+            cv::Mat *newMats = new cv::Mat[4*planes];
+
+            for (int i = 0; i < planes; ++i)
+            {
+                std::vector<cv::Mat> channels;
+                channels.resize(4);
+                cv::split(*(rgbaObject->getCvPlaneMat(i)), channels);
+                newMats[i] = channels[0];
+                newMats[i+planes] = channels[1];
+                newMats[i+2*planes] = channels[2];
+                newMats[i+3*planes] = channels[3];
+            }
+
+            ito::DataObject output(dims + 1, newShape, ito::tUInt8, newMats, 4*planes);
+            *(paramsMand->at(1).getVal<ito::DataObject*>()) = output;
+
+            delete[] newMats;
+            delete[] newShape;
+        }
+        else
+        {
+            *(paramsMand->at(1).getVal<ito::DataObject*>()) = ito::DataObject();
+        }
+
+    }
+
+    return retVal;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
+const char * OpenCVFilters::cvMergeChannelsDoc = "Reduces a [4x...xMxN] or [3x...xMxN] uint8 data object to a [...xMxN] rgba32 data object where the \n\
+first dimension is merged into the color type. If the first dimension is equal to 4, the planes are used for the blue, green, red and alpha \n\
+component, in case of three, the alpha component is set to the optional alpha value.";
+ito::RetVal OpenCVFilters::cvMergeChannelsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "uint8 data object with any shape and at least three dimensions") );
+    paramsMand->append( ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "rgba32 data object") );
+
+    paramsOpt->append( ito::Param("alpha", ito::ParamBase::Int, 0, 255, 255, "if the first dimension of the inputObject is 3, this alpha value is used for all alpha components in the output object"));
+    return retval;
+}
+
+ito::RetVal OpenCVFilters::cvMergeChannels(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retVal;
+    const ito::DataObject *inputObject = paramsMand->at(0).getVal<const ito::DataObject*>();
+
+    if (!inputObject || inputObject->getType() != ito::tUInt8 || inputObject->getDims() < 3)
+    {
+        retVal += ito::RetVal(ito::retError, 0, "rgbaObject must be of type 'uint8' and have at least 3 dimensions.");
+    }
+
+    if (!retVal.containsError())
+    {
+        {
+            int dims = inputObject->getDims();
+            cv::Size planeSize = inputObject->getCvPlaneMat(0)->size();
+            int *newShape = new int[dims-1];
+            for (int i = 1; i < dims; ++i)
+            {
+                newShape[i-1] = inputObject->getSize(i);
+            }
+
+            int components = inputObject->getSize(0);
+            int newPlanes = inputObject->calcNumMats() / components;
+
+            cv::Mat *newMats = new cv::Mat[newPlanes];
+            cv::Mat alpha;
+            
+            if (components < 4)
+            {
+                alpha.create(planeSize, CV_8UC1);
+                alpha.setTo(paramsOpt->at(0).getVal<int>());
+            }
+
+            for (int i = 0; i < newPlanes; ++i)
+            {
+                cv::Mat output(planeSize, CV_8UC4);
+                std::vector<cv::Mat> colors;
+                colors.push_back( *(inputObject->getCvPlaneMat(i)) );
+                colors.push_back( *(inputObject->getCvPlaneMat(i+newPlanes)) );
+                colors.push_back( *(inputObject->getCvPlaneMat(i+2*newPlanes)) );
+
+                if (components == 3)
+                {
+                    colors.push_back(alpha);
+                }
+                else
+                {
+                    colors.push_back(*(inputObject->getCvPlaneMat(i+3*newPlanes)) );
+                }
+
+                cv::merge(colors, output);
+                output.convertTo(newMats[i], cv::DataType<ito::Rgba32>::type);
+            }
+
+            ito::DataObject output(dims - 1, newShape, ito::tRGBA32, newMats, newPlanes);
+            *(paramsMand->at(1).getVal<ito::DataObject*>()) = output;
+
+            delete[] newMats;
+            delete[] newShape;
+        }
+
+    }
+
+    return retVal;
+}
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
@@ -1768,6 +1921,11 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvRemoveSpikes, OpenCVFilters::cvRemoveSpikesParams, tr(cvRemoveSpikesDoc));
     m_filterList.insert("cvRemoveSpikes", filter);
 
+    filter = new FilterDef(OpenCVFilters::cvSplitChannels, OpenCVFilters::cvSplitChannelsParams, tr(cvSplitChannelsDoc));
+    m_filterList.insert("cvSplitChannels", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvMergeChannels, OpenCVFilters::cvMergeChannelsParams, tr(cvMergeChannelsDoc));
+    m_filterList.insert("cvMergeChannels", filter);
 
 
     /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, tr(cvCalcHistDoc));
