@@ -63,7 +63,18 @@ PI_GCS2Interface::PI_GCS2Interface()
     m_description = QObject::tr("PI actuators following the GCS2 command set (e.g. E753)");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = "";
+    char docstring[] = "PI actuators following the GCS2 command set (e.g. E753) \n\
+This plugin is developped for single axis controllers following the GCS2 commandset. \n\
+\n\
+For the initialization you can connect to the device (if possible) via a USB port, a serial port \n\
+or a TCP/IP connection. Depending on the connection you should use the initialization parameters \n\
+in the following way: \n\
+* RS232: give the COM-port number (number only in Windows, COM-port name in Linux) as deviceName and indicate a valid baudrate as optional parameter. \n\
+* TCP/IP: give the full name of the device as deviceName or let deviceName empty in order to print out a list of all detected devices (the device name is one full line of the output! \n\
+* USB: similar to TCP/IP \n\
+\n\
+Please note that you only need to indicate a baudrate for RS232 connections, in the other cases, \n\
+the default baudrate 0 forces the controller to connect with a default baudrate which is recommended for TCP/IP or USB connections.";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = "M. Gronle, ITO, University Stuttgart";
