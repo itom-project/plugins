@@ -77,6 +77,12 @@ if (PLUGIN_DummyMotor)
     ADD_SUBDIRECTORY(DummyMotor)
 endif (PLUGIN_DummyMotor)
 
+# DemoAlgorithms
+OPTION(PLUGIN_DemoAlgorithms "Build with this plugin." ON)
+if (PLUGIN_DemoAlgorithms)
+    ADD_SUBDIRECTORY(DemoAlgorithms)
+endif (PLUGIN_DemoAlgorithms)
+
 # FFTW-Wrapper
 OPTION(PLUGIN_FFTWFilters "Build with this plugin." ON)
 if (PLUGIN_FFTWFilters)
