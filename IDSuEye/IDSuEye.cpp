@@ -389,7 +389,14 @@ ito::RetVal IDSuEye::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
 
     if(!retValue.containsError())
     {
-        *val = it.value();
+        if (hasIndex)
+        {
+            *val = apiGetParam(*it, hasIndex, index, retValue);
+        }
+        else
+        {
+            *val = *it;
+        }
     }
 
     if (waitCond)
@@ -490,17 +497,38 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 }
                 else if (key == "roi")
                 {
-                    if (val->getLen() != 4)
+                    if (!hasIndex)
                     {
-                        retValue += ito::RetVal(ito::retError, 0, "roi must have 4 values");
+                        if (val->getLen() != 4)
+                        {
+                            retValue += ito::RetVal(ito::retError, 0, "roi must have 4 values");
+                        }
+                        else
+                        {
+                            int *roi = val->getVal<int*>();
+                            rectAOI.s32X = roi[0];
+                            rectAOI.s32Y = roi[1];
+                            rectAOI.s32Width = roi[2];
+                            rectAOI.s32Height = roi[3];
+                        }
                     }
                     else
                     {
-                        int *roi = val->getVal<int*>();
-                        rectAOI.s32X = roi[0];
-                        rectAOI.s32Y = roi[1];
-                        rectAOI.s32Width = roi[2];
-                        rectAOI.s32Height = roi[3];
+                        switch (index)
+                        {
+                        case 0:
+                            rectAOI.s32X = val->getVal<int>();
+                            break;
+                        case 1:
+                            rectAOI.s32Y = val->getVal<int>();
+                            break;
+                        case 2:
+                            rectAOI.s32Width = val->getVal<int>();
+                            break;
+                        case 3:
+                            rectAOI.s32Height = val->getVal<int>();
+                            break;
+                        }
                     }
                 }
 
