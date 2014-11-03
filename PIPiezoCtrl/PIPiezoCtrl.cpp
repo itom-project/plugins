@@ -38,7 +38,12 @@
 #define PI_READTIMEOUT 256
 
 #ifdef GCS2
+#ifdef WIN32
+    #include "windows.h"
+#endif
     #include "PI_GCS2_DLL.h"
+    #undef min //undefine min, max macros from windows.h since they interfere with std::numeric_limits<_Tp>::min() and ::max() below
+    #undef max
     #include <iostream>
 #endif
 
