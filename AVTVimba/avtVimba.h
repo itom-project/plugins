@@ -67,22 +67,52 @@ class AvtVimba : public ito::AddInGrabber
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
-		ito::RetVal checkError(VmbErrorType errCode);
+		ito::RetVal checkError(VmbErrorType errCode, const char* prefix = NULL);
 
 		ito::RetVal getIntFeatureByName(const char *name, VmbInt64_t &value);
-		ito::RetVal getEnumFeatureByName(const char *name, std::string &value);
+        ito::RetVal getIntFeatureByName(const char *name, VmbInt64_t &value, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc);
+		ito::RetVal getEnumFeatureByName(const char *name, std::string &value, VmbInt64_t &idx);
 		ito::RetVal getDblFeatureByName(const char *name, double &value);
 		ito::RetVal SetDblFeature(const char *name, double &value);
 		ito::RetVal SetIntFeature(const char *name, int &value);
-		ito::RetVal SetEnumFeature(const char *name, const char *eValue);
+		ito::RetVal setEnumFeature(const char *name, const char *eValue);
+        ito::RetVal setEnumFeature(const char *name, VmbInt64_t value);
 		ito::RetVal getRange(const char *name, double &max, double &min);
-		ito::RetVal getRange(const char *name, VmbInt64_t &max, VmbInt64_t &min);
+		ito::RetVal getRange(const char *name, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc);
+
+        enum Feature
+        {
+            fBpp = 1,
+            fSize = 2,
+            fBinning = 4,
+            fAll = fBpp | fSize | fBinning
+        };
+
+        ito::RetVal sychronizeParameters(int features);
 
 
         bool m_isgrabbing; /*!< Check if acquire was executed */
 		ito::RetVal m_acquisitionStatus;
 		CameraPtr m_camera;
 		FramePtr m_frame;
+
+        enum TransportType
+        {
+            tGigE,
+            tFirewire
+        };
+
+        struct BppEnum
+        {
+            BppEnum() : bppMono8(-1), bppMono10(-1), bppMono12(-1), bppMono14(-1) {}
+            int bppMono8;
+            int bppMono10;
+            int bppMono12;
+            int bppMono14;
+        };
+
+        TransportType m_transportType;
+        BppEnum m_bppEnum;
         
     public slots:
         //!< Get Camera-Parameter
