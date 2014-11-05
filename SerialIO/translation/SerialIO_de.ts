@@ -4,32 +4,59 @@
 <context>
     <name>DockWidgetSerialIO</name>
     <message>
+        <location filename="../dockWidgetSerialIO.ui"/>
         <source>General Information</source>
-        <translation type="obsolete">Allgemeine Informationen</translation>
+        <translation>Allgemeine Informationen</translation>
     </message>
     <message>
+        <location/>
         <source>SerialIO Log</source>
-        <translation type="obsolete">SerialIO-Protokoll</translation>
+        <translation>SerialIO-Protokoll</translation>
     </message>
     <message>
+        <location/>
         <source>Decimal</source>
-        <translation type="obsolete">Dezimal</translation>
+        <translation>Dezimal</translation>
     </message>
     <message>
+        <location/>
         <source>Hexadecimal</source>
-        <translation type="obsolete">Hexadezimal</translation>
+        <translation>Hexadezimal</translation>
     </message>
     <message>
+        <location/>
         <source>Binary</source>
-        <translation type="obsolete">Binär</translation>
+        <translation>Binär</translation>
     </message>
     <message>
+        <location/>
         <source>Clear</source>
-        <translation type="obsolete">Löschen</translation>
+        <translation>Löschen</translation>
     </message>
     <message>
+        <location/>
         <source>ignor empty messages</source>
-        <translation type="obsolete">Leere Nachrichten ignorieren</translation>
+        <translation>Leere Nachrichten ignorieren</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ID:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>[ID]</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ASCII</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -140,34 +167,22 @@
     <message>
         <location line="+280"/>
         <source>Mandatory paramers are NULL</source>
-        <translation type="unfinished">Pflichtparameter ist NULL</translation>
+        <translation>Pflichtparameter ist NULL</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Optinal paramers are NULL</source>
-        <translation type="unfinished">Optionaler Parameter ist NULL</translation>
-    </message>
-    <message>
-        <source>Serialport-Interface</source>
-        <translation type="obsolete">Serialport-Schnittstelle</translation>
-    </message>
-    <message>
-        <source>The SerialIO is a itom-PlugIn to give a direct access to serial ports.
-It is used by different plugins for communication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
-The plugin is implemented for Windows or Linux. Parameters and initialization differs according to operation system.</source>
-        <translation type="obsolete">SerialIO ist ein ITOM-Plugin um einen direkten Zugriff auf die seriellen Ports zu bekommen.
-Es wird in unterschiedlichen Plugins zur Kommunikation benutzt (z. B. &apos;MFUCtrl&apos;, &apos;Uhltisch&apos;).
-Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisierung sind betriebssystemabhängig.</translation>
+        <translation>Optionaler Parameter ist NULL</translation>
     </message>
     <message>
         <location filename="../dialogSerialIO.cpp" line="+293"/>
         <source>Char token not closed correctly or number to big.</source>
-        <translation type="unfinished">Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
+        <translation>Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Undefined error.</source>
-        <translation type="unfinished">Unbekannter Fehler.</translation>
+        <translation>Unbekannter Fehler.</translation>
     </message>
 </context>
 <context>
@@ -201,10 +216,6 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <location line="+2"/>
         <source>Endline character, will be added automatically during setVal</source>
         <translation>Terminierung, wird bei setVal() automatisch hinzugefügt</translation>
-    </message>
-    <message>
-        <source>Toggle: write output buffer as block @ once or single characters</source>
-        <translation type="obsolete">Schalter: Schreibt Puffer als Block oder als einzelne Zeichen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -305,30 +316,14 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
 <context>
     <name>SerialIOInterface</name>
     <message>
-        <source>Serialport-Interface</source>
-        <translation type="obsolete">Serielle Schnittstelle</translation>
-    </message>
-    <message>
-        <source>The SerialIO is a itom-PlugIn to give a direct access to serial ports.
-It is used by different plugins for communication, (e.g. &apos;MFUCtrl&apos;, &apos;UhlActuator&apos;).
-The plugin is implemented for Windows or Linux. Parameters and initialization differs according to operation system.</source>
-        <translation type="obsolete">SerialIO ist ein itom-Plugin um einen direkten Zugriff auf die serielle Schnittstelle zu bekommen.
-Es wird in unterschiedlichen Plugins zur Kommunikation benutzt (z. B. &apos;MFUCtrl&apos;, &apos;Uhltisch&apos;).
-Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisierung sind betriebssystemabhängig.</translation>
-    </message>
-    <message>
         <location line="-103"/>
         <source>itom-plugin for a serial port communication</source>
         <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
     <message>
-        <source>The number of the serial port, starting with 1</source>
-        <translation type="obsolete">Die Nummer des Ports der seriellen Schnittstelle beginnt mit 1</translation>
-    </message>
-    <message>
         <location line="+45"/>
         <source>The number of the serial port, starting with 1 (linux 0)</source>
-        <translation type="unfinished">Nummer der seriellen Portnummer, beginnend mit 1 (bei Linux mit 0)</translation>
+        <translation>Nummer der seriellen Portnummer, beginnend mit 1 (bei Linux mit 0)</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -358,19 +353,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="+2"/>
         <source>0 -&gt; write output buffer as block or single characters with delay (1..65000)</source>
-        <translation type="unfinished">0 -&gt; Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
-    </message>
-    <message>
-        <source>Toggle parity check</source>
-        <translation type="obsolete">Schalter Paritätsprüfung</translation>
-    </message>
-    <message>
-        <source>Bitmask for flow control</source>
-        <translation type="obsolete">Bitmaske für Flusskontrolle</translation>
-    </message>
-    <message>
-        <source>Toggle: write output buffer as block or single characters</source>
-        <translation type="obsolete">Schalter: Schreibt Puffer als Block oder als einzelne Zeichen</translation>
+        <translation>Ausgabepuffer als ganzen Block (0) oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -406,143 +389,393 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation>Fehler: %1 konnte nicht interpretiert werden - nicht gesendet</translation>
     </message>
     <message>
+        <location filename="../dialogSerialIO.ui"/>
         <source>Settings</source>
-        <translation type="obsolete">Einstellungen</translation>
+        <translation>Einstellungen</translation>
     </message>
     <message>
+        <location/>
         <source>Basic</source>
-        <translation type="obsolete">Grundeinstellungen</translation>
+        <translation>Grundeinstellungen</translation>
     </message>
     <message>
+        <location/>
         <source>Baud</source>
-        <translation type="obsolete">Baudrate</translation>
+        <translation>Baudrate</translation>
     </message>
     <message>
+        <location/>
         <source>Endline</source>
-        <translation type="obsolete">Terminierung</translation>
+        <translation>Terminierung</translation>
     </message>
     <message>
+        <location/>
         <source>&lt;none&gt;</source>
-        <translation type="obsolete">&lt;nichts&gt;</translation>
+        <translation>&lt;nichts&gt;</translation>
     </message>
     <message>
+        <location/>
         <source>Parity</source>
-        <translation type="obsolete">Parität</translation>
+        <translation>Parität</translation>
     </message>
     <message>
+        <location/>
         <source>disable</source>
-        <translation type="obsolete">ausschalten</translation>
+        <translation>ausschalten</translation>
     </message>
     <message>
+        <location/>
         <source>enable</source>
-        <translation type="obsolete">einschalten</translation>
+        <translation>einschalten</translation>
     </message>
     <message>
+        <location/>
         <source>Time out</source>
-        <translation type="obsolete">Timeout</translation>
+        <translation>Timeout</translation>
     </message>
     <message>
-        <source>Single char</source>
-        <translation type="obsolete">Einzelzeichen</translation>
-    </message>
-    <message>
+        <location/>
         <source>Debug Mode</source>
-        <translation type="obsolete">Protokollierung</translation>
+        <translation>Protokollierung</translation>
     </message>
     <message>
+        <location/>
         <source>Read delay</source>
-        <translation type="obsolete">Leseverzögerung</translation>
+        <translation>Leseverzögerung</translation>
     </message>
     <message>
+        <location/>
         <source>Flow control</source>
-        <translation type="obsolete">Flusskontrolle</translation>
+        <translation>Flusskontrolle</translation>
     </message>
     <message>
-        <source>Set Parameters</source>
-        <translation type="obsolete">Parameter speichern</translation>
-    </message>
-    <message>
-        <source>Create Command</source>
-        <translation type="obsolete">Python-Code erstellen</translation>
-    </message>
-    <message>
+        <location/>
         <source>Send message</source>
-        <translation type="obsolete">Nachricht versenden</translation>
+        <translation>Nachricht versenden</translation>
     </message>
     <message>
+        <location/>
         <source>Transfer</source>
-        <translation type="obsolete">Übertragung</translation>
+        <translation>Übertragung</translation>
     </message>
     <message>
+        <location/>
         <source>Decimal</source>
-        <translation type="obsolete">Dezimal</translation>
+        <translation>Dezimal</translation>
     </message>
     <message>
+        <location/>
         <source>Hexadecimal</source>
-        <translation type="obsolete">Hexadezimal</translation>
+        <translation>Hexadezimal</translation>
     </message>
     <message>
+        <location/>
         <source>Binary</source>
-        <translation type="obsolete">Binär</translation>
+        <translation>Binär</translation>
     </message>
     <message>
+        <location/>
         <source>Send</source>
-        <translation type="obsolete">Senden</translation>
+        <translation>Senden</translation>
     </message>
     <message>
+        <location/>
         <source>Read</source>
-        <translation type="obsolete">Lesen</translation>
+        <translation>Lesen</translation>
     </message>
     <message>
+        <location/>
         <source>Cancel</source>
-        <translation type="obsolete">Abbrechen</translation>
+        <translation>Abbrechen</translation>
     </message>
     <message>
-        <source>Create Python Command</source>
-        <translation type="obsolete">Python-Code erstellen</translation>
-    </message>
-    <message>
+        <location/>
         <source>Use input below to send characters to the serial port. Characters will be send as their ASCII code from the character written. To directly write ASCII codes use the format $(code) or select Decimal, Hexadecimal or Binary separated by space.</source>
-        <translation type="obsolete">Um Nachrichten an die serielle Schnittstelle zu senden, die Eingabezeile benutzen. Zeichen werden als ASCII-Zeichen übermittelt. Um direkt ASCII-Code zu schreiben, das Format $(Code) oder Dezimal, Hexadezimal oder Binär mit Leerzeichen getrennt benutzen.</translation>
+        <translation>Um Nachrichten an die serielle Schnittstelle zu senden, die Eingabezeile benutzen. Zeichen werden als ASCII-Zeichen übermittelt. Um direkt ASCII-Code zu schreiben, das Format $(Code) oder Dezimal, Hexadezimal oder Binär mit Leerzeichen getrennt benutzen.</translation>
     </message>
     <message>
+        <location/>
         <source>Apply</source>
-        <translation type="obsolete">Übernehmen</translation>
+        <translation>Übernehmen</translation>
     </message>
     <message>
+        <location/>
         <source>Python Command</source>
-        <translation type="obsolete">Python-Befehl</translation>
+        <translation>Python-Befehl</translation>
     </message>
     <message>
+        <location/>
         <source>Create</source>
-        <translation type="obsolete">Erzeugen</translation>
+        <translation>Erzeugen</translation>
     </message>
     <message>
+        <location/>
         <source>Clear</source>
-        <translation type="obsolete">Löschen</translation>
+        <translation>Löschen</translation>
     </message>
     <message>
+        <location/>
         <source>Send Delay</source>
-        <translation type="obsolete">Verzögerung</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
+        <translation>Verzögerung</translation>
     </message>
     <message>
-        <source>Destructor must be overwritten</source>
-        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
+        <location/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>50</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>75</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>110</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>134</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>150</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>200</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>300</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>600</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>1200</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>1800</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>2400</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>4800</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>9600</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>19200</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>38400</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>57600</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>115200</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>230400</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>460800</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>500000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>576000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>921600</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>1000000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>1152000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>1500000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>2000000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>2500000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>3000000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>3500000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>4000000</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Bits</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>5</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>6</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>7</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>8</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ms</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>\r</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>\n</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>\r\n</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Stopbits</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>2</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Xon/Xoff</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>rts</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>cts</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>dtr</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>handshake</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>dsr</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ASCII</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>OK</source>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
     <message>
         <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
@@ -557,48 +790,6 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
         <translation>Uninitialisierte Vektoren für Ausgabeparameter!</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <source>function execution unused in this plugin</source>
-        <translation type="obsolete">Funktion &quot;Execution&quot; in diesem Plugin nicht verwendet</translation>
-    </message>
-    <message>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="obsolete">Ihr Plugin hat vermutlich einen Konfigurationsdialog, doch die showConfDialog-Methode wurde nicht implementiert</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>Destructor must be overwritten</source>
-        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>listener does not have a slot </source>
-        <translation type="obsolete">Listener hat keinen Slot </translation>
-    </message>
-    <message>
-        <source>this object already has been registered as listener</source>
-        <translation type="obsolete">Dieses Objekt wurde bereits als Listener registriert</translation>
-    </message>
-    <message>
-        <source>timer could not be set</source>
-        <translation type="obsolete">Timer konnte nicht gesetzt werden</translation>
-    </message>
-    <message>
-        <source>the object could not been removed from the listener list</source>
-        <translation type="obsolete">Das Objekt konnte nicht von der Listener-Liste gelöscht werden</translation>
-    </message>
-    <message>
-        <source>not implemented</source>
-        <translation type="obsolete">Nicht implementiert</translation>
     </message>
 </context>
 </TS>
