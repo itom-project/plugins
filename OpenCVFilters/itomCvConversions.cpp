@@ -23,10 +23,12 @@
 #include "itomCvConversions.h"
 
 #include "common/param.h"
+#include "DataObject/dataObjectFuncs.h"
 
 namespace itomcv
 {
 
+//--------------------------------------------------------------------------------------------------------------------------------------
 cv::Size getCVSizeFromParam(const ito::ParamBase &intArrayParam, bool squareSizeIfOneElement /*= false*/, ito::RetVal *retval /*= NULL*/, bool returnEmptySizeIfEmpty /*= false*/)
 {
     ito::RetVal ret;
@@ -73,7 +75,7 @@ cv::Size getCVSizeFromParam(const ito::ParamBase &intArrayParam, bool squareSize
     return size;
 }
 
-
+//--------------------------------------------------------------------------------------------------------------------------------------
 cv::TermCriteria getCVTermCriteriaFromParam(const ito::ParamBase &intMaxCountParam, const ito::ParamBase &doubleEpsParam, ito::RetVal *retval /*= NULL*/)
 {
     //intMaxCountParam > 0: consider it, else: do not consider max count
@@ -109,7 +111,7 @@ cv::TermCriteria getCVTermCriteriaFromParam(const ito::ParamBase &intMaxCountPar
     return criteria;
 }
 
-
+//--------------------------------------------------------------------------------------------------------------------------------------
 std::vector<cv::Mat> getInputArrayOfArraysFromDataObject(const ito::DataObject *dObj, ito::RetVal *retval /*= NULL*/)
 {
     ito::RetVal ret;
@@ -148,7 +150,7 @@ std::vector<cv::Mat> getInputArrayOfArraysFromDataObject(const ito::DataObject *
     return output;
 }
 
-
+//--------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::Mat* mat)
 {
     ito::RetVal retval;
@@ -167,13 +169,35 @@ ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::M
 
         if (dObj)
         {
-            ito::tDataType cameraMatrixType = ito::guessDataTypeFromCVMat(mat, retval);
+            ito::tDataType cameraMatrixType;
+            cv::Mat mat_;
+
+            if (mat->type() == CV_8UC3) //convert it to rgba32 with full alpha channel
+            {
+                cameraMatrixType = ito::tRGBA32;
+
+                cv::Mat in[] = {*mat, cv::Mat( mat->rows, mat->cols, CV_8UC1 )}; //bgr + alpha (all 255)
+                in[2].setTo(255);
+                cv::Mat out;
+                cv::merge(in, 2, out);
+                out.convertTo(mat_, cv::DataType<ito::Rgba32>::type);
+            }
+            else if (mat->type() == CV_8UC4) //convert it to rgba32
+            {
+                cameraMatrixType = ito::tRGBA32;
+                mat->convertTo(mat_, cv::DataType<ito::Rgba32>::type);
+            }
+            else
+            {
+                cameraMatrixType = ito::guessDataTypeFromCVMat(mat, retval);
+                mat_ = *mat;
+            }
 
             //check if dataObjParam contains one plane and if the data-pointer of the plane corresponds to the data-pointer of mat. If so, both share memory and we are done!
-            if (dObj->calcNumMats() == 1 && (dObj->getDims() == mat->dims) && dObj->getType() == cameraMatrixType)
+            if (!retval.containsError() && dObj->calcNumMats() == 1 && (dObj->getDims() == mat_.dims) && dObj->getType() == cameraMatrixType)
             {
                 cv::Mat *plane = dObj->getCvPlaneMat(0);
-                if ( plane->data == mat->data && plane->size == mat->size)
+                if ( plane->data == mat_.data && plane->size == mat_.size)
                 {
                     return retval;
                 }
@@ -181,7 +205,14 @@ ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::M
 
             if (!retval.containsError())
             {
-                *(dataObjParam.getVal<ito::DataObject*>()) = ito::DataObject(mat->dims, mat->size, cameraMatrixType, mat, 1);
+				if (mat_.dims == 0)
+				{
+					*dObj = ito::DataObject();
+				}
+				else
+				{
+					*dObj = ito::DataObject(mat_.dims, mat_.size, cameraMatrixType, &mat_, 1);
+				}
             }
         }
         else
@@ -195,6 +226,109 @@ ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::M
     }
 
     return retval;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------
+std::vector<cv::KeyPoint> getKeypointsFromParam(const ito::ParamBase &keypointParam, const char* name, ito::RetVal *retval /*= NULL*/)
+{
+    ito::RetVal retval_;
+    std::vector<cv::KeyPoint> kpts;
+    const ito::DataObject *input = keypointParam.getVal<const ito::DataObject*>();
+    if (input->getDims() > 0)
+    {
+        const ito::DataObject keypoints = ito::dObjHelper::squeezeConvertCheck2DDataObject(keypointParam.getVal<const ito::DataObject*>(), name, ito::Range(0,INT_MAX), ito::Range(7,7), retval_, ito::tFloat32, 0);
+        const ito::float32 *rowPtr = NULL;
+
+        if (!retval_.containsError())
+        {
+            kpts.reserve(keypoints.getSize(0));
+
+            for (int i = 0; i < keypoints.getSize(0); ++i)
+            {
+                rowPtr = (const ito::float32*)(keypoints.rowPtr(0, i));
+                cv::KeyPoint keyPt1;
+
+                keyPt1.pt.x = rowPtr[0];
+                keyPt1.pt.y = rowPtr[1];
+                keyPt1.size = rowPtr[2];
+                keyPt1.angle = rowPtr[3];
+                keyPt1.response = rowPtr[4];
+                keyPt1.octave = static_cast<int>(rowPtr[5]);
+                keyPt1.class_id = static_cast<int>(rowPtr[6]);
+
+                kpts.push_back(keyPt1);
+            }
+        }
+    }
+
+    if (retval) *retval += retval_;
+
+    return kpts;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------
+std::vector<cv::DMatch> getDMatchesFromParam(const ito::ParamBase &dmatchesParam, const char* name, ito::RetVal *retval /*= NULL*/)
+{
+    ito::RetVal retval_;
+    std::vector<cv::DMatch> matches;
+    const ito::DataObject *input = dmatchesParam.getVal<const ito::DataObject*>();
+    if (input->getDims() > 0)
+    {
+        const ito::DataObject matchesArray = ito::dObjHelper::squeezeConvertCheck2DDataObject(dmatchesParam.getVal<const ito::DataObject*>(), name, ito::Range(0,INT_MAX), ito::Range(4,4), retval_, ito::tFloat32, 0);
+        const ito::float32 *rowPtr = NULL;
+
+        if (!retval_.containsError())
+        {
+            matches.reserve(matchesArray.getSize(0));
+
+            for (int i = 0; i < matchesArray.getSize(0); ++i)
+            {
+                rowPtr = (const ito::float32*)(matchesArray.rowPtr(0, i));
+                cv::DMatch m;
+                m.queryIdx = static_cast<int>(rowPtr[0]);
+                m.trainIdx = static_cast<int>(rowPtr[1]);
+                m.imgIdx = static_cast<int>(rowPtr[2]);
+                m.distance = rowPtr[3];
+                matches.push_back(m);
+            }
+        }
+    }
+
+    if (retval) *retval += retval_;
+
+    return matches;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------
+cv::Mat getBGRMatFromRGBA32DataObject(const ito::DataObject &obj, ito::RetVal *retval /*= NULL*/)
+{
+    ito::RetVal ret;
+    cv::Mat bgr;
+    if (obj.getType() != ito::tRGBA32 || obj.getDims() != 2)
+    {
+        ret += ito::RetVal(ito::retError, 0, "data object must have two dimensions and type RGBA32");
+    }
+    else
+    {
+        const cv::Mat_<ito::Rgba32> *rgbaMat = (cv::Mat_<ito::Rgba32>*)(obj.getCvPlaneMat(0));
+        cv::Mat bgra;
+        rgbaMat->convertTo(bgra, CV_8UC4);
+        bgr = cv::Mat( bgra.rows, bgra.cols, CV_8UC3 );
+
+        // forming an array of matrices is a quite efficient operation,
+        // because the matrix data is not copied, only the headers
+        // rgba[0] -> bgr[2], rgba[1] -> bgr[1],
+        // rgba[2] -> bgr[0], rgba[3] -> alpha[0]
+        int from_to[] = { 0,0, 1,1, 2,2 };
+        cv::mixChannels( &bgra, 1, &bgr, 1, from_to, 3 );
+    }
+
+    if (retval)
+    {
+        *retval += ret;
+    }
+
+    return bgr;
 }
 
 } //end namespace itomcv

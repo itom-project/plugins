@@ -28,7 +28,7 @@
 #include <qmetaobject.h>
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
- DockWidgetPIPiezoCtrl::DockWidgetPIPiezoCtrl(int uniqueID, ito::AddInActuator *actuator) : m_pPlugin(actuator)
+ DockWidgetPIPiezoCtrl::DockWidgetPIPiezoCtrl(int uniqueID, ito::AddInActuator *actuator) : ito::AbstractAddInDockWidget(actuator)
  {
      ui.setupUi(this); 
 
@@ -37,7 +37,7 @@
      enableWidget(true);
  }
  //-------------------------------------------------------------------------------------------------------------------------------------------------
- void DockWidgetPIPiezoCtrl::valuesChanged(QMap<QString, ito::Param> params)
+ void DockWidgetPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
  {
     ui.lblDevice1->setText( params["ctrlType"].getVal<char*>() );
     ui.lblDevice2->setText( params["ctrlName"].getVal<char*>() );
@@ -88,7 +88,7 @@
     }
     ui.spinBoxActPos->setStyleSheet(style);
 
-     enableWidget(!running);
+    enableWidget(!running);
  }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,59 +110,6 @@ void DockWidgetPIPiezoCtrl::enableWidget(bool enabled)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetPIPiezoCtrl::waitForDoneAndCheckRetVal(ItomSharedSemaphore *waitCond)
-{
-    int done = 0;
-    QTime time;
-    QMessageBox msgBox;
-    time.start();
-    if (m_pPlugin)
-    {
-        while(done == 0 && waitCond->wait(10) == false)
-        {
-            QCoreApplication::processEvents();
-            if (time.elapsed() > PLUGINWAIT)
-            {
-                if (m_pPlugin->isAlive() == false)
-                {
-                    msgBox.setText("Error while execution");
-                    msgBox.setInformativeText("The plugin is not reacting any more");
-                    msgBox.setIcon(QMessageBox::Critical);
-                    msgBox.exec();
-                    done = 1;
-                }
-                time.restart();
-            }
-        }
-
-        if (done == 0) //ok, check returnValue of waitCond
-        {
-            ito::RetVal retVal = waitCond->returnValue;
-            if (retVal.containsError())
-            {
-                msgBox.setText("Error while execution");
-                if (retVal.errorMessage())
-                {
-                    msgBox.setInformativeText( retVal.errorMessage() );
-                }
-                msgBox.setIcon(QMessageBox::Critical);
-                msgBox.exec();
-            }
-            else if (retVal.containsWarning())
-            {
-                msgBox.setText("Warning while execution");
-                if (retVal.errorMessage())
-                {
-                    msgBox.setInformativeText( retVal.errorMessage() );
-                }
-                msgBox.setIcon(QMessageBox::Warning);
-                msgBox.exec();
-            }
-        }
-    }
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPIPiezoCtrl::on_radioLocal_clicked()
 {
     QSharedPointer<ito::ParamBase> param;
@@ -175,58 +122,29 @@ void DockWidgetPIPiezoCtrl::on_radioLocal_clicked()
         param = QSharedPointer<ito::ParamBase>(new ito::ParamBase("local",ito::ParamBase::Int,0.0));
     }
 
-    if (m_pPlugin)
-    {
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(m_pPlugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>,param), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-        waitForDoneAndCheckRetVal(locker.getSemaphore());
-    }
+    setPluginParameter(param, ito::AbstractAddInDockWidget::msgLevelWarningAndError);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPIPiezoCtrl::on_btnUp_clicked()
 {
-    if (m_pPlugin)
-    {
-        enableWidget(false);
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(m_pPlugin, "setPosRel", Q_ARG(int,0), Q_ARG(double,ui.spinBoxStepSize->value() / 1000.0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-        waitForDoneAndCheckRetVal(locker.getSemaphore());
-        enableWidget(true);
-    }
+    setActuatorPosition(0, ui.spinBoxStepSize->value() / 1000.0, true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPIPiezoCtrl::on_btnDown_clicked()
 {
-    if (m_pPlugin)
-    {
-        enableWidget(false);
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(m_pPlugin, "setPosRel", Q_ARG(int,0), Q_ARG(double,-ui.spinBoxStepSize->value() / 1000.0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-        waitForDoneAndCheckRetVal(locker.getSemaphore());
-        enableWidget(true);
-    }
+    setActuatorPosition(0, -ui.spinBoxStepSize->value() / 1000.0, true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPIPiezoCtrl::on_btnStart_clicked()
 {
-    if (m_pPlugin)
-    {
-        enableWidget(false);
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(m_pPlugin, "setPosAbs", Q_ARG(int,0), Q_ARG(double,ui.spinBoxTargetPos->value() / 1000.0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-        waitForDoneAndCheckRetVal(locker.getSemaphore());
-        enableWidget(true);
-    }
+    setActuatorPosition(0, ui.spinBoxTargetPos->value() / 1000.0, false);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPIPiezoCtrl::on_btnRefresh_clicked()
 {
-    if (m_pPlugin)
-    {
-        QMetaObject::invokeMethod(m_pPlugin, "RequestStatusAndPosition", Q_ARG(bool,true), Q_ARG(bool,true));
-    }
+    requestActuatorStatusAndPositions(true, true);
 }

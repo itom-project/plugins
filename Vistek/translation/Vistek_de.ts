@@ -156,7 +156,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../VistekInterface.cpp" line="+100"/>
+        <location filename="../VistekInterface.cpp" line="+89"/>
         <source>SVS Vistek GigE grabber.</source>
         <translation>SVS Vistek GigE Grabber.</translation>
     </message>
@@ -182,7 +182,7 @@
 <context>
     <name>Vistek</name>
     <message>
-        <location filename="../Vistek.cpp" line="+119"/>
+        <location filename="../Vistek.cpp" line="+120"/>
         <source>Camera Model ID</source>
         <translation>Kameramodell ID</translation>
     </message>
@@ -295,12 +295,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+41"/>
         <source>copy buffer during getVal of Vistek can not be executed, since no DataType unknown.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+74"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -604,19 +604,16 @@
         <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
         <source>uninitialized vector for mandatory parameters!</source>
-        <translation>Nicht initialisierter Vektor für Pflichtparameter!</translation>
+        <translation type="obsolete">Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
-        <translation>Nicht initialisierter Vektor für optionale Parameter!</translation>
+        <translation type="obsolete">Nicht initialisierter Vektor für optionale Parameter!</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
-        <translation>Nicht initialisierter Vektor fürAusgabeparameter!</translation>
+        <translation type="obsolete">Nicht initialisierter Vektor fürAusgabeparameter!</translation>
     </message>
 </context>
 <context>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>320</width>
-    <height>381</height>
+    <width>366</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -130,7 +130,7 @@
         <item>
          <widget class="QCheckBox" name="checkAsync">
           <property name="text">
-           <string>Asynchrone</string>
+           <string>asynchronous</string>
           </property>
          </widget>
         </item>
@@ -207,16 +207,6 @@
         <string>Delay after positioning</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0" colspan="2">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>the total delay is offset + proportional * distance</string>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_3">
           <property name="text">
@@ -260,6 +250,26 @@
           </property>
           <property name="maximum">
            <double>99.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="2">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>the total delay is offset + proportional * distance</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>this user-defined delay is only considered if the device has no built-in on-target flag.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

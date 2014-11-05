@@ -107,20 +107,20 @@ if(WINDOWSSDK_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/videoInput/videoInput.cpp
     )
 
-	#Add version information to the plugIn-dll unter MSVC
+    #Add version information to the plugIn-dll unter MSVC
     if(MSVC)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)
 
-	if (QT5_FOUND)
-		#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-		QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-		QT5_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
-	else (QT5_FOUND)
-		QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-		QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-		QT4_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
-	endif (QT5_FOUND)
+    if (QT5_FOUND)
+        #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+        QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    else (QT5_FOUND)
+        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+        QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+        QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    endif (QT5_FOUND)
 
     ADD_SOURCE_GROUP(videoInput)
 

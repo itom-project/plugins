@@ -87,7 +87,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../Ximea.cpp" line="+86"/>
+        <location filename="../Ximea.cpp" line="+77"/>
         <source>Ximea xiQ-Camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -111,11 +111,53 @@
     <name>Ximea</name>
     <message>
         <location line="+57"/>
+        <source>Dark Image, if null, empty image will be generated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>White Image, if null, empty image will be generated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Position of ROI in x</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Position of ROI in y</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Initialize pixel shading correction. At the moment you can only use one set of data which will be rescaled each time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Current intensity value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <location line="+7"/>
+        <source>Change value of the shading correction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-4"/>
+        <location line="+17"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-16"/>
+        <source>Corresponding values for shading correction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
         <source>gain in dB</source>
         <translation type="unfinished"></translation>
     </message>
@@ -197,7 +239,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+2"/>
+        <source>Enable bad pixel correction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>Ximea (m3api): Invalid handle</source>
         <translation type="unfinished"></translation>
     </message>
@@ -540,54 +587,90 @@
     </message>
     <message>
         <location line="+7"/>
-        <location line="+24"/>
+        <location line="+43"/>
         <source>Cannot get function xiGetNumberDevices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-21"/>
-        <location line="+24"/>
+        <location line="-40"/>
+        <location line="+43"/>
         <source>Cannot get function xiOpenDevice</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-21"/>
-        <location line="+24"/>
+        <location line="-40"/>
+        <location line="+43"/>
         <source>Cannot get function xiCloseDevice</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-21"/>
-        <location line="+24"/>
+        <location line="-40"/>
+        <location line="+43"/>
         <source>Cannot get function xiStartAcquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-21"/>
-        <location line="+24"/>
+        <location line="-40"/>
+        <location line="+43"/>
         <source>Cannot get function xiStopAcquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-21"/>
-        <location line="+24"/>
+        <location line="-40"/>
+        <location line="+43"/>
         <source>Cannot get function xiGetImage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-21"/>
-        <location line="+24"/>
+        <location line="-40"/>
+        <location line="+43"/>
         <source>Cannot get function xiSetParam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-21"/>
-        <location line="+24"/>
+        <location line="-40"/>
+        <location line="+43"/>
         <source>Cannot get function xiGetParam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="-40"/>
+        <location line="+43"/>
+        <source>Cannot get function mmUpdateFrameShading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-40"/>
+        <location line="+3"/>
+        <location line="+40"/>
+        <source>Cannot get function mmCalculateShading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-36"/>
+        <location line="+43"/>
+        <source>Cannot get function mmInitializeShading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-40"/>
+        <location line="+43"/>
+        <source>Cannot get function mmSetShadingRaw</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-40"/>
+        <location line="+43"/>
+        <source>Cannot get function mmProcessFrame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-9"/>
+        <source>Cannot get function mmCalculateShadingRaw</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+52"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -597,7 +680,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+62"/>
         <source>name of given parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -632,7 +715,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+123"/>
+        <location line="+185"/>
         <location line="+36"/>
         <source>Size must be multiply of 2</source>
         <translation type="unfinished"></translation>
@@ -643,7 +726,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+114"/>
+        <location line="+122"/>
         <source>Camera already initialized. Try with another camera number</source>
         <translation type="unfinished"></translation>
     </message>
@@ -653,7 +736,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+224"/>
+        <location line="+245"/>
         <source>Camera handle deleted before closing procedure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -678,7 +761,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+87"/>
         <source>Tried to get picture without starting device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -690,6 +773,16 @@
     <message>
         <location line="+83"/>
         <source>Empty object handle retrieved from caller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+165"/>
+        <source>Fill shading correction factor failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+174"/>
+        <source>function name &apos;%1&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -864,7 +957,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

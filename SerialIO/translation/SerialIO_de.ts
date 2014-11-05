@@ -4,59 +4,32 @@
 <context>
     <name>DockWidgetSerialIO</name>
     <message>
-        <location filename="../dockWidgetSerialIO.ui"/>
-        <source>Form</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>General Information</source>
-        <translation>Allgemeine Informationen</translation>
+        <translation type="obsolete">Allgemeine Informationen</translation>
     </message>
     <message>
-        <location/>
-        <source>ID:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>[ID]</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>SerialIO Log</source>
-        <translation>SerialIO-Protokoll</translation>
+        <translation type="obsolete">SerialIO-Protokoll</translation>
     </message>
     <message>
-        <location/>
         <source>Decimal</source>
-        <translation>Dezimal</translation>
+        <translation type="obsolete">Dezimal</translation>
     </message>
     <message>
-        <location/>
         <source>Hexadecimal</source>
-        <translation>Hexadezimal</translation>
+        <translation type="obsolete">Hexadezimal</translation>
     </message>
     <message>
-        <location/>
         <source>Binary</source>
-        <translation>Binär</translation>
+        <translation type="obsolete">Binär</translation>
     </message>
     <message>
-        <location/>
         <source>Clear</source>
-        <translation>Löschen</translation>
+        <translation type="obsolete">Löschen</translation>
     </message>
     <message>
-        <location/>
-        <source>ASCII</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>ignor empty messages</source>
-        <translation>Leere Nachrichten ignorieren</translation>
+        <translation type="obsolete">Leere Nachrichten ignorieren</translation>
     </message>
 </context>
 <context>
@@ -155,7 +128,7 @@
         <translation>Puffer löschen war nicht erfolgreich</translation>
     </message>
     <message>
-        <location line="+88"/>
+        <location line="+77"/>
         <source>licensed under LGPL</source>
         <translation></translation>
     </message>
@@ -167,12 +140,12 @@
     <message>
         <location line="+280"/>
         <source>Mandatory paramers are NULL</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pflichtparameter ist NULL</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Optinal paramers are NULL</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Optionaler Parameter ist NULL</translation>
     </message>
     <message>
         <source>Serialport-Interface</source>
@@ -189,12 +162,12 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location filename="../dialogSerialIO.cpp" line="+293"/>
         <source>Char token not closed correctly or number to big.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Undefined error.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Unbekannter Fehler.</translation>
     </message>
 </context>
 <context>
@@ -236,7 +209,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="+2"/>
         <source>0 -&gt; write output buffer as block at once or single characters with delay (1..65000)</source>
-        <translation type="unfinished"></translation>
+        <translation>0 -&gt; Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -251,22 +224,22 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="+7"/>
         <source>Clears the input buffer of serial port</source>
-        <translation>Löscht den Input-Puffer der seriellen Schnittstelle</translation>
+        <translation>Löscht den Eingabepuffer der seriellen Schnittstelle</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Clears the output buffer of serial port</source>
-        <translation>Löscht den Output-Puffer der seriellen Schnittstelle</translation>
+        <translation>Löscht den Ausgabepuffer der seriellen Schnittstelle</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Clears input (0) or output (1) buffer</source>
-        <translation>Löscht den Input- (0) oder Output- (1) Puffer</translation>
+        <translation>Löscht den Eingabe- (0) oder Ausgabe- (1) Puffer</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Clears the input or output buffer of serial port</source>
-        <translation>Löscht den Input- oder Output-Puffer der seriellen Schnittstelle</translation>
+        <translation>Löscht den Eingabe- oder Ausgabepuffer der seriellen Schnittstelle</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -355,7 +328,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="+45"/>
         <source>The number of the serial port, starting with 1 (linux 0)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nummer der seriellen Portnummer, beginnend mit 1 (bei Linux mit 0)</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -385,7 +358,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
     <message>
         <location line="+2"/>
         <source>0 -&gt; write output buffer as block or single characters with delay (1..65000)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">0 -&gt; Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
     </message>
     <message>
         <source>Toggle parity check</source>
@@ -433,218 +406,56 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation>Fehler: %1 konnte nicht interpretiert werden - nicht gesendet</translation>
     </message>
     <message>
-        <location filename="../dialogSerialIO.ui"/>
-        <source>Dialog</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Settings</source>
-        <translation>Einstellungen</translation>
+        <translation type="obsolete">Einstellungen</translation>
     </message>
     <message>
-        <location/>
         <source>Basic</source>
-        <translation>Grundeinstellungen</translation>
+        <translation type="obsolete">Grundeinstellungen</translation>
     </message>
     <message>
-        <location/>
-        <source>1</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>2</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Baud</source>
-        <translation>Baudrate</translation>
+        <translation type="obsolete">Baudrate</translation>
     </message>
     <message>
-        <location/>
-        <source>110</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>300</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>600</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1200</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>2400</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>4800</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>9600</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>19200</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>38400</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>57600</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>115200</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Bits</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>5</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>6</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>7</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>8</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Endline</source>
-        <translation>Terminierung</translation>
+        <translation type="obsolete">Terminierung</translation>
     </message>
     <message>
-        <location/>
-        <source>\r</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>\n</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>\r\n</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>&lt;none&gt;</source>
-        <translation>&lt;nichts&gt;</translation>
+        <translation type="obsolete">&lt;nichts&gt;</translation>
     </message>
     <message>
-        <location/>
-        <source>Stopbits</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Parity</source>
-        <translation>Parität</translation>
+        <translation type="obsolete">Parität</translation>
     </message>
     <message>
-        <location/>
         <source>disable</source>
-        <translation>ausschalten</translation>
+        <translation type="obsolete">ausschalten</translation>
     </message>
     <message>
-        <location/>
         <source>enable</source>
-        <translation>einschalten</translation>
+        <translation type="obsolete">einschalten</translation>
     </message>
     <message>
-        <location/>
-        <source>ms</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Time out</source>
-        <translation>Timeout</translation>
+        <translation type="obsolete">Timeout</translation>
     </message>
     <message>
         <source>Single char</source>
         <translation type="obsolete">Einzelzeichen</translation>
     </message>
     <message>
-        <location/>
         <source>Debug Mode</source>
-        <translation>Protokollierung</translation>
+        <translation type="obsolete">Protokollierung</translation>
     </message>
     <message>
-        <location/>
         <source>Read delay</source>
-        <translation>Leseverzögerung</translation>
+        <translation type="obsolete">Leseverzögerung</translation>
     </message>
     <message>
-        <location/>
         <source>Flow control</source>
-        <translation>Flusskontrolle</translation>
-    </message>
-    <message>
-        <location/>
-        <source>Xon/Xoff</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>rts</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>cts</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>dtr</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>handshake</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>dsr</source>
-        <translation></translation>
+        <translation type="obsolete">Flusskontrolle</translation>
     </message>
     <message>
         <source>Set Parameters</source>
@@ -655,183 +466,64 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation type="obsolete">Python-Code erstellen</translation>
     </message>
     <message>
-        <location/>
         <source>Send message</source>
-        <translation>Nachricht versenden</translation>
+        <translation type="obsolete">Nachricht versenden</translation>
     </message>
     <message>
-        <location/>
         <source>Transfer</source>
-        <translation>Übertragung</translation>
+        <translation type="obsolete">Übertragung</translation>
     </message>
     <message>
-        <location/>
-        <source>ASCII</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Decimal</source>
-        <translation>Dezimal</translation>
+        <translation type="obsolete">Dezimal</translation>
     </message>
     <message>
-        <location/>
         <source>Hexadecimal</source>
-        <translation>Hexadezimal</translation>
+        <translation type="obsolete">Hexadezimal</translation>
     </message>
     <message>
-        <location/>
         <source>Binary</source>
-        <translation>Binär</translation>
+        <translation type="obsolete">Binär</translation>
     </message>
     <message>
-        <location/>
         <source>Send</source>
-        <translation>Senden</translation>
+        <translation type="obsolete">Senden</translation>
     </message>
     <message>
-        <location/>
         <source>Read</source>
-        <translation>Lesen</translation>
+        <translation type="obsolete">Lesen</translation>
     </message>
     <message>
-        <location/>
-        <source>OK</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation type="obsolete">Abbrechen</translation>
     </message>
     <message>
         <source>Create Python Command</source>
         <translation type="obsolete">Python-Code erstellen</translation>
     </message>
     <message>
-        <location/>
         <source>Use input below to send characters to the serial port. Characters will be send as their ASCII code from the character written. To directly write ASCII codes use the format $(code) or select Decimal, Hexadecimal or Binary separated by space.</source>
-        <translation>Um Nachrichten an die serielle Schnittstelle zu senden, die Eingabezeile benutzen. Zeichen werden als ASCII-Zeichen übermittelt. Um direkt ASCII-Code zu schreiben, das Format $(Code) oder Dezimal, Hexadezimal oder Binär mit Leerzeichen getrennt benutzen.</translation>
+        <translation type="obsolete">Um Nachrichten an die serielle Schnittstelle zu senden, die Eingabezeile benutzen. Zeichen werden als ASCII-Zeichen übermittelt. Um direkt ASCII-Code zu schreiben, das Format $(Code) oder Dezimal, Hexadezimal oder Binär mit Leerzeichen getrennt benutzen.</translation>
     </message>
     <message>
-        <location/>
-        <source>50</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>75</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>134</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>150</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>200</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1800</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>230400</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>460800</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>500000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>576000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>921600</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1000000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1152000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1500000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>2000000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>2500000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>3000000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>3500000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>4000000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Apply</source>
-        <translation>Übernehmen</translation>
+        <translation type="obsolete">Übernehmen</translation>
     </message>
     <message>
-        <location/>
         <source>Python Command</source>
-        <translation>Python-Befehl</translation>
+        <translation type="obsolete">Python-Befehl</translation>
     </message>
     <message>
-        <location/>
         <source>Create</source>
-        <translation>Erzeugen</translation>
+        <translation type="obsolete">Erzeugen</translation>
     </message>
     <message>
-        <location/>
         <source>Clear</source>
-        <translation>Löschen</translation>
+        <translation type="obsolete">Löschen</translation>
     </message>
     <message>
-        <location/>
         <source>Send Delay</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Verzögerung</translation>
     </message>
 </context>
 <context>
@@ -852,7 +544,7 @@ Das Plugin wurde für Windows und Linux implementiert. Parameter und Initialisie
         <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
     </message>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Uninitialisierte Vektoren für Pflichtparameter!</translation>
     </message>

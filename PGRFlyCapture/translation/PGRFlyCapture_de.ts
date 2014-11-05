@@ -20,11 +20,6 @@
     </message>
     <message>
         <location/>
-        <source>Integration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
@@ -111,6 +106,11 @@
     <message>
         <location filename="../dialogPGRFlyCapture.cpp" line="+48"/>
         <source>Configuration Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogPGRFlyCapture.ui"/>
+        <source>Data Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -200,7 +200,7 @@
 <context>
     <name>PGRFlyCapture</name>
     <message>
-        <location filename="../PGRFlyCapture.cpp" line="+237"/>
+        <location filename="../PGRFlyCapture.cpp" line="+233"/>
         <location line="+5"/>
         <location line="+5"/>
         <source>Pixelsize in x (cols)</source>
@@ -214,7 +214,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+16"/>
         <source>-1: Complete free run, 0: Disable trigger, 1: enable trigger mode, 2: enable software-trigger</source>
         <translation type="unfinished"></translation>
     </message>
@@ -224,7 +224,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-43"/>
+        <location line="-50"/>
         <source>Integrationtime of CCD programmed in seconds.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -265,6 +265,11 @@
     </message>
     <message>
         <location line="+20"/>
+        <source>colorMode: &apos;gray&apos; (default) or &apos;color&apos; if color camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>bitdepth of each pixel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -319,12 +324,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1433"/>
+        <location line="+1462"/>
         <source>retrieveData of PGRFlyCapture faield, since bitdepth %i not implemented.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-321"/>
+        <location line="+687"/>
+        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1030"/>
         <source>StopDevice of PGRFlyCapture can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -346,15 +361,24 @@
     <message>
         <location line="+118"/>
         <location line="+18"/>
+        <location line="+18"/>
         <location line="+26"/>
         <source>getVal of PGRFlyCapture failed, since retrived NULL-Pointer.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
+    <name>PGRFlyCaptureInterface</name>
+    <message>
+        <location line="-1610"/>
+        <source>colorMode: &apos;gray&apos; (default) or &apos;color&apos; if color camera. In color mode, bpp is limited to 8 per color.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
-        <location line="-1585"/>
+        <location line="-18"/>
         <source>Point Grey FlyCapture2 Cameras</source>
         <translation type="unfinished"></translation>
     </message>
@@ -387,7 +411,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

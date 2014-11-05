@@ -63,6 +63,7 @@ MSMediaFoundationInterface::MSMediaFoundationInterface()
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
 "This plugin uses the Microsoft Media Foundation framework (Windows Vista, 7, 8) for capturing supported camera devices (e.g. ordinary USB or integrated cameras). \n\
+Cameras must provide the UVC 1.1 interface for USB devices. \n\
 \n\
 This driver detects an interal list of connected cameras. The parameter *cameraNumber* indicates the device to open (until now, there is no mechanism to open the next \n\
 not yet opened device!). The camera can either be used as colored camera, as gray valued camera or it is also possible to only select one color channel that is mapped \n\

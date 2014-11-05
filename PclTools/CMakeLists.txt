@@ -55,6 +55,7 @@ IF(ITOM_SDK_PCL_SUPPORT)
             SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
         ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
+        message(STATUS "VTK_INC: " ${VTK_INCLUDE_DIR})
         INCLUDE_DIRECTORIES(
             ${CMAKE_CURRENT_BINARY_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}

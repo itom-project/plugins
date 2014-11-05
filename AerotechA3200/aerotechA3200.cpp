@@ -76,7 +76,7 @@ For details please check C:\\A3200\\MANUAL.";
     m_autoSavePolicy = ito::autoSaveNever;
 	
 
-	ito::Param param = ito::Param("axes", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("list of axes IDs that are enabled (0..2). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]").toAscii().data());
+	ito::Param param = ito::Param("axes", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("list of axes IDs that are enabled (0..2). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]").toLatin1().data());
     m_initParamsOpt.append(param); 
 }
 
@@ -120,24 +120,24 @@ AerotechA3200::AerotechA3200() :
 	//ito::tParam;    // Set up the parameter list
     m_params.insert("name", Param("name", ParamBase::String | ParamBase::In | ParamBase::Readonly, "AerotechA3200", NULL));
 
-	m_params.insert("async", Param("async", ParamBase::Int, 0, 1, 0, tr("asynchronous move (1), synchronous (0) [default]").toAscii().data()));
+	m_params.insert("async", Param("async", ParamBase::Int, 0, 1, 0, tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
     m_async = m_params["async"].getVal<int>();
 	m_params.insert("numAxis", Param("numAxis", ParamBase::Int | ParamBase::In | ParamBase::Readonly, 0, 3, 3, "number of connected axes"));
 
-	m_params.insert("scaleFactor", Param("scaleFactor", ParamBase::Double | ParamBase::Readonly, 0.0, 1000000.0, 0.0, tr("scale factor of connected controller, counts per metric unit").toAscii().data()));
+	m_params.insert("scaleFactor", Param("scaleFactor", ParamBase::Double | ParamBase::Readonly, 0.0, 1000000.0, 0.0, tr("scale factor of connected controller, counts per metric unit").toLatin1().data()));
 	
-	m_params.insert("clearoffset", Param("clearoffset", ParamBase::Int, 0, 0, 0, tr("reset the offsets to zero, back to absolute coordinate").toAscii().data()));
-	m_params.insert("finished", Param("finished", ParamBase::Int | ParamBase::Readonly, 0, 1, 0, tr("check if the motion of every axis is finished").toAscii().data()));
-	m_params.insert("stop", Param("stop", ParamBase::Int, 0, 0, 0, tr("executes an immediate stop").toAscii().data()));
-    m_params.insert("acknowledge", Param("acknowledge", ParamBase::Int, 0, 0, 0, tr("acknowledge the errors of connected controller").toAscii().data()));
+	m_params.insert("clearoffset", Param("clearoffset", ParamBase::Int, 0, 0, 0, tr("reset the offsets to zero, back to absolute coordinate").toLatin1().data()));
+	m_params.insert("finished", Param("finished", ParamBase::Int | ParamBase::Readonly, 0, 1, 0, tr("check if the motion of every axis is finished").toLatin1().data()));
+	m_params.insert("stop", Param("stop", ParamBase::Int, 0, 0, 0, tr("executes an immediate stop").toLatin1().data()));
+    m_params.insert("acknowledge", Param("acknowledge", ParamBase::Int, 0, 0, 0, tr("acknowledge the errors of connected controller").toLatin1().data()));
 
-	m_params.insert("xenabled", Param("xenabled", ParamBase::Int, 0, 1, 0, tr("check if x-axis is enabled").toAscii().data()));
-    m_params.insert("yenabled", Param("yenabled", ParamBase::Int, 0, 1, 0, tr("check if y-axis is enabled").toAscii().data()));
-    m_params.insert("zenabled", Param("zenabled", ParamBase::Int, 0, 1, 0, tr("check if z-axis is enabled").toAscii().data()));
+	m_params.insert("xenabled", Param("xenabled", ParamBase::Int, 0, 1, 0, tr("check if x-axis is enabled").toLatin1().data()));
+    m_params.insert("yenabled", Param("yenabled", ParamBase::Int, 0, 1, 0, tr("check if y-axis is enabled").toLatin1().data()));
+    m_params.insert("zenabled", Param("zenabled", ParamBase::Int, 0, 1, 0, tr("check if z-axis is enabled").toLatin1().data()));
 	
 
 	double axisSpeeds[] = {20.0, 20.0, 20.0}; //mm/s, nämlich "rate" in altem Skript mcpp
-    Param param = Param("speed", ParamBase::DoubleArray, NULL, tr("speed of every axis").toAscii().data());
+    Param param = Param("speed", ParamBase::DoubleArray, NULL, tr("speed of every axis").toLatin1().data());
     param.setVal<double*>(axisSpeeds, 3);
     m_params.insert("speed", param);
 	
@@ -196,11 +196,11 @@ ito::RetVal AerotechA3200::checkError(int a3200ReturnValue)
     {
         if ( AerErrGetMessage(a3200ReturnValue, szMsg, MAX_TEXT_LEN, FALSE)!= NULL)  
 		{
-            return ito::RetVal::format(ito::retError, 0, tr("A3200 error: %s").toAscii().data(), szMsg);
+            return ito::RetVal::format(ito::retError, 0, tr("A3200 error: %s").toLatin1().data(), szMsg);
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, tr("Unknown A3200 error since the error message was too long").toAscii().data());
+            return ito::RetVal(ito::retError, 0, tr("Unknown A3200 error since the error message was too long").toLatin1().data());
         }
     }
     else
@@ -229,7 +229,7 @@ ito::RetVal AerotechA3200::getAxisMask(const int *axes, const int numAxes, AXISM
             mask = mask | AXISMASK_1;
             break;
         default:
-            retValue += ito::RetVal::format(ito::retError, 0, tr("The axis number %i is not supported. Allowed range [0, 3]").toAscii().data(), axes[i]);
+            retValue += ito::RetVal::format(ito::retError, 0, tr("The axis number %i is not supported. Allowed range [0, 3]").toLatin1().data(), axes[i]);
             break;
         }
     }
@@ -247,7 +247,7 @@ ito::RetVal AerotechA3200::getAxisMask2(const QVector<int> &axesIndices, AXISMAS
     {
         if (index < 0 || index >= m_enabledAxes.size())
         {
-            retValue += ito::RetVal::format(ito::retError, 0, tr("axis index %i is out of boundary [0, %i]").toAscii().data(), index, m_enabledAxes.size()-1);
+            retValue += ito::RetVal::format(ito::retError, 0, tr("axis index %i is out of boundary [0, %i]").toLatin1().data(), index, m_enabledAxes.size()-1);
         }
         else
         {
@@ -263,7 +263,7 @@ ito::RetVal AerotechA3200::getAxisMask2(const QVector<int> &axesIndices, AXISMAS
                 mask = mask | AXISMASK_1;
                 break;
             default:
-                retValue += ito::RetVal::format(ito::retError, 0, tr("The axis number %i is not supported. Allowed range [0, 3]").toAscii().data(), m_enabledAxes[index]);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("The axis number %i is not supported. Allowed range [0, 3]").toLatin1().data(), m_enabledAxes[index]);
                 break;
             }
         }
@@ -361,7 +361,7 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
             if ((availableMask | axisMask) != availableMask)
             {
-                retValue += ito::RetVal::format(ito::retError, 0, tr("Not all desired axes are connected to the controller (desired: %i, available: %i)").toAscii().data(), axisMask, availableMask);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("Not all desired axes are connected to the controller (desired: %i, available: %i)").toLatin1().data(), axisMask, availableMask);
             }
 
             if (!retValue.containsError())
@@ -585,7 +585,7 @@ ito::RetVal AerotechA3200::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
     if (isMotorMoving()) //this if-case is for actuators only.
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toLatin1().data());
     }
 
     if (!retValue.containsError())
@@ -616,11 +616,11 @@ ito::RetVal AerotechA3200::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             {
                 if (index < 0 || index >= arrayLength)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("given index is out of boundary").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("given index is out of boundary").toLatin1().data());
                 }
                 else if (val->getType() != ito::ParamBase::Double)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("given value must be a double if an index is given.").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("given value must be a double if an index is given.").toLatin1().data());
                 }
                 else
                 {
@@ -631,11 +631,11 @@ ito::RetVal AerotechA3200::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             {
                 if (val->getType() != ito::ParamBase::DoubleArray)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("given value must be a double array").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("given value must be a double array").toLatin1().data());
                 }
                 else if (val->getLen() != arrayLength)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, tr("length of given double array must correspond to number of axes").toAscii().data());
+                    retValue += ito::RetVal(ito::retError, 0, tr("length of given double array must correspond to number of axes").toLatin1().data());
                 }
                 else
                 {
@@ -697,7 +697,7 @@ ito::RetVal AerotechA3200::calib(const QVector<int> axis, ItomSharedSemaphore *w
 
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retValue;
@@ -706,7 +706,7 @@ ito::RetVal AerotechA3200::calib(const QVector<int> axis, ItomSharedSemaphore *w
     }
     else if (hAerCtrl == NULL)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Aerotech 3200 Handle is NULL").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Aerotech 3200 Handle is NULL").toLatin1().data());
     }
     else
     {
@@ -787,7 +787,7 @@ ito::RetVal AerotechA3200::setOrigin(QVector<int> axis, ItomSharedSemaphore *wai
 	
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toLatin1().data());
     }
     else
     {
@@ -795,7 +795,7 @@ ito::RetVal AerotechA3200::setOrigin(QVector<int> axis, ItomSharedSemaphore *wai
         {
             if (m_enabledAxes.contains(axisId) == false)
             {
-                retValue += ito::RetVal::format(ito::retError, 0, tr("axis %i is not enabled").toAscii().data(), axisId);
+                retValue += ito::RetVal::format(ito::retError, 0, tr("axis %i is not enabled").toLatin1().data(), axisId);
             }
         }
 
@@ -854,7 +854,7 @@ ito::RetVal AerotechA3200::getPos(const int axis, QSharedPointer<double> pos, It
 
     if ((axis >= m_enabledAxes.size()) || (axis >= 3) || axis < 0)
     {
-        retValue += ito::RetVal(ito::retError, 1, tr("axis index is out of bound").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 1, tr("axis index is out of bound").toLatin1().data());
     }
     else
     {
@@ -882,7 +882,7 @@ ito::RetVal AerotechA3200::getPos(QVector<int> axis, QSharedPointer<QVector<doub
     {
         if ((axis[naxis] >= m_enabledAxes.size()) || (axis[naxis] >= 3) || axis[naxis] < 0)
         {
-            retValue += ito::RetVal(ito::retError, 1, tr("at least one axis index is out of bound").toAscii().data());
+            retValue += ito::RetVal(ito::retError, 1, tr("at least one axis index is out of bound").toLatin1().data());
         }
         else
         {
@@ -912,7 +912,7 @@ ito::RetVal AerotechA3200::setPosAbs(QVector<int> axis, QVector<double> pos, Ito
 
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retValue;
@@ -921,7 +921,7 @@ ito::RetVal AerotechA3200::setPosAbs(QVector<int> axis, QVector<double> pos, Ito
     }
     else if (hAerCtrl == NULL)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Aerotech 3200 Handle is NULL").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Aerotech 3200 Handle is NULL").toLatin1().data());
     }
     else
     {
@@ -1022,7 +1022,7 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
 
     if (isMotorMoving())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Any motor axis is moving. The motor is locked.").toLatin1().data());
         if (waitCond)
         {
             waitCond->returnValue = retValue;
@@ -1031,7 +1031,7 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
     }
     else if (hAerCtrl == NULL)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Aerotech 3200 Handle is NULL").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Aerotech 3200 Handle is NULL").toLatin1().data());
     }
     else
     {
@@ -1148,7 +1148,7 @@ ito::RetVal AerotechA3200::waitForDone(const int timeoutMS, const QVector<int> a
             }
 
             replaceStatus(_axis, ito::actuatorMoving, ito::actuatorInterrupted);
-            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toAscii().data());
+            retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
             done = true;
             return retVal;
         }
@@ -1190,7 +1190,7 @@ ito::RetVal AerotechA3200::waitForDone(const int timeoutMS, const QVector<int> a
     if (timeout)
     {
         replaceStatus(_axis, ito::actuatorMoving, ito::actuatorTimeout); 
-        retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toAscii().data());
+        retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toLatin1().data());
     }
 
     //100 ms damit die Achsen sich einpegeln können
@@ -1296,70 +1296,70 @@ ito::RetVal AerotechA3200::axisFaultToRetVal(int axisFault, int axisID)//
     case 0:
         break;
     case 0x00000001:
-        retval += ito::RetVal(ito::retError, 0, tr("Position error").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Position error").toLatin1().data());
         break;
     case 0x00000002:
-        retval += ito::RetVal(ito::retError, 0, tr("Over current").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Over current").toLatin1().data());
         break;
     case 0x00000004:
-        retval += ito::RetVal(ito::retError, 0, tr("CW EOT limit").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("CW EOT limit").toLatin1().data());
         break;
     case 0x00000008:
-        retval += ito::RetVal(ito::retError, 0, tr("CCW EOT limit").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("CCW EOT limit").toLatin1().data());
         break;
     case 0x00000010:
-        retval += ito::RetVal(ito::retError, 0, tr("CW soft limit").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("CW soft limit").toLatin1().data());
         break;
     case 0x00000020:
-        retval += ito::RetVal(ito::retError, 0, tr("CCW soft limit").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("CCW soft limit").toLatin1().data());
         break;
     case 0x00000040:
-        retval += ito::RetVal(ito::retError, 0, tr("Amplifier fault").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Amplifier fault").toLatin1().data());
         break;
     case 0x00000080:
-        retval += ito::RetVal(ito::retError, 0, tr("Position fbk").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Position fbk").toLatin1().data());
         break;
     case 0x00000100:
-        retval += ito::RetVal(ito::retError, 0, tr("Velocity fbk").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Velocity fbk").toLatin1().data());
         break;
     case 0x00000200:
-        retval += ito::RetVal(ito::retError, 0, tr("Hall fault").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Hall fault").toLatin1().data());
         break;
     case 0x00000400:
-        retval += ito::RetVal(ito::retError, 0, tr("Max velocity cmd").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Max velocity cmd").toLatin1().data());
         break;
     case 0x00000800:
-        retval += ito::RetVal(ito::retError, 0, tr("ESTOP fault").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("ESTOP fault").toLatin1().data());
         break;
     case 0x00001000:
-        retval += ito::RetVal(ito::retError, 0, tr("Velocity error").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Velocity error").toLatin1().data());
         break;
     case 0x00002000:
-        retval += ito::RetVal(ito::retError, 0, tr("Task fault").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Task fault").toLatin1().data());
         break;
     case 0x00004000:
-        retval += ito::RetVal(ito::retError, 0, tr("Probe fault").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Probe fault").toLatin1().data());
         break;
     case 0x00008000:
-        retval += ito::RetVal(ito::retError, 0, tr("Auxiliary fault").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Auxiliary fault").toLatin1().data());
         break;
     case 0x00010000:
-        retval += ito::RetVal(ito::retError, 0, tr("Safe zone fault").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Safe zone fault").toLatin1().data());
         break;
     case 0x00020000:
-        retval += ito::RetVal(ito::retError, 0, tr("Motor temp").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Motor temp").toLatin1().data());
         break;
     case 0x00040000:
-        retval += ito::RetVal(ito::retError, 0, tr("Amplifier temp").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Amplifier temp").toLatin1().data());
         break;
     case 0x00080000:
-        retval += ito::RetVal(ito::retError, 0, tr("Ext encoder fault").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Ext encoder fault").toLatin1().data());
         break;
     case 0x00100000:
-        retval += ito::RetVal(ito::retError, 0, tr("Comm lost fault").toAscii().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Comm lost fault").toLatin1().data());
         break;
     default:
-        retval += ito::RetVal::RetVal(ito::retError, 0, tr("Unknown axisFault value: %1 in axis %2 (%3)").arg(axisFault).arg(axisID).arg(m_axisNames[axisID]).toAscii().data());
+        retval += ito::RetVal::RetVal(ito::retError, 0, tr("Unknown axisFault value: %1 in axis %2 (%3)").arg(axisFault).arg(axisID).arg(m_axisNames[axisID]).toLatin1().data());
     }
     return retval;
 }
@@ -1425,7 +1425,7 @@ ito::RetVal AerotechA3200::enabledisable(int axis, int ziel)
 	
     if (hAerCtrl == NULL)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Aerotech 3200 Handle is NULL").toAscii().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Aerotech 3200 Handle is NULL").toLatin1().data());
     }
     else
     {

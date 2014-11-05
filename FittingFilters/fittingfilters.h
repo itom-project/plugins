@@ -127,6 +127,8 @@ class FittingFilters : public ito::AddInAlgo
         static ito::RetVal fitLeastSquarePlane(cv::Mat *inputMatrix, double &A, double &B, double &C);
         template<typename _Tp> static ito::RetVal subtractPlaneTemplate(cv::Mat *inputMatrix, cv::Mat *destMatrix, double A, double B, double C);
         template<typename _Tp> static ito::RetVal lsqFitPlane(const cv::Mat *mat, double &A, double &B, double &C);
+        template<typename _Tp> static ito::RetVal lmedsFitPlane(const cv::Mat *mat, double &A, double &B, double &C, const double &valid_probability, const double &alarm_rate);
+        template<typename _Tp> static ito::RetVal getRandomValidMinimalSampleSet(const cv::Mat *mat, cv::RNG &rng, int numSamples, int *rows, int *cols, int maxIter = 1000); 
 
         static ito::RetVal calcPolyfitWeighted2D(const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, double reduceFactor = -1.0, const ito::DataObject *weights = NULL);
         static ito::RetVal calcPolyval2D(ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> &coefficients);

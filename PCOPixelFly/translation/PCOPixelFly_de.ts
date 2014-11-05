@@ -87,7 +87,7 @@
 <context>
     <name>PCOPixelFly</name>
     <message>
-        <location filename="../PCOPixelFly.cpp" line="+181"/>
+        <location filename="../PCOPixelFly.cpp" line="+170"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -578,7 +578,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

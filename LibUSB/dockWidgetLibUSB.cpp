@@ -206,7 +206,7 @@ void DockWidgetLibUSB::serialLog(QByteArray data, const char InOutChar)
         }
         else
         {
-            text3 = " [" + QByteArray(QString::number(data.length()).toAscii().data()) + "]";
+            text3 = " [" + QByteArray(QString::number(data.length()).toLatin1().data()) + "]";
         }
 
         if (!(ui.CheckBox->isChecked() && data.isEmpty()))

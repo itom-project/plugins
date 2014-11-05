@@ -24,6 +24,21 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+3"/>
+        <source>Performs a gaussian blur filter according to sigma and epsilon using the generic mcpp filter engine. The kernelsize (x ,y) will be estimated.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Performs a gaussian blur filter with kernelsize (x ,y) and according to sigmaX and sigmaY using the generic mcpp filter engine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Performs a median filter with kernelsize (x ,y) and pixelwise comparison of filterd image and original image to remove spikes according to delta value.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+31"/>
         <location filename="../BasicSpecialFilters.cpp" line="+545"/>
         <source>Input image</source>
@@ -36,67 +51,92 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicGenericFilters.cpp" line="+410"/>
+        <location filename="../BasicGenericFilters.cpp" line="+449"/>
+        <location line="+1921"/>
+        <location line="+238"/>
+        <location line="+225"/>
         <source>n-dim DataObject</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-2382"/>
+        <location line="+1921"/>
+        <location line="+238"/>
+        <location line="+225"/>
         <source>n-dim DataObject of type sourceImage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-2382"/>
+        <location line="+1921"/>
+        <location line="+463"/>
         <source>Odd kernelsize in x</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-2382"/>
+        <location line="+1921"/>
+        <location line="+463"/>
         <source>Odd kernelsize in y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-2382"/>
+        <location line="+1925"/>
+        <location line="+238"/>
         <source>if 0 NaN values in input image will be copied to output image (default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+445"/>
+        <location line="-1718"/>
         <location line="+567"/>
-        <location line="+342"/>
+        <location line="+343"/>
+        <location line="+596"/>
+        <location line="+238"/>
+        <location line="+334"/>
         <source>Source object not defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-905"/>
+        <location line="-2074"/>
         <location line="+567"/>
-        <location line="+342"/>
+        <location line="+343"/>
+        <location line="+596"/>
+        <location line="+238"/>
+        <location line="+334"/>
         <source>Ito data object is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-905"/>
+        <location line="-2074"/>
         <location line="+567"/>
-        <location line="+342"/>
+        <location line="+343"/>
+        <location line="+596"/>
+        <location line="+238"/>
+        <location line="+334"/>
         <source>Destination object not defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-876"/>
+        <location line="-2045"/>
         <location line="+567"/>
-        <location line="+342"/>
+        <location line="+343"/>
+        <location line="+595"/>
+        <location line="+571"/>
         <source>Error: kernel in x must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-904"/>
+        <location line="-2071"/>
         <location line="+567"/>
-        <location line="+342"/>
+        <location line="+343"/>
+        <location line="+595"/>
+        <location line="+571"/>
         <source>Error: kernel in y must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-671"/>
+        <location line="-1838"/>
         <source>high value filter with kernel %1 x %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -108,18 +148,64 @@
     <message>
         <location line="+6"/>
         <location line="+442"/>
-        <location line="+342"/>
+        <location line="+343"/>
+        <location line="+601"/>
+        <location line="+225"/>
         <source> and removed NaN-values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-347"/>
+        <location line="-1174"/>
         <source>median filter with kernel %1 x %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+342"/>
+        <location line="+343"/>
         <source>lowpass-filter (mean) with kernel %1 x %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+401"/>
+        <location line="+2"/>
+        <location line="+232"/>
+        <location line="+4"/>
+        <source>Standard deviation in x direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-38"/>
+        <location line="+225"/>
+        <source>gaussian-filter with sigma %1 x %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-189"/>
+        <source>Stop condition in x-direction, kernel values less than epsilon are ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Stop condition in y-direction, kernel values less than epsilon are ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+223"/>
+        <source>Delta value for comparison</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+199"/>
+        <location line="+8"/>
+        <location line="+11"/>
+        <location line="+11"/>
+        <location line="+11"/>
+        <location line="+28"/>
+        <source> while running spike removal by median filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+92"/>
+        <source>spike removal filter via median filter with kernel %1 x %2 for delta = %3 and newValue %4 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -127,21 +213,21 @@
         <location line="+144"/>
         <location line="+75"/>
         <location line="+179"/>
-        <location line="+1887"/>
+        <location line="+1965"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2280"/>
+        <location line="-2358"/>
         <location line="+144"/>
         <location line="+80"/>
-        <location line="+2061"/>
-        <location line="+344"/>
+        <location line="+2139"/>
+        <location line="+351"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2624"/>
+        <location line="-2709"/>
         <source>Error: Input image must be 3D</source>
         <translation type="unfinished"></translation>
     </message>
@@ -154,12 +240,12 @@
         <location line="+87"/>
         <location line="+90"/>
         <location line="+737"/>
-        <location line="+1399"/>
+        <location line="+1481"/>
         <source>Unknown type or type not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2215"/>
+        <location line="-2297"/>
         <source>Flattened object from 3d to 2d</source>
         <translation type="unfinished"></translation>
     </message>
@@ -360,13 +446,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-374"/>
+        <location filename="../BasicGenericFilters.cpp" line="-358"/>
+        <location filename="../BasicSpecialFilters.cpp" line="-374"/>
         <location line="+377"/>
         <source>value set to clipped values (default: 0.0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-375"/>
+        <location filename="../BasicSpecialFilters.cpp" line="-375"/>
         <location line="+377"/>
         <source>0: clip values outside of given range (default), 1: clip inside</source>
         <translation type="unfinished"></translation>
@@ -386,12 +473,12 @@
     <message>
         <location line="-378"/>
         <location line="+383"/>
-        <location line="+322"/>
+        <location line="+400"/>
         <source>Error: source is not a matrix or image stack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-700"/>
+        <location line="-778"/>
         <location line="+392"/>
         <source>Error: minValue must be smaller than maxValue</source>
         <translation type="unfinished"></translation>
@@ -426,7 +513,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+295"/>
+        <location line="+373"/>
         <source>Image of type Integer or float</source>
         <translation type="unfinished"></translation>
     </message>
@@ -441,7 +528,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+176"/>
         <source>Calculated Histogramm between %1 : %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -532,7 +619,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../BasicFilters.cpp" line="-163"/>
+        <location filename="../BasicFilters.cpp" line="-171"/>
         <source>ITO developed filter-functions for dateObjects</source>
         <translation type="unfinished"></translation>
     </message>
@@ -547,7 +634,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicGenericFilters.cpp" line="-1501"/>
+        <location filename="../BasicGenericFilters.cpp" line="-2368"/>
         <source>Tried to run generic filter engine without correct initilization of all buffers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -585,7 +672,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
