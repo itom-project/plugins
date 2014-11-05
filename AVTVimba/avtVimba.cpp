@@ -15,6 +15,7 @@
 #include <qstringlist.h>
 #include <qplugin.h>
 #include <qmessagebox.h>
+#include <qelapsedtimer.h>
 
 #include <VimbaCPP/Include/EnumEntry.h>
 
@@ -139,6 +140,16 @@ AvtVimba::AvtVimba() :
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AVTVimba", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("interface", ito::ParamBase::String | ito::ParamBase::Readonly, "Unknown", tr("Interface type (Firewire, GigE)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+    int roi[] = {0, 0, 2048, 2048};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2048), ito::RangeMeta(0, 2048));
+    paramVal.setMeta(rm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+#else
     paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
@@ -147,56 +158,45 @@ AvtVimba::AvtVimba() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
+#endif
+
+    paramVal = ito::Param("binning", ito::ParamBase::Int | ito::ParamBase::In, 101, 101, 101, tr("binning (horizontal_factor * 100 + vertical_factor)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
+
+    paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 10.0, tr("timeout for image acquisition in sec").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("CameraNumber", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Camera Number").toLatin1().data());
+
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("camera_number", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Camera Number").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 14, 8, tr("bpp").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	//paramVal = ito::Param("shift_bits", ito::ParamBase::Int, 0, 4, 0, tr("Shiftbits in 8-bitmode only").toLatin1().data());
-	//m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("intTime", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 60.0, 0.01, tr("Integrationtime of CCD [s]").toLatin1().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 60.0, 0.01, tr("Integrationtime of CCD [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("intTimeAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled integration time of CCD (on:1, off:0)").toLatin1().data());
+    paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 33.0, 0.0, tr("Offset as physical value that is a DC offset applied to the video signal. This values changes the blacklevel.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 33.0, 1.0, tr("Gain of AD in dB").toLatin1().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 33.0, 0.0, tr("Gain of AD in dB, set it to 0.0 for best image quality.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("gainAuto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("auto-controlled gain (on:1, off:0)").toLatin1().data());
+	paramVal = ito::Param("gain_auto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled gain (0: off, 1: continously varies the gain; gain will be read-only then)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("StreamBytesPerSecond", ito::ParamBase::Int | ito::ParamBase::In, 1000000, 124000000, 124000000, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
+	paramVal = ito::Param("stream_bps", ito::ParamBase::Int | ito::ParamBase::In, 1000000, 124000000, 124000000, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("PacketSize", ito::ParamBase::Int | ito::ParamBase::In, 500, 16384, 8228, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
+	paramVal = ito::Param("packet_size", ito::ParamBase::Int | ito::ParamBase::In, 500, 16384, 8228, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("DeviceTemperature", ito::ParamBase::Double | ito::ParamBase::Readonly | ito::ParamBase::In, 1.0, 100.0, 25.0, tr("Device Temperature").toLatin1().data());
+	paramVal = ito::Param("device_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly | ito::ParamBase::In, 1.0, 100.0, 25.0, tr("device temperature of sensor in °C").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("colorMode", ito::ParamBase::String, "Mono8", tr("color mode of camera (Mono8|Mono10|Mono12|Mono14, default: Mono8)").toLatin1().data());
-    ito::StringMeta cm_meta(ito::StringMeta::String);
-    cm_meta.addItem("Mono8");
-    cm_meta.addItem("Mono10");
-    cm_meta.addItem("Mono12");
-    cm_meta.addItem("Mono14");
-    paramVal.setMeta(&cm_meta, false);
-    m_params.insert(paramVal.getName(), paramVal);
-
-	paramVal = ito::Param("TriggerMode", ito::ParamBase::String, "Off", tr("Trigger Mode (Off|On, default Off)").toLatin1().data());
-    ito::StringMeta tm_meta(ito::StringMeta::String);
-    tm_meta.addItem("Off");
-    tm_meta.addItem("On");
-    paramVal.setMeta(&tm_meta, false);
+    paramVal = ito::Param("trigger_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("trigger mode (0: Off, 1: On)").toLatin1().data());
     m_params.insert(paramVal.getName(),paramVal);
 
-	paramVal = ito::Param("TriggerSource", ito::ParamBase::String, "Freerun", tr("Trigger Source (Freerun|Software|Line1|Line2|FixedRate, default Freerun)").toLatin1().data());
-    ito::StringMeta ts_meta(ito::StringMeta::String);
-    ts_meta.addItem("Freerun");
-    ts_meta.addItem("Software");
-	ts_meta.addItem("Line1");
-	ts_meta.addItem("Line2");
-	ts_meta.addItem("FixedRate");
-    paramVal.setMeta(&ts_meta, false);
+	paramVal = ito::Param("trigger_source", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("trigger source (Freerun, Line1, Line2, Line3, Line4, FixedRate, Software, InputLines). Not all values are supported for all cameras.").toLatin1().data());
+    m_params.insert(paramVal.getName(),paramVal);
+
+    paramVal = ito::Param("trigger_activation", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("trigger activation (RisingEdge, FallingEdge, AnyEdge, LevelHigh, LevelLow). Not all values are supported for all cameras.").toLatin1().data());
     m_params.insert(paramVal.getName(),paramVal);
 
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
@@ -252,45 +252,11 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 
     int packetSize = paramsOpt->at(1).getVal<int>();
 
-	/*CameraPtrVector cameras;
-	FramePtr rpFrame;
-	VmbUint32_t BufferSize, Width, Height;
-	VmbUchar_t *pBuffer;
-
-	VimbaSystem &sys = VimbaSystem::GetInstance();
-	sys.Startup();
-	sys.GetCameras(cameras);
-
-	cameras[0]->Open(VmbAccessModeFull);
-	cameras[0]->AcquireSingleImage(rpFrame, 2000);
-	cameras[0]->Close();
-
-	rpFrame->GetImage( pBuffer );
-
-	FILE	*fp;
-	fp = fopen("PictureMono8.pgm", "w");
-
-	rpFrame->GetBufferSize(BufferSize);	
-	rpFrame->GetWidth(Width);
-	rpFrame->GetHeight(Height);
-
-	fprintf(fp ,"P2\n# PictureMono8.pgm\n%d %d\n255\n", Width, Height);
-
-	for(int i=0; i < (int)BufferSize; i++){
-		fprintf(fp,"%d ", pBuffer[i]);
-		if(((i+1) % 70)==0){
-			fprintf(fp, "\n");
-		}
-	}
-
-	fclose(fp);
-
-	sys.Shutdown();*/
-
 	unsigned int cameraNumber = static_cast<unsigned int>(paramsOpt->at(0).getVal<int>());
 
-	m_params["CameraNumber"].setVal<int>(cameraNumber);
+	m_params["camera_number"].setVal<int>(cameraNumber);
 
+    timeoutMS = sToMs(m_params["timeout"].getVal<double>());
 
 	VimbaSystem& sys = VimbaSystem::GetInstance();
 	CameraPtrVector cameras;
@@ -323,107 +289,120 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 					m_camera->GetName(name);
 					m_camera->GetSerialNumber(serialNumber);
 					m_camera->GetInterfaceID(DeviceID);
+                    
+                    m_camera->GetInterfaceType(m_interfaceType);
 
-                    AVT::VmbAPI::FeaturePtrVector v;
+                    QString identifier = QString::fromStdString(name) + " (" + QString::fromStdString(serialNumber) + ") @ " + QString::fromStdString(DeviceID);
+					setIdentifier(identifier);
+
+                    /*AVT::VmbAPI::FeaturePtrVector v;
                     std::string blub;
                     m_camera->GetFeatures(v);
                     for (int i = 0; i < v.size(); ++i)
                     {
                         v[i]->GetName(blub);
                         std::cout << blub.data() << "\n" << std::endl;
-                    }
-
-                    retValue += checkError(m_camera->GetFeatureByName("StreamType" /*"TLType"*/, pFeature), "Vimba feature TLType");
-                    if (!retValue.containsError())
-                    {
-                        std::string tltype;
-                        pFeature->GetValue(tltype);
-                        if (tltype == "GEV")
-                        {
-                            m_transportType = tGigE;
-                        }
-                        else if (tltype == "IIDC")
-                        {
-                            m_transportType = tFirewire;
-                        }
-                        else
-                        {
-                            retValue += ito::RetVal(ito::retError, 0, "unknown or unsupported transport type (GigE, Firewire...)");
-                        }
-                    }
-
+                    }*/
                     
-
-					QString identifier = QString::fromStdString(name) + " (" + QString::fromStdString(serialNumber) + ") @ " + QString::fromStdString(DeviceID);
-					setIdentifier(identifier);
-
+                    switch (m_interfaceType)
+                    {
+                    case VmbInterfaceEthernet:
+                        m_params["interface"].setVal<char*>("GigE");
+                        break;
+                    case VmbInterfaceFirewire:
+                        m_params["interface"].setVal<char*>("Firewire");
+                        break;
+                    default:
+                        retValue += ito::RetVal(ito::retError, 0, "unknown or unsupported transport type (GigE, Firewire...)");
+                        break;
+                    }
                 }
 
                 if (!retValue.containsError())
                 {
-                    if (m_transportType == tGigE)
+                    if (m_interfaceType == VmbInterfaceEthernet)
                     {
-                        ito::RetVal retGigE = checkError(m_camera->GetFeatureByName("ExposureMode", pFeature));
-                        if (!retGigE.containsError())
-					    {
-						    retValue += setEnumFeature("ExposureMode","Timed");
-					    }
-					
-                        retGigE = checkError(m_camera->GetFeatureByName("GVSPPacketSize", pFeature));
-                        if (!retGigE.containsError())
+                        //some defaults (they are not changed in this plugin)
+                        setEnumFeature("ExposureAuto", "Off");
+                        setEnumFeature("ExposureMode", "Timed");
+                        setEnumFeature("TriggerSelector", "FrameStart"); //if the trigger source is changed, it changes the trigger for starting an exposure
+                        setEnumFeature("TriggerMode", "On"); //trigger off makes no sense
+                        setDblFeature("Gamma", 0.0);
+                        setEnumFeature("BlackLevelSelector", "All");
+
+                        if (packetSize == 0)
                         {
-                            if (packetSize == 0)
-                            {
-                                packetSize = 8228;
-                            }
-                            retValue += checkError(pFeature->SetValue(packetSize));
+                            packetSize = 8228;
                         }
+                        retValue += setIntFeature("GVSPPacketSize", packetSize);
                     }
-                    else if (m_transportType == tFirewire)
+                    else if (m_interfaceType == VmbInterfaceFirewire)
                     {
+                        //some defaults (they are not changed in this plugin)
+                        setEnumFeature("TriggerMode", "Off"); //trigger off makes no sense
+                        setEnumFeature("ExposureAuto", "Off");
+                        setEnumFeature("ExposureMode", "Timed");
+                        setEnumFeature("TriggerSelector", "ExposureStart"); //if the trigger source is changed, it changes the trigger for starting an exposure
+                        setDblFeature("Gamma", 0.0);
+                        setEnumFeature("BlackLevelSelector", "All");
+
+                        //remove unused parameters
+                        m_params.remove("stream_bps");
+                        m_params.remove("packet_size");
+                        m_params.remove("device_temperature");
+
+                        retValue += getEnumFeatureByName("TriggerSelector", enum_name, enum_idx);
                     }
 				}
 
                 if (!retValue.containsError())
                 {
+                    //GET PIXELFORMAT ENUMERATION
                     retValue += checkError(m_camera->GetFeatureByName("PixelFormat", pFeature));
                     if (!retValue.containsError())
                     {
-                        AVT::VmbAPI::EnumEntry f;
-
-                        AVT::VmbAPI::EnumEntryVector pixelTypes;
-                        pixelTypes.resize(1, f);
-                        
-                        pFeature->GetEntries(pixelTypes);
+                        AVT::VmbAPI::StringVector pixelTypesStr;
+                        AVT::VmbAPI::Int64Vector pixelTypesIdx;
                         int minBpp = 16;
                         int maxBpp = 8;
-                        for (int i = 0; i < pixelTypes.size(); ++i)
+                        bool available;
+
+                        //due to a official bug in Vimba 1.3.0 with GetEntries(...) the workaround with GetValues must be used.
+                        if (pFeature->GetValues(pixelTypesStr) == VmbErrorSuccess && pFeature->GetValues(pixelTypesIdx) == VmbErrorSuccess)
                         {
-                            pixelTypes[i].GetName(enum_name);
-                            pixelTypes[i].GetValue(enum_idx);
-                            if (name == "Mono8")
+                            for (AVT::VmbAPI::StringVector::size_type i = 0; i < pixelTypesStr.size(); ++i)
                             {
-                                minBpp = std::min(8, minBpp);
-                                maxBpp = std::max(8, maxBpp);
-                                m_bppEnum.bppMono8 = enum_idx;
-                            }
-                            else if (name == "Mono10")
-                            {
-                                minBpp = std::min(10, minBpp);
-                                maxBpp = std::max(10, maxBpp);
-                                m_bppEnum.bppMono10 = enum_idx;
-                            }
-                            else if (name == "Mono12")
-                            {
-                                minBpp = std::min(12, minBpp);
-                                maxBpp = std::max(12, maxBpp);
-                                m_bppEnum.bppMono12 = enum_idx;
-                            }
-                            else if (name == "Mono14")
-                            {
-                                minBpp = std::min(14, minBpp);
-                                maxBpp = std::max(14, maxBpp);
-                                m_bppEnum.bppMono14 = enum_idx;
+                                pFeature->IsValueAvailable(pixelTypesIdx[i], available);
+                                if (available)
+                                {
+                                    enum_name = pixelTypesStr[i];
+                                    enum_idx = pixelTypesIdx[i];
+
+                                    if (enum_name == "Mono8")
+                                    {
+                                        minBpp = std::min(8, minBpp);
+                                        maxBpp = std::max(8, maxBpp);
+                                        m_bppEnum.bppMono8 = enum_idx;
+                                    }
+                                    else if (enum_name == "Mono10")
+                                    {
+                                        minBpp = std::min(10, minBpp);
+                                        maxBpp = std::max(10, maxBpp);
+                                        m_bppEnum.bppMono10 = enum_idx;
+                                    }
+                                    else if (enum_name == "Mono12")
+                                    {
+                                        minBpp = std::min(12, minBpp);
+                                        maxBpp = std::max(12, maxBpp);
+                                        m_bppEnum.bppMono12 = enum_idx;
+                                    }
+                                    else if (enum_name == "Mono14")
+                                    {
+                                        minBpp = std::min(14, minBpp);
+                                        maxBpp = std::max(14, maxBpp);
+                                        m_bppEnum.bppMono14 = enum_idx;
+                                    }
+                                }
                             }
                         }
 
@@ -434,18 +413,132 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
                         else
                         {
                             enum_idx = m_bppEnum.bppMono14;
-                            if (enum_idx == -1) m_bppEnum.bppMono12;
-                            if (enum_idx == -1) m_bppEnum.bppMono10;
-                            if (enum_idx == -1) m_bppEnum.bppMono8;
+                            if (enum_idx == -1) enum_idx = m_bppEnum.bppMono12;
+                            if (enum_idx == -1) enum_idx = m_bppEnum.bppMono10;
+                            if (enum_idx == -1) enum_idx = m_bppEnum.bppMono8;
                             retValue += setEnumFeature("PixelFormat", enum_idx);
                             m_params["bpp"].setMeta(new ito::IntMeta(minBpp, maxBpp, 2), true);
                         }
                     }
                 }
 
+                //GET TRIGGER SOURCE ENUMERATION
+                retValue += checkError(m_camera->GetFeatureByName("TriggerSource", pFeature));
                 if (!retValue.containsError())
                 {
-                    retValue += sychronizeParameters(fAll);
+                    AVT::VmbAPI::StringVector triggerSourceStr;
+                    AVT::VmbAPI::Int64Vector triggerSourceIdx;
+                    bool available;
+                    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
+
+                    //due to a official bug in Vimba 1.3.0 with GetEntries(...) the workaround with GetValues must be used.
+                    if (pFeature->GetValues(triggerSourceStr) == VmbErrorSuccess && pFeature->GetValues(triggerSourceIdx) == VmbErrorSuccess)
+                    {
+                        for (AVT::VmbAPI::StringVector::size_type i = 0; i < triggerSourceStr.size(); ++i)
+                        {
+                            pFeature->IsValueAvailable(triggerSourceIdx[i], available);
+                            if (available)
+                            {
+                                enum_name = triggerSourceStr[i];
+                                enum_idx = triggerSourceIdx[i];
+                                sm->addItem(enum_name.data());
+
+                                if (enum_name == "Freerun")
+                                {
+                                    m_triggerSourceEnum.triggerFreerun = enum_idx;
+                                }
+                                else if (enum_name == "Line1")
+                                {
+                                    m_triggerSourceEnum.triggerLine1 = enum_idx;
+                                }
+                                else if (enum_name == "Line2")
+                                {
+                                    m_triggerSourceEnum.triggerLine2 = enum_idx;
+                                }
+                                else if (enum_name == "Line3")
+                                {
+                                    m_triggerSourceEnum.triggerLine3 = enum_idx;
+                                }
+                                else if (enum_name == "Line4")
+                                {
+                                    m_triggerSourceEnum.triggerLine4 = enum_idx;
+                                }
+                                else if (enum_name == "FixedRate")
+                                {
+                                    m_triggerSourceEnum.triggerFixedRate = enum_idx;
+                                }
+                                else if (enum_name == "Software")
+                                {
+                                    m_triggerSourceEnum.triggerSoftware = enum_idx;
+                                }
+                                else if (enum_name == "InputLines")
+                                {
+                                    m_triggerSourceEnum.triggerInputLines = enum_idx;
+                                }
+                            }
+                        }
+
+                        if (m_triggerSourceEnum.triggerSoftware != -1)
+                        {
+                            retValue += setEnumFeature("TriggerSource", m_triggerSourceEnum.triggerSoftware);
+                        }
+                    }
+
+                    m_params["trigger_source"].setMeta(sm, true);
+                }
+
+                //GET TRIGGER ACTIVATION ENUMERATION
+                retValue += checkError(m_camera->GetFeatureByName("TriggerActivation", pFeature));
+                if (!retValue.containsError())
+                {
+                    AVT::VmbAPI::StringVector triggerActivationStr;
+                    AVT::VmbAPI::Int64Vector triggerActivationIdx;
+                    bool available;
+                    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
+
+                    //due to a official bug in Vimba 1.3.0 with GetEntries(...) the workaround with GetValues must be used.
+                    if (pFeature->GetValues(triggerActivationStr) == VmbErrorSuccess && pFeature->GetValues(triggerActivationIdx) == VmbErrorSuccess)
+                    {
+                        for (AVT::VmbAPI::StringVector::size_type i = 0; i < triggerActivationStr.size(); ++i)
+                        {
+                            pFeature->IsValueAvailable(triggerActivationIdx[i], available);
+                            if (available)
+                            {
+                                enum_name = triggerActivationStr[i];
+                                enum_idx = triggerActivationIdx[i];
+                                sm->addItem(enum_name.data());
+
+                                if (enum_name == "RisingEdge")
+                                {
+                                    m_triggerActivationEnum.taRisingEdge = enum_idx;
+                                }
+                                else if (enum_name == "FallingEdge")
+                                {
+                                    m_triggerActivationEnum.taFallingEdge = enum_idx;
+                                }
+                                else if (enum_name == "AnyEdge")
+                                {
+                                    m_triggerActivationEnum.taAnyEdge = enum_idx;
+                                }
+                                else if (enum_name == "LevelHigh")
+                                {
+                                    m_triggerActivationEnum.taLevelHigh = enum_idx;
+                                }
+                                else if (enum_name == "LevelLow")
+                                {
+                                    m_triggerActivationEnum.taLevelLow = enum_idx;
+                                }
+                            }
+                        }
+                    }
+
+                    m_params["trigger_activation"].setMeta(sm, true);
+                }
+
+
+                if (!retValue.containsError())
+                {
+                    retValue += synchronizeParameters(fAll);
                 }
 			}
 			else
@@ -477,150 +570,8 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
   //              } while ( false == bIsCommandDone );
   //          }
   //      }
-
-
-		VmbInt64_t offset_x, offset_y, width, height, widthMax, heightMax,PackSize;
-		double exptime,max,min;
-		std::string trMode,trSource;
-
-		retValue += getRange("ExposureTimeAbs",max,min);
-		retValue += getIntFeatureByName("OffsetX", offset_x);
-		retValue += getIntFeatureByName("OffsetY", offset_y);
-		retValue += getIntFeatureByName("Width", width);
-		retValue += getIntFeatureByName("Height", height);
-		retValue += getIntFeatureByName("WidthMax", widthMax);
-		retValue += getIntFeatureByName("HeightMax", heightMax);
-		retValue += getDblFeatureByName("ExposureTimeAbs", exptime);
-		retValue += getEnumFeatureByName("TriggerMode", trMode, enum_idx);
-		retValue += getIntFeatureByName("GVSPPacketSize", PackSize);
-		//retValue += getIntFeatureByName("GVSPPacketSize", PackSize);
-
-
-		if (getEnumFeatureByName("TriggerSource", trSource, enum_idx)==0)
-		{
-		    m_params["TriggerSource"].setVal<char*>((char*)trSource.c_str());
-		}
+    }
 		
-
-		if (!retValue.containsError())
-		{
-			m_params["x0"].setMeta(new ito::IntMeta(0, offset_x + width), true);
-			m_params["x0"].setVal<int>(offset_x);
-
-			m_params["y0"].setMeta(new ito::IntMeta(0, offset_y + height), true);
-			m_params["y0"].setVal<int>(offset_y);
-
-			m_params["x1"].setMeta(new ito::IntMeta(offset_x, offset_x + width), true);
-			m_params["x1"].setVal<int>(offset_x + width);
-
-			m_params["y1"].setMeta(new ito::IntMeta(offset_x, offset_x + width), true);
-			m_params["y1"].setVal<int>(offset_y + height);
-
-			m_params["sizex"].setMeta(new ito::IntMeta(0, widthMax), true);
-			m_params["sizex"].setVal<int>(width);
-
-			m_params["sizey"].setMeta(new ito::IntMeta(0, heightMax), true);
-			m_params["sizey"].setVal<int>(height);
-
-			m_params["intTime"].setMeta(new ito::DoubleMeta((min+1)/1000000, (max-1)/1000000,0.000001), true);
-			m_params["intTime"].setVal<double>(exptime/100000);
-
-			
-			m_params["TriggerMode"].setVal<char*>((char*)trMode.c_str());
-
-			m_params["PacketSize"].setVal<int>(PackSize);
-
-			m_params["StreamBytesPerSecond"].setVal<int>(124000000);
-			
-			/*ito::Param paramVal("TriggerMode",ito::ParamBase::String | ito::ParamBase::In);
-			paramVal = ito::Param("TriggerMode", ito::ParamBase::String | ito::ParamBase::In,trModec, tr("Trigger Mode (Off|On, default Off)").toLatin1().data());
-			m_params.insert(paramVal.getName(),paramVal);*/
-
-			//paramVal = ito::Param("TriggerSource",ito::ParamBase::String | ito::ParamBase::In);
-			/*paramVal = ito::Param("TriggerSource", ito::ParamBase::String | ito::ParamBase::In,trSourcec, tr("Trigger Source").toLatin1().data());
-			m_params.insert(paramVal.getName(),paramVal);*/
-
-			//ito::StringMeta *sm = (ito::StringMeta*)(paramDbl.getMeta());
-			//m_params["TriggerMode"].setVal<char*>(trMode);
-		}
-
-		//int pixelFormat = paramsOpt->at(1).getVal<int>();
-		//m_params["bpp"].setVal<int>(pixelFormat);
-
-		
-		//retValue += getEnumFeatureByName("PixelFormat", pixelFormat);
-
-		//if (!retValue.containsError())
-		//{
-		//	char* colorMode = paramsOpt->at(1).getVal<char*>();
-		//	if (strcmp(colorMode, "Mono8")==0)
-		//	{
-		//		m_params["bpp"].setVal<int>(8);
-		//	}
-		//	else if (strcmp(colorMode, "Mono10")==0)
-		//	{
-		//		m_params["bpp"].setVal<int>(10);
-		//	}
-		//	else if (strcmp(colorMode, "Mono12")==0)
-		//	{
-		//		m_params["bpp"].setVal<int>(12);
-		//	}
-		//	else if (strcmp(colorMode, "Mono14")==0)
-		//	{
-		//		m_params["bpp"].setVal<int>(14);
-		//	}
-		//	//TODO
-		//	else 
-		//	{
-		//		retValue += ito::RetVal::format(ito::retError,0,"PixelFormat %s currently not supported", colorMode);
-		//	}
-
-		//	char* triggerMode = paramsOpt->at(2).getVal<char*>();
-		//	if (strcmp(triggerMode, "Off")==0 || strcmp(triggerMode,"On")==0)
-		//	{
-		//		//QVector<QSharedPointer<ito::ParamBase> > values;
-		//		m_params.insert("triggerMode",triggerMode);
-		//		//values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("triggerMode", ito::ParamBase::String, triggerMode)));
-		//		//m_params["triggerMode"].setVal<char*>(8);
-		//	}
-		//	else
-		//	{
-		//		retValue += ito::RetVal::format(ito::retError,0,"Invalid TriggerMode", colorMode);
-		//	}	
-
-		//	char* triggerSource = paramsOpt->at(3).getVal<char*>();
-		//	if (strcmp(triggerSource, "Freerun")==0 || strcmp(triggerSource,"Software")==0 || strcmp(triggerSource,"Line1")==0 || strcmp(triggerSource,"Line2")==0 || strcmp(triggerSource,"FixedRate")==0)
-		//	{
-		//		//QVector<QSharedPointer<ito::ParamBase> > values;
-		//		m_params.insert("triggerSource",triggerSource);
-		//	}
-		//	else
-		//	{
-		//		retValue += ito::RetVal::format(ito::retError,0,"Invalid TriggerSource", colorMode);
-		//	}
-
-
-		//}
-
-			/*FeaturePtr triggerSourceFeature;
-		retValue += checkError(m_camera->GetFeatureByName("TriggerSource", triggerSourceFeature));
-		retValue += checkError(triggerSourceFeature->SetValue("Freerun"));
-		getEnumFeatureByName("TriggerSource", pixelFormat);*/
-
-		//int i=1;
-
-		//TODO
-	}
-
-    //steps todo:
-    // - get all initialization parameters
-    // - try to detect your device
-    // - establish a connection to the device
-    // - synchronize the current parameters of the device with the current values of parameters inserted in m_params
-    // - if an identifier string of the device is available, set it via setIdentifier("yourIdentifier")
-    // - call checkData() in order to reconfigure the temporary image buffer m_data (or other structures) depending on the current size, image type...
-    // - call emit parametersChanged(m_params) in order to propagate the current set of parameters in m_params to connected dock widgets...
-    // - call setInitialized(true) to confirm the end of the initialization (even if it failed)
     
     if (!retValue.containsError())
     {        
@@ -656,7 +607,7 @@ ito::RetVal AvtVimba::close(ItomSharedSemaphore *waitCond)
     // - disconnect the device if not yet done
     // - this funtion is considered to be the "inverse" of init.
 
-	int nr = m_params["CameraNumber"].getVal<int>();
+	int nr = m_params["camera_number"].getVal<int>();
 	
 
 	if (m_camera.get())
@@ -690,11 +641,11 @@ ito::RetVal AvtVimba::getIntFeatureByName(const char *name, VmbInt64_t &value)
 	ito::RetVal retValue;
 	FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature));
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
 	if (!retValue.containsError())
 	{
-		retValue += checkError(pFeature->GetValue(value));
+		retValue += checkError(pFeature->GetValue(value), name);
 	}
 
 	return retValue;
@@ -706,13 +657,13 @@ ito::RetVal  AvtVimba::getIntFeatureByName(const char *name, VmbInt64_t &value, 
     ito::RetVal retValue;
 	FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature));
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
 	if (!retValue.containsError())
 	{
-		retValue += checkError(pFeature->GetValue(value));
-        retValue += checkError(pFeature->GetRange(min, max));
-        retValue += checkError(pFeature->GetIncrement(inc));
+		retValue += checkError(pFeature->GetValue(value), name);
+        retValue += checkError(pFeature->GetRange(min, max), name);
+        retValue += checkError(pFeature->GetIncrement(inc), name);
 	}
 
 	return retValue;
@@ -724,11 +675,28 @@ ito::RetVal AvtVimba::getDblFeatureByName(const char *name, double &value)
 	ito::RetVal retValue;
 	FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature));
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
 	if (!retValue.containsError())
 	{
-		retValue += checkError(pFeature->GetValue(value));
+		retValue += checkError(pFeature->GetValue(value), name);
+	}
+
+	return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal AvtVimba::getDblFeatureByName(const char *name, double &value, double &min, double &max)
+{
+	ito::RetVal retValue;
+	FeaturePtr pFeature;
+
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+
+	if (!retValue.containsError())
+	{
+		retValue += checkError(pFeature->GetValue(value), name);
+        retValue += checkError(pFeature->GetRange(min, max), name);
 	}
 
 	return retValue;
@@ -740,28 +708,28 @@ ito::RetVal AvtVimba::getEnumFeatureByName(const char *name, std::string &value,
 	ito::RetVal retValue;
 	FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature));
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
 	if (!retValue.containsError())
 	{
-		retValue += checkError(pFeature->GetValue(value));
-        retValue += checkError(pFeature->GetValue(idx));
+		retValue += checkError(pFeature->GetValue(value), name);
+        retValue += checkError(pFeature->GetValue(idx), name);
 	}
 
 	return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::SetDblFeature(const char *name, double &fValue)
+ito::RetVal AvtVimba::setDblFeature(const char *name, const double &fValue)
 {
 	FeaturePtr pFeature;
 	ito::RetVal retValue;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature));
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
 	if (!retValue.containsError())
 		{
-			retValue += checkError(pFeature->SetValue(fValue));
+			retValue += checkError(pFeature->SetValue(fValue), name);
 			if (!retValue.containsError())
 			{
 				//std::cout << "Feature " << name << " set to " << fValue << std::endl;
@@ -771,16 +739,16 @@ ito::RetVal AvtVimba::SetDblFeature(const char *name, double &fValue)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::SetIntFeature(const char *name, int &iValue)
+ito::RetVal AvtVimba::setIntFeature(const char *name, const int &iValue)
 {
 	FeaturePtr pFeature;
 	ito::RetVal retValue;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature));
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
 	if (!retValue.containsError())
 		{
-			retValue += checkError(pFeature->SetValue(iValue));
+			retValue += checkError(pFeature->SetValue(iValue), name);
 			if (!retValue.containsError())
 			{
 				//std::cout << "Feature " << name << " set to " << iValue << std::endl;
@@ -795,11 +763,11 @@ ito::RetVal AvtVimba::setEnumFeature(const char *name, const char *eValue)
 	FeaturePtr pFeature;
 	ito::RetVal retValue;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature));
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
 	if (!retValue.containsError())
 		{
-			retValue += checkError(pFeature->SetValue(eValue));
+			retValue += checkError(pFeature->SetValue(eValue), name);
 		}
 	
 	return retValue;
@@ -811,11 +779,11 @@ ito::RetVal AvtVimba::setEnumFeature(const char *name, VmbInt64_t value)
     FeaturePtr pFeature;
 	ito::RetVal retValue;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature));
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
 	if (!retValue.containsError())
 		{
-			retValue += checkError(pFeature->SetValue(value));
+			retValue += checkError(pFeature->SetValue(value), name);
 		}
 	
 	return retValue;
@@ -827,12 +795,12 @@ ito::RetVal AvtVimba::getRange(const char *name, VmbInt64_t &max, VmbInt64_t &mi
 	ito::RetVal retValue;
 	FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature));
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
 	if (!retValue.containsError())
 	{
-		retValue += checkError(pFeature->GetRange(min,max));
-        retValue += checkError(pFeature->GetIncrement(inc));
+		retValue += checkError(pFeature->GetRange(min,max), name);
+        retValue += checkError(pFeature->GetIncrement(inc), name);
 	}
 
 	return retValue;
@@ -844,11 +812,11 @@ ito::RetVal AvtVimba::getRange(const char *name, double &max, double &min)
 	ito::RetVal retValue;
 	FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature));
+	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
 	if (!retValue.containsError())
 	{
-		retValue += checkError(pFeature->GetRange(min,max));
+		retValue += checkError(pFeature->GetRange(min,max), name);
 	}
 
 	return retValue;
@@ -863,7 +831,7 @@ ito::RetVal AvtVimba::getParam(QSharedPointer<ito::Param> val, ItomSharedSemapho
     bool hasIndex = false;
     int index;
     QString suffix;
-    QMap<QString,ito::Param>::iterator it;
+    ParamMapIterator it;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
@@ -876,48 +844,16 @@ ito::RetVal AvtVimba::getParam(QSharedPointer<ito::Param> val, ItomSharedSemapho
 
     if (!retValue.containsError())
     {
-        //put your switch-case.. for getting the right value here
-
-
-		 if (key == "intTime")
+		if (key == "device_temperature")
         {
-			std::string tmpString="ExposureTimeAbs";
-            //check the new value and if ok, assign it to the internal parameter
-			//retValue += it->copyValueFrom( &(*val) );
 			double tmpDouble;
-			getDblFeatureByName("ExposureTimeAbs",tmpDouble);
-			tmpDouble=tmpDouble/1000000;
-			retValue+= it->setVal<double>(tmpDouble);
-		 }
-		 if (key == "DeviceTemperature")
-        {
-			std::string tmpString="DeviceTemperature";
-            //check the new value and if ok, assign it to the internal parameter
-			//retValue += it->copyValueFrom( &(*val) );
-			double tmpDouble;
-			getDblFeatureByName("DeviceTemperature",tmpDouble);
-			retValue+= it->setVal<double>(tmpDouble);
-			
+			retValue += getDblFeatureByName("DeviceTemperature",tmpDouble);
+            if (!retValue.containsError())
+            {
+			    retValue+= it->setVal<double>(tmpDouble);
+            }
         }
-		 else if (key == "StreamBytesPerSecond")
-		 {
-			 std::string tmpString="StreamBytesPerSecond";
-            //check the new value and if ok, assign it to the internal parameter
-			//retValue += it->copyValueFrom( &(*val) );
-			VmbInt64_t tmpInt;
-			getIntFeatureByName("StreamBytesPerSecond",tmpInt);
-			retValue+= it->setVal<int>(tmpInt);
-		 }
-		 else if (key == "PacketSize")
-		 {
-			 std::string tmpString="GVSPPacketSize";
-            //check the new value and if ok, assign it to the internal parameter
-			//retValue += it->copyValueFrom( &(*val) );
-			VmbInt64_t tmpInt;
-			getIntFeatureByName("GVSPPacketSize",tmpInt);
-			retValue+= it->setVal<int>(tmpInt);
-		 }
-
+		 
         //finally, save the desired value in the argument val (this is a shared pointer!)
         *val = it.value();
     }
@@ -941,7 +877,8 @@ ito::RetVal AvtVimba::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
     int index;
     QString suffix;
 	FeaturePtr pFeature;
-    QMap<QString, ito::Param>::iterator it;
+    ParamMapIterator it;
+    VmbInt64_t enum_idx;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
@@ -962,110 +899,155 @@ ito::RetVal AvtVimba::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
 
     if (!retValue.containsError())
     {
-        if (key == "intTime")
+        if (key == "integration_time")
         {
-			std::string tmpString="ExposureTimeAbs";
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
-			double tmpDouble = it->getVal<double>()*1000000;
-			retValue += SetDblFeature("ExposureTimeAbs",tmpDouble);
-			
+			retValue += setDblFeature("ExposureTime",sToMus(val->getVal<double>()));
+            if (!retValue.containsError())
+            {
+                retValue += synchronizeParameters(fExposure);
+            }
         }
-		else if (key == "colorMode")
+        else if (key == "timeout")
         {
-            //check the new value and if ok, assign it to the internal parameter
+            timeoutMS = sToMs(val->getVal<double>());
             retValue += it->copyValueFrom( &(*val) );
-			char* tmpChar = it->getVal<char*>();
-			if (strcmp(tmpChar, "Mono8")==0)
-			{
-				retValue += setEnumFeature("PixelFormat",tmpChar);
-				m_params["bpp"].setVal<int>(8);
-			}
-			else if (strcmp(tmpChar, "Mono10")==0)
-			{
-				retValue += setEnumFeature("PixelFormat",tmpChar);
-				m_params["bpp"].setVal<int>(10);
-			}
-			else if (strcmp(tmpChar, "Mono12")==0)
-			{
-				retValue += setEnumFeature("PixelFormat",tmpChar);
-				m_params["bpp"].setVal<int>(12);
-			}
-			else if (strcmp(tmpChar, "Mono14")==0)
-			{
-				retValue += setEnumFeature("PixelFormat",tmpChar);
-				m_params["bpp"].setVal<int>(14);
-			}
-			else
-			{
-				retValue += ito::RetVal::format(ito::retError,0,"PixelFormat %s currently not supported", tmpChar);
-			}
-			//int tmpInt = it->getVal<int>();
-			//if(tmpInt == 8)
-			//{
-			//	SetEnumFeature("PixelFormat","Mono8");
-			//}
-			//else if (tmpInt==10)
-			//{
-			//	SetEnumFeature("PixelFormat","Mono10");
-			//}
-			//else if (tmpInt==12)
-			//{
-			//	SetEnumFeature("PixelFormat","Mono12");
-			//}
-			//else if (tmpInt==14)
-			//{
-			//	SetEnumFeature("PixelFormat","Mono14");
-			//}
-			//else
-			//{
-			//	retValue += ito::RetVal::format(ito::retError,0,"PixelFormat %i currently not supported", tmpInt);
-			//}
         }
-				else if (key == "TriggerMode")
+        else if (key == "bpp")
         {
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
-			char* tmpChar = it->getVal<char*>();
-			if (strcmp(tmpChar, "Off")==0 || strcmp(tmpChar,"On")==0)
-			{
-				retValue += setEnumFeature("TriggerMode",tmpChar);
-			}
-			else
-			{
-				retValue += ito::RetVal::format(ito::retError,0,"TriggerMode %s invalid", tmpChar);
-			}
-		}
-				else if (key == "TriggerSource")
+            enum_idx = -1;
+            switch (val->getVal<int>())
+            {
+            case 8:
+                enum_idx = m_bppEnum.bppMono8;
+                break;
+            case 10:
+                enum_idx = m_bppEnum.bppMono10;
+                break;
+            case 12:
+                enum_idx = m_bppEnum.bppMono12;
+                break;
+            case 14:
+                enum_idx = m_bppEnum.bppMono14;
+                break;
+            }
+
+            if (enum_idx > -1)
+            {
+                retValue += setEnumFeature("PixelFormat", enum_idx);
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, "non supported bpp");
+            }
+
+            if (!retValue.containsError())
+            {
+                retValue += synchronizeParameters(fBpp);
+            }
+        }
+        else if (key == "binning")
         {
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
-			char* tmpChar = it->getVal<char*>();
-			if (strcmp(tmpChar, "Freerun")==0 || strcmp(tmpChar, "Software")==0 || strcmp(tmpChar, "Line1")==0 || strcmp(tmpChar, "Line2")==0 || strcmp(tmpChar, "FixedRate")==0)
-			{
-				retValue += setEnumFeature("TriggerSource",tmpChar);
-			}
-			else
-			{
-				retValue += ito::RetVal::format(ito::retError,0,"TriggerSouce %s invalid", tmpChar);
-			}
-		}
-		else if (key == "StreamBytesPerSecond")
-		{
-			retValue += it->copyValueFrom( &(*val) );
-			int tmpInt = it->getVal<int>();
-			retValue += SetIntFeature("StreamBytesPerSecond",tmpInt);
-		}
-		else if (key == "PacketSize")
-		{
-			retValue += it->copyValueFrom( &(*val) );
-			int tmpInt = it->getVal<int>();
-			retValue += SetIntFeature("GVSPPacketSize",tmpInt);
-		}
-        else if (key == "demoKey2")
+            int vBin = val->getVal<int>() % 100;
+            int hBin  = (val->getVal<int>() - vBin) / 100;
+            retValue += setIntFeature("BinningHorizontal", hBin);
+            retValue += setIntFeature("BinningVertical", vBin);
+            retValue += synchronizeParameters(fSize | fBinning);
+        }
+        else if (key == "offset")
         {
-            //check the new value and if ok, assign it to the internal parameter
-            retValue += it->copyValueFrom( &(*val) );
+            retValue += setDblFeature("BlackLevel", val->getVal<double>());
+            retValue += synchronizeParameters(fOffset);
+        }
+        else if (key == "gain")
+        {
+            retValue += setDblFeature("Gain", val->getVal<double>());
+            retValue += synchronizeParameters(fGain);
+        }
+        else if (key == "gain_auto")
+        {
+            retValue += setEnumFeature("GainAuto", val->getVal<int>() == 0 ? "Off" : "Continuous");
+            retValue += synchronizeParameters(fGain);
+        }
+        else if (key == "stream_bps")
+        {
+            retValue += setIntFeature("StreamBytesPerSecond", val->getVal<int>());
+            retValue += synchronizeParameters(fGigETransport);
+        }
+        else if (key == "packet_size")
+        {
+            retValue += setIntFeature("GVSPPacketSize", val->getVal<int>());
+            retValue += synchronizeParameters(fGigETransport);
+        }
+        else if (key == "trigger_mode")
+        {
+            retValue += setEnumFeature("TriggerMode", val->getVal<int>() == 0 ? "Off" : "On");
+            retValue += synchronizeParameters(fTrigger);
+        }
+        else if (key == "trigger_source")
+        {
+            retValue += setEnumFeature("TriggerSource", val->getVal<char*>());
+            retValue += synchronizeParameters(fTrigger);
+        }
+        else if (key == "trigger_activation")
+        {
+            retValue += setEnumFeature("TriggerActivation", val->getVal<char*>());
+            retValue += synchronizeParameters(fTrigger);
+        }
+        
+        else if (key == "roi")
+        {
+            if (!hasIndex)
+            {
+                const int* roi = val->getVal<const int*>();
+                retValue += setIntFeature("OffsetX", roi[0]);
+                retValue += setIntFeature("OffsetY", roi[1]);
+                retValue += setIntFeature("Width", roi[2]);
+                retValue += setIntFeature("Height", roi[3]);
+            }
+            else
+            {
+                switch (index)
+                {
+                case 0:
+                    retValue += setIntFeature("OffsetX", val->getVal<int>());
+                    break;
+                case 1:
+                    retValue += setIntFeature("OffsetY", val->getVal<int>());
+                    break;
+                case 2:
+                    retValue += setIntFeature("Width", val->getVal<int>());
+                    break;
+                case 3:
+                    retValue += setIntFeature("Height", val->getVal<int>());
+                    break;
+                }
+            }
+
+            retValue += synchronizeParameters(fSize);
+        }
+        else if (key == "x0")
+        {
+            //DEPRECATED, therefore redirections to roi parameter
+            QSharedPointer<ito::ParamBase> p(new ito::ParamBase("roi[0]", ito::ParamBase::Int, val->getVal<int>()));
+            retValue += setParam(p, NULL);
+        }
+        else if (key == "y0")
+        {
+            //DEPRECATED, therefore redirections to roi parameter
+            QSharedPointer<ito::ParamBase> p(new ito::ParamBase("roi[1]", ito::ParamBase::Int, val->getVal<int>()));
+            retValue += setParam(p, NULL);
+        }
+        else if (key == "x1")
+        {
+            //DEPRECATED, therefore redirections to roi parameter
+            QSharedPointer<ito::ParamBase> p(new ito::ParamBase("roi[2]", ito::ParamBase::Int, 1 + val->getVal<int>() - m_params["roi"].getVal<int*>()[0]));
+            retValue += setParam(p, NULL);
+        }
+        else if (key == "y1")
+        {
+            //DEPRECATED, therefore redirections to roi parameter
+            QSharedPointer<ito::ParamBase> p(new ito::ParamBase("roi[3]", ito::ParamBase::Int, 1 + val->getVal<int>() - m_params["roi"].getVal<int*>()[1]));
+            retValue += setParam(p, NULL);
         }
         else
         {
@@ -1096,6 +1078,11 @@ ito::RetVal AvtVimba::startDevice(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     
     incGrabberStarted(); //increment a counter to see how many times startDevice has been called
+
+    /*if (grabberStartedCount() == 1)
+    {
+        retValue += checkError(m_camera->StartCapture());
+    }*/
     
     if (waitCond)
     {
@@ -1118,6 +1105,10 @@ ito::RetVal AvtVimba::stopDevice(ItomSharedSemaphore *waitCond)
         retValue += ito::RetVal(ito::retWarning, 0, tr("The grabber has already been stopped.").toLatin1().data());
         setGrabberStarted(0);
     }
+    /*else if (grabberStartedCount() == 0)
+    {
+        retValue += checkError(m_camera->EndCapture());
+    }*/
 
     if (waitCond)
     {
@@ -1141,6 +1132,12 @@ ito::RetVal AvtVimba::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     else
     {
         m_isgrabbing = true;
+        AVT::VmbAPI::FeaturePtr feature;
+        if (m_camera->GetFeatureByName("TriggerSoftware", feature) == VmbErrorSuccess)
+        {
+            retValue += checkError(feature->RunCommand());
+        }
+
     }
 
     if (waitCond)
@@ -1175,8 +1172,10 @@ ito::RetVal AvtVimba::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 	//}
 
 	//fclose(fp);*/
-
-    m_acquisitionStatus = checkError(m_camera->AcquireSingleImage(m_frame, 10000));
+    QElapsedTimer t;
+    t.start();
+    m_acquisitionStatus = checkError(m_camera->AcquireSingleImage(m_frame, timeoutMS)); //10000));
+    qDebug() << t.elapsed();
 
     return retValue;
 }
@@ -1421,7 +1420,7 @@ const ito::RetVal AvtVimba::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal AvtVimba::sychronizeParameters(int features)
+ito::RetVal AvtVimba::synchronizeParameters(int features)
 {
     ito::RetVal retval, ret_;
     VmbInt64_t enumIdx;
@@ -1470,17 +1469,30 @@ ito::RetVal AvtVimba::sychronizeParameters(int features)
 
         if (!ret_.containsError())
         {
-            m_params["x0"].setMeta(new ito::IntMeta(x0_min, x0 + w, x0_inc), true);
-	        m_params["x0"].setVal<int>(x0);
+            ParamMapIterator it = m_params.find("roi");
+            if (it != m_params.end())
+            {
+                ito::RectMeta roiMeta(\
+                    ito::RangeMeta(x0_min, width_max, x0_inc, w_min, w_max, w_inc), \
+                    ito::RangeMeta(y0_min, height_max, y0_inc, h_min, h_max, h_inc));
+                it->setMeta(&roiMeta, false);
+                int roi[] = {x0, y0, w, h};
+                it->setVal<int*>(roi, 4);
+            }
+            else
+            {
+                m_params["x0"].setMeta(new ito::IntMeta(x0_min, x0 + w - 2, x0_inc), true);
+	            m_params["x0"].setVal<int>(x0);
 
-            m_params["y0"].setMeta(new ito::IntMeta(y0_min, y0 + h, y0_inc), true);
-	        m_params["y0"].setVal<int>(y0);
+                m_params["y0"].setMeta(new ito::IntMeta(y0_min, y0 + h - 2, y0_inc), true);
+	            m_params["y0"].setVal<int>(y0);
 
-			m_params["x1"].setMeta(new ito::IntMeta(x0 + w_min - 1, width_max - 1, w_inc), true);
-			m_params["x1"].setVal<int>(x0 + w);
+			    m_params["x1"].setMeta(new ito::IntMeta(x0 + w_min - 1, width_max - 1, w_inc), true);
+			    m_params["x1"].setVal<int>(x0 + w - 1);
 
-			m_params["y1"].setMeta(new ito::IntMeta(y0 + h_min - 1, height_max - 1, h_inc), true);
-			m_params["y1"].setVal<int>(y0 + h);
+			    m_params["y1"].setMeta(new ito::IntMeta(y0 + h_min - 1, height_max - 1, h_inc), true);
+			    m_params["y1"].setVal<int>(y0 + h- 1);
+            }
 
 			m_params["sizex"].setMeta(new ito::IntMeta(w_min, width_max, w_inc), true);
 			m_params["sizex"].setVal<int>(w);
@@ -1494,6 +1506,139 @@ ito::RetVal AvtVimba::sychronizeParameters(int features)
 
     if (features & fBinning)
     {
+        VmbInt64_t binH, binH_max, binH_min, binH_inc;
+        VmbInt64_t binV, binV_max, binV_min, binV_inc;
+        AVT::VmbAPI::FeaturePtr feature;
+        if (m_camera->GetFeatureByName("horizontalBinning", feature) == VmbErrorNotFound)
+        {
+            m_params["binning"].setFlags(ito::ParamBase::Readonly);
+        }
+        else
+        {
+            ret_ += getIntFeatureByName("BinningHorizontal", binH, binH_max, binH_min, binH_inc);
+            ret_ += getIntFeatureByName("BinninVertical", binV, binV_max, binV_min, binV_inc);
+
+            //some cameras don't have any binning parameters
+            if (!ret_.containsError())
+            {
+                m_params["binning"].setMeta(new ito::IntMeta(binH_min*100+binV_min, binH_max*100+binH_max, binV_inc), true);
+                m_params["binning"].setVal<int>(binH*100+binV);
+                m_params["binning"].setFlags(0);
+            }
+        }            
+
+        retval += ret_;
+    }
+
+    if (features & fExposure)
+    {
+        double val, min, max;
+        ret_ = getDblFeatureByName("ExposureTime", val, min, max);
+        if (!ret_.containsError())
+        {
+            ParamMapIterator it = m_params.find("integration_time");
+            it->setMeta(new ito::DoubleMeta(musToS(min), musToS(max)), true);
+            it->setVal<double>(musToS(val));
+        }
+        retval += ret_;
+    }
+
+    if ((features & fGigETransport) && m_interfaceType == VmbInterfaceEthernet)
+    {
+	    VmbInt64_t intVal, intMin, intMax, intInc;
+	    ret_ = getIntFeatureByName("StreamBytesPerSecond",intVal, intMax, intMin, intInc);
+        ParamMapIterator it = m_params.find("stream_bps");
+        if (!ret_.containsError())
+        {
+            it->setMeta(new ito::IntMeta(intMin, intMax, intInc), true);
+            it->setVal<int>(intVal);
+        }
+
+        ret_ = getIntFeatureByName("GVSPPacketSize",intVal, intMax, intMin, intInc);
+        it = m_params.find("packet_size");
+        if (!ret_.containsError())
+        {
+            it->setMeta(new ito::IntMeta(intMin, intMax, intInc), true);
+            it->setVal<int>(intVal);
+        }
+    }
+
+    if (features & fTrigger)
+    {
+        ret_ = getEnumFeatureByName("TriggerMode", enumVal, enumIdx);
+        if (!ret_.containsError())
+        {
+            m_params["trigger_mode"].setVal<int>( enumVal == "On" ? 1 : 0 );
+        }
+        retval += ret_;
+
+        ret_ = getEnumFeatureByName("TriggerSource", enumVal, enumIdx);
+        if (!ret_.containsError())
+        {
+            m_params["trigger_source"].setVal<char*>((char*)(enumVal.data()));
+        }
+        retval += ret_;
+
+        ret_ = getEnumFeatureByName("TriggerActivation", enumVal, enumIdx);
+        if (!ret_.containsError())
+        {
+            m_params["trigger_activation"].setVal<char*>((char*)(enumVal.data()));
+        }
+        retval += ret_;
+    }
+
+    if (features & fGain)
+    {
+        ret_ += getEnumFeatureByName("GainAuto", enumVal, enumIdx);
+        if (!ret_.containsError())
+        {
+            if (enumVal == "Off")
+            {
+                m_params["gain"].setFlags(0);
+                m_params["gain_auto"].setVal<int>(0);
+            }
+            else if (enumVal == "Continuous")
+            {
+                m_params["gain"].setFlags(ito::ParamBase::Readonly);
+                m_params["gain_auto"].setVal<int>(1);
+            }
+            else
+            {
+                if (!setEnumFeature("GainAuto", "Off").containsError())
+                {
+                    m_params["gain"].setFlags(0);
+                    m_params["gain_auto"].setVal<int>(0);
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, "error setting gainAuto to Off");
+                }
+            }
+        }
+        retval += ret_;
+
+        double gain, gainMax, gainMin;
+        ret_ = getDblFeatureByName("Gain", gain, gainMin, gainMax);
+        if (!ret_.containsError())
+        {
+            ((ito::DoubleMeta*)(m_params["gain"].getMeta()))->setMin(gainMin);
+            ((ito::DoubleMeta*)(m_params["gain"].getMeta()))->setMax(gainMax);
+            m_params["gain"].setVal<double>(gain);
+        }
+        retval += ret_;
+    }
+
+    if (features & fOffset)
+    {
+        double offset, offsetMax, offsetMin;
+        ret_ += getDblFeatureByName("BlackLevel", offset, offsetMin, offsetMax);
+        if (!ret_.containsError())
+        {
+            ParamMapIterator it = m_params.find("offset");
+            ((ito::DoubleMeta*)(it->getMeta()))->setMin(offsetMin);
+            ((ito::DoubleMeta*)(it->getMeta()))->setMax(offsetMax);
+            it->setVal<double>(offset);
+        }
         retval += ret_;
     }
 

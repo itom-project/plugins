@@ -17,8 +17,6 @@ DockWidgetAvtVimba::DockWidgetAvtVimba(ito::AddInDataIO *grabber) :
     m_firstRun(true)
 {
     ui.setupUi(this);
-	ui.sW_Gain->setTracking(false);
-    ui.sW_intTime->setTracking(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -26,83 +24,75 @@ void DockWidgetAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
 {
     if (m_firstRun)
     {
-        //first time call
-        //get all given parameters and adjust all widgets according to them (min, max, stepSize, values...)
-		int propCount = 0;
-
-		if (params.contains("gain"))
-        {
-            ui.lB_Gain->setVisible(true);
-            ui.sW_Gain->setVisible(true);
-            ito::DoubleMeta* dm = (ito::DoubleMeta*)(params["gain"].getMeta());
-            ui.sW_Gain->setSingleStep(dm->getStepSize());
-            ++propCount;
-        }
-        else
-        {
-            ui.lB_Gain->setVisible(false);
-            ui.sW_Gain->setVisible(false);
-        }
-
-		if (params.contains("intTime"))
-        {
-            ui.lB_intTime->setVisible(true);
-            ui.sW_intTime->setVisible(true);
-            ito::DoubleMeta* dm = (ito::DoubleMeta*)(params["intTime"].getMeta());
-            ui.sW_intTime->setSingleStep(dm->getStepSize());
-			ui.sW_intTime->setMinimum(dm->getMin()+0.000001);
-			ui.sW_intTime->setMaximum(dm->getMax()-0.000001);
-            ++propCount;
-        }
-        else
-        {
-            ui.lB_intTime->setVisible(false);
-            ui.sW_intTime->setVisible(false);
-        }
-
+        ui.lblInterface->setText(params["interface"].getVal<char*>());
         m_firstRun = false;
     }
+
+    
+
 
     if (!m_inEditing)
     {
         m_inEditing = true;
-        //check the value of all given parameters and adjust your widgets according to them (value only should be enough)
-        if (params.contains("gain"))
+        
+        ParamMapIterator it = params.find("gain");
+        if (it != params.end())
         {
-            ui.sW_Gain->setValue(params["gain"].getVal<double>());
-            ui.sW_Gain->setEnabled(params["gainAuto"].getVal<int>() == 0);
+            ui.sW_Gain->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+            ui.sW_Gain->setMinimum(it->getMin());
+            ui.sW_Gain->setMaximum(it->getMax());
+            ui.sW_Gain->setValue(it->getVal<double>());
         }
-        if (params.contains("intTime"))
+        else
         {
-            ui.sW_intTime->setValue(params["intTime"].getVal<double>());
-            ui.sW_intTime->setEnabled(params["intTimeAuto"].getVal<int>() == 0);
+            ui.lbl_Gain->setVisible(false);
+            ui.sW_Gain->setVisible(false);
         }
 
+        it = params.find("gain_auto");
+        if (it != params.end())
+        {
+            ui.check_GainAuto->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+            ui.check_GainAuto->setChecked(it->getVal<int>() > 0);
+            ui.sW_Gain->setEnabled(ui.sW_Gain->isEnabled() && (it->getVal<int>() == 0));
+        }
+        else
+        {
+            ui.check_GainAuto->setVisible(false);
+        }
+
+        it = params.find("offset");
+        if (it != params.end())
+        {
+            ui.sW_Offset->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+            ui.sW_Offset->setMinimum(it->getMin());
+            ui.sW_Offset->setMaximum(it->getMax());
+            ui.sW_Offset->setValue(it->getVal<double>());
+        }
+        else
+        {
+            ui.lbl_Offset->setVisible(false);
+            ui.sW_Offset->setVisible(false);
+        }
+
+        it = params.find("integration_time");
+        if (it != params.end())
+        {
+            ui.sW_IntTime->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+            ui.sW_IntTime->setMinimum(it->getMin());
+            ui.sW_IntTime->setMaximum(it->getMax());
+            ui.sW_IntTime->setValue(it->getVal<double>());
+        }
+        else
+        {
+            ui.lbl_IntTime->setVisible(false);
+            ui.sW_IntTime->setVisible(false);
+        }
 
 
         m_inEditing = false;
     }
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-double getStepValue(double value, double stepSize)
-{
-    int stepCount = (int)((value / stepSize) + .5);
-    //qDebug() << "----------------- getStepValue stepCount: " << stepCount << "; alt: " << value / stepSize;  // getStepValue stepCount:  77.4818 ; alt:  77.4 
-    return stepSize * stepCount;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
- //void DockWidgetAvtVimba::on_contrast_valueChanged(int i)
- //{
- //    if (!m_inEditing)
- //    {
- //        m_inEditing = true;
- //        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("contrast",ito::ParamBase::Int,i));
- //        setPluginParameter(p, msgLevelWarningAndError);
- //        m_inEditing = false;
- //    }
- //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -111,22 +101,43 @@ void DockWidgetAvtVimba::on_sW_Gain_valueChanged(double d)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        double d2 = getStepValue(d, ui.sW_Gain->singleStep());
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain",ito::ParamBase::Double,d2));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain",ito::ParamBase::Double,d));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-
-void DockWidgetAvtVimba::on_sW_intTime_valueChanged(double d)
+void DockWidgetAvtVimba::on_sW_IntTime_valueChanged(double d)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        double d2 = getStepValue(d, ui.sW_intTime->singleStep());
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("intTime",ito::ParamBase::Double,d2));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,d));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetAvtVimba::on_sW_Offset_valueChanged(double d)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("offset",ito::ParamBase::Double,d));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetAvtVimba::on_check_GainAuto_value_toggled(bool checked)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain_auto",ito::ParamBase::Int, checked ? 1 : 0));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }

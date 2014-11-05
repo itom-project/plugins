@@ -73,28 +73,40 @@ class AvtVimba : public ito::AddInGrabber
         ito::RetVal getIntFeatureByName(const char *name, VmbInt64_t &value, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc);
 		ito::RetVal getEnumFeatureByName(const char *name, std::string &value, VmbInt64_t &idx);
 		ito::RetVal getDblFeatureByName(const char *name, double &value);
-		ito::RetVal SetDblFeature(const char *name, double &value);
-		ito::RetVal SetIntFeature(const char *name, int &value);
+        ito::RetVal getDblFeatureByName(const char *name, double &value, double &min, double &max);
+		ito::RetVal setDblFeature(const char *name, const double &value);
+		ito::RetVal setIntFeature(const char *name, const int &value);
 		ito::RetVal setEnumFeature(const char *name, const char *eValue);
         ito::RetVal setEnumFeature(const char *name, VmbInt64_t value);
 		ito::RetVal getRange(const char *name, double &max, double &min);
 		ito::RetVal getRange(const char *name, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc);
 
+        inline double musToS(const double &mus) { return mus * 1.0e-6; }
+        inline double sToMus(const double &s) { return s * 1.0e6; }
+        inline double msToS(const double &mus) { return mus * 1.0e-3; }
+        inline double sToMs(const double &s) { return s * 1.0e3; }
+
         enum Feature
         {
-            fBpp = 1,
-            fSize = 2,
-            fBinning = 4,
-            fAll = fBpp | fSize | fBinning
+            fBpp = 0x001,
+            fSize = 0x002,
+            fBinning = 0x004,
+            fExposure = 0x008,
+            fGigETransport = 0x010,
+            fTrigger = 0x020,
+            fGain = 0x040,
+            fOffset = 0x080,
+            fAll = fBpp | fSize | fBinning | fExposure | fGigETransport | fTrigger | fGain | fOffset
         };
 
-        ito::RetVal sychronizeParameters(int features);
+        ito::RetVal synchronizeParameters(int features);
 
 
         bool m_isgrabbing; /*!< Check if acquire was executed */
 		ito::RetVal m_acquisitionStatus;
 		CameraPtr m_camera;
 		FramePtr m_frame;
+        double gain_range[2];
 
         enum TransportType
         {
@@ -105,14 +117,40 @@ class AvtVimba : public ito::AddInGrabber
         struct BppEnum
         {
             BppEnum() : bppMono8(-1), bppMono10(-1), bppMono12(-1), bppMono14(-1) {}
-            int bppMono8;
-            int bppMono10;
-            int bppMono12;
-            int bppMono14;
+            VmbInt64_t bppMono8;
+            VmbInt64_t bppMono10;
+            VmbInt64_t bppMono12;
+            VmbInt64_t bppMono14;
         };
 
-        TransportType m_transportType;
+        struct TriggerSourceEnum
+        {
+            TriggerSourceEnum() : triggerFreerun(-1), triggerLine1(-1), triggerLine2(-1), triggerLine3(-1), triggerLine4(-1), triggerFixedRate(-1), triggerSoftware(-1), triggerInputLines(-1) {}
+            VmbInt64_t triggerFreerun;
+            VmbInt64_t triggerLine1;
+            VmbInt64_t triggerLine2;
+            VmbInt64_t triggerLine3;
+            VmbInt64_t triggerLine4;
+            VmbInt64_t triggerFixedRate;
+            VmbInt64_t triggerSoftware;
+            VmbInt64_t triggerInputLines;
+        };
+
+        struct TriggerActivationEnum
+        {
+            TriggerActivationEnum() : taRisingEdge(-1), taFallingEdge(-1), taAnyEdge(-1), taLevelHigh(-1), taLevelLow(-1) {}
+            VmbInt64_t taRisingEdge;
+            VmbInt64_t taFallingEdge;
+            VmbInt64_t taAnyEdge;
+            VmbInt64_t taLevelHigh;
+            VmbInt64_t taLevelLow;
+        };
+
+        VmbInterfaceType m_interfaceType;
+        TriggerSourceEnum m_triggerSourceEnum;
+        TriggerActivationEnum m_triggerActivationEnum;
         BppEnum m_bppEnum;
+        int timeoutMS;
         
     public slots:
         //!< Get Camera-Parameter

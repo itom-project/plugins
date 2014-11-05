@@ -35,11 +35,10 @@ class DockWidgetAvtVimba : public ito::AbstractAddInDockWidget
         void identifierChanged(const QString &identifier);
 
     private slots:
-        //add here slots connected to changes of any widget
-        //example:
-        //void on_contrast_valueChanged(int i);
         void on_sW_Gain_valueChanged(double d);
-        void on_sW_intTime_valueChanged(double d);
+        void on_sW_Offset_valueChanged(double d);
+        void on_sW_IntTime_valueChanged(double d);
+        void on_check_GainAuto_value_toggled(bool checked);
           
 };
 
