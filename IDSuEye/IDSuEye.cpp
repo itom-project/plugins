@@ -83,6 +83,14 @@ IDSuEye::IDSuEye() :
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+    int roi[] = {0, 0, 2048, 2048};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2048), ito::RangeMeta(0, 2048));
+    paramVal.setMeta(rm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+#endif
+
     paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Index of left boundary pixel within ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("Index of top boundary pixel within ROI").toLatin1().data());
@@ -381,7 +389,14 @@ ito::RetVal IDSuEye::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
 
     if(!retValue.containsError())
     {
-        *val = it.value();
+        if (hasIndex)
+        {
+            *val = apiGetParam(*it, hasIndex, index, retValue);
+        }
+        else
+        {
+            *val = *it;
+        }
     }
 
     if (waitCond)
@@ -455,7 +470,7 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
     if(!retValue.containsError())
     {
-        if (key == "x0" || key == "x1" || key == "y0" || key == "y1")
+        if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi")
         {
             IS_RECT rectAOI;
             retValue += checkError(is_AOI(m_camera, IS_AOI_IMAGE_GET_AOI, (void*)&rectAOI, sizeof(rectAOI)));
@@ -479,6 +494,42 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 else if (key == "y1")
                 {
                     rectAOI.s32Height = 1 + val->getVal<int>() - m_params["y0"].getVal<int>();
+                }
+                else if (key == "roi")
+                {
+                    if (!hasIndex)
+                    {
+                        if (val->getLen() != 4)
+                        {
+                            retValue += ito::RetVal(ito::retError, 0, "roi must have 4 values");
+                        }
+                        else
+                        {
+                            int *roi = val->getVal<int*>();
+                            rectAOI.s32X = roi[0];
+                            rectAOI.s32Y = roi[1];
+                            rectAOI.s32Width = roi[2];
+                            rectAOI.s32Height = roi[3];
+                        }
+                    }
+                    else
+                    {
+                        switch (index)
+                        {
+                        case 0:
+                            rectAOI.s32X = val->getVal<int>();
+                            break;
+                        case 1:
+                            rectAOI.s32Y = val->getVal<int>();
+                            break;
+                        case 2:
+                            rectAOI.s32Width = val->getVal<int>();
+                            break;
+                        case 3:
+                            rectAOI.s32Height = val->getVal<int>();
+                            break;
+                        }
+                    }
                 }
 
                 retValue += checkError(is_AOI(m_camera, IS_AOI_IMAGE_SET_AOI, (void*)&rectAOI, sizeof(rectAOI)));
@@ -1310,6 +1361,18 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             it->setVal<int>(currentY1);
             it->setMeta(new ito::IntMeta(offset.s32Y + sizeMin.s32Y - 1, offset.s32Y + sizeMax.s32Y - 1, sizeInc.s32Y), true);
             it->setFlags(0);
+
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+            it = m_params.find("roi");
+            int *roi = it->getVal<int*>();
+            roi[0] = offset.s32X;
+            roi[1] = offset.s32Y;
+            roi[2] = size.s32X;
+            roi[3] = size.s32Y;
+            ito::RangeMeta widthMeta(offsetMin.s32X, sizeMax.s32X + offset.s32X - 1, offsetInc.s32X, sizeMin.s32X, sizeMax.s32X + offset.s32X, sizeInc.s32X);
+            ito::RangeMeta heightMeta(offsetMin.s32Y, sizeMax.s32Y + offset.s32Y - 1, offsetInc.s32Y, sizeMin.s32Y, sizeMax.s32Y + offset.s32Y, sizeInc.s32Y);
+            it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
+#endif            
         }
         else
         {
@@ -1317,6 +1380,9 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             m_params["x1"].setFlags(ito::ParamBase::Readonly);
             m_params["y0"].setFlags(ito::ParamBase::Readonly);
             m_params["y1"].setFlags(ito::ParamBase::Readonly);
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+            m_params["roi"].setFlags(ito::ParamBase::Readonly);
+#endif
         }
     }
 

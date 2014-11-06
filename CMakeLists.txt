@@ -23,6 +23,22 @@ IF (WIN32)
     endif (PLUGIN_aerotechEnsemble)
 ENDIF (WIN32)
 
+
+# AndorSDK3
+OPTION(PLUGIN_andorSDK3 "Build with this plugin." OFF)
+if (PLUGIN_andorSDK3)
+        ADD_SUBDIRECTORY(AndorSDK3)
+endif (PLUGIN_andorSDK3)# AVTVimba
+
+#AVTVimba
+IF (WIN32)
+    OPTION(PLUGIN_AVTVimba "Build with this plugin." ON)
+    if (PLUGIN_AVTVimba)
+            ADD_SUBDIRECTORY(AVTVimba)
+    endif (PLUGIN_AVTVimba)
+ENDIF (WIN32)
+
+
 # cmu1394
 IF (WIN32)
     OPTION(PLUGIN_cmu1394 "Build with this plugin." ON)
@@ -112,7 +128,7 @@ if (PLUGIN_GWInstekPSP)
 endif (PLUGIN_GWInstekPSP)
 
 # IDSuEye
-OPTION(PLUGIN_IDSuEye "Build with this plugin." OFF)
+OPTION(PLUGIN_IDSuEye "Build with this plugin." ON)
 if (PLUGIN_IDSuEye)
     ADD_SUBDIRECTORY(IDSuEye)
 endif (PLUGIN_IDSuEye)
@@ -209,7 +225,7 @@ if (PLUGIN_PIPiezoCtrl)
 endif (PLUGIN_PIPiezoCtrl)
 
 # PI_GCS2
-OPTION(PLUGIN_PI_GCS2 "Build with this plugin." OFF)
+OPTION(PLUGIN_PI_GCS2 "Build with this plugin." ON)
 if (PLUGIN_PI_GCS2)
     ADD_SUBDIRECTORY(PI_GCS2)
 endif (PLUGIN_PI_GCS2)
@@ -228,7 +244,7 @@ endif (PLUGIN_SerialIO)
 
 # ThorlabsCCS Spectrometer
 IF (WIN32)
-    OPTION(PLUGIN_ThorlabsCCS "Build with this plugin." OFF)
+    OPTION(PLUGIN_ThorlabsCCS "Build with this plugin." ON)
     if (PLUGIN_ThorlabsCCS)
         ADD_SUBDIRECTORY(ThorlabsCCS)
     endif (PLUGIN_ThorlabsCCS)

@@ -16,7 +16,7 @@
         <translation type="obsolete">Fittet eine Ebene im 2D-Datenobjekt und subtrahiert diese Ebene vom Datenobjekt -&gt; dies ist eine Kombination von &apos;fitPlane&apos; und &apos;subtractPlane&apos;</translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="+1291"/>
+        <location filename="../fittingfilters.cpp" line="+1589"/>
         <source>fits 2D-polynomial in 2D-dataObject and returns a double-DataObject with the fitted surface as well as an error value sigma</source>
         <translation>Fittet ein 2D-Polynom n-ter Ordnung in ein 2D-Datenobjekt und gibt ein &apos;Double&apos;-Datenobjekt mit den gefitteten Daten und der mittleren Abweichung (sigma-Wert) zurück</translation>
     </message>
@@ -26,15 +26,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-1174"/>
-        <location line="+97"/>
+        <location filename="../fittingfilters.cpp" line="-1461"/>
+        <location line="+135"/>
         <location line="+109"/>
         <location filename="../polyfit2d.cpp" line="+7"/>
         <source>source image data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-107"/>
+        <location line="-242"/>
+        <source>fitting method (leastSquareFit [default], leastSquareFitSVD, leastMedianFit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <location line="+644"/>
+        <source>probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-643"/>
+        <location line="+644"/>
+        <source>allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-516"/>
         <source>Parameter A of regression plane z = A + Bx + Cy, which is subtracted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -54,13 +71,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-116"/>
-        <location line="+207"/>
+        <location line="+91"/>
         <source>fitting method (leastSquareFit [default], leastSquareFitSVD)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-205"/>
+        <location line="+400"/>
+        <source>LeastSquares (default), LMedS (Least median of squares)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-636"/>
         <source>Parameter A of regression plane z = A + Bx + Cy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -75,17 +96,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+148"/>
         <source>source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-100"/>
-        <source>the chosen method is unknown</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+75"/>
+        <location line="-25"/>
         <location line="+109"/>
         <source>destination image data object</source>
         <translation type="unfinished"></translation>
@@ -179,7 +195,7 @@
         <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-624"/>
+        <location filename="../fittingfilters.cpp" line="-673"/>
         <source>Plugin with fitting algorithms.</source>
         <translation type="unfinished"></translation>
     </message>

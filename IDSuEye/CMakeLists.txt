@@ -57,35 +57,35 @@ find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector 
 FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
 
 IF(BUILD_TARGET64)
-	set( IDS_LIBRARY ${IDS_DIRECTORY}/Lib/uEye_api_64.lib )
+    set( IDS_LIBRARY ${IDS_DIRECTORY}/Lib/uEye_api_64.lib )
 ELSE(BUILD_TARGET64)
-	set( IDS_LIBRARY ${IDS_DIRECTORY}/Lib/uEye_api.lib )
+    set( IDS_LIBRARY ${IDS_DIRECTORY}/Lib/uEye_api.lib )
 ENDIF(BUILD_TARGET64)
 
 #################################################################
 # General settings and preprocessor settings
 #################################################################
 IF(BUILD_SHARED_LIBS)
-	SET(LIBRARY_TYPE SHARED)
+    SET(LIBRARY_TYPE SHARED)
 ELSE(BUILD_SHARED_LIBS)
-	SET(LIBRARY_TYPE STATIC)
+    SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
 IF (BUILD_UNICODE)
-	ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
 ADD_DEFINITIONS(-DCMAKE)
 ADD_DEFINITIONS(-DITOMWIDGETS_SHARED)
 
 IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-	ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
+    ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
-	SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ELSE(CMAKE_BUILD_TYPE)
-	SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 
@@ -96,16 +96,16 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 #  via the find_package macro above
 #################################################################
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
-	${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
-	${OpenCV_DIR}/include       #include directory of OpenCV
-	${ITOM_SDK_INCLUDE_DIR}     #include directory of the itom SDK (recommended) 
-	${ITOM_SDK_INCLUDE_DIR}/itomWidgets #include this subfolder if you use any widgets from itomWidgets
-	${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
-	#add further include directories here
-	${Tools_SOURCE_DIR}
-	${IDS_DIRECTORY}
-	#${Boost_INCLUDE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR} #build directory of this plugin (recommended)
+    ${CMAKE_CURRENT_SOURCE_DIR} #source directory of this plugin (recommended)
+    ${OpenCV_DIR}/include       #include directory of OpenCV
+    ${ITOM_SDK_INCLUDE_DIR}     #include directory of the itom SDK (recommended) 
+    ${ITOM_SDK_INCLUDE_DIR}/itomWidgets #include this subfolder if you use any widgets from itomWidgets
+    ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
+    #add further include directories here
+    ${Tools_SOURCE_DIR}
+    ${IDS_DIRECTORY}
+    #${Boost_INCLUDE_DIR}
 )
 
 #################################################################
@@ -119,7 +119,7 @@ INCLUDE_DIRECTORIES(
 #  the link target command below.
 #################################################################
 LINK_DIRECTORIES(
-	#add all linker directories
+    #add all linker directories
 )
 
 #################################################################
@@ -142,7 +142,7 @@ set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSuEye.h
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-	#add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
+    #add further header files (absolute pathes e.g. using CMAKE_CURRENT_SOURCE_DIR)
 )
 
 set(plugin_SOURCES
@@ -150,13 +150,13 @@ set(plugin_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/DockWidgetIDS.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSuEye.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/IDSInterface.cpp
-	#add further source files here
+    #add further source files here
 )
 
 #Append rc file to the source files for adding information about the plugin
 # to the properties of the DLL under Visual Studio.
 if(MSVC)
-	list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
 set(plugin_UI
@@ -165,7 +165,7 @@ set(plugin_UI
 )
 
 set(plugin_RCC
-	#add absolute pathes to any *.qrc resource files here
+    #add absolute pathes to any *.qrc resource files here
 )
 
 #################################################################
@@ -173,13 +173,13 @@ set(plugin_RCC
 # (These methods create the moc, rcc and uic process.)
 #################################################################
 if (QT5_FOUND)
-	#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-	QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-	QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+    QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 else (QT5_FOUND)
-	QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-	QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-	QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+    QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 endif (QT5_FOUND)
 
 
@@ -216,9 +216,9 @@ ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} $
 # if you want to link against one library whose directory is already added to LINK_DIRECTORIES above
 # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Boost_LIBRARIES} ${IDS_LIBRARY} delayimp)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${IDS_LIBRARY} delayimp)
 if (QT5_FOUND)
-	qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
+    qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
 endif (QT5_FOUND)
 
 # SET_TARGET_PROPERTIES(${target_name} PROPERTIES LINK_FLAGS "/DELAYLOAD:SC2_Cam.dll")

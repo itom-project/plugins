@@ -130,7 +130,7 @@
         <item>
          <widget class="QCheckBox" name="checkAsync">
           <property name="text">
-           <string>Asynchrone</string>
+           <string>asynchronous</string>
           </property>
          </widget>
         </item>

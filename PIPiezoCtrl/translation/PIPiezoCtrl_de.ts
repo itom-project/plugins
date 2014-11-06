@@ -4,45 +4,218 @@
 <context>
     <name>DialogPIPiezoCtrl</name>
     <message>
-        <location filename="../dialogPIPiezoCtrl.cpp" line="+47"/>
+        <location filename="../dialogPIPiezoCtrl.cpp" line="+48"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
-        <source>the upper position limit must be higher than the lower one</source>
+        <location filename="../dialogPIPiezoCtrl.ui"/>
+        <source>PI Piezo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+72"/>
-        <source>timeout while setting parameters of plugin.</source>
+        <location/>
+        <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>plugin instance not defined.</source>
+        <location/>
+        <source>Device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
-        <source>Invalid parameter input</source>
+        <location/>
+        <source>[unknown]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Error while setting parameters of plugin.</source>
+        <location/>
+        <source>Piezo:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Mode:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>remote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>local</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>asynchronous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Position limits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>low:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message utf8="true">
+        <location/>
+        <source> µm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>high:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Delay after positioning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Delay (Offset)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source> ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Delay (Proportional)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message utf8="true">
+        <location/>
+        <source> ms/µm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>the total delay is offset + proportional * distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>this user-defined delay is only considered if the device has no built-in on-target flag.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DockWidgetPIPiezoCtrl</name>
+    <message>
+        <location filename="../dockWidgetPIPiezoCtrl.ui"/>
+        <source>PI Piezo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>General Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>[ID]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Piezo:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>[unknown]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Devices:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Positioning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Step Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message utf8="true">
+        <location/>
+        <source> µm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Joystick Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Remote</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Local</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Absolut Positioning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Actual Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Target Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>PIPiezoCtrl</name>
     <message>
-        <location filename="../PIPiezoCtrl.cpp" line="+167"/>
-        <source>Current type of controller, e.g. E-662, E-665, ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location filename="../PIPiezoCtrl.cpp" line="+110"/>
         <source>device information string</source>
         <translation type="unfinished"></translation>
     </message>
@@ -97,7 +270,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-14"/>
+        <source>Current type of controller, e.g. E-662, E-665, E-753...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>asychronous (1) or sychronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
@@ -144,24 +322,24 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+129"/>
+        <location line="+200"/>
         <source>Doesn&apos;t fit to interface DataIO!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+82"/>
         <location line="+33"/>
         <source>not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+49"/>
-        <location line="+760"/>
+        <location line="+962"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-720"/>
+        <location line="-914"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -177,22 +355,22 @@
     </message>
     <message>
         <location line="+67"/>
-        <location line="+508"/>
+        <location line="+719"/>
         <source>controller device unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-399"/>
+        <location line="-577"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+55"/>
         <source>timeout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+84"/>
         <location line="+43"/>
         <source>error could not be parsed</source>
         <translation type="unfinished"></translation>
@@ -303,22 +481,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+65"/>
+        <location line="+49"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+96"/>
+        <location line="+103"/>
         <source>could not identify controller. No answer for command *idn?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Could not read port number from serial port or port number invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+210"/>
         <source>the new position (rel) seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -331,7 +510,7 @@
 <context>
     <name>PIPiezoCtrlInterface</name>
     <message>
-        <location line="-1422"/>
+        <location filename="../PIPiezoCtrlInterface.cpp" line="+84"/>
         <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>

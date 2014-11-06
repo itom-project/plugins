@@ -761,7 +761,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+88"/>
         <source>Tried to get picture without starting device</source>
         <translation type="unfinished"></translation>
     </message>

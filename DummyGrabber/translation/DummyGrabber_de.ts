@@ -4,36 +4,84 @@
 <context>
     <name>DockWidgetDummyGrabber</name>
     <message>
+        <location filename="../dockWidgetDummyGrabber.ui"/>
         <source>General Information</source>
-        <translation type="obsolete">Allgemeine Informationen</translation>
+        <translation>Allgemeine Informationen</translation>
     </message>
     <message>
+        <location/>
         <source>Image Dimensions</source>
-        <translation type="obsolete">Bild</translation>
+        <translation>Bild</translation>
     </message>
     <message>
+        <location/>
         <source>Width:</source>
-        <translation type="obsolete">Breite:</translation>
+        <translation>Breite:</translation>
     </message>
     <message>
+        <location/>
         <source>Height:</source>
-        <translation type="obsolete">Höhe:</translation>
+        <translation>Höhe:</translation>
     </message>
     <message>
+        <location/>
         <source>Bits per Pixel:</source>
-        <translation type="obsolete">Bits pro Pixel:</translation>
+        <translation>Bits pro Pixel:</translation>
     </message>
     <message>
+        <location/>
         <source> bits</source>
-        <translation type="obsolete"> Bits</translation>
+        <translation> Bits</translation>
     </message>
     <message>
+        <location/>
         <source>Integration</source>
-        <translation type="obsolete">Belichtung</translation>
+        <translation>Belichtung</translation>
     </message>
     <message>
+        <location/>
         <source>Integrationtime</source>
-        <translation type="obsolete">Belichtungszeit</translation>
+        <translation>Belichtungszeit</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Form</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>[ID]</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ID:</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source> px</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>%</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ms</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -224,17 +272,9 @@
 <context>
     <name>DummyGrabberInterface</name>
     <message>
-        <source>A virtual grabber</source>
-        <translation type="obsolete">Ein virtueller Grabber</translation>
-    </message>
-    <message>
-        <source>The DummyGrabber is a virtual camera which emulates a camera with white noise. It can be used as template for grabber implementation and for basic interface test. For simulation of measurement systems use the emulator gabber.</source>
-        <translation type="obsolete">Der DummyGrabber ist eine virtuelle Kamera, die gleichmäßiges Zufallsrauschen nachbildet. Dies kann als Vorlage zur Implementierung einer Kamera oder für rudimentäre Schnittstellentests verwendet werden. Zur Simulation eines Messsystems sollte der EmulationGrabber genutzt werden.</translation>
-    </message>
-    <message>
         <location line="-813"/>
         <source>N.A.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -249,11 +289,7 @@
     <message>
         <location line="+3"/>
         <source>Bits per Pixel, usually 8-16bit grayvalues</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bits per Pixel, usually 8-16bit grayvalues or 24 bit color</source>
-        <translation type="obsolete">Bits pro Pixel, 8-16 Bit Grauwerte oder 24 Bit Farbe</translation>
+        <translation type="unfinished">Bits pro Pixel, normalerweise 8-16 Bit Grauwerte</translation>
     </message>
 </context>
 <context>
@@ -261,7 +297,7 @@
     <message>
         <location line="-17"/>
         <source>A virtual white noise grabber</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ein virtueller Weißrausch-Grabber</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -272,44 +308,54 @@
 <context>
     <name>dialogDummyGrabber</name>
     <message>
+        <location filename="../dialogDummyGrabber.ui"/>
         <source>Buffer and Binning</source>
-        <translation type="obsolete">Puffer und Binning</translation>
+        <translation type="unfinished">Puffer und Binning</translation>
     </message>
     <message>
+        <location/>
         <source>BitPerPix</source>
-        <translation type="obsolete">BitProPix</translation>
+        <translation type="unfinished">BitProPix</translation>
     </message>
     <message>
+        <location/>
         <source>Apply</source>
-        <translation type="obsolete">Übernehmen</translation>
+        <translation type="unfinished">Übernehmen</translation>
     </message>
     <message>
+        <location/>
         <source>Cancel</source>
-        <translation type="obsolete">Abbrechen</translation>
+        <translation type="unfinished">Abbrechen</translation>
     </message>
     <message>
+        <location/>
         <source>Integration</source>
-        <translation type="obsolete">Belichtung</translation>
+        <translation type="unfinished">Belichtung</translation>
     </message>
     <message>
+        <location/>
         <source>Integrationtime</source>
-        <translation type="obsolete">Belichtungszeit</translation>
+        <translation type="unfinished">Belichtungszeit</translation>
     </message>
     <message>
+        <location/>
         <source>Frametime</source>
-        <translation type="obsolete">Zeitrahmen</translation>
+        <translation type="unfinished">Zeitrahmen</translation>
     </message>
     <message>
+        <location/>
         <source>Size</source>
-        <translation type="obsolete">Größe</translation>
+        <translation type="unfinished">Größe</translation>
     </message>
     <message>
+        <location/>
         <source>XSize</source>
-        <translation type="obsolete">X-Größe</translation>
+        <translation type="unfinished">X-Größe</translation>
     </message>
     <message>
+        <location/>
         <source>YSize</source>
-        <translation type="obsolete">Y-Größe</translation>
+        <translation type="unfinished">Y-Größe</translation>
     </message>
     <message>
         <location filename="../dialogDummyGrabber.cpp" line="+31"/>
@@ -323,40 +369,134 @@
         <translation>RIO (Binning wurde geändert, auf Übernehmen oder Speichern klicken)</translation>
     </message>
     <message>
+        <location filename="../dialogDummyGrabber.ui"/>
         <source>x-size</source>
-        <translation type="obsolete">X-Größe</translation>
+        <translation type="unfinished">X-Größe</translation>
     </message>
     <message>
+        <location/>
         <source>y-size</source>
-        <translation type="obsolete">Y-Größe</translation>
+        <translation type="unfinished">Y-Größe</translation>
     </message>
     <message>
-        <location line="-101"/>
+        <location/>
+        <location filename="../dialogDummyGrabber.cpp" line="-101"/>
         <source>Region of Interest (ROI)</source>
         <translation>Bildausschnitt (ROI)</translation>
     </message>
     <message>
+        <location/>
         <source>reset to full size</source>
-        <translation type="obsolete">Vollbild</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
+        <translation type="unfinished">Vollbild</translation>
     </message>
     <message>
-        <source>Destructor must be overwritten</source>
-        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
+        <location/>
+        <source>Dialog</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Binning X</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Binning Y</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>8</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>10</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>12</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>14</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>16</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>24</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>30</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>32</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>%</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ms</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>0</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Y0</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>X1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Y1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>X0</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>OK</source>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
     <message>
         <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
@@ -371,36 +511,6 @@
         <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor fürAusgabeparameter!</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <source>function execution unused in this plugin</source>
-        <translation type="obsolete">Die Funktion &apos;execution&apos; wurde in diesem Plugin nicht bentzt</translation>
-    </message>
-    <message>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="obsolete">Das Plugin scheint einen Konfigurationsdialog zu besitzen, doch die Methode showConfDialog wurde nicht implementiert</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <source>Constructor must be overwritten</source>
-        <translation type="obsolete">Konstruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>Destructor must be overwritten</source>
-        <translation type="obsolete">Destruktor muss überschrieben werden</translation>
-    </message>
-    <message>
-        <source>timer could not be set</source>
-        <translation type="obsolete">Timer konnte nicht gesetzt werden</translation>
-    </message>
-    <message>
-        <source>not implemented</source>
-        <translation type="obsolete">Nicht implementiert</translation>
     </message>
 </context>
 </TS>

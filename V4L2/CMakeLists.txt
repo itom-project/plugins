@@ -73,7 +73,7 @@ set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
-set(plugin_ui
+set(plugin_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogV4L2.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2.ui
 )
@@ -92,9 +92,9 @@ list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
 if (QT5_FOUND)
-    #QT5_WRAP_UI(plugin_UI_MOC ${plugin_ui})
+    #QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
 else (QT5_FOUND)
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_ui})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
     QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
 endif (QT5_FOUND)
 
@@ -112,7 +112,7 @@ if (QT5_FOUND)
 endif (QT5_FOUND)
 
 #translation
-set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_ui})
+set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
 
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
