@@ -15,9 +15,6 @@
 #include <qstringlist.h>
 #include <qplugin.h>
 #include <qmessagebox.h>
-#include <qelapsedtimer.h>
-
-#include <VimbaCPP/Include/EnumEntry.h>
 
 #include "dockWidgetAvtVimba.h"
 
@@ -35,20 +32,25 @@ AvtVimbaInterface::AvtVimbaInterface()
     m_type = ito::typeDataIO | ito::typeGrabber; //any grabber is a dataIO device AND its subtype grabber (bitmask -> therefore the OR-combination).
     setObjectName("AVTVimba");
 
-    m_description = QObject::tr("todo");
+    m_description = QObject::tr("AVT GigE and firewire cameras using Vimba interface");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"This template can be used for implementing a new type of camera or grabber plugin \n\
+"This plugin supports Allied Vision GigE and firewire cameras and has currently been tested with the following models: \n\
+- Marlin, F003 (monochrome, Firewire) \n\
+- CCD4000, GIP1000 (formerly Vosskuehler) (monochrome, GigE) \n\
 \n\
-Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
+The plugin has been compiled using the AVT Vimba version 1.3.0. \n\
+\n\
+In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. \n\
+Color formats are not supported.";
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "Authors of the plugin";
+    m_author = "J. Nitsche (IPROM Uni Braunschweig), M. Gronle (ITO Uni Stuttgart)";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("The plugin's license string");
+    m_license = QObject::tr("Licensed under LGPL");
     m_aboutThis = QObject::tr(""); 
 
     //add mandatory and optional parameters for the initialization here.
@@ -100,7 +102,9 @@ ito::RetVal AvtVimbaInterface::closeThisInst(ito::AddInBase **addInInst)
 AvtVimba::AvtVimba() : 
 	AddInGrabber(), 
 	m_isgrabbing(false),  
-	m_camera(CameraPtr())
+	m_camera(CameraPtr()),
+    m_aliveTimer(NULL),
+    m_aliveTimerThread(NULL)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AVTVimba", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -128,7 +132,7 @@ AvtVimba::AvtVimba() :
     paramVal = ito::Param("binning", ito::ParamBase::Int | ito::ParamBase::In, 101, 101, 101, tr("binning (horizontal_factor * 100 + vertical_factor)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 10.0, tr("timeout for image acquisition in sec").toLatin1().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 2.0, tr("timeout for image acquisition in sec").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI").toLatin1().data());
@@ -146,7 +150,9 @@ AvtVimba::AvtVimba() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 33.0, 0.0, tr("Gain of AD in dB, set it to 0.0 for best image quality.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("gain_auto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled gain (0: off, 1: continously varies the gain; gain will be read-only then)").toLatin1().data());
+	paramVal = ito::Param("gain_auto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled gain (0: off, 1: continuously varies the gain; gain will be read-only then)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gamma", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("Gamma value").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("stream_bps", ito::ParamBase::Int | ito::ParamBase::In, 1000000, 124000000, 124000000, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -285,6 +291,21 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 
                 if (!retValue.containsError())
                 {
+                    AVT::VmbAPI::FeaturePtr feature;
+                        if (m_camera->GetFeatureByName("ExposureTime", feature) == VmbErrorSuccess)
+                        {
+                            nameExposureTime = "ExposureTime";
+                        }
+                        else if (m_camera->GetFeatureByName("ExposureTimeAbs", feature) == VmbErrorSuccess)
+                        {
+                            nameExposureTime = "ExposureTimeAbs";
+                        }
+                        else
+                        {
+                            retValue += ito::RetVal(ito::retError, 0, "Feature 'ExposureTime' or 'ExposureTimeAbs' not available");
+                            nameExposureTime = "";
+                        }
+
                     if (m_interfaceType == VmbInterfaceEthernet)
                     {
                         //some defaults (they are not changed in this plugin)
@@ -292,7 +313,6 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
                         setEnumFeature("ExposureMode", "Timed");
                         setEnumFeature("TriggerSelector", "FrameStart"); //if the trigger source is changed, it changes the trigger for starting an exposure
                         setEnumFeature("TriggerMode", "On"); //trigger off makes no sense
-                        setDblFeature("Gamma", 0.0);
                         setEnumFeature("BlackLevelSelector", "All");
 
                         if (packetSize == 0)
@@ -308,7 +328,6 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
                         setEnumFeature("ExposureAuto", "Off");
                         setEnumFeature("ExposureMode", "Timed");
                         setEnumFeature("TriggerSelector", "ExposureStart"); //if the trigger source is changed, it changes the trigger for starting an exposure
-                        setDblFeature("Gamma", 0.0);
                         setEnumFeature("BlackLevelSelector", "All");
 
                         //remove unused parameters
@@ -546,6 +565,15 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params);
+
+        //configure aliveTimer
+        m_aliveTimerThread = new QThread(this);
+        m_aliveTimer = new QTimer(NULL);
+        m_aliveTimer->setInterval(2000);
+        m_aliveTimer->stop();
+        m_aliveTimer->moveToThread(m_aliveTimerThread);
+        m_aliveTimerThread->start();
+        connect(m_aliveTimer, SIGNAL(timeout()), this, SLOT(aliveTimer_fire()), Qt::DirectConnection);
     }
     
     if (waitCond)
@@ -590,6 +618,12 @@ ito::RetVal AvtVimba::close(ItomSharedSemaphore *waitCond)
 		//shutdown API
 		retValue += checkError(sys.Shutdown());
 	}
+
+    m_aliveTimer->stop();
+    m_aliveTimer->deleteLater();
+    m_aliveTimerThread->exit();
+    m_aliveTimerThread->wait();
+    m_aliveTimerThread->deleteLater();
 
     if (waitCond)
     {
@@ -866,7 +900,7 @@ ito::RetVal AvtVimba::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
     {
         if (key == "integration_time")
         {
-			retValue += setDblFeature("ExposureTime",sToMus(val->getVal<double>()));
+			retValue += setDblFeature(nameExposureTime,sToMus(val->getVal<double>()));
             if (!retValue.containsError())
             {
                 retValue += synchronizeParameters(fExposure);
@@ -932,6 +966,11 @@ ito::RetVal AvtVimba::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
         {
             retValue += setEnumFeature("GainAuto", val->getVal<int>() == 0 ? "Off" : "Continuous");
             retValue += synchronizeParameters(fGain);
+        }
+        else if (key == "gamma")
+        {
+            retValue += setDblFeature("Gamma", val->getVal<double>());
+            retValue += synchronizeParameters(fGamma);
         }
         else if (key == "stream_bps")
         {
@@ -1111,36 +1150,16 @@ ito::RetVal AvtVimba::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         waitCond->release();  
     }
     
-	//FramePtr rpFrame;
-	//VmbUint32_t BufferSize, Width, Height;
-	//m_camera->AcquireSingleImage(rpFrame, 2000);
-	////cameras[0]->Close();
-
-	///*rpFrame->GetImage( pBuffer );
-
-	//FILE	*fp;
-	//fp = fopen("PictureMono8.pgm", "w");*/
-
-	//rpFrame->GetBufferSize(BufferSize);	
-	//rpFrame->GetWidth(Width);
-	//VmbFrameStatusType status;
-	//rpFrame->GetReceiveStatus(status);
-	//rpFrame->GetHeight(Height);
-
-	///*fprintf(fp ,"P2\n# PictureMono8.pgm\n%d %d\n255\n", Width, Height);
-
-	//for(int i=0; i < (int)BufferSize; i++){
-	//	fprintf(fp,"%d ", pBuffer[i]);
-	//	if(((i+1) % 70)==0){
-	//		fprintf(fp, "\n");
-	//	}
-	//}
-
-	//fclose(fp);*/
-    QElapsedTimer t;
-    t.start();
-    m_acquisitionStatus = checkError(m_camera->AcquireSingleImage(m_frame, timeoutMS)); //10000));
-    qDebug() << t.elapsed();
+    if (timeoutMS > 2000)
+    {
+        QMetaObject::invokeMethod(m_aliveTimer, "start");
+        m_acquisitionStatus = checkError(m_camera->AcquireSingleImage(m_frame, timeoutMS));
+        QMetaObject::invokeMethod(m_aliveTimer, "stop");
+    }
+    else
+    {
+        m_acquisitionStatus = checkError(m_camera->AcquireSingleImage(m_frame, timeoutMS));
+    }
 
     return retValue;
 }
@@ -1381,7 +1400,7 @@ void AvtVimba::dockWidgetVisibilityChanged(bool visible)
 */
 const ito::RetVal AvtVimba::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogAvtVimba(this, &m_bppEnum, &m_triggerSourceEnum, &m_triggerActivationEnum));
+    return apiShowConfigurationDialog(this, new DialogAvtVimba(this, &m_bppEnum/*, &m_triggerSourceEnum, &m_triggerActivationEnum*/));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1438,8 +1457,8 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
             if (it != m_params.end())
             {
                 ito::RectMeta roiMeta(\
-                    ito::RangeMeta(x0_min, width_max, x0_inc, w_min, w_max, w_inc), \
-                    ito::RangeMeta(y0_min, height_max, y0_inc, h_min, h_max, h_inc));
+                    ito::RangeMeta(x0_min, width_max - 1, x0_inc, w_min, w_max, w_inc), \
+                    ito::RangeMeta(y0_min, height_max - 1, y0_inc, h_min, h_max, h_inc));
                 it->setMeta(&roiMeta, false);
                 int roi[] = {x0, y0, w, h};
                 it->setVal<int*>(roi, 4);
@@ -1498,7 +1517,7 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
     if (features & fExposure)
     {
         double val, min, max;
-        ret_ = getDblFeatureByName("ExposureTime", val, min, max);
+        ret_ = getDblFeatureByName(nameExposureTime, val, min, max);
         if (!ret_.containsError())
         {
             ParamMapIterator it = m_params.find("integration_time");
@@ -1607,5 +1626,26 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
         retval += ret_;
     }
 
+    if (features & fGamma)
+    {
+        double offset, offsetMax, offsetMin;
+        ret_ += getDblFeatureByName("Gamma", offset, offsetMin, offsetMax);
+        if (!ret_.containsError())
+        {
+            ParamMapIterator it = m_params.find("gamma");
+            ((ito::DoubleMeta*)(it->getMeta()))->setMin(offsetMin);
+            ((ito::DoubleMeta*)(it->getMeta()))->setMax(offsetMax);
+            it->setVal<double>(offset);
+        }
+        retval += ret_;
+    }
+
     return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AvtVimba::aliveTimer_fire()
+{
+    //this method is regularly called from m_awakeTimer if an acquisition is in process whose timeout is > 2sec.
+    setAlive();
 }

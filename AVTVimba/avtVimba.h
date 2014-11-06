@@ -14,6 +14,7 @@
 #include "dialogAvtVimba.h"
 #include <VimbaCPP/Include/VimbaCPP.h>
 #include "avtEnums.h"
+#include <qtimer.h>
 
 using namespace AVT::VmbAPI;
 
@@ -97,7 +98,8 @@ class AvtVimba : public ito::AddInGrabber
             fTrigger = 0x020,
             fGain = 0x040,
             fOffset = 0x080,
-            fAll = fBpp | fSize | fBinning | fExposure | fGigETransport | fTrigger | fGain | fOffset
+            fGamma = 0x100,
+            fAll = fBpp | fSize | fBinning | fExposure | fGigETransport | fTrigger | fGain | fOffset | fGamma
         };
 
         ito::RetVal synchronizeParameters(int features);
@@ -107,12 +109,15 @@ class AvtVimba : public ito::AddInGrabber
 		ito::RetVal m_acquisitionStatus;
 		CameraPtr m_camera;
 		FramePtr m_frame;
+        QTimer *m_aliveTimer;
+        QThread *m_aliveTimerThread;
 
         VmbInterfaceType m_interfaceType;
         TriggerSourceEnum m_triggerSourceEnum;
         TriggerActivationEnum m_triggerActivationEnum;
         BppEnum m_bppEnum;
         int timeoutMS;
+        const char* nameExposureTime;
         
     public slots:
         //!< Get Camera-Parameter
@@ -140,6 +145,8 @@ class AvtVimba : public ito::AddInGrabber
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
+
+        void aliveTimer_fire();
 };
 
 #endif // AVTVIMBA_H

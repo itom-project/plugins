@@ -14,7 +14,7 @@
 #include <qsharedpointer.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogAvtVimba::DialogAvtVimba(ito::AddInBase *grabber, const BppEnum *bppEnum, const TriggerSourceEnum *triggerSourceEnum, const TriggerActivationEnum *triggerActivationEnum) :
+DialogAvtVimba::DialogAvtVimba(ito::AddInBase *grabber, const BppEnum *bppEnum/*, const TriggerSourceEnum *triggerSourceEnum, const TriggerActivationEnum *triggerActivationEnum*/) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true)
 {
@@ -25,23 +25,6 @@ DialogAvtVimba::DialogAvtVimba(ito::AddInBase *grabber, const BppEnum *bppEnum, 
     if (bppEnum->bppMono10 >= 0) ui.comboBppMode->addItem("10 bit", 10);
     if (bppEnum->bppMono12 >= 0) ui.comboBppMode->addItem("12 bit", 12);
     if (bppEnum->bppMono14 >= 0) ui.comboBppMode->addItem("14 bit", 14);
-
-    ui.comboTriggerSource->clear();
-    if (triggerSourceEnum->triggerFixedRate >= 0) ui.comboTriggerSource->addItem("Fixed Rate", "FixedRate");
-    if (triggerSourceEnum->triggerLine1 >= 0) ui.comboTriggerSource->addItem("Line 1", "Line1");
-    if (triggerSourceEnum->triggerLine2 >= 0) ui.comboTriggerSource->addItem("Line 2", "Line2");
-    if (triggerSourceEnum->triggerLine3 >= 0) ui.comboTriggerSource->addItem("Line 3", "Line3");
-    if (triggerSourceEnum->triggerLine4 >= 0) ui.comboTriggerSource->addItem("Line 4", "Line4");
-    if (triggerSourceEnum->triggerFreerun >= 0) ui.comboTriggerSource->addItem("Freerun", "Freerun");
-    if (triggerSourceEnum->triggerSoftware >= 0) ui.comboTriggerSource->addItem("Software", "Software");
-    if (triggerSourceEnum->triggerInputLines >= 0) ui.comboTriggerSource->addItem("Input Lines", "InputLines");
-
-    ui.comboTriggerActivation->clear();
-    if (triggerActivationEnum->taRisingEdge >= 0) ui.comboTriggerActivation->addItem("Rising Edge", "RisingEdge");
-    if (triggerActivationEnum->taFallingEdge >= 0) ui.comboTriggerActivation->addItem("Falling Edge", "FallingEdge");
-    if (triggerActivationEnum->taAnyEdge >= 0) ui.comboTriggerActivation->addItem("Any Edge", "AnyEdge");
-    if (triggerActivationEnum->taLevelHigh >= 0) ui.comboTriggerActivation->addItem("Level High", "LevelHigh");
-    if (triggerActivationEnum->taLevelLow >= 0) ui.comboTriggerActivation->addItem("Level Low", "LevelLow");
 
     //disable dialog, since no parameters are known yet. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
@@ -79,6 +62,7 @@ void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
 #endif
 
         ui.groupGigE->setVisible( QString("GigE") == params["interface"].getVal<char*>());
+        window()->resize(window()->size());
 
         int binV_min = (int)(params["binning"].getMin()) % 100;
         int binH_min = ((int)(params["binning"].getMin()) - binV_min) / 100;
@@ -93,6 +77,20 @@ void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
         for (int i = binV_min; i <= binV_max; ++i)
         {
             ui.comboBinVer->addItem(QString("%1x").arg(i), i);
+        }
+
+        ui.comboTriggerActivation->clear();
+        const ito::StringMeta *sm = (const ito::StringMeta*)(params["trigger_activation"].getMeta());
+        for (int i = 0; i < sm->getLen(); ++sm)
+        {
+            ui.comboTriggerActivation->addItem(sm->getString(i), sm->getString(i));
+        }
+
+        ui.comboTriggerSource->clear();
+        sm = (const ito::StringMeta*)(params["trigger_source"].getMeta());
+        for (int i = 0; i < sm->getLen(); ++sm)
+        {
+            ui.comboTriggerSource->addItem(sm->getString(i), sm->getString(i));
         }
 
         m_firstRun = false;
@@ -156,6 +154,20 @@ void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
     {
         ui.label_offset->setVisible(false);
         ui.sliderOffset->setVisible(false);
+    }
+
+    it = params.find("gamma");
+    if (it != params.end())
+    {
+        ui.sliderGamma->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+        ui.sliderGamma->setMinimum(it->getMin());
+        ui.sliderGamma->setMaximum(it->getMax());
+        ui.sliderGamma->setValue(it->getVal<double>());
+    }
+    else
+    {
+        ui.label_gamma->setVisible(false);
+        ui.sliderGamma->setVisible(false);
     }
 
     it = params.find("integration_time");
@@ -347,6 +359,10 @@ ito::RetVal DialogAvtVimba::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, (newBinH*100+newBinV))));
     }
 
+    if (m_currentParameters["trigger_mode"].getVal<int>() != (ui.checkTriggerMode->isChecked() ? 1 : 0))
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::Int, (ui.checkTriggerMode->isChecked() ? 1 : 0))));
+    }
 
     QString newTriggerSource = ui.comboTriggerSource->itemData(ui.comboTriggerSource->currentIndex()).toString();
     if (newTriggerSource != m_currentParameters["trigger_source"].getVal<char*>())
@@ -354,8 +370,8 @@ ito::RetVal DialogAvtVimba::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_source", ito::ParamBase::String, newTriggerSource.toLatin1().data())));
     }
 
-    QString newTriggerActivation = ui.comboTriggerSource->itemData(ui.comboTriggerActivation->currentIndex()).toString();
-    if (newTriggerSource != m_currentParameters["trigger_activation"].getVal<char*>())
+    QString newTriggerActivation = ui.comboTriggerActivation->itemData(ui.comboTriggerActivation->currentIndex()).toString();
+    if (newTriggerActivation != m_currentParameters["trigger_activation"].getVal<char*>())
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_activation", ito::ParamBase::String, newTriggerActivation.toLatin1().data())));
     }
@@ -365,6 +381,11 @@ ito::RetVal DialogAvtVimba::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, ui.sliderOffset->value())));
     }
 
+    if (dblEq(m_currentParameters["gamma"].getVal<double>(), ui.sliderGamma->value()) == 0)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gamma", ito::ParamBase::Double, ui.sliderGamma->value())));
+    }
+
     if (m_currentParameters["gain_auto"].getVal<int>() != (ui.checkGainAuto->isChecked() ? 1 : 0))
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain_auto", ito::ParamBase::Int, (ui.checkGainAuto->isChecked() ? 1 : 0))));
@@ -372,7 +393,7 @@ ito::RetVal DialogAvtVimba::applyParameters()
 
     if (ui.checkGainAuto->isChecked() == false && dblEq(m_currentParameters["gain"].getVal<double>(), ui.sliderGain->value()) == 0)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, ui.sliderOffset->value())));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, ui.sliderGain->value())));
     }
 
     if (dblEq(m_currentParameters["integration_time"].getVal<double>(), ui.sliderIntegrationTime->value()) == 0)
@@ -385,12 +406,7 @@ ito::RetVal DialogAvtVimba::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, ui.spinTimeout->value())));
     }
 
-    if (m_currentParameters["trigger_mode"].getVal<int>() != (ui.checkTriggerMode->isChecked() ? 1 : 0))
-    {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::Int, (ui.checkTriggerMode->isChecked() ? 1 : 0))));
-    }
-
-    if (ui.groupGigE->isEnabled())
+    if (ui.groupGigE->isVisible() && m_currentParameters.contains("stream_bps") && m_currentParameters.contains("packet_size"))
     {
         if (m_currentParameters["stream_bps"].getVal<int>() != ui.spinStreamBpS->value())
         {
@@ -399,7 +415,7 @@ ito::RetVal DialogAvtVimba::applyParameters()
 
         if (m_currentParameters["packet_size"].getVal<int>() != ui.spinPacketSize->value())
         {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stream_bps", ito::ParamBase::Int, ui.spinPacketSize->value())));
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("packet_size", ito::ParamBase::Int, ui.spinPacketSize->value())));
         }
     }
 

@@ -17,6 +17,7 @@ DockWidgetAvtVimba::DockWidgetAvtVimba(ito::AddInDataIO *grabber) :
     m_firstRun(true)
 {
     ui.setupUi(this);
+    ui.groupAcquisition->setEnabled(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -25,6 +26,7 @@ void DockWidgetAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
     if (m_firstRun)
     {
         ui.lblInterface->setText(params["interface"].getVal<char*>());
+        ui.groupAcquisition->setEnabled(true);
         m_firstRun = false;
     }
 
@@ -129,7 +131,7 @@ void DockWidgetAvtVimba::on_sW_Offset_valueChanged(double d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetAvtVimba::on_check_GainAuto_value_toggled(bool checked)
+void DockWidgetAvtVimba::on_check_GainAuto_toggled(bool checked)
 {
     if (!m_inEditing)
     {

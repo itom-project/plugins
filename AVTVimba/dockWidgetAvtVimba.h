@@ -38,7 +38,7 @@ class DockWidgetAvtVimba : public ito::AbstractAddInDockWidget
         void on_sW_Gain_valueChanged(double d);
         void on_sW_Offset_valueChanged(double d);
         void on_sW_IntTime_valueChanged(double d);
-        void on_check_GainAuto_value_toggled(bool checked);
+        void on_check_GainAuto_toggled(bool checked);
           
 };
 

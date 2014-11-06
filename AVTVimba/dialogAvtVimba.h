@@ -29,7 +29,7 @@ class DialogAvtVimba : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-        DialogAvtVimba(ito::AddInBase *grabber, const BppEnum *bppEnum, const TriggerSourceEnum *triggerSourceEnum, const TriggerActivationEnum *triggerActivationEnum);
+        DialogAvtVimba(ito::AddInBase *grabber, const BppEnum *bppEnum/*, const TriggerSourceEnum *triggerSourceEnum, const TriggerActivationEnum *triggerActivationEnum*/);
         ~DialogAvtVimba() {};
 
         ito::RetVal applyParameters();
@@ -38,7 +38,7 @@ class DialogAvtVimba : public ito::AbstractAddInConfigDialog
         void enableDialog(bool enabled);
         bool m_firstRun;
 
-        inline bool dblEq(double v1, double v2) { return qAbs(v1-v2) > std::numeric_limits<double>::epsilon(); }
+        inline bool dblEq(double v1, double v2) { return qAbs(v1-v2) <= std::numeric_limits<double>::epsilon(); }
 
         Ui::DialogAvtVimba ui;
 

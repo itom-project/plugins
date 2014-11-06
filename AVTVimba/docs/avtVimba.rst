@@ -6,8 +6,8 @@
 **Summary**:    :pluginsummary:`AVTVimba`
 **Type**:       :plugintype:`AVTVimba`
 **License**:    :pluginlicense:`AVTVimba`
-**Platforms**:  Some words about supported operating systems
-**Devices**:    AVT Cameras driven by Vimba interface, tested with GigE cameras CCD4000 and GIP1000 (formerly Vosskuehler)
+**Platforms**:  Windows (Firewire + GigE), Linux only supports GigE (not tested yet)
+**Devices**:    AVT Cameras driven by Vimba interface
 **Author**:     :pluginauthor:`AVTVimba`
 =============== ========================================================================================================
  
