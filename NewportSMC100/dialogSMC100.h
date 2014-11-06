@@ -46,12 +46,14 @@ class DialogSMC100 : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-        DialogSMC100(ito::AddInBase *grabber);
+        DialogSMC100(ito::AddInBase *actuator);
         ~DialogSMC100() {};
 
         ito::RetVal applyParameters();
 
     private:
+        ito::AddInBase *m_pPlugin;
+
         void enableDialog(bool enabled);
         //ito::RetVal checkParameters();
         //ito::RetVal sendParameters();
@@ -67,6 +69,7 @@ class DialogSMC100 : public ito::AbstractAddInConfigDialog
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
+        void on_calibrateBtn_clicked();
 
 };
 

@@ -28,6 +28,8 @@
 
 #include <qmap.h>
 #include <qstring.h>
+#include <qsignalmapper.h>
+#include <qspinbox.h>
 
 #include "ui_dockWidgetSMC100.h"
 
@@ -40,8 +42,22 @@ class DockWidgetSMC100 : public ito::AbstractAddInDockWidget
         ~DockWidgetSMC100() {};
 
     private:
-        void enableWidget(bool enabled);
+        bool firstRun;
+        double m_stepSize;
+        QVector<double> m_absPosTarget;
 
+        void enableWidget(bool enabled);
+        void createUiListEntry(const int i);
+        
+        QSignalMapper *m_pIncSignalMapper;
+        QSignalMapper *m_pDecSignalMapper;
+        QSignalMapper *m_pGoSignalMapper;
+        QSignalMapper *m_pAbsPosSignalMapper;
+
+        QVector<QDoubleSpinBox*> m_pDestSpinBoxes;
+        QVector<QDoubleSpinBox*> m_pCurrSpinBoxes;
+
+        QList<QFrame*> m_pListElements;
         Ui::DockWidgetSMC100 ui;
 
     public slots:
@@ -52,10 +68,12 @@ class DockWidgetSMC100 : public ito::AbstractAddInDockWidget
         void targetChanged(QVector<double> targetPositions);
 
     private slots:
-        void on_radioLocal_clicked();
-        void on_radioRemote_clicked() { on_radioLocal_clicked(); }
-        void on_btnUp_clicked();
-        void on_btnDown_clicked();
+        // Slots from the signalmapper
+        void incBtnClicked(const int & i);    
+        void decBtnClicked(const int & i);
+        void goBtnClicked(const int & i);
+        void absDestPosChanged(const int & i);
+
         void on_btnStart_clicked();
         void on_btnRefresh_clicked();
 };

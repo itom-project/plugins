@@ -48,38 +48,63 @@ class SMC100 : public ito::AddInActuator
 
         const ito::RetVal showConfDialog(void);    /*!<shows the configuration dialog*/
         int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
+        enum controllerStatus
+        {
+            ctrlStNotRef = 0,
+            ctrlStConfig = 1,
+            ctrlStDisabled = 2,
+            ctrlStReady = 3,
+            ctrlStMotion = 4
+        };
+
+        enum calibMode
+        {
+            calibModeNotDef = -1,
+            calibModeMzAndInc = 0,
+            calibModeCurrentPos = 1,
+            calibModeMzOnly = 2,
+            calibModeEorAndInc = 3,
+            calibModeEorOnly = 4
+        };
+
 
     private:
-        bool m_useOnTarget;
-        bool m_getStatusInScan;
-        bool m_getPosInScan;
-
         ito::AddInDataIO *m_pSer;
 
-        double m_scale; //! in steps per mm
         int m_numAxis;
         int m_async;
-        double m_delayProp; //s
-        double m_delayOffset; //s
-        bool m_hasHardwarePositionLimit;
-        double m_posLimitLow;
-        double m_posLimitHigh;
 
         QVector<int> m_addresses;
         QVector<QString> m_ids;
+        QVector<int> m_controllerState;
+        QVector<int> m_calibMode;
+        QVector<double> m_acceleration;
+        QVector<double> m_velocity;
 
         QSharedPointer<ito::Param> endlineParam;
 
-        ito::RetVal SMCDummyRead(void); /*!< reads buffer of serial port without delay in order to clear it */
+        ito::RetVal SMCEmptyReadBuffer();
         ito::RetVal SMCSendCommand(const QByteArray &cmd, bool checkError, int axis = -1);
         ito::RetVal SMCReadString(QByteArray &result, int &len, int timeoutMS, bool checkError, int axis = -1);
         ito::RetVal SMCSendQuestionWithAnswerDouble(const QByteArray &questionCommand, double &answer, int timeoutMS, bool checkError, int axis = -1);
         ito::RetVal SMCSendQuestionWithAnswerString(const QByteArray &questionCommand, QByteArray &answer, int timeoutMS, bool checkError, int axis = -1);
 
+        ito::RetVal SMCSetPos(const QVector<int> axis, const QVector<double> posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
+        ito::RetVal SMCCheckStatus(const QVector<int> axis);
 
-        ito::RetVal SMCSetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
-        ito::RetVal SMCCheckStatus(void);
+        // Config Mode
+        ito::RetVal SMCEnterConfigMode(const QVector<int> axis);
+        ito::RetVal SMCLeaveConfigMode(const QVector<int> axis);
+        ito::RetVal SMCResetController(const QVector<int> axis);
 
+        // Calib Mode
+        ito::RetVal SMCSetCalibMode(const QVector<int> axis, const int mode);
+        ito::RetVal SMCGetCalibMode(const QVector<int> axis);
+
+        // Velocity and acceleration
+        ito::RetVal SMCGetVelocityAcceleration(bool vNota, const QVector<int> axis);
+        ito::RetVal SMCSetVelocityAcceleration(bool vNota, const QVector<int> axis);
+       
         ito::RetVal SMCCheckError(int axis = -1);
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
@@ -91,6 +116,8 @@ class SMC100 : public ito::AddInActuator
 
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal close(ItomSharedSemaphore *waitCond);
+
+
 
         //! Starts calibration for a single axis
         ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL);
