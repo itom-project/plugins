@@ -58,41 +58,6 @@ Put a detailed description about what the plugin is doing, what is needed to get
 
     paramVal = ito::Param("GigEPacketSize", ito::ParamBase::Int, 0, new ito::IntMeta(0, 8228, 1), "ethernet packet size (GigE cameras only). If 0, the camera tries to startup with a value of 8228 bytes/sec (network card must have jumbo frames enabled). Else set it to 1500 bytes/sec, which is a safe setting for all GigE Ethernet network cards");
     m_initParamsOpt.append(paramVal);
-
-	//paramVal=ito::Param("bpp", ito::ParamBase::Int, 8, 14, 8, "Bits per Pixel (Greyscale, 8, 10, 12, 14)");
-    //m_initParamsOpt.append(paramVal);
-
-	//paramVal=ito::Param("bpp", ito::ParamBase::Int, 8, 14, 8, "Bits per Pixel (Greyscale, 8, 10, 12, 14)");
-    //m_initParamsOpt.append(paramVal);
-
-
-	//paramVal = ito::Param("colorMode", ito::ParamBase::String, "Mono8", tr("color mode of camera (Mono8|Mono10|Mono12|Mono14, default: Mono8)").toLatin1().data());
- //   ito::StringMeta cm_meta(ito::StringMeta::String);
- //   cm_meta.addItem("Mono8");
- //   cm_meta.addItem("Mono10");
- //   cm_meta.addItem("Mono12");
- //   cm_meta.addItem("Mono14");
- //   paramVal.setMeta(&cm_meta, false);
- //   m_initParamsOpt.append(paramVal);
-
-	/*paramVal = ito::Param("TriggerMode", ito::ParamBase::String, "Off", tr("Trigger Mode (Off|On, default Off").toLatin1().data());
-    ito::StringMeta tm_meta(ito::StringMeta::String);
-    tm_meta.addItem("Off");
-    tm_meta.addItem("On");
-    paramVal.setMeta(&tm_meta, false);
-    m_initParamsOpt.append(paramVal);*/
-
-	/*paramVal = ito::Param("TriggerSource", ito::ParamBase::String, "Freerun", tr("Trigger Source (Freerun|Software|Line1|Line2|FixedRate, default Freerun").toLatin1().data());
-    ito::StringMeta ts_meta(ito::StringMeta::String);
-    ts_meta.addItem("Freerun");
-    ts_meta.addItem("Software");
-	ts_meta.addItem("Line1");
-	ts_meta.addItem("Line2");
-	ts_meta.addItem("FixedRate");
-    paramVal.setMeta(&ts_meta, false);
-    m_initParamsOpt.append(paramVal);*/
-
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1416,7 +1381,7 @@ void AvtVimba::dockWidgetVisibilityChanged(bool visible)
 */
 const ito::RetVal AvtVimba::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogAvtVimba(this));
+    return apiShowConfigurationDialog(this, new DialogAvtVimba(this, &m_bppEnum, &m_triggerSourceEnum, &m_triggerActivationEnum));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

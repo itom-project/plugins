@@ -28,9 +28,6 @@ void DockWidgetAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
         m_firstRun = false;
     }
 
-    
-
-
     if (!m_inEditing)
     {
         m_inEditing = true;

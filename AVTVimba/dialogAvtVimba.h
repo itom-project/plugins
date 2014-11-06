@@ -11,6 +11,7 @@
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
+#include "avtEnums.h"
 
 #include "ui_dialogAvtVimba.h"
 
@@ -28,7 +29,7 @@ class DialogAvtVimba : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-        DialogAvtVimba(ito::AddInBase *grabber);
+        DialogAvtVimba(ito::AddInBase *grabber, const BppEnum *bppEnum, const TriggerSourceEnum *triggerSourceEnum, const TriggerActivationEnum *triggerActivationEnum);
         ~DialogAvtVimba() {};
 
         ito::RetVal applyParameters();
@@ -37,6 +38,8 @@ class DialogAvtVimba : public ito::AbstractAddInConfigDialog
         void enableDialog(bool enabled);
         bool m_firstRun;
 
+        inline bool dblEq(double v1, double v2) { return qAbs(v1-v2) > std::numeric_limits<double>::epsilon(); }
+
         Ui::DialogAvtVimba ui;
 
     public slots:
@@ -44,7 +47,9 @@ class DialogAvtVimba : public ito::AbstractAddInConfigDialog
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
-		//void on_sB_PixFormat_valueChanged(int i);
+		void on_rangeX01_valuesChanged(int minValue, int maxValue);
+        void on_rangeY01_valuesChanged(int minValue, int maxValue);
+        void on_btnFullROI_clicked();
 };
 
 #endif
