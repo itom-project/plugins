@@ -130,7 +130,7 @@ SMC100::SMC100() :
     // Read only - Parameters
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ctrlId", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("device information string").toLatin1().data());
+    paramVal = ito::Param("ctrlId", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("device information string").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "SMC100", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -140,13 +140,13 @@ SMC100::SMC100() :
     // Read/Write - Parameters
     paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ctrlAcceleration", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
+    paramVal = ito::Param("accel", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);   
-    paramVal = ito::Param("ctrlCalibMode", ito::ParamBase::IntArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
+    paramVal = ito::Param("calibMode", ito::ParamBase::IntArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ctrlConfigMode", ito::ParamBase::IntArray, NULL, tr("Reset Controller and switch it to configmode (1) or set it back to unreferenced (0)").toLatin1().data());
+    paramVal = ito::Param("configMode", ito::ParamBase::IntArray, NULL, tr("Reset Controller and switch it to configmode (1) or set it back to unreferenced (0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ctrlVelocity", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
+    paramVal = ito::Param("speed", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     m_currentStatus = QVector<int>(1, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
@@ -247,19 +247,19 @@ ito::RetVal SMC100::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
 
             int *acceleration = new int[m_numAxis];
             memset(acceleration, 0, m_numAxis * sizeof(int));
-            m_params["ctrlAcceleration"].setVal<int*>(acceleration, m_numAxis);
+            m_params["accel"].setVal<int*>(acceleration, m_numAxis);
             delete[] acceleration;
             acceleration = NULL;
 
             int *calibMode = new int[m_numAxis];
             memset(calibMode, 0, m_numAxis * sizeof(int));
-            m_params["ctrlCalibMode"].setVal<int*>(calibMode, m_numAxis);
+            m_params["calibMode"].setVal<int*>(calibMode, m_numAxis);
             delete[] calibMode;
             calibMode = NULL;
 
             int *configMode = new int[m_numAxis];
             memset(configMode, 0, m_numAxis * sizeof(int));
-            m_params["ctrlConfigMode"].setVal<int*>(configMode, m_numAxis);
+            m_params["configMode"].setVal<int*>(configMode, m_numAxis);
             delete[] configMode;
             configMode = NULL;
 
@@ -271,7 +271,7 @@ ito::RetVal SMC100::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
 
             int *velocity = new int[m_numAxis];
             memset(velocity, 0, m_numAxis * sizeof(int));
-            m_params["ctrlVelocity"].setVal<int*>(velocity, m_numAxis);
+            m_params["speed"].setVal<int*>(velocity, m_numAxis);
             delete[] velocity;
             velocity = NULL;
 
@@ -371,19 +371,19 @@ ito::RetVal SMC100::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
             retValue += it->setVal<int>(0);
             *val = it.value();               
         }
-        else if (key == "ctrlAcceleration")
+        else if (key == "accel")
         {
             retValue += SMCGetVelocityAcceleration(false, QVector<int>(m_addresses.size()));
             retValue += it->setVal<double*>(m_acceleration.data(), m_acceleration.size());
             *val = it.value();
         }
-        else if (key == "ctrlCalibMode")
+        else if (key == "calibMode")
         {
             retValue += SMCGetCalibMode(QVector<int>(m_addresses.size()));
             retValue += it->setVal<int*>(m_calibMode.data(), m_calibMode.size());
             *val = it.value();
         }
-        else if (key == "ctrlConfigMode")
+        else if (key == "configMode")
         {
             // only the controller status is checked. Every other status is displayed as 0
             // the setter method leaves every controller represented by a 0 in its state. It only changes the 1. 
@@ -419,7 +419,7 @@ ito::RetVal SMC100::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
             retValue += it->setVal<char*>(commaText.toLatin1().data(), commaText.size());
             *val = it.value();           
         }
-        else if (key == "ctrlVelocity")
+        else if (key == "speed")
         {
             retValue += SMCGetVelocityAcceleration(true, QVector<int>(m_addresses.size()));
             retValue += it->setVal<double*>(m_velocity.data(), m_velocity.size());
@@ -493,7 +493,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
     if(!retValue.containsError())
     {
         //---------------------------
-        if (key == "ctrlCalibMode")
+        if (key == "calibMode")
         {
             if (hasIndex)
             {
@@ -521,7 +521,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             }
         }
         //---------------------------
-        else if (key == "ctrlConfigMode")
+        else if (key == "configMode")
         {
             if (hasIndex)
             {
@@ -569,7 +569,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             retValue += it->copyValueFrom(&(*val));
         }
         //---------------------------
-        else if (key == "ctrlVelocity")
+        else if (key == "speed")
         {
             if (hasIndex)
             {
@@ -597,7 +597,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             }
         }
         //---------------------------
-        else if (key == "ctrlAcceleration")
+        else if (key == "accel")
         {
             if (hasIndex)
             {
