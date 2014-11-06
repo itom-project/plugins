@@ -66,6 +66,8 @@ PI_GCS2Interface::PI_GCS2Interface()
     char docstring[] = "PI actuators following the GCS2 command set (e.g. E753) \n\
 This plugin is developped for single axis controllers following the GCS2 commandset. \n\
 \n\
+Tested with E753, don't work with E-662 and E-665! \n\
+\n\
 For the initialization you can connect to the device (if possible) via a USB port, a serial port \n\
 or a TCP/IP connection. Depending on the connection you should use the initialization parameters \n\
 in the following way: \n\
