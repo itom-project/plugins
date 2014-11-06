@@ -1471,7 +1471,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_INCREMENT, &sizeInc, &intSize, &intType);
 			if (sizeInc == 0)
 			{
-				sizeInc = sizeMax - sizeMin;
+				//sizeInc = sizeMax - sizeMin;
+				sizeInc = 1;
 			}
 
 			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X, &offset, &intSize, &intType);
