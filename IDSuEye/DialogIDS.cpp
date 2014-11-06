@@ -441,6 +441,9 @@ void DialogIDS::enableDialog(bool enabled)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogIDS::on_rangeX01_valuesChanged(int minValue, int maxValue)
 {
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+    ui.spinSizeX->setValue(maxValue - minValue + 1);
+#else
     int min_ = minValue;
     int max_ = maxValue;
     int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["x0"].getMeta() )->getStepSize();
@@ -472,11 +475,16 @@ void DialogIDS::on_rangeX01_valuesChanged(int minValue, int maxValue)
     {
         ui.spinSizeX->setValue(maxValue - minValue + 1);
     }
+
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogIDS::on_rangeY01_valuesChanged(int minValue, int maxValue)
 {
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+    ui.spinSizeY->setValue(maxValue - minValue + 1);
+#else
     int min_ = minValue;
     int max_ = maxValue;
     int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["y0"].getMeta() )->getStepSize();
@@ -508,6 +516,7 @@ void DialogIDS::on_rangeY01_valuesChanged(int minValue, int maxValue)
     {
         ui.spinSizeY->setValue(maxValue - minValue + 1);
     }
+#endif
 }
 
 //------------------------------------------------------------------------------
