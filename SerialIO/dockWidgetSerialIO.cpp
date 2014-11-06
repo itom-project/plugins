@@ -211,7 +211,7 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
             text3 = " [" + QByteArray(QString::number(data.length()).toLatin1().data()) + "]";
         }
 
-        if (!(ui.CheckBox->isChecked() && data.isEmpty() && endline.isEmpty()))
+        if (!(ui.checkIgnoreEmpty->isChecked() && data.isEmpty() && endline.isEmpty()))
         {
             ui.textTransfer->append((QString)InOutChar + " " + text1 + text2 + text3);
         }

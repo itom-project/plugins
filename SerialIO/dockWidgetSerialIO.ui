@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>194</width>
-    <height>177</height>
+    <width>262</width>
+    <height>223</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -208,9 +208,9 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QCheckBox" name="CheckBox">
+         <widget class="QCheckBox" name="checkIgnoreEmpty">
           <property name="text">
-           <string>ignor empty messages</string>
+           <string>ignore empty messages</string>
           </property>
          </widget>
         </item>
