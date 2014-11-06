@@ -79,15 +79,15 @@ if (NOT QT5_FOUND)
     QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
 endif (NOT QT5_FOUND)
 
-set(plugin_ui
+set(plugin_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogDummyMotor.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDummyMotor.ui
 )
 
 if (QT5_FOUND)
-    QT5_WRAP_UI(plugin_UI_MOC ${plugin_ui})
+    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
 else (QT5_FOUND)
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_ui})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
 endif (QT5_FOUND)
 
 set(plugin_SOURCES 
