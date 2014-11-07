@@ -1317,9 +1317,6 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     int bitppix = 10;
 	int output_bit_depth = 0;
     XI_RETURN ret;
-
-    int integration_time;
-	int int_value, int_value_min, int_value_max, int_value_step;
     int trigger_mode = 0;
     int trigger_mode2 = 0;
 
@@ -1416,6 +1413,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
         if (!retValue.containsError())
         {
+			int integration_time, int_value, int_value_max, int_value_min, int_value_step;
             // Camera-exposure is set in µsec, itom uses s
 			ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE XI_PRM_INFO_MIN, &int_value_min, &intSize, &intType);
 			ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE XI_PRM_INFO_MAX, &int_value_max, &intSize, &intType);
@@ -1424,7 +1422,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			{
 				int_value_step = int_value_max - int_value_min;
 			}
-
+			
 			m_params["integration_time"].setMeta(new ito::DoubleMeta(musecToSec(int_value_min), musecToSec(int_value_max), musecToSec(int_value_step)), true);
 
 			//check if default integration_time in m_params (from xml file) is valid and try to set it
@@ -1487,9 +1485,39 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			//gain_inc = 0.1;
 			m_params["gain"].setVal<double>(gain);
 			m_params["gain"].setMeta(new ito::DoubleMeta(gain_min, gain_max, gain_inc), true);
-
 			//retValue += apiValidateAndCastParam(*it, m_params["gain"], false, true, true);
 
+			int hdr_t1, hdr_t1_min, hdr_t1_max, hdr_t1_inc;
+			ret = pxiGetParam(m_handle, XI_PRM_HDR_T1, &hdr_t1, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HDR_T1 XI_PRM_INFO_MIN, &hdr_t1_min, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HDR_T1 XI_PRM_INFO_MAX, &hdr_t1_max, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HDR_T1 XI_PRM_INFO_INCREMENT, &hdr_t1_inc, &intSize, &intType);
+			m_params["hdr_it1"].setVal<int>(hdr_t1);
+			m_params["hdr_it1"].setMeta(new ito::IntMeta(hdr_t1_min, hdr_t1_max, hdr_t1_inc), true);
+			
+			int hdr_t2, hdr_t2_min, hdr_t2_max, hdr_t2_inc;
+			ret = pxiGetParam(m_handle, XI_PRM_HDR_T2, &hdr_t2, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HDR_T2 XI_PRM_INFO_MIN, &hdr_t2_min, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HDR_T2 XI_PRM_INFO_MAX, &hdr_t2_max, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HDR_T2 XI_PRM_INFO_INCREMENT, &hdr_t2_inc, &intSize, &intType);
+			m_params["hdr_it2"].setVal<int>(hdr_t2);
+			m_params["hdr_it2"].setMeta(new ito::IntMeta(hdr_t2_min, hdr_t2_max, hdr_t2_inc), true);
+
+			int knee_t1, knee_t1_min, knee_t1_max, knee_t1_inc;
+			ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT1, &knee_t1, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT1 XI_PRM_INFO_MIN, &knee_t1_min, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT1 XI_PRM_INFO_MAX, &knee_t1_max, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT1 XI_PRM_INFO_INCREMENT, &knee_t1_inc, &intSize, &intType);
+			m_params["hdr_knee1"].setVal<int>(knee_t1);
+			m_params["hdr_knee1"].setMeta(new ito::IntMeta(knee_t1_min, knee_t1_max, knee_t1_inc), true);
+
+			int knee_t2, knee_t2_min, knee_t2_max, knee_t2_inc;
+			ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT2, &knee_t2, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT2 XI_PRM_INFO_MIN, &knee_t2_min, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT2 XI_PRM_INFO_MAX, &knee_t2_max, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT2 XI_PRM_INFO_INCREMENT, &knee_t2_inc, &intSize, &intType);
+			m_params["hdr_knee2"].setVal<int>(knee_t2);
+			m_params["hdr_knee2"].setMeta(new ito::IntMeta(knee_t2_min, knee_t2_max, knee_t2_inc), true);
 
 
             /*if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
