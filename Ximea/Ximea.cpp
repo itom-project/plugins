@@ -1777,9 +1777,10 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             ito::uint16* ptrMul = m_shading.mul;
             ito::uint16* ptrDst = (ito::uint16*)m_data.rowPtr(0, m_shading.y0);
             ptrDst += m_shading.x0;
+            ito::int32 stepY = img.width - m_shading.xsize;
             for(int y = 0; y < m_shading.ysize; y++)
             {
-                ptrDst += img.width - m_shading.xsize;
+                
                 for(int x = 0; x < m_shading.xsize; x++)
                 {
                     if(*ptrSub > *ptrDst)
@@ -1795,7 +1796,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
                     ptrMul++;
                     ptrSub++;
                 }            
-            
+                ptrDst += stepY;
             }
             
         
@@ -2327,7 +2328,7 @@ void Ximea::activateShadingCorrection(bool enable)
 {
     if(!m_shading.valid)
     {
-        m_shading.active = false; //TODO: here was m_shading.active == false before. This should be = instead ???
+        m_shading.active = false;
         return;
     }
     m_shading.active = enable;
