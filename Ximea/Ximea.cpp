@@ -704,10 +704,32 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
     if(!retValue.containsError())
     {
-        //here the new parameter is checked whether its type corresponds or can be cast into the
-        // value in m_params and whether the new type fits to the requirements of any possible
-        // meta structure.
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION < 0x010300
+        //old style api, round the incoming double value to the allowed step size.
+        //in a new itom api, this is automatically done by a new api function.
+        if (val->getType() == ito::ParamBase::Double || val->getType() == ito::ParamBase::Int)
+        {
+            double value = val->getVal<double>();
+            if (it->getType() == ito::ParamBase::Double)
+            {
+                ito::DoubleMeta *meta = (ito::DoubleMeta*)it->getMeta();
+                if (meta)
+                {
+                    double step = meta->getStepSize();
+                    if (step != 0.0)
+                    {
+                        int multiple = qRound((value - meta->getMin()) / step);
+                        value = meta->getMin() + multiple * step;
+                        value = qBound(meta->getMin(), value, meta->getMax());
+                        val->setVal<double>(value);
+                    }
+                }
+            }
+        }
         retValue += apiValidateParam(*it, *val, false, true);
+#else
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
+#endif
     }
 
     if(!retValue.containsError())
@@ -733,7 +755,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			
 			if (bitppix == 8)
 			{
-				int bpp = XI_RAW8;
+				int bpp = XI_MONO8;
                 if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
 				{
                     retValue += getErrStr(ret);
@@ -751,8 +773,8 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			}
 			else if (bitppix == 10)
 			{
-				int bpp = XI_RAW16;
-                //int bpp = XI_MONO16;
+                int bpp = XI_MONO16;
+
                 if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
                 {
 					retValue += getErrStr(ret);
@@ -768,8 +790,8 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			}
 			else if (bitppix == 12)
 			{
-				int bpp = XI_RAW16;
-                //int bpp = XI_MONO16;
+				int bpp = XI_MONO16;
+
                 if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
                 {
 					retValue += getErrStr(ret);
@@ -785,7 +807,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			}
 			else if (bitppix == 14)
 			{
-				int bpp = XI_RAW16;
+				int bpp = XI_MONO16;
 				if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
                 {
 					retValue += getErrStr(ret);
@@ -988,6 +1010,8 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
         {
 			float gamma = (float)val->getVal<double>();
+
+
             if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
                 retValue += getErrStr(ret);
 
@@ -1050,7 +1074,8 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         }
         else if (QString::compare(key, "gain", Qt::CaseInsensitive) == 0)
         {
-			float gain = (int)(val->getVal<double>() * 10 + 0.5);
+			//float gain = (int)(val->getVal<double>() * 10 + 0.5);
+			float gain = val->getVal<double>();
             if ((ret = pxiSetParam(m_handle, XI_PRM_GAIN, &gain, sizeof(float), xiTypeFloat)))
                 retValue += getErrStr(ret);
 
@@ -1280,7 +1305,6 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
 ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-
     ito::RetVal retValue(ito::retOk);
     int iCamNumber = (*paramsOpt)[0].getVal<int>();
     int bandwidthLimit = paramsOpt->at(2).getVal<int>(); //0 auto bandwidth calculation
@@ -1302,13 +1326,6 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 #ifndef USE_OLD_API
     int timing_mode = 0;
 #endif
-
-    float framerate = 30;
-	float framerate_min = 0; 
-	float framerate_max = 0;
-    float gamma = 0.0;
-    float sharpness = 1.0;
-    double gain = 0;
     QFile paramFile;
 
     // Load parameterlist from XML-file
@@ -1434,25 +1451,46 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 #ifndef USE_OLD_API
             timing_mode = m_params["timing_mode"].getVal<int>();
 #endif
-
-			if (ret = pxiGetParam(m_handle, XI_PRM_FRAMERATE XI_PRM_INFO_MIN, &framerate_min, &floatSize, &floatType))
-				retValue += getErrStr(ret);
-			static_cast<ito::DoubleMeta*>(m_params["framerate"].getMeta())->setMin(framerate_min);
-
-			if (ret = pxiGetParam(m_handle, XI_PRM_FRAMERATE XI_PRM_INFO_MAX, &framerate_max, &floatSize, &floatType))
-				retValue += getErrStr(ret);
-			static_cast<ito::DoubleMeta*>(m_params["framerate"].getMeta())->setMax(framerate_max);
-
-			if (ret = pxiGetParam(m_handle, XI_PRM_FRAMERATE, &framerate, &floatSize, &floatType))
-				retValue += getErrStr(ret);
-
-	       if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &framerate, sizeof(float), xiTypeFloat)))
-                retValue += getErrStr(ret);
+			//sets framerate value interval
+			float framerate, framerate_min, framerate_max, framerate_inc;
+			ret = pxiGetParam(m_handle, XI_PRM_FRAMERATE, &framerate, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_FRAMERATE XI_PRM_INFO_MIN, &framerate_min, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_FRAMERATE XI_PRM_INFO_MAX, &framerate_max, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_FRAMERATE XI_PRM_INFO_INCREMENT, &framerate_inc, &floatSize, &floatType);
 			m_params["framerate"].setVal<double>(framerate);
+			m_params["framerate"].setMeta(new ito::DoubleMeta(framerate_min, framerate_max, framerate_inc), true);
+
+			//sets gamma value interval
+			float gamma, gamma_min, gamma_max, gamma_inc;
+			ret = pxiGetParam(m_handle, XI_PRM_GAMMAY, &gamma, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_GAMMAY XI_PRM_INFO_MIN, &gamma_min, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_GAMMAY XI_PRM_INFO_MAX, &gamma_max, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_GAMMAY XI_PRM_INFO_INCREMENT, &gamma_inc, &floatSize, &floatType);
+			m_params["gamma"].setVal<double>(gamma);
+			m_params["gamma"].setMeta(new ito::DoubleMeta(gamma_min, gamma_max, gamma_inc), true);
+
+			//sets sharpness value interval
+			float sharpness, sharpness_min, sharpness_max, sharpness_inc;
+			ret = pxiGetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_SHARPNESS XI_PRM_INFO_MIN, &sharpness_min, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_SHARPNESS XI_PRM_INFO_MAX, &sharpness_max, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_SHARPNESS XI_PRM_INFO_INCREMENT, &sharpness_inc, &floatSize, &floatType);
+			m_params["sharpness"].setVal<double>(sharpness);
+			m_params["sharpness"].setMeta(new ito::DoubleMeta(sharpness_min, sharpness_max, sharpness_inc), true);
+
+			//sets gain value interval
+		    float gain, gain_min, gain_max, gain_inc;
+			ret = pxiGetParam(m_handle, XI_PRM_GAIN, &gain, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_MIN, &gain_min, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_MAX, &gain_max, &floatSize, &floatType);
+			ret = pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_INCREMENT, &gain_inc, &floatSize, &floatType);
+			//gain_inc = 0.1;
+			m_params["gain"].setVal<double>(gain);
+			m_params["gain"].setMeta(new ito::DoubleMeta(gain_min, gain_max, gain_inc), true);
+
+			//retValue += apiValidateAndCastParam(*it, m_params["gain"], false, true, true);
 
 
-            gamma = m_params["gamma"].getVal<double>();
-            sharpness = m_params["sharpness"].getVal<double>();
 
             /*if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);*/
@@ -1468,12 +1506,6 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 retValue += getErrStr(ret);
 #endif
             // Though in api the dll reports not supported ...
-
-
-            if ((ret = pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat)))
-                retValue += getErrStr(ret);
-            if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
-                retValue += getErrStr(ret); 
 			int sensor_bit_depth = 0;
 
 			//ret = pxiGetParam(m_handle,XI_PRM_SENSOR_DATA_BIT_DEPTH ,&sensor_bit_depth, &pSize, &pType);
@@ -1498,10 +1530,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			bitppix = XI_RGB_PLANAR;
 			ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger);
 			ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType);
-			*/
-
-			
-			bitppix = XI_RAW8;
+			*/			
+			bitppix = XI_MONO8;
 			if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger))
 			{
 				retValue += getErrStr(ret);
@@ -1513,7 +1543,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
 			static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMin(output_bit_depth);
 
-			bitppix = XI_RAW16;
+			bitppix = XI_MONO16;
 			if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger))
 			{
 				retValue += getErrStr(ret);
