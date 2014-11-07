@@ -684,6 +684,10 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
 
+	DWORD pSize = sizeof(int);
+	
+    XI_PRM_TYPE pType = xiTypeInteger;
+
     int running = 0;
     
     //int trigger_mode = XI_TRG_OUT;    //in new api trg_out does not exist anymore, so we just use free run
@@ -726,7 +730,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         if (QString::compare(key, "bpp", Qt::CaseInsensitive) == 0)
         {
 			int bitppix = val->getVal<int>();
-
+			
 			if (bitppix == 8)
 			{
 				int bpp = XI_RAW8;
@@ -734,6 +738,16 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 				{
                     retValue += getErrStr(ret);
 				}
+						
+				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &pSize, &pType))
+				{
+					retValue += getErrStr(ret);
+				}
+				else
+				{
+					val->setVal<int>(bitppix);
+				}
+		
 			}
 			else if (bitppix == 10)
 			{
@@ -742,6 +756,14 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
                 {
 					retValue += getErrStr(ret);
+				}
+				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &pSize, &pType))
+				{
+					retValue += getErrStr(ret);
+				}
+				else
+				{
+					val->setVal<int>(bitppix);
 				}
 			}
 			else if (bitppix == 12)
@@ -752,43 +774,42 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 {
 					retValue += getErrStr(ret);
 				}
-
-			}
-			else
-			{
-				retValue = ito::RetVal(ito::retError, 0, tr("bpp value not supported").toLatin1().data());
-			}
-
-            /*if ((bitppix != 8) && (bitppix != 10))
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("bpp must be 8 or 10.").toLatin1().data());
-            }
-            else if (bitppix == 8)
-            {
-                int bpp = XI_RAW8;
-                if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
+				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &pSize, &pType))
 				{
-                    retValue += getErrStr(ret);
+					retValue += getErrStr(ret);
 				}
-            }
-            else if (bitppix == 12)
-            {
-                int bpp = XI_RAW16;
-                //int bpp = XI_MONO16;
-                if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
+				else
+				{
+					val->setVal<int>(bitppix);
+				}
+			}
+			else if (bitppix == 14)
+			{
+				int bpp = XI_RAW16;
+				if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
                 {
 					retValue += getErrStr(ret);
 				}
-            }
+				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &(*val), &pSize, &pType))
+				{
+					retValue += getErrStr(ret);
+				}
+				else
+				{
+					val->setVal<int>(bitppix);
+				}
+			}
 			else
 			{
 				retValue = ito::RetVal(ito::retError, 0, tr("bpp value not supported").toLatin1().data());
-			}*/
+			}
 
 			if (!retValue.containsError())
 			{
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
 			}
+			
+
         }
         else if (QString::compare(key, "binning", Qt::CaseInsensitive) == 0)
         {
@@ -1270,6 +1291,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     //int x0 = 0;
     //int y0 = 0;
     int bitppix = 10;
+	int output_bit_depth = 0;
     XI_RETURN ret;
 
     int integration_time;
@@ -1434,25 +1456,58 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 retValue += getErrStr(ret);
             if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
                 retValue += getErrStr(ret); 
+			int sensor_bit_depth = 0;
 
-            switch (m_params["bpp"].getVal<int>())
-            {
-                case 8:
-                    bitppix = XI_RAW8;
-                break;
-                default:
-                    bitppix = XI_RAW16;
-                    //bitppix = XI_MONO16;
-                break;
-            }
-            if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger)))
-                retValue += getErrStr(ret);
+			//ret = pxiGetParam(m_handle,XI_PRM_SENSOR_DATA_BIT_DEPTH ,&sensor_bit_depth, &pSize, &pType);
 
-            ret = pxiGetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, &pSize, &pType);
-            if ((bitppix == XI_RAW8) || (bitppix == XI_MONO8))
-                m_params["bpp"].setVal<int>(8);
-            else
-                m_params["bpp"].setVal<int>(12);
+			/*bitppix = XI_MONO8;
+			ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger);
+			ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType);
+
+			
+			bitppix = XI_MONO16;
+			ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger);
+			ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType);
+
+			bitppix = XI_RGB24;
+			ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger);
+			ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType);
+
+			bitppix = XI_RGB32;
+			ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger);
+			ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType);
+
+			bitppix = XI_RGB_PLANAR;
+			ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger);
+			ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType);
+			*/
+
+			
+			bitppix = XI_RAW8;
+			if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger))
+			{
+				retValue += getErrStr(ret);
+			}
+			if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType))
+			{
+				retValue += getErrStr(ret);
+			}
+
+			static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMin(output_bit_depth);
+
+			bitppix = XI_RAW16;
+			if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger))
+			{
+				retValue += getErrStr(ret);
+			}
+			if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType))
+			{
+				retValue += getErrStr(ret);
+			}
+
+			static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(output_bit_depth);
+			m_params["bpp"].setVal<int>(output_bit_depth);
+
         }
 
         if (!retValue.containsError())
