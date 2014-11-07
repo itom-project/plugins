@@ -30,18 +30,18 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------
  DockWidgetPIPiezoCtrl::DockWidgetPIPiezoCtrl(int uniqueID, ito::AddInActuator *actuator) : ito::AbstractAddInDockWidget(actuator)
  {
-     ui.setupUi(this); 
+    ui.setupUi(this); 
 
-     ui.lblID->setText(QString::number(uniqueID));
+    ui.lblID->setText(QString::number(uniqueID));
 
-     enableWidget(true);
+    enableWidget(true);
  }
  //-------------------------------------------------------------------------------------------------------------------------------------------------
  void DockWidgetPIPiezoCtrl::parametersChanged(QMap<QString, ito::Param> params)
  {
-    ui.lblDevice1->setText( params["ctrlType"].getVal<char*>() );
-    ui.lblDevice2->setText( params["ctrlName"].getVal<char*>() );
-    ui.lblPiezo->setText( params["piezoName"].getVal<char*>() );
+    ui.lblDevice1->setText(params["ctrlType"].getVal<char*>());
+    ui.lblDevice2->setText(params["ctrlName"].getVal<char*>());
+    ui.lblPiezo->setText(params["piezoName"].getVal<char*>());
 
     bool hasMode = params["hasLocalRemote"].getVal<int>() > 0;
     ui.groupBoxMode->setVisible(hasMode);
@@ -96,7 +96,7 @@ void DockWidgetPIPiezoCtrl::targetChanged(QVector<double> targetPositions)
 {
     if (targetPositions.size() > 0)
     {
-        ui.spinBoxTargetPos->setValue( targetPositions[0] * 1000 );
+        ui.spinBoxTargetPos->setValue(targetPositions[0] * 1000);
     }
 }
 
