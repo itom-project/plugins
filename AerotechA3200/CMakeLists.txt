@@ -47,7 +47,7 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 IF(BUILD_TARGET64)
-	message(WARNING "AerotechA3200 can only be build for 64bit. ${target_name} will not be build")
+	message(WARNING "AerotechA3200 can only be build for 32bit. ${target_name} will not be build")
 ELSE(BUILD_TARGET64)
 
 	INCLUDE_DIRECTORIES(
