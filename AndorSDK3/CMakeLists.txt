@@ -71,12 +71,18 @@ IF(BUILD_TARGET64)
     ELSE()
         FIND_LIBRARY(ANDOR_SDK3_LIBRARY "atcore" HINTS ${ANDOR_SDK3_DIR})
     ENDIF()
+	FIND_FILE(ANDOR_SDK3_BINARY "atcore.dll"  PATHS ${ANDOR_SDK3_DIR} NO_DEFAULT_PATH)
+	FIND_FILE(ANDOR_SDK3_BINARY2 "atcl_bitflow.dll"  PATHS ${ANDOR_SDK3_DIR} NO_DEFAULT_PATH)
+	FIND_FILE(ANDOR_SDK3_BINARY3 "atdevregcam.dll"  PATHS ${ANDOR_SDK3_DIR} NO_DEFAULT_PATH)
 ELSE(BUILD_TARGET64)
     IF(MSVC)
         FIND_LIBRARY(ANDOR_SDK3_LIBRARY "atcorem" HINTS ${ANDOR_SDK3_DIR}/win32)
     ELSE()
         FIND_LIBRARY(ANDOR_SDK3_LIBRARY "atcore" HINTS ${ANDOR_SDK3_DIR}/win32)
     ENDIF()
+	FIND_FILE(ANDOR_SDK3_BINARY "atcore.dll"  PATHS ${ANDOR_SDK3_DIR}/win32 NO_DEFAULT_PATH)
+	FIND_FILE(ANDOR_SDK3_BINARY2 "atcl_bitflow.dll"  PATHS ${ANDOR_SDK3_DIR}/win32 NO_DEFAULT_PATH)
+	FIND_FILE(ANDOR_SDK3_BINARY3 "atdevregcam.dll"  PATHS ${ANDOR_SDK3_DIR}/win32 NO_DEFAULT_PATH)
 ENDIF(BUILD_TARGET64)
 
 IF(ANDOR_SDK3_DIR)
@@ -300,23 +306,18 @@ IF(ANDOR_SDK3_DIR)
 
     POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
-    #set( BOOST_FILES_TO_COPY  ${Boost_CHRONO_LIBRARY_DEBUG} ${Boost_CHRONO_LIBRARY_RELEASE} 
-    #                          ${Boost_SYSTEM_LIBRARY_DEBUG} ${Boost_SYSTEM_LIBRARY_RELEASE} 
-    #                          ${Boost_THREAD_LIBRARY_DEBUG} ${Boost_THREAD_LIBRARY_RELEASE} )
-
-                              
-    #foreach (file ${BOOST_FILES_TO_COPY})
-    #  get_filename_component(LIBNAME "${file}" NAME_WE)
-    #  get_filename_component(LIBPATH "${file}" DIRECTORY )
-    #  list( APPEND FILES_TO_COPY_TO_LIB "${LIBPATH}/${LIBNAME}.dll" )
-    #endforeach (file ${BOOST_FILES_TO_COPY})
-
     #if you want to copy one or more files to the lib-folder of
     # the itom build directory, use the following macro:
     #
     # POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target}, ${listOfFiles})
     # copy SC2_Cam.dll in itoms lib folder
     #POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} FILES_TO_COPY_TO_LIB)
+	IF(WIN32)
+        POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} ANDOR_SDK3_BINARY)
+		POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} ANDOR_SDK3_BINARY2)
+		POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} ANDOR_SDK3_BINARY3)
+    ENDIF(WIN32)
+	
 ELSE(ANDOR_SDK3_DIR)
     message(WARNING "${target_name} directory could not be found. ${target_name} will not be build")
 ENDIF(ANDOR_SDK3_DIR)

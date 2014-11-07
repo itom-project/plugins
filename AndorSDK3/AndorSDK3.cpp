@@ -68,14 +68,10 @@ AndorSDK3::AndorSDK3() :
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Index of left boundary pixel within ROI").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("Index of top boundary pixel within ROI").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Index of right boundary pixel within ROI").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Index of bottom boundary pixel within ROI").toLatin1().data());
+    int roi[] = {0, 0, 2048, 2048};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2048), ito::RangeMeta(0, 2048));
+    paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 16, tr("Bitdepth of each pixel").toLatin1().data());
@@ -144,6 +140,10 @@ ito::RetVal AndorSDK3::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retVal;
+
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION <= 0x010300
+	retVal += ito::RetVal(ito::retError, 0, "this plugin requires an itom AddIn Interface >= 1.3.1");
+#endif
 
     int desiredIndex = paramsMand->at(0).getVal<int>();
 
@@ -220,6 +220,9 @@ ito::RetVal AndorSDK3::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         if (!retVal.containsError())
         {
             retVal += synchronizeCameraSettings();
+			//sometimes, the exposure time must be set again!
+			retVal += checkError(AT_SetFloat(m_handle, L"ExposureTime", m_params["integration_time"].getVal<double>()));
+			retVal += synchronizeCameraSettings(sExposure);
         }
 
     }
@@ -380,38 +383,63 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 
     if(!retValue.containsError())
     {
-        if (key == "x0")
-        {
-            int offset = val->getVal<int>() * m_hBin;
-            retValue += checkError(AT_SetInt(m_handle, L"AOILeft", offset));
-            if (!retValue.containsError()) retValue += synchronizeCameraSettings(sRoi);
-        }
-        else if (key == "y0")
-        {
-            int offset = val->getVal<int>() * m_vBin;
-            retValue += checkError(AT_SetInt(m_handle, L"AOITop", offset));
-            if (!retValue.containsError()) retValue += synchronizeCameraSettings(sRoi);
-        }
-        else if (key == "x1")
-        {
-            int size = 1 + val->getVal<int>()  - m_params["x0"].getVal<int>();
-            retValue += checkError(AT_SetInt(m_handle, L"AOIWidth", size));
-            if (!retValue.containsError()) retValue += synchronizeCameraSettings(sRoi);
-        }
-        else if (key == "y1")
-        {
-            int size = 1 + val->getVal<int>()  - m_params["y0"].getVal<int>();
-            retValue += checkError(AT_SetInt(m_handle, L"AOIHeight", size));
-            if (!retValue.containsError()) retValue += synchronizeCameraSettings(sRoi);
-        }
+		if (key == "roi")
+		{
+			if (!hasIndex)
+            {
+                int *roi = val->getVal<int*>();
+				const int *old_roi = it->getVal<const int*>();
+				if (old_roi[2] > roi[2]) //width is reduced, do it first
+				{
+					retValue += checkError(AT_SetInt(m_handle, L"AOIWidth", roi[2]));
+					retValue += checkError(AT_SetInt(m_handle, L"AOILeft", roi[0] + 1));
+				}
+				else
+				{
+					retValue += checkError(AT_SetInt(m_handle, L"AOILeft", roi[0] + 1));
+					retValue += checkError(AT_SetInt(m_handle, L"AOIWidth", roi[2]));
+				}
+
+				if (old_roi[3] > roi[3]) //height is reduced, do it first
+				{
+					retValue += checkError(AT_SetInt(m_handle, L"AOIHeight", roi[3]));
+					retValue += checkError(AT_SetInt(m_handle, L"AOITop", roi[1] + 1));
+				}
+				else
+				{
+					retValue += checkError(AT_SetInt(m_handle, L"AOITop", roi[1] + 1));
+					retValue += checkError(AT_SetInt(m_handle, L"AOIHeight", roi[3]));
+				}
+            }
+            else
+            {
+                switch (index)
+                {
+                case 0:
+                    retValue += checkError(AT_SetInt(m_handle, L"AOILeft", val->getVal<int>() + 1));
+                    break;
+                case 1:
+                    retValue += checkError(AT_SetInt(m_handle, L"AOITop", val->getVal<int>() + 1));
+                    break;
+                case 2:
+                    retValue += checkError(AT_SetInt(m_handle, L"AOIWidth", val->getVal<int>()));
+                    break;
+                case 3:
+                    retValue += checkError(AT_SetInt(m_handle, L"AOIHeight", val->getVal<int>()));
+                    break;
+                }
+            }
+
+			retValue += synchronizeCameraSettings(sRoi);
+		}
         else if (key == "integration_time")
         {
             double timeSec = val->getVal<double>();
             retValue += checkError(AT_SetFloat(m_handle, L"ExposureTime", timeSec));
 
-            if (!retValue.containsError())
+			if (!retValue.containsError())
             {
-                it->setVal<double>(timeSec); //after a call, timeMs contains the really set exposure time
+                retValue += synchronizeCameraSettings(sExposure);
             }
         }
         else if (key == "electronic_shuttering_mode")
@@ -858,22 +886,36 @@ ito::RetVal AndorSDK3::retrieveData(ito::DataObject *externalDataObject)
         {
             cv::Mat *cvMat = ((cv::Mat *)externalDataObject->get_mdata()[externalDataObject->seekMat(0)]);
 
-            for (int y = 0; y < m_buffer.aoiHeight; y++)
-            {
-                memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
-                startPtr += m_buffer.aoiStride;
-            }
+			if (m_buffer.aoiStride == bytesPerLine && cvMat->isContinuous())
+			{
+				memcpy(cvMat->ptr(0), startPtr, bytesPerLine * m_buffer.aoiHeight);
+			}
+			else
+			{
+				for (int y = 0; y < m_buffer.aoiHeight; y++)
+				{
+					memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
+					startPtr += m_buffer.aoiStride;
+				}
+			}
         }
 
         if (!copyExternal || hasListeners)
         {
             cv::Mat *cvMat = ((cv::Mat *)m_data.get_mdata()[m_data.seekMat(0)]);
 
-            for (int y = 0; y < m_buffer.aoiHeight; y++)
-            {
-                memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
-                startPtr += m_buffer.aoiStride;
-            }
+			if (m_buffer.aoiStride == bytesPerLine && cvMat->isContinuous())
+			{
+				memcpy(cvMat->ptr(0), startPtr, bytesPerLine * m_buffer.aoiHeight);
+			}
+			else
+			{
+				for (int y = 0; y < m_buffer.aoiHeight; y++)
+				{
+					memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
+					startPtr += m_buffer.aoiStride;
+				}
+			}
         }
 
         m_buffer.imageAvailable = false;
@@ -1046,12 +1088,85 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         AT_64 binVMin, binVMax, binV;
         AT_BOOL available;
         AT_IsImplemented(m_handle, L"AOIHBin", &available);
-        rettemp = checkError(AT_GetInt(m_handle, L"AOIHBin", &binH));
-        rettemp += checkError(AT_GetIntMin(m_handle, L"AOIHBin", &binHMin));
-        rettemp += checkError(AT_GetIntMax(m_handle, L"AOIHBin", &binHMax));
-        rettemp += checkError(AT_GetIntMin(m_handle, L"AOIVBin", &binVMin));
-        rettemp += checkError(AT_GetIntMax(m_handle, L"AOIVBin", &binVMax));
-        rettemp += checkError(AT_GetInt(m_handle, L"AOIVBin", &binV));
+		if (available)
+		{
+			rettemp = checkError(AT_GetInt(m_handle, L"AOIHBin", &binH));
+			rettemp += checkError(AT_GetIntMin(m_handle, L"AOIHBin", &binHMin));
+			rettemp += checkError(AT_GetIntMax(m_handle, L"AOIHBin", &binHMax));
+			rettemp += checkError(AT_GetIntMin(m_handle, L"AOIVBin", &binVMin));
+			rettemp += checkError(AT_GetIntMax(m_handle, L"AOIVBin", &binVMax));
+			rettemp += checkError(AT_GetInt(m_handle, L"AOIVBin", &binV));
+		}
+		AT_IsImplemented(m_handle, L"AOIBinning", &available);
+		if (available)
+		{
+			int count;
+			AT_WC wstring[100];
+			QString value;
+			int iVal;
+
+			AT_GetEnumIndex(m_handle, L"AOIBinning", &iVal);
+			if (AT_GetEnumCount(m_handle, L"AOIBinning", &count) == AT_SUCCESS)
+			{
+				binHMin = 8;
+				binVMin = 8;
+				binHMax = 1;
+				binVMax = 1;
+				for (int c = 0; c < count; ++c)
+				{
+					AT_GetEnumStringByIndex(m_handle, L"AOIBinning", c, wstring, 100);
+					if (wcscmp(wstring, L"1x1") == 0)
+					{
+						binHMin = binVMin = std::min((AT_64)1, binHMin);
+						binHMax = binVMax = std::max((AT_64)1, binHMax);
+						if (c == iVal)
+						{
+							binH = binV = 1;
+						}
+					}
+					else if (wcscmp(wstring, L"2x2") == 0)
+					{
+						binHMin = binVMin = std::min((AT_64)2, binHMin);
+						binHMax = binVMax = std::max((AT_64)2, binHMax);
+						if (c == iVal)
+						{
+							binH = binV = 2;
+						}
+					}
+					else if (wcscmp(wstring, L"3x3") == 0)
+					{
+						binHMin = binVMin = std::min((AT_64)3, binHMin);
+						binHMax = binVMax = std::max((AT_64)3, binHMax);
+						if (c == iVal)
+						{
+							binH = binV = 3;
+						}
+					}
+					else if (wcscmp(wstring, L"4x4") == 0)
+					{
+						binHMin = binVMin = std::min((AT_64)4, binHMin);
+						binHMax = binVMax = std::max((AT_64)4, binHMax);
+						if (c == iVal)
+						{
+							binH = binV = 4;
+						}
+					}
+					else if (wcscmp(wstring, L"8x8") == 0)
+					{
+						binHMin = binVMin = std::min((AT_64)8, binHMin);
+						binHMax = binVMax = std::max((AT_64)8, binHMax);
+						if (c == iVal)
+						{
+							binH = binV = 8;
+						}
+					}
+				}
+			}
+			else
+			{
+				rettemp += ito::RetVal(ito::retError, 0, "cannot read AOIBinning enumeration");
+			}
+		}
 
         if (available == false || rettemp.containsError()) //no binning abilities
         {
@@ -1095,6 +1210,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
             it->setMeta(new ito::IntMeta(sizeMin.y, sizeMax.y), true);
         }
 
+		//offset values seem to be 1-indexed
         rettemp += checkError(AT_GetIntMin(m_handle, L"AOILeft", &(offsetMin.x)));
         rettemp += checkError(AT_GetIntMax(m_handle, L"AOILeft", &(offsetMax.x)));
         rettemp += checkError(AT_GetInt(m_handle, L"AOILeft", &(offset.x)));
@@ -1104,54 +1220,31 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         rettemp += checkError(AT_GetInt(m_handle, L"AOITop", &(offset.y)));
 
         //offset values are in pixel coordinates
-        offsetMin.x /= m_hBin;
-        offsetMin.y /= m_vBin;
-        offsetMax.x /= m_hBin;
-        offsetMax.y /= m_vBin;
-        offset.x /= m_hBin;
-        offset.y /= m_vBin;
+        offsetMin.x = std::max(1, (int)(offsetMin.x / m_hBin));
+        offsetMin.y = std::max(1, (int)(offsetMin.x / m_vBin));
+        offsetMax.x = std::max(1, (int)(offsetMax.x / m_hBin));
+        offsetMax.y = std::max(1, (int)(offsetMax.x / m_vBin));
+        offset.x = std::max(1, (int)(offset.x / m_hBin));
+        offset.y = std::max(1, (int)(offset.x / m_vBin));
 
         //size values are in super-pixels (considering binning)
 
         if (!rettemp.containsError())
         {
-            int currentX1 = size.x + offset.x - 1;
-            int currentY1 = size.y + offset.y - 1;
-
-            it = m_params.find("x0");
-            it->setVal<int>(offset.x);
-            //x0 max is one smaller than the current x1 value, considering the increment value
-            int x0max = currentX1 - (currentX1 - offsetMin.x) % 1; //offsetInc.x;
-            it->setMeta(new ito::IntMeta(offsetMin.x, x0max, 1), true);
-            it->setFlags(0);
-
-            it = m_params.find("y0");
-            it->setVal<int>(offset.y);
-            //x0 max is one smaller than the current x1 value, considering the increment value
-            int y0max = currentY1 - (currentY1 - offsetMin.y) % 1; //offsetInc.y;
-            it->setMeta(new ito::IntMeta(offsetMin.y, y0max, 1), true);
-            it->setFlags(0);
-
-            it = m_params.find("x1");
-            it->setVal<int>(currentX1);
-            it->setMeta(new ito::IntMeta(offset.x + sizeMin.x - 1, offset.x + sizeMax.x - 1), true);
-            it->setFlags(0);
-
-            it = m_params.find("y1");
-            it->setVal<int>(currentY1);
-            it->setMeta(new ito::IntMeta(offset.y + sizeMin.y - 1, offset.y + sizeMax.y - 1), true);
-            it->setFlags(0);
+            it = m_params.find("roi");
+            int *roi = it->getVal<int*>();
+            roi[0] = offset.x - 1;
+            roi[1] = offset.y - 1;
+            roi[2] = size.x;
+            roi[3] = size.y;
+            ito::RangeMeta widthMeta(offsetMin.x - 1, sizeMax.x - 1, 1, sizeMin.x, sizeMax.x, 1);
+            ito::RangeMeta heightMeta(offsetMin.y - 1, sizeMax.x - 1, 1, sizeMin.y, sizeMax.y, 1);
+            it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
+			it->setVal<int*>(roi,4);
         }
         else
         {
-            m_params["x0"].setVal<int>(0);
-            m_params["y0"].setVal<int>(0);
-            m_params["x1"].setVal<int>(size.x-1);
-            m_params["y1"].setVal<int>(size.y-1);
-            m_params["x0"].setFlags(ito::ParamBase::Readonly);
-            m_params["x1"].setFlags(ito::ParamBase::Readonly);
-            m_params["y0"].setFlags(ito::ParamBase::Readonly);
-            m_params["y1"].setFlags(ito::ParamBase::Readonly);
+            m_params["roi"].setFlags(ito::ParamBase::Readonly);
         }
 
         AT_BOOL available;
@@ -1460,7 +1553,7 @@ ito::RetVal AndorSDK3::checkData(ito::DataObject *externalDataObject)
         AT_GetInt(m_handle, L"AOIStride", &(m_buffer.aoiStride));
         AT_GetInt(m_handle, L"AOIWidth", &(m_buffer.aoiWidth));
         AT_GetInt(m_handle, L"AOIHeight", &(m_buffer.aoiHeight));
-        m_buffer.aoiBitsPerPixel = bpp;
+        m_buffer.aoiBitsPerPixel = (bpp <= 8) ? 8 : 16;
         m_buffer.imageAvailable = false;
 
         //Allocate a number of memory buffers to store frames 
@@ -1478,6 +1571,34 @@ ito::RetVal AndorSDK3::loadEnumIndices()
     ito::RetVal retval;
     int count;
     AT_WC wstring[100];
+
+	//BitDepth
+    if (AT_GetEnumCount(m_handle, L"BitDepth", &count) == AT_SUCCESS)
+    {
+		int curVal;
+		m_bitDepth = 0;
+		AT_GetEnumIndex(m_handle, L"BitDepth", &curVal);
+        for (int c = 0; c < count; ++c)
+        {
+            AT_GetEnumStringByIndex(m_handle, L"BitDepth", c, wstring, 100);
+			if (wcscmp(wstring, L"11 Bit") == 0)
+			{
+				m_bitDepthIdx.t11Bit = c;
+				if (curVal == c) m_bitDepth = 11;
+			}
+			else if (wcscmp(wstring, L"12 Bit") == 0)
+			{
+				m_bitDepthIdx.t12Bit = c;
+				if (curVal == c) m_bitDepth = 12;
+			}
+			else if (wcscmp(wstring, L"16 Bit") == 0)
+			{
+				m_bitDepthIdx.t16Bit = c;
+				if (curVal == c) m_bitDepth = 16;
+			}
+		}
+	}
+	retval = ito::retOk;
 
     //PixelEncoding
     if (AT_GetEnumCount(m_handle, L"PixelEncoding", &count) == AT_SUCCESS)
@@ -1612,9 +1733,9 @@ ito::RetVal AndorSDK3::loadSensorInfo()
     }
 
     //sdk_version
-    if (AT_IsImplemented(m_handle, L"SoftwareVersion", &implemented) == AT_SUCCESS && implemented)
+    if (AT_IsImplemented(AT_HANDLE_SYSTEM, L"SoftwareVersion", &implemented) == AT_SUCCESS && implemented)
     {
-        if (AT_GetString(m_handle, L"SoftwareVersion", szValue, 256) == AT_SUCCESS)
+        if (AT_GetString(AT_HANDLE_SYSTEM, L"SoftwareVersion", szValue, 256) == AT_SUCCESS)
         {
             value = QString::fromWCharArray(szValue);
             m_params["sdk_version"].setVal<char*>(value.toLatin1().data());

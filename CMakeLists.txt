@@ -25,7 +25,7 @@ ENDIF (WIN32)
 
 
 # AndorSDK3
-OPTION(PLUGIN_andorSDK3 "Build with this plugin." OFF)
+OPTION(PLUGIN_andorSDK3 "Build with this plugin." ON)
 if (PLUGIN_andorSDK3)
         ADD_SUBDIRECTORY(AndorSDK3)
 endif (PLUGIN_andorSDK3)# AVTVimba

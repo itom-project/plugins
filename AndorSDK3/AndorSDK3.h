@@ -104,6 +104,14 @@ class AndorSDK3 : public ito::AddInGrabber
             int tShutterGlobal;
         };
 
+		struct BitDepthIdx
+		{
+			BitDepthIdx() : t11Bit(-1), t12Bit(-1), t16Bit(-1) {}
+			int t11Bit;
+			int t12Bit;
+			int t16Bit;
+		};
+
         struct AT_Size
         {
             AT_64 x;
@@ -114,6 +122,8 @@ class AndorSDK3 : public ito::AddInGrabber
         PixelEncodingIdx m_pixelEncodingIdx;
         TriggerModeIdx m_triggerModeIdx;
         ElectronicShutteringMode m_electronicShutteringMode;
+		BitDepthIdx m_bitDepthIdx;
+		int m_bitDepth; //read-only, this indicates how many bits per pixel are transferred.
 
         BufferStruct m_buffer;
 
