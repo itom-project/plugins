@@ -721,13 +721,45 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         }
 
 		
-        Sleep(5); //todo: why this?
+        //Sleep(5); //todo: why this?
 
         if (QString::compare(key, "bpp", Qt::CaseInsensitive) == 0)
         {
 			int bitppix = val->getVal<int>();
 
-            if ((bitppix != 8) && (bitppix != 10))
+			if (bitppix == 8)
+			{
+				int bpp = XI_RAW8;
+                if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
+				{
+                    retValue += getErrStr(ret);
+				}
+			}
+			else if (bitppix == 10)
+			{
+				int bpp = XI_RAW16;
+                //int bpp = XI_MONO16;
+                if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
+                {
+					retValue += getErrStr(ret);
+				}
+			}
+			else if (bitppix == 12)
+			{
+				int bpp = XI_RAW16;
+                //int bpp = XI_MONO16;
+                if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
+                {
+					retValue += getErrStr(ret);
+				}
+
+			}
+			else
+			{
+				retValue = ito::RetVal(ito::retError, 0, tr("bpp value not supported").toLatin1().data());
+			}
+
+            /*if ((bitppix != 8) && (bitppix != 10))
             {
                 retValue += ito::RetVal(ito::retError, 0, tr("bpp must be 8 or 10.").toLatin1().data());
             }
@@ -735,15 +767,23 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             {
                 int bpp = XI_RAW8;
                 if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
+				{
                     retValue += getErrStr(ret);
+				}
             }
-            else
+            else if (bitppix == 12)
             {
                 int bpp = XI_RAW16;
                 //int bpp = XI_MONO16;
                 if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
+                {
+					retValue += getErrStr(ret);
+				}
             }
+			else
+			{
+				retValue = ito::RetVal(ito::retError, 0, tr("bpp value not supported").toLatin1().data());
+			}*/
 
 			if (!retValue.containsError())
 			{
