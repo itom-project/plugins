@@ -1304,6 +1304,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 #endif
 
     float framerate = 30;
+	float framerate_min = 0; 
+	float framerate_max = 0;
     float gamma = 0.0;
     float sharpness = 1.0;
     double gain = 0;
@@ -1314,9 +1316,11 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
     DWORD pSize = sizeof(int);
 	DWORD intSize = sizeof(int);
+	DWORD floatSize = sizeof(float);
     XI_PRM_TYPE pType = xiTypeInteger;
 	XI_PRM_TYPE intType = xiTypeInteger;
     XI_PRM_TYPE strType = xiTypeString;
+	XI_PRM_TYPE floatType = xiTypeFloat;
 
     retValue += LoadLib();
 
@@ -1431,7 +1435,21 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             timing_mode = m_params["timing_mode"].getVal<int>();
 #endif
 
-            framerate = m_params["framerate"].getVal<double>();
+			if (ret = pxiGetParam(m_handle, XI_PRM_FRAMERATE XI_PRM_INFO_MIN, &framerate_min, &floatSize, &floatType))
+				retValue += getErrStr(ret);
+			static_cast<ito::DoubleMeta*>(m_params["framerate"].getMeta())->setMin(framerate_min);
+
+			if (ret = pxiGetParam(m_handle, XI_PRM_FRAMERATE XI_PRM_INFO_MAX, &framerate_max, &floatSize, &floatType))
+				retValue += getErrStr(ret);
+			static_cast<ito::DoubleMeta*>(m_params["framerate"].getMeta())->setMax(framerate_max);
+
+			if (ret = pxiGetParam(m_handle, XI_PRM_FRAMERATE, &framerate, &floatSize, &floatType))
+				retValue += getErrStr(ret);
+
+	       if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &framerate, sizeof(float), xiTypeFloat)))
+                retValue += getErrStr(ret);
+			m_params["framerate"].setVal<double>(framerate);
+
 
             gamma = m_params["gamma"].getVal<double>();
             sharpness = m_params["sharpness"].getVal<double>();
@@ -1450,8 +1468,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 retValue += getErrStr(ret);
 #endif
             // Though in api the dll reports not supported ...
-    //        if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &framerate, sizeof(float), xiTypeFloat)))
-    //            retValue += getErrStr(ret);
+
+
             if ((ret = pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat)))
                 retValue += getErrStr(ret);
             if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
