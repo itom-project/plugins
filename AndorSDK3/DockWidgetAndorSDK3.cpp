@@ -41,13 +41,6 @@ void DockWidgetSDK3::parametersChanged(QMap<QString, ito::Param> params)
 
     ui.lblGain->setVisible( !(params["gain"].getFlags() & ito::ParamBase::Readonly) );
     ui.sliderGain->setVisible( !(params["gain"].getFlags() & ito::ParamBase::Readonly) );
-    ui.lblGainRed->setVisible( !(params["gain_rgb"].getFlags() & ito::ParamBase::Readonly) );
-    ui.sliderGainRed->setVisible( !(params["gain_rgb"].getFlags() & ito::ParamBase::Readonly) );
-    ui.lblGainGreen->setVisible( !(params["gain_rgb"].getFlags() & ito::ParamBase::Readonly) );
-    ui.sliderGainGreen->setVisible( !(params["gain_rgb"].getFlags() & ito::ParamBase::Readonly) );
-    ui.lblGainBlue->setVisible( !(params["gain_rgb"].getFlags() & ito::ParamBase::Readonly) );
-    ui.sliderGainBlue->setVisible( !(params["gain_rgb"].getFlags() & ito::ParamBase::Readonly) );
-    ui.sliderOffset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
     ui.sliderExposure->setDisabled( params["exposure"].getFlags() & ito::ParamBase::Readonly );
 
     if (m_firstRun)
@@ -57,31 +50,23 @@ void DockWidgetSDK3::parametersChanged(QMap<QString, ito::Param> params)
             ui.lblModel->setText(params["cam_model"].getVal<char*>());
         }
         
-        if (params.contains("sensor_type"))
+        if (params.contains("camera_name"))
         {
-            ui.lblSensor->setText(params["sensor_type"].getVal<char*>());
+            ui.lblName->setText(params["camera_name"].getVal<char*>());
         }
 
-        if (params.contains("cam_id"))
+        if (params.contains("serial_number"))
         {
-            ui.lblID->setText(QString::number(params["cam_id"].getVal<int>()));
+            ui.lblSerial->setText(QString::number(params["serial_number"].getVal<int>()));
         }
 
         m_firstRun = false;
     }
 
-    if (strcmp(params["color_mode"].getVal<char*>(),"gray") == 0)
+    ParamMapIterator it = params.find("integration_time");
+    if (it != params.end())
     {
-        ui.lblBitDepth->setText(QString("gray (%1 bit)").arg(params["bpp"].getVal<int>()));
-    }
-    else
-    {
-        ui.lblBitDepth->setText(QString("RGB (8 bit)"));
-    }
-
-    if (params.contains("integration_time"))
-    {
-        ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["integration_time"].getMeta());
+        ito::DoubleMeta *dm = (ito::DoubleMeta*)(it->getMeta());
         ui.sliderExposure->setMinimum(dm->getMin());
         ui.sliderExposure->setMaximum(dm->getMax());
         if (dm->getStepSize() != 0)
@@ -92,7 +77,7 @@ void DockWidgetSDK3::parametersChanged(QMap<QString, ito::Param> params)
         {
             ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) / 100);
         }
-        ui.sliderExposure->setValue(params["integration_time"].getVal<double>());
+        ui.sliderExposure->setValue(it->getVal<double>());
     }
 
     if (params.contains("gain"))
@@ -100,17 +85,9 @@ void DockWidgetSDK3::parametersChanged(QMap<QString, ito::Param> params)
         ui.sliderGain->setValue(params["gain"].getVal<double>());
     }
 
-    if (params.contains("gain_rgb"))
+    if ((it = params.find("gain")) != params.end())
     {
-        const double *vals = params["gain_rgb"].getVal<const double*>();
-        ui.sliderGainRed->setValue(vals[0]);
-        ui.sliderGainGreen->setValue(vals[1]);
-        ui.sliderGainBlue->setValue(vals[2]);
-    }
-
-    if (params.contains("offset"))
-    {
-        ui.sliderOffset->setValue(params["offset"].getVal<double>());
+        ui.sliderGain->setValue(it->getVal<double>());
     }
 
     m_inEditing = inEditing;
@@ -137,57 +114,6 @@ void DockWidgetSDK3::on_sliderGain_valueChanged(double value)
     {
         m_inEditing = true;
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain",ito::ParamBase::Double,value));
-        setPluginParameter(p, msgLevelWarningAndError);
-        m_inEditing = false;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSDK3::on_sliderGainRed_valueChanged(double value)
-{
-    if (!m_inEditing)
-    {
-        m_inEditing = true;
-        double values[] = {value, ui.sliderGainGreen->value(), ui.sliderGainBlue->value()};
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain_rgb",ito::ParamBase::DoubleArray, 3, values));
-        setPluginParameter(p, msgLevelWarningAndError);
-        m_inEditing = false;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSDK3::on_sliderGainGreen_valueChanged(double value)
-{
-    if (!m_inEditing)
-    {
-        m_inEditing = true;
-        double values[] = {ui.sliderGainRed->value(), value, ui.sliderGainBlue->value()};
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain_rgb",ito::ParamBase::DoubleArray, 3, values));
-        setPluginParameter(p, msgLevelWarningAndError);
-        m_inEditing = false;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSDK3::on_sliderGainBlue_valueChanged(double value)
-{
-    if (!m_inEditing)
-    {
-        m_inEditing = true;
-        double values[] = {ui.sliderGainRed->value(), ui.sliderGainGreen->value(), value};
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain_rgb",ito::ParamBase::DoubleArray, 3, values));
-        setPluginParameter(p, msgLevelWarningAndError);
-        m_inEditing = false;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetSDK3::on_sliderOffset_valueChanged(double value)
-{
-    if (!m_inEditing)
-    {
-        m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("offset",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }

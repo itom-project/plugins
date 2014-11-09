@@ -19,8 +19,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETAndorSDK3_H
-#define DOCKWIDGETAndorSDK3_H
+#ifndef DOCKWIDGETANDORSDK3_H
+#define DOCKWIDGETANDORSDK3_H
 
 #include "common/abstractAddInDockWidget.h"
 #include "common/addInInterface.h"
@@ -51,10 +51,6 @@ class DockWidgetSDK3 : public ito::AbstractAddInDockWidget
     private slots:
         void on_sliderExposure_valueChanged(double value);   
         void on_sliderGain_valueChanged(double value);
-        void on_sliderGainRed_valueChanged(double value);
-        void on_sliderGainGreen_valueChanged(double value);
-        void on_sliderGainBlue_valueChanged(double value);
-        void on_sliderOffset_valueChanged(double value);
 };
 
 #endif

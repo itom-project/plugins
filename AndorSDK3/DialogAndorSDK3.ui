@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>423</width>
-    <height>515</height>
+    <width>386</width>
+    <height>405</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -46,12 +46,12 @@
         <item row="0" column="0">
          <widget class="QLabel" name="label_bpp_2">
           <property name="text">
-           <string>Color Mode and Bits per Pixel</string>
+           <string>Bits per Pixel</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="comboBppMode">
+         <widget class="QComboBox" name="comboBpp">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -67,11 +67,8 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QComboBox" name="comboBinHor"/>
-        </item>
-        <item row="1" column="2">
-         <widget class="QComboBox" name="comboBinVer"/>
+        <item row="1" column="1" colspan="2">
+         <widget class="QComboBox" name="comboBinning"/>
         </item>
        </layout>
       </widget>
@@ -85,175 +82,102 @@
         <string>Data Acquisition</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderGain" native="true">
-          <property name="decimals" stdset="0">
-           <number>0</number>
-          </property>
-          <property name="maximum" stdset="0">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="suffix" stdset="0">
-           <string> %</string>
+        <item row="3" column="0">
+         <widget class="QLabel" name="lblTimeout">
+          <property name="text">
+           <string>Timeout</string>
           </property>
          </widget>
         </item>
-        <item row="11" column="0" colspan="4">
-         <widget class="QCheckBox" name="checkAutoBlacklevel">
-          <property name="text">
-           <string>auto blacklevel correction (offset)</string>
+        <item row="0" column="1" colspan="2">
+         <widget class="SliderWidget" name="sliderGain">
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="singleStep">
+           <double>0.100000000000000</double>
+          </property>
+          <property name="pageStep">
+           <double>0.100000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>1.000000000000000</double>
+          </property>
+          <property name="suffix">
+           <string/>
           </property>
          </widget>
         </item>
-        <item row="10" column="0" colspan="4">
-         <widget class="QCheckBox" name="checkGainBoost">
-          <property name="text">
-           <string>gain boost (analog hardware gain)</string>
+        <item row="3" column="1" colspan="2">
+         <widget class="QDoubleSpinBox" name="spinTimeout">
+          <property name="suffix">
+           <string> s</string>
           </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_gain">
-          <property name="text">
-           <string>Master Gain</string>
+          <property name="decimals">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <double>999999999.000000000000000</double>
           </property>
          </widget>
         </item>
         <item row="0" column="0">
-         <widget class="QLabel" name="label_offset">
+         <widget class="QLabel" name="label_gain">
           <property name="text">
-           <string>Offset</string>
+           <string>Gain</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderOffset" native="true">
-          <property name="decimals" stdset="0">
-           <number>0</number>
-          </property>
-          <property name="maximum" stdset="0">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="suffix" stdset="0">
-           <string> %</string>
-          </property>
-          <property name="popupSlider" stdset="0">
-           <bool>false</bool>
-          </property>
-          <property name="invertedAppearance" stdset="0">
-           <bool>false</bool>
-          </property>
-          <property name="invertedControls" stdset="0">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderIntegrationTime" native="true">
-          <property name="decimals" stdset="0">
+        <item row="2" column="1" colspan="2">
+         <widget class="SliderWidget" name="sliderIntegrationTime">
+          <property name="decimals">
            <number>5</number>
           </property>
-          <property name="maximum" stdset="0">
+          <property name="maximum">
            <double>100.000000000000000</double>
           </property>
-          <property name="suffix" stdset="0">
+          <property name="suffix">
            <string> s</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
+        <item row="2" column="0">
          <widget class="QLabel" name="label_gain_2">
           <property name="text">
            <string>Integration Time</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_gain_5">
-          <property name="text">
-           <string>Green Gain</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0" colspan="2">
-         <widget class="QCheckBox" name="checkLongIntegrationTime">
-          <property name="text">
-           <string>enable long integration time</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_gain_4">
-          <property name="text">
-           <string>Red Gain</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderGainRed" native="true">
-          <property name="decimals" stdset="0">
-           <number>0</number>
-          </property>
-          <property name="maximum" stdset="0">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="suffix" stdset="0">
-           <string> %</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="QLabel" name="label_gain_3">
-          <property name="text">
-           <string>Pixel Clock</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderPixelClock" native="true">
-          <property name="decimals" stdset="0">
-           <number>0</number>
-          </property>
-          <property name="maximum" stdset="0">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="suffix" stdset="0">
-           <string> Mhz</string>
-          </property>
-         </widget>
-        </item>
         <item row="4" column="0">
-         <widget class="QLabel" name="label_gain_6">
+         <widget class="QLabel" name="lblShutter">
           <property name="text">
-           <string>Blue Gain</string>
+           <string>Shutter</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderGainGreen" native="true">
-          <property name="decimals" stdset="0">
-           <number>0</number>
-          </property>
-          <property name="maximum" stdset="0">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="suffix" stdset="0">
-           <string> %</string>
+        <item row="4" column="1" colspan="2">
+         <widget class="QComboBox" name="comboShutter">
+          <item>
+           <property name="text">
+            <string>Rolling Shutter</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Global Shutter</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="lblTrigger">
+          <property name="text">
+           <string>Trigger</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="1" colspan="3">
-         <widget class="SliderWidget" name="sliderGainBlue" native="true">
-          <property name="decimals" stdset="0">
-           <number>0</number>
-          </property>
-          <property name="maximum" stdset="0">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="suffix" stdset="0">
-           <string> %</string>
-          </property>
-         </widget>
+        <item row="6" column="1" colspan="2">
+         <widget class="QComboBox" name="comboTrigger"/>
         </item>
        </layout>
       </widget>
@@ -268,6 +192,13 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
+         <widget class="QLabel" name="lblFullAoiControl">
+          <property name="text">
+           <string>[full AOI control]</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <widget class="QLabel" name="lblx0">
@@ -277,26 +208,26 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="RangeWidget" name="rangeX01" native="true">
-            <property name="maximum" stdset="0">
+           <widget class="RangeWidget" name="rangeX01">
+            <property name="maximum">
              <number>2048</number>
             </property>
-            <property name="maximumValue" stdset="0">
-             <number>2048</number>
+            <property name="maximumValue">
+             <number>99</number>
             </property>
-            <property name="prefix" stdset="0">
+            <property name="prefix">
              <string/>
             </property>
-            <property name="suffix" stdset="0">
+            <property name="suffix">
              <string/>
             </property>
-            <property name="tickInterval" stdset="0">
+            <property name="tickInterval">
              <number>5</number>
             </property>
-            <property name="autoSpinBoxWidth" stdset="0">
+            <property name="autoSpinBoxWidth">
              <bool>true</bool>
             </property>
-            <property name="tracking" stdset="0">
+            <property name="tracking">
              <bool>false</bool>
             </property>
             <property name="decimals" stdset="0">
@@ -319,29 +250,29 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="RangeWidget" name="rangeY01" native="true">
-            <property name="singleStep" stdset="0">
+           <widget class="RangeWidget" name="rangeY01">
+            <property name="singleStep">
              <number>2</number>
             </property>
-            <property name="maximum" stdset="0">
+            <property name="maximum">
              <number>2048</number>
             </property>
-            <property name="maximumValue" stdset="0">
-             <number>2048</number>
+            <property name="maximumValue">
+             <number>99</number>
             </property>
-            <property name="prefix" stdset="0">
+            <property name="prefix">
              <string/>
             </property>
-            <property name="suffix" stdset="0">
+            <property name="suffix">
              <string/>
             </property>
-            <property name="tickInterval" stdset="0">
+            <property name="tickInterval">
              <number>5</number>
             </property>
-            <property name="autoSpinBoxWidth" stdset="0">
+            <property name="autoSpinBoxWidth">
              <bool>true</bool>
             </property>
-            <property name="tracking" stdset="0">
+            <property name="tracking">
              <bool>false</bool>
             </property>
             <property name="decimals" stdset="0">

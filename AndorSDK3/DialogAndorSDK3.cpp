@@ -41,74 +41,67 @@ DialogSDK3::DialogSDK3(ito::AddInBase *grabber) :
 void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
 {
     m_currentParameters = params;
+    ParamMapIterator it;
 
     if (m_firstRun)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-        ito::IntMeta *im;
-        im = static_cast<ito::IntMeta*>(params["x0"].getMeta());
-        ui.rangeX01->setSingleStep(im->getStepSize());
-        ui.rangeX01->setMinimum(0);
-        ui.rangeX01->setMinimumValue(0);
-        im = static_cast<ito::IntMeta*>(params["x1"].getMeta());
-        ui.rangeX01->setMaximum(im->getMax());
-        ui.rangeX01->setMaximumValue(im->getMax());
-
-        im = static_cast<ito::IntMeta*>(params["y0"].getMeta());
-        ui.rangeY01->setSingleStep(im->getStepSize());
-        ui.rangeY01->setMinimum(0);
-        ui.rangeY01->setMinimumValue(0);
-        im = static_cast<ito::IntMeta*>(params["y1"].getMeta());
-        ui.rangeY01->setMaximum(im->getMax());
-        ui.rangeY01->setMaximumValue(im->getMax());
-
-        ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
-        ito::StringMeta *colorModeMeta = static_cast<ito::StringMeta*>(params["color_mode"].getMeta());
-        ui.comboBppMode->clear();
-
-        for (int i = bppMeta->getMin(); i <= bppMeta->getMax(); i+=2)
+        if (params["full_aoi_control"].getVal<int>() > 0)
         {
-            ui.comboBppMode->addItem(QString("gray %1 bit").arg(i), i);
-        }
-
-        for (int i = 0; i < colorModeMeta->getLen(); ++i)
-        {
-            if (strcmp(colorModeMeta->getString(i), "color") == 0)
-            {
-                ui.comboBppMode->addItem("RGB, 8bit", 0);
-                break;
-            }
-        }
-
-        ito::IntMeta *binMeta = static_cast<ito::IntMeta*>(params["binning"].getMeta());
-        ui.comboBinHor->clear();
-        ui.comboBinVer->clear();
-        if (params["binning"].getFlags() & ito::ParamBase::Readonly)
-        {
-            ui.comboBinHor->setEnabled(false);
-            ui.comboBinVer->setEnabled(false);
+            ui.lblFullAoiControl->setText("full control of ROI is available");
         }
         else
         {
-            ui.comboBinHor->setEnabled(true);
-            ui.comboBinVer->setEnabled(true);
-            ui.comboBinHor->addItem("1x", 1);
-            ui.comboBinHor->addItem("2x", 2);
-            ui.comboBinHor->addItem("3x", 3);
-            ui.comboBinHor->addItem("4x", 4);
-            ui.comboBinHor->addItem("5x", 5);
-            ui.comboBinHor->addItem("6x", 6);
-            ui.comboBinHor->addItem("8x", 8);
-            ui.comboBinHor->addItem("16x", 16);
-            ui.comboBinVer->addItem("1x", 1);
-            ui.comboBinVer->addItem("2x", 2);
-            ui.comboBinVer->addItem("3x", 3);
-            ui.comboBinVer->addItem("4x", 4);
-            ui.comboBinVer->addItem("5x", 5);
-            ui.comboBinVer->addItem("6x", 6);
-            ui.comboBinVer->addItem("8x", 8);
-            ui.comboBinVer->addItem("16x", 16);
+            ui.lblFullAoiControl->setText("camera does not support full control of ROI");
+        }
+
+
+        ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+        ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+        ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
+
+        ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
+        ito::StringMeta *colorModeMeta = static_cast<ito::StringMeta*>(params["color_mode"].getMeta());
+        ui.comboBpp->clear();
+
+        for (int i = bppMeta->getMin(); i <= bppMeta->getMax(); i+= std::max(1, bppMeta->getStepSize()))
+        {
+            ui.comboBpp->addItem(QString("%1 bit").arg(i), i);
+        }
+
+        it = params.find("binning");
+        ito::IntMeta *binMeta = static_cast<ito::IntMeta*>(it->getMeta());
+        int binMin = it->getMin() / 100;
+        int binMax = it->getMax() / 100;
+        ui.comboBinning->clear();
+        if (it->getFlags() & ito::ParamBase::Readonly)
+        {
+            ui.comboBinning->setEnabled(false);
+        }
+        else
+        {
+            ui.comboBinning->setEnabled(true);
+            for (int i = binMin; i <= binMax; ++i)
+            {
+                ui.comboBinning->addItem(QString("%1x%1").arg(i), i);
+            }
+        }
+
+        it = params.find("trigger_mode");
+        ito::StringMeta *sm = static_cast<ito::StringMeta*>(it->getMeta());
+        ui.comboTrigger->clear();
+        if (it->getFlags() & ito::ParamBase::Readonly)
+        {
+            ui.comboTrigger->setEnabled(false);
+        }
+        else
+        {
+            ui.comboTrigger->setEnabled(true);
+            for (int i = 0; i < sm->getLen(); ++i)
+            {
+                ui.comboTrigger->addItem(sm->getString(i));
+            }
         }
 
         m_firstRun = false;
@@ -117,22 +110,14 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
     bool updateSizeX = false;
     bool updateSizeY = false;
     
-    ui.rangeX01->setValues(params["x0"].getVal<int>(), params["x1"].getVal<int>());
-    ui.rangeY01->setValues(params["y0"].getVal<int>(), params["y1"].getVal<int>());
-    ui.rangeX01->setEnabled(! (params["x0"].getFlags() & ito::ParamBase::Readonly));
-    ui.rangeY01->setEnabled(! (params["y0"].getFlags() & ito::ParamBase::Readonly));
+    int *roi = params["roi"].getVal<int*>();
+    ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
+    ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
+    ui.rangeX01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
+    ui.rangeY01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
 
     ui.spinSizeX->setValue(params["sizex"].getVal<int>());
     ui.spinSizeY->setValue(params["sizey"].getVal<int>());
-
-    ui.checkGainBoost->setChecked(params["gain_boost_enabled"].getVal<int>() > 0);
-    ui.checkGainBoost->setDisabled(params["gain_boost_enabled"].getFlags() & ito::ParamBase::Readonly);
-
-    ui.checkLongIntegrationTime->setChecked(params["long_integration_time_enabled"].getVal<int>() > 0);
-    ui.checkLongIntegrationTime->setDisabled(params["long_integration_time_enabled"].getFlags() & ito::ParamBase::Readonly);
-
-    ui.checkAutoBlacklevel->setChecked(params["auto_blacklevel_enabled"].getVal<int>() > 0);
-    ui.checkAutoBlacklevel->setDisabled(params["auto_blacklevel_enabled"].getFlags() & ito::ParamBase::Readonly);
 
     ito::DoubleMeta *dm = static_cast<ito::DoubleMeta*>(params["integration_time"].getMeta());
     ui.sliderIntegrationTime->setMinimum(dm->getMin());
@@ -141,63 +126,41 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
     ui.sliderIntegrationTime->setValue(params["integration_time"].getVal<double>());
     ui.sliderIntegrationTime->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
 
-    ito::IntMeta *im = static_cast<ito::IntMeta*>(params["pixel_clock"].getMeta());
-    ui.sliderPixelClock->setMinimum(im->getMin());
-    ui.sliderPixelClock->setMaximum(im->getMax());
-    ui.sliderPixelClock->setSingleStep(im->getStepSize());
-    ui.sliderPixelClock->setValue(params["pixel_clock"].getVal<int>());
-    ui.sliderPixelClock->setEnabled(!(params["pixel_clock"].getFlags() & ito::ParamBase::Readonly));
+    ui.comboShutter->setCurrentIndex(params["electronic_shuttering_mode"].getVal<int>());
+
+    it = params.find("timeout");
+    ui.spinTimeout->setValue(it->getVal<double>());
 
     double dval = params["gain"].getVal<double>();
     ui.sliderGain->setValue(dval*100.0);
-    ui.sliderGain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
+    ui.sliderGain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));             
 
-    double *gain_rgb = params["gain_rgb"].getVal<double*>();
-    ui.sliderGainRed->setValue(gain_rgb[0]*100.0);
-    ui.sliderGainRed->setEnabled(!(params["gain_rgb"].getFlags() & ito::ParamBase::Readonly));
-
-    ui.sliderGainGreen->setValue(gain_rgb[1]*100.0);
-    ui.sliderGainGreen->setEnabled(!(params["gain_rgb"].getFlags() & ito::ParamBase::Readonly));
-
-    ui.sliderGainBlue->setValue(gain_rgb[2]*100.0);
-    ui.sliderGainBlue->setEnabled(!(params["gain_rgb"].getFlags() & ito::ParamBase::Readonly));
-
-    dval = params["offset"].getVal<double>();
-    ui.sliderOffset->setValue(dval*100.0);
-    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));             
-    
-    int userData = 0;
-    if (strcmp(params["color_mode"].getVal<char*>(), "gray") == 0)
+    int bpp = params["bpp"].getVal<int>();
+    for (int i = 0; i < ui.comboBpp->count(); ++i)
     {
-        userData = params["bpp"].getVal<int>();
-    }
-
-    for (int i = 0; i < ui.comboBppMode->count(); ++i)
-    {
-        if (ui.comboBppMode->itemData(i, 32).toInt() == userData)
+        if (ui.comboBpp->itemData(i, 32).toInt() == bpp)
         {
-            ui.comboBppMode->setCurrentIndex(i);
+            ui.comboBpp->setCurrentIndex(i);
             break;
         }
     }
 
-    int binVer = params["binning"].getVal<int>() % 100;
-    int binHor = (params["binning"].getVal<int>() - binVer) % 100;
-
-    for (int i = 0; i < ui.comboBinHor->count(); ++i)
+    int bin = params["binning"].getVal<int>() / 100;
+    for (int i = 0; i < ui.comboBinning->count(); ++i)
     {
-        if (ui.comboBinHor->itemData(i, 32).toInt() == binHor)
+        if (ui.comboBinning->itemData(i, 32).toInt() == bin)
         {
-            ui.comboBinHor->setCurrentIndex(i);
+            ui.comboBinning->setCurrentIndex(i);
             break;
         }
     }
 
-    for (int i = 0; i < ui.comboBinVer->count(); ++i)
+    QString trigger_mode = params["trigger_mode"].getVal<char*>();
+    for (int i = 0; i < ui.comboTrigger->count(); ++i)
     {
-        if (ui.comboBinVer->itemData(i, 32).toInt() == binVer)
+        if (ui.comboTrigger->itemText(i) == trigger_mode)
         {
-            ui.comboBinVer->setCurrentIndex(i);
+            ui.comboTrigger->setCurrentIndex(i);
             break;
         }
     }
@@ -213,115 +176,48 @@ ito::RetVal DialogSDK3::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
     bool success = false;
 
-    bool changeX0 = false;
-    bool changeX1 = false;
-    bool changeY0 = false;
-    bool changeY1 = false;
-
-    if(ui.rangeX01->isEnabled())
+    if(ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {
-        int x0;
-        int x1;
+        int x0, x1, y0, y1;
         ui.rangeX01->values(x0,x1);
+        ui.rangeY01->values(y0,y1);
+        int roi[] = {0,0,0,0};
+        memcpy(roi, m_currentParameters["roi"].getVal<int*>(), 4*sizeof(int));
 
-        if((m_currentParameters["x0"].getVal<int>() !=  x0))
+        if (roi[0] != x0 || roi[1] != y0 || roi[2] != (x1-x0+1) || roi[3] != (y1-y0+1))
         {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, x0)));
-        }
-        if((m_currentParameters["x1"].getVal<int>() !=  x1))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, x1)));
-        }
-    }
-
-    if(ui.rangeY01->isEnabled())
-    {
-        int y0;
-        int y1;
-        ui.rangeY01->values(y0, y1);
-
-        if((m_currentParameters["y0"].getVal<int>() !=  y0))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, y0)));
-        }
-        if((m_currentParameters["y1"].getVal<int>() !=  y1))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, y1)));
+            roi[0] = x0;
+            roi[1] = y0;
+            roi[2] = x1-x0+1;
+            roi[3] = y1-y0+1;
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("roi", ito::ParamBase::IntArray, 4, roi)));
         }
     }
 
-    if (ui.comboBinHor->isEnabled() && ui.comboBinVer->isEnabled())
+    if (ui.comboBinning->isEnabled())
     {
-        int bin = ui.comboBinHor->itemData(ui.comboBinHor->currentIndex()).toInt() * 100 + ui.comboBinVer->itemData(ui.comboBinHor->currentIndex()).toInt();
+        int bin = ui.comboBinning->itemData(ui.comboBinning->currentIndex()).toInt() * 100 + ui.comboBinning->itemData(ui.comboBinning->currentIndex()).toInt();
         if (m_currentParameters["binning"].getVal<int>() != bin)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, bin)));
         }
     }
 
-    if(ui.sliderPixelClock->isEnabled())
-    {
-        int clock = ui.sliderPixelClock->value();
-        if(m_currentParameters["pixel_clock"].getVal<int>() != clock)
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("pixel_clock", ito::ParamBase::Int, clock)));
-        }
-    }
-
-    if(ui.checkGainBoost->isEnabled())
-    {
-        int ival = ui.checkGainBoost->isChecked() ? 1 : 0;
-        if(m_currentParameters["gain_boost_enabled"].getVal<int>() != ival)
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain_boost_enabled", ito::ParamBase::Int, ival)));
-        }
-    }
-
-    if(ui.checkAutoBlacklevel->isEnabled())
-    {
-        int ival = ui.checkAutoBlacklevel->isChecked() ? 1 : 0;
-        if(m_currentParameters["auto_blacklevel_enabled"].getVal<int>() != ival)
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("auto_blacklevel_enabled", ito::ParamBase::Int, ival)));
-        }
-    }
-
     if(ui.sliderGain->isEnabled())
     {
-        double dval = ui.sliderGain->value()/100.0;
+        double dval = ui.sliderGain->value();
         if(qAbs(m_currentParameters["gain"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.sliderGainRed->isEnabled())
+    if(ui.spinTimeout->isEnabled())
     {
-        double dval[] = {ui.sliderGainRed->value()/100.0, ui.sliderGainGreen->value()/100.0, ui.sliderGainBlue->value()/100.0};
-        const double *curdval = m_currentParameters["gain_rgb"].getVal<double*>();
-        if(qAbs(dval[0] - curdval[0]) >= std::numeric_limits<double>::epsilon() || 
-           qAbs(dval[1] - curdval[1]) >= std::numeric_limits<double>::epsilon() || 
-           qAbs(dval[2] - curdval[2]) >= std::numeric_limits<double>::epsilon() )
+        double dval = ui.spinTimeout->value();
+        if(qAbs(m_currentParameters["timeout"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
         {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain_rgb", ito::ParamBase::DoubleArray, 3, dval)));
-        }
-    }
-
-    if(ui.sliderOffset->isEnabled())
-    {
-        double dval = ui.sliderOffset->value()/100.0;
-        if(qAbs(m_currentParameters["offset"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, dval)));
-        }
-    }
-
-    if(ui.checkLongIntegrationTime->isEnabled())
-    {
-        int ival = ui.checkLongIntegrationTime->isChecked() ? 1 : 0;
-        if(m_currentParameters["long_integration_time_enabled"].getVal<int>() != ival)
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("long_integration_time_enabled", ito::ParamBase::Int, ival)));
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, dval)));
         }
     }
 
@@ -334,38 +230,31 @@ ito::RetVal DialogSDK3::applyParameters()
         }
     }
 
-    if(ui.comboBppMode->isEnabled())
+    if(ui.comboBpp->isEnabled())
     {
-        int i = ui.comboBppMode->itemData(ui.comboBppMode->currentIndex()).toInt();
-        int bpp;
-        bool color = false;
-        if (i == 0)
-        {
-            color = true;
-            bpp = 8;
-        }
-        else
-        {
-            bpp = i;
-        }
+        int bpp = ui.comboBpp->itemData(ui.comboBpp->currentIndex()).toInt();
         
         if(m_currentParameters["bpp"].getVal<int>() !=  bpp)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bpp)));
         }
+    }
 
-        if(color && strcmp(m_currentParameters["color_mode"].getVal<char*>(), "color") != 0)
+    if (ui.comboShutter->isEnabled())
+    {
+        if (m_currentParameters["electronic_shuttering_mode"].getVal<int>() != ui.comboShutter->currentIndex())
         {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("color_mode", ito::ParamBase::String, "color")));
-        }
-
-        if(!color && strcmp(m_currentParameters["color_mode"].getVal<char*>(), "gray") != 0)
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("color_mode", ito::ParamBase::String, "gray")));
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("electronic_shuttering_mode", ito::ParamBase::Int, ui.comboShutter->currentIndex())));
         }
     }
 
-   
+    if (ui.comboTrigger->isEnabled())
+    {
+        if (QString::compare(m_currentParameters["trigger_mode"].getVal<char*>(),ui.comboTrigger->currentText()) == 0)
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::String, ui.comboTrigger->currentText().toLatin1().data())));
+        }
+    }
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
 
