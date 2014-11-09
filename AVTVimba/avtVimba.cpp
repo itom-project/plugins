@@ -37,8 +37,10 @@ AvtVimbaInterface::AvtVimbaInterface()
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
 "This plugin supports Allied Vision GigE and firewire cameras and has currently been tested with the following models: \n\
-- Marlin, F003 (monochrome, Firewire) \n\
-- CCD4000, GIP1000 (formerly Vosskuehler) (monochrome, GigE) \n\
+\n\
+- Marlin, F033 (monochrome, Firewire) \n\
+- Manta G-917B and G-146B (monochrome, GigE) \n\
+- GIP1000 + Vosskuehler CCD4000 (monochrome, GigE) \n\
 \n\
 The plugin has been compiled using the AVT Vimba version 1.3.0. \n\
 \n\
