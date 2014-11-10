@@ -134,8 +134,6 @@ class Ximea : public ito::AddInGrabber
 
         ito::RetVal LoadLib();
         ito::RetVal getErrStr(const int error);
-        int m_numDevices;
-        int m_device;
         int m_saveParamsOnClose;
 #if linux
         void *m_handle;
