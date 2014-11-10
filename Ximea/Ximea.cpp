@@ -231,7 +231,7 @@ Ximea::Ximea() :
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, 0, 4, 0, tr("Set Triggermode, 0: free run, 1: ext. rising edge, 2: ext. falling edge, 3: software.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("trigger_mode2", ito::ParamBase::Int, 0, 3, 1, tr("Set Triggermode2, 0: single image, 1: frame duration, 2: burst, 3: burst with frame duration.").toLatin1().data());
+	paramVal = ito::Param("trigger_mode2", ito::ParamBase::Int, 0, 3, 1, tr("Set Triggermode2, 0: Exposure Frame Start, 1: Exposure Frame duration, 2: Frame Burst Start, 3: Frame Burst duration.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("timing_mode", ito::ParamBase::Int, 0, 1, 1, tr("Acquisition timing: 0: free run, 1: by frame rate.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
@@ -1532,7 +1532,27 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			//sets trigger mode 2
 			int trigger_mode2;
 			ret = pxiGetParam(m_handle, XI_PRM_TRG_SELECTOR XI_PRM_INFO, &trigger_mode2, &intSize, &intType);
-			m_params["trigger_mode2"].setVal<int>(trigger_mode2);
+
+			if(trigger_mode2 = XI_TRG_SEL_FRAME_START)
+			{
+				m_params["trigger_mode2"].setVal<int>(0);
+			}
+			else if(trigger_mode2 = XI_TRG_SEL_EXPOSURE_ACTIVE)
+			{
+				m_params["trigger_mode2"].setVal<int>(1);
+			}
+			else if(trigger_mode2 = XI_TRG_SEL_FRAME_BURST_START)
+			{
+				m_params["trigger_mode2"].setVal<int>(2);
+			}
+			else if(trigger_mode2 = XI_TRG_SEL_FRAME_BURST_ACTIVE)
+			{
+				m_params["trigger_mode2"].setVal<int>(3);
+			}
+			else
+			{
+				retValue += getErrStr(ret);
+			}
 
 #ifndef USE_OLD_API
 			int timing_mode = pxiGetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, &intSize, &intType);
