@@ -52,16 +52,20 @@ class AndorSDK3 : public ito::AddInGrabber
         ito::RetVal checkError(const int &code);
 
         enum SyncParams { 
-            sPixelClock = 1, 
-            sExposure = 2, 
-            sBinning = 4,
-            sRoi = 8,
-            sGain = 16,
-            sOffset = 32,
-            sTriggerMode = 64,
-            sBppAndPreAmpGain = 128,
-            sElectronicShutteringMode = 256,
-            sAll = sPixelClock | sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sBppAndPreAmpGain | sElectronicShutteringMode };
+            sPixelClock = 0x0001, 
+            sExposure = 0x0002, 
+            sBinning = 0x0004,
+            sRoi = 0x0008,
+            sGain = 0x0010,
+            sOffset = 0x0020,
+            sTriggerMode = 0x0040,
+            sBppAndPreAmpGain = 0x0080,
+            sElectronicShutteringMode = 0x0100,
+            sFanSpeed = 0x0200,
+            sCooling = 0x0400,
+            sReadoutRate = 0x0800,
+            sFrameRate = 0x1000,
+            sAll = sPixelClock | sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sBppAndPreAmpGain | sElectronicShutteringMode | sFanSpeed | sCooling | sReadoutRate | sFrameRate};
 
         AT_H m_handle;
         int m_cameraIndex;
@@ -112,6 +116,23 @@ class AndorSDK3 : public ito::AddInGrabber
 			int t16Bit;
 		};
 
+        struct FanSpeedIdx
+        {
+            FanSpeedIdx(): sOff(-1), sLow(-1), sOn(-1) {}
+            int sOff;
+            int sLow;
+            int sOn;
+        };
+
+        struct PixelReadoutRateIdx
+        {
+            PixelReadoutRateIdx(): p100(-1), p200(-1), p280(-1), p550(-1) {}
+            int p100;
+            int p200;
+            int p280;
+            int p550;
+        };
+
         struct AT_Size
         {
             AT_64 x;
@@ -123,6 +144,8 @@ class AndorSDK3 : public ito::AddInGrabber
         TriggerModeIdx m_triggerModeIdx;
         ElectronicShutteringMode m_electronicShutteringMode;
 		BitDepthIdx m_bitDepthIdx;
+        FanSpeedIdx m_fanSpeedIdx;
+        PixelReadoutRateIdx m_pixelReadoutRate;
 		int m_bitDepth; //read-only, this indicates how many bits per pixel are transferred.
 
         BufferStruct m_buffer;

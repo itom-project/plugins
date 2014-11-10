@@ -84,6 +84,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
             ui.comboBinning->setEnabled(true);
             for (int i = binMin; i <= binMax; ++i)
             {
+                if (i != 1 || i != 2 || i != 3 || i != 4 || i != 8) continue;
                 ui.comboBinning->addItem(QString("%1x%1").arg(i), i);
             }
         }
@@ -101,6 +102,38 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
             for (int i = 0; i < sm->getLen(); ++i)
             {
                 ui.comboTrigger->addItem(sm->getString(i));
+            }
+        }
+        
+        it = params.find("fan_speed");
+        sm = static_cast<ito::StringMeta*>(it->getMeta());
+        ui.comboFanSpeed->clear();
+        if (it->getFlags() & ito::ParamBase::Readonly)
+        {
+            ui.comboFanSpeed->setEnabled(false);
+        }
+        else
+        {
+            ui.comboFanSpeed->setEnabled(true);
+            for (int i = 0; i < sm->getLen(); ++i)
+            {
+                ui.comboFanSpeed->addItem(sm->getString(i));
+            }
+        }
+        
+        it = params.find("pixel_readout_rate");
+        sm = static_cast<ito::StringMeta*>(it->getMeta());
+        ui.comboPixelReadoutRate->clear();
+        if (it->getFlags() & ito::ParamBase::Readonly)
+        {
+            ui.comboPixelReadoutRate->setEnabled(false);
+        }
+        else
+        {
+            ui.comboPixelReadoutRate->setEnabled(true);
+            for (int i = 0; i < sm->getLen(); ++i)
+            {
+                ui.comboPixelReadoutRate->addItem(sm->getString(i));
             }
         }
 
@@ -155,15 +188,37 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
         }
     }
 
-    QString trigger_mode = params["trigger_mode"].getVal<char*>();
+    QString str = params["trigger_mode"].getVal<char*>();
     for (int i = 0; i < ui.comboTrigger->count(); ++i)
     {
-        if (ui.comboTrigger->itemText(i) == trigger_mode)
+        if (ui.comboTrigger->itemText(i) == str)
         {
             ui.comboTrigger->setCurrentIndex(i);
             break;
         }
     }
+
+    str = params["fan_speed"].getVal<char*>();
+    for (int i = 0; i < ui.comboFanSpeed->count(); ++i)
+    {
+        if (ui.comboFanSpeed->itemText(i) == str)
+        {
+            ui.comboFanSpeed->setCurrentIndex(i);
+            break;
+        }
+    }
+    
+    str = params["pixel_readout_rate"].getVal<char*>();
+    for (int i = 0; i < ui.comboPixelReadoutRate->count(); ++i)
+    {
+        if (ui.comboPixelReadoutRate->itemText(i) == str)
+        {
+            ui.comboPixelReadoutRate->setCurrentIndex(i);
+            break;
+        }
+    }
+
+    ui.checkSensorCooling->setChecked( params["sensor_cooling"].getVal<int>() > 0);
 
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
@@ -253,6 +308,30 @@ ito::RetVal DialogSDK3::applyParameters()
         if (QString::compare(m_currentParameters["trigger_mode"].getVal<char*>(),ui.comboTrigger->currentText()) == 0)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::String, ui.comboTrigger->currentText().toLatin1().data())));
+        }
+    }
+    
+    if (ui.comboFanSpeed->isEnabled())
+    {
+        if (QString::compare(m_currentParameters["fan_speed"].getVal<char*>(),ui.comboFanSpeed->currentText()) == 0)
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("fan_speed", ito::ParamBase::String, ui.comboFanSpeed->currentText().toLatin1().data())));
+        }
+    }
+    
+    if (ui.comboPixelReadoutRate->isEnabled())
+    {
+        if (QString::compare(m_currentParameters["pixel_readout_rate"].getVal<char*>(),ui.comboPixelReadoutRate->currentText()) == 0)
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("pixel_readout_rate", ito::ParamBase::String, ui.comboPixelReadoutRate->currentText().toLatin1().data())));
+        }
+    }
+
+    if (ui.comboFanSpeed->isEnabled())
+    {
+        if (m_currentParameters["sensor_cooling"].getVal<int>() == (ui.checkSensorCooling->isChecked() > 0 ? 1 : 0))
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sensor_cooling", ito::ParamBase::Int, (ui.checkSensorCooling->isChecked() > 0 ? 1 : 0))));
         }
     }
 

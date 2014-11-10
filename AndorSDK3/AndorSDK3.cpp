@@ -57,7 +57,7 @@ AndorSDK3::AndorSDK3() :
     paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 1.0, 0.005, tr("Exposure time of chip (in seconds).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     
-    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 808, 101, tr("Horizontal and vertical binning, depending on camera ability. 104 means a 1x binning in horizontal and 4x binning in vertical direction. (only quadratic binning is allowed; if read only binning is not supported)").toLatin1().data());
+    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 808, 101, tr("Horizontal and vertical binning, depending on camera ability. 104 means a 1x binning in horizontal and 4x binning in vertical direction. (only symmetric binning is allowed; if read only binning is not supported)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Gain (normalized value 0..1)").toLatin1().data());
@@ -78,6 +78,9 @@ AndorSDK3::AndorSDK3() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 1.0, tr("acquisition timeout in secs").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("frame_rate", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 1.0, tr("frame rate in Hz").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("interface", ito::ParamBase::String | ito::ParamBase::Readonly, "[unknown]", tr("camera interface type").toLatin1().data());
@@ -101,10 +104,25 @@ AndorSDK3::AndorSDK3() :
     paramVal = ito::Param("trigger_mode", ito::ParamBase::String, "Software", tr("camera trigger (Interal, Software, External, External Start, External Exposure)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("fan_speed", ito::ParamBase::String, "Off", tr("fan speed (Off, Low, On - not all values are available for every camera)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("pixel_readout_rate", ito::ParamBase::String, "100 MHz", tr("pixel readout rate in MHz ('100 MHz', '200 MHz', '280 MHz', '550 MHz'; not all options are available for all cameras)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("electronic_shuttering_mode", ito::ParamBase::Int, 0, 1, 0, tr("0: rolling shutter (for highest frame rate, best noise performance, default), 1: global shutter (for pulsed, fast moving images)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("full_aoi_control", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 1, tr("indicates if full AOI control is available (usually yes, for some Neo cameras it isn't and you can only apply certain ROI sizes (see camera manual))").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("readout_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, std::numeric_limits<double>::max(), 0.0, tr("time to readout data from the sensor in the current configuration (0.0 if not implemented)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("sensor_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("current temperature of sensor in °C (inf if not implemented)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("sensor_cooling", ito::ParamBase::Int, 0, 1, 0, tr("state of the sensor cooling. Cooling is disabled (0) by default at power up and must be enabled (1) for the camera to achieve its target temperature.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
 
@@ -309,6 +327,39 @@ ito::RetVal AndorSDK3::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
 
     if(!retValue.containsError())
     {
+        if (key == "readout_time")
+        {
+            AT_BOOL implemented;
+            retValue = checkError(AT_IsImplemented(m_handle, L"ReadoutTime", &implemented));
+            if (!retValue.containsError() && implemented)
+            {
+                double dval;
+                it->setFlags(0);
+                retValue += checkError(AT_GetFloat(m_handle, L"ReadoutTime", &dval));
+                it->setVal<double>(dval);
+            }
+            else
+            {
+                it->setVal<double>(0.0);
+            }
+        }
+        else if (key == "sensor_temperature")
+        {
+            AT_BOOL implemented;
+            retValue = checkError(AT_IsImplemented(m_handle, L"SensorTemperature", &implemented));
+            if (!retValue.containsError() && implemented)
+            {
+                double dval;
+                it->setFlags(0);
+                retValue += checkError(AT_GetFloat(m_handle, L"SensorTemperature", &dval));
+                it->setVal<double>(dval);
+            }
+            else
+            {
+                it->setVal<double>(std::numeric_limits<double>::infinity());
+            }
+        }
+
         *val = it.value();
     }
 
@@ -442,6 +493,16 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
                 retValue += synchronizeCameraSettings(sExposure);
             }
         }
+        else if (key == "frame_rate")
+        {
+            double timeSec = val->getVal<double>();
+            retValue += checkError(AT_SetFloat(m_handle, L"FrameRate", timeSec));
+
+			if (!retValue.containsError())
+            {
+                retValue += synchronizeCameraSettings(sFrameRate);
+            }
+        }
         else if (key == "electronic_shuttering_mode")
         {
             if (val->getVal<int>() == 0) //rolling
@@ -498,33 +559,6 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
                 retValue += synchronizeCameraSettings(sBinning | sRoi);
             }
         }
-        //else if (key == "gain")
-        //{
-        //    retValue += checkError(is_SetHardwareGain(m_camera, qRound(val->getVal<double>()*100.0), IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER));
-
-        //    if (!retValue.containsError())
-        //    {
-        //        retValue += synchronizeCameraSettings(sGain);
-        //    }
-        //}
-        //else if (key == "offset")
-        //{
-        //    if (m_blacklevelRange.s32Max == 0 && m_blacklevelRange.s32Min == 0)
-        //    {
-        //        retValue += ito::RetVal(ito::retError, 0, "no valid blacklevel offset range available");
-        //    }
-        //    else
-        //    {
-        //        INT offset = (m_blacklevelRange.s32Max - m_blacklevelRange.s32Min) * val->getVal<double>();
-        //        offset = m_blacklevelRange.s32Min + offset - (offset % m_blacklevelRange.s32Inc);
-        //        retValue += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_SET_OFFSET, (void*)&offset, sizeof(offset)));
-        //    }
-
-        //    if (!retValue.containsError())
-        //    {
-        //        retValue += synchronizeCameraSettings(sOffset);
-        //    }
-        //}
         else if (key == "trigger_mode")
         {
             QString mode = val->getVal<char*>();
@@ -542,6 +576,62 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
                     if (wcscmp(wstring, mode_) == 0)
                     {
                         retValue += checkError(AT_SetEnumIndex(m_handle, L"TriggerMode", c));
+
+                        if (!retValue.containsError())
+                        {
+                            char cstring[100];
+                            wcstombs(cstring, wstring, 100);
+                            it->setVal<char*>(cstring);
+                        }
+                    }
+                }
+            }
+        }
+        else if (key == "fan_speed")
+        {
+            QString speed = val->getVal<char*>();
+            AT_WC speed_[100];
+            AT_WC wstring[100];
+            int count;
+            int len = speed.toWCharArray(speed_);
+            speed_[len] = '\0';
+
+            if (AT_GetEnumCount(m_handle, L"FanSpeed", &count) == AT_SUCCESS)
+            {
+                for (int c = 0; c < count; ++c)
+                {
+                    AT_GetEnumStringByIndex(m_handle, L"FanSpeed", c, wstring, 100);
+                    if (wcscmp(wstring, speed_) == 0)
+                    {
+                        retValue += checkError(AT_SetEnumIndex(m_handle, L"FanSpeed", c));
+
+                        if (!retValue.containsError())
+                        {
+                            char cstring[100];
+                            wcstombs(cstring, wstring, 100);
+                            it->setVal<char*>(cstring);
+                        }
+                    }
+                }
+            }
+        }
+        else if (key == "pixel_readout_rate")
+        {
+            QString speed = val->getVal<char*>();
+            AT_WC speed_[100];
+            AT_WC wstring[100];
+            int count;
+            int len = speed.toWCharArray(speed_);
+            speed_[len] = '\0';
+
+            if (AT_GetEnumCount(m_handle, L"PixelReadoutRate", &count) == AT_SUCCESS)
+            {
+                for (int c = 0; c < count; ++c)
+                {
+                    AT_GetEnumStringByIndex(m_handle, L"PixelReadoutRate", c, wstring, 100);
+                    if (wcscmp(wstring, speed_) == 0)
+                    {
+                        retValue += checkError(AT_SetEnumIndex(m_handle, L"PixelReadoutRate", c));
 
                         if (!retValue.containsError())
                         {
@@ -1041,24 +1131,6 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
     QMap<QString, ito::Param>::iterator it;
     AT_BOOL implemented;
 
-    /*if (what & sPixelClock)
-    {
-        //get pixelclock and ranges
-        it = m_params.find("pixel_clock");
-        rettemp = checkError(is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_GET_RANGE, (void*)uintVal3, sizeof(uintVal3)));
-        rettemp += checkError(is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_GET, (void*)&uintVal, sizeof(uintVal)));
-        if (!rettemp.containsError())
-        {
-            it->setVal<int>(uintVal);
-            it->setMeta(new ito::IntMeta(uintVal3[0], uintVal3[1], uintVal3[2]),true);
-        }
-        else
-        {
-            it->setFlags(ito::ParamBase::Readonly);
-        }
-        retval += rettemp;
-    }*/
-
     if (what & sExposure)
     {
         //get exposure time, exposure modes and ranges
@@ -1072,6 +1144,45 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
             rettemp += checkError(AT_GetFloat(m_handle, L"ExposureTime", &dval));
             it->setMeta(new ito::DoubleMeta(dmin,dmax),true);
             it->setVal<double>(dval);
+        }
+        else
+        {
+            it->setFlags(ito::ParamBase::Readonly);
+        }
+        retval += rettemp;
+    }
+    
+    if (what & sFrameRate)
+    {
+        //get exposure time, exposure modes and ranges
+        it = m_params.find("frame_rate");
+        rettemp = checkError(AT_IsImplemented(m_handle, L"FrameRate", &implemented));
+        if (!rettemp.containsError() && implemented)
+        {
+            it->setFlags(0);
+            rettemp += checkError(AT_GetFloatMin(m_handle, L"FrameRate", &dmin));
+            rettemp += checkError(AT_GetFloatMax(m_handle, L"FrameRate", &dmax));
+            rettemp += checkError(AT_GetFloat(m_handle, L"FrameRate", &dval));
+            it->setMeta(new ito::DoubleMeta(dmin,dmax),true);
+            it->setVal<double>(dval);
+        }
+        else
+        {
+            it->setFlags(ito::ParamBase::Readonly);
+        }
+        retval += rettemp;
+    }
+    
+    if (what & sCooling)
+    {
+        AT_64 val;
+        it = m_params.find("sensor_cooling");
+        rettemp = checkError(AT_IsImplemented(m_handle, L"SensorCooling", &implemented));
+        if (!rettemp.containsError() && implemented)
+        {
+            it->setFlags(0);
+            rettemp += checkError(AT_GetInt(m_handle, L"SensorCooling", &val));
+            it->setVal<int>(dval);
         }
         else
         {
@@ -1254,100 +1365,6 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         retval += rettemp;
     }
 
-    /*if (what & sGain)
-    {
-        //get pixelclock and ranges
-        it = m_params.find("gain");
-        it->setVal<double>((double)is_SetHardwareGain(m_camera, IS_GET_MASTER_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) / 100.0);
-        if (m_sensorInfo.nColorMode & IS_COLORMODE_MONOCHROME)
-        {
-            it->setFlags(0);
-        }
-        else
-        {
-            it->setFlags(ito::ParamBase::Readonly);
-        }
-
-        it = m_params.find("gain_rgb");
-        double rgbGain[] = {0.0,0.0,0.0};
-        rgbGain[0] = is_SetHardwareGain(m_camera, IS_GET_RED_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) / 100.0;
-        rgbGain[1] = is_SetHardwareGain(m_camera, IS_GET_GREEN_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) / 100.0;
-        rgbGain[2] = is_SetHardwareGain(m_camera, IS_GET_BLUE_GAIN, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER, IS_IGNORE_PARAMETER) / 100.0;
-        it->setVal<double*>(rgbGain, 3);
-        if (m_sensorInfo.nColorMode & IS_COLORMODE_BAYER)
-        {
-            it->setFlags(0);
-        }
-        else
-        {
-            it->setFlags(ito::ParamBase::Readonly);
-        }
-
-        it = m_params.find("gain_boost_enabled");
-        if (is_SetGainBoost(m_camera, IS_GET_SUPPORTED_GAINBOOST) == IS_SET_GAINBOOST_ON)
-        {
-            it->setFlags(0);
-            int activated = is_SetGainBoost(m_camera, IS_GET_GAINBOOST);
-            it->setVal<int>( activated == IS_SET_GAINBOOST_ON ? 1 : 0 );
-        }
-        else
-        {
-            it->setFlags(ito::ParamBase::Readonly);
-            it->setVal<int>(0);
-        }
-    }
-
-    if (what & sOffset)
-    {
-        //offset is represented by the manual blacklevel correction that is added to each value. If this feature cannot be changed the
-        //parameter is set to readonly
-        it = m_params.find("offset");
-        UINT capabilities, val2;
-        ito::RetVal retTemp = checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_CAPS, (void*)&capabilities, sizeof(capabilities)));
-
-        if (!retTemp.containsError())
-        {
-            it->setFlags((capabilities & IS_BLACKLEVEL_CAP_SET_OFFSET) ? 0 : ito::ParamBase::Readonly);
-            
-            retTemp += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_OFFSET_RANGE, (void*)&m_blacklevelRange, sizeof(m_blacklevelRange)));
-            retTemp += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_OFFSET, (void*)&val2, sizeof(val2)));
-
-            if (!retTemp.containsError())
-            {
-                it->setVal<double>((double)(val2 - m_blacklevelRange.s32Min) / ((double)(m_blacklevelRange.s32Max -m_blacklevelRange.s32Min)));
-                it->setMeta(new ito::DoubleMeta(0.0,1.0,0.0), true);
-            }
-            else
-            {
-                it->setVal<int>(0.0);
-                it->setMeta(new ito::DoubleMeta(0.0,1.0,0.0), true);
-            }
-
-            it = m_params.find("auto_blacklevel_enabled");
-            if (capabilities & IS_BLACKLEVEL_CAP_SET_AUTO_BLACKLEVEL)
-            {
-                it->setMeta(new ito::IntMeta(0,1), true);
-                it->setFlags(0);
-                retTemp += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_MODE, (void*)&val2, sizeof(val2)));
-                if (!retTemp.containsError())
-                {
-                    it->setVal<int>( val2 == IS_AUTO_BLACKLEVEL_ON ? 1 : 0 );
-                }
-            }
-            else
-            {
-                it->setFlags(ito::ParamBase::Readonly);
-                retTemp += checkError(is_Blacklevel(m_camera, IS_BLACKLEVEL_CMD_GET_MODE, (void*)&val2, sizeof(val2)));
-                if (!retTemp.containsError())
-                {
-                    int v = val2 == IS_AUTO_BLACKLEVEL_ON ? 1 : 0;
-                    it->setVal<int>( v );
-                    it->setMeta(new ito::IntMeta(v,v), true);                    
-                }
-            }
-        }
-    }*/
-
     if (what & sTriggerMode)
     {
         it = m_params.find("trigger_mode");
@@ -1355,6 +1372,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
 
         int count;
         AT_WC wstring[100];
+        char cvalue[100];
         QString value;
         int iVal;
 
@@ -1364,14 +1382,86 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
             for (int c = 0; c < count; ++c)
             {
                 AT_GetEnumStringByIndex(m_handle, L"TriggerMode", c, wstring, 100);
-                value = QString::fromWCharArray(wstring);
-                sm->addItem(value.toLatin1().data());
+                wcstombs(cvalue, wstring, 100);
+                sm->addItem(cvalue);
 
                 if (c == iVal)
                 {
-                    it->setVal<char*>(value.toLatin1().data());
+                    it->setVal<char*>(cvalue);
 
                     m_softwareTriggerEnabled = (c == m_triggerModeIdx.tSoftware);
+                }
+            }
+            it->setFlags(0);
+        }
+        else
+        {
+            it->setVal<char*>("[notSupported]");
+            it->setFlags(ito::ParamBase::Readonly);
+            
+        }
+
+        it->setMeta(sm,true);   
+    }
+    
+    if (what & sReadoutRate)
+    {
+        it = m_params.find("pixel_readout_rate");
+        ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
+
+        int count;
+        AT_WC wstring[100];
+        char cstring[100];
+        int iVal;
+
+        AT_GetEnumIndex(m_handle, L"PixelReadoutRate", &iVal);
+        if (AT_GetEnumCount(m_handle, L"PixelReadoutRate", &count) == AT_SUCCESS)
+        {
+            for (int c = 0; c < count; ++c)
+            {
+                AT_GetEnumStringByIndex(m_handle, L"PixelReadoutRate", c, wstring, 100);
+                wcstombs(cstring, wstring, 100);
+                sm->addItem(cstring);
+
+                if (c == iVal)
+                {
+                    it->setVal<char*>(cstring);
+                }
+            }
+            it->setFlags(0);
+        }
+        else
+        {
+            it->setVal<char*>("[notSupported]");
+            it->setFlags(ito::ParamBase::Readonly);
+            
+        }
+
+        it->setMeta(sm,true);   
+    }
+
+    if (what & sFanSpeed)
+    {
+        it = m_params.find("fan_speed");
+        ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String);
+
+        int count;
+        AT_WC wstring[100];
+        char cstring[100];
+        int iVal;
+
+        AT_GetEnumIndex(m_handle, L"FanSpeed", &iVal);
+        if (AT_GetEnumCount(m_handle, L"FanSpeed", &count) == AT_SUCCESS)
+        {
+            for (int c = 0; c < count; ++c)
+            {
+                AT_GetEnumStringByIndex(m_handle, L"FanSpeed", c, wstring, 100);
+                wcstombs(cstring, wstring, 100);
+                sm->addItem(cstring);
+
+                if (c == iVal)
+                {
+                    it->setVal<char*>(cstring);
                 }
             }
             it->setFlags(0);
@@ -1669,6 +1759,54 @@ ito::RetVal AndorSDK3::loadEnumIndices()
             }
         }
     }
+    
+    //FanSpeed
+    if (AT_GetEnumCount(m_handle, L"FanSpeed", &count) == AT_SUCCESS)
+    {
+        for (int c = 0; c < count; ++c)
+        {
+            AT_GetEnumStringByIndex(m_handle, L"FanSpeed", c, wstring, 100);
+
+            if (wcscmp(wstring, L"On") == 0)
+            {
+                m_fanSpeedIdx.sOn = c;
+            }
+            else if (wcscmp(wstring, L"Low") == 0)
+            {
+                m_fanSpeedIdx.sLow = c;
+            }
+            else if (wcscmp(wstring, L"Off") == 0)
+            {
+                m_fanSpeedIdx.sOff = c;
+            }
+        }
+    }
+    
+    //FanSpeed
+    if (AT_GetEnumCount(m_handle, L"PixelReadoutRate", &count) == AT_SUCCESS)
+    {
+        for (int c = 0; c < count; ++c)
+        {
+            AT_GetEnumStringByIndex(m_handle, L"PixelReadoutRate", c, wstring, 100);
+
+            if (wcscmp(wstring, L"100 MHz") == 0)
+            {
+                m_pixelReadoutRate.p100 = c;
+            }
+            else if (wcscmp(wstring, L"200 MHz") == 0)
+            {
+                m_pixelReadoutRate.p200 = c;
+            }
+            else if (wcscmp(wstring, L"280 MHz") == 0)
+            {
+                m_pixelReadoutRate.p280 = c;
+            }
+            else if (wcscmp(wstring, L"550 MHz") == 0)
+            {
+                m_pixelReadoutRate.p550 = c;
+            }
+        }
+    }
 
     return retval;
 }
@@ -1687,8 +1825,9 @@ ito::RetVal AndorSDK3::loadSensorInfo()
     {
         if (AT_GetString(m_handle, L"FirmwareVersion", szValue, 256) == AT_SUCCESS)
         {
-            value = QString::fromWCharArray(szValue);
-            m_params["firmware_version"].setVal<char*>(value.toLatin1().data());
+            char cValue[256];
+            wcstombs(cValue, szValue, 256);
+            m_params["firmware_version"].setVal<char*>(cValue);
         }
     }
 
@@ -1697,8 +1836,9 @@ ito::RetVal AndorSDK3::loadSensorInfo()
     {
         if (AT_GetString(m_handle, L"InterfaceType", szValue, 256) == AT_SUCCESS)
         {
-            value = QString::fromWCharArray(szValue);
-            m_params["interface"].setVal<char*>(value.toLatin1().data());
+            char cValue[256];
+            wcstombs(cValue, szValue, 256);
+            m_params["interface"].setVal<char*>(cValue);
         }
     }
 
@@ -1707,8 +1847,9 @@ ito::RetVal AndorSDK3::loadSensorInfo()
     {
         if (AT_GetString(m_handle, L"CameraModel", szValue, 256) == AT_SUCCESS)
         {
-            value = QString::fromWCharArray(szValue);
-            m_params["camera_model"].setVal<char*>(value.toLatin1().data());
+            char cValue[256];
+            wcstombs(cValue, szValue, 256);
+            m_params["camera_model"].setVal<char*>(cValue);
         }
     }
 
@@ -1717,8 +1858,9 @@ ito::RetVal AndorSDK3::loadSensorInfo()
     {
         if (AT_GetString(m_handle, L"CameraName", szValue, 256) == AT_SUCCESS)
         {
-            value = QString::fromWCharArray(szValue);
-            m_params["camera_name"].setVal<char*>(value.toLatin1().data());
+            char cValue[256];
+            wcstombs(cValue, szValue, 256);
+            m_params["camera_name"].setVal<char*>(cValue);
         }
     }
 
@@ -1727,8 +1869,9 @@ ito::RetVal AndorSDK3::loadSensorInfo()
     {
         if (AT_GetString(m_handle, L"SerialNumber", szValue, 256) == AT_SUCCESS)
         {
-            value = QString::fromWCharArray(szValue);
-            m_params["serial_number"].setVal<char*>(value.toLatin1().data());
+            char cValue[256];
+            wcstombs(cValue, szValue, 256);
+            m_params["serial_number"].setVal<char*>(cValue);
         }
     }
 
@@ -1737,8 +1880,9 @@ ito::RetVal AndorSDK3::loadSensorInfo()
     {
         if (AT_GetString(AT_HANDLE_SYSTEM, L"SoftwareVersion", szValue, 256) == AT_SUCCESS)
         {
-            value = QString::fromWCharArray(szValue);
-            m_params["sdk_version"].setVal<char*>(value.toLatin1().data());
+            char cValue[256];
+            wcstombs(cValue, szValue, 256);
+            m_params["sdk_version"].setVal<char*>(cValue);
         }
     }
 
