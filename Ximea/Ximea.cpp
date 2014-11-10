@@ -202,7 +202,7 @@ Ximea::Ximea() :
 
 
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
-   int roi[] = {0, 0, 2048, 2048};
+   int roi[] = {0, 0, 0, 0};
    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x, y, width, height) [this replaces the values x0, x1, y0, y1].").toLatin1().data());
    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2048), ito::RangeMeta(0, 2048));
    paramVal.setMeta(rm, true);
@@ -1258,38 +1258,18 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
 					if(!retValue.containsError())
 					{
-					    roi[0] = offset_x;
+
+						it = m_params.find("roi");
+						int *roi = it->getVal<int*>();
+						roi[0] = offset_x;
 						roi[1] = offset_y;
 						roi[2] = width;
 						roi[3] = heigth;
-						it = m_params.find("roi");
-
-						int max = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getMax();
-						int min = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getMin();
-						int size_max = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getSizeMax();
-						int size_min = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getSizeMin();
-						int size_step_size = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getSizeStepSize();
-						int stepsize = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getStepSize();
-						
-					
-
-						int offsetMin_x, sizeMax_x, offsetInc_x, sizeMin_x, sizeInc_x;
-						int offsetMin_y, sizeMax_y, offsetInc_y, sizeMin_y, sizeInc_y;
-						ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x -1, offsetInc_x, sizeMin_x, sizeMin_x + offset_x, sizeInc_x);
-						ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y -1, offsetInc_y, sizeMin_y, sizeMax_y + offset_x, sizeInc_y);
-						it ->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
-					
-
-					
-						/*
-						it = m_params.find("roi");
-						//int *roi = it->getVal<int*>();
-						ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x -1, offsetInc_x, sizeMin_x, sizeMin_x + offset_x, sizeInc_x);
-						ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y -1, offsetInc_y, sizeMin_y, sizeMax_y + offset_x, sizeInc_y);
-						it ->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
-						*/
-						
-						
+						m_params["x0"].setVal<int>(offset_x);
+						m_params["x1"].setVal<int>(width);
+						m_params["y0"].setVal<int>(offset_y);
+						m_params["y1"].setVal<int>(heigth);
+		
 					}
 
 				}
@@ -1781,10 +1761,14 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
 		it = m_params.find("roi");
-		int *roi = it->getVal<int*>();
+        int *roi = it->getVal<int*>();
+		roi[0] = offset_x;
+		roi[1] = offset_y;
+		roi[2] = size_x;
+		roi[3] = size_y;
 		ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x -1, offsetInc_x, sizeMin_x, sizeMin_x + offset_x, sizeInc_x);
-		ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y -1, offsetInc_y, sizeMin_y, sizeMax_y + offset_x, sizeInc_y);
-		it ->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
+		ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y -1, offsetInc_y, sizeMin_y, sizeMax_y + offset_x, sizeInc_y);	
+		m_params["roi"].setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
 		
 #endif
 		}
