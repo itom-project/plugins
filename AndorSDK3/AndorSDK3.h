@@ -149,6 +149,7 @@ class AndorSDK3 : public ito::AddInGrabber
 		int m_bitDepth; //read-only, this indicates how many bits per pixel are transferred.
 
         BufferStruct m_buffer;
+		bool m_camRestartNecessary;
 
         static int andorOpenedIndices[32];
 
@@ -158,6 +159,8 @@ class AndorSDK3 : public ito::AddInGrabber
 
         int m_hBin, m_vBin;
         bool m_softwareTriggerEnabled;
+		AT_64 m_timestampFrequency; // in Hz
+		AT_64 m_lastTimestamp;
 
     signals:
 

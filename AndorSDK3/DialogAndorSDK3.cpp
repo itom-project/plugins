@@ -28,7 +28,9 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogSDK3::DialogSDK3(ito::AddInBase *grabber) :
     AbstractAddInConfigDialog(grabber),
-    m_firstRun(true)
+    m_firstRun(true),
+	m_currentSizeMaxX(-1),
+	m_currentSizeMaxY(-1)
 {
     ui.setupUi(this);
 
@@ -56,11 +58,6 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
             ui.lblFullAoiControl->setText("camera does not support full control of ROI");
         }
 
-
-        ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
-        ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
-        ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
-
         ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
         ito::StringMeta *colorModeMeta = static_cast<ito::StringMeta*>(params["color_mode"].getMeta());
         ui.comboBpp->clear();
@@ -84,7 +81,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
             ui.comboBinning->setEnabled(true);
             for (int i = binMin; i <= binMax; ++i)
             {
-                if (i != 1 || i != 2 || i != 3 || i != 4 || i != 8) continue;
+                if (i != 1 && i != 2 && i != 3 && i != 4 && i != 8) continue;
                 ui.comboBinning->addItem(QString("%1x%1").arg(i), i);
             }
         }
@@ -140,6 +137,23 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
         m_firstRun = false;
     }
 
+	bool updateROIMeta = true;
+	ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+
+	if (m_currentSizeMaxY == rm->getHeightRangeMeta().getMax() &&
+		m_currentSizeMaxX == rm->getWidthRangeMeta().getMax())
+	{
+		updateROIMeta = false;
+	}
+
+	if (updateROIMeta)
+	{
+        ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+        ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
+		m_currentSizeMaxX = rm->getWidthRangeMeta().getMax();
+		m_currentSizeMaxY = rm->getHeightRangeMeta().getMax();
+	}
+
     bool updateSizeX = false;
     bool updateSizeY = false;
     
@@ -165,7 +179,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
     ui.spinTimeout->setValue(it->getVal<double>());
 
     double dval = params["gain"].getVal<double>();
-    ui.sliderGain->setValue(dval*100.0);
+    ui.sliderGain->setValue(dval);
     ui.sliderGain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));             
 
     int bpp = params["bpp"].getVal<int>();
@@ -218,6 +232,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
         }
     }
 
+	ui.checkSensorCooling->setDisabled(params["sensor_cooling"].getFlags() & ito::ParamBase::Readonly);
     ui.checkSensorCooling->setChecked( params["sensor_cooling"].getVal<int>() > 0);
 
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
@@ -261,7 +276,7 @@ ito::RetVal DialogSDK3::applyParameters()
     if(ui.sliderGain->isEnabled())
     {
         double dval = ui.sliderGain->value();
-        if(qAbs(m_currentParameters["gain"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
+        if(qAbs(m_currentParameters["gain"].getVal<double>() - dval) > std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
         }
@@ -270,7 +285,7 @@ ito::RetVal DialogSDK3::applyParameters()
     if(ui.spinTimeout->isEnabled())
     {
         double dval = ui.spinTimeout->value();
-        if(qAbs(m_currentParameters["timeout"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
+        if(qAbs(m_currentParameters["timeout"].getVal<double>() - dval) > std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, dval)));
         }
@@ -305,7 +320,7 @@ ito::RetVal DialogSDK3::applyParameters()
 
     if (ui.comboTrigger->isEnabled())
     {
-        if (QString::compare(m_currentParameters["trigger_mode"].getVal<char*>(),ui.comboTrigger->currentText()) == 0)
+        if (QString::compare(m_currentParameters["trigger_mode"].getVal<char*>(),ui.comboTrigger->currentText()) != 0)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::String, ui.comboTrigger->currentText().toLatin1().data())));
         }
@@ -313,7 +328,7 @@ ito::RetVal DialogSDK3::applyParameters()
     
     if (ui.comboFanSpeed->isEnabled())
     {
-        if (QString::compare(m_currentParameters["fan_speed"].getVal<char*>(),ui.comboFanSpeed->currentText()) == 0)
+        if (QString::compare(m_currentParameters["fan_speed"].getVal<char*>(),ui.comboFanSpeed->currentText()) != 0)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("fan_speed", ito::ParamBase::String, ui.comboFanSpeed->currentText().toLatin1().data())));
         }
@@ -321,17 +336,17 @@ ito::RetVal DialogSDK3::applyParameters()
     
     if (ui.comboPixelReadoutRate->isEnabled())
     {
-        if (QString::compare(m_currentParameters["pixel_readout_rate"].getVal<char*>(),ui.comboPixelReadoutRate->currentText()) == 0)
+        if (QString::compare(m_currentParameters["pixel_readout_rate"].getVal<char*>(),ui.comboPixelReadoutRate->currentText()) != 0)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("pixel_readout_rate", ito::ParamBase::String, ui.comboPixelReadoutRate->currentText().toLatin1().data())));
         }
     }
 
-    if (ui.comboFanSpeed->isEnabled())
+    if (ui.checkSensorCooling->isEnabled())
     {
-        if (m_currentParameters["sensor_cooling"].getVal<int>() == (ui.checkSensorCooling->isChecked() > 0 ? 1 : 0))
+        if (m_currentParameters["sensor_cooling"].getVal<int>() == (ui.checkSensorCooling->isChecked() ? 1 : 0))
         {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sensor_cooling", ito::ParamBase::Int, (ui.checkSensorCooling->isChecked() > 0 ? 1 : 0))));
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sensor_cooling", ito::ParamBase::Int, (ui.checkSensorCooling->isChecked() ? 1 : 0))));
         }
     }
 
@@ -367,78 +382,6 @@ void DialogSDK3::enableDialog(bool enabled)
     ui.groupBoxBinning->setEnabled(enabled);
     ui.groupBoxIntegration->setEnabled(enabled);
     ui.groupBoxSize->setEnabled(enabled);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DialogSDK3::on_rangeX01_valuesChanged(int minValue, int maxValue)
-{
-    int min_ = minValue;
-    int max_ = maxValue;
-    int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["x0"].getMeta() )->getStepSize();
-    int imageOffset = static_cast<ito::IntMeta*>( m_currentParameters["sizex"].getMeta() )->getStepSize();
-    int maxWidth = static_cast<ito::IntMeta*>( m_currentParameters["x1"].getMeta() )->getMax() + 1;
-
-    if ((min_ % stepOffset) != 0)
-    {
-        min_ = stepOffset * qRound((float)min_ / (float)stepOffset);
-        if (min_ >= max_)
-        {
-            min_ = stepOffset * floor((float)min_ / (float)stepOffset);
-        }
-    }
-    min_ = qBound<int>(0, min_, max_);
-
-    if (((max_ - min_ + 1) % imageOffset) != 0)
-    {
-        max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
-    }
-    
-    max_ = qBound<int>(0, max_, maxWidth-1);
-
-    if (min_ != minValue || max_ != maxValue)
-    {
-        ui.rangeX01->setValues(min_,max_);
-    }
-    else
-    {
-        ui.spinSizeX->setValue(maxValue - minValue + 1);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DialogSDK3::on_rangeY01_valuesChanged(int minValue, int maxValue)
-{
-    int min_ = minValue;
-    int max_ = maxValue;
-    int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["y0"].getMeta() )->getStepSize();
-    int imageOffset = static_cast<ito::IntMeta*>( m_currentParameters["sizey"].getMeta() )->getStepSize();
-    int maxHeight = static_cast<ito::IntMeta*>( m_currentParameters["y1"].getMeta() )->getMax() + 1;
-
-    if ((min_ % stepOffset) != 0)
-    {
-        min_ = stepOffset * qRound((float)min_ / (float)stepOffset);
-        if (min_ >= max_)
-        {
-            min_ = stepOffset * floor((float)min_ / (float)stepOffset);
-        }
-    }
-    min_ = qBound<int>(0, min_, max_);
-
-    if (((max_ - min_ + 1) % imageOffset) != 0)
-    {
-        max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
-    }
-    
-    max_ = qBound<int>(0, max_, maxHeight - 1);
-
-    if (min_ != minValue || max_ != maxValue)
-    {
-        ui.rangeY01->setValues(min_,max_);
-    }
-    else
-    {
-        ui.spinSizeY->setValue(maxValue - minValue + 1);
-    }
 }
 
 //------------------------------------------------------------------------------

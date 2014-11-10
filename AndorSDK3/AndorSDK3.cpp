@@ -48,7 +48,10 @@ AndorSDK3::AndorSDK3() :
     AddInGrabber(),
     m_handle(AT_HANDLE_UNINITIALISED),
     m_hBin(1),
-    m_vBin(1)
+    m_vBin(1),
+	m_camRestartNecessary(false),
+	m_timestampFrequency(0),
+	m_lastTimestamp(-1)
 {
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AndorSDK3", "plugin name");
@@ -60,7 +63,7 @@ AndorSDK3::AndorSDK3() :
     paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 808, 101, tr("Horizontal and vertical binning, depending on camera ability. 104 means a 1x binning in horizontal and 4x binning in vertical direction. (only symmetric binning is allowed; if read only binning is not supported)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Gain (normalized value 0..1)").toLatin1().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.5, tr("Gain (normalized value 0..1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toLatin1().data());
@@ -200,6 +203,10 @@ ito::RetVal AndorSDK3::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     {
         //get sensor info
         retVal += loadSensorInfo();
+		if (!retVal.containsError())
+		{
+			setIdentifier(m_params["serial_number"].getVal<char*>());
+		}
         retVal += loadEnumIndices();
 
         //pre-set some settings (no error check, if the setting is not available, this doesn't matter)
@@ -240,7 +247,20 @@ ito::RetVal AndorSDK3::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             retVal += synchronizeCameraSettings();
 			//sometimes, the exposure time must be set again!
 			retVal += checkError(AT_SetFloat(m_handle, L"ExposureTime", m_params["integration_time"].getVal<double>()));
-			retVal += synchronizeCameraSettings(sExposure);
+			retVal += synchronizeCameraSettings(sExposure | sFrameRate);
+
+			//get initial values of some read-only, information parameters
+			QSharedPointer<ito::Param> p(new ito::Param("readout_time"));
+			retVal += getParam(p, NULL);
+			p = QSharedPointer<ito::Param>(new ito::Param("sensor_temperature"));
+			retVal += getParam(p, NULL);
+
+			AT_BOOL implemented;
+			retVal += AT_IsImplemented(m_handle, L"TimestampClockFrequency", &implemented);
+			if (implemented)
+			{
+				retVal += AT_GetInt(m_handle, L"TimestampClockFrequency", &m_timestampFrequency);
+			}
         }
 
     }
@@ -273,6 +293,12 @@ ito::RetVal AndorSDK3::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
+
+	if (grabberStartedCount() > 0)
+	{
+		setGrabberStarted(1);
+		retValue += stopDevice(NULL);
+	}
 
     if (m_handle != AT_HANDLE_UNINITIALISED)
     {
@@ -487,20 +513,22 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         {
             double timeSec = val->getVal<double>();
             retValue += checkError(AT_SetFloat(m_handle, L"ExposureTime", timeSec));
-
-			if (!retValue.containsError())
-            {
-                retValue += synchronizeCameraSettings(sExposure);
-            }
+            retValue += synchronizeCameraSettings(sExposure | sFrameRate);
         }
         else if (key == "frame_rate")
         {
             double timeSec = val->getVal<double>();
             retValue += checkError(AT_SetFloat(m_handle, L"FrameRate", timeSec));
+            retValue += synchronizeCameraSettings(sFrameRate);
+        }
+		else if (key == "sensor_cooling")
+        {
+            AT_BOOL cooling = val->getVal<int>() > 0;
+            retValue += checkError(AT_SetBool(m_handle, L"SensorCooling", cooling));
 
 			if (!retValue.containsError())
             {
-                retValue += synchronizeCameraSettings(sFrameRate);
+                retValue += synchronizeCameraSettings(sCooling);
             }
         }
         else if (key == "electronic_shuttering_mode")
@@ -530,20 +558,10 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 
             if (!retValue.containsError())
             {
+				m_camRestartNecessary = true;
                 it->setVal<int>(val->getVal<int>());
             }
         }
-        //else if (key == "pixel_clock")
-        //{
-        //    UINT clock = val->getVal<int>();
-        //    retValue += checkError(is_PixelClock(m_camera, IS_PIXELCLOCK_CMD_SET, (void*)&clock, sizeof(clock)));
-
-        //    if (!retValue.containsError())
-        //    {
-        //        retValue += setMinimumFrameRate();
-        //        retValue += synchronizeCameraSettings(sPixelClock | sExposure);
-        //    }
-        //}
         else if (key == "binning")
         {
             int b = val->getVal<int>();
@@ -551,8 +569,25 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
             int h = (b-v) / 100;
             INT mode = 0;
 
-            retValue += checkError(AT_SetInt(m_handle, L"AOIHBin", h));
-            retValue += checkError(AT_SetInt(m_handle, L"AOIVBin", h));
+			AT_BOOL available;
+			AT_IsImplemented(m_handle, L"AOIHBin", &available);
+			if (available)
+			{
+				retValue += checkError(AT_SetInt(m_handle, L"AOIHBin", h));
+				retValue += checkError(AT_SetInt(m_handle, L"AOIVBin", v));
+			}
+			else if (h != v)
+			{
+				retValue += ito::RetVal(ito::retError, 0, "camera only supports symmetric binning values (e.g. 2x2)");
+			}
+			else
+			{
+				QString s = QString("%1x%1").arg(h);
+				AT_WC ws[10];
+				memset(ws, 0, sizeof(AT_WC)*10);
+				s.toWCharArray(ws);
+				retValue += checkError(AT_SetEnumString(m_handle, L"AOIBinning", ws));
+			}
 
             if (!retValue.containsError())
             {
@@ -581,6 +616,7 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
                         {
                             char cstring[100];
                             wcstombs(cstring, wstring, 100);
+							m_camRestartNecessary = true;
                             it->setVal<char*>(cstring);
                         }
                     }
@@ -828,6 +864,14 @@ ito::RetVal AndorSDK3::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             timeout_ = AT_INFINITE;
         }
 
+		if (m_timestampFrequency > 0)
+		{
+			if (AT_GetInt(m_handle, L"TimestampClock", &m_lastTimestamp) != AT_SUCCESS)
+			{
+				m_lastTimestamp = -1;
+			}
+		}
+
         int result = AT_WaitBuffer(m_handle, &ptr, &ptrSize, timeout_);
         if (result == AT_ERR_TIMEDOUT)
         {
@@ -968,6 +1012,12 @@ ito::RetVal AndorSDK3::retrieveData(ito::DataObject *externalDataObject)
             copyExternal = true;
         }
 
+		double timestampClock_ = -1.0;
+		if (m_lastTimestamp > -1.0 && m_timestampFrequency > 0)
+		{
+			timestampClock_ = (double)m_lastTimestamp / ((double)m_timestampFrequency);
+		}
+
         int bytesPerLine = m_buffer.aoiWidth * m_buffer.aoiBitsPerPixel / 8;
         AT_U8 *startPtr = m_buffer.alignedBuffer;
         // pnPitch is in bits
@@ -975,6 +1025,7 @@ ito::RetVal AndorSDK3::retrieveData(ito::DataObject *externalDataObject)
         if (copyExternal)
         {
             cv::Mat *cvMat = ((cv::Mat *)externalDataObject->get_mdata()[externalDataObject->seekMat(0)]);
+			externalDataObject->setTag("timestamp", ito::DataObjectTagType(timestampClock_));
 
 			if (m_buffer.aoiStride == bytesPerLine && cvMat->isContinuous())
 			{
@@ -993,6 +1044,7 @@ ito::RetVal AndorSDK3::retrieveData(ito::DataObject *externalDataObject)
         if (!copyExternal || hasListeners)
         {
             cv::Mat *cvMat = ((cv::Mat *)m_data.get_mdata()[m_data.seekMat(0)]);
+			m_data.setTag("timestamp", ito::DataObjectTagType(timestampClock_));
 
 			if (m_buffer.aoiStride == bytesPerLine && cvMat->isContinuous())
 			{
@@ -1142,7 +1194,8 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
             rettemp += checkError(AT_GetFloatMin(m_handle, L"ExposureTime", &dmin));
             rettemp += checkError(AT_GetFloatMax(m_handle, L"ExposureTime", &dmax));
             rettemp += checkError(AT_GetFloat(m_handle, L"ExposureTime", &dval));
-            it->setMeta(new ito::DoubleMeta(dmin,dmax),true);
+
+			it->setMeta(new ito::DoubleMeta(dmin,dmax),true);
             it->setVal<double>(dval);
         }
         else
@@ -1175,14 +1228,14 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
     
     if (what & sCooling)
     {
-        AT_64 val;
+        AT_BOOL val;
         it = m_params.find("sensor_cooling");
         rettemp = checkError(AT_IsImplemented(m_handle, L"SensorCooling", &implemented));
         if (!rettemp.containsError() && implemented)
         {
             it->setFlags(0);
-            rettemp += checkError(AT_GetInt(m_handle, L"SensorCooling", &val));
-            it->setVal<int>(dval);
+			rettemp += checkError(AT_GetBool(m_handle, L"SensorCooling", &val));
+			it->setVal<int>(val ? 1 : 0);
         }
         else
         {
@@ -1349,7 +1402,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
             roi[2] = size.x;
             roi[3] = size.y;
             ito::RangeMeta widthMeta(offsetMin.x - 1, sizeMax.x - 1, 1, sizeMin.x, sizeMax.x, 1);
-            ito::RangeMeta heightMeta(offsetMin.y - 1, sizeMax.x - 1, 1, sizeMin.y, sizeMax.y, 1);
+            ito::RangeMeta heightMeta(offsetMin.y - 1, sizeMax.y - 1, 1, sizeMin.y, sizeMax.y, 1);
             it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
 			it->setVal<int*>(roi,4);
         }
@@ -1626,9 +1679,20 @@ ito::RetVal AndorSDK3::checkData(ito::DataObject *externalDataObject)
     AT_64 bufferSize;
     AT_GetInt(m_handle, L"ImageSizeBytes", &bufferSize);
 
-    if (m_buffer.bufferSize != bufferSize || m_buffer.aoiHeight != futureHeight)
+    if (m_buffer.bufferSize != bufferSize || m_buffer.aoiHeight != futureHeight || m_camRestartNecessary)
     {
-        AT_Flush(m_handle);
+		m_camRestartNecessary = false;
+		if (this->grabberStartedCount() > 0)
+		{
+			ito::RetVal retValue;
+			retValue += checkError(AT_Command(m_handle, L"AcquisitionStop"));
+			retValue += checkError(AT_Flush(m_handle));
+			retValue += checkError(AT_Command(m_handle, L"AcquisitionStart")); //no image is acquired yet since input buffer is empty (due to flushing before)
+		}
+		else
+		{
+			AT_Flush(m_handle);
+		}
 
         //delete old buffer
         if (m_buffer.buffer)

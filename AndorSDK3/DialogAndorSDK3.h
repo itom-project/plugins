@@ -52,6 +52,8 @@ class DialogSDK3 : public ito::AbstractAddInConfigDialog
     private:
         void enableDialog(bool enabled);
         bool m_firstRun;
+		int m_currentSizeMaxX;
+		int m_currentSizeMaxY;
 
         Ui::DialogAndorSDK3 ui;
 
@@ -60,8 +62,6 @@ class DialogSDK3 : public ito::AbstractAddInConfigDialog
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
-        void on_rangeX01_valuesChanged(int minValue, int maxValue);
-        void on_rangeY01_valuesChanged(int minValue, int maxValue);
         void on_btnFullROI_clicked();
 };
 

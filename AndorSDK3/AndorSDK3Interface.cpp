@@ -94,7 +94,12 @@ ito::RetVal AndorSDK3Interface::getAddInInst( ito::AddInBase **addInInst )
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AndorSDK3Interface::closeThisInst( ito::AddInBase **addInInst )
 {
-   REMOVE_PLUGININSTANCE(AndorSDK3)
+   //REMOVE_PLUGININSTANCE(AndorSDK3) -> crashed here???
+   if (*addInInst)
+   {
+      delete ((AndorSDK3 *)*addInInst);
+      m_InstList.removeOne(*addInInst);
+   } 
    return ito::retOk;
 }
 

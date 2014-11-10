@@ -41,13 +41,13 @@ void DockWidgetSDK3::parametersChanged(QMap<QString, ito::Param> params)
 
     ui.lblGain->setVisible( !(params["gain"].getFlags() & ito::ParamBase::Readonly) );
     ui.sliderGain->setVisible( !(params["gain"].getFlags() & ito::ParamBase::Readonly) );
-    ui.sliderExposure->setDisabled( params["exposure"].getFlags() & ito::ParamBase::Readonly );
+    ui.sliderExposure->setDisabled( params["integration_time"].getFlags() & ito::ParamBase::Readonly );
 
     if (m_firstRun)
     {
-        if (params.contains("cam_model"))
+        if (params.contains("camera_model"))
         {
-            ui.lblModel->setText(params["cam_model"].getVal<char*>());
+            ui.lblModel->setText(params["camera_model"].getVal<char*>());
         }
         
         if (params.contains("camera_name"))
@@ -57,7 +57,12 @@ void DockWidgetSDK3::parametersChanged(QMap<QString, ito::Param> params)
 
         if (params.contains("serial_number"))
         {
-            ui.lblSerial->setText(QString::number(params["serial_number"].getVal<int>()));
+            ui.lblSerial->setText(params["serial_number"].getVal<char*>());
+        }
+
+		if (params.contains("bpp"))
+        {
+			ui.lblBitDepth->setText(QString("%1 bit").arg(params["bpp"].getVal<int>()));
         }
 
         m_firstRun = false;
@@ -78,11 +83,6 @@ void DockWidgetSDK3::parametersChanged(QMap<QString, ito::Param> params)
             ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) / 100);
         }
         ui.sliderExposure->setValue(it->getVal<double>());
-    }
-
-    if (params.contains("gain"))
-    {
-        ui.sliderGain->setValue(params["gain"].getVal<double>());
     }
 
     if ((it = params.find("gain")) != params.end())
