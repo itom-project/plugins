@@ -703,9 +703,8 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
 
-	DWORD pSize = sizeof(int);
-	
-    XI_PRM_TYPE pType = xiTypeInteger;
+	XI_PRM_TYPE intType = xiTypeInteger;
+	DWORD intSize = sizeof(int);
 
     int running = 0;
     
@@ -780,7 +779,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                     retValue += getErrStr(ret);
 				}
 						
-				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &pSize, &pType))
+				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &intSize, &intType))
 				{
 					retValue += getErrStr(ret);
 				}
@@ -798,7 +797,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 {
 					retValue += getErrStr(ret);
 				}
-				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &pSize, &pType))
+				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &intSize, &intType))
 				{
 					retValue += getErrStr(ret);
 				}
@@ -815,7 +814,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 {
 					retValue += getErrStr(ret);
 				}
-				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &pSize, &pType))
+				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &intSize, &intType))
 				{
 					retValue += getErrStr(ret);
 				}
@@ -831,7 +830,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 {
 					retValue += getErrStr(ret);
 				}
-				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &(*val), &pSize, &pType))
+				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &(*val), &intSize, &intType))
 				{
 					retValue += getErrStr(ret);
 				}
@@ -871,15 +870,12 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 				{
 					it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
 
-					DWORD pSize = sizeof(int);
-					XI_PRM_TYPE pType = xiTypeInteger;
-
 					int maxxsize, maxysize;
 
-					ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &maxxsize, &pSize, &pType);
-					ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &maxysize, &pSize, &pType);
-					ret = pxiGetParam(m_handle, XI_PRM_WIDTH, &curxsize, &pSize, &pType);
-					ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &curysize, &pSize, &pType);
+					ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &maxxsize, &intSize, &intType);
+					ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &maxysize, &intSize, &intType);
+					ret = pxiGetParam(m_handle, XI_PRM_WIDTH, &curxsize, &intSize, &intType);
+					ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &curysize, &intSize, &intType);
 
 					maxxsize = (int)(maxxsize / (bin));
 					maxysize = (int)(maxysize / (bin));
@@ -904,7 +900,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 		else if (QString::compare(key, "binning_type", Qt::CaseInsensitive) == 0)
 		{
 			int type = val->getVal<int>();
-			if ((ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING_TYPE, &type, sizeof(int), xiTypeInteger)))
+			if ((ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING_TYPE, &type, sizeof(int), intType)))
 			{
 				retValue += getErrStr(ret);
 			}
@@ -914,14 +910,12 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             int enable = val->getVal<int>() > 0 ? 1 : 0;
             int maxVal = 0;
             int curVal = 0;
-            DWORD pSize = sizeof(int);
-            XI_PRM_TYPE pType = xiTypeInteger;
 
-            if ((ret = pxiSetParam(m_handle, XI_PRM_BPC, &enable, sizeof(int), xiTypeInteger)))
+            if ((ret = pxiSetParam(m_handle, XI_PRM_BPC, &enable, sizeof(int), intType)))
             {
                 retValue += getErrStr(ret);
             }
-            if (ret = pxiGetParam(m_handle, XI_PRM_BPC, &curVal, &pSize, &pType))
+            if (ret = pxiGetParam(m_handle, XI_PRM_BPC, &curVal, &intSize, &intType))
             {
                 retValue += getErrStr(ret);
             }
@@ -939,31 +933,29 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             if(enable)
             {
                 integration_time += integration_time / 4;
-                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), xiTypeInteger)))
-                if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), xiTypeInteger)))
+                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), intType)))
+                if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), intType)))
                 {
                     retValue += getErrStr(ret);
                 }
-                DWORD pSize = sizeof(int);
-                XI_PRM_TYPE pType = xiTypeInteger;
-                retValue += getErrStr(pxiGetParam(m_handle, "hdr" XI_PRM_INFO , &enable, &pSize, &pType)); 
+                retValue += getErrStr(pxiGetParam(m_handle, "hdr" XI_PRM_INFO , &enable, &intSize, &intType)); 
 
-                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &knee1, sizeof(int), xiTypeInteger)))
-                //if ((ret = pxiSetParam(m_handle, "hdr_ratio" , &knee1, sizeof(int), xiTypeInteger)))
+                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &knee1, sizeof(int), intType)))
+                //if ((ret = pxiSetParam(m_handle, "hdr_ratio" , &knee1, sizeof(int), intType)))
                 //{
                 //    retValue += getErrStr(ret);
                 //}
-                if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), intType)))
                     retValue += getErrStr(ret);
             }
             else
             {
-                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), xiTypeInteger)))
-                if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), xiTypeInteger)))
+                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), intType)))
+                if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), intType)))
                 {
                     retValue += getErrStr(ret);
                 }
-                if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), intType)))
                     retValue += getErrStr(ret);
             }
 
@@ -973,24 +965,24 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 
             if(enable)
             {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), intType)))
                 {
                     retValue += getErrStr(ret);
                 }
-                else if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT2 , &knee2, sizeof(int), xiTypeInteger)))
+                else if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT2 , &knee2, sizeof(int), intType)))
                 {
                     retValue += getErrStr(ret);
                 }
-                else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T1 , &intTime1, sizeof(int), xiTypeInteger)))
+                else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T1 , &intTime1, sizeof(int), intType)))
                 {
                     retValue += getErrStr(ret);
                 }
-                else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T2, &intTime2, sizeof(int), xiTypeInteger)))
+                else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T2, &intTime2, sizeof(int), intType)))
                 {
                     retValue += getErrStr(ret);
                 }
             }
-            if ((ret = pxiSetParam(m_handle, XI_PRM_HDR, &enable, sizeof(int), xiTypeInteger)))
+            if ((ret = pxiSetParam(m_handle, XI_PRM_HDR, &enable, sizeof(int), intType)))
             {
                 retValue += getErrStr(ret);
             }
@@ -1004,12 +996,10 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         else if (QString::compare(key, "integration_time", Qt::CaseInsensitive) == 0)
         {
 			int integration_time = secToMusec(val->getVal<double>());
-            if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
+            if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), intType)))
                 retValue += getErrStr(ret);
 				
-			DWORD varSize = sizeof(int);
-			XI_PRM_TYPE varType = xiTypeInteger;
-			if ((ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, &varSize, &varType)))
+			if ((ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, &intSize, &intType)))
 				retValue += getErrStr(ret);
 			else
 				m_params["integration_time"].setVal<double>(musecToSec(integration_time));
@@ -1042,7 +1032,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         else if (QString::compare(key, "trigger_mode", Qt::CaseInsensitive) == 0)
         {
 			int trigger_mode = val->getVal<int>();
-            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
+            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), intType)))
                 retValue += getErrStr(ret);
 
 			if (!retValue.containsError())
@@ -1054,7 +1044,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         else if (QString::compare(key, "trigger_mode2", Qt::CaseInsensitive) == 0)
         {
 			int trigger_mode2 = val->getVal<int>();
-            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
+            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), intType)))
                 retValue += getErrStr(ret);
 
 			if (!retValue.containsError())
@@ -1068,7 +1058,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 #ifndef USE_OLD_API
 			int timing_mode = val->getVal<int>();
 
-            if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
+            if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), intType)))
                 retValue += getErrStr(ret);
 
 			if (!retValue.containsError())
@@ -1106,14 +1096,11 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         else if (QString::compare(key, "x1", Qt::CaseInsensitive) == 0)
         {
             int size = val->getVal<int>() - m_params["x0"].getVal<int>() + 1;
-			XI_PRM_TYPE intType = xiTypeInteger;
-			DWORD intSize = sizeof(int);
-
             if(size % 2 != 0)
             {
                 retValue += ito::RetVal(ito::retWarning, 0, tr("Size must be multiple of 2").toLatin1().data());
             }
-			else if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
+			else if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), intType)))
             {
                 retValue += getErrStr(ret);
             }
@@ -1131,14 +1118,12 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         else if (QString::compare(key, "y1", Qt::CaseInsensitive) == 0)
         {
 			int size = val->getVal<int>() - m_params["y0"].getVal<int>() + 1;
-			XI_PRM_TYPE intType = xiTypeInteger;
-			DWORD intSize = sizeof(int);
 
             if(size % 2 != 0)
             {
                 retValue += ito::RetVal(ito::retWarning, 0, tr("Size must be multiple of 2").toLatin1().data());
             }
-			else if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
+			else if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), intType)))
             {
                 retValue += getErrStr(ret);
             }
@@ -1167,29 +1152,27 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			else if (x0old < offset)
             {
                 //m_params["sizex"].setVal<int>(size);
-                if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), intType)))
                     retValue += getErrStr(ret);
                 if (!retValue.containsError())
 				{
-					if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset, sizeof(int), xiTypeInteger)))
+					if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset, sizeof(int), intType)))
 					retValue += getErrStr(ret);
 				}
             }
             else
             {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset, sizeof(int), intType)))
                     retValue += getErrStr(ret);
 				if (!retValue.containsError())
 				{
-					if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
+					if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), intType)))
 						retValue += getErrStr(ret);
 				}
             }
 
 			if (!retValue.containsError())
 			{
-				XI_PRM_TYPE intType = xiTypeInteger;
-				DWORD intSize = sizeof(int);
 
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
 				ito::IntMeta* meta = static_cast<ito::IntMeta*>(m_params["x1"].getMeta());
@@ -1212,29 +1195,27 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             }
 			else if (y0old < offset)
             {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), intType)))
                     retValue += getErrStr(ret);
 				if (!retValue.containsError())
 				{
-					if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset, sizeof(int), xiTypeInteger)))
+					if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset, sizeof(int), intType)))
 						retValue += getErrStr(ret);
 				}
             }
             else
             {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset, sizeof(int), xiTypeInteger)))
+                if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset, sizeof(int), intType)))
                     retValue += getErrStr(ret);
 				if (!retValue.containsError())
 				{
-					if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
+					if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), intType)))
 						retValue += getErrStr(ret);
 				}
             }
 
 			if (!retValue.containsError())
 			{
-				XI_PRM_TYPE intType = xiTypeInteger;
-				DWORD intSize = sizeof(int);
 
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
 				ito::IntMeta* meta = static_cast<ito::IntMeta*>(m_params["y1"].getMeta());
@@ -1244,6 +1225,99 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 				meta->setMin(val->getVal<int>() + size - 1);
 			}
         }
+		else if(QString::compare(key, "roi", Qt::CaseInsensitive) == 0)
+		{
+			if (!hasIndex)
+			{
+				if (val->getLen() !=4)
+				{
+					retValue += ito::RetVal(ito::retError, 0, "roi must have 4 values");
+				}
+				else
+				{
+					int *roi_old = m_params["roi"].getVal<int*>();
+					int *roi = val->getVal<int*>();
+					int width = roi[2] - roi[0];
+					int heigth = roi[3] - roi[1];
+					int offset_x = roi[0];
+					int offset_y = roi[1];
+
+					if (roi != roi_old)
+					{
+						
+
+						if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset_x, intSize, intType))
+							retValue += getErrStr(ret);
+						if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, intSize, intType))
+							retValue += getErrStr(ret);
+						if (ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &width, intSize, intType))
+							retValue += getErrStr(ret);
+						if (ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &heigth, intSize, intType))
+							retValue += getErrStr(ret);
+					}
+
+					if(!retValue.containsError())
+					{
+					    roi[0] = offset_x;
+						roi[1] = offset_y;
+						roi[2] = width;
+						roi[3] = heigth;
+						it = m_params.find("roi");
+
+						int max = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getMax();
+						int min = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getMin();
+						int size_max = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getSizeMax();
+						int size_min = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getSizeMin();
+						int size_step_size = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getSizeStepSize();
+						int stepsize = static_cast<ito::RectMeta*>( m_params["roi"].getMeta())->getWidthRangeMeta().getStepSize();
+						
+					
+
+						int offsetMin_x, sizeMax_x, offsetInc_x, sizeMin_x, sizeInc_x;
+						int offsetMin_y, sizeMax_y, offsetInc_y, sizeMin_y, sizeInc_y;
+						ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x -1, offsetInc_x, sizeMin_x, sizeMin_x + offset_x, sizeInc_x);
+						ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y -1, offsetInc_y, sizeMin_y, sizeMax_y + offset_x, sizeInc_y);
+						it ->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
+					
+
+					
+						/*
+						it = m_params.find("roi");
+						//int *roi = it->getVal<int*>();
+						ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x -1, offsetInc_x, sizeMin_x, sizeMin_x + offset_x, sizeInc_x);
+						ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y -1, offsetInc_y, sizeMin_y, sizeMax_y + offset_x, sizeInc_y);
+						it ->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
+						*/
+						
+						
+					}
+
+				}
+			}
+			else
+			{
+				switch (index)
+				{
+				case 0:
+
+					break;
+
+				case 1:
+					break;
+
+				case 2:
+					break;
+
+				case 3:
+					break;
+				}
+			}
+
+		}
+
+
+
+
 		else
 		{
 			it->copyValueFrom(&(*val));
@@ -1327,11 +1401,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     ito::RetVal retValue(ito::retOk);
     int bandwidthLimit = paramsOpt->at(2).getVal<int>(); //0 auto bandwidth calculation
 	int iCamNumber = (*paramsOpt)[0].getVal<int>();
-    int bitppix = 10;
-	int output_bit_depth = 0;
     XI_RETURN ret;
-    int trigger_mode = 0;
-    int trigger_mode2 = 0;
 
 #ifndef USE_OLD_API
     int timing_mode = 0;
@@ -1348,7 +1418,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 	XI_PRM_TYPE intType = xiTypeInteger;
     XI_PRM_TYPE strType = xiTypeString;
 	XI_PRM_TYPE floatType = xiTypeFloat;
-
+	QMap<QString, ito::Param>::iterator it;
     retValue += LoadLib();
 	
 	m_params["camNumber"].getVal<int>(iCamNumber);
@@ -1583,8 +1653,9 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger);
 			ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType);
 			*/	
+			int output_bit_depth = 0;
+			int bitppix = XI_MONO8;
 
-			bitppix = XI_MONO8;
 			if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger))
 			{
 				retValue += getErrStr(ret);
@@ -1649,62 +1720,74 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     retValue += getErrStr(ret);
             }*/
 
-			int offset, offsetMin, offsetMax, offsetInc;
-			int size, sizeMin, sizeMax, sizeInc;
+			int offset_x, offsetMin_x, offsetMax_x, offsetInc_x;
+			int size_x, sizeMin_x, sizeMax_x, sizeInc_x;
 
 			//obtain current offsetX and width values
-			ret = pxiGetParam(m_handle, XI_PRM_WIDTH, &size, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MIN, &sizeMin, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &sizeMax, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_INCREMENT, &sizeInc, &intSize, &intType);
-			if (sizeInc == 0)
+			ret = pxiGetParam(m_handle, XI_PRM_WIDTH, &size_x, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MIN, &sizeMin_x, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &sizeMax_x, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_INCREMENT, &sizeInc_x, &intSize, &intType);
+			if (sizeInc_x == 0)
 			{
-				//sizeInc = sizeMax - sizeMin;
-				sizeInc = 1;
+				//sizeInc_x = sizeMax_x - sizeMin_x;
+				sizeInc_x = 1;
 			}
 
-			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X, &offset, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_MIN, &offsetMin, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_MAX, &offsetMax, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_INCREMENT, &offsetInc, &intSize, &intType);
-			if (offsetInc == 0)
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X, &offset_x, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_MIN, &offsetMin_x, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_MAX, &offsetMax_x, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_INCREMENT, &offsetInc_x, &intSize, &intType);
+			if (offsetInc_x == 0)
 			{
-				offsetInc = offsetMax - offsetMin;
+				offsetInc_x = offsetMax_x - offsetMin_x;
 			}
 
-			m_params["x0"].setVal<int>(offset);
-			m_params["x0"].setMeta(new ito::IntMeta(offsetMin, sizeMax - sizeMin, offsetInc), true);
-			m_params["x1"].setVal<int>(offset + size - 1);
-			m_params["x1"].setMeta(new ito::IntMeta(offset + sizeMin - 1, sizeMax - 1, sizeInc), true);
-			m_params["sizex"].setVal<int>(size);
-			m_params["sizex"].setMeta(new ito::IntMeta(sizeMin, sizeMax, sizeInc), true);
+			m_params["x0"].setVal<int>(offset_x);
+			m_params["x0"].setMeta(new ito::IntMeta(offsetMin_x, sizeMax_x - sizeMin_x, offsetInc_x), true);
+			m_params["x1"].setVal<int>(offset_x + size_x - 1);
+			m_params["x1"].setMeta(new ito::IntMeta(offset_x + sizeMin_x - 1, sizeMax_x - 1, sizeInc_x), true);
+			m_params["sizex"].setVal<int>(size_x);
+			m_params["sizex"].setMeta(new ito::IntMeta(sizeMin_x, sizeMax_x, sizeInc_x), true);
 
 			//obtain current offsetY and height values
-			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &size, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MIN, &sizeMin, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &sizeMax, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_INCREMENT, &sizeInc, &intSize, &intType);
-			if (sizeInc == 0)
+			int offset_y, offsetMin_y, offsetMax_y, offsetInc_y;
+			int size_y, sizeMin_y, sizeMax_y, sizeInc_y;
+			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &size_y, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MIN, &sizeMin_y, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &sizeMax_y, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_INCREMENT, &sizeInc_y, &intSize, &intType);
+			if (sizeInc_y == 0)
 			{
-				sizeInc = sizeMax - sizeMin;
+				sizeInc_y = sizeMax_y - sizeMin_y;
 			}
 
-			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y, &offset, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_MIN, &offsetMin, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_MAX, &offsetMax, &intSize, &intType);
-			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_INCREMENT, &offsetInc, &intSize, &intType);
-			if (offsetInc == 0)
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_MIN, &offsetMin_y, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_MAX, &offsetMax_y, &intSize, &intType);
+			ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_INCREMENT, &offsetInc_y, &intSize, &intType);
+			if (offsetInc_y == 0)
 			{
-				offsetInc = offsetMax - offsetMin;
+				offsetInc_y = offsetMax_y - offsetMin_y;
 			}
 
-			m_params["y0"].setVal<int>(offset);
-			m_params["y0"].setMeta(new ito::IntMeta(offsetMin, sizeMax - sizeMin, offsetInc), true);
-			m_params["y1"].setVal<int>(offset + size - 1);
-			m_params["y1"].setMeta(new ito::IntMeta(offset + sizeMin - 1, sizeMax - 1, sizeInc), true);
-			m_params["sizey"].setVal<int>(size);
-			m_params["sizey"].setMeta(new ito::IntMeta(sizeMin, sizeMax, sizeInc), true); 
-        }
+			m_params["y0"].setVal<int>(offset_y);
+			m_params["y0"].setMeta(new ito::IntMeta(offsetMin_y, sizeMax_y - sizeMin_y, offsetInc_y), true);
+			m_params["y1"].setVal<int>(offset_y + size_y - 1);
+			m_params["y1"].setMeta(new ito::IntMeta(offset_y + sizeMin_y - 1, sizeMax_y - 1, sizeInc_y), true);
+			m_params["sizey"].setVal<int>(size_y);
+			m_params["sizey"].setMeta(new ito::IntMeta(sizeMin_y, sizeMax_y, sizeInc_y), true); 
+        
+
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+		it = m_params.find("roi");
+		int *roi = it->getVal<int*>();
+		ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x -1, offsetInc_x, sizeMin_x, sizeMin_x + offset_x, sizeInc_x);
+		ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y -1, offsetInc_y, sizeMin_y, sizeMax_y + offset_x, sizeInc_y);
+		it ->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
+		
+#endif
+		}
 
         if (!retValue.containsError())
         {
