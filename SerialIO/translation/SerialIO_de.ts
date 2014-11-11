@@ -55,12 +55,12 @@
     <message>
         <location/>
         <source>Port:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>
         <source>[Identifier]</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -239,7 +239,7 @@
     <message>
         <location line="+2"/>
         <source>If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn das Protokoll aktiviert wurde, können mit diesem Parameter leer Nachrichten ignoriert werden</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -377,7 +377,7 @@
     <message>
         <location line="+2"/>
         <source>If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn das Protokoll aktiviert wurde, können mit diesem Parameter leer Nachrichten ignoriert werden</translation>
     </message>
     <message>
         <location line="-19"/>
