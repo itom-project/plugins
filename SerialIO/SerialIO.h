@@ -41,7 +41,8 @@ class SerialPort
                 parity(0),
                 stopbits(1),
                 flow(0),
-                debug(0),
+//                debug(0),
+//                debugIgnoreEmpty(0),
                 sendDelay(0),
                 timeout(4000) { endline[0] = '\n'; endline[1] = 0; endline[2] = 0; }
             char port;
@@ -51,7 +52,8 @@ class SerialPort
             char stopbits;
             char flow;
             char endline[3];
-            char debug;
+//            char debug;
+//            char debugIgnoreEmpty;
             int sendDelay;
             int timeout;
         };
@@ -99,6 +101,7 @@ class SerialIO : public ito::AddInDataIO //, public DummyGrabberInterface
     private:
         SerialPort m_serport;
         bool m_debugMode;   /*! Enables / Disables live connection to dockingwidge-protocol */
+        bool m_debugIgnoreEmpty;   /*! Enables / Disables to ignore empty messages */
         static int m_instCounter;
 
     signals:

@@ -37,30 +37,29 @@ char getHexChar(int i)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DockWidgetSerialIO::DockWidgetSerialIO(QMap<QString, ito::Param> params, int uniqueID)
+DockWidgetSerialIO::DockWidgetSerialIO(ito::AddInDataIO *dataIO) :
+    AbstractAddInDockWidget(dataIO),
+    m_inEditing(false)
 {
-    ui.setupUi(this); 
-    char* temp = params["name"].getVal<char*>(); //char* is borrowed reference, do not delete it
+    ui.setupUi(this);
+
+/*    char* temp = params["name"].getVal<char*>(); //char* is borrowed reference, do not delete it
 //    ui.lblName->setText(temp);
     ui.lblID->setText(QString::number(uniqueID));
-     
-    valuesChanged(params);
+    valuesChanged(params);*/
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
- void DockWidgetSerialIO::valuesChanged(QMap<QString, ito::Param> params)
+ void DockWidgetSerialIO::parametersChanged(QMap<QString, ito::Param> params)
 {
-    if (params.keys().contains("debug"))
+    if (!m_inEditing)
     {
+        m_inEditing = true;
+        ui.checkIgnoreEmpty->setChecked(params["debugIgnoreEmpty"].getVal<int>());
         ui.groupBox_3->setEnabled(params["debug"].getVal<int>());
+        m_inEditing = false;
     }
 }
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-/* void DockWidgetSerialIO::uniqueIDChanged(const int uniqueID)
-{
-    ui.lblID->setText(QString::number(uniqueID));
-}*/
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetSerialIO::on_ClrButton_clicked()
@@ -218,4 +217,21 @@ void DockWidgetSerialIO::serialLog(QByteArray data, QByteArray endline, const ch
     }
  }
 
- //-------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetSerialIO::identifierChanged(const QString &identifier)
+{
+    ui.lblIdentifier->setText(identifier);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetSerialIO::on_checkIgnoreEmpty_clicked()
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("debugIgnoreEmpty",ito::ParamBase::Int,(int)ui.checkIgnoreEmpty->isChecked()));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
+

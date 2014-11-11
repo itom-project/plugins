@@ -34,9 +34,8 @@
         <translation>Löschen</translation>
     </message>
     <message>
-        <location/>
         <source>ignor empty messages</source>
-        <translation>Leere Nachrichten ignorieren</translation>
+        <translation type="obsolete">Leere Nachrichten ignorieren</translation>
     </message>
     <message>
         <location/>
@@ -45,18 +44,23 @@
     </message>
     <message>
         <location/>
-        <source>ID:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>[ID]</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>ASCII</source>
         <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>ignore empty messages</source>
+        <translation>Leere Nachrichten ignorieren</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Port:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>[Identifier]</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -165,7 +169,7 @@
         <translation>K.A.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+285"/>
         <source>Mandatory paramers are NULL</source>
         <translation>Pflichtparameter ist NULL</translation>
     </message>
@@ -188,7 +192,7 @@
 <context>
     <name>SerialIO</name>
     <message>
-        <location filename="../SerialIO.cpp" line="-241"/>
+        <location filename="../SerialIO.cpp" line="-244"/>
         <source>Serial port number of this device</source>
         <translation>Serielle Portnummer dieses Geräts</translation>
     </message>
@@ -230,7 +234,12 @@
     <message>
         <location line="+2"/>
         <source>If true, all out and inputs are written to dockingWidget</source>
-        <translation>Wenn aktiviert, wird die Kommunikation im dockingWidget protokolliert</translation>
+        <translation>Wenn aktiviert, wird die Kommunikation in der Toolbox protokolliert</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+7"/>
@@ -288,12 +297,12 @@
         <translation>Konflikt mit Parametertyp</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+18"/>
         <source>Parameter not found</source>
         <translation>Parameter wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+153"/>
         <source>StartDevice not necessary</source>
         <translation>&quot;StartDevice&quot; nicht nötig</translation>
     </message>
@@ -308,7 +317,7 @@
         <translation>&quot;Acquire&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="-343"/>
+        <location line="-356"/>
         <source>Current baudrate in bits/s</source>
         <translation>Aktuelle Baudrate ist bits/s</translation>
     </message>
@@ -316,7 +325,7 @@
 <context>
     <name>SerialIOInterface</name>
     <message>
-        <location line="-103"/>
+        <location line="-105"/>
         <source>itom-plugin for a serial port communication</source>
         <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
@@ -363,10 +372,15 @@
     <message>
         <location line="+2"/>
         <source>Initialised &apos;debug&apos;-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget</source>
-        <translation>Schaltet Protokollierung ein und aus. Wurde sie aktiviert, wird die Kommunikation im dockingWidget protokolliert</translation>
+        <translation>Schaltet Protokollierung ein und aus. Wurde diese aktiviert, wird die Kommunikation in der Toolbox protokolliert</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="+2"/>
+        <source>If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-19"/>
         <source>The baudrate of the port</source>
         <translation>Die Baudrate des Ports</translation>
     </message>
@@ -521,7 +535,7 @@
     <message>
         <location/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location/>

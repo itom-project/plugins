@@ -25,6 +25,9 @@
 
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
+#include "common/addInInterface.h"
+#include "common/abstractAddInDockWidget.h"
+
 #include "ui_dockWidgetSerialIO.h"
 
 #include <QtGui>
@@ -33,26 +36,30 @@
 #include <qstring.h>
 #include <qbytearray.h>
 
-class DockWidgetSerialIO : public QWidget
+class DockWidgetSerialIO : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetSerialIO(QMap<QString, ito::Param> params, int uniqueID);
+        DockWidgetSerialIO(ito::AddInDataIO *dataIO);
         ~DockWidgetSerialIO() {};
 
     private:
         Ui::DockWidgetSerialIO ui;
+        bool m_inEditing;
 
     signals:
 
     public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);
+        void parametersChanged(QMap<QString, ito::Param> params);
+//        void valuesChanged(QMap<QString, ito::Param> params);
 //        void uniqueIDChanged(const int uniqueID);
         void serialLog(QByteArray data, QByteArray endline, const char InOutChar);
+        void identifierChanged(const QString &identifier);
 
     private slots:
         void on_ClrButton_clicked();
+        void on_checkIgnoreEmpty_clicked();
 };
 
 #endif
