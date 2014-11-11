@@ -1633,7 +1633,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 		roi[1] = offset_y;
 		roi[2] = size_x;
 		roi[3] = size_y;
-		ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x -1, offsetInc_x, sizeMin_x, sizeMin_x + offset_x, sizeInc_x);
+		ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x -1, offsetInc_x, sizeMin_x, sizeMax_x + offset_x, sizeInc_x);
 		ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y -1, offsetInc_y, sizeMin_y, sizeMax_y + offset_x, sizeInc_y);	
 		m_params["roi"].setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
 		
