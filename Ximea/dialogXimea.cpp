@@ -22,639 +22,279 @@
 
 #include "dialogXimea.h"
 
+#include <qdialogbuttonbox.h>
+#include <qvector.h>
+#include <qsharedpointer.h>
+
+#include "common/addInInterface.h"
+
 //----------------------------------------------------------------------------------------------------------------------------------
-int dialogXimea::getVals(QMap<QString, ito::Param> *paramVals)
+dialogXimea::dialogXimea(ito::AddInBase *grabber) :
+    AbstractAddInConfigDialog(grabber),
+    m_firstRun(true)
 {
-    bool updateSizeX = false;
-    bool updateSizeY = false;
+    ui.setupUi(this);
 
-    setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-    // added by itobiege, Mar. 2013, but not tested!
+    //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
+    enableDialog(false);
+};
 
-    foreach(const ito::Param &param, *paramVals)
+//---------------------------------------------------------------------------------------------------------------------
+void dialogXimea::enableDialog(bool enabled)
+{
+    ui.groupBoxBinning->setEnabled(enabled);
+    ui.groupBoxIntegration->setEnabled(enabled);
+    ui.groupBoxSize->setEnabled(enabled);
+}
+//---------------------------------------------------------------------------------------------------------------------
+void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
+{
+    if (m_firstRun)
     {
-        if((m_paramsVals).contains(param.getName()))
-        {
-            m_paramsVals[param.getName()] = param;
-        }
-        else // Or create a new parameter
-        {
-            m_paramsVals.insert(param.getName(), param);
-        }
+		enableDialog(true);
+		setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-        if(!strcmp(param.getName(), "x0"))
-        {
-            int ival = param.getVal<int>();
+		ui.label_sensor->setText(params["sensor_type"].getVal<char*>());
+		ui.label_serial->setText(QString::number(params["serialNumber"].getVal<int>()));
 
-            ui.spinBox_x0->setValue(ival);
-            ui.spinBox_x1->setMinimum(ival);
+		ui.spinBox_bin->setMaximum(params["binning"].getMax());
+		ui.spinBox_bin->setMinimum(params["binning"].getMin());
+		ui.spinBox_bin->setValue(params["binning"].getVal<int>());
+		ui.spinBox_bin->setEnabled(true); //TODO
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_x0->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_x0->setEnabled(false);
-            }
-        }
+		int bpp = params["bpp"].getVal<int>();
+		ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
+		ui.combo_bpp->clear();
+		for(int i = bppMeta->getMin(); i <= bppMeta->getMax(); i+=2)
+		{
+			ui.combo_bpp->addItem(QString("%1").arg(i), i);
+		}
 
-        if(!strcmp(param.getName(), "x1"))
-        {
-            int ival = (int)param.getMax();
-            ui.spinBox_x1->setMaximum(ival);
+		for (int i = 0; i < ui.combo_bpp->count(); ++i)
+		{
+			if (ui.combo_bpp->itemData(i, 32).toInt() == bpp)
+			{
+				ui.combo_bpp->setCurrentIndex(i);
+				break;
+			}
+		}
 
-            ival = param.getVal<int>();
-            ui.spinBox_x1->setValue(ival);
-            ui.spinBox_x0->setMaximum(ival);
+		ito::DoubleMeta *offset = static_cast<ito::DoubleMeta*>(params["offset"].getMeta());
+		ui.sliderWidget_Offset->setMinimum(offset->getMin());
+		ui.sliderWidget_Offset->setMaximum(offset->getMax());
+		ui.sliderWidget_Offset->setSingleStep(offset->getStepSize());
+		ui.sliderWidget_Offset->setValue(params["offset"].getVal<int>());
+		ui.sliderWidget_Offset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.pushButton_setSizeXMax->setEnabled(true);
-                ui.spinBox_x1->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_x1->setEnabled(false);
-            }
-        }
+		ito::DoubleMeta *gain = static_cast<ito::DoubleMeta*>(params["gain"].getMeta());
+		ui.sliderWidget_Gain->setMinimum(gain->getMin());
+		ui.sliderWidget_Gain->setMaximum(gain->getMax());
+		ui.sliderWidget_Gain->setSingleStep(gain->getStepSize());
+		ui.sliderWidget_Gain->setValue(params["gain"].getVal<int>());
+		ui.sliderWidget_Gain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
 
-        if(!strcmp(param.getName(), "y0"))
-        {
-            int ival = param.getVal<int>();
+		ito::DoubleMeta *integrationtime = static_cast<ito::DoubleMeta*>(params["integration_time"].getMeta());
+		ui.sliderWidget_integrationtime->setMinimum(integrationtime->getMin());
+		ui.sliderWidget_integrationtime->setMaximum(integrationtime->getMax());
+		ui.sliderWidget_integrationtime->setSingleStep(integrationtime->getStepSize());
+		ui.sliderWidget_integrationtime->setValue(params["integration_time"].getVal<int>());
+		ui.sliderWidget_integrationtime->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
 
-            ui.spinBox_y0->setValue(ival);
-            ui.spinBox_y1->setMinimum(ival);
+		ito::DoubleMeta *framerate = static_cast<ito::DoubleMeta*>(params["framerate"].getMeta());
+		ui.sliderWidget_framerate->setMinimum(framerate->getMin());
+		ui.sliderWidget_framerate->setMaximum(framerate->getMax());
+		ui.sliderWidget_framerate->setSingleStep(framerate->getStepSize());
+		ui.sliderWidget_framerate->setValue(params["framerate"].getVal<int>());
+		ui.sliderWidget_framerate->setEnabled(!(params["framerate"].getFlags() & ito::ParamBase::Readonly));
+		/*
+		btnFullROI
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_y0->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_y0->setEnabled(false);
-            }
-        }
+		spinSizeX
+		spinSizeY
+		*/
 
-        if(!strcmp(param.getName(), "y1"))
-        {
-            int ival = (int)param.getMax();
-            ui.spinBox_y1->setMaximum(ival);
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+        ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+        ui.rangeX->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+        ui.rangeY->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
+		
+#else
+        ito::IntMeta *im;
+        im = static_cast<ito::IntMeta*>(params["x0"].getMeta());
+        ui.rangeX->setSingleStep(im->getStepSize());
+        ui.rangeX->setMinimum(0);
+        ui.rangeX->setMinimumValue(0);
+        im = static_cast<ito::IntMeta*>(params["x1"].getMeta());
+        ui.rangeX->setMaximum(im->getMax());
+        ui.rangeX->setMaximumValue(im->getMax());
 
-            ival = param.getVal<int>();
-            ui.spinBox_y1->setValue(ival);
-            ui.spinBox_y0->setMaximum(ival);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.pushButton_setSizeYMax->setEnabled(true);
-                ui.spinBox_y1->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_y1->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(), "sizex"))
-        {
-            int ival = param.getVal<int>();
-            ui.spinBox_xsize->setValue(ival);
-        }
-
-        if(!strcmp(param.getName(), "sizey"))
-        {
-            int ival = param.getVal<int>();
-            ui.spinBox_ysize->setValue(ival);
-        }
-
-        if(!strcmp(param.getName(),"gain"))
-        {
-            double dval = param.getVal<double>();
-            ui.spinBox_gain->setValue((int)(dval*100.0+0.5));
-            ui.horizontalSlider_gain->setValue((dval*100 + 0.5));
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_gain->setEnabled(true);
-                ui.horizontalSlider_gain->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_gain->setEnabled(false);
-                ui.horizontalSlider_gain->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(),"offset"))
-        {
-            double dval = param.getVal<double>();
-            ui.spinBox_offset->setValue((int)(dval*100.0+0.5));
-            ui.horizontalSlider_offset->setValue((dval*100 + 0.5));
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_offset->setEnabled(true);
-                ui.horizontalSlider_offset->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_offset->setEnabled(false);
-                ui.horizontalSlider_offset->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(),"frame_time"))
-        {
-            double dval = param.getMin()*1000;
-            ui.doubleSpinBox_frame_time->setMinimum(dval);
-
-            dval = param.getMax()*1000;
-            ui.doubleSpinBox_frame_time->setMaximum(dval);
-
-            dval = param.getVal<double>()*1000;
-            ui.doubleSpinBox_frame_time->setValue(dval);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.doubleSpinBox_frame_time->setEnabled(true);
-            }
-            else
-            {
-                ui.doubleSpinBox_frame_time->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(),"integration_time"))
-        {
-            double dval = param.getMin()*1000;
-            ui.doubleSpinBox_integration_time->setMinimum(dval);
-
-            dval = param.getMax()*1000;
-            ui.doubleSpinBox_integration_time->setMaximum(dval);
-
-            dval = param.getVal<double>()*1000;
-            ui.doubleSpinBox_integration_time->setValue(dval);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.doubleSpinBox_integration_time->setEnabled(true);
-            }
-            else
-            {
-                ui.doubleSpinBox_integration_time->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(), "binning"))
-        {
-            int ival = param.getMin();
-
-            ui.spinBox_bin->setMinimum(ival);
-
-            ival = param.getMax();
-
-            ui.spinBox_bin->setMaximum(ival);
-
-            ival = param.getVal<int>();
-
-            ui.spinBox_bin->setValue(ival);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_bin->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_bin->setEnabled(false);
-            }
-        }
-
-
-        if(!strcmp(param.getName(), "bpp"))
-        {
-            int ival = param.getVal<int>();
-            ui.spinBox_bpp->setValue(ival);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.combo_bpp->setEnabled(true);
-            }
-            else
-            {
-                ui.combo_bpp->setEnabled(false);
-            }
-
-
-            switch (ival)
-            {
-                case 8:
-                    ui.combo_bpp->setCurrentIndex(0);
-                break;
-                case 10:
-                    ui.combo_bpp->setCurrentIndex(1);
-                break;
-                case 12:
-                    ui.combo_bpp->setCurrentIndex(2);
-                break;
-                case 14:
-                    ui.combo_bpp->setCurrentIndex(3);
-                break;
-                case 16:
-                    ui.combo_bpp->setCurrentIndex(4);
-                break;
-                case 24:
-                    ui.combo_bpp->setCurrentIndex(5);
-                break;
-                case 30:
-                    ui.combo_bpp->setCurrentIndex(6);
-                break;
-                case 32:
-                    ui.combo_bpp->setCurrentIndex(7);
-                break;
-                default:
-                    ui.combo_bpp->setEnabled(false);
-                    m_paramsVals["bpp"].setFlags(ito::ParamBase::Readonly);
-                break;
-            }
-        }
+        im = static_cast<ito::IntMeta*>(params["y0"].getMeta());
+        ui.rangeY->setSingleStep(im->getStepSize());
+        ui.rangeY->setMinimum(0);
+        ui.rangeY->setMinimumValue(0);
+        im = static_cast<ito::IntMeta*>(params["y1"].getMeta());
+        ui.rangeY->setMaximum(im->getMax());
+        ui.rangeY->setMaximumValue(im->getMax());
+#endif
+        m_firstRun = false;
     }
-//    ui.groupBoxIntegration->setEnabled(true);
-//    ui.groupBoxBinning->setEnabled(true);
-//    ui.groupBoxSize->setEnabled(true);
+	/*
+	int *roi = params["roi"].getVal<int*>();
+	ui.rangeX->setValues(roi[0], roi[0] + roi[2] - 1);
+	ui.rangeY->setValues(roi[1], roi[1] + roi[3] - 1);
+	ui.rangeX->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
+	ui.rangeY->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
+	*/
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
 
-    return 0;
+        
+
+        m_inEditing = false;
+    }
+
+    m_currentParameters = params;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int dialogXimea::sendVals()
+ito::RetVal dialogXimea::applyParameters()
 {
-    bool binning_changed = false;
+    ito::RetVal retValue(ito::retOk);
+    QVector<QSharedPointer<ito::ParamBase> > values;
+    bool success = false;
 
-    //ito::tParam param;
+    //only send parameters which are changed
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
 
-    if(m_paramsVals.size() < 1)
+
+#else
+
+#endif
+   
+
+    //check further parameters...
+
+    retValue += setPluginParameters(values, msgLevelWarningAndError);
+
+    return retValue;
+}
+
+
+//------------------------------------------------------------------------------
+void dialogXimea::on_btnFullROI_clicked()
+{
+    if (m_currentParameters.contains("sizex") && m_currentParameters.contains("sizey"))
     {
-        return 0;
+        ui.rangeX->setValues(0, m_currentParameters["sizex"].getMax());
+        ui.rangeY->setValues(0, m_currentParameters["sizey"].getMax());
     }
+}
 
-    QVector<QSharedPointer<ito::ParamBase> > outVector;
+//---------------------------------------------------------------------------------------------------------------------
+void dialogXimea::on_buttonBox_clicked(QAbstractButton* btn)
+{
+    ito::RetVal retValue(ito::retOk);
 
+    QDialogButtonBox::ButtonRole role = ui.buttonBox->buttonRole(btn);
 
-    if((ui.spinBox_bin->isEnabled()))
+    if (role == QDialogButtonBox::RejectRole)
     {
-        int ival = ui.spinBox_bin->value();
-		ival = ival * 101; //1 -> 101, 2 -> 202, 4 -> 404...
-        if((m_paramsVals["binning"].getVal<int>() !=  ival))
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, ival)));
-            binning_changed = true;
-        }
+        reject(); //close dialog with reject
     }
-
-    if(!binning_changed)
+    else if (role == QDialogButtonBox::AcceptRole)
     {
-        int ivalFirst, ivalLast;
-        bool changeX0 = false;
-        bool changeX1 = false;
-        bool changeY0 = false;
-        bool changeY1 = false;
-
-        if(ui.spinBox_x0->isEnabled())
-        {
-            ivalFirst = ui.spinBox_x0->value();
-            if(m_paramsVals["x0"].getVal<int>() !=  ivalFirst)
-            {
-                changeX0 = true;
-            }
-        }
-
-        if(ui.spinBox_x1->isEnabled())
-        {
-            ivalLast = ui.spinBox_x1->value();
-            if(m_paramsVals["x1"].getVal<int>() !=  ivalLast)
-            {
-                changeX1 = true;
-            }
-        }
-
-        if(changeX0 && changeX1)
-        {
-            if(ivalFirst > m_paramsVals["x1"].getVal<int>())
-            {
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ivalLast)));
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, ivalFirst)));
-            }
-            else
-            {
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, ivalFirst)));
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ivalLast)));
-            }
-        }
-        else if(changeX0)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, ivalFirst)));
-        }
-        else if(changeX1)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ivalLast)));
-        }
-
-        if(ui.spinBox_y0->isEnabled())
-        {
-            ivalFirst = ui.spinBox_y0->value();
-            if(m_paramsVals["y0"].getVal<int>() !=  ivalFirst)
-            {
-                changeY0 = true;
-            }
-        }
-
-        if(ui.spinBox_y1->isEnabled())
-        {
-            ivalLast = ui.spinBox_y1->value();
-            if(m_paramsVals["y1"].getVal<int>() !=  ivalLast)
-            {
-                changeY1 = true;
-            }
-        }
-
-        if(changeY0 && changeY1)
-        {
-            if(ivalFirst > m_paramsVals["y1"].getVal<int>())
-            {
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ivalLast)));
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, ivalFirst)));
-            }
-            else
-            {
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, ivalFirst)));
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ivalLast)));
-            }
-        }
-        else if(changeY0)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, ivalFirst)));
-        }
-        else if(changeY1)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ivalLast)));
-        }
-
+        accept(); //AcceptRole
     }
-
-    if(ui.spinBox_gain->isEnabled())
+    else
     {
-        double dval = ui.spinBox_gain->value()/100.0;
-        if(m_paramsVals["gain"].getVal<double>() !=  dval)
+        applyParameters(); //ApplyRole
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void dialogXimea::on_rangeX_valuesChanged(int minValue, int maxValue)
+{
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+    ui.spinSizeX->setValue(maxValue - minValue + 1);
+#else
+    int min_ = minValue;
+    int max_ = maxValue;
+    int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["x0"].getMeta() )->getStepSize();
+    int imageOffset = static_cast<ito::IntMeta*>( m_currentParameters["sizex"].getMeta() )->getStepSize();
+    int maxWidth = static_cast<ito::IntMeta*>( m_currentParameters["x1"].getMeta() )->getMax() + 1;
+
+    if ((min_ % stepOffset) != 0)
+    {
+        min_ = stepOffset * qRound((float)min_ / (float)stepOffset);
+        if (min_ >= max_)
         {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
+            min_ = stepOffset * floor((float)min_ / (float)stepOffset);
         }
     }
+    min_ = qBound<int>(0, min_, max_);
 
-    if(ui.spinBox_offset->isEnabled())
+    if (((max_ - min_ + 1) % imageOffset) != 0)
     {
-        double dval = ui.spinBox_offset->value()/100.0;
-        if(m_paramsVals["offset"].getVal<double>() !=  dval)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, dval)));
-        }
+        max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
+    }
+    
+    max_ = qBound<int>(0, max_, maxWidth-1);
+
+    if (min_ != minValue || max_ != maxValue)
+    {
+        ui.rangeX->setValues(min_,max_);
+    }
+    else
+    {
+        ui.spinSizeX->setValue(maxValue - minValue + 1);
     }
 
-    if(ui.doubleSpinBox_integration_time->isEnabled())
-    {
-        double dval = ui.doubleSpinBox_integration_time->value()/1000.0;
-        if(m_paramsVals["integration_time"].getVal<double>() !=  dval)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
-        }
-    }
-
-    if(ui.doubleSpinBox_frame_time->isEnabled())
-    {
-        double dval = ui.doubleSpinBox_frame_time->value()/1000.0;
-        if(m_paramsVals["frame_time"].getVal<double>() !=  dval)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("frame_time", ito::ParamBase::Double, dval)));
-        }
-    }
-
-    if(ui.combo_bpp->isEnabled())
-    {
-        QVariant qvar = ui.combo_bpp->currentIndex();
-        int bppNew = -1;
-        switch (qvar.toInt())
-        {
-            case 0:
-                bppNew = 8;
-            break;
-            case 1:
-                bppNew = 10;
-            break;
-            case 2:
-                bppNew = 12;
-            break;
-            case 3:
-                bppNew = 14;
-            break;
-            case 4:
-                bppNew = 16;
-            break;
-            case 5:
-                bppNew = 24;
-            break;
-            case 6:
-                bppNew = 30;
-            break;
-            case 7:
-                bppNew = 32;
-            break;
-        }
-        if((bppNew > 0) && (m_paramsVals["bpp"].getVal<int>() !=  bppNew))
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bppNew)));
-        }
-    }
-
-    if(m_Grabber)   // Grabber exists
-    {
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(m_Grabber, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, outVector), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-        while (!locker.getSemaphore()->wait(5000))
-        {
-            if (!m_Grabber->isAlive())
-            {
-                break;
-            }
-        }
-    }
-    return 0;
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void dialogXimea::valuesChanged(QMap<QString, ito::Param> params)
+void dialogXimea::on_rangeY_valuesChanged(int minValue, int maxValue)
 {
-    getVals(&params);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail This function resets the x-size of the ROI to the maximum value!
- *
- * \date    Oct.2011
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogXimea::on_pushButton_setSizeXMax_clicked()
-{
-    int inttemp = 0;
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+    ui.spinSizeY->setValue(maxValue - minValue + 1);
+#else
+    int min_ = minValue;
+    int max_ = maxValue;
+    int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["y0"].getMeta() )->getStepSize();
+    int imageOffset = static_cast<ito::IntMeta*>( m_currentParameters["sizey"].getMeta() )->getStepSize();
+    int maxHeight = static_cast<ito::IntMeta*>( m_currentParameters["y1"].getMeta() )->getMax() + 1;
 
-    inttemp = ui.spinBox_x0->minimum();
-    ui.spinBox_x0->setValue(inttemp);
-
-    inttemp = ui.spinBox_x1->maximum();
-    ui.spinBox_x1->setValue(inttemp);
-
-    ui.spinBox_xsize->update();
-
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail This function resets the y-size of the ROI to the maximum value!
- *
- * \date    Oct.2011
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogXimea::on_pushButton_setSizeYMax_clicked()
-{
-    int inttemp = 0;
-
-    inttemp = ui.spinBox_y1->maximum();
-    ui.spinBox_y1->setValue(inttemp);
-
-    inttemp = ui.spinBox_y0->minimum();
-    ui.spinBox_y0->setValue(inttemp);
-
-    ui.spinBox_ysize->update();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the applyButton is clicked, the bpp and the binning of the attached camera is changed!
- *  Changes of parameters lead to a reload of all camera parameters. Other unapplied values are lost!
- *
- * \date    Oct.2011
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogXimea::on_applyButton_clicked()
-{
-    ui.groupBoxSize->setTitle("Size");
-    ui.groupBoxSize->setEnabled(true);
-    this->sendVals();
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the spinBox for x0 changes its value, the size in X and the minimal x1 changes also
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogXimea::on_spinBox_x0_valueChanged(int value)
-{
-    if(ui.spinBox_x1->value() < value)
+    if ((min_ % stepOffset) != 0)
     {
-        ui.spinBox_x1->setValue(value);
+        min_ = stepOffset * qRound((float)min_ / (float)stepOffset);
+        if (min_ >= max_)
+        {
+            min_ = stepOffset * floor((float)min_ / (float)stepOffset);
+        }
     }
-    ui.spinBox_x1->setMinimum(value);
-    ui.spinBox_xsize->setValue(ui.spinBox_x1->value() - value + 1);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the spinBox for x1 changes its value, the size in X and the maximal x0 changes also
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogXimea::on_spinBox_x1_valueChanged(int value)
-{
-    if(ui.spinBox_x0->value() > value)
-    {
-        ui.spinBox_x0->setValue(value);
-    }
-    ui.spinBox_x0->setMaximum(value);
-    ui.spinBox_xsize->setValue(value - ui.spinBox_x0->value() + 1);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the spinBox for y0 changes its value, the size in Y and the minimal y1 changes also
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogXimea::on_spinBox_y0_valueChanged(int value)
-{
-    if(ui.spinBox_y1->value() < value)
-    {
-        ui.spinBox_y1->setValue(value);
-    }
-    ui.spinBox_y1->setMinimum(value);
-    ui.spinBox_ysize->setValue(ui.spinBox_y1->value() - value + 1);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the spinBox for y0 changes its value, the size in Y and the maximal y0 changes also
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogXimea::on_spinBox_y1_valueChanged(int value)
-{
-    if(ui.spinBox_y0->value() > value)
-    {
-        ui.spinBox_y0->setValue(value);
-    }
-    ui.spinBox_y0->setMaximum(value);
-    ui.spinBox_ysize->setValue(value - ui.spinBox_y0->value() + 1);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the binning is activated, further settings of size will be disabled until apply is pressed
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogXimea::on_spinBox_binX_valueChanged(int value)
-{
-    ui.groupBoxSize->setTitle("Size (Binning changed, press apply or save)");
-    ui.groupBoxSize->setEnabled(false);
+    min_ = qBound<int>(0, min_, max_);
 
-    return;
+    if (((max_ - min_ + 1) % imageOffset) != 0)
+    {
+        max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
+    }
+    
+    max_ = qBound<int>(0, max_, maxHeight - 1);
+
+    if (min_ != minValue || max_ != maxValue)
+    {
+        ui.rangeY->setValues(min_,max_);
+    }
+    else
+    {
+        ui.spinSizeY->setValue(maxValue - minValue + 1);
+    }
+#endif
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the binning is activated, further settings of size will be disabled until apply is pressed
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogXimea::on_spinBox_binY_valueChanged(int value)
-{
-    ui.groupBoxSize->setTitle("Size (Binning changed, press apply or save)");
-    ui.groupBoxSize->setEnabled(false);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+

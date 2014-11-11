@@ -27,6 +27,7 @@
 #include "XimeaFuncsImport.h"
 #include "pluginVersion.h"
 #include "dockWidgetXimea.h"
+#include "dialogXimea.h"
 
 #include "common/sharedFunctionsQt.h"
 
@@ -40,6 +41,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
+#include <qmetaobject.h>
 
 Q_DECLARE_METATYPE(ito::DataObject)
 
@@ -105,31 +107,6 @@ XimeaInterface::~XimeaInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 Q_EXPORT_PLUGIN2(Ximeainterface, XimeaInterface)
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal Ximea::showConfDialog(void)
-{
-    ito::RetVal retValue(ito::retOk);
-
-    dialogXimea *confDialog = new dialogXimea(this);
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-
-    QMetaObject::invokeMethod(this, "sendParameterRequest");
-
-    if (confDialog->exec())
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-        confDialog->sendVals();
-    }
-    else
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    }
-    delete confDialog;
-
-    return retValue;
-}
 //----------------------------------------------------------------------------------------------------------------------------------
 Ximea::Ximea() : 
 	AddInGrabber(),  
@@ -248,7 +225,7 @@ Ximea::Ximea() :
     //now create dock widget for this plugin
     DockWidgetXimea *XI = new DockWidgetXimea(m_params, getID());
 
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), XI, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), XI, SLOT(parametersChanged(QMap<QString, ito::Param>)));
     connect(XI, SIGNAL(OffsetPropertiesChanged(double)), this, SLOT(OffsetPropertiesChanged(double)));
     connect(XI, SIGNAL(GainPropertiesChanged(double)), this, SLOT(GainPropertiesChanged(double)));
     connect(XI, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
@@ -2414,4 +2391,33 @@ void Ximea::activateShadingCorrection(bool enable)
     }
     m_shading.active = enable;
     return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const ito::RetVal Ximea::showConfDialog(void)
+{
+    //ito::RetVal retValue(ito::retOk);
+
+    //dialogXimea *confDialog = new dialogXimea(this);
+	return apiShowConfigurationDialog(this, new dialogXimea(this));
+    
+	/*
+	
+	
+	connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+
+    QMetaObject::invokeMethod(this, "sendParameterRequest");
+
+    if (confDialog->exec())
+    {
+        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+        confDialog->sendVals();
+    }
+    else
+    {
+        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+    }
+    delete confDialog;
+	*/
+    
 }
