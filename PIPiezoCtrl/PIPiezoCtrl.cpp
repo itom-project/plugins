@@ -47,7 +47,6 @@
     #include <iostream>
 #endif
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 //! 
@@ -67,9 +66,6 @@ const ito::RetVal PIPiezoCtrl::showConfDialog(void)
 #endif
     return apiShowConfigurationDialog(this, dialog);
 }
-
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
@@ -177,7 +173,7 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, additionalTag);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
@@ -187,7 +183,7 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
     {
         retValue += ito::RetVal(ito::retError, 0, tr("this motor only has one axis, therefore it is not allowed to get a parameter with index unequal to 0").toLatin1().data());
     }
-    else if(!retValue.containsError())
+    else if (!retValue.containsError())
     {
         if (key == "PI_CMD")
         {
@@ -331,15 +327,15 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     QVector<QPair<int, QByteArray> > lastError;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
@@ -347,7 +343,7 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (key == "PI_CMD")
         {
@@ -386,7 +382,7 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 }
                 else
                 {
-                    retValue += it->copyValueFrom( &(*val) );
+                    retValue += it->copyValueFrom(&(*val));
                 }
             }
             else
@@ -436,7 +432,7 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 break;
             }
         }
-        else if(key == "checkFlags")
+        else if (key == "checkFlags")
         {
             retValue += it->copyValueFrom(&(*val));
 
@@ -465,7 +461,7 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
@@ -478,7 +474,6 @@ ito::RetVal PIPiezoCtrl::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
     return retValue;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Init method which is called by the addInManager after the initiation of a new instance of DummyGrabber.
@@ -619,6 +614,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail close method which is called before that this instance is deleted by the PIPiezoCtrlInterface
     notice that this method is called in the actual thread of this instance.
@@ -813,7 +809,6 @@ ito::RetVal PIPiezoCtrl::getPos(const QVector<int> axis, QSharedPointer<QVector<
     return retval;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
             This function calls PIPiezoCtrl::PISetPos(axis, pos, "ABSOLUTCOMMAND")
@@ -917,6 +912,7 @@ ito::RetVal PIPiezoCtrl::setPosRel(const QVector<int> axis, QVector<double> pos,
     
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
             It sends the current postion and the status to the world.
@@ -959,6 +955,7 @@ ito::RetVal PIPiezoCtrl::requestStatusAndPosition(bool sendCurrentPos, bool send
 
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!
 updates the status flag (if possible). For E662 only the overflow status can be checked, the rest is determined by the movement
 and a guess if the motor reached the target position
@@ -1044,10 +1041,8 @@ ito::RetVal PIPiezoCtrl::PICheckStatus(void)
     return retVal;
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 // 
 
 /*!
@@ -1078,7 +1073,7 @@ ito::RetVal PIPiezoCtrl::PIDummyRead(void) /*!< reads buffer of serial port with
     return ito::retOk;
 }
 
-//--------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutMS)
 {
     ito::RetVal retValue = ito::retOk;
@@ -1178,14 +1173,13 @@ ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutM
     return retValue;
 }
 
-//--------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastErrors)
 {
     bool errorAvailable = true;
     ito::RetVal retValue(ito::retOk);
     int errorNo = std::numeric_limits<int>::max();
     lastErrors.clear();
-
 
 #ifdef GCS2
 
@@ -1302,7 +1296,7 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
                 errorNo = buffer.left(1).toInt();
                 if (errorNo != 0)
                 {
-                    lastErrors.append(QPair<int,QByteArray>(-1001,tr( "unknown error").toLatin1().data()));
+                    lastErrors.append(QPair<int,QByteArray>(-1001,tr("unknown error").toLatin1().data()));
                 }
                 else
                 {
@@ -1316,7 +1310,7 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
     return retValue;
 }
 
-//-----------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::PISendCommand(const QByteArray &command)
 {
     ito::RetVal retVal;
@@ -1339,7 +1333,7 @@ ito::RetVal PIPiezoCtrl::PISendCommand(const QByteArray &command)
     return retVal;
 }
 
-//-----------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string. 
             If string is invalid, val is not set and error-message is reported
@@ -1348,7 +1342,7 @@ ito::RetVal PIPiezoCtrl::PISendCommand(const QByteArray &command)
     \sa PIPiezoCtrl::PIGetDouble
     \return retOk
 */
-ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble( const QByteArray &questionCommand, double &answer, int timeoutMS)
+ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble(const QByteArray &questionCommand, double &answer, int timeoutMS)
 {
     int readSigns;
     QByteArray _answer;
@@ -1373,7 +1367,7 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble( const QByteArray &quest
     return retValue;
 }
 
-//-------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble2(const QByteArray &questionCommand, int axisId, double &answer, int timeoutMS)
 {
     int readSigns;
@@ -1422,7 +1416,7 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble2(const QByteArray &quest
     return retValue;
 }
 
-//-------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail Returns a double value from the device answer stored in buffer. Tries to read an integer value and if this fails a double value from the string. 
             If string is invalid, val is not set and error-message is reported
@@ -1431,7 +1425,7 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerDouble2(const QByteArray &quest
     \param[out] readsigns    Number of read signs
     \return retOk
 */
-ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerString( const QByteArray &questionCommand, QByteArray &answer, int timeoutMS)
+ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerString(const QByteArray &questionCommand, QByteArray &answer, int timeoutMS)
 {
     int readSigns;
     ito::RetVal retValue = PISendCommand(questionCommand);
@@ -1447,7 +1441,7 @@ ito::RetVal PIPiezoCtrl::PISendQuestionWithAnswerString( const QByteArray &quest
     return retValue;
 }
 
-//---------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::convertPIErrorsToRetVal(QVector<QPair<int,QByteArray> > &lastErrors)
 {
     if (lastErrors.size() > 0)
@@ -1466,7 +1460,7 @@ ito::RetVal PIPiezoCtrl::convertPIErrorsToRetVal(QVector<QPair<int,QByteArray> >
     return ito::retOk;
 }
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 {
     ito::RetVal retval = ito::retOk;
@@ -1486,6 +1480,7 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",ito::ParamBase::Int,1)),NULL);
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,108)),NULL);
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\n")),NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("debugIgnoreEmpty",ito::ParamBase::Int,1)),NULL);
     }
 #endif
 
@@ -1695,8 +1690,6 @@ ito::RetVal PIPiezoCtrl::PISetOperationMode(bool localNotRemote)
     return retValue;
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm. 
             If the axisnumber is not 0, this function returns an error.
@@ -1789,7 +1782,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
                 retval += waitForDone(delayTimeMS, QVector<int>(1,axis)); //WaitForAnswer(60000, axis);
             }
 
-			if(m_getStatusInScan)
+			if (m_getStatusInScan)
 			{
 				retval += PIGetLastErrors(lastErrors);
 				retval += convertPIErrorsToRetVal(lastErrors);
@@ -1826,7 +1819,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*axis*/ /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
 {
     ito::RetVal retVal(ito::retOk);
@@ -1890,12 +1883,12 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
 
     replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorAtTarget);
 
-    if(m_getStatusInScan)
+    if (m_getStatusInScan)
     {
         retVal += PICheckStatus();
     }
 
-    if(m_getPosInScan)
+    if (m_getPosInScan)
     {
         retVal += getPos(0, actPos, NULL);
     }
@@ -1908,9 +1901,7 @@ ito::RetVal PIPiezoCtrl::waitForDone(const int timeoutMS, const QVector<int> /*a
     return retVal;
 }
 
-
-
-//---------------------------------------------------------------------------------------------------------------------------------- 
+//----------------------------------------------------------------------------------------------------------------------------------
 void PIPiezoCtrl::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
