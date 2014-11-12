@@ -1275,9 +1275,10 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             // Camera-exposure is set in µsec, itom uses s
             integration_time = (int)(m_params["integration_time"].getVal<double>() * 1000000);
             trigger_mode = m_params["trigger_mode"].getVal<int>();
+#ifndef USE_OLD_API
             trigger_mode2 = m_params["trigger_mode2"].getVal<int>();
 
-#ifndef USE_OLD_API
+
             timing_mode = m_params["timing_mode"].getVal<int>();
 #endif
 
@@ -1290,12 +1291,12 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 retValue += getErrStr(ret);
             if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);
+#ifndef USE_OLD_API
 
             // Though in api the dll reports not supported ...
-            //if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
-            //    retValue += getErrStr(ret);
+            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);
 
-#ifndef USE_OLD_API
             if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);
 #endif

@@ -595,7 +595,7 @@ ito::RetVal DemoAlgorithms::demoTestActuator(QVector<ito::ParamBase> *paramsMand
 
 
 
-    if(retval.containsError())
+    if(!retval.containsError())
     {
         // Get current time
         starttime = (double)(cv::getTickCount())/cv::getTickFrequency();
