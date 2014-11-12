@@ -1509,8 +1509,17 @@ ito::RetVal Ximea::startDevice(ItomSharedSemaphore *waitCond)
 
     if(grabberStartedCount() < 1)
     {
-        setGrabberStarted(0);
+        int mode = XI_GPO_EXPOSURE_ACTIVE;
+        int pin = 1;
         XI_RETURN ret;
+        ret = pxiSetParam(m_handle, XI_PRM_GPO_SELECTOR, &pin, sizeof(int), xiTypeInteger);
+        if (ret)
+            retValue += getErrStr(ret);
+        ret = pxiSetParam(m_handle, XI_PRM_GPO_MODE, &mode, sizeof(int), xiTypeInteger);
+        if (ret)
+            retValue += getErrStr(ret);
+        setGrabberStarted(0);
+        
         ret = pxiStartAcquisition(m_handle);
         if (ret)
             retValue += getErrStr(ret);
@@ -1579,17 +1588,16 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         XI_RETURN ret;
         if(m_isgrabbing & Ximea::grabberGrabbed)
         {
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal. This acquire was ignored.").toLatin1().data());
+            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal.").toLatin1().data());
         }
-        else
+
+        if (triggermode == XI_TRG_SOFTWARE)
         {
-            if (triggermode == XI_TRG_SOFTWARE)
+            int val = 1;
+            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, &val, sizeof(int), xiTypeInteger))) //TODO: isn't it necessary to set the value to XI_TRG_SOFTWARE here?
             {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, 0, sizeof(int), xiTypeInteger))) //TODO: isn't it necessary to set the value to XI_TRG_SOFTWARE here?
-                {
-                    retValue += getErrStr(ret); 
-                    m_acqRetVal += retValue;
-                }
+                retValue += getErrStr(ret); 
+                m_acqRetVal += retValue;
             }
         }
 
@@ -1614,7 +1622,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             m_acqRetVal += retValue;
             m_isgrabbing |= Ximea::grabberGrabError;
         }
-        if(m_shading.active)
+        if(m_shading.active && ret == 0)
         {
             ito::uint16* ptrSub = m_shading.sub;
             ito::uint16* ptrMul = m_shading.mul;
@@ -2132,7 +2140,7 @@ void Ximea::activateShadingCorrection(bool enable)
 {
     if(!m_shading.valid)
     {
-        m_shading.active == false;
+        m_shading.active = false;
         return;
     }
     m_shading.active = enable;
