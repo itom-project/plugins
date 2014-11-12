@@ -998,7 +998,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         }
         else if (QString::compare(key, "gain", Qt::CaseInsensitive) == 0)
         {
-			//float gain = (int)(val->getVal<double>() * 10 + 0.5);
+
 			float gain = val->getVal<double>();
             retValue += getErrStr(pxiSetParam(m_handle, XI_PRM_GAIN, &gain, sizeof(float), xiTypeFloat));
 			if (!retValue.containsError())
@@ -1394,6 +1394,17 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			m_params["framerate"].setVal<double>(framerate);
 			m_params["framerate"].setMeta(new ito::DoubleMeta(framerate_min, framerate_max, framerate_inc), true);
 
+			/* //need new API
+			//sets offset of black_level
+			int offset, offset_min, offset_max, offset_inc;
+			retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_IMAGE_BLACK_LEVEL, &offset, &intSize, &intType));
+			retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_IMAGE_BLACK_LEVEL XI_PRM_INFO_MIN, &offset_min, &intSize, &intType));
+			retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_IMAGE_BLACK_LEVEL XI_PRM_INFO_MAX, &offset_max, &intSize, &intType));
+			retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_IMAGE_BLACK_LEVEL XI_PRM_INFO_INCREMENT, &offset_inc, &intSize, &intType));
+			m_params["offset"].setVal<double>(offset);
+			m_params["offset"].setMeta(new ito::DoubleMeta(offset_min, offset_max, offset_inc), true);
+			*/
+			
 			//sets gamma value interval
 			float gamma, gamma_min, gamma_max, gamma_inc;
 			retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_GAMMAY, &gamma, &floatSize, &floatType));
@@ -1601,6 +1612,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			m_params["y1"].setMeta(new ito::IntMeta(offset_y + sizeMin_y - 1, sizeMax_y - 1, sizeInc_y), true);
 			m_params["sizey"].setVal<int>(size_y);
 			m_params["sizey"].setMeta(new ito::IntMeta(sizeMin_y, sizeMax_y, sizeInc_y), true); 
+
+
         
 
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
