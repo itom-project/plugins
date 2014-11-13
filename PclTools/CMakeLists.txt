@@ -62,6 +62,7 @@ IF(ITOM_SDK_PCL_SUPPORT)
             ${QT_QTCORE_INCLUDE_DIR}
             ${OpenCV_DIR}/include
             ${PCL_INCLUDE_DIRS}
+            ${BOOST_INCLUDE_DIRS}
             ${ITOM_SDK_INCLUDE_DIRS}
             ${VISUALLEAKDETECTOR_INCLUDE_DIR}
             ${EIGEN_INCLUDE_DIR}
@@ -72,6 +73,7 @@ IF(ITOM_SDK_PCL_SUPPORT)
         LINK_DIRECTORIES(
             ${VTK_DIR} #this linker dir is necessary, since VTK_INSTALL_EXPORT_NAME is set to 1 above, such that VTK does not directly include all its dependencies.
             ${VTK_LIBRARY_DIRS}
+            ${BOOST_LIBRARY_DIRS}
         )
 
         set(plugin_HEADERS
@@ -84,9 +86,16 @@ IF(ITOM_SDK_PCL_SUPPORT)
 
         set(plugin_UI
         )
+        
+        set(plugin_RCC
+        )
 
         set(plugin_SOURCES 
             ${CMAKE_CURRENT_SOURCE_DIR}/pclTools.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/implIncludes.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFit.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFitGeneric.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/pclProjectInliers.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/random_sample_corrected.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pcl/filters/impl/cylinder_clipper3D.hpp
         )
@@ -96,22 +105,22 @@ IF(ITOM_SDK_PCL_SUPPORT)
             list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
         endif(MSVC)
 
-		if (QT5_FOUND)
-			#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-			QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-			QT5_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
-		else (QT5_FOUND)
-			QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-			QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-			QT4_ADD_RESOURCES(designer_rcc_MOC ${plugin_RCC})
-		endif (QT5_FOUND)
+        if (QT5_FOUND)
+            #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+            QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+            QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+        else (QT5_FOUND)
+            QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+            QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+            QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+        endif (QT5_FOUND)
 
         file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
         #handle translations END STEP 1
 
         ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
         
-		TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES})
         if (QT5_FOUND)
             qt5_use_modules(${target_name} Widgets UiTools)
         endif (QT5_FOUND)

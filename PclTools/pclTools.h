@@ -31,6 +31,10 @@
     #define USEOMP 0
 #endif
 
+#define CIRCLE3D_LIMIT_NORMAL 0
+#define PLANE_LIMIT_NORMAL 0
+#define CONE_LIMIT_NORMAL 0
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class PclToolsInterface
 *   @brief short description
@@ -210,6 +214,7 @@ class PclTools : public ito::AddInAlgo
 
     protected:
         //static int savePolygonFileSTLB(const std::string &file_name, const pcl::PolygonMesh& mesh);
+		static int nthreads;
 
     private:
         Q_DISABLE_COPY( PclTools )
