@@ -91,10 +91,6 @@ IF(XIMEA_APIDIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     )
-<<<<<<< HEAD
-	
-	set(plugin_SOURCES 
-=======
 
     if (NOT QT5_FOUND)
         QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
@@ -112,43 +108,22 @@ IF(XIMEA_APIDIR)
     endif (QT5_FOUND)
 
     set(plugin_SOURCES 
->>>>>>> master
+
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.cpp
     )
 
-    set(plugin_UI
-        ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.ui
-    )
-	
-	set(plugin_RCC
-		#add absolute pathes to any *.qrc resource files here
-	)
-	
-	#Add version information to the plugIn-dll unter MSVC
+
     if(MSVC)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)
-	
-	if (QT5_FOUND)
-		#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-		QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-		QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-	else (QT5_FOUND)
-		QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-		QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-		QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-	endif (QT5_FOUND)
 
-<<<<<<< HEAD
-=======
     #handle translations BEGIN STEP 1
     set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
     set (TRANSLATION_OUTPUT_FILES)
     set (TRANSLATIONS_FILES)
->>>>>>> master
+
 
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
