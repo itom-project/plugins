@@ -61,7 +61,7 @@ void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		int binning = params["binning"].getVal<int>();
 		ito::IntMeta *binningMeta = static_cast<ito::IntMeta*>(params["binning"].getMeta());
 		ui.combo_bin->clear();
-		for(int i = binningMeta->getMin(); i <= binningMeta->getMax(); i+=2)
+		for(int i = binningMeta->getMin(); i <= binningMeta->getMax(); i+=101)
 		{
 			ui.combo_bin->addItem(QString("%1").arg(i), i);
 		}
@@ -100,9 +100,6 @@ void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		ui.sliderWidget_Offset->setSingleStep(offset->getStepSize());
 		ui.sliderWidget_Offset->setValue(params["offset"].getVal<int>());
 		ui.sliderWidget_Offset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));
-
-		//offset works not with old API
-		ui.sliderWidget_Offset->setEnabled(false);
 
 		ito::DoubleMeta *gain = static_cast<ito::DoubleMeta*>(params["gain"].getMeta());
 		ui.sliderWidget_Gain->setMinimum(gain->getMin());

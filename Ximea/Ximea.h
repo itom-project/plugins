@@ -141,6 +141,12 @@ class Ximea : public ito::AddInGrabber
         HANDLE m_handle;
 #endif
 
+#if linux
+    void *ximeaLib;
+#else
+    HMODULE ximeaLib;
+#endif
+
         void* m_pvShadingSettings;
 
         SoftwareShading m_shading;
