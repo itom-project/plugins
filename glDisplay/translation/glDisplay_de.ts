@@ -188,7 +188,7 @@
 <context>
     <name>GLDisplay</name>
     <message>
-        <location filename="../glDisplay.cpp" line="+159"/>
+        <location filename="../glDisplay.cpp" line="+176"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -273,7 +273,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+100"/>
         <source>insufficient gray values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -286,7 +286,7 @@
 <context>
     <name>GLDisplayInterface</name>
     <message>
-        <location line="-652"/>
+        <location line="-645"/>
         <source>Frameless window to display images using OpenGL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -312,12 +312,12 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>height of window</source>
+        <source>height of window, if 0 (default) the window is positioned in the second screen or gets a default width of 100px if no second screen is available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>width of window</source>
+        <source>width of window, if 0 (default) the window is positioned in the second screen or gets a default height of 100px if no second screen is available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

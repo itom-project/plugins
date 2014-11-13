@@ -78,15 +78,15 @@ if (NOT QT5_FOUND)
     QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
 endif (NOT QT5_FOUND)
 
-set(plugin_ui
+set(plugin_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogLeicaMotorFocus.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLeicaMotorFocus.ui
 )
 
 if (QT5_FOUND)
-    QT5_WRAP_UI(plugin_UI_MOC ${plugin_ui})
+    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
 else (QT5_FOUND)
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_ui})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
 endif (QT5_FOUND)
 
 set(plugin_SOURCES 
@@ -101,7 +101,6 @@ if(MSVC)
 endif(MSVC)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-#handle translations END STEP 1
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 

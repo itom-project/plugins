@@ -16,7 +16,7 @@
         <translation type="obsolete">Fittet eine Ebene im 2D-Datenobjekt und subtrahiert diese Ebene vom Datenobjekt -&gt; dies ist eine Kombination von &apos;fitPlane&apos; und &apos;subtractPlane&apos;</translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="+1005"/>
+        <location filename="../fittingfilters.cpp" line="+1589"/>
         <source>fits 2D-polynomial in 2D-dataObject and returns a double-DataObject with the fitted surface as well as an error value sigma</source>
         <translation>Fittet ein 2D-Polynom n-ter Ordnung in ein 2D-Datenobjekt und gibt ein &apos;Double&apos;-Datenobjekt mit den gefitteten Daten und der mittleren Abweichung (sigma-Wert) zurück</translation>
     </message>
@@ -26,15 +26,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-866"/>
-        <location line="+75"/>
+        <location filename="../fittingfilters.cpp" line="-1461"/>
+        <location line="+135"/>
         <location line="+109"/>
         <location filename="../polyfit2d.cpp" line="+7"/>
         <source>source image data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-107"/>
+        <location line="-242"/>
+        <source>fitting method (leastSquareFit [default], leastSquareFitSVD, leastMedianFit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <location line="+644"/>
+        <source>probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-643"/>
+        <location line="+644"/>
+        <source>allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-516"/>
         <source>Parameter A of regression plane z = A + Bx + Cy, which is subtracted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -49,20 +66,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-57"/>
-        <location line="+74"/>
-        <location filename="../polyfit2d.cpp" line="+34"/>
+        <location line="+17"/>
         <source>Error: source image must be two-dimensional.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-94"/>
-        <location line="+185"/>
+        <location line="+91"/>
         <source>fitting method (leastSquareFit [default], leastSquareFitSVD)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-183"/>
+        <location line="+400"/>
+        <source>LeastSquares (default), LMedS (Least median of squares)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-636"/>
         <source>Parameter A of regression plane z = A + Bx + Cy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -77,26 +96,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+74"/>
-        <location filename="../polyfit2d.cpp" line="+5"/>
+        <location line="+148"/>
         <source>source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-69"/>
-        <source>the chosen method is unknown</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+44"/>
+        <location line="-25"/>
         <location line="+109"/>
         <source>destination image data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-79"/>
-        <location filename="../polyfit2d.cpp" line="+5"/>
+        <location filename="../polyfit2d.cpp" line="+55"/>
         <source>destination matrix is NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -121,7 +133,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-83"/>
+        <location line="-94"/>
         <source>destination data object with fitted values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -146,7 +158,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+162"/>
         <source>2:  gradX und gradY =0, Funktion abgebrochen</source>
         <translation type="unfinished"></translation>
     </message>
@@ -177,21 +189,13 @@
     </message>
 </context>
 <context>
-    <name>FittingFiltersInterface</name>
-    <message>
-        <location filename="../fittingfilters.cpp" line="-622"/>
-        <source>plugin-instance cannot be converted to class FittingFilters. Close operation failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>QObject</name>
     <message>
         <source>Filter-Plugin for fitting-methods.</source>
         <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location filename="../fittingfilters.cpp" line="-673"/>
         <source>Plugin with fitting algorithms.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -209,7 +213,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

@@ -140,7 +140,7 @@
 <context>
     <name>MSMediaFoundation</name>
     <message>
-        <location filename="../MSMediaFoundation.cpp" line="+173"/>
+        <location filename="../MSMediaFoundation.cpp" line="+174"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -436,12 +436,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-47"/>
+        <location line="-48"/>
         <source>MSMediaFoundation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+28"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>

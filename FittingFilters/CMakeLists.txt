@@ -101,12 +101,12 @@ if (NOT QT5_FOUND)
     QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
 endif (NOT QT5_FOUND)
 
-set(plugin_ui
+set(plugin_UI
 )
 
 if (QT5_FOUND)
 else (QT5_FOUND)
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_ui})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
 endif (QT5_FOUND)
 
 set(plugin_SOURCES 

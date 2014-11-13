@@ -4,31 +4,195 @@
 <context>
     <name>AerotechA3200</name>
     <message>
-        <location filename="../aerotechA3200.cpp" line="+125"/>
+        <location filename="../aerotechA3200.cpp" line="+123"/>
         <source>asynchronous move (1), synchronous (0) [default]</source>
         <translation>Asynchrone Fahrt (1), synchrone Fahrt (0) [Voreinstellung]</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+4"/>
+        <source>scale factor of connected controller, counts per metric unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>reset the offsets to zero, back to absolute coordinate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>check if the motion of every axis is finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>executes an immediate stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>acknowledge the errors of connected controller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>check if x-axis is enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>check if y-axis is enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>check if z-axis is enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>speed of every axis</source>
         <translation>Geschwindigkeit jeder Achse</translation>
     </message>
     <message>
-        <location line="+450"/>
+        <location line="+59"/>
+        <source>A3200 error: %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <location line="+34"/>
+        <source>The axis number %i is not supported. Allowed range [0, 3]</source>
+        <translation type="unfinished">Achsennummer %i wird nicht unterstützt. Erlaubter Bereich [0, 9] {0, 3]?}</translation>
+    </message>
+    <message>
+        <location line="+322"/>
         <source>any axis is moving. Parameters cannot be set</source>
         <translation>Eine Achse verfährt gerade. Die Einstellungen konnten nicht geändert werden</translation>
+    </message>
+    <message>
+        <location line="+121"/>
+        <location line="+215"/>
+        <location line="+110"/>
+        <location line="+394"/>
+        <source>Aerotech 3200 Handle is NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-129"/>
+        <source>Position error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Over current</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>CW EOT limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>CCW EOT limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>CW soft limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>CCW soft limit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Amplifier fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Position fbk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Velocity fbk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Hall fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Max velocity cmd</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>ESTOP fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Velocity error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Task fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Probe fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Auxiliary fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Safe zone fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Motor temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Amplifier temp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Ext encoder fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Comm lost fault</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>not supported yet</source>
         <translation type="obsolete">Momentan nicht unterstützt</translation>
     </message>
     <message>
-        <location line="+184"/>
+        <location line="-569"/>
         <source>motor is running. Further action is not possible</source>
         <translation>Motor läuft gerade. Ausführung nicht möglich</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+67"/>
         <source>axis index is out of bound</source>
         <translation>Achsenindex liegt außerhalb des zulässigen Bereichs</translation>
     </message>
@@ -38,45 +202,41 @@
         <translation>Ein Achsenindex liegt außerhalb des zulässigen Bereichs</translation>
     </message>
     <message>
-        <location line="-186"/>
-        <location line="+216"/>
-        <location line="+88"/>
+        <location line="-185"/>
+        <location line="+215"/>
+        <location line="+110"/>
         <source>Any motor axis is moving. The motor is locked.</source>
         <translation>Ein Motor verfährt gerade. Der Motor ist geblockt.</translation>
     </message>
     <message>
-        <location line="-798"/>
         <source>A3200 error %i: %s</source>
-        <translation>A3200-Fehler %i: %s</translation>
+        <translation type="obsolete">A3200-Fehler %i: %s</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="-822"/>
         <source>Unknown A3200 error since the error message was too long</source>
         <translation>Unbekannter A3200-Fehler. Die Fehlermeldung war zu lang</translation>
     </message>
     <message>
-        <location line="+46"/>
-        <location line="+55"/>
         <source>The axis number %i is not supported. Allowed range [0, 9]</source>
-        <translation>Achsennummer %i wird nicht unterstützt. Erlaubter Bereich [0, 9]</translation>
+        <translation type="obsolete">Achsennummer %i wird nicht unterstützt. Erlaubter Bereich [0, 9]</translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="+47"/>
         <source>axis index %i is out of boundary [0, %i]</source>
         <translation>Achsenindex %i liegt außerhalb des aktuellen Bereichs [0, %i]</translation>
     </message>
     <message>
-        <location line="+79"/>
         <source>Please make sure that only one controller is configured and connected</source>
-        <translation>Bitte stellen Sie sicher, dass nur ein Controller angeschlossen und konfiguriert wurde</translation>
+        <translation type="obsolete">Bitte stellen Sie sicher, dass nur ein Controller angeschlossen und konfiguriert wurde</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+114"/>
         <source>Not all desired axes are connected to the controller (desired: %i, available: %i)</source>
         <translation>Nicht alle angeforderten Achsen sind mit dem Controller verbunden (angefordert: %i, verfügbar: %i)</translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+255"/>
         <source>given index is out of boundary</source>
         <translation>Übergebener Index liegt außerhalb des aktuellen Bereichs</translation>
     </message>
@@ -96,19 +256,16 @@
         <translation>Länge des übergebenen Double-Arrays muss mit der Anzahl der Achsen übereinstimmen</translation>
     </message>
     <message>
-        <location line="+53"/>
-        <location line="+216"/>
-        <location line="+88"/>
         <source>Aerotech A3200 Handle is NULL</source>
-        <translation>Aerotech A3200-Handle ist NULL</translation>
+        <translation type="obsolete">Aerotech A3200-Handle ist NULL</translation>
     </message>
     <message>
-        <location line="-215"/>
+        <location line="+160"/>
         <source>axis %i is not enabled</source>
         <translation>Achse %i wurde nicht aktiviert</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+353"/>
         <source>interrupt occurred</source>
         <translation>Unterbrechung aufgetreten</translation>
     </message>
@@ -118,107 +275,7 @@
         <translation>Zeitüberschreitung aufgetreten</translation>
     </message>
     <message>
-        <location line="+98"/>
-        <source>The absolute value of the difference between the position command and the position feedback exceeded the threshold specified by the PositionErrorThreshold parameter.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The average motor current exceeded the threshold specified by the AverageCurrentThreshold and AverageCurrentTime parameters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The axis encountered the clockwise (positive) end-of-travel limit switch.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The axis encountered the counter-clockwise (negative) end-of-travel limit switch.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The axis was commanded to move beyond the position specified by the SoftwareLimitHigh parameter.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The axis was commanded to move beyond the position specified by the SoftwareLimitLow parameter.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The amplifier for this axis exceeded its maximum current rating or experienced an internal error.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The drive detected a problem with the feedback device specified by the PositionFeedbackType and PositionFeedbackChannel parameters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The drive detected a problem with the feedback device specified by the VelocityFeedbackType and VelocityFeedbackChannel parameters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The drive detected an invalid state (all high or all low) for the Hall-effect sensor inputs on this axis.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The commanded velocity is more than the velocity command threshold. Before the axis is homed, this threshold is specified by the VelocityCommandThresholdBeforeHome parameter. After the axis is homed, this threshold is specified by the VelocityCommandThreshold parameter.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The emergency stop sense input, specified by the ESTOPFaultInput parameter, was triggered.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The absolute value of the difference between the velocity command and the velocity feedback exceeded the threshold specified by the VelocityErrorThreshold parameter.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The external fault input, specified by the ExternalFaultAnalogInput or ExternalFaultDigitalInput parameters, was triggered.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The motor thermistor input was triggered, which indicates that the motor exceeded its maximum recommended operating temperature.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The amplifier exceeded its maximum recommended operating temperature.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The encoder fault input on the motor feedback connector was triggered.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>One or more of the drives on the network lost communications with the controller.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The difference between the position feedback and the scaled (adjusted by GainKv) velocity feedback exceeds the threshold specified by the PositionErrorThreshold parameter.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>The distance that the axis moved while searching for the marker exceeded the threshold specified by the MarkerSearchThreshold parameter in axis %1 (%2).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+169"/>
         <source>Unknown axisFault value: %1 in axis %2 (%3)</source>
         <translation>Unbekannter Fehlerwert %1 bei Achse %2 (%3)</translation>
     </message>
@@ -226,9 +283,13 @@
 <context>
     <name>AerotechA3200Interface</name>
     <message>
-        <location line="-1213"/>
         <source>list of axes IDs that are enabled (0..9). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]</source>
-        <translation>Liste der aktiven Achsen-IDs (0..9). Die erste ID entspricht dem Index 0, die zweite ID Index 1,... [Voreinstellung: Leere Liste, alle möglichen Achsen werden verbunden]</translation>
+        <translation type="obsolete">Liste der aktiven Achsen-IDs (0..9). Die erste ID entspricht dem Index 0, die zweite ID Index 1,... [Voreinstellung: Leere Liste, alle möglichen Achsen werden verbunden]</translation>
+    </message>
+    <message>
+        <location line="-1283"/>
+        <source>list of axes IDs that are enabled (0..2). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]</source>
+        <translation type="unfinished">Liste der aktiven Achsen-IDs (0..9). Die erste ID entspricht dem Index 0, die zweite ID Index 1,... [Voreinstellung: Leere Liste, alle möglichen Achsen werden verbunden] {0..2)?} {0,?} {1.?}</translation>
     </message>
 </context>
 <context>
@@ -302,7 +363,7 @@
     </message>
     <message>
         <location/>
-        <location filename="../dockWidgetAerotechA3200.cpp" line="+104"/>
+        <location filename="../dockWidgetAerotechA3200.cpp" line="+126"/>
         <location line="+13"/>
         <source>mm</source>
         <translation></translation>
@@ -351,14 +412,14 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../aerotechA3200.cpp" line="-12"/>
+        <location filename="../aerotechA3200.cpp" line="-13"/>
         <source>Plugin for the A3200-controller of Aerotech</source>
         <translation>Plugin des A3200-Controllers von Aerotech</translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>Licensed under LGPL, The Aerotech A3200 library belongs to Aerotech under their specific license.</source>
-        <translation></translation>
+        <source>Licensed under LGPL, The Aerotech A3200 library belongs to Aerotech under their specific license (accessible by their free FTP server).</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -419,7 +480,7 @@
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../dialogAerotechA3200.cpp" line="+34"/>
+        <location filename="../dialogAerotechA3200.cpp" line="+56"/>
         <source>Speed</source>
         <translation>Geschwindigkeit</translation>
     </message>
@@ -456,101 +517,21 @@
     </message>
 </context>
 <context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="+687"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location line="+92"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+986"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
         <source>function execution unused in this plugin</source>
-        <translation>Diese Funktion wurde im Plugin nicht benutzt</translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+147"/>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Diese Funktion wurde im Plugin nicht benutzt</translation>
     </message>
 </context>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>timer could not be set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
         <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished">Das Objekt konnte nicht aus der Listener-Liste gelöscht werden</translation>
+        <translation type="obsolete">Das Objekt konnte nicht aus der Listener-Liste gelöscht werden</translation>
     </message>
     <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
         <source>not implemented</source>
-        <translation type="unfinished">nicht implementiert</translation>
+        <translation type="obsolete">nicht implementiert</translation>
     </message>
 </context>
 </TS>

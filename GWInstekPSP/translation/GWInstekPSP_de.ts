@@ -30,26 +30,6 @@
     </message>
     <message>
         <location/>
-        <source>Voltage</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source> V</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Load</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source> W</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>Limit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -60,7 +40,27 @@
     </message>
     <message>
         <location/>
+        <source> W</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
         <source>Current</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source> V</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Voltage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -77,7 +77,7 @@
 <context>
     <name>GWInstekPSP</name>
     <message>
-        <location filename="../GWInstekPSP.cpp" line="+206"/>
+        <location filename="../GWInstekPSP.cpp" line="+193"/>
         <source>Undefined answer from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -258,6 +258,11 @@
 <context>
     <name>dialogGWInstekPSP</name>
     <message>
+        <location filename="../dialogGWInstekPSP.cpp" line="+44"/>
+        <source>Configuration Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../dialogGWInstekPSP.ui"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
@@ -352,16 +357,11 @@
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../dialogGWInstekPSP.cpp" line="+44"/>
-        <source>Configuration Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

@@ -4,7 +4,7 @@
 <context>
     <name>AerotechEnsemble</name>
     <message>
-        <location filename="../aerotechEnsemble.cpp" line="+150"/>
+        <location filename="../aerotechEnsemble.cpp" line="+135"/>
         <source>asynchronous move (1), synchronous (0) [default]</source>
         <translation>Asynchrone Fahrt (1), synchrone Fahrt (0) [Voreinstellung]</translation>
     </message>
@@ -458,7 +458,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

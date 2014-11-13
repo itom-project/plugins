@@ -1521,9 +1521,54 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			    retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_BPC, &badpix, &intSize, &intType));
 			    m_params["badPixel"].setVal(badpix);
             }
+<<<<<<< HEAD
 
 		    //sets ROI values
             if (!retValue.containsError())
+=======
+            paramListXML.clear();
+        }
+
+        if (!retValue.containsError())
+        {
+            // Camera-exposure is set in µsec, itom uses s
+            integration_time = (int)(m_params["integration_time"].getVal<double>() * 1000000);
+            trigger_mode = m_params["trigger_mode"].getVal<int>();
+#ifndef USE_OLD_API
+            trigger_mode2 = m_params["trigger_mode2"].getVal<int>();
+
+
+            timing_mode = m_params["timing_mode"].getVal<int>();
+#endif
+
+            framerate = m_params["framerate"].getVal<double>();
+
+            gamma = m_params["gamma"].getVal<double>();
+            sharpness = m_params["sharpness"].getVal<double>();
+
+            if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);
+            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);
+#ifndef USE_OLD_API
+
+            // Though in api the dll reports not supported ...
+            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);
+
+            if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
+                retValue += getErrStr(ret);
+#endif
+            // Though in api the dll reports not supported ...
+    //        if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &framerate, sizeof(float), xiTypeFloat)))
+    //            retValue += getErrStr(ret);
+            if ((ret = pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat)))
+                retValue += getErrStr(ret);
+            if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
+                retValue += getErrStr(ret); 
+
+            switch (m_params["bpp"].getVal<int>())
+>>>>>>> master
             {
 			    //TODO: why should the default values of x0,x1,y0,y1 be set to the camera without knowning the size and abilities of the chip?
 			    //why not asking the chip for its current roi and adapting x0,x1,y0,y1 depending on this? therefore we uncommented the following part
@@ -1741,8 +1786,17 @@ ito::RetVal Ximea::startDevice(ItomSharedSemaphore *waitCond)
 
     if(grabberStartedCount() < 1)
     {
-        setGrabberStarted(0);
+        int mode = XI_GPO_EXPOSURE_ACTIVE;
+        int pin = 1;
         XI_RETURN ret;
+        ret = pxiSetParam(m_handle, XI_PRM_GPO_SELECTOR, &pin, sizeof(int), xiTypeInteger);
+        if (ret)
+            retValue += getErrStr(ret);
+        ret = pxiSetParam(m_handle, XI_PRM_GPO_MODE, &mode, sizeof(int), xiTypeInteger);
+        if (ret)
+            retValue += getErrStr(ret);
+        setGrabberStarted(0);
+        
         ret = pxiStartAcquisition(m_handle);
         if (ret)
             retValue += getErrStr(ret);
@@ -1811,17 +1865,16 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         XI_RETURN ret;
         if(m_isgrabbing & Ximea::grabberGrabbed)
         {
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal. This acquire was ignored.").toLatin1().data());
+            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal.").toLatin1().data());
         }
-        else
+
+        if (triggermode == XI_TRG_SOFTWARE)
         {
-            if (triggermode == XI_TRG_SOFTWARE)
+            int val = 1;
+            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, &val, sizeof(int), xiTypeInteger))) //TODO: isn't it necessary to set the value to XI_TRG_SOFTWARE here?
             {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, 0, sizeof(int), xiTypeInteger))) //TODO: isn't it necessary to set the value to XI_TRG_SOFTWARE here?
-                {
-                    retValue += getErrStr(ret); 
-                    m_acqRetVal += retValue;
-                }
+                retValue += getErrStr(ret); 
+                m_acqRetVal += retValue;
             }
         }
 
@@ -1846,7 +1899,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             m_acqRetVal += retValue;
             m_isgrabbing |= Ximea::grabberGrabError;
         }
-        if(m_shading.active)
+        if(m_shading.active && ret == 0)
         {
             ito::uint16* ptrSub = m_shading.sub;
             ito::uint16* ptrMul = m_shading.mul;

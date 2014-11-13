@@ -138,6 +138,16 @@
     </message>
     <message>
         <location/>
+        <source>Axis:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
         <source>Positioning</source>
         <translation type="unfinished"></translation>
     </message>
@@ -183,7 +193,7 @@
     </message>
     <message>
         <location/>
-        <source>Refresh</source>
+        <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -193,24 +203,14 @@
     </message>
     <message>
         <location/>
-        <source>Start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Axis:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1</source>
+        <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>LeicaMotorFocus</name>
     <message>
-        <location filename="../LeicaMotorFocus.cpp" line="+309"/>
+        <location filename="../LeicaMotorFocus.cpp" line="+298"/>
         <source>Unexspected #(17) at first sign in buffer. Sign deleted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -391,16 +391,6 @@
     <name>dialogLeicaMotorFocus</name>
     <message>
         <location filename="../dialogLeicaMotorFocus.ui"/>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>Leica Motor Focus - Configuration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -469,11 +459,21 @@
         <source>set current position as origin</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location/>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

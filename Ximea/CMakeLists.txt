@@ -91,8 +91,28 @@ IF(XIMEA_APIDIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     )
+<<<<<<< HEAD
 	
 	set(plugin_SOURCES 
+=======
+
+    if (NOT QT5_FOUND)
+        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+    endif (NOT QT5_FOUND)
+
+    set(plugin_UI
+        ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.ui
+    )
+
+    if (QT5_FOUND)
+        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+    else (QT5_FOUND)
+        QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+    endif (QT5_FOUND)
+
+    set(plugin_SOURCES 
+>>>>>>> master
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.cpp
@@ -122,6 +142,13 @@ IF(XIMEA_APIDIR)
 		QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 	endif (QT5_FOUND)
 
+<<<<<<< HEAD
+=======
+    #handle translations BEGIN STEP 1
+    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+    set (TRANSLATION_OUTPUT_FILES)
+    set (TRANSLATIONS_FILES)
+>>>>>>> master
 
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 

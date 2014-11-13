@@ -25,6 +25,7 @@
 
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
+#include "common/abstractAddInConfigDialog.h"
 
 #include "ui_dialogPIPiezoCtrl.h"
 
@@ -37,26 +38,29 @@
 
 namespace ito
 {
-    class AddInActuator; //forward declaration
+    class AddInBase; //forward declaration
 }
 
-class DialogPIPiezoCtrl : public QDialog 
+class DialogPIPiezoCtrl : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
     public:
-        DialogPIPiezoCtrl(ito::AddInActuator *motor);
+        DialogPIPiezoCtrl(ito::AddInBase *grabber);
         ~DialogPIPiezoCtrl() {};
+
+        ito::RetVal applyParameters();
 
     private:
         void enableDialog(bool enabled);
-        ito::RetVal checkParameters();
-        ito::RetVal sendParameters();
+        //ito::RetVal checkParameters();
+        //ito::RetVal sendParameters();
 
-        ito::AddInActuator *m_pPIPiezo;
-        QMap<QString, ito::Param> m_actualParameters;
+        //ito::AddInActuator *m_pPIPiezo;
+        //QMap<QString, ito::Param> m_actualParameters;
 
         Ui::DialogPIPiezoCtrl ui;
+        bool m_firstRun;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);

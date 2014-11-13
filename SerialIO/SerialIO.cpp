@@ -1083,6 +1083,8 @@ Example \n\
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("enableDebug", ito::ParamBase::Int, 0, 1, 0, tr("Initialised 'debug'-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_initParamsOpt.append(paramVal);
+    paramVal = ito::Param("debugIgnoreEmpty", ito::ParamBase::Int, 0, 1, 0, tr("If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
 
     return;
 }
@@ -1114,7 +1116,7 @@ const ito::RetVal SerialIO::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false)
+SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(false)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "SerialIO", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -1138,6 +1140,8 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false)
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("debugIgnoreEmpty", ito::ParamBase::Int, 0, 1, 0, tr("If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     //register exec functions
     QVector<ito::Param> pMand;
@@ -1158,7 +1162,7 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false)
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
 
     //now create dock widget for this plugin
-    DockWidgetSerialIO *dw = new DockWidgetSerialIO(m_params, getID() );
+    DockWidgetSerialIO *dw = new DockWidgetSerialIO(this);
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
@@ -1288,6 +1292,7 @@ ito::RetVal SerialIO::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
             sendDelay = m_params["sendDelay"].getVal<int>();
             timeout = (int)(m_params["timeout"].getVal<double>() * 1000.0 + 0.5);
             m_debugMode = (bool)(m_params["debug"].getVal<int>());
+            m_debugIgnoreEmpty = (bool)(m_params["debugIgnoreEmpty"].getVal<int>());
             retValue += m_serport.setparams(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
         }
         else
@@ -1398,11 +1403,21 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
             m_identifier = QString("/dev/ttyUSB%1").arg(port);
             break;
         }
+
+        setIdentifier(m_identifier);
     }
 
+    if (!retval.containsError())
+    {
+        retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[6]));
+        m_debugMode = (bool)(m_params["debug"].getVal<int>());
+    }
 
-    retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[6]));
-    m_debugMode = (bool)(m_params["debug"].getVal<int>());
+    if (!retval.containsError())
+    {
+        retval += m_params["debugIgnoreEmpty"].copyValueFrom(&((*paramsOpt)[7]));
+        m_debugIgnoreEmpty = (bool)(m_params["debugIgnoreEmpty"].getVal<int>());    
+    }
 
     emit parametersChanged(m_params);
 
@@ -1560,14 +1575,14 @@ void SerialIO::dockWidgetVisibilityChanged(bool visible)
         DockWidgetSerialIO *dw = qobject_cast<DockWidgetSerialIO*>(getDockWidget()->widget());
         if (visible)
         {
-            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
             connect(this, SIGNAL(serialLog(QByteArray, QByteArray, const char)), dw, SLOT(serialLog(QByteArray, QByteArray, const char)));
 
             emit parametersChanged(m_params);
         }
         else
         {
-            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
             disconnect(this, SIGNAL(serialLog(QByteArray, QByteArray, const char)), dw, SLOT(serialLog(QByteArray, QByteArray, const char)));
         }
     }

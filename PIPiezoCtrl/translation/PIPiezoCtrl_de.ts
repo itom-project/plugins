@@ -4,33 +4,8 @@
 <context>
     <name>DialogPIPiezoCtrl</name>
     <message>
-        <location filename="../dialogPIPiezoCtrl.cpp" line="+47"/>
+        <location filename="../dialogPIPiezoCtrl.cpp" line="+48"/>
         <source>Configuration Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+42"/>
-        <source>the upper position limit must be higher than the lower one</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+72"/>
-        <source>timeout while setting parameters of plugin.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>plugin instance not defined.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Invalid parameter input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Error while setting parameters of plugin.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -75,7 +50,7 @@
     </message>
     <message>
         <location/>
-        <source>Asynchrone</source>
+        <source>asynchronous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -105,11 +80,6 @@
     </message>
     <message>
         <location/>
-        <source>the total delay is offset + proportional * distance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
         <source>Delay (Offset)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -128,6 +98,16 @@
         <source> ms/µm</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location/>
+        <source>the total delay is offset + proportional * distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>this user-defined delay is only considered if the device has no built-in on-target flag.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DockWidgetPIPiezoCtrl</name>
@@ -143,7 +123,12 @@
     </message>
     <message>
         <location/>
-        <source>[unknown]</source>
+        <source>ID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -153,12 +138,12 @@
     </message>
     <message>
         <location/>
-        <source>ID:</source>
+        <source>[unknown]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location/>
-        <source>[ID]</source>
+        <source>Devices:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -188,6 +173,11 @@
     </message>
     <message>
         <location/>
+        <source>Joystick Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
         <source>Remote</source>
         <translation type="unfinished"></translation>
     </message>
@@ -208,12 +198,12 @@
     </message>
     <message>
         <location/>
-        <source>Start</source>
+        <source>Target Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location/>
-        <source>Target Position</source>
+        <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -221,26 +211,11 @@
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location/>
-        <source>Devices:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Joystick Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>PIPiezoCtrl</name>
     <message>
-        <location filename="../PIPiezoCtrl.cpp" line="+178"/>
-        <source>Current type of controller, e.g. E-662, E-665, ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location filename="../PIPiezoCtrl.cpp" line="+106"/>
         <source>device information string</source>
         <translation type="unfinished"></translation>
     </message>
@@ -295,7 +270,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-14"/>
+        <source>Current type of controller, e.g. E-662, E-665, E-753...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>asychronous (1) or sychronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
@@ -310,17 +290,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+49"/>
         <source>this motor only has one axis, therefore it is not allowed to get a parameter with index unequal to 0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+8"/>
         <source>parameter PI_CMD requires the real command send to the motor after a colon-sign.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -331,75 +306,45 @@
     </message>
     <message>
         <location line="+3"/>
-        <location line="+33"/>
+        <location line="+34"/>
         <location line="+24"/>
         <source>device type is unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+61"/>
-        <source>name of given parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+17"/>
+        <location line="+86"/>
         <source>parameter PI_CMD requires the real command send to the motor after a colon-sign in the parameter name or as value (second parameter of setParam method).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Parameter is read only, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>New value is larger than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>New value is smaller than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+19"/>
+        <location line="+27"/>
         <source>this device does not support the local/remote control mode switch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
-        <source>Given parameter and m_param do not have the same type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+55"/>
+        <location line="+199"/>
         <source>Doesn&apos;t fit to interface DataIO!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+83"/>
         <location line="+33"/>
         <source>not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+49"/>
-        <location line="+760"/>
+        <location line="+959"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-720"/>
+        <location line="-911"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+47"/>
+        <location line="+46"/>
         <source>Too many axis. This is currently a single axis device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -409,23 +354,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+67"/>
-        <location line="+508"/>
+        <location line="+69"/>
+        <location line="+717"/>
         <source>controller device unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-399"/>
+        <location line="-577"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+55"/>
         <source>timeout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+83"/>
         <location line="+43"/>
         <source>error could not be parsed</source>
         <translation type="unfinished"></translation>
@@ -536,22 +481,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+65"/>
+        <location line="+49"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+96"/>
+        <location line="+104"/>
         <source>could not identify controller. No answer for command *idn?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Could not read port number from serial port or port number invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+208"/>
         <source>the new position (rel) seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -564,7 +510,7 @@
 <context>
     <name>PIPiezoCtrlInterface</name>
     <message>
-        <location line="-1427"/>
+        <location filename="../PIPiezoCtrlInterface.cpp" line="+84"/>
         <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -595,7 +541,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

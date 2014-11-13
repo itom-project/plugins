@@ -152,7 +152,7 @@
 <context>
     <name>DispWindow</name>
     <message>
-        <location filename="../dispWindow.cpp" line="+189"/>
+        <location filename="../dispWindow.cpp" line="+186"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -182,22 +182,12 @@
         <translation type="unfinished">Anzahl der unterschiedlichen Bilder: Phasenschiebung + Grauwert + 2</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>0: disable, 1: enable; default disable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Lookup table</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+215"/>
+        <location line="+230"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-266"/>
+        <location line="-272"/>
         <source>Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter &apos;lut&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -237,12 +227,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+392"/>
+        <location line="+6"/>
+        <source>0: disable gamma correction, 1: enable gamma correction; default disable (see also &apos;lut&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Lookup table for a gamma correction with 256 values. The gamma correction itself is en-/disabled via parameter &apos;gamma&apos;. If enabled, the value to display is modified by lut[value]. Per default the lut is a 1:1 relation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+386"/>
         <source>mandatory or optional parameters vector not initialized!!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+124"/>
         <source>wrong z-size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -276,7 +276,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+48"/>
+        <source>insufficient gray values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+99"/>
         <source>function name &apos;%s&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -284,7 +289,7 @@
 <context>
     <name>DispWindowInterface</name>
     <message>
-        <location line="-854"/>
+        <location line="-927"/>
         <source>Window for SLM/LCD-Applications</source>
         <translation type="unfinished">Fenster für SLM/LCD-Anwendungen</translation>
     </message>
@@ -324,13 +329,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-13"/>
-        <source>N.A.</source>
+        <location line="+3"/>
+        <source>Lookup table for a gamma correction with 256 values. If given, the gamma correction will be enabled (default: off) and the projected values are then modified with lut[value].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>Lookup table</source>
+        <location line="-16"/>
+        <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -385,7 +390,7 @@
 <context>
     <name>PrjWindow</name>
     <message>
-        <location filename="../projWindow.cpp" line="+1076"/>
+        <location filename="../projWindow.cpp" line="+1122"/>
         <source>error out of memory (cosine init 7)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -399,16 +404,11 @@
         <source>error gen texture (graycode / cosine init)</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="+624"/>
-        <source>insufficient gray values</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-724"/>
+        <location line="-100"/>
         <source>error out of memory (cosine init 1)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -524,7 +524,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

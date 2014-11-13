@@ -4,12 +4,12 @@
 <context>
     <name>OpenCVGrabber</name>
     <message>
-        <location filename="../OpenCVGrabber.cpp" line="+356"/>
+        <location filename="../OpenCVGrabber.cpp" line="+345"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+261"/>
+        <location line="+266"/>
         <source>Camera (%i) could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
@@ -19,7 +19,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-91"/>
+        <location line="-96"/>
         <source>first pixel index in ROI (x-direction)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -84,7 +84,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+405"/>
+        <location line="+410"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -167,7 +167,7 @@
 <context>
     <name>OpenCVGrabberInterface</name>
     <message>
-        <location line="-899"/>
+        <location line="-904"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -199,17 +199,17 @@
     <name>dialogOpenCVGrabber</name>
     <message>
         <location filename="../dialogOpenCVGrabber.ui"/>
+        <source>Configuration OpenCV Grabber</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
         <source>Buffer Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>ms</source>
+        <source>Bit per Pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -229,37 +229,17 @@
     </message>
     <message>
         <location/>
+        <source>Set Full ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
         <source>Y0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location/>
         <source>Size Y</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Apply</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Configuration OpenCV Grabber</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Bit per Pixel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Set Full ROI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -287,11 +267,31 @@
         <source>Integration Time</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location/>
+        <source>ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
+        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

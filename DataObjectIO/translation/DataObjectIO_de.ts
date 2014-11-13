@@ -16,7 +16,7 @@
         <translation type="obsolete">Läd 1D und 2D Datenobjekte aus gängigen Bildformaten (bmp, png, jpg, pgm...)</translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="+134"/>
+        <location filename="../DataObjectIO.cpp" line="+119"/>
         <source>saves 1D and 2D dataObject to image formats via QImage (*.xbm *.xpm)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -148,6 +148,16 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+3"/>
+        <source>loads an ascii-based data file like csv, tsv or space seperated values.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>ASCII Data (*.txt *.csv *.tsv)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+31"/>
         <location line="+770"/>
         <source>2D-DataObject of anytype or 3-planes DataObject of uint8</source>
@@ -156,14 +166,14 @@
     <message>
         <location line="-768"/>
         <location line="+770"/>
-        <location line="+823"/>
+        <location line="+815"/>
         <location line="+43"/>
         <location line="+44"/>
         <location line="+46"/>
         <location line="+41"/>
         <location line="+44"/>
         <location line="+44"/>
-        <location line="+841"/>
+        <location line="+849"/>
         <source>Destination filename</source>
         <translation type="unfinished"></translation>
     </message>
@@ -223,40 +233,43 @@
     </message>
     <message>
         <location line="+5"/>
-        <location line="+1622"/>
+        <location line="+1614"/>
         <source>Entered Image format is not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1600"/>
+        <location line="-1592"/>
         <location line="+585"/>
-        <location line="+1052"/>
-        <location line="+342"/>
+        <location line="+1044"/>
+        <location line="+350"/>
+        <location line="+90"/>
         <source>Empty dataObjet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1977"/>
+        <location line="-2067"/>
         <location line="+585"/>
-        <location line="+1052"/>
-        <location line="+342"/>
+        <location line="+1044"/>
+        <location line="+350"/>
+        <location line="+90"/>
         <source>Source file name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1972"/>
+        <location line="-2062"/>
         <source>Color element character: R or G or B or RGB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+27"/>
         <location line="+584"/>
-        <location line="+1105"/>
+        <location line="+1097"/>
+        <location line="+399"/>
         <source>The file &apos;%s&apos; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1685"/>
+        <location line="-2076"/>
         <source>The file &apos;%s&apos; is no readable image file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -282,16 +295,18 @@
     </message>
     <message>
         <location line="+438"/>
+        <location line="+1496"/>
         <source>Dataobject not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="-1488"/>
+        <location line="+1496"/>
         <source>The file &apos;%s&apos; is no readable file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+309"/>
+        <location line="-1195"/>
         <location line="+43"/>
         <location line="+44"/>
         <location line="+46"/>
@@ -434,7 +449,7 @@
     </message>
     <message>
         <location line="+29"/>
-        <location line="+269"/>
+        <location line="+277"/>
         <location line="+62"/>
         <source>Destination dataObject is invalid.</source>
         <translation type="unfinished"></translation>
@@ -448,6 +463,10 @@
     </message>
     <message>
         <location line="-50"/>
+        <source>Format of the image is currently not supported by itom.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+80"/>
         <source>Color format of the file is currently not compatible with itom. Wait for next itom version.</source>
         <translation type="unfinished"></translation>
@@ -468,7 +487,82 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="+31"/>
+        <source>Ignore the first n-lines.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>(1) Try to interprete list elements with 3 elements per row as a matrix or (0) load as written.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Uses this as the seperator between elements. If NULL, try to guess.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Uses this as the sign for decimal numbers. If NULL, try to guess.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+96"/>
+        <location line="+11"/>
+        <location line="+239"/>
+        <location line="+40"/>
+        <source>Unexpected end of file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-268"/>
+        <source>The decimal sign has to be undefined (NULL), &apos;.&apos; or &apos;,&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The decimal sign and the seperator must differ.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <location line="+10"/>
+        <location line="+38"/>
+        <source>The decimal was specified as (,) but no other seperators where found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>The seperator was specified as (.) but other possible seperators where found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The seperator was specified as (,) but other possible seperators where found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The seperator was specified as (tab) but other possible seperators where found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The seperator was specified as (space) but other possible seperators where found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The seperator was specified as (;) but other possible seperators where found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The file is no list with 3 columns and N rows or contains invalid seperators.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-442"/>
         <source>Color channel not supported for extraction!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -491,7 +585,7 @@
 <context>
     <name>DataObjectIOInterface</name>
     <message>
-        <location line="-1461"/>
+        <location line="-1464"/>
         <source>Fill in about dialog content</source>
         <translation type="unfinished"></translation>
     </message>
@@ -517,24 +611,6 @@
     <message>
         <location line="+18"/>
         <source>Licensed under LPGL.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1069"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
