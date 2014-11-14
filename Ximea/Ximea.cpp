@@ -1197,32 +1197,33 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
 					if (offset_x + width >= rm->getWidthRangeMeta().getMax())
 					{
+                        if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset_x, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_OFFSET_X", QString::number(offset_x));
+                        if (ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &width, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_WIDTH", QString::number(width));	
+					}
+					else
+					{
                         if (ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &width, intSize, intType))
 						    retValue += getErrStr(ret, "XI_PRM_WIDTH", QString::number(width));
 						if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset_x, intSize, intType))
                             retValue += getErrStr(ret, "XI_PRM_OFFSET_X", QString::number(offset_x));
 					}
-					else
-					{
-                        if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset_x, intSize, intType))
-						    retValue += getErrStr(ret, "XI_PRM_OFFSET_X", QString::number(offset_x));
-                        if (ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &width, intSize, intType))
-						    retValue += getErrStr(ret, "XI_PRM_WIDTH", QString::number(width));						
-					}
 
 					if (offset_y + height >= rm->getHeightRangeMeta().getMax())
 					{
+                        if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_OFFSET_Y", QString::number(offset_y));
+                        if (ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &height, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_HEIGHT", QString::number(height));
+					}
+ 					else
+					{
+	
                         if (ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &height, intSize, intType))
 						    retValue += getErrStr(ret, "XI_PRM_HEIGHT", QString::number(height));
                         if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, intSize, intType))
 						    retValue += getErrStr(ret, "XI_PRM_OFFSET_Y", QString::number(offset_y));
-					}
- 					else
-					{
-                        if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, intSize, intType))
-						    retValue += getErrStr(ret, "XI_PRM_OFFSET_Y", QString::number(offset_y));
-                        if (ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &height, intSize, intType))
-						    retValue += getErrStr(ret, "XI_PRM_HEIGHT", QString::number(height));						
 					}
 
 					if (!retValue.containsError())
@@ -1678,6 +1679,14 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 		    roi[1] = offset_y;
 		    roi[2] = size_x;
 		    roi[3] = size_y;
+            if (sizeMin_x % sizeInc_x != 0)
+            {
+                sizeMin_x = sizeMin_x - (sizeMin_x % sizeInc_x) + sizeInc_x;
+            }
+            if (sizeMin_y % sizeInc_y != 0)
+            {
+                sizeMin_y = sizeMin_y - (sizeMin_x % sizeInc_x) + sizeInc_x;
+            }
 		    ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x -1, offsetInc_x, sizeMin_x, sizeMax_x + offset_x, sizeInc_x);
 		    ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y -1, offsetInc_y, sizeMin_y, sizeMax_y + offset_x, sizeInc_y);	
 			it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
@@ -1840,7 +1849,7 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
 			//offsetInc_x = offsetMax_x - offsetMin_x;
 			offsetInc_x = 1;
 		}
-
+        //TODO size
 		m_params["x0"].setVal<int>(offset_x);
 		m_params["x0"].setMeta(new ito::IntMeta(offsetMin_x, sizeMax_x - sizeMin_x, offsetInc_x), true);
 		m_params["x1"].setVal<int>(offset_x + size_x - 1);
@@ -1893,6 +1902,15 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
 		roi[1] = offset_y;
 		roi[2] = size_x;
 		roi[3] = size_y;
+        if (sizeMin_x % sizeInc_x != 0)
+        {
+            sizeMin_x = sizeMin_x - (sizeMin_x % sizeInc_x) + sizeInc_x;
+        }
+        if (sizeMin_y % sizeInc_y != 0)
+        {
+            sizeMin_y = sizeMin_y - (sizeMin_x % sizeInc_x) + sizeInc_x;
+        }
+
 		ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x -1, offsetInc_x, sizeMin_x, sizeMax_x + offset_x, sizeInc_x);
 		ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y -1, offsetInc_y, sizeMin_y, sizeMax_y + offset_x, sizeInc_y);	
 		it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
