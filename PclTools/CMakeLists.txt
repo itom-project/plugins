@@ -24,7 +24,7 @@ ENDIF(BUILD_SHARED_LIBS)
 SET(VTK_INSTALL_EXPORT_NAME 1) #avoid that vtk directly links to an absolute Qt-library, that is located somewhere on their computer configuration.
 find_package(ITOM_SDK REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-FIND_PACKAGE_QT(ON Widgets LinguistTools)
+FIND_PACKAGE_QT(ON Widgets LinguistTools OpenGL)
 
 IF(ITOM_SDK_PCL_SUPPORT)
     find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
