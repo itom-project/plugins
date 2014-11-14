@@ -149,7 +149,7 @@ class Ximea : public ito::AddInGrabber
 		RoiMeta m_roiMeta;
 
         ito::RetVal LoadLib();
-        ito::RetVal getErrStr(const int error, const QString &command);
+        ito::RetVal getErrStr(const int error, const QString &command, const QString &value);
         int m_saveParamsOnClose;
 #if linux
         void *m_handle;
