@@ -111,6 +111,20 @@ class Ximea : public ito::AddInGrabber
             grabberGrabError = 0x04
         };
 
+		enum SyncParams {          
+            sExposure = 2, 
+            sBinning = 4,
+            sRoi = 8,
+            sGain = 0,
+            sOffset = 0,
+            sTriggerMode = 0,
+			sTriggerMode2 = 1,
+			sBpp = 8,
+			sFrameRate = 1,
+			sGamma = 1,
+			sSharpness = 1,
+            sAll = sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sTriggerMode2 | sBpp | sFrameRate | sGamma | sSharpness };
+
 		struct RoiMeta
 		{
 			int offsetXMin;
@@ -126,6 +140,8 @@ class Ximea : public ito::AddInGrabber
 			int heightMax;
 			int heightStep;
 		};
+
+		ito::RetVal synchronizeCameraSettings(int what = sAll);
 
 		inline double musecToSec(int musec) { return (double)musec * 1.0e-6; }
 		inline int secToMusec(double sec) { return (int)(sec * 1.0e6); }
@@ -186,9 +202,6 @@ class Ximea : public ito::AddInGrabber
 
         //! Slot to synchronize this plugin with dockingwidget
         void OffsetPropertiesChanged(double offset);
-
-        //! Slot to synchronize this plugin with dockingwidget
-        void IntegrationPropertiesChanged(double integrationtime);
 
         //! Slot to run special function
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);

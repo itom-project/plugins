@@ -81,8 +81,14 @@
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
         <property name="suffix">
-         <string> ms</string>
+         <string> µs</string>
         </property>
        </widget>
       </item>
@@ -150,7 +156,7 @@
            <number>999999999</number>
           </property>
           <property name="maximumValue">
-           <number>999999999</number>
+           <number>99</number>
           </property>
           <property name="maximumRange">
            <UInt>999999999</UInt>
@@ -191,7 +197,7 @@
            <number>999999999</number>
           </property>
           <property name="maximumValue">
-           <number>999999999</number>
+           <number>99</number>
           </property>
           <property name="maximumRange">
            <UInt>999999999</UInt>
