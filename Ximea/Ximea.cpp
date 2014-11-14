@@ -1401,7 +1401,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			    }	
 
 			    m_params["integration_time"].setVal<double>(musecToSec(integration_time));
-			    m_params["integration_time"].setMeta(new ito::DoubleMeta(musecToSec(integration_min), musecToSec(integration_max), musecToSec(integration_step)), true);
+			    m_params["integration_time"].setMeta(new ito::DoubleMeta(musecToSec(integration_min + integration_step), musecToSec(integration_max - integration_step), musecToSec(integration_step)), true);
 
 			    // set binning
 			    int binning, binning_min, binning_max, binning_type;
@@ -1673,7 +1673,7 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
 			integration_step = integration_max - integration_min;
 		}	
 		it->setVal<double>(musecToSec(integration_time));
-		it->setMeta(new ito::DoubleMeta(musecToSec(integration_min), musecToSec(integration_max), musecToSec(integration_step)), true);
+		it->setMeta(new ito::DoubleMeta(musecToSec(integration_min + integration_step), musecToSec(integration_max - integration_step), musecToSec(integration_step)), true);
 	}
 	if (what & sBinning)
 	{

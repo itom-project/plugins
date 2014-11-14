@@ -109,9 +109,9 @@ void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		ui.sliderWidget_Gain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
 
 		ito::DoubleMeta *integrationtime = static_cast<ito::DoubleMeta*>(params["integration_time"].getMeta());
-		ui.sliderWidget_integrationtime->setMinimum((integrationtime->getMin()));
-		ui.sliderWidget_integrationtime->setMaximum((integrationtime->getMax()));
-		ui.sliderWidget_integrationtime->setSingleStep((integrationtime->getStepSize()));
+		ui.sliderWidget_integrationtime->setMinimum(integrationtime->getMin());
+		ui.sliderWidget_integrationtime->setMaximum(integrationtime->getMax());
+		ui.sliderWidget_integrationtime->setSingleStep(integrationtime->getStepSize());
 		ui.sliderWidget_integrationtime->setValue((params["integration_time"].getVal<double>()));
 		ui.sliderWidget_integrationtime->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
 
