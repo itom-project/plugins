@@ -114,6 +114,9 @@ AvtVimba::AvtVimba() :
     paramVal = ito::Param("interface", ito::ParamBase::String | ito::ParamBase::Readonly, "Unknown", tr("Interface type (Firewire, GigE)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("serial_no", ito::ParamBase::String | ito::ParamBase::Readonly, "Unknown", tr("Serial number of connected camera").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     int roi[] = {0, 0, 2048, 2048};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
@@ -267,6 +270,8 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 
                     QString identifier = QString::fromStdString(name) + " (" + QString::fromStdString(serialNumber) + ") @ " + QString::fromStdString(DeviceID);
 					setIdentifier(identifier);
+
+                    m_params["serial_no"].setVal<char*>( (char*)(serialNumber.data()) );
 
                     /*AVT::VmbAPI::FeaturePtrVector v;
                     std::string blub;
