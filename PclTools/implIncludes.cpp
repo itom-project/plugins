@@ -20,6 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#include <pcl/point_types.h>
+
 //these includes are not inside of another cpp where they are really needed (due to big-object compiler problems)
 //therefore they are split into this single file, however it is necessary to implement the necessary classes for
 //every point type, that is used.
