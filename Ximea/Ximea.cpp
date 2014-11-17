@@ -153,7 +153,7 @@ Ximea::Ximea() :
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.00000, 0.000, 0.0000, tr("Exposure time of chip (in seconds).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("gain in dB").toLatin1().data());
+   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("gain in %").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("offset", ito::ParamBase::Int, 0, 1, 0, tr("Currently not used.").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
@@ -221,11 +221,6 @@ Ximea::Ximea() :
 	m_params.insert(paramVal.getName(), paramVal);
     //now create dock widget for this plugin
     DockWidgetXimea *XI = new DockWidgetXimea(m_params, getID());
-
-    /*connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), XI, SLOT(parametersChanged(QMap<QString, ito::Param>)));
-    connect(XI, SIGNAL(OffsetPropertiesChanged(double)), this, SLOT(OffsetPropertiesChanged(double)));
-    connect(XI, SIGNAL(GainPropertiesChanged(double)), this, SLOT(GainPropertiesChanged(double)));
-    connect(XI, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));*/
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -678,7 +673,9 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
     QMap<QString, ito::Param>::iterator it;
 
 	XI_PRM_TYPE intType = xiTypeInteger;
+    XI_PRM_TYPE floatType = xiTypeFloat;
 	DWORD intSize = sizeof(int);
+    DWORD floatSize = sizeof(float);
 
     int running = 0;
     
@@ -962,6 +959,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 				retValue += synchronizeCameraSettings(sSharpness);
 			}
         }
+        /*
         else if (QString::compare(key, "offset", Qt::CaseInsensitive) ==0)
         {
             int offset = val->getVal<int>();
@@ -974,6 +972,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 				retValue += synchronizeCameraSettings(sOffset);
             }
         }
+        */
         else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
         {
 			float gamma = (float)val->getVal<double>();
@@ -1039,11 +1038,15 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         {
 
 			float gain = val->getVal<double>();
+            float gain_max;
+            if (ret = pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_MAX, &gain_max, &floatSize, &floatType))
+                retValue += getErrStr(ret, "XI_PRM_GAIN XI_PRM_INFO_MAX", QString::number(gain_max));
+            gain = gain * gain_max;
             if (ret = pxiSetParam(m_handle, XI_PRM_GAIN, &gain, sizeof(float), xiTypeFloat))
                 retValue += getErrStr(ret, "XI_PRM_GAIN", QString::number(gain));
 			if (!retValue.containsError())
 			{
-				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+				m_params["gain"].setVal<double>(gain);
 				retValue += synchronizeCameraSettings(sGain | sFrameRate | sExposure);
 			}
         }
@@ -1491,6 +1494,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			    m_params["framerate"].setVal<double>(framerate);
 			    m_params["framerate"].setMeta(new ito::DoubleMeta(framerate_min, framerate_max, framerate_inc), true);
 
+                /*
 			    //need new API
 			    //sets offset of black_level
 			    int offset, offset_min, offset_max, offset_inc;
@@ -1504,6 +1508,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     retValue += getErrStr(ret, "XI_PRM_IMAGE_BLACK_LEVEL XI_PRM_INFO_INCREMENT", QString::number(offset_inc));
 			    m_params["offset"].setVal<int>(offset);
 			    m_params["offset"].setMeta(new ito::IntMeta(offset_min, offset_max, offset_inc), true);
+                */
 			    
 			
 			    //sets gamma value interval
@@ -1542,8 +1547,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     retValue += getErrStr(ret, "XI_PRM_GAIN XI_PRM_INFO_MAX", QString::number(gain_max));
 			    if (ret = pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_INCREMENT, &gain_inc, &floatSize, &floatType))
                     retValue += getErrStr(ret, "XI_PRM_GAIN XI_PRM_INFO_INCREMENT", QString::number(gain_inc));
-			    m_params["gain"].setVal<double>(gain);
-			    m_params["gain"].setMeta(new ito::DoubleMeta(gain_min, gain_max, gain_inc), true);
+			    m_params["gain"].setVal<double>(gain/ gain_max);
+			    m_params["gain"].setMeta(new ito::DoubleMeta(gain_min/ gain_max, gain_max/ gain_max, gain_inc/ gain_max), true);
 
 			    //Sets trigger mode
 			    int trigger_mode; 
@@ -1593,6 +1598,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			    if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType))
                     retValue += getErrStr(ret, "XI_PRM_OUTPUT_DATA_BIT_DEPTH", QString::number(output_bit_depth));
 			    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(output_bit_depth);
+
 			    m_params["bpp"].setVal<int>(output_bit_depth);
 
 			    // bad pixel correction
@@ -1940,10 +1946,11 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             retValue += getErrStr(ret, "XI_PRM_GAIN XI_PRM_INFO_MAX", QString::number(gain_max));
 		if (ret = pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_INCREMENT, &gain_inc, &floatSize, &floatType))
             retValue += getErrStr(ret, "XI_PRM_GAIN XI_PRM_INFO_INCREMENT", QString::number(gain_inc));
-		it->setVal<double>(gain);
-		it->setMeta(new ito::DoubleMeta(gain_min, gain_max, gain_inc), true);
+		it->setVal<double>(gain/ gain_max);
+		it->setMeta(new ito::DoubleMeta(gain_min/ gain_max, gain_max/ gain_max, gain_inc/ gain_max), true);
 	}
-	if (what & sOffset)
+	/*
+    if (what & sOffset)
 	{
 		it = m_params.find("offset");
 		//sets offset of black_level
@@ -1959,6 +1966,7 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
 		it->setVal<int>(offset);
 		it->setMeta(new ito::IntMeta(offset_min, offset_max, offset_inc), true);
 	}
+    */
 	if (what & sGamma)
 	{
 		it = m_params.find("gamma");
@@ -2426,23 +2434,6 @@ void Ximea::updateParameters(QMap<QString, ito::Param> params)
         setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Int, offset_new)), NULL);
     }
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if gain parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void Ximea::GainPropertiesChanged(double gain)
-{
-    if( gain <= m_params["gain"].getMax() &&
-        gain >= m_params["gain"].getMin())
-    {
-        setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", m_params["gain"].getType(), gain)));
-    }
-}
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //ito::RetVal Ximea::adjustROIMeta(bool horizontalNotVertical)

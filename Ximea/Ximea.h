@@ -197,9 +197,6 @@ class Ximea : public ito::AddInGrabber
 
         void updateParameters(QMap<QString, ito::Param> params);
 
-        //! Slot to synchronize this plugin with dockingwidget
-        void GainPropertiesChanged(double gain);
-
         //! Slot to run special function
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);
 
