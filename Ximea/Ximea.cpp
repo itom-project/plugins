@@ -155,7 +155,7 @@ Ximea::Ximea() :
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("gain in dB").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Currently not used.").toLatin1().data());
+   paramVal = ito::Param("offset", ito::ParamBase::Int, 0, 1, 0, tr("Currently not used.").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
    paramVal = ito::Param("gamma", ito::ParamBase::Double, 0.3, 1.0, 1.0, tr("Luminosity gamma value (0.3 highest correction, 1 no correction).").toLatin1().data());
@@ -222,10 +222,10 @@ Ximea::Ximea() :
     //now create dock widget for this plugin
     DockWidgetXimea *XI = new DockWidgetXimea(m_params, getID());
 
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), XI, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+    /*connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), XI, SLOT(parametersChanged(QMap<QString, ito::Param>)));
     connect(XI, SIGNAL(OffsetPropertiesChanged(double)), this, SLOT(OffsetPropertiesChanged(double)));
     connect(XI, SIGNAL(GainPropertiesChanged(double)), this, SLOT(GainPropertiesChanged(double)));
-    connect(XI, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
+    connect(XI, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));*/
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -744,31 +744,26 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         if (QString::compare(key, "bpp", Qt::CaseInsensitive) == 0)
         {
 			int bitppix = val->getVal<int>();
-			int bpp = -1;            
-			if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger))
-                retValue += getErrStr(ret, "XI_PRM_IMAGE_DATA_FORMAT", QString::number(bpp));	
-
+			int bpp = 0;            
 			if (bitppix == 8)
 			{
-				int bpp = XI_MONO8;
+				bpp = XI_MONO8;
                 if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger))
                     retValue += getErrStr(ret, "XI_PRM_IMAGE_DATA_FORMAT", QString::number(bpp));
 
 				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &intSize, &intType))
-				{
 					retValue += getErrStr(ret, "XI_PRM_OUTPUT_DATA_BIT_DEPTH", QString::number(bitppix));
-				}
 				else
-				{
 					val->setVal<int>(bitppix);
-				}
+
 		
 			}
 			else if (bitppix == 10)
 			{
-                int bpp = XI_MONO16;                
+                bpp = XI_MONO16;                
                 if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger))
                     retValue += getErrStr(ret, "XI_PRM_IMAGE_DATA_FORMAT", QString::number(bpp));
+
 				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &intSize, &intType))
 					retValue += getErrStr(ret, "XI_PRM_OUTPUT_DATA_BIT_DEPTH", QString::number(bitppix));
 				else
@@ -777,9 +772,10 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			}
 			else if (bitppix == 12)
 			{
-				int bpp = XI_MONO16;                
+				bpp = XI_MONO16;                
                 if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger))
                     retValue += getErrStr(ret, "XI_PRM_IMAGE_DATA_FORMAT", QString::number(bpp));
+
 				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &intSize, &intType))
 					retValue += getErrStr(ret, "XI_PRM_OUTPUT_DATA_BIT_DEPTH", QString::number(bitppix));
 				else
@@ -787,9 +783,10 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			}
 			else if (bitppix == 14)
 			{
-				int bpp = XI_MONO16;                
+				bpp = XI_MONO16;                
 				if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger))
                     retValue += getErrStr(ret, "XI_PRM_IMAGE_DATA_FORMAT", QString::number(bpp));
+
 				if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, &intSize, &intType))
 					retValue += getErrStr(ret, "XI_PRM_OUTPUT_DATA_BIT_DEPTH", QString::number(bitppix));
 				else
@@ -965,6 +962,18 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 				retValue += synchronizeCameraSettings(sSharpness);
 			}
         }
+        else if (QString::compare(key, "offset", Qt::CaseInsensitive) ==0)
+        {
+            int offset = val->getVal<int>();
+			if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_BLACK_LEVEL, &offset, sizeof(int), intType))
+                retValue += getErrStr(ret, "XI_PRM_IMAGE_BLACK_LEVEL", QString::number(offset));			    
+			
+            if (!retValue.containsError())
+            {
+                it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+				retValue += synchronizeCameraSettings(sOffset);
+            }
+        }
         else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
         {
 			float gamma = (float)val->getVal<double>();
@@ -1017,7 +1026,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 #endif
         else if (QString::compare(key, "framerate", Qt::CaseInsensitive) == 0)
         {
-			float frameRate = val->getVal<double>();
+			float frameRate = val->getVal<double>();//TODO set Readonly, if not available
             if (ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &frameRate, sizeof(float), xiTypeFloat))
                 retValue += getErrStr(ret, "XI_PRM_FRAMERATE", QString::number(frameRate));
 			if (!retValue.containsError())
@@ -1226,9 +1235,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                         if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, intSize, intType))
 						    retValue += getErrStr(ret, "XI_PRM_OFFSET_Y", QString::number(offset_y));
                         if (ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &height, intSize, intType))
-						    retValue += getErrStr(ret, "XI_PRM_HEIGHT", QString::number(height));
-                        
-                        
+						    retValue += getErrStr(ret, "XI_PRM_HEIGHT", QString::number(height));  
                     }
                     
 					if (!retValue.containsError())
@@ -1495,8 +1502,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     retValue += getErrStr(ret, "XI_PRM_IMAGE_BLACK_LEVEL XI_PRM_INFO_MAX", QString::number(offset_max));
 			    if (ret = pxiGetParam(m_handle, XI_PRM_IMAGE_BLACK_LEVEL XI_PRM_INFO_INCREMENT, &offset_inc, &intSize, &intType))
                     retValue += getErrStr(ret, "XI_PRM_IMAGE_BLACK_LEVEL XI_PRM_INFO_INCREMENT", QString::number(offset_inc));
-			    m_params["offset"].setVal<double>(offset);
-			    m_params["offset"].setMeta(new ito::DoubleMeta(offset_min, offset_max, offset_inc), true);
+			    m_params["offset"].setVal<int>(offset);
+			    m_params["offset"].setMeta(new ito::IntMeta(offset_min, offset_max, offset_inc), true);
 			    
 			
 			    //sets gamma value interval
@@ -1939,7 +1946,6 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
 	if (what & sOffset)
 	{
 		it = m_params.find("offset");
-
 		//sets offset of black_level
 		int offset, offset_min, offset_max, offset_inc;
 		if (ret = pxiGetParam(m_handle, XI_PRM_IMAGE_BLACK_LEVEL, &offset, &intSize, &intType))
@@ -1950,8 +1956,8 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             retValue += getErrStr(ret, "XI_PRM_IMAGE_BLACK_LEVEL XI_PRM_INFO_MAX", QString::number(offset_max));
 		if (ret = pxiGetParam(m_handle, XI_PRM_IMAGE_BLACK_LEVEL XI_PRM_INFO_INCREMENT, &offset_inc, &intSize, &intType))
             retValue += getErrStr(ret, "XI_PRM_IMAGE_BLACK_LEVEL XI_PRM_INFO_INCREMENT", QString::number(offset_inc));
-		it->setVal<double>(offset);
-		it->setMeta(new ito::DoubleMeta(offset_min, offset_max, offset_inc), true);
+		it->setVal<int>(offset);
+		it->setMeta(new ito::IntMeta(offset_min, offset_max, offset_inc), true);
 	}
 	if (what & sGamma)
 	{
@@ -1994,7 +2000,7 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
 		int trigger_mode; 
 		if (ret = pxiGetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, &intSize, &intType))
             retValue += getErrStr(ret, "XI_PRM_TRG_SOURCE", QString::number(trigger_mode));
-		it->getVal<int>(trigger_mode);
+		it->setVal<int>(trigger_mode);
 	}
 	if (what & sTriggerMode2)
 	{
@@ -2378,7 +2384,7 @@ void Ximea::updateParameters(QMap<QString, ito::Param> params)
     int binning_old = 0;
     int bitppix_new = 0;
     int binning_new = 0;
-    double offset_new = 0.0;
+    int offset_new = 0;
     double value = 0.0;
 
     char name[40]={0};
@@ -2405,7 +2411,7 @@ void Ximea::updateParameters(QMap<QString, ito::Param> params)
 
     bitppix_new = m_params["bpp"].getVal<int>();
     binning_new = m_params["binning"].getVal<int>();
-    offset_new = m_params["offset"].getVal<double>();
+    offset_new = m_params["offset"].getVal<int>();
 
     if (bitppix_new != bitppix_old)
     {
@@ -2417,7 +2423,7 @@ void Ximea::updateParameters(QMap<QString, ito::Param> params)
     }
     else
     {
-        setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, offset_new)), NULL);
+        setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Int, offset_new)), NULL);
     }
 }
 
@@ -2437,20 +2443,6 @@ void Ximea::GainPropertiesChanged(double gain)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if  offset parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void Ximea::OffsetPropertiesChanged(double offset)
-{
-    if( offset <= m_params["offset"].getMax() &&
-        offset >= m_params["offset"].getMin())
-    {
-        setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", m_params["offset"].getType(), offset)));
-    }
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //ito::RetVal Ximea::adjustROIMeta(bool horizontalNotVertical)

@@ -115,9 +115,9 @@ class Ximea : public ito::AddInGrabber
             sExposure = 2, 
             sBinning = 4,
             sRoi = 8,
-            sGain = 0,
-            sOffset = 0,
-            sTriggerMode = 0,
+            sGain = 1,
+            sOffset = 1,
+            sTriggerMode = 1,
 			sTriggerMode2 = 1,
 			sBpp = 8,
 			sFrameRate = 1,
@@ -199,9 +199,6 @@ class Ximea : public ito::AddInGrabber
 
         //! Slot to synchronize this plugin with dockingwidget
         void GainPropertiesChanged(double gain);
-
-        //! Slot to synchronize this plugin with dockingwidget
-        void OffsetPropertiesChanged(double offset);
 
         //! Slot to run special function
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);

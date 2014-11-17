@@ -94,7 +94,7 @@ void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		}
 		ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
 
-		ito::DoubleMeta *offset = static_cast<ito::DoubleMeta*>(params["offset"].getMeta());
+		ito::IntMeta *offset = static_cast<ito::IntMeta*>(params["offset"].getMeta());
 		ui.sliderWidget_Offset->setMinimum(offset->getMin());
 		ui.sliderWidget_Offset->setMaximum(offset->getMax());
 		ui.sliderWidget_Offset->setSingleStep(offset->getStepSize());
@@ -181,10 +181,10 @@ void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		ui.sliderWidget_framerate->setMaximum(framerate->getMax());
 		ui.sliderWidget_framerate->setValue(params["framerate"].getVal<double>());
 
-		ito::DoubleMeta *offset = static_cast<ito::DoubleMeta*>(params["offset"].getMeta());
+		ito::IntMeta *offset = static_cast<ito::IntMeta*>(params["offset"].getMeta());
 		ui.sliderWidget_Offset->setMinimum(offset->getMin());
 		ui.sliderWidget_Offset->setMaximum(offset->getMax());
-		ui.sliderWidget_Offset->setValue(params["offset"].getVal<double>());
+		ui.sliderWidget_Offset->setValue(params["offset"].getVal<int>());
 
 		ito::DoubleMeta *integrationtime = static_cast<ito::DoubleMeta*>(params["integration_time"].getMeta());
 		ui.sliderWidget_integrationtime->setMinimum(integrationtime->getMin());
@@ -306,10 +306,10 @@ ito::RetVal dialogXimea::applyParameters()
 	
 	if(ui.sliderWidget_Offset->isEnabled())
     {
-        double offset = ui.sliderWidget_Offset->value();
-        if(m_currentParameters["offset"].getVal<double>() != offset)
+        int offset = ui.sliderWidget_Offset->value();
+        if(m_currentParameters["offset"].getVal<int>() != offset)
         {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, offset)));
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Int, offset)));
         }
     }
 
