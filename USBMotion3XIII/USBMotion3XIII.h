@@ -85,7 +85,7 @@ class USBMotion3XIII : public ito::AddInActuator
         ito::RetVal loadDriverSettingsToParams();
         ito::RetVal loadParamsToEEP();
         ito::RetVal errorCheck(unsigned int driverErrorNumber);
-        int getTotalStepsPerTurn(int axis); //axis = 0,1,2
+        double getTotalStepsPerUnit(int axis); //axis = 0,1,2
 
         ito::RetVal setMicroSteps(int axis, int steps);
         ito::RetVal setCoilCurrents(int axis, char changeBitMask, double agtat, double aleat, double v0, double threshold); 
@@ -95,6 +95,8 @@ class USBMotion3XIII : public ito::AddInActuator
 
         ito::RetVal changeStatusTimer(bool anyMotorIsMoving);
         ito::RetVal updateStatus();
+
+        int m_axisUnit[3]; //0: deg, 1: mm
 
         int m_curDeviceIndex;
         QVector<unsigned char> m_availableAxis;
@@ -125,9 +127,6 @@ class USBMotion3XIII : public ito::AddInActuator
         ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-
-        void setAbsTargetDegree(double target1, double target2, double target3);
-        void setRelTargetDegree(unsigned int axisNo, double relStepDegree);
 
     private slots:
         void dockWidgetVisibilityChanged( bool visible );

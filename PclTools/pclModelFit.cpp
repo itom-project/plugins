@@ -1,0 +1,1337 @@
+/* ********************************************************************
+    Plugin "PCLTools" for itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2014, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
+
+    This file is part of a plugin for the measurement software itom.
+  
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
+#include "pclTools.h"
+#define EIGEN_QT_SUPPORT
+
+#include "DataObject/dataobj.h"
+#include "common/helperCommon.h"
+#include "PointCloud/pclStructures.h"
+#include "PointCloud/pclFunctions.h"
+#include "PointCloud/impl/pclFunctionsImpl.h"
+
+#include "DataObject/dataObjectFuncs.h"
+
+#include <pcl/pcl_config.h>
+
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/common/distances.h>
+
+
+
+#include <qstring.h>
+#include <qvariant.h>
+
+
+bool PclTools::checkFitWithOutNormals(const int &fitObj)
+{
+    switch(fitObj)
+    {
+        case pcl::SACMODEL_PLANE:
+        case pcl::SACMODEL_LINE:
+        //case pcl::SACMODEL_STICK:
+        case pcl::SACMODEL_CIRCLE2D:
+        case pcl::SACMODEL_CIRCLE3D:
+        case pcl::SACMODEL_SPHERE:
+        //case pcl::SACMODEL_PARALLEL_LINE:
+        //case pcl::SACMODEL_PERPENDICULAR_PLANE:
+        //case pcl::SACMODEL_PARALLEL_PLANE:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool PclTools::checkFitNormals(const int &fitObj)
+{
+    switch(fitObj)
+    {
+        case pcl::SACMODEL_PLANE:
+        case pcl::SACMODEL_LINE:
+        //case pcl::SACMODEL_STICK:
+        case pcl::SACMODEL_CIRCLE2D:
+        case pcl::SACMODEL_CIRCLE3D:
+        case pcl::SACMODEL_SPHERE:
+        case pcl::SACMODEL_CYLINDER:
+        case pcl::SACMODEL_CONE:
+        //case pcl::SACMODEL_PARALLEL_LINE:
+        //case pcl::SACMODEL_PERPENDICULAR_PLANE:
+        //case pcl::SACMODEL_PARALLEL_PLANE:
+            return true;
+        default:
+            return false;
+    }
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitModelDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitModelParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, pcl::SACMODEL_PLANE, tr("Model type according to enum pcl::SacModel").toLatin1().data()));
+    paramsOpt->clear();
+    paramsOpt->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
+    paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("coeffizientsModel", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("Vector with the model coeffizients according to model definition.").toLatin1().data()));
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitModel(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, -1);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitModelDObjDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitModelDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = pclFitModelParams(paramsMand,paramsOpt,paramsOut);
+/*
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+*/
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->first() = ito::Param("dataObjIn", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input dataObject (const)").toLatin1().data());
+    paramsMand->append(ito::Param("randomSamples", ito::ParamBase::Int | ito::ParamBase::In, 256, 65356, 65356, tr("Number of random samples or all if >65355").toLatin1().data()));
+
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitModelDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    if(ito::ITOM_API_FUNCS == NULL || apiFilterCall == NULL || apiFilterParam == NULL || apiFilterParamBase == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("The api-functions are not defined. Init of filter failed").toLatin1().data());
+    }
+
+    QVector<ito::ParamBase> tmpParamsMand;
+    tmpParamsMand.clear();
+
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *inputObjct = (ito::DataObject*)((*paramsMand)[0].getVal<void*>());
+    if(inputObjct == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Input DataObject must not be NULL").toLatin1().data());
+    }
+
+    ito::PCLPointCloud tmpCloud;
+
+    ito::PCLPointCloud *tmpCloudFilter = NULL; 
+
+    bool deleteOnClose = false;
+
+    try
+    {
+        ito::pclHelper::pointCloudFromDisparity(inputObjct, tmpCloud, true);
+    }
+    catch(std::bad_alloc exc)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Could not allocated new pointcloud").toLatin1().data());
+    }
+
+    if((*paramsMand)[1].getVal<int>() != pcl::SACMODEL_SPHERE)
+    {
+        QVector<ito::ParamBase> estNormMand;
+        QVector<ito::ParamBase> estNormOpt;
+        QVector<ito::ParamBase> estNormOut;
+
+        retval += apiFilterParamBase("pclEstimateNormals", &estNormMand, &estNormOpt, &estNormOut);
+        if(!retval.containsError())
+        {
+            estNormMand[0].setVal<void*>(&tmpCloud);
+            estNormMand[1].setVal<void*>(&tmpCloud);
+            retval += pclEstimateNormals(&estNormMand, &estNormOpt, &estNormOut);
+        }
+    }
+
+    int nrOfPoints = (*paramsMand)[2].getVal<int>();
+
+    if(!retval.containsError())
+    {
+
+        if(nrOfPoints < 65356)
+        {
+            tmpCloudFilter = new ito::PCLPointCloud();
+
+            QVector<ito::ParamBase> estRndMand;
+            QVector<ito::ParamBase> estRndOpt;
+            QVector<ito::ParamBase> estRndOut;
+
+            retval += apiFilterParamBase("pclRandomSample", &estRndMand, &estRndOpt, &estRndOut);
+            if(!retval.containsError())
+            {
+                estRndMand[0].setVal<void*>(&tmpCloud);
+                estRndMand[1].setVal<void*>(tmpCloudFilter);
+                estRndMand[2].setVal<int>(nrOfPoints);
+                retval += pclRandomSample(&estRndMand, &estRndOpt, &estRndOut);
+            }
+            deleteOnClose = true;
+
+        }
+        else
+        {
+            tmpCloudFilter = &tmpCloud;
+        }
+    }
+
+    if(!retval.containsError())
+    {
+        tmpParamsMand.append(ito::ParamBase("pointCloudIn", ito::ParamBase::PointCloudPtr));
+        tmpParamsMand[0].setVal<void*>(tmpCloudFilter);
+        tmpParamsMand.append(ito::ParamBase("modelType", ito::ParamBase::Int, (*paramsMand)[1].getVal<int>()));
+        retval += pclFitModelGeneric(&tmpParamsMand, paramsOpt, paramsOut, -1);
+    }
+
+    if(tmpCloudFilter && deleteOnClose) delete tmpCloudFilter;
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitCylinderDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitCylinderParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
+
+    paramsOpt->clear();
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on axis of symmetrie of cylinder").toLatin1().data()));
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting axis of symmetrie of cylinder").toLatin1().data()));
+    paramsOut->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting fitted radius of cylinder").toLatin1().data()));
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitCylinder(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_CYLINDER);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitSphereDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitSphereParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
+
+    paramsOpt->clear();
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting center point of spehre").toLatin1().data()));
+    paramsOut->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting fitted radius of sphere").toLatin1().data()));
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitSphere(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_SPHERE);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitCircle2DDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitCircle2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
+
+    paramsOpt->clear();
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting center point (xy) of circle").toLatin1().data()));
+    paramsOut->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting fitted radius of circle").toLatin1().data()));
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitCircle2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_CIRCLE2D);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitCircle3DDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitCircle3DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
+
+    paramsOpt->clear();
+#if CIRCLE3D_LIMIT_NORMAL
+    paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+#endif
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting center point of the circle").toLatin1().data()));
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting normal vector").toLatin1().data()));
+    paramsOut->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting fitted radius of the circle").toLatin1().data()));
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitCircle3D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_CIRCLE3D);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitPlaneDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+
+    paramsOpt->clear();
+#if PLANE_LIMIT_NORMAL
+    paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+#endif
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting normal vector").toLatin1().data()));
+    paramsOut->append(ito::Param("value", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting last value of Hesse Form").toLatin1().data()));
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_PLANE);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitLineDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitLineParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+
+    paramsOpt->clear();
+#if PLANE_LIMIT_NORMAL
+    paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("axis to fit to [x, y, z]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+#endif
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on the line").toLatin1().data()));
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data())); 
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitLine(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_LINE);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclFitConeDOC = "\n\
+\n\
+\n\
+\n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitConeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("angularLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("opening angle limits in radiant [min, max]").toLatin1().data()));
+
+    paramsOpt->clear();
+#if CONE_LIMIT_NORMAL
+    paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("axis to fit to [x, y, z]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+#endif
+    paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
+    paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
+
+    paramsOut->clear();
+    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on the line").toLatin1().data()));
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data())); 
+    paramsOut->append(ito::Param("openingAgle", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting opening angle in radiant").toLatin1().data())); 
+    paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+    return retval;
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclFitCone(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_CONE);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclDistanceToModelParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
+    paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with distances").toLatin1().data()));
+    paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Model type according to enum pcl::SacModel").toLatin1().data()));
+
+    paramsOpt->clear();
+
+    paramsOpt->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("point on cylinder symmetrie axis").toLatin1().data()));
+    paramsOpt->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("symmetrie axis of cylinder").toLatin1().data()));
+    paramsOpt->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::In, 0.0, (double)(std::numeric_limits<float>::max()), 0.0, tr("cylinder radius").toLatin1().data()));
+
+    paramsOut->clear();
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclDistanceToModelDOC = "\n\
+\n\
+\n\
+Possible types are: \n\
+--------------------\n\
+SACMODEL_PLANE = 0, \n\
+SACMODEL_LINE = 1, \n\
+SACMODEL_CIRCLE2D = 2, \n\
+SACMODEL_CIRCLE3D = 3, \n\
+SACMODEL_SPHERE = 4, \n\
+SACMODEL_CYLINDER = 5, \n\
+SACMODEL_CONE = 6, \n\
+SACMODEL_TORUS = 7, \n\
+SACMODEL_PARALLEL_LINE = 8, \n\
+SACMODEL_PERPENDICULAR_PLANE = 9, \n\
+SACMODEL_PARALLEL_LINES = 10, \n\
+SACMODEL_NORMAL_PLANE = 11, \n\
+SACMODEL_NORMAL_SPHERE = 12, \n\
+SACMODEL_REGISTRATION = 13, \n\
+SACMODEL_REGISTRATION_2D = 14, \n\
+SACMODEL_PARALLEL_PLANE = 15, \n\
+SACMODEL_NORMAL_PARALLEL_PLANE = 16, \n\
+SACMODEL_STICK = 17 \n\
+\n";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ double PclTools::pointToLineDist(const float inPt[3], const float modelCoefficients[7])
+{
+    Eigen::Vector4f linePt  (modelCoefficients[0], modelCoefficients[1], modelCoefficients[2], 0);
+    Eigen::Vector4f lineDir (modelCoefficients[3], modelCoefficients[4], modelCoefficients[5], 0);
+    Eigen::Vector4f pt (inPt[0], inPt[1], inPt[2], 0);
+    return sqrt(pcl::sqrPointToLineDistance (pt, linePt, lineDir));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclDistanceToModel(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+
+    QVector<ito::ParamBase> mands = (*paramsMand);
+    QVector<ito::ParamBase> opts = (*paramsOpt);
+    QVector<ito::ParamBase> outs = (*paramsOut);
+
+#if PCL_VERSION_COMPARE(<, 1, 7, 0)
+    return ito::RetVal(ito::retError, 0, tr("pclDistanceToModel not implemented for PCL 1.6.1 or lower").toLatin1().data());
+#else
+    //read params from mandatory and optional params
+    ito::PCLPointCloud *pclIn = (ito::PCLPointCloud*)mands[0].getVal<void*>();
+    if (pclIn == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("input point cloud must not be NULL").toLatin1().data());
+    }
+
+    ito::PCLPointCloud *pclOut = (ito::PCLPointCloud*)mands[1].getVal<void*>();
+    if (pclOut == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("output point cloud must not be NULL").toLatin1().data());
+    }
+
+    int modelType = mands[2].getVal<int>();
+    int distanceType = 0;
+
+    Eigen::Vector4f linePt;
+    linePt[3] = 0.0f;
+
+    Eigen::Vector4f lineDir;
+    lineDir[3] = 0.0f;
+
+    float radius = cv::saturate_cast<float>(opts[2].getVal<double>());
+
+    switch(modelType)
+    {
+        default:
+        case pcl::SACMODEL_PLANE:
+        case pcl::SACMODEL_LINE:
+        case pcl::SACMODEL_CIRCLE2D:
+        case pcl::SACMODEL_CIRCLE3D:
+        {
+            return ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(modelType))).toLatin1().data());
+        }
+        case pcl::SACMODEL_SPHERE:
+        {
+            distanceType = 3;
+            double* value = NULL;
+
+            if(opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
+            {
+                return ito::RetVal(ito::retError, 0, (tr("Spherical model must have [x,y,z] and r. [x,y,z] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
+            }
+            else
+            {
+                linePt[0] = cv::saturate_cast<float>(value[0]);
+                linePt[1] = cv::saturate_cast<float>(value[1]);
+                linePt[2] = cv::saturate_cast<float>(value[2]);
+            }
+
+        }
+        break;
+        case pcl::SACMODEL_CYLINDER:
+        {
+            distanceType = 1;
+            double* value = NULL;
+
+            if(opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
+            {
+                return ito::RetVal(ito::retError, 0, (tr("Cylinder model must have 7 parameters, [x,y,z], [dx, dy, dz] and r. [x,y,z] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
+            }
+            else
+            {
+                linePt[0] = cv::saturate_cast<float>(value[0]);
+                linePt[1] = cv::saturate_cast<float>(value[1]);
+                linePt[2] = cv::saturate_cast<float>(value[2]);
+            }
+
+            if(opts[1].getLen() < 3 || (value = (double*)(opts[1].getVal<void*>())) == NULL)
+            {
+                return ito::RetVal(ito::retError, 0, (tr("Cylinder model must have [x,y,z], [dx, dy, dz] and r. [dx,dy,dz] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
+            }
+            else
+            {
+                lineDir[0] = cv::saturate_cast<float>(value[0]);
+                lineDir[1] = cv::saturate_cast<float>(value[1]);
+                lineDir[2] = cv::saturate_cast<float>(value[2]);
+            }
+        }
+        break;
+        case pcl::SACMODEL_CONE:
+        case pcl::SACMODEL_TORUS:
+        case pcl::SACMODEL_PARALLEL_LINE:
+        case pcl::SACMODEL_PERPENDICULAR_PLANE:
+        case pcl::SACMODEL_PARALLEL_LINES:
+        case pcl::SACMODEL_NORMAL_PLANE:
+        case pcl::SACMODEL_NORMAL_SPHERE:
+        case pcl::SACMODEL_REGISTRATION:
+        case pcl::SACMODEL_REGISTRATION_2D:
+        case pcl::SACMODEL_PARALLEL_PLANE:
+        case pcl::SACMODEL_NORMAL_PARALLEL_PLANE:
+        case pcl::SACMODEL_STICK:
+        {
+            return ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(modelType))).toLatin1().data());
+        }
+
+
+    }
+
+    float floatNAN = std::numeric_limits<float>::quiet_NaN();
+
+    bool overwriteInput = false; //real inplace was possible
+    pcl::PointXYZ center(linePt[0], linePt[1], linePt[2]);
+
+    switch(pclIn->getType())
+    {
+        default:
+        case ito::pclInvalid:
+            return ito::RetVal(ito::retError, 0, tr("invalid point cloud type not defined or point cloud invalid").toLatin1().data());
+        case ito::pclXYZ:
+        {
+            if (pclIn == pclOut)
+            {
+                pclOut = new ito::PCLPointCloud(ito::pclXYZNormal);
+                pclOut->resize(pclIn->size());
+                overwriteInput = true;
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(ito::pclXYZNormal);
+                pclOut->resize(pclIn->size());
+            }
+        }
+        break;
+        case ito::pclXYZI:
+        {
+            if (pclIn == pclOut)
+            {
+                pclOut = new ito::PCLPointCloud(ito::pclXYZINormal);
+                pclOut->resize(pclIn->size());
+                overwriteInput = true;
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(ito::pclXYZINormal);
+                pclOut->resize(pclIn->size());
+            }
+        }
+        break;
+        case ito::pclXYZRGBA:
+        {
+            if (pclIn == pclOut)
+            {
+                pclOut = new ito::PCLPointCloud(ito::pclXYZRGBNormal);
+                pclOut->resize(pclIn->size());
+                overwriteInput = true;
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(ito::pclXYZRGBNormal);
+                pclOut->resize(pclIn->size());
+            }
+        }
+        break;
+        case ito::pclXYZNormal:
+        case ito::pclXYZINormal:
+        case ito::pclXYZRGBNormal:
+        {
+            if (pclIn == pclOut)
+            {
+                //*pclOut = *pclIn;
+                //Do nothing
+            }
+            else
+            {
+                *pclOut = ito::PCLPointCloud(*pclIn);
+            }
+        }
+        break;
+    }
+
+    #if (USEOMP)
+    #pragma omp parallel num_threads(nthreads)
+    {
+    #endif  
+    
+    Eigen::Vector4f curPt;
+    curPt[3] = 0.0f;
+
+    switch(pclIn->getType())
+    {
+        default:
+        case ito::pclInvalid:
+            retval += ito::RetVal(ito::retError, 0, tr("invalid point cloud type or type not allowed").toLatin1().data());
+            break;
+        case ito::pclXYZ: //does not work, SACSegmentation do not support SACMODEL_CYLINDER
+        {
+            pcl::PointCloud<pcl::PointXYZ>::Ptr pclSrc = pclIn->toPointXYZ();
+            pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
+
+            if(distanceType == 0)
+            {
+
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                    
+            }
+        }
+        break;
+        case ito::pclXYZNormal:
+        {
+            pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pclIn->toPointXYZNormal();
+            pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
+
+            if(distanceType == 0)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {                       
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {   
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {    
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                    
+            }
+        }
+        break;
+        case ito::pclXYZI:
+        {
+            pcl::PointCloud<pcl::PointXYZI>::Ptr pclSrc = pclIn->toPointXYZI();
+            pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
+
+            if(distanceType == 0)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).intensity = pclSrc->at(np).intensity;
+                }                    
+            }
+        }
+        break;
+        case ito::pclXYZRGBA:
+        {
+            pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pclSrc = pclIn->toPointXYZRGBA();
+            pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
+
+            if(distanceType == 0)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {
+                    memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
+                    memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
+
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                    pclDists->at(np).rgba = pclSrc->at(np).rgba;
+                }                    
+            }
+        }
+        break;
+        case ito::pclXYZINormal:
+        {
+            pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclSrc = pclIn->toPointXYZINormal();
+            pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
+
+            if(distanceType == 0)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                        
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                    
+            }
+        }
+        break;
+        case ito::pclXYZRGBNormal:
+        {
+            pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclSrc = pclIn->toPointXYZRGBNormal();
+            pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
+                
+            if(distanceType == 0)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                
+            }
+            else if(distanceType == 1)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 2)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                     
+            }
+            else if(distanceType == 3)
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif     
+                for (int np = 0; np < pclOut->size(); np++)
+                {     
+                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    {
+                        pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
+                    }
+                    else
+                    {
+                        pclDists->at(np).curvature = floatNAN;
+                    }
+                }                    
+            }
+        }
+        break;
+    }
+
+    #if (USEOMP)
+    }
+    #endif
+
+    if (!retval.containsError() && overwriteInput)
+    {
+        (*pclIn) = (*pclOut); //here: pclOut is a new, temporary point cloud, pclIn is the given argument pclIn AND pclOut!
+        delete pclOut;
+    }
+
+    return retval;
+#endif  
+}

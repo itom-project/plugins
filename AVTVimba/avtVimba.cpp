@@ -114,6 +114,9 @@ AvtVimba::AvtVimba() :
     paramVal = ito::Param("interface", ito::ParamBase::String | ito::ParamBase::Readonly, "Unknown", tr("Interface type (Firewire, GigE)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("serial_no", ito::ParamBase::String | ito::ParamBase::Readonly, "Unknown", tr("Serial number").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     int roi[] = {0, 0, 2048, 2048};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
@@ -267,6 +270,8 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 
                     QString identifier = QString::fromStdString(name) + " (" + QString::fromStdString(serialNumber) + ") @ " + QString::fromStdString(DeviceID);
 					setIdentifier(identifier);
+
+                    m_params["serial_no"].setVal<char*>( (char*)(serialNumber.data()) );
 
                     /*AVT::VmbAPI::FeaturePtrVector v;
                     std::string blub;
@@ -621,11 +626,18 @@ ito::RetVal AvtVimba::close(ItomSharedSemaphore *waitCond)
 		retValue += checkError(sys.Shutdown());
 	}
 
-    m_aliveTimer->stop();
-    m_aliveTimer->deleteLater();
-    m_aliveTimerThread->exit();
-    m_aliveTimerThread->wait();
-    m_aliveTimerThread->deleteLater();
+    if (m_aliveTimer)
+    {
+        m_aliveTimer->stop();
+        m_aliveTimer->deleteLater();
+    }
+
+    if (m_aliveTimerThread)
+    {
+        m_aliveTimerThread->exit();
+        m_aliveTimerThread->wait();
+        m_aliveTimerThread->deleteLater();
+    }
 
     if (waitCond)
     {
@@ -1189,15 +1201,10 @@ ito::RetVal AvtVimba::retrieveData(ito::DataObject *externalDataObject)
 		}
 		else
 		{
-			//step 1: create m_data (if not yet available)
-			if (externalDataObject && hasListeners)
+			//step 1: update size of externalDataObject. The internal one m_data is already checked after any parameter change (in synchronizeParameters method)
+			if (externalDataObject)
 			{
-				retValue += checkData(NULL); //update m_data
-				retValue += checkData(externalDataObject); //update external object
-			}
-			else
-			{
-				retValue += checkData(externalDataObject); //update external object or m_data
+				retValue += checkData(externalDataObject);
 			}
         
 			if (!retValue.containsError())
@@ -1337,7 +1344,7 @@ ito::RetVal AvtVimba::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     {
         //this method calls retrieveData with the passed dataObject as argument such that retrieveData is able to copy the image obtained
         //by the camera directly into the given, external dataObject
-        retValue += retrieveData(dObj);  //checkData is executed inside of retrieveData
+        retValue += retrieveData(dObj);
     }
 
     if (!retValue.containsError())
@@ -1641,6 +1648,8 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
         }
         retval += ret_;
     }
+
+    retval += checkData();
 
     return retval;
 }

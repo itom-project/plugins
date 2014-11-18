@@ -1,4 +1,4 @@
-/* ********************************************************************
+/* *******************************************************************
     Plugin "USBMotion3XIII" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2013, Institut für Technische Optik (ITO),
@@ -121,10 +121,15 @@ might slightly differ from the desired values due to rounding uncertainties.";
     m_autoLoadPolicy = ito::autoLoadAlways;
     m_autoSavePolicy = ito::autoSaveAlways;
 
-    m_initParamsMand.append(ito::Param("serialNumber", ito::ParamBase::String, "[unknown]", tr("serial number or string of the device to open").toLatin1().data()));
-    m_initParamsOpt.append(ito::Param("axisSteps1", ito::ParamBase::Int, 0, new ito::IntMeta(0,100000), tr("number of full steps per turn of axis 1, 0: axis not connected [default]").toLatin1().data()));
-    m_initParamsOpt.append(ito::Param("axisSteps2", ito::ParamBase::Int, 0, new ito::IntMeta(0,100000), tr("number of full steps per turn of axis 2, 0: axis not connected [default]").toLatin1().data()));
-    m_initParamsOpt.append(ito::Param("axisSteps3", ito::ParamBase::Int, 0, new ito::IntMeta(0,100000), tr("number of full steps per turn of axis 3, 0: axis not connected [default]").toLatin1().data()));
+	m_initParamsMand.append(ito::Param("serialNumber", ito::ParamBase::String, "[unknown]", tr("serial number or string of the device to open").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("axisSteps1", ito::ParamBase::Double, 0.0, new ito::DoubleMeta(0.0,100000.0), tr("number of full steps per unit (deg or mm) of axis 1, 0: axis not connected [default]").toLatin1().data()));
+	m_initParamsOpt.append(ito::Param("axisSteps2", ito::ParamBase::Double, 0.0, new ito::DoubleMeta(0.0,100000.0), tr("number of full steps per unit (deg or mm) of axis 2, 0: axis not connected [default]").toLatin1().data()));
+	m_initParamsOpt.append(ito::Param("axisSteps3", ito::ParamBase::Double, 0.0, new ito::DoubleMeta(0.0,100000.0), tr("number of full steps per unit (deg or mm) of axis 3, 0: axis not connected [default]").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("unit1", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("unit of axis 1, 0: degree, 1: mm [default: 0]").toLatin1().data()));
+	m_initParamsOpt.append(ito::Param("unit2", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("unit of axis 2, 0: degree, 1: mm [default: 0]").toLatin1().data()));
+	m_initParamsOpt.append(ito::Param("unit3", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("unit of axis 3, 0: degree, 1: mm [default: 0]").toLatin1().data()));
+	m_initParamsOpt.append(ito::Param("switchSettings", ito::ParamBase::Int, 0, new ito::IntMeta(0,63), tr("SwitchSettings").toLatin1().data()));
+
     //ito::tParam paramVal = ito::tParam("Number of Axis", ito::ParamBase::Int, 0, 10, 6, "Number of axis for this Motor");
     //m_initParamsOpt.append(paramVal);
 
@@ -133,12 +138,11 @@ might slightly differ from the desired values due to rounding uncertainties.";
 //----------------------------------------------------------------------------------------------------------------------------------
 USBMotion3XIIIInterface::~USBMotion3XIIIInterface()
 {
-    //unloadDLL();
-
     m_initParamsMand.clear();
     m_initParamsOpt.clear();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal USBMotion3XIIIInterface::loadDLL()
 {
     ito::RetVal retValue(ito::retOk);
@@ -269,6 +273,7 @@ ito::RetVal USBMotion3XIIIInterface::loadDLL()
     return retValue;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal USBMotion3XIIIInterface::unloadDLL()
 {
     if (mLib.isLoaded())
@@ -309,7 +314,6 @@ ito::RetVal USBMotion3XIIIInterface::unloadDLL()
     Q_EXPORT_PLUGIN2(USBMotion3XIIIInterface, USBMotion3XIIIInterface)
 #endif
 
-//----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal USBMotion3XIII::showConfDialog(void)
 {
@@ -364,7 +368,7 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
     m_params.insert( "async", Param("async", ParamBase::Int, 0, 1, 0, tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
     m_async = m_params["async"].getVal<int>();
 
-    m_params.insert( "axisSteps1", Param("axisSteps1", ParamBase::Int | ParamBase::Readonly, 0, 100000, 200, tr("number of full steps per turn of motor 1, 0: motor not connected").toLatin1().data())); //read-only
+    m_params.insert( "axisSteps1", Param("axisSteps1", ParamBase::Double | ParamBase::Readonly, 0.0, 100000.0, 200.0, tr("number of full steps per turn of motor 1, 0: motor not connected").toLatin1().data())); //read-only
     m_params.insert( "vMin1", Param("vMin1", ParamBase::Double, 0.0, 10000.0, 90.0, tr("minimal speed in degree per second of motor 1").toLatin1().data()));
     m_params.insert( "vMax1", Param("vMax1", ParamBase::Double, 0.0, 10000.0, 90.0, tr("maximal speed in degree per second of motor 1").toLatin1().data()));
     m_params.insert( "aMax1", Param("aMax1", ParamBase::Double, 0.0, 10000.0, 5.0, tr("maximal acceleration in degree/s^2 of motor 1").toLatin1().data()));
@@ -373,9 +377,10 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
     m_params.insert( "coilCurrentRest1", Param("coilCurrentRest1", ParamBase::Double, 12.5, 100.0, 12.5, tr("coil current if motor 1 is in rest [12.5%, 25%, ... 87.5%, 100%]").toLatin1().data()));
     m_params.insert( "coilCurrentThreshold1", Param("coilCurrentThreshold1", ParamBase::Double, 0.0, 10000.0, 5.0, tr("threshold acceleration for distinction between coilCurrentHigh and coilCurrentLow").toLatin1().data()));
     m_params.insert( "axisEnabled1", Param("axisEnabled1", ParamBase::Int, 0, 1, 1, tr("determine if motor 1 is enabled (1) or disabled (0). If disabled, this motor is manually moveable").toLatin1().data()));
-    m_params.insert( "microSteps1", Param("microSteps1", ParamBase::Int, 1, 64, 1, tr("micro steps for motor 1 [1,2,4,8,16,32,64]").toLatin1().data()));
+	m_params.insert( "microSteps1", Param("microSteps1", ParamBase::Int, 1, 64, 1, tr("micro steps for motor 1 [1,2,4,8,16,32,64]").toLatin1().data()));
+    m_params.insert( "switchSettings1", Param("switchSettings1", ParamBase::Int, 0, 15, 0, tr("bitmask of switch settings (bit 1: DISABLE_STOP_L, bit 2: DISABLE_STOP_R, bit 3: SOFT_STOP, bit 4: REF_RnL").toLatin1().data()));
 
-    m_params.insert( "axisSteps2", Param("axisSteps2", ParamBase::Int | ParamBase::Readonly, 0, 100000, 200, tr("number of full steps per turn of motor 2, 0: motor not connected").toLatin1().data())); //read-only
+    m_params.insert( "axisSteps2", Param("axisSteps2", ParamBase::Double | ParamBase::Readonly, 0.0, 100000.0, 200.0, tr("number of full steps per turn of motor 2, 0: motor not connected").toLatin1().data())); //read-only
     m_params.insert( "vMin2", Param("vMin2", ParamBase::Double, 0.0, 10000.0, 90.0, tr("minimal speed in degree per second of motor 2").toLatin1().data()));
     m_params.insert( "vMax2", Param("vMax2", ParamBase::Double, 0.0, 10000.0, 90.0, tr("maximal speed in degree per second of motor 2").toLatin1().data()));
     m_params.insert( "aMax2", Param("aMax2", ParamBase::Double, 0.0, 10000.0, 5.0, tr("maximal acceleration in degree/s^2 of motor 2").toLatin1().data()));
@@ -385,8 +390,10 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
     m_params.insert( "coilCurrentThreshold2", Param("coilCurrentThreshold2", ParamBase::Double, 0.0, 10000.0, 5.0, tr("threshold acceleration for distinction between coilCurrentHigh and coilCurrentLow").toLatin1().data()));
     m_params.insert( "axisEnabled2", Param("axisEnabled2", ParamBase::Int, 0, 1, 1, tr("determine if motor 2 is enabled (1) or disabled (0). If disabled, this motor is manually moveable").toLatin1().data()));
     m_params.insert( "microSteps2", Param("microSteps2", ParamBase::Int, 1, 64, 1, tr("micro steps for motor 2 [1,2,4,8,16,32,64]").toLatin1().data()));
+    m_params.insert( "switchSettings2", Param("switchSettings2", ParamBase::Int, 0, 15, 0, tr("bitmask of switch settings (bit 1: DISABLE_STOP_L, bit 2: DISABLE_STOP_R, bit 3: SOFT_STOP, bit 4: REF_RnL").toLatin1().data()));
 
-    m_params.insert( "axisSteps3", Param("axisSteps3", ParamBase::Int | ParamBase::Readonly, 0, 100000, 200, tr("number of full steps per turn of motor 3, 0: motor not connected").toLatin1().data())); //read-only
+
+    m_params.insert( "axisSteps3", Param("axisSteps3", ParamBase::Double | ParamBase::Readonly, 0.0, 100000.0, 200.0, tr("number of full steps per turn of motor 3, 0: motor not connected").toLatin1().data())); //read-only
     m_params.insert( "vMin3", Param("vMin3", ParamBase::Double, 0.0, 10000.0, 90.0, tr("minimal speed in degree per second of motor 3").toLatin1().data()));
     m_params.insert( "vMax3", Param("vMax3", ParamBase::Double, 0.0, 10000.0, 90.0, tr("maximal speed in degree per second of motor 3").toLatin1().data()));
     m_params.insert( "aMax3", Param("aMax3", ParamBase::Double, 0.0, 10000.0, 5.0, tr("maximal acceleration in degree/s^2 of motor 3").toLatin1().data()));
@@ -395,7 +402,9 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
     m_params.insert( "coilCurrentRest3", Param("coilCurrentRest3", ParamBase::Double, 12.5, 100.0, 12.5, tr("coil current if motor 3 is in rest [12.5%, 25%, ... 87.5%, 100%]").toLatin1().data()));
     m_params.insert( "coilCurrentThreshold3", Param("coilCurrentThreshold3", ParamBase::Double, 0.0, 10000.0, 5.0, tr("threshold acceleration for distinction between coilCurrentHigh and coilCurrentLow").toLatin1().data()));
     m_params.insert( "axisEnabled3", Param("axisEnabled3", ParamBase::Int, 0, 1, 1, tr("determine if motor 3 is enabled (1) or disabled (0). If disabled, this motor is manually moveable").toLatin1().data()));
-    m_params.insert( "microSteps3", Param("microSteps3", ParamBase::Int, 1, 64, 1, tr("micro steps for motor 3 [1,2,4,8,16,32,64]").toLatin1().data()));
+	m_params.insert( "microSteps3", Param("microSteps3", ParamBase::Int, 1, 64, 1, tr("micro steps for motor 3 [1,2,4,8,16,32,64]").toLatin1().data()));
+    m_params.insert( "switchSettings3", Param("switchSettings3", ParamBase::Int, 0, 15, 0, tr("bitmask of switch settings (bit 1: DISABLE_STOP_L, bit 2: DISABLE_STOP_R, bit 3: SOFT_STOP, bit 4: REF_RnL").toLatin1().data()));
+
 
     m_currentPos.fill(0.0,3);
     m_currentStatus.fill(0,3);
@@ -409,9 +418,6 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
 
    //Marc: connect(this, SIGNAL(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)), USBMotion3XIIIWid, SLOT(statusUpdated(QVector<bool>, QVector<bool>, QVector<double>, QVector<double>, QVector<bool>)));
    //Marc: connect(this, SIGNAL(targetsChanged(QVector<bool>, QVector<double>)), USBMotion3XIIIWid, SLOT(targetsChanged(QVector<bool>, QVector<double>)));
-   
-   connect(USBMotion3XIIIWid, SIGNAL(setAbsTargetDegree(double, double, double)), this, SLOT(setAbsTargetDegree(double, double, double)));
-   connect(USBMotion3XIIIWid, SIGNAL(setRelTargetDegree(unsigned int, double)), this, SLOT(setRelTargetDegree(unsigned int, double)));
 
    Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
    QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -479,7 +485,7 @@ ito::RetVal USBMotion3XIII::updateStatus()
 
     unsigned char mcStatus;
     unsigned char dvrChain;
-    int stepsPerTurn;
+    double stepsPerUnit;
 
     enabledriverchain(0x00, 0x00, 1 | 2 | 4, dvrChain, DWTIMEOUT);
 
@@ -493,9 +499,11 @@ ito::RetVal USBMotion3XIII::updateStatus()
             getxtarget(i, mcStatus, targetPos[i], DWTIMEOUT);
             getxactual(i, mcStatus, actualPos[i], DWTIMEOUT);
 
-            stepsPerTurn = getTotalStepsPerTurn(i);
-            m_currentPos[i] = /*actPosDbl[i] =*/ static_cast<double>(360.0 * actualPos[i]) / static_cast<double>(stepsPerTurn);
-            m_targetPos[i] = /*targetPosDbl[i] =*/ static_cast<double>(360.0 * targetPos[i]) / static_cast<double>(stepsPerTurn);
+
+			stepsPerUnit = getTotalStepsPerUnit(i);
+            m_currentPos[i] = /*actPosDbl[i] =*/ static_cast<double>(actualPos[i]) / stepsPerUnit;
+            m_targetPos[i] = /*targetPosDbl[i] =*/ static_cast<double>(targetPos[i]) / stepsPerUnit;
+
 
             if (mcStatus & (1 << (2*i)))
             {
@@ -535,9 +543,9 @@ void USBMotion3XIII::timerEvent( QTimerEvent *event )
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int USBMotion3XIII::getTotalStepsPerTurn(int axis) //axis = 0,1,2
+double USBMotion3XIII::getTotalStepsPerUnit(int axis) //axis = 0,1,2
 {
-    int fullSteps = m_params["axisSteps" + QString::number(axis + 1)].getVal<int>();
+    double fullSteps = m_params["axisSteps" + QString::number(axis + 1)].getVal<double>(); //in units as well
     int microSteps = m_params["microSteps" + QString::number(axis + 1)].getVal<int>();
     return fullSteps * microSteps; //0 if motor is not available
 }
@@ -548,7 +556,7 @@ ito::RetVal USBMotion3XIII::loadDriverSettingsToParams()
     unsigned char mcStatus;
     unsigned char valueC1, valueC2, valueC3;
     unsigned short valueS1;
-    int steps;
+    double steps;
     int microSteps;
 
     RetVal retValue(retOk);
@@ -556,8 +564,8 @@ ito::RetVal USBMotion3XIII::loadDriverSettingsToParams()
     for (unsigned int axis = 0; axis <= 2; axis ++)
     {
         //motorSteps must already been loaded
-        steps = m_params["axisSteps" + QString::number(axis+1)].getVal<int>();
-        if (steps <= 0) steps = 200; //if steps == 0, then motor is not available, but in order to avoid a crash in the subsequent calculation, set steps to a default value of 200.
+        steps = m_params["axisSteps" + QString::number(axis+1)].getVal<double>();
+        if (steps <= 0) steps = 200.0; //if steps == 0, then motor is not available, but in order to avoid a crash in the subsequent calculation, set steps to a default value of 200.
 
         //microSteps
         retValue += errorCheck(getmicrosteps( axis, valueC1, mcStatus, DWTIMEOUT ));
@@ -575,7 +583,11 @@ ito::RetVal USBMotion3XIII::loadDriverSettingsToParams()
         retValue += errorCheck(enabledriverchain(0x00 , 0x00, 1 << axis, valueC1, DWTIMEOUT ));
         m_params["axisEnabled" + QString::number(axis+1)].setVal<int>( valueC1 & (1 << axis) );
 
-        //vmin
+        //switch settings
+        retValue += errorCheck(getswitchsettings(axis, valueC1, mcStatus, DWTIMEOUT));
+        m_params["switchSettings" + QString::number(axis+1)].setVal<int>(valueC1);
+
+		//vmin
         retValue += errorCheck(getvmin(axis, mcStatus, valueS1, DWTIMEOUT ));
         m_params["vMin" + QString::number(axis+1)].setVal<double>( 360.0 * (double)valueS1 / ( steps * microSteps ) );
 
@@ -660,17 +672,20 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 str = RETSTRING( getproductname(m_curDeviceIndex) );
                 m_params["productName"].setVal<char*>( str.toLatin1().data() );
 
-                /*int test = paramsOpt->value(0).getVal<int>();
-                test = paramsOpt->value(1).getVal<int>();
-                test = paramsOpt->value(2).getVal<int>();*/
-                m_params["axisSteps1"].setVal<int>( paramsOpt->value(0).getVal<int>() );
-                m_params["axisSteps2"].setVal<int>( paramsOpt->value(1).getVal<int>() );
-                m_params["axisSteps3"].setVal<int>( paramsOpt->value(2).getVal<int>() );
+                m_axisUnit[0] = paramsOpt->at(0).getVal<int>();
+                m_axisUnit[1] = paramsOpt->at(1).getVal<int>();
+                m_axisUnit[2] = paramsOpt->at(2).getVal<int>();
 
+                m_params["axisSteps1"].setVal<double>( paramsOpt->value(0).getVal<double>() );
+                m_params["axisSteps2"].setVal<double>( paramsOpt->value(1).getVal<double>() );
+                m_params["axisSteps3"].setVal<double>( paramsOpt->value(2).getVal<double>() );
+				
                 if (m_params["axisSteps1"].getVal<int>() > 0) m_availableAxis.append(0);
                 if (m_params["axisSteps2"].getVal<int>() > 0) m_availableAxis.append(1);
                 if (m_params["axisSteps3"].getVal<int>() > 0) m_availableAxis.append(2);
 
+                
+				
                 //if (initparamfromeep( DWTIMEOUT) ) // load values from EEPROM or default values
                 //{
                     retValue += errorCheck(initparamtodefault( DWTIMEOUT ));
@@ -681,7 +696,22 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 retValue += errorCheck(setmode(0, 0x00, mcStatus, DWTIMEOUT));
                 retValue += errorCheck(setmode(1, 0x00, mcStatus, DWTIMEOUT));
                 retValue += errorCheck(setmode(2, 0x00, mcStatus, DWTIMEOUT));
-                retValue += loadDriverSettingsToParams();
+
+                //iprom: ich habe jetzt switchSettings1..switchSettings3 als Parameter angelegt.
+                //Damit lässt sich jederzeit die Settings-Einstellungen ändern. Brauchen wir
+                //dann die init-Parameter hier überhaupt noch?
+				// %% setswitchsettings for all axis
+				// calculate Settings
+				int Switches = paramsOpt->value(6).getVal<int>();
+				int ERG1 = (Switches & 48) >> 4; 
+				int ERG2 = (Switches & 12) >> 2;
+				int ERG3 = (Switches &  3) >> 0;
+				// set setswitchsettings
+				retValue += errorCheck(setswitchsettings(0, ERG1, mcStatus, DWTIMEOUT));
+				retValue += errorCheck(setswitchsettings(1, ERG2, mcStatus, DWTIMEOUT));
+				retValue += errorCheck(setswitchsettings(2, ERG3, mcStatus, DWTIMEOUT));
+				
+                retValue += loadDriverSettingsToParams(); //iprom: warum ist diese Zeile rausgeflogen? Hier wird der aktuelle Zustand des Controllers gelesen und die m_params-Parameter mit diesem synchronisiert
 
             }
         }
@@ -697,6 +727,11 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         }
     }
 
+    if (!retValue.containsError())
+    {
+        emit parametersChanged(m_params);
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -708,31 +743,24 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 
         if (USBMotion3XIIIWid)
         {
-            temp = m_params["name"].getVal<char*>(); //borrowed reference
-            QString name = temp;
-            temp = m_params["serialNumber"].getVal<char*>(); //borrowed reference
-            QString id = temp;
+            QString id = m_params["serialNumber"].getVal<char*>(); //borrowed reference
+            setIdentifier(id);
 
             QString axis = "";
-            QVector<bool> available = QVector<bool>() << false << false << false;
             if (m_availableAxis.contains(0)) 
             {
                 axis.append("x (0) ");
-                available[0] = true;
             }
             if (m_availableAxis.contains(1)) 
             {
                 axis.append("y (1) ");
-                available[1] = true;
             }
             if (m_availableAxis.contains(2)) 
             {
                 axis.append("z (2) ");
-                available[2] = true;
             }
 
-
-            QMetaObject::invokeMethod(USBMotion3XIIIWid, "basicInformationChanged", Q_ARG(QString,name), Q_ARG(QString,id), Q_ARG(QString,axis), Q_ARG(QVector<bool>,available));
+            QMetaObject::invokeMethod(USBMotion3XIIIWid, "basicInformationChanged", Q_ARG(QString,axis), Q_ARG(int*,m_axisUnit));
         }
     }
 
@@ -793,33 +821,32 @@ ito::RetVal USBMotion3XIII::close(ItomSharedSemaphore *waitCond)
 ito::RetVal USBMotion3XIII::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
+    QMap<QString,ito::Param>::iterator it;
 
-    if (key == "")
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
-    }
-    else
-    {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-        if (paramIt != m_params.constEnd())
-        {
-            *val = paramIt.value();
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
-        }
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if (waitCond) 
+    if(!retValue.containsError())
+    {
+        *val = it.value();
+    }
+
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 
@@ -829,99 +856,142 @@ ito::RetVal USBMotion3XIII::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
-    int iTemp;
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
     int axis;
 
-    if(isMotorMoving())
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("Motor is moving. Parameters cannot be set.").toLatin1().data());
-    }
-    else if (key == "")
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
-    }
-    else
-    {
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
-        if (paramIt != m_params.end() && (paramIt->getType() == val->getType() || (paramIt->isNumeric() && val->isNumeric())))
-        {
-            //check read-only
-            if ((*paramIt).getFlags() & ParamBase::Readonly)
-            {
-                retValue += ito::RetVal(retError, 0, tr("this parameter is only readable").toLatin1().data());
-            }
-            else if (key == "async")
-            {
-                iTemp = val->getVal<int>();
-                if (iTemp == 0 || iTemp == 1)
-                {
-                    (*paramIt).setVal<int>(iTemp);
-                    m_async = iTemp;
-                }
-                else
-                {
-                    retValue += ito::RetVal(retError, 0, tr("async parameter needs value 0 or 1").toLatin1().data());
-                }
-            }
-            else if (key == "microSteps1" || key == "microSteps2" || key == "microSteps3")
-            {
-                axis = key.right(1).toInt();
-                retValue += setMicroSteps( axis, val->getVal<int>() );
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-                //if micro-steps are changed, acceleration, speed and coil threshold value must be reset, too
-                retValue += setAcceleration( axis, m_params["aMax" + QString::number(axis)].getVal<double>() );
-                retValue += setSpeed( axis, 0x1 | 0x2, m_params["vMin" + QString::number(axis)].getVal<double>(), m_params["vMax" + QString::number(axis)].getVal<double>() );
-                retValue += setCoilCurrents( axis, 0x8, 0.0, 0.0, 0.0, m_params["coilCurrentThreshold" + QString::number(axis)].getVal<double>() );
-            }
-            else if (key == "axisEnabled1" || key == "axisEnabled2" || key == "axisEnabled3")
+    if(isMotorMoving()) //this if-case is for actuators only.
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toLatin1().data());
+    }
+
+    if(!retValue.containsError())
+    {
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
+    }
+
+    if(!retValue.containsError())
+    {
+        //here the new parameter is checked whether its type corresponds or can be cast into the
+        // value in m_params and whether the new type fits to the requirements of any possible
+        // meta structure.
+        retValue += apiValidateParam(*it, *val, false, true);
+    }
+
+    if (!retValue.containsError())
+    {
+        if (key == "async")
+        {
+            retValue += it->copyValueFrom( &(*val) );
+        }
+        else if (key == "microSteps1" || key == "microSteps2" || key == "microSteps3")
+        {
+            axis = key.right(1).toInt();
+            retValue += setMicroSteps( axis, val->getVal<int>() );
+
+            //if micro-steps are changed, acceleration, speed and coil threshold value must be reset, too
+            retValue += setAcceleration( axis, m_params["aMax" + QString::number(axis)].getVal<double>() );
+            retValue += setSpeed( axis, 0x1 | 0x2, m_params["vMin" + QString::number(axis)].getVal<double>(), m_params["vMax" + QString::number(axis)].getVal<double>() );
+            retValue += setCoilCurrents( axis, 0x8, 0.0, 0.0, 0.0, m_params["coilCurrentThreshold" + QString::number(axis)].getVal<double>() );
+            if (!retValue.containsError())
             {
-                retValue += setEnabled( key.right(1).toInt(), val->getVal<int>() );
-            }
-            else if (key == "aMax1" || key == "aMax2" || key == "aMax3")
-            {
-                retValue += setAcceleration( key.right(1).toInt(), val->getVal<double>() );
-            }
-            else if (key == "vMax1" || key == "vMax2" || key == "vMax3")
-            {
-                retValue += setSpeed( key.right(1).toInt(), 0x2, 0.0, val->getVal<double>() );
-            }
-            else if (key == "vMin1" || key == "vMin2" || key == "vMin3")
-            {
-                retValue += setSpeed( key.right(1).toInt(), 0x1,val->getVal<double>(), 0.0 );
-            }
-            else if (key == "coilCurrentHigh1" || key == "coilCurrentHigh2" || key == "coilCurrentHigh3")
-            {
-                retValue += setCoilCurrents( key.right(1).toInt(), 0x01, val->getVal<double>(), 0,0,0 );
-            }
-            else if (key == "coilCurrentLow1" || key == "coilCurrentLow2" || key == "coilCurrentLow3")
-            {
-                retValue += setCoilCurrents( key.right(1).toInt(), 0x02, 0,val->getVal<double>(), 0,0 );
-            }
-            else if (key == "coilCurrentRest1" || key == "coilCurrentRest2" || key == "coilCurrentRest3")
-            {
-                retValue += setCoilCurrents( key.right(1).toInt(), 0x04, 0,0,val->getVal<double>(), 0 );
-            }
-            else if (key == "coilCurrentThreshold1" || key == "coilCurrentThreshold2" || key == "coilCurrentThreshold3")
-            {
-                retValue += setCoilCurrents( key.right(1).toInt(), 0x08, 0,0,0,val->getVal<double>() );
-            }
-            else
-            {
-                retValue += paramIt.value().copyValueFrom( &(*val) );
+                retValue += it->copyValueFrom( &(*val) );
             }
         }
-        else if (paramIt->getType() != val->getType())
+        else if (key == "axisEnabled1" || key == "axisEnabled2" || key == "axisEnabled3")
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("given parameter and m_param do not have the same type").toLatin1().data());
+            retValue += setEnabled( key.right(1).toInt(), val->getVal<int>() );
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom( &(*val) );
+            }
+        }
+        else if (key == "aMax1" || key == "aMax2" || key == "aMax3")
+        {
+            retValue += setAcceleration( key.right(1).toInt(), val->getVal<double>() );
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom( &(*val) );
+            }
+        }
+        else if (key == "vMax1" || key == "vMax2" || key == "vMax3")
+        {
+            retValue += setSpeed( key.right(1).toInt(), 0x2, 0.0, val->getVal<double>() );
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom( &(*val) );
+            }
+        }
+        else if (key == "vMin1" || key == "vMin2" || key == "vMin3")
+        {
+            retValue += setSpeed( key.right(1).toInt(), 0x1,val->getVal<double>(), 0.0 );
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom( &(*val) );
+            }
+        }
+        else if (key == "coilCurrentHigh1" || key == "coilCurrentHigh2" || key == "coilCurrentHigh3")
+        {
+            retValue += setCoilCurrents( key.right(1).toInt(), 0x01, val->getVal<double>(), 0,0,0 );
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom( &(*val) );
+            }
+        }
+        else if (key == "coilCurrentLow1" || key == "coilCurrentLow2" || key == "coilCurrentLow3")
+        {
+            retValue += setCoilCurrents( key.right(1).toInt(), 0x02, 0,val->getVal<double>(), 0,0 );
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom( &(*val) );
+            }
+        }
+        else if (key == "coilCurrentRest1" || key == "coilCurrentRest2" || key == "coilCurrentRest3")
+        {
+            retValue += setCoilCurrents( key.right(1).toInt(), 0x04, 0,0,val->getVal<double>(), 0 );
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom( &(*val) );
+            }
+        }
+        else if (key == "coilCurrentThreshold1" || key == "coilCurrentThreshold2" || key == "coilCurrentThreshold3")
+        {
+            retValue += setCoilCurrents( key.right(1).toInt(), 0x08, 0,0,0,val->getVal<double>() );
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom( &(*val) );
+            }
+        }
+        else if (key == "switchSettings1" || key == "switchSettings2" || key == "switchSettings3")
+        {
+            unsigned char status;
+            retValue += errorCheck(setswitchsettings(key.right(1).toInt()-1, val->getVal<int>(), status, DWTIMEOUT)); 
+            if (!retValue.containsError())
+            {
+                retValue += it->copyValueFrom( &(*val) );
+            }
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
+            //all parameters that don't need further checks can simply be assigned
+            //to the value in m_params (the rest is already checked above)
+            retValue += it->copyValueFrom( &(*val) );
         }
     }
 
-    if (waitCond) 
+    if(!retValue.containsError())
+    {
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+    }
+
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -987,7 +1057,7 @@ ito::RetVal USBMotion3XIII::setCoilCurrents(int axis, char changeBitMask, double
     unsigned short driverThreshold;
     double paramMin;
     double paramMax;
-    int stepsPerTurn;
+    double stepsPerUnit;
 
     if (axis < 1 || axis > 3)
     {
@@ -998,7 +1068,7 @@ ito::RetVal USBMotion3XIII::setCoilCurrents(int axis, char changeBitMask, double
         return ito::RetVal(retError, 0, tr("this axis is not available (axisSteps = 0)").toLatin1().data());
     }
 
-    stepsPerTurn = getTotalStepsPerTurn(axis-1);
+    stepsPerUnit = getTotalStepsPerUnit(axis-1);
     motor = axis-1;
 
     if ((changeBitMask ^ (0x1 | 0x2 | 0x4 | 0x8)) > 0) //not every value will be changed, therefore read the current values
@@ -1044,7 +1114,7 @@ ito::RetVal USBMotion3XIII::setCoilCurrents(int axis, char changeBitMask, double
         if (threshold < paramMin) return RetVal(retError,0, tr("coilCurrentThreshold is lower than the minimal allowed value").toLatin1().data());
         if (threshold > paramMax) return RetVal(retError,0, tr("coilCurrentThreshold is bigger than the maximal allowed value").toLatin1().data());
 
-        driverThreshold = qRound(threshold * static_cast<double>(stepsPerTurn) / 360.0);
+        driverThreshold = qRound(threshold * stepsPerUnit);
     }
 
     if (retValue == retOk)
@@ -1052,7 +1122,7 @@ ito::RetVal USBMotion3XIII::setCoilCurrents(int axis, char changeBitMask, double
         retValue += errorCheck( setcoilcurrent(motor, driverAgtat, driverAleat, driverV0, driverThreshold, mcStatus, DWTIMEOUT) );
 
         getcoilcurrent(motor, mcStatus, driverAgtat, driverAleat, driverV0, driverThreshold, DWTIMEOUT );
-        threshold = 360.0 * static_cast<double>(driverThreshold) / static_cast<double>(stepsPerTurn);
+        threshold = static_cast<double>(driverThreshold) / stepsPerUnit;
         agtat = driverAgtat == 0 ? 100.0 : 12.5 * driverAgtat;
         aleat = driverAleat == 0 ? 100.0 : 12.5 * driverAleat;
         v0    =    driverV0 == 0 ? 100.0 : 12.5 * driverV0;
@@ -1089,7 +1159,7 @@ ito::RetVal USBMotion3XIII::setSpeed(int axis, char changeBitMask, double vmin, 
     unsigned short driverVMax;
     double paramMin;
     double paramMax;
-    double stepsPerTurn;
+    double stepsPerUnit;
 
     if (axis < 1 || axis > 3)
     {
@@ -1100,7 +1170,7 @@ ito::RetVal USBMotion3XIII::setSpeed(int axis, char changeBitMask, double vmin, 
         return ito::RetVal(retError, 0, tr("this axis is not available (axisSteps = 0)").toLatin1().data());
     }
 
-    stepsPerTurn = static_cast<double>( getTotalStepsPerTurn(axis-1) );
+    stepsPerUnit = getTotalStepsPerUnit(axis-1);
     motor = axis-1;
 
     if (changeBitMask & 0x2) //set vmax
@@ -1117,12 +1187,12 @@ ito::RetVal USBMotion3XIII::setSpeed(int axis, char changeBitMask, double vmin, 
             return ito::RetVal(retError, 0, tr("vMax is bigger than the maximal allowed value").toLatin1().data());
         }
 
-        driverVMax = qRound( vmax * stepsPerTurn / 360.0 );
+        driverVMax = qRound( vmax * stepsPerUnit );
     
         retValue += errorCheck( setvmax( motor, driverVMax, mcStatus, DWTIMEOUT ) );
 
         getvmax(motor, mcStatus, driverVMax, DWTIMEOUT);
-        vmax = 360.0 * static_cast<double>(driverVMax) / stepsPerTurn;
+        vmax = static_cast<double>(driverVMax) / stepsPerUnit;
 
         if (retValue == retOk )
         {
@@ -1144,12 +1214,12 @@ ito::RetVal USBMotion3XIII::setSpeed(int axis, char changeBitMask, double vmin, 
             return ito::RetVal(retError, 0, tr("vMin is bigger than the maximal allowed value").toLatin1().data());
         }
 
-        driverVMin = qRound( vmin * stepsPerTurn / 360.0 );
+        driverVMin = qRound( vmin * stepsPerUnit );
     
         retValue += errorCheck( setvmin( motor, driverVMin, mcStatus, DWTIMEOUT ) );
 
         getvmin(motor, mcStatus, driverVMin, DWTIMEOUT);
-        vmin = 360.0 * static_cast<double>(driverVMin) / stepsPerTurn;
+        vmin = static_cast<double>(driverVMin) / stepsPerUnit;
 
         if (retValue == retOk)
         {
@@ -1158,9 +1228,9 @@ ito::RetVal USBMotion3XIII::setSpeed(int axis, char changeBitMask, double vmin, 
     }
 
     getvmin(motor, mcStatus, driverVMin, DWTIMEOUT);
-    qDebug() << "V-Min set to " << driverVMin << " steps / sek; " << (360*driverVMin)/stepsPerTurn <<" °/sek";
+    qDebug() << "V-Min set to " << driverVMin << " steps / sec; " << (driverVMin)/stepsPerUnit <<" °/sec or mm/sec";
     getvmax(motor, mcStatus, driverVMax, DWTIMEOUT);
-    qDebug() << "V-Max set to " << driverVMax << " steps / sek; " << (360*driverVMax)/stepsPerTurn << " °/sek";
+    qDebug() << "V-Max set to " << driverVMax << " steps / sec; " << (driverVMax)/stepsPerUnit << " °/sec or mm/sec";
 
     return retValue;
 }
@@ -1175,7 +1245,7 @@ ito::RetVal USBMotion3XIII::setAcceleration(int axis, double amax) //axis = 1,2,
     unsigned short driverAmax;
     double paramMin;
     double paramMax;
-    int stepsPerTurn;
+    double stepsPerUnit;
 
     if (axis < 1 || axis > 3)
     {
@@ -1198,8 +1268,8 @@ ito::RetVal USBMotion3XIII::setAcceleration(int axis, double amax) //axis = 1,2,
         return ito::RetVal(retError, 0, tr("aMax is bigger than the maximal allowed value").toLatin1().data());
     }
 
-    stepsPerTurn = getTotalStepsPerTurn(axis-1);
-    driverAmax = qRound(amax * static_cast<double>(stepsPerTurn) / 360.0);
+    stepsPerUnit = getTotalStepsPerUnit(axis-1);
+    driverAmax = qRound(amax * stepsPerUnit);
 
     motor = axis-1;
     
@@ -1207,7 +1277,7 @@ ito::RetVal USBMotion3XIII::setAcceleration(int axis, double amax) //axis = 1,2,
 
     //check
     getamax(motor, mcStatus, driverAmax, DWTIMEOUT);
-    amax = 360.0 * static_cast<double>(driverAmax) / static_cast<double>(stepsPerTurn);
+    amax = static_cast<double>(driverAmax) / stepsPerUnit;
 
     if (retValue == retOk )
     {
@@ -1261,9 +1331,6 @@ ito::RetVal USBMotion3XIII::setEnabled(int axis, int value) //axis = 1,2,3
     
     return retValue;
 }
-
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal USBMotion3XIII::calib(const int axis, ItomSharedSemaphore *waitCond)
@@ -1382,7 +1449,7 @@ ito::RetVal USBMotion3XIII::getPos(const int axis, QSharedPointer<double> pos, I
         int tempPos;
         retValue += errorCheck( getxactual( axis ,  mcStatus , tempPos,  DWTIMEOUT) );
         //transform tempPos to angle
-        *pos = 360.0 * (double)tempPos / (double)getTotalStepsPerTurn(axis);
+        *pos = (double)tempPos / getTotalStepsPerUnit(axis);
         m_currentPos[axis] = *pos;
     }
     else
@@ -1413,7 +1480,7 @@ ito::RetVal USBMotion3XIII::getPos(QVector<int> axis, QSharedPointer<QVector<dou
             int tempPos;
             retValue += errorCheck( getxactual( axis[naxis] ,  mcStatus , tempPos,  DWTIMEOUT) );
             //transform tempPos to angle
-            m_currentPos[naxis] = 360.0 * (double)tempPos / (double)getTotalStepsPerTurn(naxis);
+            m_currentPos[naxis] = (double)tempPos / getTotalStepsPerUnit(naxis);
             (*pos)[naxis] = m_currentPos[axis[naxis]];
         }
         else
@@ -1452,9 +1519,9 @@ ito::RetVal USBMotion3XIII::setPosAbs(const int axis, const double pos, ItomShar
     else
     {
         //pos is in degree
-        int stepsPerTurn = getTotalStepsPerTurn(axis);
-        int steps = qRound( static_cast<double>(pos * stepsPerTurn) / 360.0 );
-        m_targetPos[axis] = static_cast<double>(360 * steps) / static_cast<double>(stepsPerTurn); //calc it here in order to consider round-problems
+        double stepsPerUnit = getTotalStepsPerUnit(axis);
+        int steps = qRound( static_cast<double>(pos * stepsPerUnit) );
+        m_targetPos[axis] = static_cast<double>(steps) / stepsPerUnit; //calc it here in order to consider round-problems
         unsigned char mcStatus;
         setStatus(m_currentStatus[axis], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
         retValue += errorCheck( setxtarget(axis, steps, mcStatus, DWTIMEOUT) );
@@ -1502,7 +1569,7 @@ ito::RetVal USBMotion3XIII::setPosAbs(QVector<int> axis, QVector<double> pos, It
     ito::RetVal retValue(ito::retOk);
     int newTargetSteps[3] = {0, 0, 0};
     char motor = 0;
-    int stepsPerTurn;
+    double stepsPerUnit;
     bool released = false;
 
     if(isMotorMoving())
@@ -1524,9 +1591,9 @@ ito::RetVal USBMotion3XIII::setPosAbs(QVector<int> axis, QVector<double> pos, It
             motor |= (1 << axis[i]);
             if (axis[i] >= 0 && axis[i] < 3 )
             {
-                stepsPerTurn = getTotalStepsPerTurn(axis[i]);
-                newTargetSteps[axis[i]] = qRound(static_cast<double>(stepsPerTurn * pos[i]) / 360.0);
-                m_targetPos[axis[i]] = static_cast<double>(360 * newTargetSteps[axis[i]]) / static_cast<double>(stepsPerTurn); //calc it here in order to consider round-problems
+                stepsPerUnit = getTotalStepsPerUnit(axis[i]);
+                newTargetSteps[axis[i]] = qRound(stepsPerUnit * pos[i]);
+                m_targetPos[axis[i]] = static_cast<double>(newTargetSteps[axis[i]]) / stepsPerUnit; //calc it here in order to consider round-problems
             }
         }
 
@@ -1592,9 +1659,9 @@ ito::RetVal USBMotion3XIII::setPosRel(const int axis, const double pos, ItomShar
         if (retValue == ito::retOk)
         {
             //pos is in degree
-            int stepsPerTurn = getTotalStepsPerTurn(axis);
-            int steps = qRound( static_cast<double>(stepsPerTurn * (*actPos + pos)) / 360.0);
-            m_targetPos[axis] = static_cast<double>(360 * steps) / static_cast<double>(stepsPerTurn); //calc it here in order to consider round-problems
+            double stepsPerUnit = getTotalStepsPerUnit(axis);
+            int steps = qRound( static_cast<double>(stepsPerUnit * (*actPos + pos)));
+            m_targetPos[axis] = static_cast<double>(steps) / stepsPerUnit; //calc it here in order to consider round-problems
 
             unsigned char mcStatus;
             setStatus(m_currentStatus[axis], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
@@ -1642,7 +1709,7 @@ ito::RetVal USBMotion3XIII::setPosRel(QVector<int> axis, QVector<double> pos, It
     int newTarget[3] = {0, 0, 0};
     short s[3] = {0, 0, 0};
     char motor = 0;
-    int stepsPerTurn;
+    double stepsPerUnit;
     unsigned char mcStatus;
     bool released = false;
 
@@ -1667,10 +1734,10 @@ ito::RetVal USBMotion3XIII::setPosRel(QVector<int> axis, QVector<double> pos, It
             motor |= (1 << axis[i]);
             if (axis[i] >= 0 && axis[i] < 3 )
             {
-                stepsPerTurn = getTotalStepsPerTurn(axis[i]);
-                newTarget[axis[i]] = oldTarget[axis[i]] + qRound( static_cast<double>(stepsPerTurn * pos[i]) / 360.0 );
+                stepsPerUnit = getTotalStepsPerUnit(axis[i]);
+                newTarget[axis[i]] = oldTarget[axis[i]] + qRound( static_cast<double>(stepsPerUnit * pos[i]) );
                 m_currentPos[axis[i]] = newTarget[axis[i]];
-                m_targetPos[axis[i]] = static_cast<double>(360 * newTarget[axis[i]]) / static_cast<double>(stepsPerTurn); //calc it here in order to consider round-problems
+                m_targetPos[axis[i]] = static_cast<double>(newTarget[axis[i]]) / stepsPerUnit; //calc it here in order to consider round-problems
             }
         }
 
@@ -1857,41 +1924,6 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
     }
 
     return retVal;
-}
-
-//---------------------------------------------------------------------------------------------------------------------------------- 
-void USBMotion3XIII::setAbsTargetDegree(double target1, double target2, double target3)
-{
-    QVector<int> axis;
-    QVector<double> pos;
-
-    for (int i=0 ; i<3; i++)
-    {
-        if (m_availableAxis.contains(i))
-        {
-            axis.append(i);
-            switch(i)
-            {
-            case 0:
-                pos.append(target1);
-                break;
-            case 1:
-                pos.append(target2);
-                break;
-            case 2:
-                pos.append(target3);
-                break;
-            }
-        }
-    }
-
-    setPosAbs(axis,pos,NULL);
-}
-
-//---------------------------------------------------------------------------------------------------------------------------------- 
-void USBMotion3XIII::setRelTargetDegree(unsigned int axisNo, double relStepDegree)
-{
-    setPosRel(axisNo, relStepDegree, NULL);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
