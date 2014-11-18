@@ -158,6 +158,12 @@ if (PLUGIN_LeicaMotorFocus)
     ADD_SUBDIRECTORY(LeicaMotorFocus)
 endif (PLUGIN_LeicaMotorFocus)
 
+# libmodbus
+OPTION(PLUGIN_LibModbus "Build with this plugin." ON)
+if (PLUGIN_LibModbus)
+    ADD_SUBDIRECTORY(libmodbus)
+endif (PLUGIN_LibModbus)
+
 # LibUSB
 OPTION(PLUGIN_LIBUSB "Build with this plugin." ON)
 if (PLUGIN_LIBUSB)
