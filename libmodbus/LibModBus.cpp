@@ -35,26 +35,8 @@
 
 #include "pluginVersion.h"
 
-//#include <qdebug.h>
-//#include <qmessagebox.h>
-
-//#ifndef linux
-//    #include <Windows.h>
-////#define CCTS_OFLOW      0x00010000      /* CTS flow control of output */
-////#define CRTSCTS         (CCTS_OFLOW | CRTS_IFLOW)
-////#define CRTS_IFLOW      0x00020000      /* RTS flow control of input */
-//#else
-//    #include <unistd.h>
-////    #include <stdio.h>
-//    #include <termios.h>
-////    #include <sys/stat.h>
-//    #include <fcntl.h>
-//    #include <sys/ioctl.h>
-//#endif
-
 //#include "dockWidgetLibModBus.h"
-modbus_t *ctx;
-int initnum=0;
+
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -98,27 +80,10 @@ LibModBusInterface::LibModBusInterface()
     m_aboutThis = QObject::tr("N.A.");  
 
     ito::Param paramVal("IP", ito::ParamBase::String, "127.0.0.1", tr("IP-Adress of the target device (for ModBus TCP)").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}"), true);
     m_initParamsMand.append(paramVal);
 	paramVal = ito::Param("port", ito::ParamBase::Int, 0, 1024, 502, tr("The number of the TCP port for ModBus Communication (default 502)").toLatin1().data());
     m_initParamsMand.append(paramVal);
-
-
-    /*paramVal = ito::Param("bits", ito::ParamBase::Int, 5, 8, 8, tr("Number of bits to be written in line").toLatin1().data());
-    m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("stopbits", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits").toLatin1().data());
-    m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::Int, 0, 2, 0, tr("Parity: 0 -> no parity, 1 -> odd parity, 2 -> even parity").toLatin1().data());
-    m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("flow", ito::ParamBase::Int, 0, 127, 0, tr("Bitmask for flow control (see docstring for more information)").toLatin1().data());
-    m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("sendDelay", ito::ParamBase::Int, 0, 65000, 0, tr("0 -> write output buffer as block or single characters with delay (1..65000)").toLatin1().data());
-    m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
-    m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("enableDebug", ito::ParamBase::Int, 0, 1, 0, tr("Initialised 'debug'-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget").toLatin1().data());
-    m_initParamsOpt.append(paramVal);*/
-
-    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -148,53 +113,17 @@ const ito::RetVal LibModBus::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-LibModBus::LibModBus() : AddInDataIO(), m_debugMode(false)
+LibModBus::LibModBus() : AddInDataIO(), m_pCTX(NULL), m_connected(false)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "LibModBus", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("IP", ito::ParamBase::String | ito::ParamBase::In, "127.0.0.1", tr("IP Adress of the target device").toLatin1().data());
+	paramVal = ito::Param("IP", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "127.0.0.1", tr("IP Adress of the target device").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::In, 0, 1024, 502, tr("TCP Port for ModBus TCP Communication").toLatin1().data());
+	paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 0, 1024, 502, tr("TCP Port for ModBus TCP Communication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("registers",ito::ParamBase::String | ito::ParamBase::In,"1,10",tr("Default string for register addressing. Coding is 'Reg1Address,Reg1Size;Reg2Address,Reg2Size...'").toLatin1().data());
 	m_params.insert(paramVal.getName(),paramVal);
-    /*paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 50, 4000000, 9600, tr("Current baudrate in bits/s").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("bits", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 5, 8, 8, tr("Number of bits to be written in line").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("stopbits", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 1, 2, 1, tr("Stop bits after every n bits").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 2, 0, tr("Toggle parity check").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("flow", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 127, 0, tr("Bitmask for flow control as integer").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("endline", ito::ParamBase::String | ito::ParamBase::NoAutosave, "\n", tr("Endline character, will be added automatically during setVal").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sendDelay", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 65000, 0, tr("0 -> write output buffer as block at once or single characters with delay (1..65000)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);*/
-
-    //register exec functions
-    QVector<ito::Param> pMand;
-    QVector<ito::Param> pOpt;
-    QVector<ito::Param> pOut;
-    /*registerExecFunc("clearInputBuffer", pMand, pOpt, pOut, tr("Clears the input buffer of serial port"));
-    registerExecFunc("clearOutputBuffer", pMand, pOpt, pOut, tr("Clears the output buffer of serial port"));
-
-    pMand << ito::Param("bufferType", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Clears input (0) or output (1) buffer").toLatin1().data());
-    registerExecFunc("clearBuffer", pMand, pOpt, pOut, tr("Clears the input or output buffer of serial port"));*/
-
-/*    //now create dock widget for this plugin
-    DockWidgetLibModBus *LibModBusWidget = new DockWidgetLibModBus(m_params, m_uniqueID);
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), LibModBusWidget, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    connect(this, SIGNAL(uniqueIDChanged(const int)), LibModBusWidget, SLOT(uniqueIDChanged(const int)));
-    connect(this, SIGNAL(serialLog(QByteArray, QByteArray, const char)), LibModBusWidget, SLOT(serialLog(QByteArray, QByteArray, const char)));*/
-
-    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
 
     //now create dock widget for this plugin
     /*DockWidgetLibModBus *dw = new DockWidgetLibModBus(m_params, getID() );
@@ -231,33 +160,46 @@ LibModBus::~LibModBus()
 ito::RetVal LibModBus::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
+    QMap<QString,ito::Param>::iterator it;
 
-    if (key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-        if (paramIt != m_params.constEnd())
+        //put your switch-case.. for getting the right value here
+
+        //finally, save the desired value in the argument val (this is a shared pointer!)
+        //if the requested parameter name has an index, e.g. roi[0], then the sub-value of the
+        //array is split and returned using the api-function apiGetParam
+        if (hasIndex)
         {
-            *val = paramIt.value();
+            *val = apiGetParam(*it, hasIndex, index, retValue);
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
+            *val = *it;
         }
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -265,68 +207,48 @@ ito::RetVal LibModBus::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
 
-    if (key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+
+    if(!retValue.containsError())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
-        if (paramIt != m_params.end())
-        {
+        //here the new parameter is checked whether its type corresponds or can be cast into the
+        // value in m_params and whether the new type fits to the requirements of any possible
+        // meta structure.
+        retValue += apiValidateParam(*it, *val, false, true);
 
-            int flow = 0;
-            char *endline = NULL;
-
-
-            if (paramIt->getFlags() & ito::ParamBase::Readonly)    //check read-only
-            {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
-                goto end;
-            }
-            else if (val->isNumeric() && paramIt->isNumeric())
-            {
-                double curval = val->getVal<double>();
-                if (curval > paramIt->getMax())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else if (curval < paramIt->getMin())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else
-                {
-                    paramIt.value().setVal<double>(curval);
-                }
-            }
-            else if (paramIt->getType() == val->getType())
-            {
-                retValue += paramIt.value().copyValueFrom(&(*val));
-            }
-            else
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
-                goto end;
-            }
-
-            
-            flow = m_params["flow"].getVal<int>();
-            endline = m_params["endline"].getVal<char*>(); //borrowed reference
-            //retValue += m_serport.setparams(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("Parameter not found").toLatin1().data());
-        }
+        //if you program for itom 1.4.0 or higher (Interface version >= 1.3.1) you should use this
+        //API method instead of the one above: The difference is, that incoming parameters that are
+        //compatible but do not have the same type than the corresponding m_params value are cast
+        //to the type of the internal parameter and incoming double values are rounded to the
+        //next value (depending on a possible step size, if different than 0.0)
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
-    emit parametersChanged(m_params);
 
-end:
+    if(!retValue.containsError())
+    {
+        //all parameters that don't need further checks can simply be assigned
+        //to the value in m_params (the rest is already checked above)
+        retValue += it->copyValueFrom( &(*val) );
+    }
+
+    if(!retValue.containsError())
+    {
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -339,68 +261,51 @@ end:
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LibModBus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
-
     ItomSharedSemaphoreLocker locker(waitCond);
 
     ito::RetVal retval;
-    int port = paramsMand->at(1).getVal<int>();
-	int connect = 0;
-	m_params["port"].setVal<int>(port);
+    int port = 0;
     char *IP;
-    //char * ip = paramsMand->at(0).getVal<char>();;
-
-    // mandatory parameters
-    if (paramsMand == NULL)
-    {
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("Mandatory paramers are NULL").toLatin1().data());
-        goto end;
-    }
-
 
     retval += m_params["IP"].copyValueFrom(&((*paramsMand)[0]));
     IP = m_params["IP"].getVal<char *>(); //borrowed reference
-    //strncpy(IP, ip, 3);
-//    sprintf(endline, "%s", tendline);
-
-    // optional parameters
-    if (paramsOpt == NULL)
-    {
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("Optinal paramers are NULL").toLatin1().data());
-        goto end;
-    }
 	retval += m_params["port"].copyValueFrom(&((*paramsMand)[1]));
     port = m_params["port"].getVal<int>();
 
-
-	ctx = modbus_new_tcp(IP,port);
-    if ( modbus_connect(ctx)==0)
-	{
-		retval+=ito::RetVal(ito::retOk);
-	}
-	else
-	{
-		retval+=ito::RetVal(ito::retError,0,QObject::tr("ModbusTCP-connect failed!").toLatin1().data());
-	}
-	
     if (!retval.containsError())
     {
-       std::cout << "Connect to Device at IP: " << IP << "; Port: " << port << " success" << std::endl;
-	   ++initnum;
+	    m_pCTX = modbus_new_tcp(IP,port);
+        if (m_pCTX == NULL)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("Unable to allocate libmodbus context").toLatin1().data());
+        }
+        else if ( modbus_connect(m_pCTX) == -1)
+	    {
+		    retval += ito::RetVal(ito::retError,0,QObject::tr("ModbusTCP-connect failed!").toLatin1().data());
+	    }
+        else
+        {
+            m_connected = true;
+        }
+	
+        if (!retval.containsError())
+        {
+           std::cout << "Connect to Device at IP: " << IP << "; Port: " << port << " success" << std::endl;
+        }
     }
 
-
-    //retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[6]));
-    //m_debugMode = (bool)(m_params["debug"].getVal<int>());
-
-    emit parametersChanged(m_params);
-
-end:
+    if (!retval.containsError())
+    {
+        emit parametersChanged(m_params);
+        setIdentifier(QString("IP %1 @ Port %2").arg(IP).arg(port));
+    }
 
     if (waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
@@ -410,11 +315,17 @@ ito::RetVal LibModBus::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
-	modbus_close(ctx);
-	--initnum;
-	if ( initnum==0)
+
+    if (m_pCTX && m_connected)
+    {
+	    modbus_close(m_pCTX);
+        m_connected = false;
+    }
+
+	if (m_pCTX)
 	{
-		modbus_free(ctx);
+		modbus_free(m_pCTX);
+        m_pCTX = NULL;
 	}
 
     if (waitCond)
@@ -467,6 +378,7 @@ ito::RetVal LibModBus::acquire(const int /*trigger*/, ItomSharedSemaphore *waitC
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
 	bool validOp=true;
@@ -516,7 +428,7 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 		{
 			for (i=0;i<regAddr.size();i++)
 			{
-				registercounter = modbus_read_registers(ctx, regAddr.at(i), regNb.at(i), tab_reg);
+				registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
 				for (j=0; j < registercounter; j++) 
 				{
 					std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
@@ -549,10 +461,6 @@ ito::RetVal LibModBus::getVal(QSharedPointer<char> data, QSharedPointer<int> len
     ito::RetVal retval;
     //retval = m_serport.sread(data.data(), length.data(), 0);
 
-    if (m_debugMode)
-    {
-        //emit serialLog(QByteArray(data.data(),*length), "", '<');
-    }
 
     if (waitCond)
     {
@@ -582,13 +490,6 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
     //const char *buf = data;
     char endline[3] = {0, 0, 0};
     ito::RetVal retval(ito::retOk);
-
-    //m_serport.getendline(endline);
-    if (m_debugMode)
-    {
-        //emit serialLog(QByteArray(buf,datalength), QByteArray(endline, (int)strlen(endline)), '>');
-    }
-    //retval = m_serport.swrite(buf, datalength, m_params["sendDelay"].getVal<int>());
 
 	if (incomingObject->getSize(0)>0)
 	{
@@ -630,7 +531,7 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
 			for (i=0;i<regAddr.size();i++)
 			{
 				uint16_t *tab_reg_nb = tab_reg + dObjPos;
-				registercounter = modbus_write_registers(ctx, regAddr.at(i), regNb.at(i), tab_reg_nb);
+				registercounter = modbus_write_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg_nb);
 				if (registercounter == regNb.at(i))
 				{
 					std::cout << "Write at Reg. " << regAddr.at(i) << " success! \n " << std::endl; 
@@ -640,7 +541,7 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
 					std::cout << "Write at Reg. " << regAddr.at(i) << " failed! \n " << std::endl; 
 				}
 				dObjPos=dObjPos+regNb.at(i);
-				/*registercounter = modbus_read_registers(ctx, regAddr.at(i), regNb.at(i), tab_reg);
+				/*registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
 				for (j=0; j < registercounter; j++) 
 				{
 					std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
@@ -669,24 +570,6 @@ ito::RetVal LibModBus::execFunc(const QString funcName, QSharedPointer<QVector<i
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
-
-    if (funcName == "clearInputBuffer")
-    {
-        //retval = m_serport.sclearbuffer(0);
-    }
-    else if (funcName == "clearOutputBuffer")
-    {
-        //retval = m_serport.sclearbuffer(1);
-    }
-    else if (funcName == "clearBuffer")
-    {
-        ito::ParamBase *bufferType = NULL;
-        bufferType = &((*paramsMand)[0]);
-        if (!retval.containsError())
-        {
-            //retval = m_serport.sclearbuffer(static_cast<bool>(bufferType->getVal<int>()));
-        }
-    }
 
     if (waitCond)
     {

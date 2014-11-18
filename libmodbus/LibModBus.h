@@ -38,58 +38,9 @@
 
 
 
-/*class SerialPort
-{
-    private:
-        struct serParams {
-            serParams() :
-                port(0),
-                baud(9600),
-                bits(8),
-                parity(0),
-                stopbits(1),
-                flow(0),
-                debug(0),
-                sendDelay(0),
-                timeout(4000) { endline[0] = '\n'; endline[1] = 0; endline[2] = 0; }
-            char port;
-            int baud;
-            char bits;
-            char parity;
-            char stopbits;
-            char flow;
-            char endline[3];
-            char debug;
-            int sendDelay;
-            int timeout;
-        };
-        serParams m_serParams;
-        char *m_pDevice;
-
-#ifndef __linux__
-        HANDLE m_dev;
-#else
-        int m_dev;
-#endif
-
-    public:
-        enum PortType { COM, TTYS, TTYUSB }; //COM is for windows, TTYS is a serial port on linux, TTYUSB is a usb-serial port on linux
-        SerialPort() : m_pDevice(0), m_dev(0) {}
-        const ito::RetVal sopen(const int port, const int baud, const char* endline, const int bits, const int stopbits, const int parity, const int flow, const int sendDelay, const int timeout, PortType &portType);
-        const ito::RetVal sclose(void);
-        const ito::RetVal sread(char *buf, int *len, const int sendDelay);
-        int sreadable(void) const;
-        const ito::RetVal swrite(const char c) const;
-        const ito::RetVal swrite(const char *buf, const int len, const int sendDelay) const;
-        const ito::RetVal setparams(const serParams &params);
-        const ito::RetVal setparams(const int baud, const char* endline, const int bits = 8, const int stopbits = 0, const int parity = 0, const int flow = 0, const int sendDelay = 0, const int timeout = 4000);
-        int isOpen() { return m_dev != 0 ? 1 : 0; }
-        const ito::RetVal sclearbuffer(int BufferType);
-        const ito::RetVal getendline(char *eline);
-};*/
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class LibModBus : public ito::AddInDataIO //, public DummyGrabberInterface
+class LibModBus : public ito::AddInDataIO
 {
     Q_OBJECT
 
@@ -99,28 +50,17 @@ class LibModBus : public ito::AddInDataIO //, public DummyGrabberInterface
 
     public:
         friend class LibModBusInterface;
-//        friend class SerialPort;
         const ito::RetVal showConfDialog(void);
-        int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
-        //int isOpen() { return m_serport.isOpen(); }
+        int hasConfDialog(void) { return 0; } //!< indicates that this plugin has got a configuration dialog
 
     private:
-        //SerialPort m_serport;
-        bool m_debugMode;   /*! Enables / Disables live connection to dockingwidge-protocol */
-        static int m_instCounter;
+        modbus_t *m_pCTX;
+        bool m_connected;
 
     signals:
-        //void serialLog(QByteArray data, QByteArray endline, const char InOutChar);
         void uniqueIDChanged(const int);
-        //void parametersChanged(QMap<QString, ito::tParam>); (defined in AddInBase)
 
     public slots:
-/*
-        ito::RetVal getParam(const char *name, QSharedPointer<double> val, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal getParam(const char *name, QSharedPointer<char> val, QSharedPointer<int> len, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(const char *name, const char *val, const int len, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(const char *name, const double val, ItomSharedSemaphore *waitCond = NULL);
-*/
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
 
