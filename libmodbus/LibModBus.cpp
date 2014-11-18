@@ -64,12 +64,12 @@ LibModBusInterface::LibModBusInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-	"LibModBus is a itom-Plugin which provides modbusTCP communication.\n\
-	The plugin is based on libmodbus v3.1.1 library and under development for Windows only atm.\n\
-	Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus. \n\
-	The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. \n\
-	The content of the registers is expected as data in the uint16 data object, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
-	If no MetaTag is set, values of m_params['registers'] is tried to be used for addressing.";
+"LibModBus is a itom-Plugin which provides modbusTCP communication.\n\
+The plugin is based on libmodbus v3.1.1 library and under development for Windows only atm.\n\
+Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus. \n\
+The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. \n\
+The content of the registers is expected as data in the uint16 data object, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
+If no MetaTag is set, values of m_params['registers'] is tried to be used for addressing.";
 
     m_detaildescription = tr(docstring);
     m_author = "J.Nitsche, IPROM, University Braunschweig";
