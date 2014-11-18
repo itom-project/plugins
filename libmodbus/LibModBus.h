@@ -23,7 +23,7 @@
 #ifndef LIBMODBUS_H
 #define LIBMODBUS_H
 
-#if WIN32
+#if (WIN32 || _WIN64 || _WINDOWS)
     #define NOMINMAX //avoid inclusion of min,max macros in windows.h
     #include <WinSock2.h>
 #endif
