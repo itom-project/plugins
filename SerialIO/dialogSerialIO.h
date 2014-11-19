@@ -52,7 +52,7 @@ class dialogSerialIO : public QDialog
         bool eventFilter(QObject *obj, QEvent *event);
 
     public:
-        dialogSerialIO(void *sport);
+        dialogSerialIO(void *sport, QString identifier);
 //        dialogSerialIO() : m_psport(NULL), readDelay(1000) { ui.setupUi(this); };
         ~dialogSerialIO();
         int setVals(QMap<QString, ito::Param> *params);

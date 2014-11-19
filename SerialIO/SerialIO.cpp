@@ -1103,7 +1103,7 @@ SerialIOInterface::~SerialIOInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialIO::showConfDialog(void)
 {
-    dialogSerialIO *confDialog = new dialogSerialIO((void*)this);
+    dialogSerialIO *confDialog = new dialogSerialIO((void*)this, m_identifier);
     QVariant qvar = m_params["port"].getVal<double>();
     confDialog->setVals(&m_params);
     if (confDialog->exec())
@@ -1351,7 +1351,6 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 
     retval += m_params["port"].copyValueFrom(&((*paramsMand)[0]));
     port = m_params["port"].getVal<int>();
-    
 
     retval += m_params["baud"].copyValueFrom(&((*paramsMand)[1]));
     baud = m_params["baud"].getVal<int>();

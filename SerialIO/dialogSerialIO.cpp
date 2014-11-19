@@ -215,7 +215,7 @@ int dialogSerialIO::getVals(int &baud, char *endline, int &bits, int &stopbits, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-dialogSerialIO::dialogSerialIO(void *sport) :
+dialogSerialIO::dialogSerialIO(void *sport, QString identifier) :
     m_psport(sport)
 { 
     ito::RetVal ret;
@@ -230,7 +230,7 @@ dialogSerialIO::dialogSerialIO(void *sport) :
     QMap<QString, ito::Param> *paramList = NULL;
 
     sio->getParamList(&paramList);
-    setWindowTitle(QString((*paramList)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+    setWindowTitle(QString((*paramList)["name"].getVal<char*>()) + " - " + identifier + " - " + tr("Configuration Dialog"));
     m_baud = (*paramList)["baud"].getVal<int>();
     m_bits = (*paramList)["bits"].getVal<int>();
     m_stopbits = (*paramList)["stopbits"].getVal<int>();
