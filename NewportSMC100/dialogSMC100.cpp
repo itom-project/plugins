@@ -38,205 +38,313 @@ DialogSMC100::DialogSMC100(ito::AddInBase *actuator) :
 {
     ui.setupUi(this);
 
+    freshStarted = true;
+
+    m_calibStatusNames.append("MZ and encoder");
+    m_calibStatusNames.append("Current Pos as Home");
+    m_calibStatusNames.append("MZ only");
+    m_calibStatusNames.append("EoR ans encoder");
+    m_calibStatusNames.append("EoR only");
+    
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------
+DialogSMC100::~DialogSMC100()
+{
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogSMC100::parametersChanged(QMap<QString, ito::Param> params)
 {
-////    QString temp;
-//    setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-//    ui.lblDevice1->setText(params["ctrlType"].getVal<char*>());
-//    //ui.lblDevice2->setText(params["ctrlName"].getVal<char*>());
-//    ui.lblPiezo->setText(params["piezoName"].getVal<char*>());
-//
-//    bool hasMode = params["hasLocalRemote"].getVal<int>() > 0;
-//    //ui.comboMode->setVisible(hasMode);
-//    //ui.lblMode->setVisible(hasMode);
-//
-//    if (params["local"].getVal<int>() > 0)
-//    {
-//        //ui.comboMode->setCurrentIndex(1);
-//    }
-//    else
-//    {
-//        //ui.comboMode->setCurrentIndex(0);
-//    }
-//
-//    ui.checkAsync->setChecked(params["async"].getVal<int>() > 0);
-//    //ui.dblSpinPosLimitHigh->setValue(params["posLimitHigh"].getVal<double>() * 1000);
-//    //ui.dblSpinPosLimitLow->setValue(params["posLimitLow"].getVal<double>() * 1000);
-//
-//    //ui.spinDelayOffset->setMinimum(0);
-//    //ui.spinDelayOffset->setMaximum(params["delayOffset"].getMax() * 1000);
-//    //ui.spinDelayOffset->setValue(params["delayOffset"].getVal<double>() * 1000);
-//
-//    //ui.spinDelayProp->setMinimum(0);
-//    //ui.spinDelayProp->setMaximum(params["delayProp"].getMax() * 1000);
-//    //ui.spinDelayProp->setValue(params["delayProp"].getVal<double>());
-//
-//    //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
-//    enableDialog(true);
-//
-//    m_currentParameters = params;
+    if (freshStarted)
+    {
+        m_numAxis = params["numaxis"].getVal<int>();
+        m_calibInitialStatus = QVector<int>(m_numAxis, 0);
+        m_speedInitialStatus = QVector<double>(m_numAxis, 0.0);
+        m_accelInitialStatus = QVector<double>(m_numAxis, 0.0);
+        m_axisToInitialize   = QVector<bool>(m_numAxis, false);
+        m_InitialStatus      = QVector<int>(m_numAxis, false);
+    }
+
+    // get Initial Parameters
+    memcpy(m_calibInitialStatus.data(), params["calib_mode"].getVal<int*>(), sizeof(int)*m_numAxis);
+    memcpy(m_InitialStatus.data(), params["current_status"].getVal<double*>(), sizeof(double)*m_numAxis);
+    memcpy(m_speedInitialStatus.data(), params["speed"].getVal<double*>(), sizeof(double)*m_numAxis);
+    memcpy(m_accelInitialStatus.data(), params["accel"].getVal<double*>(), sizeof(double)*m_numAxis);
+
+    if (freshStarted)
+    { // Execute those lines only once to create the list entries
+
+        for (int i = 0; i < m_numAxis; ++i)
+        {
+            createUiListEntry(i);
+        }
+        freshStarted = false;
+
+        // further set numAxis Label and ID-Label
+        ui.idLabel->setText(QString(params["name"].getVal<char*>()));
+        ui.numAxisLabel->setText(QString::number(m_numAxis));
+    }
+
+    // Disconnect signals of ui elements while changing their values
+    for (int i = 0; i < m_pComboBoxes.size(); ++i)
+    {
+        disconnect(m_pComboBoxes[i], SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+        disconnect(m_pSpeedSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
+        disconnect(m_pAccelSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));   
+    }
+
+    // Set Spinboxes to currwent values
+    for (int i = 0; i < m_numAxis; ++i)
+    {
+        m_pAccelSpin[i]->setValue(m_accelInitialStatus[i]);
+        m_pSpeedSpin[i]->setValue(m_speedInitialStatus[i]);
+    }
+
+    // Set Comboboxes to currentStatus
+    for (int i = 0; i < m_numAxis; ++i)
+    {
+        int j = 0;
+        while (true)
+        {
+            if (m_pComboBoxes[i]->itemData(j) == m_calibInitialStatus[i])
+            {
+                m_pComboBoxes[i]->setCurrentIndex(j);
+                break;
+            }
+            ++j;
+        }
+    }
+        
+    // set ui to new parameters
+    ui.checkAsync->setChecked(params["async"].getVal<int>());
+    
+    // Reconnect them for reaction on upcomming changes
+    for (int i = 0; i < m_pComboBoxes.size(); ++i)
+    {
+        connect(m_pComboBoxes[i], SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+        connect(m_pSpeedSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
+        connect(m_pAccelSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
+    }
+    //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
+    enableDialog(true);
+
+    m_currentParameters = params;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogSMC100::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
-    //QVector<QSharedPointer<ito::ParamBase> > values;
-    //bool success = false;
-
-    ////only send parameters which are changed
-
-    ////int i = ui.comboMode->currentIndex() > 0 ? 1 : 0;
-    //if (m_currentParameters["local"].getVal<int>() != i)
-    //{
-    //    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("local", ito::ParamBase::Int, i)));
-    //}
-    //
-    //i = ui.checkAsync->isChecked() ? 1 : 0;
-    //if (m_currentParameters["async"].getVal<int>() != i)
-    //{
-    //    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, i)));
-    //}
-
-    ////double v_high = ui.dblSpinPosLimitHigh->value() / 1000.0;
-    ////double v_low = ui.dblSpinPosLimitLow->value() / 1000.0;
-    //if (v_high < v_low)
-    //{
-    //    std::swap(v_high,v_low);
-    //}
-    //if (m_currentParameters["posLimitHigh"].getVal<double>() != v_high)
-    //{
-    //    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("posLimitHigh", ito::ParamBase::Double, v_high)));
-    //}
-
-    //if (m_currentParameters["posLimitLow"].getVal<double>() != v_low)
-    //{
-    //    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("posLimitLow", ito::ParamBase::Double, v_low)));
-    //}
-
-    //double v = ui.spinDelayOffset->value() / 1000.0;
-    //if (m_currentParameters["delayOffset"].getVal<double>() != v)
-    //{
-    //    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayOffset", ito::ParamBase::Double, v)));
-    //}
-
-    //v = ui.spinDelayProp->value();
-    //if (m_currentParameters["delayProp"].getVal<double>() != v)
-    //{
-    //    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayProp", ito::ParamBase::Double, v)));
-    //}
-
-    //retValue += setPluginParameters(values, msgLevelWarningAndError);
-
+    QVector<QSharedPointer<ito::ParamBase> > values;
+    
+    // This is a general option that does not need the config mode
+    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, ui.checkAsync->isChecked())));
+    
+    retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DialogSMC100::on_buttonBox_clicked(QAbstractButton* btn)
 {
-    //ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue(ito::retOk);
 
-    //QDialogButtonBox::ButtonRole role = ui.buttonBox->buttonRole(btn);
+    QDialogButtonBox::ButtonRole role = ui.buttonBox->buttonRole(btn);
 
-    //if (role == QDialogButtonBox::RejectRole)
-    //{
-    //    reject(); //close dialog with reject
-    //}
-    //else if (role == QDialogButtonBox::AcceptRole)
-    //{
-    //    accept(); //AcceptRole
-    //}
-    //else
-    //{
-    //    applyParameters(); //ApplyRole
-    //}
+    if (role == QDialogButtonBox::RejectRole)
+    {
+        reject(); //close dialog with reject
+    }
+    else if (role == QDialogButtonBox::AcceptRole)
+    {
+        accept(); //AcceptRole
+    }
+    else
+    {
+        applyParameters(); //ApplyRole
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DialogSMC100::on_calibrateBtn_clicked()
 {
-    ito::RetVal retval;
+    ito::RetVal retValue(ito::retOk);
+    QVector<QSharedPointer<ito::ParamBase> > values;
+    ItomSharedSemaphore* waitCond = NULL;
+
+    // Check in m_axisToInitialize which parameters have to be applied to values apply them
     QVector<int> axis;
-    QStringList sList = ui.lineAxisToCalibrate->text().split(",", QString::SplitBehavior::SkipEmptyParts);
-    QVariant v;
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    // convert all string parts to int
-    foreach(const QString &s, sList)
+    QVector<double> speedV;
+    QVector<double> accelV;
+    QVector<int> calibV;
+    QVector<int> configV;
+    QVector<int> configVInv;
+    for (int i = 0; i < m_axisToInitialize.size(); ++i)
     {
-        v.setValue(s);
-        if (v.canConvert<int>())
+        speedV.append(m_pSpeedSpin[i]->value());
+        accelV.append(m_pAccelSpin[i]->value());
+        axis.append(i);
+        if (m_axisToInitialize[i] == true)
         {
-            axis.append(v.toInt());
+            configV.append(1);
+            configVInv.append(0);
+            calibV.append(m_pComboBoxes[i]->itemData(m_pComboBoxes[i]->currentIndex()).toInt());
+        }
+        else
+        {
+            configV.append(0);
+            configVInv.append(0);
+            calibV.append(m_calibInitialStatus[i]); // don´t care, keep old mode
         }
     }
+    
+    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("config_state", ito::ParamBase::IntArray, configV.size(), configV.data())));   
+    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed", ito::ParamBase::DoubleArray, speedV.size(), speedV.data())));
+    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel", ito::ParamBase::DoubleArray, accelV.size(), accelV.data())));
+    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("calib_mode", ito::ParamBase::IntArray, calibV.size(), calibV.data())));
+    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("config_state", ito::ParamBase::IntArray, configVInv.size(), configVInv.data())));
+    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("exec_calib", ito::ParamBase::IntArray, configV.size(), configV.data())));
 
-    // Check which method should be used for calibration
-    int homingType = 0;
-    if (ui.radioType0->isChecked())
-    {
-        homingType = 0;
-    }
-    else if (ui.radioType1->isChecked())
-    {
-        homingType = 1;
-    }
-    else if (ui.radioType2->isChecked())
-    {
-        homingType = 2;
-    }
-    else if (ui.radioType3->isChecked())
-    {
-        homingType = 3;
-    }
-    else if (ui.radioType4->isChecked())
-    {
-        homingType = 4;
-    }
 
-    for (int i = 0; i < axis.size(); ++i)
+    if (!retValue.containsError())
     {
-        if (QMetaObject::invokeMethod(m_pPlugin, "setCalibMode", Q_ARG(int, axis[i]), Q_ARG(int, homingType), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+        ui.calibrateBtn->setEnabled(false);
+        // Apply the parameters new values
+        retValue += setPluginParameters(values, msgLevelWarningAndError);
+        if (!retValue.containsError())
         {
-            retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
+            foreach(QFrame *f, m_pListElements)
+            {
+                f->setStyleSheet("");
+            }
+            m_axisToInitialize.fill(false);
         }
-        if (retval.containsError())
-        {
-            QMessageBox msgBox;
-            msgBox.setText(tr("Couldn´t invoke slot of plugin"));
-            msgBox.setIcon(QMessageBox::Warning);
-            msgBox.exec();
-        }        
-    }
-
-    // go through and initialize them all
-    for (int i = 0; i < axis.size(); ++i)
-    {
-        if (QMetaObject::invokeMethod(m_pPlugin, "calib", Q_ARG(int, axis[i]), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
-        {
-            retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
-        }
-        if (retval.containsError())
-        {
-            QMessageBox msgBox;
-            msgBox.setText(tr("Couldn´t invoke slot of plugin"));
-            msgBox.setIcon(QMessageBox::Warning);
-            msgBox.exec();
-        }
+        ui.calibrateBtn->setEnabled(true);
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void DialogSMC100::enableDialog(bool enabled)
 {
-   /* ui.group1->setEnabled(enabled);
-    ui.group2->setEnabled(enabled);
-    ui.group3->setEnabled(enabled);
-    ui.group4->setEnabled(enabled);*/
+
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogSMC100::comboBoxChanged(int itemIdx)
+{
+    QFrame *senderFrame = qobject_cast<QFrame*>(QObject::sender()->parent());
+    int i = senderFrame->objectName().toInt();
+    senderFrame->setStyleSheet("#"+senderFrame->objectName()+" {background-color: DeepSkyBlue}");
+    m_axisToInitialize[i] = true;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DialogSMC100::spinboxChanged(double value)
+{
+    QFrame *senderFrame = qobject_cast<QFrame*>(QObject::sender()->parent());
+    int i = senderFrame->objectName().toInt();
+    senderFrame->setStyleSheet("#"+senderFrame->objectName()+" {background-color: DeepSkyBlue}");
+    m_axisToInitialize[i] = true;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DialogSMC100::resetButtonClicked()
+{
+    QFrame *senderFrame = qobject_cast<QFrame*>(QObject::sender()->parent());
+    int i = senderFrame->objectName().toInt();
+    senderFrame->setStyleSheet("");
+
+    // Disconnect signals of ui elements while changing their values
+    disconnect(m_pComboBoxes[i], SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+    disconnect(m_pSpeedSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
+    disconnect(m_pAccelSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));   
+
+    m_pSpeedSpin[i]->setValue(m_speedInitialStatus[i]);
+    m_pAccelSpin[i]->setValue(m_accelInitialStatus[i]);
+    for (int j = 0; j < m_pComboBoxes[i]->count(); ++j)
+    {
+        if (m_pComboBoxes[i]->itemData(j) == m_calibInitialStatus[i])
+        {
+            m_pComboBoxes[i]->setCurrentIndex(m_pComboBoxes[i]->itemData(j).toInt());
+            break;
+        }
+    }
+    m_axisToInitialize[i] = false;
+
+    // Reconnect them for reaction on upcomming changes
+    connect(m_pComboBoxes[i], SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+    connect(m_pSpeedSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
+    connect(m_pAccelSpin[i], SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DialogSMC100::createUiListEntry(const int i)
+{
+    // Create outer elements
+    QFrame *frame = new QFrame(ui.scrollAreaWidgetContents);
+    ui.scrollAreaWidgetContents->layout()->setContentsMargins(0,0,0,0);
+    QHBoxLayout *layout = new QHBoxLayout(frame);
+    layout->setContentsMargins(0,0,0,0);
+    frame->setLayout(layout);
+    frame->setObjectName(QString::number(i));
+     
+    // Create innner elements and set option
+    QLabel *nrLabel = new QLabel(QString::number(i),frame);
+    nrLabel->setMaximumWidth(25);
+    nrLabel->setAlignment(Qt::AlignCenter);
+
+    QComboBox *statusCombo = new QComboBox(frame);     
+    statusCombo->setToolTip("Calibration mode");
+    for (int i = 0; i < m_calibStatusNames.size(); ++i)
+    {
+        statusCombo->addItem(QIcon(), QString::number(i)+" "+m_calibStatusNames[i], QVariant(i));
+    }
+
+    QDoubleSpinBox *speedSpin = new QDoubleSpinBox(frame);
+    speedSpin->setToolTip("Speed");
+    // TODO hier müssen noch die Werte ausgelesen werden
+    speedSpin->setMaximum(100);
+    speedSpin->setMinimum(0);
+    speedSpin->setSuffix(" units/sec");
+
+    QDoubleSpinBox *accelSpin = new QDoubleSpinBox(frame);
+    accelSpin->setToolTip("Acceleration");
+    accelSpin->setMaximum(100);
+    accelSpin->setMinimum(0);
+    accelSpin->setSuffix(" units/sec²");
+    
+    QPushButton *resetButton = new QPushButton(frame);
+    resetButton->setToolTip("revert the changed configurations of this axis.");
+    resetButton->setIcon(QIcon(":/dialogue/reset.png"));
+    resetButton->setIconSize(QSize(20,20));
+    resetButton->setMaximumHeight(22);
+    resetButton->setMaximumWidth(22);
+    resetButton->setContentsMargins(0,0,0,0);
+
+    // inser elements in Layout
+    layout->insertWidget(0, nrLabel);
+    layout->insertWidget(1, speedSpin);
+    layout->insertWidget(2, accelSpin);
+    layout->insertWidget(3, statusCombo);
+    layout->insertWidget(4, resetButton);
+
+    frame->setLayout(layout);
+    ui.verticalListLayout->insertWidget(ui.verticalListLayout->count()-1, frame);
+
+    //// Map signals from each line to corresponding slot
+    connect(statusCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+    connect(speedSpin, SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
+    connect(accelSpin, SIGNAL(valueChanged(double)), this, SLOT(spinboxChanged(double)));
+    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
+
+    // store Pointer to each spin box in a qvector for later occuring use
+    m_pListElements.append(frame);
+    m_pSpeedSpin.append(speedSpin);
+    m_pAccelSpin.append(accelSpin);
+    m_pComboBoxes.append(statusCombo);
+    m_pResetBtn.append(resetButton);
 }

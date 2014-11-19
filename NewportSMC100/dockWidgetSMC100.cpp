@@ -33,7 +33,6 @@ DockWidgetSMC100::DockWidgetSMC100(int uniqueID, ito::AddInActuator *actuator) :
 {
     ui.setupUi(this); 
     firstRun = true;
-    m_stepSize = 0.5;
 
     m_pIncSignalMapper    = new QSignalMapper(this);
     m_pDecSignalMapper    = new QSignalMapper(this);
@@ -42,6 +41,12 @@ DockWidgetSMC100::DockWidgetSMC100(int uniqueID, ito::AddInActuator *actuator) :
     //ui.lblID->setText(QString::number(uniqueID));
 
     enableWidget(true);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+DockWidgetSMC100::~DockWidgetSMC100()
+{
+    int i = 0;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -56,6 +61,7 @@ void DockWidgetSMC100::createUiListEntry(const int i)
      
     // Create innner elements and set option
     QLabel *nrLabel = new QLabel(QString::number(i),frame);
+    nrLabel->setAlignment(Qt::AlignCenter);
     QPushButton *incBtn = new QPushButton("+", frame);
     incBtn->setMaximumWidth(25);
     QPushButton *decBtn = new QPushButton("-", frame);
@@ -68,7 +74,26 @@ void DockWidgetSMC100::createUiListEntry(const int i)
     QDoubleSpinBox *destSpin = new QDoubleSpinBox;
     destSpin->setDecimals(5);
     destSpin->setSuffix(" mm");
-    QPushButton *goBtn = new QPushButton(QIcon(),"", frame);
+    QPushButton *goBtn = new QPushButton(QIcon(":/widget/run.png"),"", frame);
+
+    // Set Width management
+    QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+    nrLabel->setSizePolicy(sizePolicy);
+    nrLabel->setMinimumWidth(20);
+    nrLabel->setMaximumWidth(20);
+    incBtn->setSizePolicy(sizePolicy);
+    incBtn->setMinimumWidth(35);
+    incBtn->setMinimumWidth(35);
+    decBtn->setSizePolicy(sizePolicy);
+    decBtn->setMinimumWidth(35);
+    decBtn->setMinimumWidth(35);
+    destSpin->setSizePolicy(sizePolicy);
+    goBtn->setMinimumWidth(35);
+    goBtn->setMinimumWidth(35);
+    QSizePolicy sizePolicyEx(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    destSpin->setSizePolicy(sizePolicyEx);
+    currSpin->setSizePolicy(sizePolicyEx);
+
 
     // inser elements in Layout
     layout->insertWidget(0, nrLabel);
@@ -93,6 +118,9 @@ void DockWidgetSMC100::createUiListEntry(const int i)
     // store Pointer to each spin box in a qvector for later occuring use
     m_pDestSpinBoxes.append(destSpin);
     m_pCurrSpinBoxes.append(currSpin); 
+    m_pIncButtons.append(incBtn);
+    m_pDecButtons.append(decBtn);
+    m_pGoButtons.append(goBtn);
 
     m_absPosTarget.append(0);
 
@@ -104,8 +132,11 @@ void DockWidgetSMC100::parametersChanged(QMap<QString, ito::Param> params)
 {
     if (firstRun)
     {
-        int nrOfAxis = params["nrOfAxis"].getVal<int>();
+        int nrOfAxis = params["numaxis"].getVal<int>();
+        ui.btnStart->setIcon(QIcon(":/widget/run_multi"));
         ui.labelNrOfAxis->setNum(nrOfAxis);
+        QString sID = "COM" + QString::number(params["comPort"].getVal<int>());
+        ui.ctrlIDLabel->setText(sID);
         for (int i = 0; i < nrOfAxis; ++i)
         {
             // Create list entries
@@ -120,35 +151,18 @@ void DockWidgetSMC100::parametersChanged(QMap<QString, ito::Param> params)
         // Don´t enter this part again
         firstRun = false; 
     }
-    else
-    {
-
-    }
-   /* ui.lblDevice1->setText( params["ctrlType"].getVal<char*>() );
-    ui.lblDevice2->setText( params["ctrlName"].getVal<char*>() );
-    ui.lblPiezo->setText( params["piezoName"].getVal<char*>() );
-    bool hasMode = params["hasLocalRemote"].getVal<int>() > 0;
-    ui.groupBoxMode->setVisible(hasMode);
-    if (params["local"].getVal<int>() > 0)
-    {
-        ui.radioLocal->setChecked(true);
-    }
-    else
-    {
-        ui.radioRemote->setChecked(true);
-    }*/
  }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetSMC100::incBtnClicked(const int & i)
 {
-    setActuatorPosition(i, m_stepSize, true);
+    setActuatorPosition(i, ui.spinStepSize->value(), true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetSMC100::decBtnClicked(const int & i)
 {
-    setActuatorPosition(i, -m_stepSize, true);
+    setActuatorPosition(i, -ui.spinStepSize->value(), true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -170,13 +184,11 @@ void DockWidgetSMC100::absDestPosChanged(const int & i)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetSMC100::actuatorStatusChanged(QVector<int> status, QVector<double> actPosition) //!< slot to receive information about status and position changes.
 {
-    if (m_pCurrSpinBoxes.size() == status.size() && m_pCurrSpinBoxes.size() == actPosition.size())
+    if (m_pCurrSpinBoxes.size() == status.size() && (m_pCurrSpinBoxes.size() == actPosition.size() || actPosition.size() == 0))
     {
         int i = 0;
         foreach(QDoubleSpinBox *cSB, m_pCurrSpinBoxes)
         {            
-            cSB->setValue(actPosition[i]);
-
             if (actPosition.size() > 0)
             {
                 cSB->setValue(actPosition[i]);
@@ -188,19 +200,31 @@ void DockWidgetSMC100::actuatorStatusChanged(QVector<int> status, QVector<double
             if (status[i] & ito::actuatorMoving)
             {
                 style = "background-color: yellow";
+                m_pIncButtons[i]->setEnabled(false);
+                m_pDecButtons[i]->setEnabled(false);
+                m_pGoButtons[i]->setEnabled(false);
                 running = true;
             }
             else if (status[i] & ito::actuatorInterrupted)
             {
                 style = "background-color: red";
+                m_pIncButtons[i]->setEnabled(true);
+                m_pDecButtons[i]->setEnabled(true);
+                m_pGoButtons[i]->setEnabled(true);
             }
             else if (status[i] & ito::actuatorTimeout)
             {
                 style = "background-color: #FFA3FD";
+                m_pIncButtons[i]->setEnabled(true);
+                m_pDecButtons[i]->setEnabled(true);
+                m_pGoButtons[i]->setEnabled(true);
             }
             else
             {
                 style = "background-color: ";
+                m_pIncButtons[i]->setEnabled(true);
+                m_pDecButtons[i]->setEnabled(true);
+                m_pGoButtons[i]->setEnabled(true);
             }
             cSB->setStyleSheet(style);
 
@@ -232,6 +256,7 @@ void DockWidgetSMC100::targetChanged(QVector<double> targetPositions)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetSMC100::enableWidget(bool enabled)
 {
+    // TODO: disable some widgets at the beginning... optional
     //ui.spinBoxTargetPos->setEnabled(enabled);
     //ui.btnUp->setEnabled(enabled);
     //ui.btnDown->setEnabled(enabled);
@@ -241,11 +266,24 @@ void DockWidgetSMC100::enableWidget(bool enabled)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetSMC100::on_btnStart_clicked()
 {
-    //setActuatorPosition(0, ui.spinBoxTargetPos->value() / 1000.0, false);
+    QVector<int> axis;
+    QVector<double> values;
+    for (int i = 0; i < m_pDestSpinBoxes.size(); ++i)
+    {
+        axis.append(i);
+        values.append(m_pDestSpinBoxes.at(i)->value());
+    }
+    setActuatorPosition(axis, values, false);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetSMC100::on_btnRefresh_clicked()
 {
-    //requestActuatorStatusAndPositions(true, true);
+    requestActuatorStatusAndPositions(true, true);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetSMC100::on_btnCancel_clicked()
+{
+    setActuatorInterrupt();
 }

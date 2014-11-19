@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>320</width>
+    <width>376</width>
     <height>588</height>
    </rect>
   </property>
@@ -26,6 +26,9 @@
       <string>Info</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="margin">
+       <number>6</number>
+      </property>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -67,12 +70,12 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>TextLabel</string>
+           <string>COM-Port:</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="ctrlIDLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -85,6 +88,37 @@
          </widget>
         </item>
        </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Step Size</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="margin">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QDoubleSpinBox" name="spinStepSize">
+        <property name="suffix">
+         <string> mm</string>
+        </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="value">
+         <double>0.500000000000000</double>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -418,8 +452,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>298</width>
-          <height>439</height>
+          <width>354</width>
+          <height>392</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalListLayout">
