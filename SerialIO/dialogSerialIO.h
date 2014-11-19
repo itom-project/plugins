@@ -53,7 +53,6 @@ class dialogSerialIO : public QDialog
 
     public:
         dialogSerialIO(void *sport, QString identifier);
-//        dialogSerialIO() : m_psport(NULL), readDelay(1000) { ui.setupUi(this); };
         ~dialogSerialIO();
         int setVals(QMap<QString, ito::Param> *params);
         int getVals(int &baud, char *endline, int &bits, int &stopbits, int &parity, unsigned int &flow, int &sendDelay, double &timeout, bool &debug);

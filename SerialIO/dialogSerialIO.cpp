@@ -230,7 +230,7 @@ dialogSerialIO::dialogSerialIO(void *sport, QString identifier) :
     QMap<QString, ito::Param> *paramList = NULL;
 
     sio->getParamList(&paramList);
-    setWindowTitle(QString((*paramList)["name"].getVal<char*>()) + " - " + identifier + " - " + tr("Configuration Dialog"));
+    setWindowTitle(QString((*paramList)["name"].getVal<char*>()) + ": " + identifier + " - " + tr("Configuration Dialog"));
     m_baud = (*paramList)["baud"].getVal<int>();
     m_bits = (*paramList)["bits"].getVal<int>();
     m_stopbits = (*paramList)["stopbits"].getVal<int>();
@@ -576,51 +576,8 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
             timeout);
     ui.lineEditCommandStr->setText(txt);
 
-/*    char txt[100];
-    char endline[5] = { 0, 0, 0, 0, 0 };
-    SerialIO *sio = (SerialIO *)m_psport;
-    QMap<QString, ito::Param> *paramList = NULL;
-
-    sio->getParamList(&paramList);
-
-    endline[0] = '\\';
-    char *temp = (*paramList)["endline"].getVal<char*>(); //borrowed reference
-    if (strcmp(temp, "\r\n") == 0)
-    {
-        endline[1] = 'r';
-        endline[2] = '\\';
-        endline[3] = 'n';
-    }
-    else if (strcmp(temp, "\n") == 0)
-    {
-        endline[1] = 'n';
-    }
-    else if (strcmp(temp, "\r") == 0)
-    {
-        endline[1] = 'r';
-    }
-    else
-    {
-        endline[0] = 0;
-    }
-
-    char *deviceName = (*paramList)["name"].getVal<char*>(); //borrowed reference
-    sprintf(txt,
-            "dataIO(\"%s\",%d,%d,\"%s\",%d,%d,%d,%d,%d,%f)",
-            deviceName,
-            (*paramList)["port"].getVal<int>(),
-            (*paramList)["baud"].getVal<int>(),
-            endline,
-            (*paramList)["bits"].getVal<int>(), 
-            (*paramList)["stopbits"].getVal<int>(),
-            (*paramList)["parity"].getVal<int>(),
-            (*paramList)["flow"].getVal<int>(),
-            (*paramList)["sendDelay"].getVal<int>(),
-            (*paramList)["timeout"].getVal<double>());
-    ui.lineEditCommandStr->setText(txt);
-
 //    QClipboard *clipboard = QApplication::clipboard();
-//    clipboard->setText(txt);*/
+//    clipboard->setText(txt);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
