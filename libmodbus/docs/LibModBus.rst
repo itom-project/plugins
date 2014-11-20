@@ -41,18 +41,18 @@ parameters can be changed using *setParam*.
 
 **name**: {str}, read-only
     name of the plugin (*LibModBus*)
-	
+    
 **IP**: {str}, read-only
-	IP-Address of the connected Modbus-TCP device
-	
+    IP-Address of the connected Modbus-TCP device
+    
 **port**: {int}, read-only
-	port used for ip communication
-	
+    port used for ip communication
+    
 **registers**: {str}
-	fallback addressing for modbus registers. This value will be used, if a dataObject without 'registers'-tag is sent to the getVal- or setVal-function. 
-	*registers* needs to be stored with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4'
+    fallback addressing for modbus registers. This value will be used, if a dataObject without 'registers'-tag is sent to the getVal- or setVal-function. 
+    *registers* needs to be stored with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4'
 
-	
+    
 Usage
 =====
 
@@ -62,19 +62,19 @@ the second dimension has to have the exact size of the numbers of written or rea
 .. code-block:: python
     
     obj = dataObject([1,10],'uint16')
-	
+    
 To address the requested registers, either parameter *registers* can be used, or obj can be given a *registers*-tag. The *registers*-tag has to have the same structure as the *registers* parameter. 
 The parameter is useful if the same registers need to be read/written multiple times while the tag should be used for changing registers. 
 
 .. code-block:: python
     
     lmb = dataIO("LibModBus", '127.0.0.1', 502)
-	lmb.setParam('registers','10,2;34,1;77,4;100,1;101,1;102,1')
-	obj = dataObject([1,10],'uint16')
-	lmb.getVal(obj)										#reads registers 10,11,34,77..80,100..102 and saves them to obj consecutive
-	obj.setTag('registers','105,4;200,4;204,2')				#sets registers-tag
-	lmb.setVal(obj)										#writes previously read values to registers 105..108,200..203,204,205
-	obj.setTag('registers','105,4;200,4')				
-	lmb.setVal(obj)										#produces error, obj is of size [1,10] but only 8 registers (105..108,200..203) are requested
+    lmb.setParam('registers','10,2;34,1;77,4;100,1;101,1;102,1')
+    obj = dataObject([1,10],'uint16')
+    lmb.getVal(obj)                             #reads registers 10,11,34,77..80,100..102 and saves them to obj consecutive
+    obj.setTag('registers','105,4;200,4;204,2') #sets registers-tag
+    lmb.setVal(obj)                             #writes previously read values to registers 105..108,200..203,204,205
+    obj.setTag('registers','105,4;200,4')
+    lmb.setVal(obj)                             #produces error, obj is of size [1,10] but only 8 registers (105..108,200..203) are requested
 
 The number of consecutive registers is generally used to read/write values that are bigger than 16bit (2 registers for 32bit, 4 registers for 64bit)and should be used that way. Please refer to the documentation of the modbus slave you will be using.
