@@ -708,6 +708,7 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
     sft.function = function;
     sft.t_id = ctx->backend->prepare_response_tid(req, &req_length);
 
+    /* Data are flushed on illegal number of values errors. */
     switch (function) {
     case MODBUS_FC_READ_COILS: {
         int nb = (req[offset + 3] << 8) + req[offset + 4];
@@ -725,7 +726,7 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
                 MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE, rsp);
         } else if ((address + nb) > mb_mapping->nb_bits) {
             if (ctx->debug) {
-                fprintf(stderr, "Illegal data address %0X in read_bits\n",
+                fprintf(stderr, "Illegal data address 0x%0X in read_bits\n",
                         address + nb);
             }
             rsp_length = response_exception(
@@ -758,7 +759,7 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
                 MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE, rsp);
         } else if ((address + nb) > mb_mapping->nb_input_bits) {
             if (ctx->debug) {
-                fprintf(stderr, "Illegal data address %0X in read_input_bits\n",
+                fprintf(stderr, "Illegal data address 0x%0X in read_input_bits\n",
                         address + nb);
             }
             rsp_length = response_exception(
@@ -789,7 +790,7 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
                 MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE, rsp);
         } else if ((address + nb) > mb_mapping->nb_registers) {
             if (ctx->debug) {
-                fprintf(stderr, "Illegal data address %0X in read_registers\n",
+                fprintf(stderr, "Illegal data address 0x%0X in read_registers\n",
                         address + nb);
             }
             rsp_length = response_exception(
@@ -825,7 +826,7 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
                 MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE, rsp);
         } else if ((address + nb) > mb_mapping->nb_input_registers) {
             if (ctx->debug) {
-                fprintf(stderr, "Illegal data address %0X in read_input_registers\n",
+                fprintf(stderr, "Illegal data address 0x%0X in read_input_registers\n",
                         address + nb);
             }
             rsp_length = response_exception(
@@ -847,11 +848,9 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
         if (address >= mb_mapping->nb_bits) {
             if (ctx->debug) {
                 fprintf(stderr,
-                        "Illegal data address %0X in write_bit\n",
+                        "Illegal data address 0x%0X in write_bit\n",
                         address);
             }
-            _sleep_response_timeout(ctx);
-            modbus_flush(ctx);
             rsp_length = response_exception(
                 ctx, &sft,
                 MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS, rsp);
@@ -865,7 +864,7 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
             } else {
                 if (ctx->debug) {
                     fprintf(stderr,
-                            "Illegal data value %0X in write_bit request at address %0X\n",
+                            "Illegal data value 0x%0X in write_bit request at address %0X\n",
                             data, address);
                 }
                 rsp_length = response_exception(
@@ -877,11 +876,9 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
     case MODBUS_FC_WRITE_SINGLE_REGISTER:
         if (address >= mb_mapping->nb_registers) {
             if (ctx->debug) {
-                fprintf(stderr, "Illegal data address %0X in write_register\n",
+                fprintf(stderr, "Illegal data address 0x%0X in write_register\n",
                         address);
             }
-            _sleep_response_timeout(ctx);
-            modbus_flush(ctx);
             rsp_length = response_exception(
                 ctx, &sft,
                 MODBUS_EXCEPTION_ILLEGAL_DATA_ADDRESS, rsp);
@@ -912,7 +909,7 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
                 MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE, rsp);
         } else if ((address + nb) > mb_mapping->nb_bits) {
             if (ctx->debug) {
-                fprintf(stderr, "Illegal data address %0X in write_bits\n",
+                fprintf(stderr, "Illegal data address 0x%0X in write_bits\n",
                         address + nb);
             }
             rsp_length = response_exception(
@@ -947,7 +944,7 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
                 MODBUS_EXCEPTION_ILLEGAL_DATA_VALUE, rsp);
         } else if ((address + nb) > mb_mapping->nb_registers) {
             if (ctx->debug) {
-                fprintf(stderr, "Illegal data address %0X in write_registers\n",
+                fprintf(stderr, "Illegal data address 0x%0X in write_registers\n",
                         address + nb);
             }
             rsp_length = response_exception(
@@ -995,7 +992,7 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
     case MODBUS_FC_MASK_WRITE_REGISTER:
         if (address >= mb_mapping->nb_registers) {
             if (ctx->debug) {
-                fprintf(stderr, "Illegal data address %0X in write_register\n",
+                fprintf(stderr, "Illegal data address 0x%0X in write_register\n",
                         address);
             }
             rsp_length = response_exception(
@@ -1036,7 +1033,7 @@ int modbus_reply(modbus_t *ctx, const uint8_t *req,
                    (address_write + nb_write) > mb_mapping->nb_registers) {
             if (ctx->debug) {
                 fprintf(stderr,
-                        "Illegal data read address %0X or write address %0X write_and_read_registers\n",
+                        "Illegal data read address 0x%0X or write address 0x%0X write_and_read_registers\n",
                         address + nb, address_write + nb_write);
             }
             rsp_length = response_exception(ctx, &sft,

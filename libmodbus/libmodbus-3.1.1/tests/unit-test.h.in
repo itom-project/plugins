@@ -1,18 +1,8 @@
 /*
- * Copyright © 2008-2013 Stéphane Raimbault <stephane.raimbault@gmail.com>
+ * Copyright © 2008-2014 Stéphane Raimbault <stephane.raimbault@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * it under the terms of the BSD License.
  */
 
 #ifndef _UNIT_TEST_H_
@@ -50,6 +40,10 @@ const uint16_t UT_REGISTERS_ADDRESS = 0x16B;
 const uint16_t UT_REGISTERS_ADDRESS_SPECIAL = 0x6C;
 /* The response of the server will contains an invalid TID or slave */
 const uint16_t UT_REGISTERS_ADDRESS_INVALID_TID_OR_SLAVE = 0x6D;
+/* The server will wait for 1 second before replying to test timeout */
+const uint16_t UT_REGISTERS_ADDRESS_SLEEP_500_MS = 0x6E;
+/* The server will wait for 5 ms before sending each byte */
+const uint16_t UT_REGISTERS_ADDRESS_BYTE_SLEEP_5_MS = 0x6F;
 
 const uint16_t UT_REGISTERS_NB = 0x3;
 const uint16_t UT_REGISTERS_TAB[] = { 0x022B, 0x0001, 0x0064 };
