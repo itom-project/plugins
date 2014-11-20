@@ -29,7 +29,7 @@ OPTION(BUILD_LIBMODBUS_SHARED "Build libmodbus as shared library (DLL) or static
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
-add_subdirectory(libmodbus-3.1.1)
+add_subdirectory(libmodbus-3.1.2)
 
 
 #################################################################
@@ -108,7 +108,7 @@ INCLUDE_DIRECTORIES(
     ${OpenCV_DIR}/include       #include directory of OpenCV
     ${ITOM_SDK_INCLUDE_DIRS}    #include directory of the itom SDK (recommended) 
     ${VISUALLEAKDETECTOR_INCLUDE_DIR} #include directory to the visual leak detector (recommended, does nothing if not available)
-    ${CMAKE_CURRENT_SOURCE_DIR}/libmodbus-3.1.1/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/libmodbus-3.1.2/src
     #add further include directories here
 )
 
