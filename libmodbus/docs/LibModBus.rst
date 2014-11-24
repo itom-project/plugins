@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`LibModBus`
 **License**:    :pluginlicense:`LibModBus`
 **Platforms**:  Windows, Linux
-**Devices**:    Modbus communication over TCP/IP
+**Devices**:    Modbus communication over TCP/IP and RTU
 **Author**:     :pluginauthor:`LibModBus`
 =============== ========================================================================================================
 
@@ -42,11 +42,23 @@ parameters can be changed using *setParam*.
 **name**: {str}, read-only
     name of the plugin (*LibModBus*)
     
-**IP**: {str}, read-only
-    IP-Address of the connected Modbus-TCP device
+**target**: {str}, read-only
+    IP-Address of the connected Modbus-TCP device or serial port for Modbus-RTU connection. Under Windows COM1-COM9 is supported, unix-based systems should use /dev/ttyS0.. or /dev/ttyUSB0..
     
 **port**: {int}, read-only
-    port used for ip communication
+    port used for IP communication or device ID for ModbusRTU
+	
+**baud**: {int}, read-only
+	The baudrate of the port for RTU communication
+
+**parity**: {str}, read-only
+	Parity for RTU communication (N->None, E->Even, O->Odd)
+	
+**databit**: {int}, read-only
+	Number of bits to be written in line for RTU communication
+	
+**stopbit**: {int}, read-only
+	Stop bits after every n bits for RTU communication
     
 **registers**: {str}
     fallback addressing for modbus registers. This value will be used, if a dataObject without 'registers'-tag is sent to the getVal- or setVal-function. 
@@ -57,7 +69,7 @@ Usage
 =====
 
 Values can be read or written via modbus communication using the *getVal(dObj)* and *setVal(dObj)* functions. The dataObject *dObj* needs to be two dimensional with the first dimension set to 1, 
-the second dimension has to have the exact size of the numbers of written or read registers. As modbus uses 16bit integer values, dObj should be initialized as 'uint16'.
+the second dimension has to have the exact size of the numbers of written or read registers. As modbus uses 16bit integer values, dObj must be initialized as 'uint16'.
 
 .. code-block:: python
     

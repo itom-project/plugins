@@ -32,6 +32,7 @@
 #include <qbytearray.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
+#include <regex>
 
 #include "pluginVersion.h"
 
@@ -64,26 +65,38 @@ LibModBusInterface::LibModBusInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"LibModBus is a itom-Plugin which provides modbusTCP communication.\n\
-The plugin is based on libmodbus v3.1.1 library and under development for Windows only atm.\n\
+"LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.\n\
+The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.\n\
 Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus. \n\
 The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. \n\
 The content of the registers is expected as data in the uint16 data object, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
 If no MetaTag is set, values of m_params['registers'] is tried to be used for addressing.";
 
     m_detaildescription = tr(docstring);
-    m_author = "J.Nitsche, IPROM, University Braunschweig";
+    m_author = "J.Nitsche, IPROM, TU Braunschweig";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");  
 
-    ito::Param paramVal("IP", ito::ParamBase::String, "127.0.0.1", tr("IP-Adress of the target device (for ModBus TCP)").toLatin1().data());
-    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}"), true);
+    ito::Param paramVal("target", ito::ParamBase::String, "127.0.0.1", tr("Adress of the target device. IP-Adress for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)").toLatin1().data());
+	paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}||COM[1-9]||/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}"), true);
     m_initParamsMand.append(paramVal);
-	paramVal = ito::Param("port", ito::ParamBase::Int, 0, 1024, 502, tr("The number of the TCP port for ModBus Communication (default 502)").toLatin1().data());
-    m_initParamsMand.append(paramVal);
+
+	paramVal = ito::Param("port", ito::ParamBase::Int, 0, 1024, 502, tr("The number of the TCP port for ModBusTCP (default 502) or slave ID for ModbusRTU").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
+	paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port for RTU communication").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
+	paramVal = ito::Param("parity", ito::ParamBase::String, "N", tr("Parity for RTU communication (N,E,O)").toLatin1().data());
+	paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[N,P,O]{1}"), true);
+    m_initParamsOpt.append(paramVal);
+	paramVal = ito::Param("databit", ito::ParamBase::Int, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
+	paramVal = ito::Param("stopbit", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
+
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -118,11 +131,19 @@ LibModBus::LibModBus() : AddInDataIO(), m_pCTX(NULL), m_connected(false)
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "LibModBus", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("IP", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "127.0.0.1", tr("IP Adress of the target device").toLatin1().data());
+	paramVal = ito::Param("target", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "127.0.0.1", tr("IP Adress or COM-Port of the target device").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 0, 1024, 502, tr("TCP Port for ModBus TCP Communication").toLatin1().data());
+	paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 0, 1024, 502, tr("TCP Port for ModbusTCP or slave ID for ModbusRTU").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("registers",ito::ParamBase::String | ito::ParamBase::In,"1,10",tr("Default string for register addressing. Coding is 'Reg1Address,Reg1Size;Reg2Address,Reg2Size...'").toLatin1().data());
+	paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 50, 4000000, 9600, tr("The baudrate of the port for RTU communication").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("parity", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "N", tr("Parity for RTU communication (N,E,O)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("databit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("stopbit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("registers",ito::ParamBase::String | ito::ParamBase::In,"0,10",tr("Default string for register addressing. Coding is 'Reg1Address,Reg1Size;Reg2Address,Reg2Size...'").toLatin1().data());
 	m_params.insert(paramVal.getName(),paramVal);
 
     //now create dock widget for this plugin
@@ -265,23 +286,59 @@ ito::RetVal LibModBus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
     ito::RetVal retval;
     int port = 0;
-    char *IP;
+	int baud = 9600;
+	int databit = 8;
+	int stopbit = 1;
+	char parity;
+    char *target;
+	bool IP = false;
 
-    retval += m_params["IP"].copyValueFrom(&((*paramsMand)[0]));
-    IP = m_params["IP"].getVal<char *>(); //borrowed reference
-	retval += m_params["port"].copyValueFrom(&((*paramsMand)[1]));
+    retval += m_params["target"].copyValueFrom(&((*paramsMand)[0]));
+    target = m_params["target"].getVal<char *>(); //borrowed reference
+	retval += m_params["port"].copyValueFrom(&((*paramsOpt)[0]));
     port = m_params["port"].getVal<int>();
+	retval += m_params["baud"].copyValueFrom(&((*paramsOpt)[1]));
+    baud = m_params["baud"].getVal<int>();
+	retval += m_params["parity"].copyValueFrom(&((*paramsOpt)[2]));
+    parity = *m_params["parity"].getVal<char *>();
+	retval += m_params["databit"].copyValueFrom(&((*paramsOpt)[3]));
+    databit = m_params["databit"].getVal<int>();
+	retval += m_params["stopbit"].copyValueFrom(&((*paramsOpt)[4]));
+    stopbit = m_params["stopbit"].getVal<int>();
+	
+	std::string check = target;
+	std::tr1::regex rx_ip("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+	std::tr1::regex rx_com("COM[1-9]");
+	std::tr1::regex rx_tty("/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}");
 
     if (!retval.containsError())
     {
-	    m_pCTX = modbus_new_tcp(IP,port);
+
+		if (regex_match(check.begin(), check.end(), rx_ip) == true)
+		{
+			std::cout << "IP found \n" << std::endl;
+			m_pCTX = modbus_new_tcp(target,port);
+			IP = true;
+		}
+		else if (regex_match(check.begin(), check.end(), rx_com) == true || regex_match(check.begin(), check.end(), rx_tty) == true)
+		{
+			std::cout << "Serial found \n" << std::endl;
+			m_pCTX = modbus_new_rtu(target,baud,parity,databit,stopbit);
+			modbus_set_slave(m_pCTX,port);
+			IP = false;
+			//retval += ito::RetVal(ito::retError, 0, tr("COM found").toLatin1().data());
+		}
+		else
+		{
+			retval += ito::RetVal(ito::retError, 0, tr("invalid target device").toLatin1().data());
+		}
         if (m_pCTX == NULL)
         {
             retval += ito::RetVal(ito::retError, 0, tr("Unable to allocate libmodbus context").toLatin1().data());
         }
         else if ( modbus_connect(m_pCTX) == -1)
 	    {
-		    retval += ito::RetVal(ito::retError,0,QObject::tr("ModbusTCP-connect failed!").toLatin1().data());
+		    retval += ito::RetVal(ito::retError,0,QObject::tr("Modbus-connect failed!").toLatin1().data());
 	    }
         else
         {
@@ -290,14 +347,14 @@ ito::RetVal LibModBus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 	
         if (!retval.containsError())
         {
-           std::cout << "Connect to Device at IP: " << IP << "; Port: " << port << " success" << std::endl;
+           std::cout << "Connect to Device at: " << target << "; Port/ID: " << port << " success" << std::endl;
         }
     }
 
     if (!retval.containsError())
     {
         emit parametersChanged(m_params);
-        setIdentifier(QString("IP %1 @ Port %2").arg(IP).arg(port));
+        setIdentifier(QString("Target %1 @ Port/ID %2").arg(target).arg(port));
     }
 
     if (waitCond)
@@ -391,66 +448,73 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 	QString regContent;
 	QStringList regList,addrList;
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retval(ito::retOk);
 	ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-	if (dObj->getSize(0)>0)
+	if (dObj->getType()!=3)
 	{
-		registers = dObj->getTag("registers",validOp);
-		if (validOp)											// Register Address transmitted in dObj-Meta-Data
+		retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16").toLatin1().data());
+	}
+	if (!retval.containsError())
+    {
+		if (dObj->getSize(0)>0)
 		{
-			regContent = registers.getVal_ToString().data();
-		}
-		else													// Register Adress taken from m_params as default fallback
-		{
-			char* regchar = m_params["registers"].getVal<char*>();
-			regContent = QString(QLatin1String(regchar));
-		}
-		regList = regContent.split(";");
-		listcounter=regList.size();
-
-		for ( i=0; i<listcounter; i++)
-		{
-			addrList = regList.at(i).split(",");
-			regAddr.push_back(addrList.at(0).toInt(&validOp));
-			tmpInt=addrList.size();
-			if (tmpInt>1)
+			registers = dObj->getTag("registers",validOp);
+			if (validOp)											// Register Address transmitted in dObj-Meta-Data
 			{
-				tmpInt = addrList.at(1).toInt(&validOp);
+				regContent = registers.getVal_ToString().data();
+			}
+			else													// Register Adress taken from m_params as default fallback
+			{
+				char* regchar = m_params["registers"].getVal<char*>();
+				regContent = QString(QLatin1String(regchar));
+			}
+			regList = regContent.split(";");
+			listcounter=regList.size();
+
+			for ( i=0; i<listcounter; i++)
+			{
+				addrList = regList.at(i).split(",");
+				regAddr.push_back(addrList.at(0).toInt(&validOp));
+				tmpInt=addrList.size();
+				if (tmpInt>1)
+				{
+					tmpInt = addrList.at(1).toInt(&validOp);
+				}
+				else
+				{
+					tmpInt=1;
+				}
+				regNb.push_back(tmpInt);
+				regNumbers += tmpInt;
+			}
+			if (regNumbers == dObj->getSize(1))
+			{
+				for (i=0;i<regAddr.size();i++)
+				{
+					registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
+					for (j=0; j < registercounter; j++) 
+					{
+						std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
+						dObj->at<ito::uint16>(0,dObjPos)=tab_reg[j];
+						dObjPos++;
+					}
+				}
+			
 			}
 			else
 			{
-				tmpInt=1;
+				retval += ito::RetVal(ito::retError,0,QObject::tr("Size of given data object does not match number of requested registers").toLatin1().data());
 			}
-			regNb.push_back(tmpInt);
-			regNumbers += tmpInt;
-		}
-		if (regNumbers == dObj->getSize(1))
-		{
-			for (i=0;i<regAddr.size();i++)
-			{
-				registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
-				for (j=0; j < registercounter; j++) 
-				{
-					std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
-					dObj->at<ito::uint16>(0,dObjPos)=tab_reg[j];
-					dObjPos++;
-				}
-			}
-			
-		}
-		else
-		{
-			std::cout << "Size of given data object does not match number of requested registers \n" << std::endl;
 		}
 	}
 	//std::cout << val << std::endl;
 	if (waitCond) 
     {
-        waitCond->returnValue = retValue;
+        waitCond->returnValue = retval;
         waitCond->release();
     }
 
-    return retValue;
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -477,7 +541,7 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
 	bool validOp=true;
 	uint16_t tab_reg[64];
 	ito::DataObjectTagType registers;
-	int listcounter,registercounter,i,j,tmpInt;
+	int listcounter,registercounter,i,tmpInt;
 	int regNumbers = 0;
 	int dObjPos=0;
 	std::vector<int> regAddr,regNb;
@@ -486,77 +550,82 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
 
 
     ItomSharedSemaphoreLocker locker(waitCond);
-	const ito::DataObject *incomingObject = reinterpret_cast<const ito::DataObject*>(data);
+	const ito::DataObject *dObj = reinterpret_cast<const ito::DataObject*>(data);
     //const char *buf = data;
     char endline[3] = {0, 0, 0};
     ito::RetVal retval(ito::retOk);
-
-	if (incomingObject->getSize(0)>0)
+	if (dObj->getType()!=3)
 	{
-		registers = incomingObject->getTag("registers",validOp);
-		if (validOp)											// Register Address transmitted in dObj-Meta-Data
+		retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16").toLatin1().data());
+	}
+	if (!retval.containsError())
+    {
+		if (dObj->getSize(0)>0)
 		{
-			regContent = registers.getVal_ToString().data();
-		}
-		else													// Register Adress taken from m_params as default fallback
-		{
-			char* regchar = m_params["registers"].getVal<char*>();
-			regContent = QString(QLatin1String(regchar));
-		}
-		regList = regContent.split(";");
-		listcounter=regList.size();
+			registers = dObj->getTag("registers",validOp);
+			if (validOp)											// Register Address transmitted in dObj-Meta-Data
+			{
+				regContent = registers.getVal_ToString().data();
+			}
+			else													// Register Adress taken from m_params as default fallback
+			{
+				char* regchar = m_params["registers"].getVal<char*>();
+				regContent = QString(QLatin1String(regchar));
+			}
+			regList = regContent.split(";");
+			listcounter=regList.size();
 
-		for ( i=0; i<listcounter; i++)
-		{
-			addrList = regList.at(i).split(",");
-			regAddr.push_back(addrList.at(0).toInt(&validOp));
-			tmpInt=addrList.size();
-			if (tmpInt>1)
+			for ( i=0; i<listcounter; i++)
 			{
-				tmpInt = addrList.at(1).toInt(&validOp);
-			}
-			else
-			{
-				tmpInt=1;
-			}
-			regNb.push_back(tmpInt);
-			regNumbers += tmpInt;
-		}
-		if (regNumbers == incomingObject->getSize(1))
-		{
-			for (i=0;i<regNumbers;i++)
-			{
-				tab_reg[i]=incomingObject->at<ito::uint16>(0,i);
-			}
-			for (i=0;i<regAddr.size();i++)
-			{
-				uint16_t *tab_reg_nb = tab_reg + dObjPos;
-				registercounter = modbus_write_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg_nb);
-				if (registercounter == regNb.at(i))
+				addrList = regList.at(i).split(",");
+				regAddr.push_back(addrList.at(0).toInt(&validOp));
+				tmpInt=addrList.size();
+				if (tmpInt>1)
 				{
-					std::cout << "Write at Reg. " << regAddr.at(i) << " success! \n " << std::endl; 
+					tmpInt = addrList.at(1).toInt(&validOp);
 				}
 				else
 				{
-					std::cout << "Write at Reg. " << regAddr.at(i) << " failed! \n " << std::endl; 
+					tmpInt=1;
 				}
-				dObjPos=dObjPos+regNb.at(i);
-				/*registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
-				for (j=0; j < registercounter; j++) 
-				{
-					std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
-					incomingObject->at<ito::uint16>(0,dObjPos)=tab_reg[j];
-					dObjPos++;
-				}*/
+				regNb.push_back(tmpInt);
+				regNumbers += tmpInt;
 			}
+			if (regNumbers == dObj->getSize(1))
+			{
+				for (i=0;i<regNumbers;i++)
+				{
+					tab_reg[i]=dObj->at<ito::uint16>(0,i);
+				}
+				for (i=0;i<regAddr.size();i++)
+				{
+					uint16_t *tab_reg_nb = tab_reg + dObjPos;
+					registercounter = modbus_write_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg_nb);
+					if (registercounter == regNb.at(i))
+					{
+						std::cout << "Write at Reg. " << regAddr.at(i) << " success! \n " << std::endl; 
+					}
+					else
+					{
+						std::cout << "Write at Reg. " << regAddr.at(i) << " failed! \n " << std::endl; 
+					}
+					dObjPos=dObjPos+regNb.at(i);
+					/*registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
+					for (j=0; j < registercounter; j++) 
+					{
+						std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
+						incomingObject->at<ito::uint16>(0,dObjPos)=tab_reg[j];
+						dObjPos++;
+					}*/
+				}
 			
-		}
-		else
-		{
-			std::cout << "Size of given data object does not match number of transmitted registers \n" << std::endl;
+			}
+			else
+			{
+				retval += ito::RetVal(ito::retError,0,QObject::tr("Size of given data object does not match number of transmitted registers").toLatin1().data());
+			}
 		}
 	}
-
     if (waitCond)
     {
         waitCond->returnValue = retval;
