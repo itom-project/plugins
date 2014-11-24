@@ -40,7 +40,6 @@ AvtVimbaInterface::AvtVimbaInterface()
 \n\
 - Marlin, F033 (monochrome, Firewire) \n\
 - Manta G-917B and G-146B (monochrome, GigE) \n\
-- GIP1000 + Vosskuehler CCD4000 (monochrome, GigE) \n\
 \n\
 The plugin has been compiled using the AVT Vimba version 1.3.0. \n\
 \n\
