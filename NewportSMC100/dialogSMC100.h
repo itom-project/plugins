@@ -35,6 +35,10 @@
 #include <qabstractbutton.h>
 #include <qvector.h>
 #include <qsharedpointer.h>
+#include <qcombobox.h>
+#include <qsignalmapper.h>
+#include <qcommandlinkbutton.h>
+#include <qspinbox.h>
 
 namespace ito
 {
@@ -47,12 +51,31 @@ class DialogSMC100 : public ito::AbstractAddInConfigDialog
 
     public:
         DialogSMC100(ito::AddInBase *actuator);
-        ~DialogSMC100() {};
+        ~DialogSMC100();
 
         ito::RetVal applyParameters();
 
     private:
         ito::AddInBase *m_pPlugin;
+        bool freshStarted;
+        int m_numAxis;
+
+        // Just the list for naming
+        QStringList m_calibStatusNames;
+
+        QVector<int> m_calibInitialStatus;
+        QVector<int> m_InitialStatus;
+        QVector<double> m_speedInitialStatus;
+        QVector<double> m_accelInitialStatus;
+        
+        QVector<bool> m_axisToInitialize;
+
+        QList<QFrame*> m_pListElements;
+        QVector<QDoubleSpinBox*> m_pSpeedSpin;
+        QVector<QDoubleSpinBox*> m_pAccelSpin;
+        QVector<QComboBox*> m_pComboBoxes;
+        QVector<QPushButton*> m_pResetBtn;
+
 
         void enableDialog(bool enabled);
         //ito::RetVal checkParameters();
@@ -60,6 +83,7 @@ class DialogSMC100 : public ito::AbstractAddInConfigDialog
 
         //ito::AddInActuator *m_pSMCPiezo;
         //QMap<QString, ito::Param> m_actualParameters;
+        void createUiListEntry(const int i);
 
         Ui::DialogSMC100 ui;
         bool m_firstRun;
@@ -70,6 +94,9 @@ class DialogSMC100 : public ito::AbstractAddInConfigDialog
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
         void on_calibrateBtn_clicked();
+        void resetButtonClicked();
+        void comboBoxChanged(int itemIdx);
+        void spinboxChanged(double value);
 
 };
 

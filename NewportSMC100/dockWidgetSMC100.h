@@ -39,11 +39,10 @@ class DockWidgetSMC100 : public ito::AbstractAddInDockWidget
 
     public:
         DockWidgetSMC100(int uniqueID, ito::AddInActuator * myPlugin);
-        ~DockWidgetSMC100() {};
+        ~DockWidgetSMC100();
 
     private:
         bool firstRun;
-        double m_stepSize;
         QVector<double> m_absPosTarget;
 
         void enableWidget(bool enabled);
@@ -56,6 +55,9 @@ class DockWidgetSMC100 : public ito::AbstractAddInDockWidget
 
         QVector<QDoubleSpinBox*> m_pDestSpinBoxes;
         QVector<QDoubleSpinBox*> m_pCurrSpinBoxes;
+        QVector<QPushButton*> m_pIncButtons;
+        QVector<QPushButton*> m_pDecButtons;
+        QVector<QPushButton*> m_pGoButtons;
 
         QList<QFrame*> m_pListElements;
         Ui::DockWidgetSMC100 ui;
@@ -76,6 +78,7 @@ class DockWidgetSMC100 : public ito::AbstractAddInDockWidget
 
         void on_btnStart_clicked();
         void on_btnRefresh_clicked();
+        void on_btnCancel_clicked();
 };
 
 #endif

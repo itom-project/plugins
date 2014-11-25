@@ -33,7 +33,14 @@
 #include <QtCore/QtPlugin>
 #include <qtimer.h>
 #include <qwaitcondition.h>
+#include <qelapsedtimer.h>
 #include <qdatetime.h>
+
+#if (WIN32 || _WIN64 || _WINDOWS)
+    #define NOMINMAX //avoid inclusion of min,max macros in windows.h
+    #include <Windows.h> //for sleep command
+#endif
+#include <qdebug.h>
 
 #define SMC_READTIMEOUT 256
 
@@ -51,66 +58,7 @@
     \return retOk
     \sa dialogSMC100
 */
-const ito::RetVal SMC100::showConfDialog(void)
-{
-    return apiShowConfigurationDialog(this, new DialogSMC100(this));
-}
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SMC100::SMCResetController(const QVector<int> axis)
-{
-    for (int i = 0; i < axis.size(); ++i)
-    {
-        this->SMCSendCommand("RS", false, m_addresses[axis[i]]);
-        while (true)
-        {
-            SMCCheckStatus(axis);
-            if (m_controllerState.at(i) == ctrlStNotRef)
-            {
-                break;
-            }
-        }
-    }
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SMC100::SMCEnterConfigMode(const QVector<int> axis)
-{
-    SMCResetController(axis);
-    for (int i = 0; i < axis.size(); ++i)
-    {
-        this->SMCSendCommand("PW1", false, m_addresses[axis[i]]);
-        while (true)
-        {
-            SMCCheckStatus(axis);
-            if (m_controllerState.at(i) == this->ctrlStConfig)
-            {
-                break;
-            }
-        }
-    }
-    return ito::retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SMC100::SMCLeaveConfigMode(const QVector<int> axis)
-{
-    // Sets the controllers to "not ref" state
-    for (int i = 0; i < axis.size(); ++i)
-    {
-        this->SMCSendCommand("PW0", false, m_addresses[axis[i]]);
-        while (true)
-        {
-            SMCCheckStatus(axis);
-            if (m_controllerState.at(i) == this->ctrlStNotRef)
-            {
-                break;
-            }
-        }
-    }
-    return ito::retOk;
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail defines the name and sets the plugins parameters (m_parans). The plugin is initialized (e.g. by a Python call) 
@@ -130,11 +78,13 @@ SMC100::SMC100() :
     // Read only - Parameters
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("ctrlId", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("device information string").toLatin1().data());
+    paramVal = ito::Param("ctrlId", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("device information string").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("current_status", ito::ParamBase::IntArray, NULL, tr("Displays the current status in the Newport system.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "SMC100", NULL);
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("nrOfAxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 32, 0, tr("Number of Axis").toLatin1().data());
+    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 32, 0, tr("Number of Axis").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     // Read/Write - Parameters
@@ -142,11 +92,15 @@ SMC100::SMC100() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("accel", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);   
-    paramVal = ito::Param("calibMode", ito::ParamBase::IntArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
+    paramVal = ito::Param("calib_mode", ito::ParamBase::IntArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("configMode", ito::ParamBase::IntArray, NULL, tr("Reset Controller and switch it to configmode (1) or set it back to unreferenced (0)").toLatin1().data());
+    paramVal = ito::Param("config_state", ito::ParamBase::IntArray, NULL, tr("Reset Controller and switch to configmode (1) or set it back to unreferenced (0)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("speed", ito::ParamBase::DoubleArray, NULL, tr("Calibration / Homing mode for each axis for further information refer to datasheet command HT").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("exec_calib", ito::ParamBase::IntArray, NULL, tr("Expects an array with the axis that should be calibrated ([1,3,4])").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("calib_timeout", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 16.0, tr("timeout when calibrating axes in seconds").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     m_currentStatus = QVector<int>(1, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
@@ -230,10 +184,6 @@ ito::RetVal SMC100::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
                 {
                     break;
                 }
-
-                //try to clear error memory
-                SMCCheckError(i);
-                SMCCheckError(i);
             }
         }
 
@@ -253,16 +203,22 @@ ito::RetVal SMC100::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
 
             int *calibMode = new int[m_numAxis];
             memset(calibMode, 0, m_numAxis * sizeof(int));
-            m_params["calibMode"].setVal<int*>(calibMode, m_numAxis);
+            m_params["calib_mode"].setVal<int*>(calibMode, m_numAxis);
             delete[] calibMode;
             calibMode = NULL;
 
             int *configMode = new int[m_numAxis];
             memset(configMode, 0, m_numAxis * sizeof(int));
-            m_params["configMode"].setVal<int*>(configMode, m_numAxis);
+            m_params["config_state"].setVal<int*>(configMode, m_numAxis);
             delete[] configMode;
             configMode = NULL;
 
+            int *currentStatus = new int[m_numAxis];
+            memset(currentStatus, 0, m_numAxis * sizeof(int));
+            m_params["current_status"].setVal<int*>(currentStatus, m_numAxis);
+            delete[] currentStatus;
+            currentStatus = NULL;
+                
             int *ids = new int[m_numAxis];
             memset(ids, 0, m_numAxis * sizeof(int));
             m_params["ctrlId"].setVal<int*>(ids, m_numAxis);
@@ -275,7 +231,7 @@ ito::RetVal SMC100::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
             delete[] velocity;
             velocity = NULL;
 
-            m_params["nrOfAxis"].setVal<int>(m_numAxis);
+            m_params["numaxis"].setVal<int>(m_numAxis);
 
             m_calibMode = QVector<int>(m_numAxis, 0);
             m_targetPos = QVector<double>(m_numAxis, 0.0);
@@ -283,6 +239,13 @@ ito::RetVal SMC100::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
             m_currentPos = QVector<double>(m_numAxis, 0.0);
             m_velocity = QVector<double>(m_numAxis, 0.0);
             m_acceleration = QVector<double>(m_numAxis, 0.0);
+
+            QVector<int> allAxis;
+            for (int i = 0; i < m_numAxis; ++i)
+            {
+                allAxis.append(i);
+            }
+            SMCCheckStatus(allAxis);
         }
     }
 
@@ -298,6 +261,149 @@ ito::RetVal SMC100::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
     }
 
     setInitialized(true); //init method has been finished (independent on retval)
+    getParam(QSharedPointer<ito::Param>(new ito::Param("async")));
+    getParam(QSharedPointer<ito::Param>(new ito::Param("comPort")));
+    getParam(QSharedPointer<ito::Param>(new ito::Param("accel")));
+    getParam(QSharedPointer<ito::Param>(new ito::Param("calib_mode")));
+    getParam(QSharedPointer<ito::Param>(new ito::Param("config_state")));
+    getParam(QSharedPointer<ito::Param>(new ito::Param("current_status")));
+    getParam(QSharedPointer<ito::Param>(new ito::Param("speed")));
+    QVector<int> allAxis;
+    for (int i = 0; i < m_numAxis; ++i)
+    {
+        allAxis.append(i);
+    }
+    SMCCheckStatus(allAxis);
+    return retval;
+}
+
+
+const ito::RetVal SMC100::showConfDialog(void)
+{
+    return apiShowConfigurationDialog(this, new DialogSMC100(this));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal SMC100::SMCResetController(const QVector<int> axis, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval = ito::retOk;
+    retval += SMCCheckStatus(axis);
+
+    if (!retval.containsError())
+    {
+        // Reset the given controller
+        foreach(const int &a, axis)
+        {
+            if (m_controllerState.at(a) != ctrlStNotRef && m_controllerState.at(a) != ctrlStConfig)
+            {
+                SMCSendCommand("RS", false, m_addresses[a]);
+                qDebug() << "Reset" << a;
+            }
+        }
+        // Wait till all controller are ready
+        foreach(const int &a, axis)
+        {
+            if (m_controllerState.at(a) != ctrlStNotRef && m_controllerState.at(a) != ctrlStConfig)
+            {
+                while (true)
+                {
+                    SMCCheckStatus(axis);
+                    this->setAlive();
+                    if (m_controllerState.at(a) == ctrlStNotRef)
+                    {
+                        qDebug() << "reset" << a << "done";
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal SMC100::SMCEnterConfigMode(const QVector<int> axis, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval = ito::retOk;
+    QElapsedTimer timer;
+
+    SMCResetController(axis);
+    foreach(const int &a, axis)
+    {
+        Sleep(200);
+        retval += SMCSendCommand("PW1", false, m_addresses[a]);
+        Sleep(1000);
+        SMCCheckError(m_addresses[a]);
+        retval += SMCCheckError(m_addresses[a]);
+        qDebug() << "EnterConfig" << a;
+
+        if (!retval.containsError())
+        {
+            timer.start();
+
+            while (true)
+            {
+                retval += SMCCheckStatus(axis);
+
+                if (retval.containsError())
+                {
+                    break;
+                }
+
+                this->setAlive();
+
+                if (m_controllerState.at(a) == this->ctrlStConfig)
+                {
+                    break;
+                }
+                else if (timer.elapsed() > 5000)
+                {
+                    retval += ito::RetVal::format(ito::retError,0,"timeout while entering config mode (axis %i)", m_addresses[a]);
+                    break;
+                }
+            }
+        }
+    }
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal SMC100::SMCLeaveConfigMode(const QVector<int> axis, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval = ito::retOk;
+    // Sets the controllers to "not ref" state
+    foreach(const int &a, axis)
+    {
+        this->SMCSendCommand("PW0", false, m_addresses[a]);
+        qDebug() << "LeaveConfig" << a;
+        while (true)
+        {
+            SMCCheckStatus(axis);
+            this->setAlive();
+            if (m_controllerState.at(a) == this->ctrlStNotRef)
+            {
+                break;
+            }
+        }
+    }
+
+    // Wait till movement is done and the release the semaphor
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
     return retval;
 }
 
@@ -367,23 +473,27 @@ ito::RetVal SMC100::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
         }
         else if (key == "comPort")
         {
-            // TODO: how do I read the number of the comPort?
-            retValue += it->setVal<int>(0);
-            *val = it.value();               
+            QSharedPointer<ito::Param> val(new ito::Param("port"));
+            retValue += m_pSer->getParam(val, NULL);
+            //int comPort = 0;            
+            if (!retValue.containsError())
+            {
+                retValue += it->setVal<int>(val->getVal<int>());
+            }
         }
         else if (key == "accel")
         {
-            retValue += SMCGetVelocityAcceleration(false, QVector<int>(m_addresses.size()));
+            retValue += SMCGetVelocityAcceleration(false);
             retValue += it->setVal<double*>(m_acceleration.data(), m_acceleration.size());
             *val = it.value();
         }
-        else if (key == "calibMode")
+        else if (key == "calib_mode")
         {
             retValue += SMCGetCalibMode(QVector<int>(m_addresses.size()));
             retValue += it->setVal<int*>(m_calibMode.data(), m_calibMode.size());
             *val = it.value();
         }
-        else if (key == "configMode")
+        else if (key == "config_state")
         {
             // only the controller status is checked. Every other status is displayed as 0
             // the setter method leaves every controller represented by a 0 in its state. It only changes the 1. 
@@ -408,6 +518,17 @@ ito::RetVal SMC100::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
             retValue += it->setVal<int*>(axis.data(), axis.size());
             *val = it.value();
         }
+        else if (key == "current_status")
+        {
+            QVector<int> axis;
+            foreach(const int &a, m_addresses)
+            {
+                axis.append(a-1);
+            }
+            retValue += SMCCheckStatus(axis);
+            retValue += it->setVal<int*>(m_controllerState.data(), m_controllerState.size());
+            *val = it.value();    
+        }
         else if (key == "ctrlId")
         {
             QString commaText = "";
@@ -417,20 +538,20 @@ ito::RetVal SMC100::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
             }
             commaText.remove(commaText.length() - 1, 1);
             retValue += it->setVal<char*>(commaText.toLatin1().data(), commaText.size());
-            *val = it.value();           
+            *val = it.value();
         }
         else if (key == "speed")
         {
-            retValue += SMCGetVelocityAcceleration(true, QVector<int>(m_addresses.size()));
+            retValue += SMCGetVelocityAcceleration(true);
             retValue += it->setVal<double*>(m_velocity.data(), m_velocity.size());
             *val = it.value();
         }
         else if (key == "name")
         {
             retValue += it->setVal<char*>(getIdentifier().toLatin1().data(), getIdentifier().size());
-            *val = it.value();               
+            *val = it.value();
         }
-        else if (key == "nrOfAxis")
+        else if (key == "numaxis")
         {
             val->setVal<int>(m_numAxis);
             *val = it.value();
@@ -447,7 +568,7 @@ ito::RetVal SMC100::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -472,7 +593,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
     int index;
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
-    QVector<QPair<int, QByteArray> > lastError;
+    QVector<QPair<int, QByteArray> > lastitError;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
@@ -493,19 +614,19 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
     if(!retValue.containsError())
     {
         //---------------------------
-        if (key == "calibMode")
+        if (key == "calib_mode")
         {
             if (hasIndex)
             {
-                if (index < 0 || index >= m_numAxis)
-                {
-                    retValue += ito::RetVal::format(ito::retError, 0, "index must be in range [0,%i]", m_numAxis-1);
-                }
-                else
-                {
-                    it->getVal<int*>()[index] = val->getVal<int>();
-                    //setCalibMode(
-                }
+                //if (index < 0 || index >= m_numAxis)
+                //{
+                //    retValue += ito::RetVal::format(ito::retError, 0, "index must be in range [0,%i]", m_numAxis-1);
+                //}
+                //else
+                //{
+                //    it->getVal<int*>()[index] = val->getVal<int>();
+                //    //setCalibMode
+                //}
             }
             else
             {
@@ -515,25 +636,55 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                 }
                 else
                 {
-                    //setCalibMode()
-                    it->copyValueFrom(&(*val));
+                    m_calibMode = QVector<int>(m_numAxis);
+                    memcpy(m_calibMode.data(), val->getVal<int*>(), sizeof(int)*m_numAxis);
+                    retValue += SMCSetCalibMode(m_calibMode);
+                    if (!retValue.containsError())
+                    {
+                        it->copyValueFrom(&(*val));
+                    }           
                 }
             }
         }
         //---------------------------
-        else if (key == "configMode")
+        else if (key == "exec_calib")
         {
             if (hasIndex)
             {
-                if (index < 0 || index >= m_numAxis)
+                if (val->getVal<int>() > 0)
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, "index must be in range [0,%i]", m_numAxis-1);
+                    calib(QVector<int>(1, index));
                 }
-                else
+            }
+            else
+            {
+                QVector<int> axes;
+                for (int i = 0; i < val->getLen(); ++i)
                 {
-                    it->getVal<int*>()[index] = val->getVal<int>();
-                    //SMCEnterConfigMode(QVector<int>(1, it->getVal<int*>()[0]));
+                    if (val->getVal<int*>()[i] > 0)
+                    {
+                        axes.append(i);
+                    }
                 }
+
+                calib(axes);
+            }
+        }
+        //---------------------------
+        else if (key == "config_state")
+        {
+            if (hasIndex)
+            {
+                //if (index < 0 || index >= m_numAxis)
+                //{
+                //    retValue += ito::RetVal::format(ito::retError, 0, "index must be in range [0,%i]", m_numAxis-1);
+                //}
+                //else
+                //{
+                //    it->getVal<int*>()[index] = val->getVal<int>();
+                //    SMCEnterConfigMode(QVector<int>(1, it->getVal<int*>()[0]));
+                //    retValue += it->copyValueFrom(&(*val));
+                //}
             }
             else
             {
@@ -552,7 +703,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                         {
                             tempEnter.append(i);
                         }
-                        else
+                        else if (it->getVal<int*>()[i] == 0 && m_controllerState[i] == 1)
                         {
                             tempLeave.append(i);
                         }
@@ -573,15 +724,15 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
         {
             if (hasIndex)
             {
-                if (index < 0 || index >= m_numAxis)
-                {
-                    retValue += ito::RetVal::format(ito::retError, 0, "index must be in range [0,%i]", m_numAxis-1);
-                }
-                else
-                {
-                    //SMCSetAcceleration
-                    it->getVal<int*>()[index] = val->getVal<int>();
-                }
+                //if (index < 0 || index >= m_numAxis)
+                //{
+                //    retValue += ito::RetVal::format(ito::retError, 0, "index must be in range [0,%i]", m_numAxis-1);
+                //}
+                //else
+                //{
+                //    //SMCSetAcceleration
+                //    it->getVal<int*>()[index] = val->getVal<int>();
+                //}
             }
             else
             {
@@ -591,7 +742,9 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                 }
                 else
                 {
-                    //SMCSetAcceleration
+                    QVector<double> speed = QVector<double>(val->getLen());      
+                    memcpy(speed.data(), val->getVal<int*>(), sizeof(double)*val->getLen());
+                    SMCSetVelocityAcceleration(true, speed);
                     it->copyValueFrom(&(*val));
                 }
             }
@@ -601,15 +754,15 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
         {
             if (hasIndex)
             {
-                if (index < 0 || index >= m_numAxis)
-                {
-                    retValue += ito::RetVal::format(ito::retError, 0, "index must be in range [0,%i]", m_numAxis-1);
-                }
-                else
-                {
-                    //SMCSetAcceleration(QVector<int>(0, ));
-                    it->getVal<int*>()[index] = val->getVal<int>();
-                }
+                //if (index < 0 || index >= m_numAxis)
+                //{
+                //    retValue += ito::RetVal::format(ito::retError, 0, "index must be in range [0,%i]", m_numAxis-1);
+                //}
+                //else
+                //{
+                //    //SMCSetAcceleration(QVector<int>(0, ));
+                //    it->getVal<int*>()[index] = val->getVal<int>();
+                //}
             }
             else
             {
@@ -619,7 +772,9 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                 }
                 else
                 {
-                    //SMCSetAcceleration(val)
+                    QVector<double> accel = QVector<double>(val->getLen());      
+                    memcpy(accel.data(), val->getVal<int*>(), sizeof(double)*val->getLen());
+                    SMCSetVelocityAcceleration(false, accel);
                     it->copyValueFrom(&(*val));
                 }
             }
@@ -656,15 +811,30 @@ ito::RetVal SMC100::SMCGetCalibMode(const QVector<int> axis)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SMC100::SMCSetCalibMode(const QVector<int> axis, const int mode)
+ito::RetVal SMC100::SMCSetCalibMode(const QVector<int> axisAndMode)
 {
     ito::RetVal retval = ito::retOk;
-    for (int i = 0; i < axis.size(); ++i)
+    QVector<int> axis;
+    bool released = false;
+    for (int i = 0; i < axisAndMode.size(); ++i)
     {
         if (m_addresses.size() > i)
         {
-            SMCSendCommand("HT"+QByteArray::number(mode), false, m_addresses[axis[i]]);
-            m_calibMode[i] = mode;
+            if (axisAndMode[i] != m_calibMode[i])
+            {
+                if (m_controllerState[i] == ctrlStConfig)
+                {
+                    axis.append(i);
+                    SMCSendCommand("HT"+QByteArray::number(axisAndMode[i]), false, m_addresses[i]);
+                    m_calibMode[i] = axisAndMode[i];
+                }
+                else
+                {             
+                    retval += ito::RetVal(ito::retWarning, 0, "The requested axis is not in config mode");
+                    break;
+                }
+            }
+            // otherwise it´s -1 and that means that the old status remains
         }
         else 
         {
@@ -698,52 +868,61 @@ ito::RetVal SMC100::calib(const int axis, ItomSharedSemaphore *waitCond)
 */
 ito::RetVal SMC100::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::retOk;
-    for (int i = 0; i < axis.size(); ++i)
+    //for homing, we first need to go into not-reference mode (if not yet done)
+    ito::RetVal retval = SMCResetController(axis, NULL);
+
+    bool done = false;
+    QElapsedTimer timer;
+
+    foreach (const int &a, axis)
     {
-        if (m_addresses.size() > i)
+        if (a < 0 || a >= m_numAxis)
         {
-            SMCSendCommand("OR", false, m_addresses[axis[i]]);
+            retval += ito::RetVal(ito::retError, 0, "invalid axis number");
         }
-        else 
+        else
         {
-            retval += ito::RetVal(ito::retError, 0, "The requested axis for calibration was could not be found");
+            if (m_controllerState[a] == ctrlStNotRef)
+            {
+                SMCSendCommand("OR", false, m_addresses[a]);
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "The requested axis is not in notReferenced mode");
+            }
+        }
+    }
+
+    timer.start();
+
+    while (!done)
+    {
+        retval += SMCCheckStatus(axis);
+
+        qDebug() << "calib: " << m_controllerState << m_controllerState << m_currentStatus;
+
+        done = true; //suggest we are done
+        foreach (int a, axis)
+        {
+            if (m_controllerState[a] != ctrlStReady)
+            {
+                done = false;
+            }
+        }
+
+        if (timer.elapsed() > m_params["calib_timeout"].getVal<double>() * 1000.0)
+        {
+            retval += ito::RetVal(ito::retError, 0, "timeout when calibrating axes");
             break;
         }
+
+        if (retval.containsError())
+        {
+            break;
+        }
+
+        setAlive();
     }
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retval;
-        waitCond->release();
-    }
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function sets the zero position of a single axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
-
-    \param [in] axis    numbers of axis to set to zero
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-    \sa ItomSharedSemaphore
-*/
-ito::RetVal SMC100::setOrigin(const int axis, ItomSharedSemaphore * /*waitCond*/)
-{
-    return setOrigin(QVector<int>(1,axis), NULL);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail This function sets the zero position of various axis spezified by "axis". In the case of this device the function body is nearly empty and has no effect.
-
-    \param [in] axis    Vector with numbers of axis to set to zero
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-    \sa ItomSharedSemaphore
-*/
-ito::RetVal SMC100::setOrigin(QVector<int> /*axis*/, ItomSharedSemaphore *waitCond)
-{
-    ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("not implemented").toLatin1().data());
 
     if (waitCond)
     {
@@ -765,7 +944,13 @@ ito::RetVal SMC100::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSe
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;// = SMCCheckStatus();
-    *status = m_currentStatus;
+    QVector<int> allAxis;
+    for (int i = 0; i < m_numAxis; ++i)
+    {
+        allAxis.append(i);
+    }
+    SMCCheckStatus(allAxis);
+    *status = m_controllerState;
 
     if (waitCond)
     {
@@ -808,21 +993,20 @@ ito::RetVal SMC100::getPos(const QVector<int> axis, QSharedPointer<QVector<doubl
 
     double *pos_ = pos->data();
     
-    //QSharedPointer<QVector<double>> sharedpos = QSharedPointer<double>(new double);
-    // TODO:
-    if (axis.size() <= m_addresses.size() /*&&  pos.size() <= m_addresses.size()*/)
+    for (int idx = 0; idx < axis.size(); ++idx)
     {
-        for (int idx = 0; idx < axis.size(); ++idx)
+        if (axis[idx] < 0 || axis[idx] >= m_numAxis)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "invalid axis number (%i)", axis[idx]);
+        }
+        else
         {
             retval += this->SMCSendQuestionWithAnswerDouble("TP", pos_[idx], 200, false, m_addresses[axis[idx]]);
             //(*pos)[0] = *sharedpos;
             m_currentPos[axis[idx]] = pos_[idx];
         }
     }
-    else
-    {
-        retval +=ito::RetVal(ito::retError, 0, tr("Error. Too many Axis / wrong Axis").toLatin1().data());
-    }
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -915,12 +1099,6 @@ ito::RetVal SMC100::requestStatusAndPosition(bool sendCurrentPos, bool sendTarge
         {
             retval += getPos(i,sharedpos,0);
             m_currentPos[i] = *sharedpos;
-
-            // TODO: weiterhin noetig, und wenn ja fuer was?
-            //if (std::abs(*sharedpos-m_targetPos[i]) > 0.01)
-            //{
-            //    m_targetPos[i] = *sharedpos;
-            //}
         
             sendStatusUpdate(false);
         }
@@ -940,30 +1118,57 @@ ito::RetVal SMC100::requestStatusAndPosition(bool sendCurrentPos, bool sendTarge
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SMC100::SMCGetVelocityAcceleration(bool vNota, const QVector<int> axis)
+ito::RetVal SMC100::SMCGetVelocityAcceleration(bool vNota)
 {
-    ito::RetVal retval = ito::retOk;
+    ito::RetVal retval;
     if (vNota == true)
     {
-        for (int i = 0; i < axis.size(); ++i)
+        for (int i = 0; i < m_numAxis; ++i)
         {
-            SMCSendQuestionWithAnswerDouble("VA?", m_velocity[i], SMC_READTIMEOUT, false, m_addresses[i]);
+             retval += SMCSendQuestionWithAnswerDouble("VA?", m_velocity[i], SMC_READTIMEOUT, false, m_addresses[i]);
         }
     }
     else
     {
-        for (int i = 0; i < axis.size(); ++i)
+        for (int i = 0; i < m_numAxis; ++i)
         {
-            SMCSendQuestionWithAnswerDouble("AC?", m_acceleration[i], SMC_READTIMEOUT, false, m_addresses[i]);
+            retval += SMCSendQuestionWithAnswerDouble("AC?", m_acceleration[i], SMC_READTIMEOUT, false, m_addresses[i]);
         }
     }
-    return ito::retOk;
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SMC100::SMCSetVelocityAcceleration(bool vNota, const QVector<int> axis)
+ito::RetVal SMC100::SMCSetVelocityAcceleration(bool vNota, const QVector<double> value)
 {
-    return ito::retOk;
+    ito::RetVal retval;
+    if (vNota == true && value.size() == m_numAxis)
+    { // Velocity
+        for (int i = 0; i < m_numAxis; ++i)
+        {
+            if (m_controllerState[i] == ctrlStConfig)
+            {
+                QString cmd = "VA"+QString::number(value[i]);
+                retval += SMCSendCommand(cmd.toLatin1(), false, m_addresses[i]);
+            }
+        }
+    }
+    else if (vNota == false && value.size() == m_numAxis)
+    { // Acceleration
+        for (int i = 0; i < m_numAxis; ++i)
+        {
+            if (m_controllerState[i] == ctrlStConfig)
+            {
+                QString cmd = "AC"+QString::number(value[i]);
+                retval += SMCSendCommand(cmd.toLatin1(), false, m_addresses[i]);
+            }
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Array size doesn´t match the number of axis").toLatin1().data());
+    }
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -976,39 +1181,52 @@ ito::RetVal SMC100::SMCCheckStatus(const QVector<int> axis)
     ito::RetVal retVal = ito::retOk;
     foreach(const int &a, axis)
     {
-        ito::RetVal r = SMCSendCommand("TS?", false, m_addresses[a]);
-        QByteArray ans;
-        int len;
-        r += SMCReadString(ans, len, 200, false);
-        ans = ans.right(2);
-        bool ok = false;
-        int i = ans.toUInt(&ok, 16);
-        if (ok == true)
+        if (a < 0 || a >= m_numAxis)
         {
-            if (i >= 10 && i < 19)
-            {   // x0A - x11 =>NOT REFERENCED
-                setStatus(m_currentStatus[a], ito::actuatorAvailable, ito::actSwitchesMask | ito::actStatusMask);
-                m_controllerState[a] = ctrlStNotRef;
-            }
-            else if (i == 20)
-            {   // x14 => CONFIG-Mode
-                setStatus(m_currentStatus[a], ito::actuatorAvailable, ito::actSwitchesMask | ito::actStatusMask);
-                m_controllerState[a] = this->ctrlStConfig;
-            }
-            else if (i == 40)
-            {   // x28 => MOVING
-                setStatus(m_currentStatus[a], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-                m_controllerState[a] = this->ctrlStMotion;
-            }
-            else if (i > 49 && i < 54)
-            {   // x32 - x35 => READY
-                setStatus(m_currentStatus[a], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
-                m_controllerState[a] = this->ctrlStReady;
-            }
-            else if (i > 59 && i < 63)
-            {   // x3C - x3E => DISABLED
-                setStatus(m_currentStatus[a], !ito::actuatorEnabled, ito::actSwitchesMask | ito::actStatusMask);
-                m_controllerState[a] = this->ctrlStDisabled;
+            retVal += ito::RetVal(ito::retError,0,"invalid axis");
+        }
+        else
+        {
+            // This is a dummy read so that stage errors disappear
+            SMCCheckError();
+            ito::RetVal r = SMCSendCommand("TS?", false, m_addresses[a]);
+            QByteArray ans;
+            int len;
+            r += SMCReadString(ans, len, 200, false);
+            ans = ans.right(2);
+            bool ok = false;
+            int i = ans.toUInt(&ok, 16);
+            if (ok == true)
+            {
+                if (i >= 10 && i < 19)
+                {   // x0A - x11 =>NOT REFERENCED
+                    setStatus(m_currentStatus[a], ito::actuatorAvailable, ito::actSwitchesMask | ito::actStatusMask);
+                    m_controllerState[a] = ctrlStNotRef;
+                }
+                else if (i == 20)
+                {   // x14 => CONFIG-Mode
+                    setStatus(m_currentStatus[a], ito::actuatorAvailable, ito::actSwitchesMask | ito::actStatusMask);
+                    m_controllerState[a] = this->ctrlStConfig;
+                }
+                else if (i == 40 || i== 0x001E || i == 0x001F) //moving, homing by rs232 or homing by smc-rc
+                {   // x28 => MOVING
+                    setStatus(m_currentStatus[a], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+                    m_controllerState[a] = this->ctrlStMotion;
+                }
+                else if (i > 49 && i < 54)
+                {   // x32 - x35 => READY
+                    setStatus(m_currentStatus[a], ito::actuatorAtTarget, ito::actSwitchesMask | ito::actStatusMask);
+                    m_controllerState[a] = this->ctrlStReady;
+                }
+                else if (i > 59 && i < 63)
+                {   // x3C - x3E => DISABLED
+                    setStatus(m_currentStatus[a], !ito::actuatorEnabled, ito::actSwitchesMask | ito::actStatusMask);
+                    m_controllerState[a] = this->ctrlStDisabled;
+                }
+                else
+                {
+                    m_controllerState[a] = -1;
+                }
             }
         }
     }
@@ -1084,28 +1302,6 @@ ito::RetVal SMC100::SMCReadString(QByteArray &result, int &len, int timeoutMS, b
     }
 
     return retValue;
-}
-
-ito::RetVal SMC100::SMCEmptyReadBuffer()
-{
-    ito::RetVal r;
-    QByteArray err;
-    int len;
-
-    while(true)
-    {
-        r = SMCSendCommand("TE", false, -1);
-        int i = 10000;
-        while (i > 0)
-        { --i; }
-        SMCReadString(err, len, 200, false);
-        if (len == 0)
-        {
-            break;
-        }            
-    }
-
-    return r;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
@@ -1314,16 +1510,13 @@ ito::RetVal SMC100::SMCSendQuestionWithAnswerString(const QByteArray &questionCo
 */
 ito::RetVal SMC100::SMCSetPos(const QVector<int> axis, const QVector<double> posMM, bool relNotAbs, ItomSharedSemaphore *waitCond)
 {
-    // Empty read-buffer completely befor sending new command
-    SMCEmptyReadBuffer();
-
     ito::RetVal retval = ito::retOk;
     bool released = false;
     QByteArray cmd;
 
     foreach (const int &a, axis)
     {
-        if (a < 0 || a >= m_addresses.size())
+        if (a < 0 || a >= m_numAxis)
         {
             retval += ito::RetVal::format(ito::retError, 0, tr("Axis %i does not exist").toLatin1().data(), a);
         }
@@ -1395,9 +1588,7 @@ ito::RetVal SMC100::SMCSetPos(const QVector<int> axis, const QVector<double> pos
                 waitCond->release();
                 released = true;
             }
-
             retval += waitForDone(100, axis); 
-
             // Wait till movement is done and the release the semaphor
             if (!m_async && waitCond && !released)
             {
@@ -1451,6 +1642,8 @@ ito::RetVal SMC100::waitForDone(const int timeoutMS, const QVector<int> axis /*i
 
             retVal += ito::RetVal(ito::retError, 0, tr("interrupt occurred").toLatin1().data());
             done = true;
+
+            sendStatusUpdate(true);
         }
         else
         {
@@ -1470,7 +1663,11 @@ ito::RetVal SMC100::waitForDone(const int timeoutMS, const QVector<int> axis /*i
             {   // Position reached and movement done
                 break;
             }
-            // wait XX ms and try again
+
+            if (!retVal.containsError())
+            {
+                setAlive();
+            }
         }
     }
     return retVal;
@@ -1497,3 +1694,32 @@ void SMC100::dockWidgetVisibilityChanged(bool visible)
         }
     }
 }
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////// NOT IMPLEMENTED FUNCTIONS /////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+
+ito::RetVal SMC100::setOrigin(const int axis, ItomSharedSemaphore * /*waitCond*/)
+{
+    return setOrigin(QVector<int>(1,axis), NULL);
+}
+
+//----------------------------------------------------------------------------------------------------------------
+ito::RetVal SMC100::setOrigin(QVector<int> /*axis*/, ItomSharedSemaphore *waitCond)
+{
+    ito::RetVal retval = ito::RetVal(ito::retError, 0, tr("Not implemented, use calibmode to set actual position as zero.").toLatin1().data());
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
+}
+
+
+
+// TODO: Implement the hasIndex functionality in setParam

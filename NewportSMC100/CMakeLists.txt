@@ -78,6 +78,7 @@ set(plugin_SOURCES
 
 set(plugin_RCC
     #add absolute pathes to any *.qrc resource files here
+	${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -88,11 +89,11 @@ endif(MSVC)
 if (QT5_FOUND)
     #if automoc if OFF, you also need to call QT5_WRAP_CPP here
     QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-    QT5_ADD_RESOURCES(plugin_rcc_MOC ${plugin_RCC})
+    QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 else (QT5_FOUND)
     QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
     QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-    QT4_ADD_RESOURCES(plugin_rcc_MOC ${plugin_RCC})
+    QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 endif (QT5_FOUND)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")

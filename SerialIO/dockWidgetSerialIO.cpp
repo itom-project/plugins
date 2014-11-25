@@ -229,7 +229,7 @@ void DockWidgetSerialIO::on_checkIgnoreEmpty_clicked()
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("debugIgnoreEmpty",ito::ParamBase::Int,(int)ui.checkIgnoreEmpty->isChecked()));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("debugIgnoreEmpty", ito::ParamBase::Int, (int)ui.checkIgnoreEmpty->isChecked()));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }

@@ -83,7 +83,6 @@ class SMC100 : public ito::AddInActuator
 
         QSharedPointer<ito::Param> endlineParam;
 
-        ito::RetVal SMCEmptyReadBuffer();
         ito::RetVal SMCSendCommand(const QByteArray &cmd, bool checkError, int axis = -1);
         ito::RetVal SMCReadString(QByteArray &result, int &len, int timeoutMS, bool checkError, int axis = -1);
         ito::RetVal SMCSendQuestionWithAnswerDouble(const QByteArray &questionCommand, double &answer, int timeoutMS, bool checkError, int axis = -1);
@@ -92,18 +91,19 @@ class SMC100 : public ito::AddInActuator
         ito::RetVal SMCSetPos(const QVector<int> axis, const QVector<double> posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
         ito::RetVal SMCCheckStatus(const QVector<int> axis);
 
+        
         // Config Mode
-        ito::RetVal SMCEnterConfigMode(const QVector<int> axis);
-        ito::RetVal SMCLeaveConfigMode(const QVector<int> axis);
-        ito::RetVal SMCResetController(const QVector<int> axis);
+        ito::RetVal SMCEnterConfigMode(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal SMCLeaveConfigMode(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal SMCResetController(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
 
         // Calib Mode
-        ito::RetVal SMCSetCalibMode(const QVector<int> axis, const int mode);
+        ito::RetVal SMCSetCalibMode(const QVector<int> axisAndMode);
         ito::RetVal SMCGetCalibMode(const QVector<int> axis);
 
         // Velocity and acceleration
-        ito::RetVal SMCGetVelocityAcceleration(bool vNota, const QVector<int> axis);
-        ito::RetVal SMCSetVelocityAcceleration(bool vNota, const QVector<int> axis);
+        ito::RetVal SMCGetVelocityAcceleration(bool vNota);
+        ito::RetVal SMCSetVelocityAcceleration(bool vNota, const QVector<double> axis);
        
         ito::RetVal SMCCheckError(int axis = -1);
 
@@ -116,8 +116,6 @@ class SMC100 : public ito::AddInActuator
 
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal close(ItomSharedSemaphore *waitCond);
-
-
 
         //! Starts calibration for a single axis
         ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL);

@@ -40,7 +40,6 @@ AvtVimbaInterface::AvtVimbaInterface()
 \n\
 - Marlin, F033 (monochrome, Firewire) \n\
 - Manta G-917B and G-146B (monochrome, GigE) \n\
-- GIP1000 + Vosskuehler CCD4000 (monochrome, GigE) \n\
 \n\
 The plugin has been compiled using the AVT Vimba version 1.3.0. \n\
 \n\
@@ -147,7 +146,7 @@ AvtVimba::AvtVimba() :
 	paramVal = ito::Param("camera_number", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Camera Number").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 14, 8, tr("bpp").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 14, 8, tr("Bit depth of sensor").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 60.0, 0.01, tr("Integrationtime of CCD [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
