@@ -554,6 +554,7 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
     bool enableDebug;
     ito::RetVal ret;
     char endline[3] = {0, 0, 0};
+    QString endlineStr;
 
     SerialIO *sio = (SerialIO *)m_psport;
     QMap<QString, ito::Param> *paramList = NULL;
@@ -561,13 +562,26 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
 
     getVals(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout, enableDebug);
 
+    endlineStr = "";
+    for (int i = 0; i < 3; ++i)
+    {
+        if (endline[i] == '\r')
+        {
+            endlineStr = endlineStr + "\\r";
+        }
+        else if (endline[i] == '\n')
+        {
+            endlineStr = endlineStr + "\\n";
+        }
+    }
+
     char *deviceName = (*paramList)["name"].getVal<char*>(); //borrowed reference
     sprintf(txt,
             "dataIO(\"%s\",%d,%d,\"%s\",%d,%d,%d,%d,%d,%f)",
             deviceName,
             (*paramList)["port"].getVal<int>(),
             baud,
-            endline,
+            endlineStr.toLatin1().data(),
             bits,
             stopbits,
             parity,
