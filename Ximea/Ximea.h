@@ -87,6 +87,7 @@ class Ximea : public ito::AddInGrabber
         ~Ximea();
         //! Constructor
         Ximea();
+        void dockWidgetVisibilityChanged(bool visible);
 
     public:
         friend class XimeaInterface;

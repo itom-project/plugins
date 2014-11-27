@@ -65,7 +65,7 @@
          <bool>false</bool>
         </property>
         <property name="suffix">
-         <string> dB</string>
+         <string> %</string>
         </property>
        </widget>
       </item>
@@ -88,7 +88,7 @@
          <double>999999999.000000000000000</double>
         </property>
         <property name="suffix">
-         <string> µs</string>
+         <string> s</string>
         </property>
        </widget>
       </item>

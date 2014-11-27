@@ -23,41 +23,42 @@
 #ifndef DOCKWIDGETXIMEA_H
 #define DOCKWIDGETXIMEA_H
 
-#include "common/sharedStructures.h"
-
+#include "common/abstractAddInDockWidget.h"
+#include "common/addInInterface.h"
 #include <QtGui>
 #include <qwidget.h>
 #include <qmap.h>
 #include <qstring.h>
+#include <qabstractbutton.h>
+#include <qsharedpointer.h>
+#include <qmetaobject.h>
 
 #include "ui_dockWidgetXimea.h"
 
-class DockWidgetXimea : public QWidget
+class DockWidgetXimea : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetXimea(QMap<QString, ito::Param> params, int uniqueID);
+        DockWidgetXimea(int uniqueID, ito::AddInDataIO *grabber);
         ~DockWidgetXimea() {};
 
     private:
         Ui::DockWidgetXimea ui;
+        void enableWidget(bool enabled);
 
-    signals:
-        void GainPropertiesChanged(double gain);
-        void OffsetPropertiesChanged(double offset);
-        void IntegrationPropertiesChanged(double integrationtime);
+        bool m_inEditing;
+        bool m_firstRun;
+        QMap<QString, ito::Param> m_currentParams;
 
     public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);
-
+        void parametersChanged(QMap<QString, ito::Param> params);
+        void identifierChanged(const QString &identifier);
 
     private slots:
-        void on_spinBox_offset_editingFinished();
-        void on_horizontalSlider_offset_sliderMoved(int d);
-        void on_spinBox_gain_editingFinished();
-        void on_horizontalSlider_gain_sliderMoved(int d);
-        void on_doubleSpinBox_integration_time_editingFinished();
+        void on_sliderWidget_offset_valueChanged(double value);   
+        void on_sliderWidget_gain_valueChanged(double value); 
+        void on_sliderWidget_integrationtime_valueChanged(double value); 
 };
 
 #endif

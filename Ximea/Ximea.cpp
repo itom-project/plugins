@@ -220,11 +220,12 @@ Ximea::Ximea() :
 	paramVal = ito::Param("sensor_type", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Sensor type of the attached camera").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
     //now create dock widget for this plugin
-    DockWidgetXimea *XI = new DockWidgetXimea(m_params, getID());
+        //now create dock widget for this plugin
+    DockWidgetXimea *m_dockWidget = new DockWidgetXimea(getID(), this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, XI);
+    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1509,7 +1510,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			    m_params["offset"].setVal<int>(offset);
 			    m_params["offset"].setMeta(new ito::IntMeta(offset_min, offset_max, offset_inc), true);
                 */
-			    
+			    m_params["offset"].setFlags(ito::ParamBase::Readonly);
 			
 			    //sets gamma value interval
 			    float gamma, gamma_min, gamma_max, gamma_inc;
@@ -2766,3 +2767,21 @@ const ito::RetVal Ximea::showConfDialog(void)
     
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void Ximea::dockWidgetVisibilityChanged(bool visible)
+{
+    if (getDockWidget())
+    {
+        QWidget *widget = getDockWidget()->widget();
+        if (visible)
+        {
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+
+            emit parametersChanged(m_params);
+        }
+        else
+        {
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+        }
+    }
+}
