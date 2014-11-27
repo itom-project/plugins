@@ -47,8 +47,6 @@
 #include "math.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-    #define BUFFER_OFFSET(bytes) ((GLubyte*) NULL + (bytes))
-
     const GLint POSITION = 0;
     GLsizei const ElementCount = 6; //was 4 for GL_QUAD
     

@@ -97,7 +97,8 @@ void main(void) \
 
 //----------------------------------------------------------------------------------------------------------------------------------
 GLWindow::GLWindow(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f)
-    : QGLWidget(format, parent, shareWidget, f)
+    : QGLWidget(format, parent, shareWidget, f),
+    m_init(false)
 {
 }
 
@@ -121,13 +122,13 @@ void GLWindow::initializeGL()
     //glActiveTexture(0); //https://bugreports.qt-project.org/browse/QTBUG-27408
 
     qglClearColor(Qt::white);
-
+    bool result;
 #if QT_VERSION >= 0x050000
-    shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, VERTEX_SHADER);
-    shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment, FRAGMENT_SHADER);
+    result = shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, VERTEX_SHADER);
+    result = shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment, FRAGMENT_SHADER);
 #else
-    shaderProgram.addShaderFromSourceCode(QGLShader::Vertex, VERTEX_SHADER);
-    shaderProgram.addShaderFromSourceCode(QGLShader::Fragment, FRAGMENT_SHADER);
+    result = shaderProgram.addShaderFromSourceCode(QGLShader::Vertex, VERTEX_SHADER);
+    result = shaderProgram.addShaderFromSourceCode(QGLShader::Fragment, FRAGMENT_SHADER);
 #endif
     shaderProgram.link();
 
@@ -154,7 +155,20 @@ void GLWindow::initializeGL()
 
     m_vertices << QVector3D(-1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, -1, 0) << QVector3D(1, 1, 0);
     m_textureCoordinates << QVector2D(0,1) << QVector2D(0,0) << QVector2D(1,1) << QVector2D(1,0);
+
+    m_init = true;
     
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GLWindow::shutdown()
+{
+
+    shaderProgram.removeAllShaders();
+    shaderProgram.release();
+
+    m_init = false;
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -182,8 +196,8 @@ void GLWindow::paintGL()
 
     if (m_textures.size() > 0)
     {
-        shaderProgram.setAttributeArray("vertex", m_vertices.constData());
         shaderProgram.enableAttributeArray("vertex");
+        shaderProgram.setAttributeArray("vertex", m_vertices.constData());
 
         m_currentTexture = qBound(0, m_currentTexture, m_textures.size() - 1);
         const TextureItem &item = m_textures[m_currentTexture];
@@ -596,7 +610,6 @@ void GLWindow::setLUT(QVector<unsigned char> &lut)
     shaderProgram.bind();
     shaderProgram.setUniformValueArray("lutarr", &templut[0][0], 256, 3);
     shaderProgram.release();
-
     doneCurrent();
 
     updateGL();

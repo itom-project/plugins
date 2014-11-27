@@ -84,8 +84,10 @@ private:
     QVector<ito::DataObject> m_objects;
     QVector<TextureItem> m_textures;
     int m_currentTexture;
+    bool m_init;
 
 public slots:
+    ito::RetVal shutdown();
     ito::RetVal addTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal setColor(const QColor &color);
     ito::RetVal setClearColor(const QColor &color);
