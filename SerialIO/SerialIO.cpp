@@ -64,7 +64,53 @@
 
 #include "dockWidgetSerialIO.h"
 
+/*static*/ int SerialPort::baudRates[] = 
+{
+    50,
+    75,
+    110,
+    134,
+    150,
+    200,
+    300,
+    600,
+    1200,
+    1800,
+    2400,
+    4800,
+    9600,
+    19200,
+    38400,
+    57600,
+    115200,
+    230400,
+    460800,
+    500000,
+    576000,
+    921600,
+    1000000,
+    1152000,
+    1500000,
+    2000000,
+    2500000,
+    3000000,
+    3500000,
+    4000000
+};
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
+const bool SerialPort::isValidBaudRate(const int baud)
+{
+    int i = 0;
+    while (i < m_baudRatesSize && baudRates[i] != baud)
+    {
+        ++i;
+    }
+
+    return i < m_baudRatesSize;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 {
@@ -348,8 +394,6 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 //    options.c_cc[VTIME] = 0;    // Set timeout
     options.c_cc[VMIN] = 0;                  // At least on character before satisfy reading
     tcsetattr(m_dev, TCSANOW, &options);     // Activate the settings
-
-//    return 0;
 #else
     // port setup
     DCB dcbSerialParams = {0};                                          // Structure for the port parameters
@@ -359,31 +403,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
         return -2;                                                      // Error while getting port parameters
     }
 
-/*    switch (params.baud)                                                // Set the speed (Bauds)
-    {
-        case 110:       dcbSerialParams.BaudRate = CBR_110;     break;
-        case 300:       dcbSerialParams.BaudRate = CBR_300;     break;
-        case 600:       dcbSerialParams.BaudRate = CBR_600;     break;
-        case 1200:      dcbSerialParams.BaudRate = CBR_1200;    break;
-        case 2400:      dcbSerialParams.BaudRate = CBR_2400;    break;
-        case 4800:      dcbSerialParams.BaudRate = CBR_4800;    break;
-        case 9600:      dcbSerialParams.BaudRate = CBR_9600;    break;
-//        case 14400:     dcbSerialParams.BaudRate = CBR_14400;   break;
-        case 19200:     dcbSerialParams.BaudRate = CBR_19200;   break;
-        case 38400:     dcbSerialParams.BaudRate = CBR_38400;   break;
-//        case 56000:     dcbSerialParams.BaudRate = CBR_56000;   break;
-        case 57600:     dcbSerialParams.BaudRate = CBR_57600;   break;
-        case 115200:    dcbSerialParams.BaudRate = CBR_115200;  break;
-//        case 128000:    dcbSerialParams.BaudRate = CBR_128000;  break;
-//        case 256000:    dcbSerialParams.BaudRate = CBR_256000;  break;
-        default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid baud rate").toLatin1().data());
-    }*/
-    if (params.baud == 50      || params.baud == 75      || params.baud == 134     || params.baud == 150     || params.baud == 200     || params.baud == 300     ||
-        params.baud == 600     || params.baud == 1200    || params.baud == 1800    || params.baud == 2400    || params.baud == 4800    || params.baud == 9600    ||
-        params.baud == 19200   || params.baud == 38400   || params.baud == 57600   || params.baud == 115200  || params.baud == 230400  || params.baud == 460800  ||
-        params.baud == 500000  || params.baud == 576000  || params.baud == 921600  || params.baud == 1000000 || params.baud == 1152000 || params.baud == 1500000 || 
-        params.baud == 2000000 || params.baud == 2500000 || params.baud == 3000000 || params.baud == 3500000 || params.baud == 4000000)
+    if (SerialPort::isValidBaudRate(params.baud))
     {
         // Set the speed (Bauds)
         dcbSerialParams.BaudRate = params.baud;
@@ -394,15 +414,6 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
     }
     m_serParams.baud = params.baud;
 
-/*    switch (params.bits)
-    {
-        case 5: dcbSerialParams.ByteSize = 5;   break;
-        case 6: dcbSerialParams.ByteSize = 6;   break;
-        case 7: dcbSerialParams.ByteSize = 7;   break;
-        case 8: dcbSerialParams.ByteSize = 8;   break;
-        default:
-            return ito::RetVal(ito::retError, 0, QObject::tr("invalid number of bits").toLatin1().data());
-    }*/
     if (params.bits > 4 && params.bits < 9)
     {
         dcbSerialParams.ByteSize = params.bits;
@@ -605,6 +616,9 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
             const int stopbits, const int parity, const int flow, const int sendDelay, const int timeout, PortType &portType)
 {
     char device[50];
+
+    m_baudRatesSize = (int)(sizeof(baudRates)/sizeof(int));
+
 #ifdef __linux__
 //    _snprintf(device, 50, "/dev/ttyS%d", port);
     _snprintf(device, 50, "/dev/ttyUSB%d", port);
@@ -1103,7 +1117,8 @@ SerialIOInterface::~SerialIOInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialIO::showConfDialog(void)
 {
-    dialogSerialIO *confDialog = new dialogSerialIO((void*)this, m_identifier);
+    return apiShowConfigurationDialog(this, new dialogSerialIO(this, (void*)this, m_identifier, (int)(sizeof(SerialPort::baudRates)/sizeof(int))));
+/*    dialogSerialIO *confDialog = new dialogSerialIO((void*)this, m_identifier);
     QVariant qvar = m_params["port"].getVal<double>();
     confDialog->setVals(&m_params);
     if (confDialog->exec())
@@ -1112,7 +1127,7 @@ const ito::RetVal SerialIO::showConfDialog(void)
     }
     delete confDialog;
 
-    return ito::retOk;
+    return ito::retOk;*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1576,7 +1591,6 @@ void SerialIO::dockWidgetVisibilityChanged(bool visible)
         {
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
             connect(this, SIGNAL(serialLog(QByteArray, QByteArray, const char)), dw, SLOT(serialLog(QByteArray, QByteArray, const char)));
-
             emit parametersChanged(m_params);
         }
         else

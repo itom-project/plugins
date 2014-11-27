@@ -109,7 +109,7 @@ QString dialogSerialIO::interpretAnswer(const char* temp, const int templen)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int dialogSerialIO::setVals(QMap<QString, ito::Param> *params)
+/*int dialogSerialIO::setVals(QMap<QString, ito::Param> *params)
 {
     QString BaudStr = QString::number((*params)["baud"].getVal<int>());
     int i = 0;
@@ -166,19 +166,91 @@ int dialogSerialIO::setVals(QMap<QString, ito::Param> *params)
     ui.spinBox_sendDelay->setValue(sendDelay);
 
     return 0;
+}*/
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void dialogSerialIO::parametersChanged(QMap<QString, ito::Param> params)
+{
+    QString BaudStr = QString::number((params)["baud"].getVal<int>());
+    int i = 0;
+    while (i < ui.combo_baud->count() && ui.combo_baud->itemText(i) != BaudStr)
+    {
+        i++;
+    }
+    if (i == ui.combo_baud->count())
+    {
+        i = 12;
+    }
+    ui.combo_baud->setCurrentIndex(i);
+
+    if ((params).keys().contains("debug"))
+    {
+        ui.checkBox_debug->setChecked((params)["debug"].getVal<int>());
+    }
+
+    char *endline = (params)["endline"].getVal<char *>(); //borrowed reference
+    if (strcmp(endline, "\r") == 0)
+    {
+        ui.combo_endline->setCurrentIndex(0);
+    }
+    else if (strcmp(endline, "\n") == 0)
+    {
+        ui.combo_endline->setCurrentIndex(1);
+    }
+    else if (strcmp(endline, "\r\n") == 0)
+    {
+        ui.combo_endline->setCurrentIndex(2);
+    }
+    else
+    {
+        ui.combo_endline->setCurrentIndex(3);
+    }
+
+    ui.combo_bits->setCurrentIndex((params)["bits"].getVal<int>() - 5);
+    ui.combo_stopbits->setCurrentIndex((params)["stopbits"].getVal<int>() - 1);
+    ui.combo_parity->setCurrentIndex((params)["parity"].getVal<int>());
+
+    unsigned int flow = (unsigned int)((params)["flow"].getVal<int>());
+    ui.combo_flow_xonxoff->setCurrentIndex(flow & 1);
+    ui.combo_flow_rts->setCurrentIndex((flow >> 1) & 3);
+    ui.combo_flow_cts->setCurrentIndex((flow >> 3) & 1);
+    ui.combo_flow_dtr->setCurrentIndex((flow >> 4) & 3);
+    ui.combo_flow_dsr->setCurrentIndex((flow >> 6) & 1);
+
+    int timeout = (int)((params)["timeout"].getVal<double>() * 1000.0 + 0.5);
+    ui.spinBox_timeout->setValue(timeout);
+    int timeoutmax = (int)((params)["timeout"].getMax() * 1000.0 + 0.5);
+    ui.spinBox_timeout->setMaximum(timeoutmax);
+
+    int sendDelay = (params)["sendDelay"].getVal<int>();
+    ui.spinBox_sendDelay->setValue(sendDelay);
+
+    m_currentParameters = params;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int dialogSerialIO::getVals(int &baud, char *endline, int &bits, int &stopbits, int &parity, unsigned int &flow, int &sendDelay, double &timeout, bool &debug)
+ito::RetVal dialogSerialIO::applyParameters()
 {
-    QVariant qvar;
+    ito::RetVal retValue(ito::retOk);
+    QVector<QSharedPointer<ito::ParamBase> > values;
+    bool success = false;
 
-    baud = ui.combo_baud->itemText((int)ui.combo_baud->currentIndex()).toInt();
+    //only send parameters which are changed
 
-    debug = ui.checkBox_debug->isChecked();
+    int i = ui.combo_baud->itemText((int)ui.combo_baud->currentIndex()).toInt();
+    if (m_currentParameters["baud"].getVal<int>() != i)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, i)));
+    }
 
-    qvar = ui.combo_endline->currentIndex();
-    switch (qvar.toInt())
+    i = ui.checkBox_debug->isChecked() ? 1 : 0;
+    if (m_currentParameters["debug"].getVal<int>() != i)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("debug", ito::ParamBase::Int, i)));
+    }
+
+    char endline[3] = {0, 0, 0};
+    switch (ui.combo_endline->currentIndex())
     {
         case 0:
             endline[0] = '\r';
@@ -193,6 +265,68 @@ int dialogSerialIO::getVals(int &baud, char *endline, int &bits, int &stopbits, 
         case 3:
             endline[0] = 0;
         break;
+    }
+    if (strcmp(m_currentParameters["endline"].getVal<char*>(), endline) != 0)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, endline)));
+    }
+
+    i = ui.combo_bits->currentIndex() + 5;
+    if (m_currentParameters["bits"].getVal<int>() != i)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, i)));
+    }
+
+    i = ui.combo_stopbits->currentIndex() + 1;
+    if (m_currentParameters["stopbits"].getVal<int>() != i)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, i)));
+    }
+
+    i = ui.combo_parity->currentIndex();
+    if (m_currentParameters["parity"].getVal<int>() != i)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, i)));
+    }
+
+    i = ui.combo_flow_xonxoff->currentIndex() + 
+        ui.combo_flow_rts->currentIndex() * 2 +
+        ui.combo_flow_cts->currentIndex() * 8 +
+        ui.combo_flow_dtr->currentIndex() * 16 +
+        ui.combo_flow_dsr->currentIndex() * 64;
+    if (m_currentParameters["flow"].getVal<int>() != i)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, i)));
+    }
+
+    double v = (double)ui.spinBox_timeout->value() / 1000.0;
+    if (m_currentParameters["timeout"].getVal<double>() != v)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, v)));
+    }
+
+    i = ui.spinBox_sendDelay->value();
+    if (m_currentParameters["sendDelay"].getVal<int>() != i)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sendDelay", ito::ParamBase::Int, i)));
+    }
+
+    retValue += setPluginParameters(values, msgLevelWarningAndError);
+
+    return retValue;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+/*int dialogSerialIO::getVals(int &baud, QString &endline, int &bits, int &stopbits, int &parity, unsigned int &flow, int &sendDelay, double &timeout, bool &debug)
+{
+    baud = ui.combo_baud->itemText((int)ui.combo_baud->currentIndex()).toInt();
+
+    debug = ui.checkBox_debug->isChecked();
+
+    endline = ui.combo_endline->currentText();
+    if (endline.size() > 4)
+    {
+        endline = "";
     }
 
     bits = ui.combo_bits->currentIndex() + 5;
@@ -212,16 +346,25 @@ int dialogSerialIO::getVals(int &baud, char *endline, int &bits, int &stopbits, 
     sendDelay = ui.spinBox_sendDelay->value();
 
     return 0;
-}
+}*/
 
 //----------------------------------------------------------------------------------------------------------------------------------
-dialogSerialIO::dialogSerialIO(void *sport, QString identifier) :
+//dialogSerialIO::dialogSerialIO(void *sport, QString identifier) :
+//    m_psport(sport)
+dialogSerialIO::dialogSerialIO(ito::AddInBase *dataIO, void *sport, QString identifier, int baudRatesSize) :
+    AbstractAddInConfigDialog(dataIO),
     m_psport(sport)
-{ 
+{
     ito::RetVal ret;
 
     memset(m_endline, 0, 3 * sizeof(char));
     ui.setupUi(this);
+
+//    ui.combo_baud->clear();
+    for (int i = 0; i < baudRatesSize; i++)
+    {
+        ui.combo_baud->addItem(QString::number(SerialPort::baudRates[i]));
+    }
 
     ui.lineEditSend->installEventFilter(this);
 
@@ -515,7 +658,8 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
 //----------------------------------------------------------------------------------------------------------------------------------
 void dialogSerialIO::on_pushButtonSet_clicked()
 {
-    int baud;
+    applyParameters();
+/*    int baud;
     int bits;
     int stopbits;
     int parity;
@@ -537,43 +681,42 @@ void dialogSerialIO::on_pushButtonSet_clicked()
     ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, (int)flow)));
     ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sendDelay", ito::ParamBase::Int, sendDelay)));
     ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, timeout)));
-    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("debug", ito::ParamBase::Int, enableDebug)));
+    ret += sio->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("debug", ito::ParamBase::Int, enableDebug)));*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void dialogSerialIO::on_pushButtonCreateCommand_clicked()
 {
-    char txt[100];
-    int baud;
-    int bits;
-    int stopbits;
-    int parity;
-    unsigned int flow;
-    int sendDelay;
-    double timeout;
-    bool enableDebug;
+    char txt[150];
     ito::RetVal ret;
-    char endline[3] = {0, 0, 0};
-    QString endlineStr;
 
     SerialIO *sio = (SerialIO *)m_psport;
     QMap<QString, ito::Param> *paramList = NULL;
     sio->getParamList(&paramList);
 
-    getVals(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout, enableDebug);
+    int baud = ui.combo_baud->itemText((int)ui.combo_baud->currentIndex()).toInt();
 
-    endlineStr = "";
-    for (int i = 0; i < 3; ++i)
+    QString endline = ui.combo_endline->currentText();
+    if (endline.size() > 4)
     {
-        if (endline[i] == '\r')
-        {
-            endlineStr = endlineStr + "\\r";
-        }
-        else if (endline[i] == '\n')
-        {
-            endlineStr = endlineStr + "\\n";
-        }
+        endline = "";
     }
+
+    int bits = ui.combo_bits->currentIndex() + 5;
+
+    int stopbits = ui.combo_stopbits->currentIndex() + 1;
+
+    int parity = ui.combo_parity->currentIndex();
+
+    unsigned int flow = ui.combo_flow_xonxoff->currentIndex() + 
+        ui.combo_flow_rts->currentIndex() * 2 +
+        ui.combo_flow_cts->currentIndex() * 8 +
+        ui.combo_flow_dtr->currentIndex() * 16 +
+        ui.combo_flow_dsr->currentIndex() * 64;
+
+    double timeout = (double)ui.spinBox_timeout->value() / 1000.0;
+
+    int sendDelay = ui.spinBox_sendDelay->value();
 
     char *deviceName = (*paramList)["name"].getVal<char*>(); //borrowed reference
     sprintf(txt,
@@ -581,7 +724,7 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
             deviceName,
             (*paramList)["port"].getVal<int>(),
             baud,
-            endlineStr.toLatin1().data(),
+            endline.toLatin1().data(),
             bits,
             stopbits,
             parity,

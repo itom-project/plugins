@@ -30,6 +30,7 @@
 #include <qsharedpointer.h>
 #include <qbytearray.h>
 
+//----------------------------------------------------------------------------------------------------------------------------------
 class SerialPort
 {
     private:
@@ -80,6 +81,10 @@ class SerialPort
         int isOpen() { return m_dev != 0 ? 1 : 0; }
         const ito::RetVal sclearbuffer(int BufferType);
         const ito::RetVal getendline(char *eline);
+        const bool isValidBaudRate(const int baud);
+
+        static int baudRates[];
+        int m_baudRatesSize;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
