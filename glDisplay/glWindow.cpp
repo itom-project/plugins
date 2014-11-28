@@ -570,21 +570,27 @@ ito::RetVal GLWindow::checkGLError()
     {
         case GL_NO_ERROR:
             return ito::retOk;
-            break;
         case GL_INVALID_ENUM:
             retval += ito::RetVal(ito::retError, ret, "An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.");
+            break;
         case GL_INVALID_VALUE:
             retval += ito::RetVal(ito::retError, ret, "A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.");
+            break;
         case GL_INVALID_OPERATION:
             retval += ito::RetVal(ito::retError, ret, "The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.");
+            break;
         case GL_INVALID_FRAMEBUFFER_OPERATION:
             retval += ito::RetVal(ito::retError, ret, "The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.");
+            break;
         case GL_OUT_OF_MEMORY:
             retval += ito::RetVal(ito::retError, ret, "There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.");
+            break;
         case GL_STACK_UNDERFLOW:
             retval += ito::RetVal(ito::retError, ret, "An attempt has been made to perform an operation that would cause an internal stack to underflow.");
+            break;
         case GL_STACK_OVERFLOW:
             retval += ito::RetVal(ito::retError, ret, "An attempt has been made to perform an operation that would cause an internal stack to overflow.");
+            break;
         default:
             retval += ito::RetVal(ito::retError, ret, "an unknown opengl error occurred");
             break;             
