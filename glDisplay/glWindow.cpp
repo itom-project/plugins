@@ -110,7 +110,9 @@ GLWindow::~GLWindow()
 //----------------------------------------------------------------------------------------------------------------------------------
 void GLWindow::initializeGL()
 {
-    //initializeGLFunctions(this->context());
+    ito::RetVal retval;
+
+    initializeGLFunctions();
 
     glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
@@ -122,15 +124,41 @@ void GLWindow::initializeGL()
     //glActiveTexture(0); //https://bugreports.qt-project.org/browse/QTBUG-27408
 
     qglClearColor(Qt::white);
-    bool result;
+
 #if QT_VERSION >= 0x050000
-    result = shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, VERTEX_SHADER);
-    result = shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment, FRAGMENT_SHADER);
+    if (shaderProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, VERTEX_SHADER) == false)
+    {
+        QString log = shaderProgram.log();
+        qDebug() << "error adding vertex shader: " << log;
+        retval += ito::RetVal::format(ito::retError, 0, "error adding vertex shader: %s", log.toLatin1().data());
+    }
+    if (shaderProgram.addShaderFromSourceCode(QOpenGLShader::Fragment, FRAGMENT_SHADER) == false)
+    {
+        QString log = shaderProgram.log();
+        qDebug() << "error adding fragment shader: " << log;
+        retval += ito::RetVal::format(ito::retError, 0, "error adding fragment shader: %s", log.toLatin1().data());
+    }
 #else
-    result = shaderProgram.addShaderFromSourceCode(QGLShader::Vertex, VERTEX_SHADER);
-    result = shaderProgram.addShaderFromSourceCode(QGLShader::Fragment, FRAGMENT_SHADER);
+    if (shaderProgram.addShaderFromSourceCode(QGLShader::Vertex, VERTEX_SHADER) == false)
+    {
+        QString log = shaderProgram.log();
+        qDebug() << "error adding vertex shader: " << log;
+        retval += ito::RetVal::format(ito::retError, 0, "error adding vertex shader: %s", log.toLatin1().data());
+    }
+    if (shaderProgram.addShaderFromSourceCode(QGLShader::Fragment, FRAGMENT_SHADER) == false)
+    {
+        QString log = shaderProgram.log();
+        qDebug() << "error adding fragment shader: " << log;
+        retval += ito::RetVal::format(ito::retError, 0, "error adding fragment shader: %s", log.toLatin1().data());
+    }
 #endif
-    shaderProgram.link();
+    
+    if (shaderProgram.link() == false)
+    {
+        QString log = shaderProgram.log();
+        qDebug() << "error linking shader program: " << log;
+        retval += ito::RetVal::format(ito::retError, 0, "error linking shader program shader: %s", log.toLatin1().data());
+    }
 
     QMatrix4x4 unityMatrix;
     unityMatrix.setToIdentity();
@@ -144,19 +172,32 @@ void GLWindow::initializeGL()
         templut[col][2] = col / 255.0;
     }
 
-    shaderProgram.bind();
-    shaderProgram.setUniformValue("MVP", unityMatrix);
-    shaderProgram.setUniformValue("textureObject", 0);
-    shaderProgram.setUniformValue("gamma", 0);
-    shaderProgram.setUniformValueArray("lutarr", &templut[0][0], 256, 3);
-    shaderProgram.setUniformValue("color", QColor(Qt::white));
-    shaderProgram.setUniformValue("gamma", 0);
-    shaderProgram.release();
+    if (shaderProgram.bind())
+    {
+        shaderProgram.setUniformValue("MVP", unityMatrix);
+        shaderProgram.setUniformValue("textureObject", 0);
+        shaderProgram.setUniformValue("gamma", 0);
+        shaderProgram.setUniformValueArray("lutarr", &templut[0][0], 256, 3);
+        shaderProgram.setUniformValue("color", QColor(Qt::white));
+        shaderProgram.setUniformValue("gamma", 0);
+        shaderProgram.release();
+    }
+    else
+    {
+        QString log = shaderProgram.log();
+        qDebug() << "error binding shader program in initializeGL: " << log;
+        retval += ito::RetVal::format(ito::retError, 0, "error binding shader program in initializeGL: %s", log.toLatin1().data());
+    }
 
     m_vertices << QVector3D(-1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, -1, 0) << QVector3D(1, 1, 0);
     m_textureCoordinates << QVector2D(0,1) << QVector2D(0,0) << QVector2D(1,1) << QVector2D(1,0);
 
-    m_init = true;
+    if (!retval.containsError())
+    {
+        m_init = true;
+    }
+
+    m_glErrors += retval;
     
 }
 
@@ -179,11 +220,7 @@ void GLWindow::resizeGL(int width, int height)
         height = 1;
     }
 
-    makeCurrent();
-
     glViewport(0, 0, width, height);
-
-    doneCurrent();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -192,7 +229,14 @@ void GLWindow::paintGL()
     QSize size = this->size();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    shaderProgram.bind();
+
+    if (shaderProgram.bind() == false)
+    {
+        QString log = shaderProgram.log();
+        qDebug() << "error binding shader program in paintGL: " << log;
+        m_glErrors += ito::RetVal::format(ito::retError, 0, "error binding shader program in paintGL: %s", log.toLatin1().data());
+        return;
+    }
 
     if (m_textures.size() > 0)
     {
@@ -258,12 +302,11 @@ void GLWindow::paintGL()
     
         shaderProgram.disableAttributeArray("vertex");
         shaderProgram.disableAttributeArray("textureCoordinate");
-
+        
         glBindTexture(GL_TEXTURE_2D, 0);
         checkGLError(); //opengl error is normal!
 
         //glActiveTexture(0); //https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
-        checkGLError();
     }
 
     shaderProgram.release();
@@ -547,7 +590,7 @@ ito::RetVal GLWindow::checkGLError()
             break;             
     }
 
-    qDebug() << "OpenGL Error: " << retval.errorMessage();
+    qDebug() << "OpenGL Error: " << ret << " - " << retval.errorMessage();
 
     return retval;
 }
@@ -613,4 +656,20 @@ void GLWindow::setLUT(QVector<unsigned char> &lut)
     doneCurrent();
 
     updateGL();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal GLWindow::getErrors(ItomSharedSemaphore *waitCond/* = NULL*/)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal r = m_glErrors;
+    m_glErrors = ito::retOk;
+
+    if (waitCond)
+    {
+        waitCond->returnValue = r;
+        waitCond->release();
+    }
+
+    return r;
 }

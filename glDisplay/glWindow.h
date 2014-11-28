@@ -45,7 +45,7 @@
 #include "common/sharedStructuresQt.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class GLWindow : public QGLWidget //, protected QGLFunctions
+class GLWindow : public QGLWidget, protected QGLFunctions
 {
     Q_OBJECT
 
@@ -86,7 +86,10 @@ private:
     int m_currentTexture;
     bool m_init;
 
+    ito::RetVal m_glErrors;
+
 public slots:
+    ito::RetVal getErrors(ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal shutdown();
     ito::RetVal addTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal setColor(const QColor &color);

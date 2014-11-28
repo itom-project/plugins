@@ -277,7 +277,7 @@ GLDisplay::GLDisplay() :
 		//{
 		//	return;
 		//}
-
+        
 		m_pWindow->setCursor(Qt::BlankCursor);
 		m_pWindow->setWindowTitle("GLDisplay");
 		m_pWindow->move(defx0, defy0);
@@ -515,6 +515,25 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     {
         retval += ito::RetVal(ito::retError, 0, tr("mandatory or optional parameters vector not initialized!!").toLatin1().data());
     }
+    
+    if (m_pWindow)
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(m_pWindow, "getErrors", Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+        if (locker->wait(10000))
+        {
+            retval += locker->returnValue;
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "timeout getting initialization status of OpenGL display");
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "OpenGL display window is not available");
+    }
+        
 
     if (!retval.containsError())
     {
