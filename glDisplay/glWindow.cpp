@@ -29,7 +29,6 @@
 #include <iostream>
 #include <qfileinfo.h>
 #include <qdir.h>
-#include <qimage.h>
 
 #if (defined WIN32)
         #define NOMINMAX
@@ -194,8 +193,8 @@ void GLWindow::initializeGL()
         templut[col][2] = col / 255.0;
     }
     
-    m_vertices <<  QVector3D(-1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, -1, 0) << QVector3D(1, 1, 0);
-    m_textureCoordinates << QVector2D(0,1) << QVector2D(0,0) << QVector2D(1,1) << QVector2D(1,0);
+    m_vertices <<  QVector3D(-1, -1, 0) << QVector3D(1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, 1, 0);
+    m_textureCoordinates << QVector2D(0,1) << QVector2D(1,1) << QVector2D(0,0) << QVector2D(1,0);
 
     if (shaderProgram.bind())
     {
@@ -347,11 +346,9 @@ void GLWindow::paintGL()
         }
 
         m_textureCoordinates[0].setY(scaleY);
-        m_textureCoordinates[2].setY(scaleY);
-        m_textureCoordinates[2].setX(scaleX);
+        m_textureCoordinates[1].setY(scaleY);
         m_textureCoordinates[3].setX(scaleX);
-
-        //qDebug() << m_textureCoordinates;
+        m_textureCoordinates[1].setX(scaleX);
 
 #if QT_VERSION >= 0x050000
         m_vao->bind();
@@ -397,8 +394,6 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
 
     int width, height, nrOfItems;
     const cv::Mat *plane = NULL;
-    //QImage image;
-    //uchar *linePtr;
     ito::uint32 *data = NULL;
     const ito::uint8 *cvLinePtr;
     bool valid;
@@ -431,8 +426,7 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
         glClear(GL_COLOR_BUFFER_BIT);          //clear screen buffer
 
         data = new ito::uint32[width*height];
-        //memset(data, 150, width*height*sizeof(QRgb));
-        //image = QImage(width, height, QImage::Format_ARGB32);
+
 
         for (int i = 0; i < nrOfItems; ++i)
         {
@@ -440,14 +434,13 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
 
             for (int r = 0; r < height; ++r)
             {
-                //linePtr = image.scanLine(r);
+
                 cvLinePtr = plane->ptr(r);
 
                 for (int c = 0; c < width; ++c)
                 {
                     //a, b, g, r
-                    data[r*width+c] = qRgba(cvLinePtr[c], cvLinePtr[c], cvLinePtr[c], 255); //(255 << 24) + ((c > 5 ? 10:70) << 16) + ((c < 5 ? 20:100) << 8) + (r < 5 ? 50 : 200);
-                    //((unsigned int*)linePtr)[c] = qRgba(cvLinePtr[c], cvLinePtr[c], cvLinePtr[c], 255);
+                    data[r*width+c] = qRgba(cvLinePtr[c], cvLinePtr[c], cvLinePtr[c], 255);
                 }
             }
             TextureItem item;
@@ -461,7 +454,6 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
             this->checkGLError();
             
-            //item.texture = bindTexture(image, GL_TEXTURE_2D);
             qDebug() << glIsTexture(item.texture);
             glBindTexture(GL_TEXTURE_2D, 0);
 
