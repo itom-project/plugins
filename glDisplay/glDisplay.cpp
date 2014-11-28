@@ -520,7 +520,7 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(m_pWindow, "getErrors", Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-        if (locker->wait(10000))
+        if (locker->wait(2000))
         {
             retval += locker->returnValue;
         }

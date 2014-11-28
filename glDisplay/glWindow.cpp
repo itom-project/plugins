@@ -98,7 +98,8 @@ void main(void) \
 //----------------------------------------------------------------------------------------------------------------------------------
 GLWindow::GLWindow(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f)
     : QGLWidget(format, parent, shareWidget, f),
-    m_init(false)
+    m_init(false),
+    m_vao(NULL)
 {
 }
 
@@ -138,6 +139,10 @@ void GLWindow::initializeGL()
         qDebug() << "error adding fragment shader: " << log;
         retval += ito::RetVal::format(ito::retError, 0, "error adding fragment shader: %s", log.toLatin1().data());
     }
+
+    m_vao = new QOpenGLVertexArrayObject(this);
+    m_vao->create();
+    m_vao->bind();
 #else
     if (shaderProgram.addShaderFromSourceCode(QGLShader::Vertex, VERTEX_SHADER) == false)
     {
@@ -171,6 +176,9 @@ void GLWindow::initializeGL()
         templut[col][1] = col / 255.0;
         templut[col][2] = col / 255.0;
     }
+    
+    m_vertices << QVector3D(-1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, -1, 0) << QVector3D(1, 1, 0);
+    m_textureCoordinates << QVector2D(0,1) << QVector2D(0,0) << QVector2D(1,1) << QVector2D(1,0);
 
     if (shaderProgram.bind())
     {
@@ -180,6 +188,24 @@ void GLWindow::initializeGL()
         shaderProgram.setUniformValueArray("lutarr", &templut[0][0], 256, 3);
         shaderProgram.setUniformValue("color", QColor(Qt::white));
         shaderProgram.setUniformValue("gamma", 0);
+
+#if QT_VERSION >= 0x050000
+        if (m_vertexBuffer.create())
+        {
+            m_vertexBuffer.setUsagePattern( QOpenGLBuffer::StaticDraw );
+            m_vertexBuffer.bind(); //use it now
+            m_vertexBuffer.allocate( m_vertices.constData(), m_vertices.size() * 3 * sizeof(qreal) );
+            shaderProgram.enableAttributeArray("vertex");
+            shaderProgram.setAttributeBuffer("vertex", GL_FLOAT, 0, 3); //load m_vertexBuffer to Shader variable 'vertex'
+            QString log = shaderProgram.log();
+            checkGLError();
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "OpenGL implementation does not support buffers or no OpenGL context available (error creating buffer)");
+        }
+#endif
+
         shaderProgram.release();
     }
     else
@@ -189,8 +215,7 @@ void GLWindow::initializeGL()
         retval += ito::RetVal::format(ito::retError, 0, "error binding shader program in initializeGL: %s", log.toLatin1().data());
     }
 
-    m_vertices << QVector3D(-1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, -1, 0) << QVector3D(1, 1, 0);
-    m_textureCoordinates << QVector2D(0,1) << QVector2D(0,0) << QVector2D(1,1) << QVector2D(1,0);
+    
 
     if (!retval.containsError())
     {
@@ -204,6 +229,9 @@ void GLWindow::initializeGL()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal GLWindow::shutdown()
 {
+#if QT_VERSION >= 0x050000
+    m_vertexBuffer.destroy();
+#endif
 
     shaderProgram.removeAllShaders();
     shaderProgram.release();
@@ -240,8 +268,12 @@ void GLWindow::paintGL()
 
     if (m_textures.size() > 0)
     {
+#if QT_VERSION >= 0x050000
+        m_vao->bind();
+#else
         shaderProgram.enableAttributeArray("vertex");
         shaderProgram.setAttributeArray("vertex", m_vertices.constData());
+#endif
 
         m_currentTexture = qBound(0, m_currentTexture, m_textures.size() - 1);
         const TextureItem &item = m_textures[m_currentTexture];

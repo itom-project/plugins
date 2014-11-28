@@ -31,12 +31,14 @@
 
 #if QT_VERSION >= 0x050000
 	#include <qopenglfunctions.h>
-	//#include <qopenglvertexarrayobject.h>
+	#include <qopenglvertexarrayobject.h>
     #include <qopenglshaderprogram.h>
+    #include <qopenglbuffer.h>
 #else
     //#include <qglfunctions.h>  //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
     #include <qglshaderprogram.h>
     #include <qglfunctions.h>
+    
 #endif
 
 #include "DataObject/dataobj.h"
@@ -75,8 +77,11 @@ protected:
 private:
 #if QT_VERSION >= 0x050000
     QOpenGLShaderProgram shaderProgram;
+    QOpenGLBuffer m_vertexBuffer;
+    QOpenGLVertexArrayObject *m_vao;
 #else
     QGLShaderProgram shaderProgram;
+    void *m_vao; //dummy
 #endif
     QVector<QVector3D> m_vertices;
     QVector<QVector2D> m_textureCoordinates;
@@ -87,6 +92,8 @@ private:
     bool m_init;
 
     ito::RetVal m_glErrors;
+
+    
 
 public slots:
     ito::RetVal getErrors(ItomSharedSemaphore *waitCond = NULL);
