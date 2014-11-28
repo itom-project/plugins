@@ -30,11 +30,12 @@
 #include <qvector.h>
 
 #if QT_VERSION >= 0x050000
-	#include <qopenglfunctions.h>
-	#include <qopenglvertexarrayobject.h>
+    #include <qopenglfunctions.h>
+    #include <qopenglvertexarrayobject.h>
     #include <qopenglshaderprogram.h>
-    #include <qopenglbuffer.h>
-#else
+#if  _DEBUG
+	#include <qopengldebug.h>
+#endif#else
     //#include <qglfunctions.h>  //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
     #include <qglshaderprogram.h>
     #include <qglfunctions.h>
@@ -47,7 +48,11 @@
 #include "common/sharedStructuresQt.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class GLWindow : public QGLWidget, protected QGLFunctions
+#if QT_VERSION >= 0x050000
+class GLWindow : public QGLWidget, protected QOpenGLFunctions
+#else
+class GLWindow : public QGLWidget /*, protected QGLFunctions*/
+#endif
 {
     Q_OBJECT
 
@@ -77,11 +82,12 @@ protected:
 private:
 #if QT_VERSION >= 0x050000
     QOpenGLShaderProgram shaderProgram;
+    QOpenGLDebugLogger *m_pLogger;
     QOpenGLBuffer m_vertexBuffer;
-    QOpenGLVertexArrayObject *m_vao;
-#else
+    QOpenGLVertexArrayObject *m_vao;#else
     QGLShaderProgram shaderProgram;
     void *m_vao; //dummy
+    void *m_pLogger; //dummy
 #endif
     QVector<QVector3D> m_vertices;
     QVector<QVector2D> m_textureCoordinates;
@@ -107,6 +113,10 @@ public slots:
     ito::RetVal setSize(const int &width, const int &height);
     ito::RetVal enableGammaCorrection(bool enabled); //en/disables gamma correction based on the lut values (per default, the lut values are a 1:1 relation)
     void setLUT(QVector<unsigned char> &lut); //transfers the lut values for possible gamma correction to the opengl buffer
+
+#if QT_VERSION >= 0x050100
+	void onMessageLogged( QOpenGLDebugMessage message );
+#endif
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

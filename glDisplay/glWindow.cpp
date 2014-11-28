@@ -99,7 +99,7 @@ void main(void) \
 GLWindow::GLWindow(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f)
     : QGLWidget(format, parent, shareWidget, f),
     m_init(false),
-    m_vao(NULL)
+    m_pLogger(NULL)
 {
 }
 
@@ -113,7 +113,24 @@ void GLWindow::initializeGL()
 {
     ito::RetVal retval;
 
-    initializeGLFunctions();
+#if QT_VERSION > 0x050000 && _DEBUG
+    initializeOpenGLFunctions();
+
+	m_pLogger = new QOpenGLDebugLogger( this );
+
+    connect( m_pLogger, SIGNAL( messageLogged( QOpenGLDebugMessage ) ),
+             this, SLOT( onMessageLogged( QOpenGLDebugMessage ) ),
+             Qt::DirectConnection );
+
+	//initialization will fail if GL_KHR_debug extension of OpenGL is not available
+    if ( m_pLogger->initialize() ) 
+	{
+        m_pLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
+        m_pLogger->enableMessages();
+    }
+#else
+	//initializeGLFunctions(); 
+#endif
 
     glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
@@ -711,3 +728,11 @@ ito::RetVal GLWindow::getErrors(ItomSharedSemaphore *waitCond/* = NULL*/)
 
     return r;
 }
+
+#if QT_VERSION >= 0x050100
+//----------------------------------------------------------------------------------------------------------------------------------
+void GLWindow::onMessageLogged( QOpenGLDebugMessage message )
+{
+    qDebug() << message;
+}
+#endif
