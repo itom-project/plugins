@@ -36,7 +36,8 @@
     #include <qopenglbuffer.h>
 #if  _DEBUG
 	#include <qopengldebug.h>
-#endif#else
+#endif
+#else
     //#include <qglfunctions.h>  //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
     #include <qglshaderprogram.h>
     #include <qglfunctions.h>
