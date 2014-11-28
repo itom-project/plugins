@@ -33,6 +33,7 @@
     #include <qopenglfunctions.h>
     #include <qopenglvertexarrayobject.h>
     #include <qopenglshaderprogram.h>
+    #include <qopenglbuffer.h>
 #if  _DEBUG
 	#include <qopengldebug.h>
 #endif#else
@@ -84,7 +85,9 @@ private:
     QOpenGLShaderProgram shaderProgram;
     QOpenGLDebugLogger *m_pLogger;
     QOpenGLBuffer m_vertexBuffer;
-    QOpenGLVertexArrayObject *m_vao;#else
+    QOpenGLBuffer m_textureBuffer;
+    QOpenGLVertexArrayObject *m_vao;
+#else
     QGLShaderProgram shaderProgram;
     void *m_vao; //dummy
     void *m_pLogger; //dummy

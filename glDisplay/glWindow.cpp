@@ -137,7 +137,7 @@ void GLWindow::initializeGL()
 
     // Make sure that textures are enabled.
     // I read that ATI cards need this before MipMapping.
-    glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_TEXTURE_2D);
 
     //glActiveTexture(0); //https://bugreports.qt-project.org/browse/QTBUG-27408
 
@@ -194,7 +194,7 @@ void GLWindow::initializeGL()
         templut[col][2] = col / 255.0;
     }
     
-    m_vertices << QVector3D(-1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, -1, 0) << QVector3D(1, 1, 0);
+    m_vertices <<  QVector3D(-1, -1, 0) << QVector3D(-1, 1, 0) << QVector3D(1, -1, 0) << QVector3D(1, 1, 0);
     m_textureCoordinates << QVector2D(0,1) << QVector2D(0,0) << QVector2D(1,1) << QVector2D(1,0);
 
     if (shaderProgram.bind())
@@ -214,6 +214,21 @@ void GLWindow::initializeGL()
             m_vertexBuffer.allocate( m_vertices.constData(), m_vertices.size() * 3 * sizeof(qreal) );
             shaderProgram.enableAttributeArray("vertex");
             shaderProgram.setAttributeBuffer("vertex", GL_FLOAT, 0, 3); //load m_vertexBuffer to Shader variable 'vertex'
+            QString log = shaderProgram.log();
+            checkGLError();
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "OpenGL implementation does not support buffers or no OpenGL context available (error creating buffer)");
+        }
+
+        if (m_textureBuffer.create())
+        {
+            m_textureBuffer.setUsagePattern( QOpenGLBuffer::DynamicDraw );
+            m_textureBuffer.bind(); //use it now
+            m_textureBuffer.allocate( m_textureCoordinates.constData(), m_textureCoordinates.size() * 3 * sizeof(qreal) );
+            shaderProgram.enableAttributeArray("textureCoordinate");
+            shaderProgram.setAttributeBuffer("textureCoordinate", GL_FLOAT, 0, 3); //load m_textureBuffer to Shader variable 'vertex'
             QString log = shaderProgram.log();
             checkGLError();
         }
@@ -273,7 +288,7 @@ void GLWindow::paintGL()
 {
     QSize size = this->size();
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
 
     if (shaderProgram.bind() == false)
     {
@@ -285,12 +300,7 @@ void GLWindow::paintGL()
 
     if (m_textures.size() > 0)
     {
-#if QT_VERSION >= 0x050000
-        m_vao->bind();
-#else
-        shaderProgram.enableAttributeArray("vertex");
-        shaderProgram.setAttributeArray("vertex", m_vertices.constData());
-#endif
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         m_currentTexture = qBound(0, m_currentTexture, m_textures.size() - 1);
         const TextureItem &item = m_textures[m_currentTexture];
@@ -341,9 +351,23 @@ void GLWindow::paintGL()
         m_textureCoordinates[2].setX(scaleX);
         m_textureCoordinates[3].setX(scaleX);
 
-        shaderProgram.setAttributeArray("textureCoordinate", m_textureCoordinates.constData());
-        checkGLError();
+        //qDebug() << m_textureCoordinates;
+
+#if QT_VERSION >= 0x050000
+        m_vao->bind();
+        shaderProgram.enableAttributeArray("vertex");
+
+        m_textureBuffer.bind(); //use it now
+        m_textureBuffer.allocate( m_textureCoordinates.constData(), m_textureCoordinates.size() * 3 * sizeof(qreal) );
         shaderProgram.enableAttributeArray("textureCoordinate");
+        shaderProgram.setAttributeBuffer("textureCoordinate", GL_FLOAT, 0, 3); //load m_textureBuffer to Shader variable 'vertex'
+            
+#else
+        shaderProgram.enableAttributeArray("vertex");
+        shaderProgram.setAttributeArray("vertex", m_vertices.constData());
+        shaderProgram.enableAttributeArray("textureCoordinate");
+        shaderProgram.setAttributeArray("textureCoordinate", m_textureCoordinates.constData());
+#endif
         checkGLError();
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -373,8 +397,9 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
 
     int width, height, nrOfItems;
     const cv::Mat *plane = NULL;
-    QImage image;
-    uchar *linePtr;
+    //QImage image;
+    //uchar *linePtr;
+    ito::uint32 *data = NULL;
     const ito::uint8 *cvLinePtr;
     bool valid;
     ito::DataObjectTagType tag;
@@ -405,7 +430,9 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  //black background
         glClear(GL_COLOR_BUFFER_BIT);          //clear screen buffer
 
-        image = QImage(width, height, QImage::Format_ARGB32);
+        data = new ito::uint32[width*height];
+        //memset(data, 150, width*height*sizeof(QRgb));
+        //image = QImage(width, height, QImage::Format_ARGB32);
 
         for (int i = 0; i < nrOfItems; ++i)
         {
@@ -413,16 +440,28 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
 
             for (int r = 0; r < height; ++r)
             {
-                linePtr = image.scanLine(r);
+                //linePtr = image.scanLine(r);
                 cvLinePtr = plane->ptr(r);
 
                 for (int c = 0; c < width; ++c)
                 {
-                    ((unsigned int*)linePtr)[c] = qRgba(cvLinePtr[c], cvLinePtr[c], cvLinePtr[c], 255);
+                    //a, b, g, r
+                    data[r*width+c] = qRgba(cvLinePtr[c], cvLinePtr[c], cvLinePtr[c], 255); //(255 << 24) + ((c > 5 ? 10:70) << 16) + ((c < 5 ? 20:100) << 8) + (r < 5 ? 50 : 200);
+                    //((unsigned int*)linePtr)[c] = qRgba(cvLinePtr[c], cvLinePtr[c], cvLinePtr[c], 255);
                 }
             }
             TextureItem item;
-            item.texture = bindTexture(image, GL_TEXTURE_2D);
+
+            glGenTextures(1, &(item.texture));
+            this->checkGLError();
+            glBindTexture(GL_TEXTURE_2D, item.texture);
+            this->checkGLError();
+
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            this->checkGLError();
+            
+            //item.texture = bindTexture(image, GL_TEXTURE_2D);
             qDebug() << glIsTexture(item.texture);
             glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -535,6 +574,9 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
         
             m_textures.append(item);
         }
+
+        delete[] data;
+        data = NULL;
     }
 
     *nrOfTotalTextures = m_textures.size();
