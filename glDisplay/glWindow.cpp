@@ -99,7 +99,9 @@ GLWindow::GLWindow(const QGLFormat &format, QWidget *parent, const QGLWidget *sh
     : QGLWidget(format, parent, shareWidget, f),
 #if QT_VERSION >= 0x050000
     m_init(false),
+#if _DEBUG
     m_pLogger(NULL),
+#endif
     m_glf(NULL)
 #else
     m_init(false)
