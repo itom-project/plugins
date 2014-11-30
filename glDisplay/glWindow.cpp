@@ -287,8 +287,6 @@ void GLWindow::paintGL()
 {
     QSize size = this->size();
 
-    
-
     if (shaderProgram.bind() == false)
     {
         QString log = shaderProgram.log();
@@ -305,8 +303,8 @@ void GLWindow::paintGL()
         const TextureItem &item = m_textures[m_currentTexture];
 
         //glActiveTexture(GL_TEXTURE0); //https://bugreports.qt-project.org/browse/QTBUG-27408
-        glBindTexture(GL_TEXTURE_2D, item.texture);
-        checkGLError();
+        glBindTexture(GL_TEXTURE_2D, item.texture);        
+        m_glErrors += checkGLError();
         
         if (item.textureWrapS == 0)
         {
@@ -328,18 +326,17 @@ void GLWindow::paintGL()
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, item.textureMinFilter);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, item.textureMagFilter);
-        checkGLError();
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         //glPixelTransferi(GL_MAP_COLOR, GL_TRUE);
         checkGLError();
 
-        double scaleX = size.width() / item.width;
+        double scaleX = (double)size.width() / (double)item.width;
         if (item.textureWrapS == 0)
         {
             scaleX = 1;
         }
-        double scaleY = size.height() / item.height;
+        double scaleY = (double)size.height() / (double)item.height;
         if (item.textureWrapT == 0)
         {
             scaleY = 1;
@@ -352,29 +349,28 @@ void GLWindow::paintGL()
 
 #if QT_VERSION >= 0x050000
         m_vao->bind();
+        //m_glErrors += checkGLError();
         shaderProgram.enableAttributeArray("vertex");
-
         m_textureBuffer.bind(); //use it now
         m_textureBuffer.allocate( m_textureCoordinates.constData(), m_textureCoordinates.size() * 3 * sizeof(qreal) );
         shaderProgram.enableAttributeArray("textureCoordinate");
-        shaderProgram.setAttributeBuffer("textureCoordinate", GL_FLOAT, 0, 3); //load m_textureBuffer to Shader variable 'vertex'
-            
+        shaderProgram.setAttributeBuffer("textureCoordinate", GL_FLOAT, 0, 2); //load m_textureBuffer to Shader variable 'vertex'
+        m_glErrors += checkGLError();
 #else
         shaderProgram.enableAttributeArray("vertex");
         shaderProgram.setAttributeArray("vertex", m_vertices.constData());
         shaderProgram.enableAttributeArray("textureCoordinate");
         shaderProgram.setAttributeArray("textureCoordinate", m_textureCoordinates.constData());
+        m_glErrors += checkGLError();
 #endif
-        checkGLError();
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        checkGLError();
     
         shaderProgram.disableAttributeArray("vertex");
         shaderProgram.disableAttributeArray("textureCoordinate");
         
         glBindTexture(GL_TEXTURE_2D, 0);
-        checkGLError(); //opengl error is normal!
+        m_glErrors += checkGLError(); //opengl error is normal!
 
         //glActiveTexture(0); //https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
     }
