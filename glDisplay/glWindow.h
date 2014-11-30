@@ -30,7 +30,7 @@
 #include <qvector.h>
 
 #if QT_VERSION >= 0x050000
-    #include <qopenglfunctions.h>
+    #include <qopenglfunctions.h> //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
     #include <qopenglvertexarrayobject.h>
     #include <qopenglshaderprogram.h>
     #include <qopenglbuffer.h>
@@ -50,11 +50,7 @@
 #include "common/sharedStructuresQt.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#if QT_VERSION >= 0x050000
-class GLWindow : public QGLWidget, protected QOpenGLFunctions
-#else
-class GLWindow : public QGLWidget /*, protected QGLFunctions*/
-#endif
+class GLWindow : public QGLWidget
 {
     Q_OBJECT
 
@@ -84,6 +80,7 @@ protected:
 private:
 #if QT_VERSION >= 0x050000
     QOpenGLShaderProgram shaderProgram;
+    QOpenGLFunctions *m_glf;
 #if _DEBUG
     QOpenGLDebugLogger *m_pLogger;
 #else

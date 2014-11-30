@@ -98,13 +98,19 @@ void main(void) \
 GLWindow::GLWindow(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f)
     : QGLWidget(format, parent, shareWidget, f),
     m_init(false),
-    m_pLogger(NULL)
+    m_pLogger(NULL),
+    m_glf(NULL)
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 GLWindow::~GLWindow()
 {
+    if (m_glf)
+    {
+        delete m_glf;
+        m_glf = NULL;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -112,8 +118,18 @@ void GLWindow::initializeGL()
 {
     ito::RetVal retval;
 
+#if QT_VERSION > 0x050000
+    m_glf = new QOpenGLFunctions(context()->contextHandle());
+    if (m_glf)
+    {
+        m_glf->initializeOpenGLFunctions();
+    }
+#else
+	//initializeGLFunctions(); 
+#endif
+
 #if QT_VERSION > 0x050000 && _DEBUG
-    initializeOpenGLFunctions();
+    
 
 	m_pLogger = new QOpenGLDebugLogger( this );
 
@@ -127,8 +143,6 @@ void GLWindow::initializeGL()
         m_pLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
         m_pLogger->enableMessages();
     }
-#else
-	//initializeGLFunctions(); 
 #endif
 
     glEnable(GL_DEPTH_TEST);
