@@ -331,15 +331,15 @@ void GLWindow::paintGL()
         //glPixelTransferi(GL_MAP_COLOR, GL_TRUE);
         checkGLError();
 
-        double scaleX = (double)size.width() / (double)item.width;
+        qreal scaleX = (qreal)size.width() / (qreal)item.width;
         if (item.textureWrapS == 0)
         {
-            scaleX = 1;
+            scaleX = 1.0;
         }
-        double scaleY = (double)size.height() / (double)item.height;
+        qreal scaleY = (qreal)size.height() / (qreal)item.height;
         if (item.textureWrapT == 0)
         {
-            scaleY = 1;
+            scaleY = 1.0;
         }
 
         m_textureCoordinates[0].setY(scaleY);

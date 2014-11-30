@@ -38,15 +38,13 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class GLWindow;
-
-class DialogDispWindow : public ito::AbstractAddInConfigDialog 
+class DialogGLDisplay : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
     public:
-        DialogDispWindow(ito::AddInBase *grabber, GLWindow *prjWindow);
-        ~DialogDispWindow() {};
+        DialogGLDisplay(ito::AddInBase *plugin);
+        ~DialogGLDisplay() {};
 
         ito::RetVal applyParameters();
 
@@ -55,7 +53,6 @@ class DialogDispWindow : public ito::AbstractAddInConfigDialog
         bool m_inEditing;
 
         Ui::DialogGLDisplay ui;
-        GLWindow *m_pWindow;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);

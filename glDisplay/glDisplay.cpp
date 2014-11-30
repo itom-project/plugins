@@ -624,7 +624,7 @@ void GLDisplay::numberOfImagesChanged(int numImg, int numGray, int numCos)
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal GLDisplay::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogDispWindow(this, m_pWindow));
+    return apiShowConfigurationDialog(this, new DialogGLDisplay(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
