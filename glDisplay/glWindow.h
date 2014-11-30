@@ -84,7 +84,12 @@ protected:
 private:
 #if QT_VERSION >= 0x050000
     QOpenGLShaderProgram shaderProgram;
+#if _DEBUG
     QOpenGLDebugLogger *m_pLogger;
+#else
+    void *m_pLogger; //dummy
+    typedef int QOpenGLDebugMessage; //dummy, necessary since slot below cannot be commented in RELEASE (moc'er will not accept it)
+#endif
     QOpenGLBuffer m_vertexBuffer;
     QOpenGLBuffer m_textureBuffer;
     QOpenGLVertexArrayObject *m_vao;
@@ -118,7 +123,7 @@ public slots:
     ito::RetVal enableGammaCorrection(bool enabled); //en/disables gamma correction based on the lut values (per default, the lut values are a 1:1 relation)
     void setLUT(QVector<unsigned char> &lut); //transfers the lut values for possible gamma correction to the opengl buffer
 
-#if QT_VERSION >= 0x050100
+#if QT_VERSION >= 0x050100 //do not anything to this #if line, since the moc'er cannot read this
 	void onMessageLogged( QOpenGLDebugMessage message );
 #endif
 };
