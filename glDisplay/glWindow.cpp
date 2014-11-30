@@ -97,20 +97,26 @@ void main(void) \
 //----------------------------------------------------------------------------------------------------------------------------------
 GLWindow::GLWindow(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f)
     : QGLWidget(format, parent, shareWidget, f),
+#if QT_VERSION >= 0x050000
     m_init(false),
     m_pLogger(NULL),
     m_glf(NULL)
+#else
+    m_init(false)
+#endif
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 GLWindow::~GLWindow()
 {
+#if QT_VERSION >= 0x050000
     if (m_glf)
     {
         delete m_glf;
         m_glf = NULL;
     }
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

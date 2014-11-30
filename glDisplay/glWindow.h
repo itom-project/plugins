@@ -59,7 +59,6 @@ public:
     ~GLWindow();
 
 protected:
-
     struct TextureItem
     {
         GLuint texture;
@@ -84,7 +83,6 @@ private:
 #if _DEBUG
     QOpenGLDebugLogger *m_pLogger;
 #else
-    void *m_pLogger; //dummy
     typedef int QOpenGLDebugMessage; //dummy, necessary since slot below cannot be commented in RELEASE (moc'er will not accept it)
 #endif
     QOpenGLBuffer m_vertexBuffer;
@@ -92,8 +90,6 @@ private:
     QOpenGLVertexArrayObject *m_vao;
 #else
     QGLShaderProgram shaderProgram;
-    void *m_vao; //dummy
-    void *m_pLogger; //dummy
 #endif
     QVector<QVector3D> m_vertices;
     QVector<QVector2D> m_textureCoordinates;
@@ -104,8 +100,6 @@ private:
     bool m_init;
 
     ito::RetVal m_glErrors;
-
-    
 
 public slots:
     ito::RetVal getErrors(ItomSharedSemaphore *waitCond = NULL);
@@ -120,7 +114,7 @@ public slots:
     ito::RetVal enableGammaCorrection(bool enabled); //en/disables gamma correction based on the lut values (per default, the lut values are a 1:1 relation)
     void setLUT(QVector<unsigned char> &lut); //transfers the lut values for possible gamma correction to the opengl buffer
 
-#if QT_VERSION >= 0x050100 //do not anything to this #if line, since the moc'er cannot read this
+#if QT_VERSION >= 0x050100 //do not anything to this #if line, since the moc'er cannot read this. Do not make a _DEBUG define, since this is not accepted by the moc'er either
 	void onMessageLogged( QOpenGLDebugMessage message );
 #endif
 };
