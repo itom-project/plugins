@@ -2999,13 +2999,33 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclSampleToDataObject(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
-    ito::PCLPolygonMesh *meshIn = (ito::PCLPolygonMesh*)(*paramsMand)[0].getVal<void*>();
+    ito::PCLPointCloud *pointCloud = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
     ito::DataObject *disperityMap = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
     ito::DataObject *intensityMap = (ito::DataObject*)(*paramsOpt)[0].getVal<void*>();
+    ito::DataObject *deviationMap = (ito::DataObject*)(*paramsOpt)[1].getVal<void*>();
 
-    if (meshIn == NULL || meshIn->polygonMesh().get() == NULL)
+    int width = (*paramsMand)[2].getVal<int>();
+    int height = (*paramsMand)[3].getVal<int>();
+
+    ito::RetVal retval = ito::retOk;
+
+    bool getDisperity = true;
+    bool getIntensity = intensityMap != NULL;
+    bool getDeviation = deviationMap != NULL;
+
+    if(!pointCloud->isOrganized() && !pointCloud->is_dense())
+    {
+        return ito::RetVal(ito::retError, 0, tr("point cloud must be organized and dense").toLatin1().data());
+    }
+
+    if (pointCloud == NULL || pointCloud->width() < 1 || pointCloud->height() < 1)
     {
         return ito::RetVal(ito::retError, 0, tr("point cloud pointer or content must not be NULL").toLatin1().data());
+    }
+
+    if (pointCloud->width() * pointCloud->height() != height * width)
+    {
+        return ito::RetVal(ito::retError, 0, tr("number of element of pointcloud must be identical to width*height").toLatin1().data());
     }
 
     if (disperityMap == NULL)
@@ -3018,7 +3038,249 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
         return ito::RetVal(ito::retError, 0, tr("intensity output dataObject must differ from disperity dataObject").toLatin1().data());
     }
 
-    return ito::retOk;
+    if ((deviationMap == disperityMap || deviationMap == intensityMap) && deviationMap != NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("curvature output dataObject must differ from disperity dataObject").toLatin1().data());
+    }
+
+    if(getDisperity)
+    {
+        *disperityMap = ito::DataObject(height, width, ito::tFloat32);
+    }
+
+    cv::Mat* dispMat = (cv::Mat*)(disperityMap->get_mdata()[disperityMap->seekMat(0)]);
+    cv::Mat* intMat = NULL;
+    cv::Mat* devMat = NULL;
+
+    if(getIntensity)
+    {
+        if(pointCloud->getType() == ito::pclXYZI  || pointCloud->getType() == ito::pclXYZINormal)
+        {
+            *intensityMap = ito::DataObject(height, width, ito::tFloat32);
+        }
+        /*
+        else if(pointCloud->getType() == ito::pclXYZRGBA || pointCloud->getType() == ito::pclXYZRGBNormal)
+        {
+            *deviationMap = ito::DataObject(height, width, ito::tRGBA32);
+        }
+        */
+        else
+        {
+            return ito::RetVal(ito::retError, 0, tr("point cloud must be of type a with an intensity or rgba vector to extract intensity").toLatin1().data());
+        }
+        intMat = (cv::Mat*)(intensityMap->get_mdata()[intensityMap->seekMat(0)]);
+    }
+
+    if(getDeviation)
+    {
+        if(pointCloud->getType() == ito::pclXYZNormal  || pointCloud->getType() == ito::pclXYZINormal || pointCloud->getType() == ito::pclXYZRGBNormal)
+        {
+            *deviationMap = ito::DataObject(height, width, ito::tFloat32);
+        }
+
+        else
+        {
+            return ito::RetVal(ito::retError, 0, tr("point cloud must be of type a with defined normals to extract intensity").toLatin1().data());
+        }
+        devMat = (cv::Mat*)(deviationMap->get_mdata()[deviationMap->seekMat(0)]);
+    }
+
+
+
+    switch(pointCloud->getType())
+    {
+    default:
+        retval += ito::RetVal(ito::retError, 0, "point cloud type not supported be given");
+        break;
+    case ito::pclInvalid:
+        retval += ito::RetVal(ito::retError, 0, "a valid organized point cloud must be given");
+        break;
+    case ito::pclXYZ: //pcl::PointXYZ, toPointXYZ
+        {
+            pcl::PointCloud<pcl::PointXYZ>::Ptr pclSrc = pointCloud->toPointXYZ();
+
+
+            //#if (USEOMP)
+            //#pragma omp for schedule(guided)
+            //#endif
+
+            ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
+            
+            #if (USEOMP)
+            #pragma omp for schedule(guided)
+            #endif
+            for (int np = 0; np < pointCloud->size(); np++)
+            {
+                rowPtr[np] = pclSrc->at(np).z;
+            }                
+           
+        }
+        break;
+    case ito::pclXYZI: //pcl::PointXYZI, toPointXYZI
+        {
+            pcl::PointCloud<pcl::PointXYZI>::Ptr pclSrc = pointCloud->toPointXYZI();
+
+
+            #if (USEOMP)
+            #pragma omp parallel num_threads(nthreads)
+            {
+            #endif 
+
+            ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
+            
+            if(getIntensity)
+            {
+                ito::float32* intPtr = intMat->ptr<ito::float32>(0);
+
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif
+                for (int np = 0; np < pointCloud->size(); np++)
+                {
+                    rowPtr[np] = pclSrc->at(np).z;
+                    intPtr[np] = pclSrc->at(np).intensity;
+                }
+            }
+            else
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif
+                for (int np = 0; np < pointCloud->size(); np++)
+                {
+                    rowPtr[np] = pclSrc->at(np).z;
+                }            
+            }
+
+            #if (USEOMP)
+            }
+            #endif 
+        }
+        break;
+    /*
+    case ito::pclXYZRGBA: //pcl::PointXYZRGBA, toPointXYZRGBA
+        {
+
+        }
+        break;
+    */
+    case ito::pclXYZNormal: //pcl::PointNormal, toPointXYZNormal
+        {
+            pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pointCloud->toPointXYZNormal();
+
+            #if (USEOMP)
+            #pragma omp parallel num_threads(nthreads)
+            {
+            #endif 
+            ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
+            
+            if(getDeviation)
+            {
+                ito::float32* devPtr = devMat->ptr<ito::float32>(0);
+
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif
+                for (int np = 0; np < pointCloud->size(); np++)
+                {
+                    rowPtr[np] = pclSrc->at(np).z;
+                    devPtr[np] = pclSrc->at(np).curvature;
+                }
+            }
+            else
+            {
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif
+                for (int np = 0; np < pointCloud->size(); np++)
+                {
+                    rowPtr[np] = pclSrc->at(np).z;
+                }            
+            }
+            #if (USEOMP)
+            }
+            #endif 
+        }
+        break;
+    case ito::pclXYZINormal: //pcl::PointXYZINormal, toPointXYZINormal
+        {
+            pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclSrc = pointCloud->toPointXYZINormal();
+
+            #if (USEOMP)
+            #pragma omp parallel num_threads(nthreads)
+            {
+            #endif 
+            ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
+            
+
+            if(getIntensity && getDeviation)
+            {
+                ito::float32* intPtr = intMat->ptr<ito::float32>(0);
+                ito::float32* devPtr = devMat->ptr<ito::float32>(0);
+
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif
+                for (int np = 0; np < pointCloud->size(); np++)
+                {
+                    rowPtr[np] = pclSrc->at(np).z;
+                    intPtr[np] = pclSrc->at(np).intensity;
+                    devPtr[np] = pclSrc->at(np).curvature;
+                }
+            }
+            else if(getIntensity)
+            {
+                ito::float32* intPtr = intMat->ptr<ito::float32>(0);
+
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif
+                for (int np = 0; np < pointCloud->size(); np++)
+                {
+                    rowPtr[np] = pclSrc->at(np).z;
+                    intPtr[np] = pclSrc->at(np).intensity;
+                }
+            }
+            else if(getDeviation)
+            {
+                ito::float32* devPtr = devMat->ptr<ito::float32>(0);
+
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif
+                for (int np = 0; np < pointCloud->size(); np++)
+                {
+                    rowPtr[np] = pclSrc->at(np).z;
+                    devPtr[np] = pclSrc->at(np).curvature;
+                }
+            }
+            else
+            {
+
+                #if (USEOMP)
+                #pragma omp for schedule(guided)
+                #endif
+                for (int np = 0; np < pointCloud->size(); np++)
+                {
+                    rowPtr[np] = pclSrc->at(np).z;
+                }            
+            }
+            #if (USEOMP)
+            }
+            #endif 
+        }
+        break;
+    /*
+    case ito::pclXYZRGBNormal: //pcl::PointXYZRGBNormal, toPointXYZRGBNormal
+        {
+
+        }
+
+        break;
+    */
+    }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3033,9 +3295,12 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
     }
 
     paramsMand->clear();
-    paramsMand->append(ito::Param("meshIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid point cloud of type XYZ or XYZI").toLatin1().data()));
-    paramsMand->append(ito::Param("disperityMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Outpot dataObject with z-Values").toLatin1().data()));
-    paramsOpt->append( ito::Param("intensityMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Outpot dataObject with intensity-Values").toLatin1().data()));
+    paramsMand->append(ito::Param("organizedCloud", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid, organized point cloud").toLatin1().data()));
+    paramsMand->append(ito::Param("disperityMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output dataObject with z-Values").toLatin1().data()));
+    paramsMand->append(ito::Param("width", ito::ParamBase::Int | ito::ParamBase::In , 1, std::numeric_limits<int>::max(), 1280, tr("Output dataObject with z-Values").toLatin1().data()));
+    paramsMand->append(ito::Param("height", ito::ParamBase::Int | ito::ParamBase::In , 1, std::numeric_limits<int>::max(), 1024, tr("Output dataObject with z-Values").toLatin1().data()));
+    paramsOpt->append( ito::Param("intensityMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output dataObject with intensity-Values").toLatin1().data()));
+    paramsOpt->append( ito::Param("curvatureMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output dataObject with curvature-Values").toLatin1().data()));
     return retval;
 }
 
@@ -3511,6 +3776,11 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclPoisson, PclTools::pclPoissonParams, tr("Uses pcl::Poisson-filter to reduce a mesh / estimate the surface of an object."));
     m_filterList.insert("pclSurfaceByPoisson", filter);
+
+
+    filter = new FilterDef(PclTools::pclSampleToDataObject, PclTools::pclSampleToDataObjectParams, tr("Uses copy an organized and dense pointcloud to an dataObject."));
+    m_filterList.insert("pclSampleToDataObject", filter);
+    
 
     if (waitCond)
     {
