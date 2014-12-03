@@ -24,7 +24,7 @@ ENDIF(BUILD_SHARED_LIBS)
 
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
+FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
@@ -81,31 +81,16 @@ IF(XIMEA_APIDIR)
     endif(BUILD_TARGET64)
 
     set(plugin_HEADERS
-        ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedFunctionsQt.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     )
 
-    if (NOT QT5_FOUND)
-        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-    endif (NOT QT5_FOUND)
-
     set(plugin_UI
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.ui
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.ui
     )
-
-    if (QT5_FOUND)
-        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-    else (QT5_FOUND)
-        QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-    endif (QT5_FOUND)
 
     set(plugin_SOURCES 
 
@@ -114,10 +99,23 @@ IF(XIMEA_APIDIR)
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.cpp
     )
 
+	set(plugin_RCC
+	)
+
 
     if(MSVC)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)
+
+	if (QT5_FOUND)
+		#if automoc if OFF, you also need to call QT5_WRAP_CPP here
+		QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+		QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+	else (QT5_FOUND)
+		QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+		QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+		QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+	endif (QT5_FOUND)
 
     #handle translations BEGIN STEP 1
     set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
@@ -127,9 +125,13 @@ IF(XIMEA_APIDIR)
 
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
-    ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
-	
-	TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+	ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    if (QT5_FOUND)
+        TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
+        qt5_use_modules(${target_name} Widgets UiTools Xml)
+    else (QT5_FOUND)
+        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
+    endif (QT5_FOUND)	
 
     set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
 	PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")

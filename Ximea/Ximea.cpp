@@ -101,8 +101,9 @@ XimeaInterface::~XimeaInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(Ximeainterface, XimeaInterface)
-
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(XimeaInterface, XimeaInterface)
+#endif
 //----------------------------------------------------------------------------------------------------------------------------------
 Ximea::Ximea() : 
 	AddInGrabber(),  
