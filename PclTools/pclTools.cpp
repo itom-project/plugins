@@ -58,6 +58,7 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/random_sample.h>
+#include <pcl/filters/crop_box.h>
 #include "random_sample_corrected.h" //corrected version for errornous version of random_sample filter in pcl 1.6.0
 #include <pcl/common/pca.h>
 
@@ -1474,6 +1475,203 @@ const char* PclTools::pclPassThroughDOC = "\n\
                 ptfilter.setNegative(true);
             }
             ptfilter.filter(*(pclOut->toPointXYZRGBNormal()));
+        }
+
+        break;
+    }
+
+    if (inplace)
+    {
+        (*pclIn) = (*pclOut); //here: pclOut is a new, temporary point cloud, pclIn is the given argument pclIn AND pclOut!
+        delete pclOut;
+    }
+
+    return ito::retOk;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclCropBoxDOC = "pclCropBox is a filter that allows the user to filter all the data inside of a given box.\n\
+\n\
+Indicate the minimum and maximum values in x,y and z direction for the box and optionally tranlate and rotate the box to \n\
+adjust its position and orientation. The rotation vector are the euler angles rx, ry and rz.";
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclCropBoxParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid input point cloud").toLatin1().data()));
+    paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with removed NaN values").toLatin1().data()));
+
+    double mins[] = {-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()};
+    param = ito::Param("minValue", ito::ParamBase::DoubleArray | ito::ParamBase::In, 3, mins, tr("minimum values (x,y,z) (default: FLT_MIN)").toLatin1().data());
+    ito::DoubleArrayMeta *dam = new ito::DoubleArrayMeta(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), 0.0, 3, 3);
+    param.setMeta(dam, true);
+    paramsOpt->append(param);
+
+    double maxs[] = {std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
+    param = ito::Param("maxValue", ito::ParamBase::DoubleArray | ito::ParamBase::In, 3, maxs, tr("maximum values (x,y,z) (default: FLT_MAX)").toLatin1().data());
+    dam = new ito::DoubleArrayMeta(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), 0.0, 3, 3);
+    param.setMeta(dam, true);
+    paramsOpt->append(param);
+
+    double zeros[] = {0.0, 0.0, 0.0};
+    param = ito::Param("translation", ito::ParamBase::DoubleArray | ito::ParamBase::In, 3, zeros, tr("translation of box (dx,dy,dz) (default: zero values)").toLatin1().data());
+    dam = new ito::DoubleArrayMeta(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), 0.0, 3, 3);
+    param.setMeta(dam, true);
+    paramsOpt->append(param);
+
+    param = ito::Param("rotation", ito::ParamBase::DoubleArray | ito::ParamBase::In, 3, zeros, tr("euler rotation angles (in rad) of box (rx,ry,rz) (default: zero values)").toLatin1().data());
+    dam = new ito::DoubleArrayMeta(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), 0.0, 3, 3);
+    param.setMeta(dam, true);
+    paramsOpt->append(param);
+
+    paramsOpt->append(ito::Param("negative", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("1: values inside of range will be deleted, else 0 [default]").toLatin1().data()));
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PclTools::pclCropBox(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::PCLPointCloud *pclIn = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
+    ito::PCLPointCloud *pclOut = (ito::PCLPointCloud*)(*paramsMand)[1].getVal<void*>();
+
+    bool inplace = false; //no real inplace is possible
+
+    if (pclIn == NULL || pclOut == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("point cloud must not be NULL").toLatin1().data());
+    }
+    
+    const double *mins = paramsOpt->at(0).getVal<double*>();
+    const double *maxs = paramsOpt->at(1).getVal<double*>();
+    const double *rot = paramsOpt->at(3).getVal<double*>();
+    const double *trans = paramsOpt->at(2).getVal<double*>();
+
+    Eigen::Vector4f min_pt(mins[0], mins[1], mins[2], 0.0);
+    Eigen::Vector4f max_pt(maxs[0], maxs[1], maxs[2], 0.0);
+    Eigen::Vector3f rotation(rot[0], rot[1], rot[2]);
+    Eigen::Vector3f translation(trans[0], trans[1], trans[2]);
+
+    int negative = (*paramsOpt)[4].getVal<int>();
+
+
+    if (pclIn == pclOut)
+    {
+        pclOut = new ito::PCLPointCloud(pclIn->getType());
+        inplace = true;
+    }
+    else
+    {
+        *pclOut = ito::PCLPointCloud(pclIn->getType());
+    }
+
+    switch(pclIn->getType())
+    {
+    case ito::pclInvalid:
+        break;
+    case ito::pclXYZ:
+        {
+            pcl::PointCloud<pcl::PointXYZ>::Ptr ptr = pclIn->toPointXYZ();
+            pcl::CropBox<pcl::PointXYZ> cbfilter (false);
+            cbfilter.setInputCloud(ptr);
+            cbfilter.setMin(min_pt);
+            cbfilter.setMax(max_pt);
+            cbfilter.setTranslation(translation);
+            cbfilter.setRotation(rotation);
+            if (negative > 0)
+            {
+                cbfilter.setNegative(true);
+            }
+            cbfilter.filter(*(pclOut->toPointXYZ()));
+        }
+        break;
+    case ito::pclXYZI:
+        {
+            pcl::PointCloud<pcl::PointXYZI>::Ptr ptr = pclIn->toPointXYZI();
+            pcl::CropBox<pcl::PointXYZI> cbfilter (false);
+            cbfilter.setInputCloud(ptr);
+            cbfilter.setMin(min_pt);
+            cbfilter.setMax(max_pt);
+            cbfilter.setTranslation(translation);
+            cbfilter.setRotation(rotation);
+            if (negative > 0)
+            {
+                cbfilter.setNegative(true);
+            }
+            cbfilter.filter(*(pclOut->toPointXYZI()));
+        }
+        break;
+    case ito::pclXYZRGBA:
+        {
+            pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ptr = pclIn->toPointXYZRGBA();
+            pcl::CropBox<pcl::PointXYZRGBA> cbfilter (false);
+            cbfilter.setInputCloud(ptr);
+            cbfilter.setMin(min_pt);
+            cbfilter.setMax(max_pt);
+            cbfilter.setTranslation(translation);
+            cbfilter.setRotation(rotation);
+            if (negative > 0)
+            {
+                cbfilter.setNegative(true);
+            }
+            cbfilter.filter(*(pclOut->toPointXYZRGBA()));
+        }
+        break;
+    case ito::pclXYZNormal:
+        {
+            pcl::PointCloud<pcl::PointNormal>::Ptr ptr = pclIn->toPointXYZNormal();
+            pcl::CropBox<pcl::PointNormal> cbfilter (false);
+            cbfilter.setInputCloud(ptr);
+            cbfilter.setMin(min_pt);
+            cbfilter.setMax(max_pt);
+            cbfilter.setTranslation(translation);
+            cbfilter.setRotation(rotation);
+            if (negative > 0)
+            {
+                cbfilter.setNegative(true);
+            }
+            cbfilter.filter(*(pclOut->toPointXYZNormal()));
+        }
+        break;
+    case ito::pclXYZINormal:
+        {
+            pcl::PointCloud<pcl::PointXYZINormal>::Ptr ptr = pclIn->toPointXYZINormal();
+            pcl::CropBox<pcl::PointXYZINormal> cbfilter (false);
+            cbfilter.setInputCloud(ptr);
+            cbfilter.setMin(min_pt);
+            cbfilter.setMax(max_pt);
+            cbfilter.setTranslation(translation);
+            cbfilter.setRotation(rotation);
+            if (negative > 0)
+            {
+                cbfilter.setNegative(true);
+            }
+            cbfilter.filter(*(pclOut->toPointXYZINormal()));
+        }
+        break;
+    case ito::pclXYZRGBNormal:
+        {
+            pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr ptr = pclIn->toPointXYZRGBNormal();
+            pcl::CropBox<pcl::PointXYZRGBNormal> cbfilter (false);
+            cbfilter.setInputCloud(ptr);
+            cbfilter.setMin(min_pt);
+            cbfilter.setMax(max_pt);
+            cbfilter.setTranslation(translation);
+            cbfilter.setRotation(rotation);
+            if (negative > 0)
+            {
+                cbfilter.setNegative(true);
+            }
+            cbfilter.filter(*(pclOut->toPointXYZRGBNormal()));
         }
 
         break;
@@ -3737,6 +3935,9 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclPassThrough, PclTools::pclPassThroughParams, tr("filters a point cloud by giving boundary values to a specific dimension (outside or inside of this field)."));
     m_filterList.insert("pclPassThrough", filter);
+    
+    filter = new FilterDef(PclTools::pclCropBox, PclTools::pclCropBoxParams, tr(pclCropBoxDOC));
+    m_filterList.insert("pclCropBox", filter);
 
     filter = new FilterDef(PclTools::pclVoxelGrid, PclTools::pclVoxelGridParams, tr("downsamples a point cloud using a voxelized gripd approach."));
     m_filterList.insert("pclVoxelGrid", filter);
