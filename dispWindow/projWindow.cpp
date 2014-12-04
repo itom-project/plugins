@@ -1959,14 +1959,20 @@ ito::RetVal PrjWindow::enableGammaCorrection(bool enabled)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PrjWindow::setGammaPrj(const int gammaCol)
+ito::RetVal PrjWindow::setGammaPrj(const int grayValue, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retval = ito::retOk;
 
-    m_gammaCol = gammaCol;
+    m_gammaCol = grayValue;
     m_imgNum = -1;
 
     paintGL();
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
 
     return retval;
 }

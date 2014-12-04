@@ -191,6 +191,10 @@ DispWindow::DispWindow() :
     pMand = QVector<ito::Param>() << ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("absolute filename of the file where the grabbing image should be saved").toLatin1().data());
     registerExecFunc("grabFramebuffer", pMand, pOpt, pOut, tr("grab the current OpenGL frame as image and saves it to the given filename. The image format is guessed from the suffix of the filename (default QImage formats supported)"));
 
+    pMand = QVector<ito::Param>() << ito::Param("grayValue", ito::ParamBase::Int | ito::ParamBase::In, 0, 255, 0, tr("unique gray value. Depending on the projected color, all color channels are reduced by this value [0..255]").toLatin1().data());
+    registerExecFunc("projectGrayValue", pMand, pOpt, pOut, tr("projects an image where all pixels have the same gray-level. This is used for the determination of the gamma correction").toLatin1().data());
+
+
     pMand.clear();
     pOpt.clear();
     pOut.clear();
@@ -232,9 +236,6 @@ DispWindow::DispWindow() :
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("gamma", ito::ParamBase::Int, 0, 1, 0, tr("0: disable gamma correction, 1: enable gamma correction; default disable (see also 'lut')").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("gammaCol", ito::ParamBase::Int, 0, 255, 127, NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table for a gamma correction with 256 values. The gamma correction itself is en-/disabled via parameter 'gamma'. If enabled, the value to display is modified by lut[value]. Per default the lut is a 1:1 relation.").toLatin1().data());
@@ -490,12 +491,6 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
         {
             QMetaObject::invokeMethod(m_pWindow, "enableGammaCorrection", Qt::BlockingQueuedConnection, Q_ARG(bool, val->getVal<int>() > 0));
-			it->copyValueFrom( &(*val) );
-        }
-        else if (QString::compare(key, "gammaCol", Qt::CaseInsensitive) == 0)
-        {
-            m_params["numimg"].setVal<int>(-1); //set dependent parameter
-			QMetaObject::invokeMethod(m_pWindow, "setGammaPrj", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()));
 			it->copyValueFrom( &(*val) );
         }
         else if (QString::compare(key, "color", Qt::CaseInsensitive) == 0)
@@ -1013,6 +1008,23 @@ ito::RetVal DispWindow::execFunc(const QString funcName, QSharedPointer<QVector<
         else
         {
             retValue += ito::RetVal(ito::retError,0,"timeout while grabbing current OpenGL frame");
+        }
+    }
+    else if (funcName == "projectGrayValue")
+    {
+        m_params["numimg"].setVal<int>(-1); //set dependent parameter
+        int grayValue = paramsMand->at(0).getVal<int>();
+
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(m_pWindow, "setGammaPrj", Q_ARG(int, grayValue), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        if(locker.getSemaphore()->wait(5000))
+        {
+            retValue += locker.getSemaphore()->returnValue;
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retError,0,"timeout while projecting a single-color image.");
         }
     }
     else
