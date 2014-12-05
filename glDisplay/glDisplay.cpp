@@ -277,7 +277,7 @@ GLDisplay::GLDisplay() :
 		//{
 		//	return;
 		//}
-
+        
 		m_pWindow->setCursor(Qt::BlankCursor);
 		m_pWindow->setWindowTitle("GLDisplay");
 		m_pWindow->move(defx0, defy0);
@@ -296,7 +296,10 @@ GLDisplay::GLDisplay() :
 //----------------------------------------------------------------------------------------------------------------------------------
 GLDisplay::~GLDisplay()
 {
-    m_pWindow->deleteLater();
+    if (m_pWindow)
+    {
+        delete(m_pWindow);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -512,6 +515,25 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     {
         retval += ito::RetVal(ito::retError, 0, tr("mandatory or optional parameters vector not initialized!!").toLatin1().data());
     }
+    
+    if (m_pWindow)
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(m_pWindow, "getErrors", Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+        if (locker->wait(2000))
+        {
+            retval += locker->returnValue;
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "timeout getting initialization status of OpenGL display");
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "OpenGL display window is not available");
+    }
+        
 
     if (!retval.containsError())
     {
@@ -580,6 +602,8 @@ ito::RetVal GLDisplay::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
+    QMetaObject::invokeMethod(m_pWindow, "shutdown");
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -600,7 +624,7 @@ void GLDisplay::numberOfImagesChanged(int numImg, int numGray, int numCos)
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal GLDisplay::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogDispWindow(this, m_pWindow));
+    return apiShowConfigurationDialog(this, new DialogGLDisplay(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

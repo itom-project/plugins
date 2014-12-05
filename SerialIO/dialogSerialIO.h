@@ -25,12 +25,18 @@
 
 #include "common/sharedStructures.h"
 #include "ui_dialogSerialIO.h"
+#include "common/abstractAddInConfigDialog.h"
 
 #include <QtGui>
 #include <qdialog.h>
 #include <QStringList>
 
-class dialogSerialIO : public QDialog 
+namespace ito
+{
+    class AddInBase; //forward declaration
+}
+
+class dialogSerialIO : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
@@ -52,10 +58,12 @@ class dialogSerialIO : public QDialog
         bool eventFilter(QObject *obj, QEvent *event);
 
     public:
-        dialogSerialIO(void *sport, QString identifier);
+//        dialogSerialIO(void *sport, QString identifier);
+        dialogSerialIO(ito::AddInBase *dataIO, void *sport, QString identifier, int baudRatesSize);
         ~dialogSerialIO();
-        int setVals(QMap<QString, ito::Param> *params);
-        int getVals(int &baud, char *endline, int &bits, int &stopbits, int &parity, unsigned int &flow, int &sendDelay, double &timeout, bool &debug);
+//        int setVals(QMap<QString, ito::Param> *params);
+//        int getVals(int &baud, QString &endline, int &bits, int &stopbits, int &parity, unsigned int &flow, int &sendDelay, double &timeout, bool &debug);
+        ito::RetVal applyParameters();
 
     public slots:
         QString interpretAnswer(const char* temp, const int len);
@@ -68,6 +76,7 @@ class dialogSerialIO : public QDialog
         void on_cancelButton_clicked();
         void on_okButton_clicked();
         void on_pushButton_clear_clicked();
+        void parametersChanged(QMap<QString, ito::Param> params);
 
     private slots:
 

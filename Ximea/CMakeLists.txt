@@ -102,7 +102,11 @@ IF(XIMEA_APIDIR)
 	set(plugin_RCC
 	)
 
+<<<<<<< HEAD
 
+=======
+    #Add version information to the plugIn-dll unter MSVC
+>>>>>>> master
     if(MSVC)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)
@@ -116,11 +120,14 @@ IF(XIMEA_APIDIR)
 		QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
 		QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 	endif (QT5_FOUND)
+<<<<<<< HEAD
 
     #handle translations BEGIN STEP 1
     set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
     set (TRANSLATION_OUTPUT_FILES)
     set (TRANSLATIONS_FILES)
+=======
+>>>>>>> master
 
 
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
@@ -130,10 +137,18 @@ IF(XIMEA_APIDIR)
         TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
         qt5_use_modules(${target_name} Widgets UiTools Xml)
     else (QT5_FOUND)
+<<<<<<< HEAD
         TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
     endif (QT5_FOUND)	
 
     set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+=======
+        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
+    endif (QT5_FOUND)
+
+	#translation
+	set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+>>>>>>> master
 	PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
     
     PLUGIN_DOCUMENTATION(${target_name} ximea)

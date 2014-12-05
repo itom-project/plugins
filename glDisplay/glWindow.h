@@ -30,13 +30,18 @@
 #include <qvector.h>
 
 #if QT_VERSION >= 0x050000
-	#include <qopenglfunctions.h>
-	//#include <qopenglvertexarrayobject.h>
+    #include <qopenglfunctions.h> //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
+    #include <qopenglvertexarrayobject.h>
     #include <qopenglshaderprogram.h>
+    #include <qopenglbuffer.h>
+#if  _DEBUG
+	#include <qopengldebug.h>
+#endif
 #else
     //#include <qglfunctions.h>  //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
     #include <qglshaderprogram.h>
     #include <qglfunctions.h>
+    
 #endif
 
 #include "DataObject/dataobj.h"
@@ -45,7 +50,7 @@
 #include "common/sharedStructuresQt.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class GLWindow : public QGLWidget //, protected QGLFunctions
+class GLWindow : public QGLWidget
 {
     Q_OBJECT
 
@@ -54,7 +59,6 @@ public:
     ~GLWindow();
 
 protected:
-
     struct TextureItem
     {
         GLuint texture;
@@ -75,6 +79,15 @@ protected:
 private:
 #if QT_VERSION >= 0x050000
     QOpenGLShaderProgram shaderProgram;
+    QOpenGLFunctions *m_glf;
+#if _DEBUG
+    QOpenGLDebugLogger *m_pLogger;
+#else
+    typedef int QOpenGLDebugMessage; //dummy, necessary since slot below cannot be commented in RELEASE (moc'er will not accept it)
+#endif
+    QOpenGLBuffer m_vertexBuffer;
+    QOpenGLBuffer m_textureBuffer;
+    QOpenGLVertexArrayObject *m_vao;
 #else
     QGLShaderProgram shaderProgram;
 #endif
@@ -84,8 +97,13 @@ private:
     QVector<ito::DataObject> m_objects;
     QVector<TextureItem> m_textures;
     int m_currentTexture;
+    bool m_init;
+
+    ito::RetVal m_glErrors;
 
 public slots:
+    ito::RetVal getErrors(ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal shutdown();
     ito::RetVal addTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal setColor(const QColor &color);
     ito::RetVal setClearColor(const QColor &color);
@@ -95,6 +113,10 @@ public slots:
     ito::RetVal setSize(const int &width, const int &height);
     ito::RetVal enableGammaCorrection(bool enabled); //en/disables gamma correction based on the lut values (per default, the lut values are a 1:1 relation)
     void setLUT(QVector<unsigned char> &lut); //transfers the lut values for possible gamma correction to the opengl buffer
+
+#if QT_VERSION >= 0x050100 //do not anything to this #if line, since the moc'er cannot read this. Do not make a _DEBUG define, since this is not accepted by the moc'er either
+	void onMessageLogged( QOpenGLDebugMessage message );
+#endif
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

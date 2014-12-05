@@ -65,7 +65,6 @@ class PrjWindow : public QGLWidget
         };
 	
     protected:
-        ito::RetVal setGammaPrj(const int gammaCol);
 
     private:
         QGLFormat::OpenGLVersionFlags m_glVer;
@@ -142,6 +141,8 @@ class PrjWindow : public QGLWidget
         ito::RetVal showFirstCosImg(ItomSharedSemaphore *waitCond = NULL);
 
         ito::RetVal showImageNum(const int num);
+
+        ito::RetVal setGammaPrj(const int grayValue, ItomSharedSemaphore *waitCond = NULL);
 
         ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = NULL);
 
