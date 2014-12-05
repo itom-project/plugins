@@ -104,34 +104,14 @@ XimeaInterface::~XimeaInterface()
 #if QT_VERSION < 0x050000
     Q_EXPORT_PLUGIN2(XimeaInterface, XimeaInterface)
 #endif
-<<<<<<< HEAD
-=======
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal Ximea::showConfDialog(void)
 {
-    ito::RetVal retValue(ito::retOk);
-
-    dialogXimea *confDialog = new dialogXimea(this);
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-
-    QMetaObject::invokeMethod(this, "sendParameterRequest");
-
-    if (confDialog->exec())
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-        confDialog->sendVals();
-    }
-    else
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    }
-    delete confDialog;
-
-    return retValue;
+   return apiShowConfigurationDialog(this, new dialogXimea(this));
 }
->>>>>>> master
+
 //----------------------------------------------------------------------------------------------------------------------------------
 Ximea::Ximea() : 
 	AddInGrabber(),  
@@ -2765,35 +2745,6 @@ void Ximea::activateShadingCorrection(bool enable)
     }
     m_shading.active = enable;
     return;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-const ito::RetVal Ximea::showConfDialog(void)
-{
-    //ito::RetVal retValue(ito::retOk);
-
-    //dialogXimea *confDialog = new dialogXimea(this);
-	return apiShowConfigurationDialog(this, new dialogXimea(this));
-    
-	/*
-	
-	
-	connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-
-    QMetaObject::invokeMethod(this, "sendParameterRequest");
-
-    if (confDialog->exec())
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-        confDialog->sendVals();
-    }
-    else
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    }
-    delete confDialog;
-	*/
-    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
