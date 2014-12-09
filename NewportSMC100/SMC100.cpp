@@ -986,7 +986,7 @@ ito::RetVal SMC100::getPos(const int axis, QSharedPointer<double> pos, ItomShare
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk
 */
-ito::RetVal SMC100::getPos(const QVector<int> axis, QSharedPointer<QVector<double>> pos, ItomSharedSemaphore *waitCond)
+ito::RetVal SMC100::getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;

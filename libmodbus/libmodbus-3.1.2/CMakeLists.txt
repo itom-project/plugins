@@ -18,6 +18,7 @@ ELSE(BUILD_LIBMODBUS_SHARED)
     #if itomCommon is static, add -fPIC as compiler flag for linux
     IF(UNIX)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
     ENDIF(UNIX)
 ENDIF(BUILD_LIBMODBUS_SHARED)
 
