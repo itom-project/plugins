@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/SuperlumBS">
+    <file>laser_icon_push.png</file>
+    <file>laser_icon.png</file>
+  </qresource>
+</RCC>

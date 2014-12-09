@@ -254,6 +254,12 @@ if (PLUGIN_SerialIO)
     ADD_SUBDIRECTORY(SerialIO)
 endif (PLUGIN_SerialIO)
 
+# SuperlumBS
+OPTION(PLUGIN_SuperlumBS "Build with this plugin." ON)
+if (PLUGIN_SuperlumBS)
+    ADD_SUBDIRECTORY(SuperlumBS)
+endif (PLUGIN_SuperlumBS)
+
 # ThorlabsCCS Spectrometer
 IF (WIN32)
     OPTION(PLUGIN_ThorlabsCCS "Build with this plugin." ON)
