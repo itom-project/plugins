@@ -52,4 +52,4 @@ class PIPiezoCtrlInterface : public ito::AddInInterfaceBase
     public slots:
 };
 
-#endif PIPIEZOCTRLINTERFACE_H
+#endif //PIPIEZOCTRLINTERFACE_H

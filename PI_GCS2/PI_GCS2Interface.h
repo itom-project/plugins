@@ -52,4 +52,4 @@ class PI_GCS2Interface : public ito::AddInInterfaceBase
     public slots:
 };
 
-#endif PIGCS2INTERFACE_H
+#endif //PIGCS2INTERFACE_H
