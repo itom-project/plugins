@@ -32,7 +32,6 @@
 #include <qbytearray.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include <regex>
 #include <qregexp.h>
 
 #include "pluginVersion.h"
