@@ -36,8 +36,12 @@
 #include <QtCore/QMetaObject>
 
 // ids-includes
-#include "IDS/uEye.h"
-#include "IDS/version.h"
+#if linux
+    #include "ueye.h"
+#else
+    #include "IDS/uEye.h"
+    #include "IDS/version.h"
+#endif
 
 // project-includes
 #include "pluginVersion.h"
@@ -55,7 +59,10 @@ namespace
     template < size_t bitPosition, size_t bits >
     unsigned int get( unsigned int x )
     {
+#if linux
+#else
         static_assert( (bitPosition+bits) <= (sizeof(x)*8), "Accessing invalid bits!" );
+#endif
 
         return ( x >> bitPosition ) & ( (0x1<<bits) - 1 );
     }

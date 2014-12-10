@@ -19,7 +19,11 @@ SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages tha
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 
-set( IDS_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs/" )
+IF(WIN32)
+    set( IDS_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/IDSDevLibs/" )
+ELSE(WIN32)
+    set( IDS_DIRECTORY "/usr/include" )
+ENDIF(WIN32)
 
 #################################################################
 # Automatic package detection
@@ -56,11 +60,21 @@ find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector 
 # possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport,LinguistTools...
 FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
 
-IF(BUILD_TARGET64)
-    set( IDS_LIBRARY ${IDS_DIRECTORY}/Lib/uEye_api_64.lib )
-ELSE(BUILD_TARGET64)
-    set( IDS_LIBRARY ${IDS_DIRECTORY}/Lib/uEye_api.lib )
-ENDIF(BUILD_TARGET64)
+IF(WIN32)
+    set( DELAY_IMP_LIB "delayimp")
+    IF(BUILD_TARGET64)
+        set( IDS_LIBRARY ${IDS_DIRECTORY}/Lib/uEye_api_64.lib )
+    ELSE(BUILD_TARGET64)
+        set( IDS_LIBRARY ${IDS_DIRECTORY}/Lib/uEye_api.lib )
+    ENDIF(BUILD_TARGET64)
+ELSE(WIN32)
+    set( DELAY_IMP_LIB )
+    IF(BUILD_TARGET64)
+        set( IDS_LIBRARY "/usr/lib/libueye_api64.so.4.50" )
+    ELSE(BUILD_TARGET64)
+        set( IDS_LIBRARY "/usr/lib/libueye_api.so.4.50" )
+    ENDIF(BUILD_TARGET64)
+ENDIF(WIN32)
 
 #################################################################
 # General settings and preprocessor settings
@@ -216,7 +230,7 @@ ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} $
 # if you want to link against one library whose directory is already added to LINK_DIRECTORIES above
 # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${IDS_LIBRARY} delayimp)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${IDS_LIBRARY} ${DELAY_IMP_LIB})
 if (QT5_FOUND)
     qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
 endif (QT5_FOUND)

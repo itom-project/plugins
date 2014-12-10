@@ -1214,8 +1214,8 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
 {
     UINT uintVal;
     UINT uintVal3[3];
-    DOUBLE dVal;
-    DOUBLE dVal3[3];
+    double dVal;
+    double dVal3[3];
     ito::RetVal retval, rettemp;
     QMap<QString, ito::Param>::iterator it;
 

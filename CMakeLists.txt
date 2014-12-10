@@ -243,10 +243,12 @@ if (PLUGIN_PI_GCS2)
 endif (PLUGIN_PI_GCS2)
 
 # QCam
-OPTION(PLUGIN_QCam "Build with this plugin." OFF)
-if (PLUGIN_QCam)
-    ADD_SUBDIRECTORY(QCam)
-endif (PLUGIN_QCam)
+IF (WIN32)
+    OPTION(PLUGIN_QCam "Build with this plugin." OFF)
+    if (PLUGIN_QCam)
+        ADD_SUBDIRECTORY(QCam)
+    endif (PLUGIN_QCam)
+ENDIF (WIN32)
 
 # SerialIO
 OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
