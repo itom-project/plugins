@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dockWidgetIDS.h"
+#include "DockWidgetIDS.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DockWidgetIDS::DockWidgetIDS(ito::AddInDataIO *grabber) :

@@ -59,6 +59,9 @@ parameters can be changed using *setParam*.
 	
 **stopbit**: {int}, read-only
 	Stop bits after every n bits for RTU communication
+
+**output_mode**: {bool}
+    if output_mode is true, multiple outputs will be sent to command line, e.g. register values of getVal function. Default is false
     
 **registers**: {str}
     fallback addressing for modbus registers. This value will be used, if a dataObject without 'registers'-tag is sent to the getVal- or setVal-function. 

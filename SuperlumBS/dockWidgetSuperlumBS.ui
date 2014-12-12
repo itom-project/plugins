@@ -1,0 +1,1079 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DockWidgetSuperlumBS</class>
+ <widget class="QWidget" name="DockWidgetSuperlumBS">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>294</width>
+    <height>476</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_11">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>General Information</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="margin">
+       <number>3</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>ID:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="lblID">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>unknown</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Name:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_device_name">
+        <property name="text">
+         <string>unknown</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>serial Nr.: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_Device">
+        <property name="text">
+         <string>unknown</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>COM Port:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_COM_Port">
+        <property name="text">
+         <string>unknown</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="minimumSize">
+         <size>
+          <width>41</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>41</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Remote:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="comboBox_Remote">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>local</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>remote</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Operation Mode settings</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <property name="margin">
+       <number>3</number>
+      </property>
+      <item>
+       <widget class="QTabWidget" name="tabWidget_Operation_Mode">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="MAN">
+         <attribute name="title">
+          <string>MAN</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="2" column="1">
+           <widget class="DoubleSpinBox" name="doubleSpinBox_MAN_Wavelength">
+            <property name="suffix">
+             <string> nm</string>
+            </property>
+            <property name="minimum">
+             <double>820.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>870.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+            <property name="value">
+             <double>845.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_Tuning_Range">
+            <property name="text">
+             <string>Full tuning range: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_MAN_Wavelength_Steps">
+            <property name="text">
+             <string>Wavelength steps: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <spacer name="verticalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_MAN_Wavelength">
+            <property name="text">
+             <string>Wavelength: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_MAN_Wavelength_Steps_Value">
+            <property name="text">
+             <string>0.05 nm</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <property name="topMargin">
+             <number>3</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_MAN_Start_Wavelength">
+              <property name="text">
+               <string>unknown</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_MAN_Stop_Wavelength">
+              <property name="text">
+               <string>unknown</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="2">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="2">
+           <spacer name="verticalSpacer_15">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="AUTO">
+         <attribute name="title">
+          <string>AUTO</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_AUTO_Start_Wavelength">
+            <property name="text">
+             <string>Start wavelength: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="DoubleSpinBox" name="doubleSpinBox_AUTO_Start_Wavelength">
+            <property name="suffix">
+             <string> nm</string>
+            </property>
+            <property name="minimum">
+             <double>820.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>870.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>870.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_AUTO_Stop_Wavelength">
+            <property name="text">
+             <string>Stop wavelength: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="DoubleSpinBox" name="doubleSpinBox_AUTO_Stop_Wavelength">
+            <property name="suffix">
+             <string> nm</string>
+            </property>
+            <property name="minimum">
+             <double>820.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>870.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>46</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_AUTO_Sweep_Speed">
+            <property name="text">
+             <string>Sweep speed: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="DoubleSpinBox" name="doubleSpinBox_AUTO_Speed">
+            <property name="suffix">
+             <string> nm/s</string>
+            </property>
+            <property name="minimum">
+             <double>2.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>5000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <spacer name="verticalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="1">
+           <spacer name="verticalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="2">
+           <spacer name="verticalSpacer_14">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="EXT">
+         <attribute name="title">
+          <string>EXT</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Start wavelength: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="DoubleSpinBox" name="doubleSpinBox_EXT_Start_Wavelength">
+            <property name="suffix">
+             <string> nm</string>
+            </property>
+            <property name="minimum">
+             <double>820.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>870.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>870.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2" rowspan="2">
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>46</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Stop wavelength: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="DoubleSpinBox" name="doubleSpinBox_EXT_Stop_Wavelength">
+            <property name="suffix">
+             <string> nm</string>
+            </property>
+            <property name="minimum">
+             <double>820.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>870.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Sweep speed: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="DoubleSpinBox" name="doubleSpinBox_EXT_Speed">
+            <property name="suffix">
+             <string> nm/s</string>
+            </property>
+            <property name="minimum">
+             <double>2.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>5000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="1">
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="2">
+           <spacer name="verticalSpacer_13">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="MOD">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <attribute name="title">
+          <string>MOD</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_Tuning_Range_2">
+            <property name="text">
+             <string>Full tuning range: </string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label_MOD_Start_Wavelength">
+              <property name="text">
+               <string>unknown</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>-</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_MOD_Stop_Wavelength">
+              <property name="text">
+               <string>unknown</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>Wavelength 1:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="DoubleSpinBox" name="doubleSpinBox_MOD_Wavelength1">
+            <property name="suffix">
+             <string> nm</string>
+            </property>
+            <property name="minimum">
+             <double>820.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>870.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>870.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <spacer name="horizontalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>17</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>Wavelength 2:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="DoubleSpinBox" name="doubleSpinBox_MOD_Wavelength2">
+            <property name="suffix">
+             <string> nm</string>
+            </property>
+            <property name="minimum">
+             <double>820.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>870.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.050000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Modulation frequency:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="comboBox_MOD_frequency">
+            <property name="minimumSize">
+             <size>
+              <width>71</width>
+              <height>22</height>
+             </size>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <property name="maxVisibleItems">
+             <number>12</number>
+            </property>
+            <item>
+             <property name="text">
+              <string extracomment="0.1">0.1 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="0.2">0.2 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="0.5">0.5 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="1.0">1 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="2.0">2 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="5.0">5 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="10.0">10 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="20.0">20 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="50.0">50 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="100.0">100 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="200.0">200 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="500.0">500 Hz</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string extracomment="1000.0">1000 Hz</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <spacer name="verticalSpacer_10">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>41</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="4" column="2">
+           <spacer name="verticalSpacer_11">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="4" column="1">
+           <spacer name="verticalSpacer_12">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_Control">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Control</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <property name="margin">
+       <number>3</number>
+      </property>
+      <item row="2" column="1">
+       <widget class="QGroupBox" name="groupBox_Booster">
+        <property name="title">
+         <string>Booster Control</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QLabel" name="label_Booster_Enable">
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>unknown</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_Booster_Emission">
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>unknown</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_Booster_Limit">
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>unknown</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="title">
+         <string>Power Control</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <property name="margin">
+          <number>3</number>
+         </property>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="btn_Optical_Output">
+           <property name="minimumSize">
+            <size>
+             <width>95</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="superlumBS.qrc">
+             <normaloff>:/SuperlumBS/laser_icon.png</normaloff>
+             <normalon>:/SuperlumBS/laser_icon_push.png</normalon>:/SuperlumBS/laser_icon.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label_Power_Mode">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Power:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="comboBox_Power_Mode">
+             <item>
+              <property name="text">
+               <string>LOW</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>HIGH</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer_8">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_Master_Key">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>unknown</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_Interlock_Alarm">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>unknown</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>Master Key:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Remote Interlock: </string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_5">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DoubleSpinBox</class>
+   <extends>QWidget</extends>
+   <header>doubleSpinBox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="superlumBS.qrc"/>
+ </resources>
+ <connections/>
+</ui>

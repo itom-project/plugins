@@ -6,7 +6,7 @@
 **Summary**:    :pluginsummary:`IDSuEye`
 **Type**:       :plugintype:`IDSuEye`
 **License**:    :pluginlicense:`IDSuEye`
-**Platforms**:  Windows, Linux ready but not tested
+**Platforms**:  Windows, Linux
 **Devices**:    IDS Imaging cameras
 **Author**:     :pluginauthor:`IDSuEye`
 =============== ========================================================================================================

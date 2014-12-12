@@ -1581,7 +1581,11 @@ adjust its position and orientation. The rotation vector are the euler angles rx
     case ito::pclXYZ:
         {
             pcl::PointCloud<pcl::PointXYZ>::Ptr ptr = pclIn->toPointXYZ();
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             pcl::CropBox<pcl::PointXYZ> cbfilter (false);
+#else
+            pcl::CropBox<pcl::PointXYZ> cbfilter;
+#endif
             cbfilter.setInputCloud(ptr);
             cbfilter.setMin(min_pt);
             cbfilter.setMax(max_pt);
@@ -1597,7 +1601,11 @@ adjust its position and orientation. The rotation vector are the euler angles rx
     case ito::pclXYZI:
         {
             pcl::PointCloud<pcl::PointXYZI>::Ptr ptr = pclIn->toPointXYZI();
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             pcl::CropBox<pcl::PointXYZI> cbfilter (false);
+#else
+            pcl::CropBox<pcl::PointXYZI> cbfilter;
+#endif
             cbfilter.setInputCloud(ptr);
             cbfilter.setMin(min_pt);
             cbfilter.setMax(max_pt);
@@ -1613,7 +1621,11 @@ adjust its position and orientation. The rotation vector are the euler angles rx
     case ito::pclXYZRGBA:
         {
             pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ptr = pclIn->toPointXYZRGBA();
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             pcl::CropBox<pcl::PointXYZRGBA> cbfilter (false);
+#else
+            pcl::CropBox<pcl::PointXYZRGBA> cbfilter;
+#endif
             cbfilter.setInputCloud(ptr);
             cbfilter.setMin(min_pt);
             cbfilter.setMax(max_pt);
@@ -1629,7 +1641,11 @@ adjust its position and orientation. The rotation vector are the euler angles rx
     case ito::pclXYZNormal:
         {
             pcl::PointCloud<pcl::PointNormal>::Ptr ptr = pclIn->toPointXYZNormal();
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             pcl::CropBox<pcl::PointNormal> cbfilter (false);
+#else
+            pcl::CropBox<pcl::PointNormal> cbfilter;
+#endif
             cbfilter.setInputCloud(ptr);
             cbfilter.setMin(min_pt);
             cbfilter.setMax(max_pt);
@@ -1645,7 +1661,11 @@ adjust its position and orientation. The rotation vector are the euler angles rx
     case ito::pclXYZINormal:
         {
             pcl::PointCloud<pcl::PointXYZINormal>::Ptr ptr = pclIn->toPointXYZINormal();
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             pcl::CropBox<pcl::PointXYZINormal> cbfilter (false);
+#else
+            pcl::CropBox<pcl::PointXYZINormal> cbfilter;
+#endif
             cbfilter.setInputCloud(ptr);
             cbfilter.setMin(min_pt);
             cbfilter.setMax(max_pt);
@@ -1661,7 +1681,11 @@ adjust its position and orientation. The rotation vector are the euler angles rx
     case ito::pclXYZRGBNormal:
         {
             pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr ptr = pclIn->toPointXYZRGBNormal();
+#if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             pcl::CropBox<pcl::PointXYZRGBNormal> cbfilter (false);
+#else
+            pcl::CropBox<pcl::PointXYZRGBNormal> cbfilter;
+#endif
             cbfilter.setInputCloud(ptr);
             cbfilter.setMin(min_pt);
             cbfilter.setMax(max_pt);

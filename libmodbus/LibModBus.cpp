@@ -32,7 +32,7 @@
 #include <qbytearray.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include <regex>
+#include <qregexp.h>
 
 #include "pluginVersion.h"
 
@@ -95,6 +95,8 @@ If no MetaTag is set, values of m_params['registers'] is tried to be used for ad
     m_initParamsOpt.append(paramVal);
 	paramVal = ito::Param("stopbit", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
     m_initParamsOpt.append(paramVal);
+    paramVal = ito::Param("output_mode", ito::ParamBase::Int, 0, 1, 0, tr("Enables command-line output of different readouts (e.g. register values of getVal)").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
 
 
 }
@@ -142,6 +144,8 @@ LibModBus::LibModBus() : AddInDataIO(), m_pCTX(NULL), m_connected(false)
 	paramVal = ito::Param("databit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("stopbit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("output_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Enables command-line output of different readouts (e.g. register values of getVal)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("registers",ito::ParamBase::String | ito::ParamBase::In,"0,10",tr("Default string for register addressing. Coding is 'Reg1Address,Reg1Size;Reg2Address,Reg2Size...'").toLatin1().data());
 	m_params.insert(paramVal.getName(),paramVal);
@@ -292,6 +296,7 @@ ito::RetVal LibModBus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 	char parity;
     char *target;
 	bool IP = false;
+    bool output_mode=false;
 
     retval += m_params["target"].copyValueFrom(&((*paramsMand)[0]));
     target = m_params["target"].getVal<char *>(); //borrowed reference
@@ -305,24 +310,26 @@ ito::RetVal LibModBus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     databit = m_params["databit"].getVal<int>();
 	retval += m_params["stopbit"].copyValueFrom(&((*paramsOpt)[4]));
     stopbit = m_params["stopbit"].getVal<int>();
+    retval += m_params["output_mode"].copyValueFrom(&((*paramsOpt)[5]));
+    output_mode = m_params["output_mode"].getVal<int>();
 	
-	std::string check = target;
-	std::tr1::regex rx_ip("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
-	std::tr1::regex rx_com("COM[1-9]");
-	std::tr1::regex rx_tty("/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}");
+	QString target_ = target;
+	QRegExp rx_ip("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+	QRegExp rx_com("COM[1-9]");
+	QRegExp rx_tty("/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}");
 
     if (!retval.containsError())
     {
 
-		if (regex_match(check.begin(), check.end(), rx_ip) == true)
+		if (rx_ip.exactMatch(target_))
 		{
-			std::cout << "IP found \n" << std::endl;
+			//std::cout << "IP found \n" << std::endl;
 			m_pCTX = modbus_new_tcp(target,port);
 			IP = true;
 		}
-		else if (regex_match(check.begin(), check.end(), rx_com) == true || regex_match(check.begin(), check.end(), rx_tty) == true)
+		else if (rx_com.exactMatch(target_) || rx_tty.exactMatch(target_))
 		{
-			std::cout << "Serial found \n" << std::endl;
+			//std::cout << "Serial found \n" << std::endl;
 			m_pCTX = modbus_new_rtu(target,baud,parity,databit,stopbit);
 			modbus_set_slave(m_pCTX,port);
 			IP = false;
@@ -439,6 +446,7 @@ ito::RetVal LibModBus::acquire(const int /*trigger*/, ItomSharedSemaphore *waitC
 ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
 	bool validOp=true;
+    bool output_mode=false;
 	uint16_t tab_reg[64];
 	ito::DataObjectTagType registers;
 	int listcounter,registercounter,i,j,tmpInt;
@@ -447,6 +455,7 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 	std::vector<int> regAddr,regNb;
 	QString regContent;
 	QStringList regList,addrList;
+    output_mode = m_params["output_mode"].getVal<int>();
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
 	ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
@@ -494,7 +503,10 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 					registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
 					for (j=0; j < registercounter; j++) 
 					{
-						std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
+                        if (output_mode)
+                        {
+						    std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
+                        }
 						dObj->at<ito::uint16>(0,dObjPos)=tab_reg[j];
 						dObjPos++;
 					}
@@ -539,6 +551,7 @@ ito::RetVal LibModBus::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomSharedSemaphore *waitCond)
 {
 	bool validOp=true;
+    bool output_mode=false;
 	uint16_t tab_reg[64];
 	ito::DataObjectTagType registers;
 	int listcounter,registercounter,i,tmpInt;
@@ -547,7 +560,7 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
 	std::vector<int> regAddr,regNb;
 	QString regContent;
 	QStringList regList,addrList;
-
+    output_mode = m_params["output_mode"].getVal<int>();
 
     ItomSharedSemaphoreLocker locker(waitCond);
 	const ito::DataObject *dObj = reinterpret_cast<const ito::DataObject*>(data);
@@ -603,7 +616,10 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
 					registercounter = modbus_write_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg_nb);
 					if (registercounter == regNb.at(i))
 					{
-						std::cout << "Write at Reg. " << regAddr.at(i) << " success! \n " << std::endl; 
+                        if (output_mode)
+                        {
+						    std::cout << "Write at Reg. " << regAddr.at(i) << " success! \n " << std::endl; 
+                        }
 					}
 					else
 					{
