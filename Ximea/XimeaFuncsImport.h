@@ -45,7 +45,7 @@ XI_RETURN (__cdecl *pxiGetImage)(IN HANDLE hDevice, IN DWORD timeout, OUT LPXI_I
 XI_RETURN (__cdecl *pxiSetParam)(IN HANDLE hDevice, const char* prm, void* val, DWORD size, XI_PRM_TYPE type);
 XI_RETURN (__cdecl *pxiGetParam)(IN HANDLE hDevice, const char* prm, void* val, DWORD * size, XI_PRM_TYPE * type);
 
-
+#ifdef USE_SHADING
 MM40_RETURN (__cdecl *pUpdateFrameShading)(IN HANDLE hDevice, IN HANDLE hFieldBuffer, IN LPMMSHADING lpSahding);
 MM40_RETURN (__cdecl *pCalculateShading)(IN HANDLE hDevice, INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, LPWORD pBlack, LPWORD pWhite );
 MM40_RETURN (__cdecl *pCalculateShadingRaw)(INOUT LPMMSHADING lpMMS, DWORD dwCX, DWORD dwCY, LPWORD pBlack, LPWORD pWhite );
@@ -53,4 +53,5 @@ MM40_RETURN (__cdecl *pInitializeShading)(IN HANDLE hDevice, INOUT LPMMSHADING l
 MM40_RETURN (__cdecl *pProcessFrame)(IN HANDLE hDevice);
 
 MM40_RETURN (__cdecl *pSetShadingRaw)(IN LPMMSHADING lpSahding);
+#endif //USE_SHADING
 #endif

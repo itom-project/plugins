@@ -536,6 +536,7 @@ ito::RetVal Ximea::LoadLib(void)
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) dlsym(ximeaLib, "xiGetParam")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 
+#ifdef USE_SHADING
         if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) dlsym(ximeaLib, "mmUpdateFrameShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
 
@@ -554,6 +555,7 @@ ito::RetVal Ximea::LoadLib(void)
 
         if ((pProcessFrame = (MM40_RETURN(*)(HANDLE)) dlsym(ximeaLib, "mmProcessFrame")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());
+#endif // USE_SHADING
 #else
         if ((pxiGetNumberDevices = (XI_RETURN(*)(PDWORD)) GetProcAddress(ximeaLib, "xiGetNumberDevices")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toLatin1().data());
@@ -579,6 +581,7 @@ ito::RetVal Ximea::LoadLib(void)
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) GetProcAddress(ximeaLib, "xiGetParam")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 
+#ifdef USE_SHADING
         if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) GetProcAddress(ximeaLib, "mmUpdateFrameShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
 
@@ -597,7 +600,7 @@ ito::RetVal Ximea::LoadLib(void)
 
         if ((pProcessFrame = (MM40_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "mmProcessFrame")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());
-        
+#endif // USE_SHADING        
 #endif
     }
 
@@ -1206,7 +1209,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     {
         retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized. Try with another camera number").toLatin1().data());
     }
-    else
+    else if(!retValue.containsError())
     {
         ret = pxiOpenDevice(iCamNumber, &m_handle);
         if (!m_handle || ret != XI_OK)
@@ -2041,7 +2044,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
         }
         */
     }
-/*
+#ifdef USE_SHADING
     else if (funcName == "updateShading")
     {    
         param1 = ito::getParamByName(&(*paramsOpt), "darkImage", &retValue);
@@ -2100,7 +2103,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
             
         }
     }
-*/
+#endif
     else
     {
         retValue += ito::RetVal(ito::retError, 0, tr("function name '%1' does not exist").arg(funcName.toLatin1().data()).toLatin1().data());
