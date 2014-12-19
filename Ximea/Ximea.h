@@ -110,7 +110,7 @@ class Ximea : public ito::AddInGrabber
         };
 
         ito::RetVal LoadLib();
-        ito::RetVal getErrStr(const int error);
+        ito::RetVal getErrStr(const int error, const bool asWarning = false);
         int m_numDevices;
         int m_device;
         int m_saveParamsOnClose;

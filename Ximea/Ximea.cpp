@@ -255,8 +255,9 @@ Ximea::~Ximea()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal Ximea::getErrStr(const int error)
+ito::RetVal Ximea::getErrStr(const int error, const bool asWarning)
 {
+    ito::tRetValue type = asWarning ? ito::retWarning : ito::retError;
     switch (error)
     {
         case 0:
@@ -264,210 +265,210 @@ ito::RetVal Ximea::getErrStr(const int error)
         break;
         //errors from m3Api.h
         case 1:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid handle").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid handle").toLatin1().data());
         break;
         case 2:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Register read error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Register read error").toLatin1().data());
         break;
         case 3:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Register write error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Register write error").toLatin1().data());
         break;
         case 4:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing resources error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Freeing resources error").toLatin1().data());
         break;
         case 5:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing channel error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Freeing channel error").toLatin1().data());
         break;
         case 6:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Freeing bandwith error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Freeing bandwith error").toLatin1().data());
         break;
         case 7:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Read block error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Read block error").toLatin1().data());
         break;
         case 8:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Write block error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Write block error").toLatin1().data());
         break;
         case 9:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): No image").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): No image").toLatin1().data());
         break;
         case 10:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Timeout").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Timeout").toLatin1().data());
         break;
         case 11:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid arguments supplied").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid arguments supplied").toLatin1().data());
         break;
         case 12:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Not supported").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Not supported").toLatin1().data());
         break;
         case 13:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Attach buffers error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Attach buffers error").toLatin1().data());
         break;
         case 14:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Overlapped result").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Overlapped result").toLatin1().data());
         break;
         case 15:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Memory allocation error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Memory allocation error").toLatin1().data());
         break;
         case 16:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context is NULL").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): DLL context is NULL").toLatin1().data());
         break;
         case 17:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context is non zero").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): DLL context is non zero").toLatin1().data());
         break;
         case 18:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): DLL context exists").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): DLL context exists").toLatin1().data());
         break;
         case 19:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Too many devices connected").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Too many devices connected").toLatin1().data());
         break;
         case 20:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Camera context error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Camera context error").toLatin1().data());
         break;
         case 21:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Unknown hardware").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Unknown hardware").toLatin1().data());
         break;
         case 22:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid TM file").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid TM file").toLatin1().data());
         break;
         case 23:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid TM tag").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid TM tag").toLatin1().data());
         break;
         case 24:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Incomplete TM").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Incomplete TM").toLatin1().data());
         break;
         case 25:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Bus reset error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Bus reset error").toLatin1().data());
         break;
         case 26:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Not implemented").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Not implemented").toLatin1().data());
         break;
         case 27:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too bright").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Shading too bright").toLatin1().data());
         break;
         case 28:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too dark").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Shading too dark").toLatin1().data());
         break;
         case 29:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Gain is too low").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Gain is too low").toLatin1().data());
         break;
         case 30:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid bad pixel list").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid bad pixel list").toLatin1().data());
         break;
         case 31:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Bad pixel list realloc error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Bad pixel list realloc error").toLatin1().data());
         break;
         case 32:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid pixel list").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid pixel list").toLatin1().data());
         break;
         case 33:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid Flash File System").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid Flash File System").toLatin1().data());
         break;
         case 34:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid profile").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid profile").toLatin1().data());
         break;
         case 35:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid bad pixel list").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid bad pixel list").toLatin1().data());
         break;
         case 36:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid buffer").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid buffer").toLatin1().data());
         break;
         case 38:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Invalid data").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid data").toLatin1().data());
         break;
         case 39:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Timing generator is busy").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Timing generator is busy").toLatin1().data());
         break;
         case 40:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Wrong operation open/write/read/close").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Wrong operation open/write/read/close").toLatin1().data());
         break;
         case 41:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Acquisition already started").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Acquisition already started").toLatin1().data());
         break;
         case 42:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Old version of device driver installed to the system").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Old version of device driver installed to the system").toLatin1().data());
         break;
         case 43:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): To get error code please call GetLastError function").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): To get error code please call GetLastError function").toLatin1().data());
         break;
         case 44:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Data can't be processed").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Data can't be processed").toLatin1().data());
         break;
         case 45:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Error occured and acquisition has been stoped or didn't start").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Error occured and acquisition has been stoped or didn't start").toLatin1().data());
         break;
         case 46:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Acquisition has been stoped with error").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Acquisition has been stoped with error").toLatin1().data());
         break;
         case 47:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Input ICC profile missed or corrupted").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Input ICC profile missed or corrupted").toLatin1().data());
         break;
         case 48:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Output ICC profile missed or corrupted").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Output ICC profile missed or corrupted").toLatin1().data());
         break;
         case 49:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Device not ready to operate").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Device not ready to operate").toLatin1().data());
         break;
         case 50:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Shading too contrast").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Shading too contrast").toLatin1().data());
         break;
         case 51:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Module already initialized").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Module already initialized").toLatin1().data());
         break;
         case 52:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Application doesn't enough privileges(one or more applications opened)").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Application doesn't enough privileges(one or more applications opened)").toLatin1().data());
         break;
         case 53:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): installed driver incompatible with current software").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): installed driver incompatible with current software").toLatin1().data());
         break;
         case 54:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): TM file was not loaded successfully from resources").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): TM file was not loaded successfully from resources").toLatin1().data());
         break;
         case 55:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Device has been reseted, abnormal initial state").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Device has been reseted, abnormal initial state").toLatin1().data());
         break;
         case 56:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): No Devices found").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): No Devices found").toLatin1().data());
         break;
         case 57:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): Resource (device) or function  locked by mutex").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): Resource (device) or function  locked by mutex").toLatin1().data());
         break;
 
         //errors from xiApi.h
         case 100:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): unknown parameter").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): unknown parameter").toLatin1().data());
         break;
         case 101:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter value").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): wrong parameter value").toLatin1().data());
         break;
         case 103:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter type").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): wrong parameter type").toLatin1().data());
         break;
         case 104:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): wrong parameter size").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): wrong parameter size").toLatin1().data());
         break;
         case 105:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): input buffer too small").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): input buffer too small").toLatin1().data());
         break;
         case 106:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): parameter info not supported").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): parameter info not supported").toLatin1().data());
         break;
         case 107:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): parameter info not supported").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): parameter info not supported").toLatin1().data());
         break;
         case 108:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): data format not supported").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): data format not supported").toLatin1().data());
         break;
         case 109:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): read only parameter").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): read only parameter").toLatin1().data());
         break;
         case 110:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): no devices found").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): no devices found").toLatin1().data());
         break;
         case 111:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): this camera does not support currently available bandwidth").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): this camera does not support currently available bandwidth").toLatin1().data());
         break;
         default:
-            return ito::RetVal(ito::retError, error, tr("Ximea (m3api): unknown error code").toLatin1().data());
+            return ito::RetVal(type, error, tr("Ximea (m3api): unknown error code").toLatin1().data());
         break;
     }
 }
@@ -972,7 +973,10 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             else if (strcmp(paramIt.value().getName(),"trigger_mode2") == 0)
             {
                 if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
+                {
                     retValue += getErrStr(ret);
+                }
+                    
             }
 
             else if (strcmp(paramIt.value().getName(),"timing_mode") == 0)
@@ -1294,15 +1298,46 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);
             if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
-                retValue += getErrStr(ret);
+            {
+                if(ret == 12)
+                {
+                    m_params["trigger_mode"].setFlags(m_params["trigger_mode"].getFlags() | ito::ParamBase::Readonly);
+                    retValue += getErrStr(ret, true);
+                }
+                else
+                {
+                    retValue += getErrStr(ret);
+                }
+            }
 #ifndef USE_OLD_API
 
             // Though in api the dll reports not supported ...
             if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
-                retValue += getErrStr(ret);
+            {
+                if(ret == 12)
+                {
+                    m_params["trigger_mode2"].setFlags(m_params["trigger_mode2"].getFlags() | ito::ParamBase::Readonly);
+                    retValue += getErrStr(ret, true);
+                }
+                else
+                {
+                    retValue += getErrStr(ret);
+                }
+            }
+                
 
             if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
-                retValue += getErrStr(ret);
+            {
+                if(ret == 12)
+                {
+                    m_params["timing_mode"].setFlags(m_params["timing_mode"].getFlags() | ito::ParamBase::Readonly);
+                    retValue += getErrStr(ret, true);
+                }
+                else
+                {
+                    retValue += getErrStr(ret);
+                }
+            }
 #endif
             // Though in api the dll reports not supported ...
     //        if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &framerate, sizeof(float), xiTypeFloat)))
