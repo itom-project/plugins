@@ -184,6 +184,12 @@ if (PLUGIN_NEWPORT_SMC100)
     ADD_SUBDIRECTORY(NewportSMC100)
 endif (PLUGIN_NEWPORT_SMC100)
 
+# NI-DAQmx
+OPTION(PLUGIN_NI-DAQmx "Build with this plugin." OFF)
+if (PLUGIN_NI-DAQmx)
+    ADD_SUBDIRECTORY(NI-DAQmx)
+endif (PLUGIN_NI-DAQmx)
+
 # OpenCVFilters
 OPTION(PLUGIN_OpenCVFilters "Build with this plugin." ON)
 if (PLUGIN_OpenCVFilters)
