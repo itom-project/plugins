@@ -90,6 +90,7 @@ void DialogPGRFlyCapture::parametersChanged(QMap<QString, ito::Param> params)
     
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     int *roi = params["roi"].getVal<int*>();
+    qDebug() << roi[0] << roi[1] << roi[2] << roi[3];
     ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
     ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
     ui.rangeX01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));

@@ -300,9 +300,6 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("cam_interface", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Interface of camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("timestamp", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 10000000.0, 0.0, tr("Time in ms since last image (end of exposure)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
     //now create dock widget for this plugin
     DockWidgetPGRFlyCapture *dw = new DockWidgetPGRFlyCapture(this);
 
@@ -437,7 +434,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             if (key == "x1")
             {
                 int val_ = val->getVal<int>() - m_params["x0"].getVal<int>() + 1;
-                retValue += flyCapChangeFormat7_(false, true, -1, -1, -1, val->getVal<int>(), -1);
+                retValue += flyCapChangeFormat7_(false, true, -1, -1, -1, val_, -1);
             }
             else
             {
@@ -1579,38 +1576,12 @@ ito::RetVal PGRFlyCapture::acquire(const int trigger, ItomSharedSemaphore *waitC
     }
     else
     {
-		m_last_acquireTime = m_acquireTime;
-        m_acquireTime = (double)(cv::getTickCount())/cv::getTickFrequency();
-		m_params["timestamp"].setVal<double>((m_acquireTime-m_last_acquireTime)*1000);
         this->m_isgrabbing = true;
         if(m_RunSoftwareSync)
         {
             retValue += checkError(m_myCam.FireSoftwareTrigger());
         }
-        else
-        {
-            /*FlyCapture2::Image pImage;
-            retError = m_myCam.RetrieveBuffer( &pImage );
-            if (retError != FlyCapture2::PGRERROR_OK)
-            {
-                _snprintf(errBuff, 255, "Error in acquire-function: %s", retError.GetDescription());
-                retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-            }*/
 
-            
-        }
-        /*
-        retError = m_myCam.( CameraStats .GetCameraInfo.GetCycleTime(&m_timeStamp);
-        if (retError != FlyCapture2::PGRERROR_OK)
-        {
-            _snprintf(errBuff, 255, "Error in acquire-function: %s", retError.GetDescription());
-            retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-        }
-        */
-#if EVALSPEED
-        double tempTime = (double)(cv::getTickCount())/cv::getTickFrequency();
-        std::cout << "\nAcquire in camera thread\t" << tempTime-m_acquireTime << "\n";
-#endif
         if (waitCond)
         {
             waitCond->returnValue = retValue;
@@ -1620,9 +1591,6 @@ ito::RetVal PGRFlyCapture::acquire(const int trigger, ItomSharedSemaphore *waitC
         if (!retValue.containsError())
         {
             m_acquisitionStatus = checkError(m_myCam.RetrieveBuffer(&m_imageBuffer));
-
-            double tempTime = (double)(cv::getTickCount())/cv::getTickFrequency();
-            std::cout << "\nAcquire in camera thread\t" << tempTime-m_acquireTime << "\n";
         }
         else
         {
@@ -1729,17 +1697,6 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue = m_acquisitionStatus;
 
-    unsigned long imglength = 0;
-    long lcopysize = 0;
-    long lsrcstrpos = 0;
-    int y  = 0;
-    int maxxsize = (int)m_params["sizex"].getMax();
-    int maxysize = (int)m_params["sizey"].getMax();
-    int curxsize = m_params["sizex"].getVal<int>();
-    int curysize = m_params["sizey"].getVal<int>();
-    int x0 = m_params["x0"].getVal<int>();
-    int y0 = m_params["y0"].getVal<int>();
-
     bool hasListeners = false;
     bool copyExternal = false;
     if(m_autoGrabbingListeners.size() > 0)
@@ -1758,105 +1715,125 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
     }
 
     FlyCapture2::Image convertedImage;
-    
-    // time to sleep
-
-#if EVALSPEED    
-    double intermTime1 = (double)(cv::getTickCount())/cv::getTickFrequency();
-
-    double getValTime = (m_params["frame_time"].getVal<double>() - ((double)(cv::getTickCount())/cv::getTickFrequency() - m_acquireTime)) * 1000.0;
-    
-    if(m_RunSync)
-    {
-        double getValTime2 = getValTime;
-        while (getValTime2 > 0.0)
-        {
-            getValTime2 = (m_params["frame_time"].getVal<double>() - ((double)(cv::getTickCount())/cv::getTickFrequency() - m_acquireTime)) * 1000.0;
-        }
-    }
-    double intermTime2 = (double)(cv::getTickCount())/cv::getTickFrequency();
-#endif
-    
-#if EVALSPEED
-    double totalTime = (double)(cv::getTickCount())/cv::getTickFrequency();
-#endif
 
     if (!retValue.containsError())
     {
-        //int bpp = m_params["bpp"].getVal<int>();
         int bpp = m_imageBuffer.GetBitsPerPixel();
-        //int cols = pImage.GetCols();
-        //int rows = pImage.GetRows();
-        //int buffer = pImage.GetDataSize();
-        //FlyCapture2::TimeStamp cur_timeStamp = pImage.GetTimeStamp();
-
-        //if(cur_timeStamp.seconds < m_timeStamp.seconds && cur_timeStamp.microSeconds < m_timeStamp.microSeconds)
-        //{
-        //    retError = m_myCam.RetrieveBuffer( &pImage );
-        //    if (retError != FlyCapture2::PGRERROR_OK)
-        //    {
-        //        _snprintf(errBuff, 255, "Error in retrieveData-function: %s", retError.GetDescription());
-        //        retValue += ito::RetVal(ito::retError, (int)retError.GetType(), errBuff);
-        //    }
-        //}
+        FlyCapture2::PixelFormat format = m_imageBuffer.GetPixelFormat();
 
         if(bpp <= 8 && !m_colouredOutput)
         {
-            retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &convertedImage));
-
-            if (!retValue.containsError())
+            if (format != FlyCapture2::PIXEL_FORMAT_MONO8)
             {
-                ito::uint8 *cbuf=(ito::uint8*)convertedImage.GetData();
-                if(cbuf == NULL)
+                retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &convertedImage));
+
+                if (!retValue.containsError())
                 {
-                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
-                }
-                else 
-                {
-                    if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
-                    if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                    ito::uint8 *cbuf=(ito::uint8*)convertedImage.GetData();
+                    if(cbuf == NULL)
+                    {
+                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                    }
+                    else
+                    {
+                        if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                        if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                    }
                 }
             }
-        }
-        else if(bpp <= 8 && m_colouredOutput)
-        {
-            retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_BGRU, &convertedImage));
-
-            if (!retValue.containsError())
+            else
             {
-                ito::Rgba32 *cbuf=(ito::Rgba32*)convertedImage.GetData();
-                if(cbuf == NULL)
-                {
-                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
-                }
-                else 
-                {
-                    if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::Rgba32>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
-                    if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::Rgba32>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
-                }
-            }
-        }
-        else if(bpp <= 12)
-        {
-            retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_MONO16, &convertedImage));
-
-            if (!retValue.containsError())
-            {
-                ito::uint16 *cbuf=(ito::uint16*)convertedImage.GetData();
+                ito::uint8 *cbuf=(ito::uint8*)m_imageBuffer.GetData();
                 if(cbuf == NULL)
                 {
                     retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
                 }
                 else
                 {
-                    if(copyExternal) 
+                    if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>(cbuf, m_imageBuffer.GetCols(), m_imageBuffer.GetRows());
+                    if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>(cbuf, m_imageBuffer.GetCols(), m_imageBuffer.GetRows());
+                }
+            }
+        }
+        else if(bpp <= 8 && m_colouredOutput)
+        {
+            if (format != FlyCapture2::PIXEL_FORMAT_BGRU)
+            {
+                retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_BGRU, &convertedImage));
+
+                if (!retValue.containsError())
+                {
+                    ito::Rgba32 *cbuf=(ito::Rgba32*)convertedImage.GetData();
+                    if(cbuf == NULL)
                     {
-                        retValue += externalDataObject->copyFromData2D<ito::uint16>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                    }
+                    else
+                    {
+                        if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::Rgba32>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                        if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::Rgba32>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                    }
+                }
+            }
+            else
+            {
+                ito::Rgba32 *cbuf=(ito::Rgba32*)m_imageBuffer.GetData();
+                if(cbuf == NULL)
+                {
+                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                }
+                else
+                {
+                    if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::Rgba32>(cbuf, m_imageBuffer.GetCols(), m_imageBuffer.GetRows());
+                    if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::Rgba32>(cbuf, m_imageBuffer.GetCols(), m_imageBuffer.GetRows());
+                }
+            }
+        }
+        else if(bpp <= 12)
+        {
+            if (format != FlyCapture2::PIXEL_FORMAT_MONO16)
+            {
+                retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_MONO16, &convertedImage));
+
+                if (!retValue.containsError())
+                {
+                    ito::uint16 *cbuf=(ito::uint16*)convertedImage.GetData();
+                    if(cbuf == NULL)
+                    {
+                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                    }
+                    else
+                    {
+                        if(copyExternal)
+                        {
+                            retValue += externalDataObject->copyFromData2D<ito::uint16>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                            *externalDataObject >>= 4;
+                        }
+                        if(!copyExternal || hasListeners)
+                        {
+                            retValue += m_data.copyFromData2D<ito::uint16>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                            m_data >>= 4;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ito::uint16 *cbuf=(ito::uint16*)m_imageBuffer.GetData();
+                if(cbuf == NULL)
+                {
+                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                }
+                else
+                {
+                    if(copyExternal)
+                    {
+                        retValue += externalDataObject->copyFromData2D<ito::uint16>(cbuf, m_imageBuffer.GetCols(), m_imageBuffer.GetRows());
                         *externalDataObject >>= 4;
                     }
-                    if(!copyExternal || hasListeners) 
+                    if(!copyExternal || hasListeners)
                     {
-                        retValue += m_data.copyFromData2D<ito::uint16>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                        retValue += m_data.copyFromData2D<ito::uint16>(cbuf, m_imageBuffer.GetCols(), m_imageBuffer.GetRows());
                         m_data >>= 4;
                     }
                 }
@@ -1864,19 +1841,38 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
         }
         else if(bpp <= 16)
         {
-            retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_MONO16, &convertedImage));
-
-            if (!retValue.containsError())
+            if (format != FlyCapture2::PIXEL_FORMAT_MONO16)
             {
-                ito::uint16 *cbuf=(ito::uint16*)convertedImage.GetData();
-                if(cbuf == NULL)
+                retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_MONO16, &convertedImage));
+
+                if (!retValue.containsError())
                 {
-                    retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                    ito::uint16 *cbuf=(ito::uint16*)convertedImage.GetData();
+                    if(cbuf == NULL)
+                    {
+                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                    }
+                    else
+                    {
+                        if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                        if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                    }
                 }
-                else
+            }
+            else
+            {
+                if (!retValue.containsError())
                 {
-                    if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
-                    if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>(cbuf, convertedImage.GetCols(), convertedImage.GetRows());
+                    ito::uint16 *cbuf=(ito::uint16*)m_imageBuffer.GetData();
+                    if(cbuf == NULL)
+                    {
+                        retValue += ito::RetVal(ito::retError, 1002, tr("getVal of PGRFlyCapture failed, since retrived NULL-Pointer.").toLatin1().data());
+                    }
+                    else
+                    {
+                        if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>(cbuf, m_imageBuffer.GetCols(), m_imageBuffer.GetRows());
+                        if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>(cbuf, m_imageBuffer.GetCols(), m_imageBuffer.GetRows());
+                    }
                 }
             }
         }
@@ -1907,18 +1903,6 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
 
         this->m_isgrabbing = false;
     }
-
-#if EVALSPEED
-    double totalTime2 = (double)(cv::getTickCount())/cv::getTickFrequency();
-
-    std::cout << "\nFramtime \t" << m_params["frame_time"].getVal<double>() * 1000.0 << "\n";
-    std::cout << "\nAcquire to timer \t" << (intermTime1 - m_acquireTime) * 1000.0 << "\n";
-    std::cout << "\nWait till end of frame \t" << (intermTime2 - intermTime1)* 1000.0 << " Shoudbe:" << getValTime << "\n";
-    std::cout << "\nGrabbing from Buffer \t" << (totalTime - intermTime2) * 1000.0  << "\n";
-
-    std::cout << "\nAcquire till got buffer \t" << (totalTime -  m_acquireTime) * 1000.0 << "\n";
-    std::cout << "\nAcquire till copied buffer \t" << (totalTime2 -  m_acquireTime) * 1000.0 << "\n";
-#endif
 
     return retValue;
 }
@@ -2315,12 +2299,12 @@ ito::RetVal PGRFlyCapture::flyCapChangeFormat7_(bool changeBpp, bool changeROI, 
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
             ParamMapIterator it = m_params.find("roi");
             int *roi = it->getVal<int*>();
-            roi[0] = x0;
-            roi[1] = y0;
-            roi[2] = width;
-            roi[3] = height;
-            ito::RangeMeta widthMeta(0, m_format7Info.maxWidth, m_format7Info.offsetHStepSize, 0, m_format7Info.maxWidth, m_format7Info.imageHStepSize);
-            ito::RangeMeta heightMeta(0, m_format7Info.maxHeight, m_format7Info.offsetVStepSize, 0, m_format7Info.maxHeight, m_format7Info.imageVStepSize);
+            roi[0] = m_currentFormat7Settings.offsetX;
+            roi[1] = m_currentFormat7Settings.offsetY;
+            roi[2] = m_currentFormat7Settings.width;
+            roi[3] = m_currentFormat7Settings.height;
+            ito::RangeMeta widthMeta(0, m_format7Info.maxWidth, m_format7Info.offsetHStepSize, m_format7Info.imageHStepSize, m_format7Info.maxWidth, m_format7Info.imageHStepSize);
+            ito::RangeMeta heightMeta(0, m_format7Info.maxHeight, m_format7Info.offsetVStepSize, m_format7Info.imageVStepSize, m_format7Info.maxHeight, m_format7Info.imageVStepSize);
             it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
 #endif  
 

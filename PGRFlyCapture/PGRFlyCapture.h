@@ -109,9 +109,6 @@ class PGRFlyCapture : public ito::AddInGrabber
         ExtendedShutterType m_extendedShutter;
         FlyCapture2::EmbeddedImageInfo m_embeddedInfo;
         bool m_hasFrameInfo;
-
-        double m_acquireTime;    /*!< Timestamp for acquire in seconds relative to cpu ticks */
-		double m_last_acquireTime;
        
         FlyCapture2::Format7ImageSettings m_currentFormat7Settings;
         FlyCapture2::Format7PacketInfo m_currentPacketInfo;
