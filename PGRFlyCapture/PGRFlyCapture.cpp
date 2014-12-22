@@ -236,14 +236,22 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Pixelsize in x (cols)").toLatin1().data());
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+    int roi[] = {0, 0, 2048, 2048};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2048), ito::RangeMeta(0, 2048));
+    paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("Pixelsize in y (rows)").toLatin1().data());
+#endif
+
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("left index of first pixel in ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("top index first pixel in ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Pixelsize in x (cols)").toLatin1().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("right index of last pixel in ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Pixelsize in y (rows)").toLatin1().data());
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("bottom index of last pixel in ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("colorMode", ito::ParamBase::String | ito::ParamBase::Readonly, "gray", tr("colorMode: 'gray' (default) or 'color' if color camera").toLatin1().data());
@@ -389,27 +397,80 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
     if(!retValue.containsError())
     {
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION < 0x010300
+        //old style api, round the incoming double value to the allowed step size.
+        //in a new itom api, this is automatically done by a new api function.
+        if (val->getType() == ito::ParamBase::Double || val->getType() == ito::ParamBase::Int)
+        {
+            double value = val->getVal<double>();
+            if (it->getType() == ito::ParamBase::Double)
+            {
+                ito::DoubleMeta *meta = (ito::DoubleMeta*)it->getMeta();
+                if (meta)
+                {
+                    double step = meta->getStepSize();
+                    if (step != 0.0)
+                    {
+                        int multiple = qRound((value - meta->getMin()) / step);
+                        value = meta->getMin() + multiple * step;
+                        value = qBound(meta->getMin(), value, meta->getMax());
+                        val->setVal<double>(value);
+                    }
+                }
+            }
+        }
         retValue += apiValidateParam(*it, *val, false, true);
+#else
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
+#endif
     }
 
     if(!retValue.containsError())
     {
         // Adapted parameters and send out depending parameter
-        if (key == "x0")
+        if (key == "x0" || (key == "roi" && hasIndex && index == 0))
         {
-            retValue += flyCapChangeFormat7(false, true, -1, val->getVal<int>(), -1, -1, -1);
+            retValue += flyCapChangeFormat7_(false, true, -1, val->getVal<int>(), -1, -1, -1);
         }
-        else if (key == "x1")
+        else if (key == "x1" || (key == "roi" && hasIndex && index == 2))
         {
-            retValue += flyCapChangeFormat7(false, true, -1, -1, -1, val->getVal<int>(), -1);
+            if (key == "x1")
+            {
+                int val_ = val->getVal<int>() - m_params["x0"].getVal<int>() + 1;
+                retValue += flyCapChangeFormat7_(false, true, -1, -1, -1, val->getVal<int>(), -1);
+            }
+            else
+            {
+                retValue += flyCapChangeFormat7_(false, true, -1, -1, -1, val->getVal<int>(), -1);
+            }
         }
-        else if (key == "y0")
+        else if (key == "y0" || (key == "roi" && hasIndex && index == 1))
         {
-            retValue += flyCapChangeFormat7(false, true, -1, -1, val->getVal<int>(), -1, -1);
+            retValue += flyCapChangeFormat7_(false, true, -1, -1, val->getVal<int>(), -1, -1);
         }
-        else if (key == "y1")
+        else if (key == "y1" || (key == "roi" && hasIndex && index == 3))
         {
-            retValue += flyCapChangeFormat7(false, true, -1, -1, -1, -1, val->getVal<int>());
+            if (key == "y1")
+            {
+                int val_ = val->getVal<int>() - m_params["y0"].getVal<int>() + 1;
+                retValue += flyCapChangeFormat7_(false, true, -1, -1, -1, -1, val_);
+            }
+            else
+            {
+                retValue += flyCapChangeFormat7_(false, true, -1, -1, -1, -1, val->getVal<int>());
+            }
+        }
+        else if (key == "roi")
+        {
+            if (hasIndex)
+            {
+                retValue += ito::RetVal(ito::retError, 0, "only indices in the range [0,3] are allowed");
+            }
+            else
+            {
+                const int *vals = val->getVal<int*>();
+                retValue += flyCapChangeFormat7_(false, true, -1, vals[0], vals[1], vals[2], vals[3]);
+            }
         }
         else if (key == "extended_shutter")
         {
@@ -571,7 +632,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         }
         else if (key == "bpp")
         {
-            retValue += flyCapChangeFormat7(true, false, val->getVal<int>());
+            retValue += flyCapChangeFormat7_(true, false, val->getVal<int>());
         }
         else
         {
@@ -942,7 +1003,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
                 if (!retVal.containsError())
                 {
-                    flyCapChangeFormat7(true, false, desiredBpp);
+                    flyCapChangeFormat7_(true, false, desiredBpp);
                     pixelFormat = m_currentFormat7Settings.pixelFormat;
                 }
             }
@@ -2111,7 +2172,7 @@ ito::RetVal PGRFlyCapture::checkError(const FlyCapture2::Error &error)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PGRFlyCapture::flyCapChangeFormat7(bool changeBpp, bool changeROI, int bpp, int x0, int y0, int x1, int y1)
+ito::RetVal PGRFlyCapture::flyCapChangeFormat7_(bool changeBpp, bool changeROI, int bpp /*=-1*/, int x0 /*=-1*/, int y0 /*=-1*/, int width /*=-1*/, int height /*=-1*/)
 {
     ito::RetVal retValue;
     int running = 0;
@@ -2165,8 +2226,8 @@ ito::RetVal PGRFlyCapture::flyCapChangeFormat7(bool changeBpp, bool changeROI, i
         {
             if (x0 == -1) x0 = f7ImageSettings.offsetX;
             if (y0 == -1) y0 = f7ImageSettings.offsetY;
-            if (x1 == -1) x1 = f7ImageSettings.offsetX + f7ImageSettings.width - 1;
-            if (y1 == -1) y1 = f7ImageSettings.offsetY + f7ImageSettings.height - 1;
+            if (width == -1) width = f7ImageSettings.width;
+            if (height == -1) height = f7ImageSettings.height;
 
             if (x0 < 0 || x0 >= (m_format7Info.maxWidth - 1) || (x0 % m_format7Info.offsetHStepSize) != 0)
             {
@@ -2178,22 +2239,22 @@ ito::RetVal PGRFlyCapture::flyCapChangeFormat7(bool changeBpp, bool changeROI, i
                 retValue += ito::RetVal::format(ito::retError, 0, "y0 must be in range [0:%i:%i]", m_format7Info.offsetVStepSize, m_format7Info.maxHeight-1);
             }
 
-            if (x1 <= x0 || x1 > (m_format7Info.maxWidth - 1) || ((1 + x1 - x0) % m_format7Info.imageHStepSize) != 0)
+            if (width < 0 || ((x0 + width) > m_format7Info.maxWidth) || ((width) % m_format7Info.imageHStepSize) != 0)
             {
-                retValue += ito::RetVal::format(ito::retError, 0, "x1 must be in range [%i:%i:%i]", x0+1, m_format7Info.imageHStepSize, m_format7Info.maxWidth-1);
+                retValue += ito::RetVal::format(ito::retError, 0, "width must be in range [0:%i:%i]", m_format7Info.imageHStepSize, m_format7Info.maxWidth-x0);
             }
 
-            if (y1 <= y0 || y1 > (m_format7Info.maxHeight - 1) || ((1 + y1 - y0) % m_format7Info.imageVStepSize) != 0)
+            if (height < 0 || ((y0 + height) > m_format7Info.maxHeight) || ((height) % m_format7Info.imageVStepSize) != 0)
             {
-                retValue += ito::RetVal::format(ito::retError, 0, "y1 must be in range [%i:%i:%i]", y0+1, m_format7Info.imageVStepSize, m_format7Info.maxHeight-1);
+                retValue += ito::RetVal::format(ito::retError, 0, "y1 must be in range [0:%i:%i]", m_format7Info.imageVStepSize, m_format7Info.maxHeight-y0);
             }
 
             if (!retValue.containsError())
             {
                 f7ImageSettings.offsetX = x0;
                 f7ImageSettings.offsetY = y0;
-                f7ImageSettings.width = (x1 - x0 + 1);
-                f7ImageSettings.height = (y1 - y0 + 1);
+                f7ImageSettings.width = width;
+                f7ImageSettings.height = height;
             }
         }
 
@@ -2250,6 +2311,18 @@ ito::RetVal PGRFlyCapture::flyCapChangeFormat7(bool changeBpp, bool changeROI, i
             m_params["y1"].setVal<int>( m_currentFormat7Settings.offsetY + m_currentFormat7Settings.height - 1 );
             im = static_cast<ito::IntMeta*>(m_params["y1"].getMeta());
             im->setMin( m_currentFormat7Settings.offsetY + m_format7Info.imageVStepSize - 1);
+
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+            ParamMapIterator it = m_params.find("roi");
+            int *roi = it->getVal<int*>();
+            roi[0] = x0;
+            roi[1] = y0;
+            roi[2] = width;
+            roi[3] = height;
+            ito::RangeMeta widthMeta(0, m_format7Info.maxWidth, m_format7Info.offsetHStepSize, 0, m_format7Info.maxWidth, m_format7Info.imageHStepSize);
+            ito::RangeMeta heightMeta(0, m_format7Info.maxHeight, m_format7Info.offsetVStepSize, 0, m_format7Info.maxHeight, m_format7Info.imageVStepSize);
+            it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
+#endif  
 
             m_params["sizex"].setVal<int>(m_currentFormat7Settings.width);
             m_params["sizey"].setVal<int>(m_currentFormat7Settings.height);

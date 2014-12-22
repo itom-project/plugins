@@ -89,7 +89,7 @@ class PGRFlyCapture : public ito::AddInGrabber
         ito::RetVal flyCapGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type);
         ito::RetVal flyCapGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type);
 
-        ito::RetVal flyCapChangeFormat7(bool changeBpp, bool changeROI, int bpp = -1, int x0 = -1, int y0 = -1, int x1 = -1, int y1 = -1);
+        ito::RetVal flyCapChangeFormat7_(bool changeBpp, bool changeROI, int bpp = -1, int x0 = -1, int y0 = -1, int width = -1, int height = -1);
         ito::RetVal flyCapSetExtendedShutter(bool enabled);
         ito::RetVal flyCapSynchronizeFrameRateShutter();
 
