@@ -204,7 +204,8 @@ PGRFlyCapture::PGRFlyCapture() :
     m_offsetMax(1.0),
     m_offsetMin(0.0),
     m_extendedShutter(UNINITIALIZED),
-    m_colouredOutput(false)
+    m_colouredOutput(false),
+    m_firstTimestamp(-1.0)
 {
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
@@ -995,6 +996,64 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         retVal += flyCapSetExtendedShutter( m_params["extended_shutter"].getVal<int>() > 0 );
     }
 
+    if (!retVal.containsError())
+    {
+        retVal += checkError(m_myCam.GetEmbeddedImageInfo(&m_embeddedInfo));
+        if (!retVal.containsError() && m_embeddedInfo.timestamp.available)
+        {
+            if (m_embeddedInfo.timestamp.available)
+            {
+                m_embeddedInfo.timestamp.onOff = true;
+            }
+            if (m_embeddedInfo.gain.available)
+            {
+                m_embeddedInfo.gain.onOff = false;
+            }
+            if (m_embeddedInfo.shutter.available)
+            {
+                m_embeddedInfo.shutter.onOff = false;
+            }
+            if (m_embeddedInfo.brightness.available)
+            {
+                m_embeddedInfo.brightness.onOff = false;
+            }
+            if (m_embeddedInfo.exposure.available)
+            {
+                m_embeddedInfo.exposure.onOff = false;
+            }
+            if (m_embeddedInfo.whiteBalance.available)
+            {
+                m_embeddedInfo.whiteBalance.onOff = false;
+            }
+            if (m_embeddedInfo.frameCounter.available)
+            {
+                m_embeddedInfo.frameCounter.onOff = true;
+            }
+            if (m_embeddedInfo.strobePattern.available)
+            {
+                m_embeddedInfo.strobePattern.onOff = false;
+            }
+            if (m_embeddedInfo.GPIOPinState.available)
+            {
+                m_embeddedInfo.GPIOPinState.onOff = false;
+            }
+            if (m_embeddedInfo.ROIPosition.available)
+            {
+                m_embeddedInfo.ROIPosition.onOff = true;
+            }
+
+            retVal += checkError(m_myCam.SetEmbeddedImageInfo(&m_embeddedInfo));
+
+            m_hasFrameInfo = false;
+            const unsigned int k_frameInfoReg = 0x12F8;
+            unsigned int frameInfoRegVal = 0;
+            if (m_myCam.ReadRegister(k_frameInfoReg, &frameInfoRegVal) == FlyCapture2::PGRERROR_OK && (frameInfoRegVal >> 31) != 0)
+            {
+                m_hasFrameInfo = true;
+            }
+        }
+    }
+
     if(!retVal.containsError())
     {
         FlyCapture2:: PropertyInfo propInfo;
@@ -1762,8 +1821,29 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
         }
         else
         {
-            retValue += ito::RetVal::format(ito::retError, 1002, tr("retrieveData of PGRFlyCapture faield, since bitdepth %i not implemented.").toLatin1().data(), bpp);
+            retValue += ito::RetVal::format(ito::retError, 1002, tr("retrieveData of PGRFlyCapture failed, since bitdepth %i not implemented.").toLatin1().data(), bpp);
         }
+
+        if (!retValue.containsError() && m_hasFrameInfo)
+        {
+            double timestamp = timeStampToDouble(m_imageBuffer.GetTimeStamp());
+            FlyCapture2::ImageMetadata metadata = m_imageBuffer.GetMetadata();
+            if (copyExternal)
+            {
+                externalDataObject->setTag("timestamp", timestamp);
+                externalDataObject->setTag("frame_counter", metadata.embeddedFrameCounter);
+                externalDataObject->setTag("roi_x0", metadata.embeddedROIPosition >> 16);
+                externalDataObject->setTag("roi_y0", metadata.embeddedROIPosition & 0x00ff);
+            }
+            if (!copyExternal || hasListeners)
+            {
+                m_data.setTag("timestamp", timestamp);
+                m_data.setTag("frame_counter", metadata.embeddedFrameCounter);
+                m_data.setTag("roi_x0", metadata.embeddedROIPosition >> 16);
+                m_data.setTag("roi_y0", metadata.embeddedROIPosition & 0x00ff);
+            }
+        }
+
         this->m_isgrabbing = false;
     }
 
@@ -2458,4 +2538,25 @@ ito::RetVal PGRFlyCapture::checkData(ito::DataObject *externalDataObject)
     }
 
     return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------
+double PGRFlyCapture::timeStampToDouble(const FlyCapture2::TimeStamp &timestamp)
+{
+    double secOffset;
+    double time1 = (double)timestamp.cycleSeconds + (((double)timestamp.cycleCount + ((double)timestamp.cycleOffset/3072.0))/8000.0);
+
+    if (m_firstTimestamp < 0.0)
+    {
+        m_firstTimestamp = (double)(cv::getTickCount())/cv::getTickFrequency() - time1;
+        secOffset = 0.0;
+    }
+    else
+    {
+        double temp = (double)(cv::getTickCount())/cv::getTickFrequency();
+        secOffset = 128.0 * ((unsigned int)((temp - m_firstTimestamp)) >> 7);
+
+    }
+
+    return secOffset + time1;
 }

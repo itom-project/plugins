@@ -107,6 +107,8 @@ class PGRFlyCapture : public ito::AddInGrabber
         double m_offsetMin;
 
         ExtendedShutterType m_extendedShutter;
+        FlyCapture2::EmbeddedImageInfo m_embeddedInfo;
+        bool m_hasFrameInfo;
 
         double m_acquireTime;    /*!< Timestamp for acquire in seconds relative to cpu ticks */
 		double m_last_acquireTime;
@@ -119,12 +121,14 @@ class PGRFlyCapture : public ito::AddInGrabber
 
         ito::RetVal m_acquisitionStatus;
         FlyCapture2::Image m_imageBuffer;
+        double m_firstTimestamp;
 
         unsigned int GetBppFromPixelFormat( FlyCapture2::PixelFormat pixelFormat );
         bool GetPixelFormatFromVideoMode( FlyCapture2::VideoMode mode, bool stippled, FlyCapture2::PixelFormat* pixFormat);
         bool GetResolutionFromVideoMode( FlyCapture2::VideoMode mode, int &sizeX, int &sizeY);
         double GetFrameTimeFromFrameRate( FlyCapture2::FrameRate frameRate );
         FlyCapture2::FrameRate GetSuitAbleFrameRateFromFrameTime( double frameTime );
+        double timeStampToDouble(const FlyCapture2::TimeStamp &timestamp);
 
         ito::RetVal checkError(const FlyCapture2::Error &error);
 
