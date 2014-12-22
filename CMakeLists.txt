@@ -184,6 +184,12 @@ if (PLUGIN_NEWPORT_SMC100)
     ADD_SUBDIRECTORY(NewportSMC100)
 endif (PLUGIN_NEWPORT_SMC100)
 
+# NI-DAQmx
+OPTION(PLUGIN_NI-DAQmx "Build with this plugin." OFF)
+if (PLUGIN_NI-DAQmx)
+    ADD_SUBDIRECTORY(NI-DAQmx)
+endif (PLUGIN_NI-DAQmx)
+
 # OpenCVFilters
 OPTION(PLUGIN_OpenCVFilters "Build with this plugin." ON)
 if (PLUGIN_OpenCVFilters)
@@ -243,16 +249,24 @@ if (PLUGIN_PI_GCS2)
 endif (PLUGIN_PI_GCS2)
 
 # QCam
-OPTION(PLUGIN_QCam "Build with this plugin." OFF)
-if (PLUGIN_QCam)
-    ADD_SUBDIRECTORY(QCam)
-endif (PLUGIN_QCam)
+IF (WIN32)
+    OPTION(PLUGIN_QCam "Build with this plugin." OFF)
+    if (PLUGIN_QCam)
+        ADD_SUBDIRECTORY(QCam)
+    endif (PLUGIN_QCam)
+ENDIF (WIN32)
 
 # SerialIO
 OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
 if (PLUGIN_SerialIO)
     ADD_SUBDIRECTORY(SerialIO)
 endif (PLUGIN_SerialIO)
+
+# SuperlumBS
+OPTION(PLUGIN_SuperlumBS "Build with this plugin." ON)
+if (PLUGIN_SuperlumBS)
+    ADD_SUBDIRECTORY(SuperlumBS)
+endif (PLUGIN_SuperlumBS)
 
 # ThorlabsCCS Spectrometer
 IF (WIN32)

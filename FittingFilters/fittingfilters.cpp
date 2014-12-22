@@ -1225,7 +1225,7 @@ template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *ma
 // this version of the least median fits randomly selects three points from the plane, determines the plane out of
 // these three points and determines the distance from every point to the plane. Finally the plane is chosen
 // whose median of all distances is minimum.
-template<typename _Tp> static ito::RetVal FittingFilters::lmedsFitPlane(const cv::Mat *mat, double &A, double &B, double &C, const double &valid_probability, const double &alarm_rate)
+template<typename _Tp> ito::RetVal FittingFilters::lmedsFitPlane(const cv::Mat *mat, double &A, double &B, double &C, const double &valid_probability, const double &alarm_rate)
 {
     if (mat->channels() > 1)
     {
@@ -1338,7 +1338,7 @@ template<typename _Tp> static ito::RetVal FittingFilters::lmedsFitPlane(const cv
 //returns numSamples pairs of unique (rows,cols) within mat (only valid values) that are randomly chosen.
 //If the algorithm does not find the required number of unique and valid points after maxIter, an error is returned.
 //rows and cols must be allocated with at least numSamples values. rng must be initialized with seed value.
-template<typename _Tp> static ito::RetVal FittingFilters::getRandomValidMinimalSampleSet(const cv::Mat *mat, cv::RNG &rng, int numSamples, int *rows, int *cols, int maxIter /*= 1000*/)
+template<typename _Tp> ito::RetVal FittingFilters::getRandomValidMinimalSampleSet(const cv::Mat *mat, cv::RNG &rng, int numSamples, int *rows, int *cols, int maxIter /*= 1000*/)
 {
     int nrOfValues = mat->rows * mat->cols;
     int iter = 0;

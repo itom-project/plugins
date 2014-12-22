@@ -32,7 +32,7 @@
 #include <qbytearray.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-#include <regex>
+#include <qregexp.h>
 
 #include "pluginVersion.h"
 
@@ -313,21 +313,21 @@ ito::RetVal LibModBus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     retval += m_params["output_mode"].copyValueFrom(&((*paramsOpt)[5]));
     output_mode = m_params["output_mode"].getVal<int>();
 	
-	std::string check = target;
-	std::tr1::regex rx_ip("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
-	std::tr1::regex rx_com("COM[1-9]");
-	std::tr1::regex rx_tty("/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}");
+	QString target_ = target;
+	QRegExp rx_ip("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+	QRegExp rx_com("COM[1-9]");
+	QRegExp rx_tty("/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}");
 
     if (!retval.containsError())
     {
 
-		if (regex_match(check.begin(), check.end(), rx_ip) == true)
+		if (rx_ip.exactMatch(target_))
 		{
 			//std::cout << "IP found \n" << std::endl;
 			m_pCTX = modbus_new_tcp(target,port);
 			IP = true;
 		}
-		else if (regex_match(check.begin(), check.end(), rx_com) == true || regex_match(check.begin(), check.end(), rx_tty) == true)
+		else if (rx_com.exactMatch(target_) || rx_tty.exactMatch(target_))
 		{
 			//std::cout << "Serial found \n" << std::endl;
 			m_pCTX = modbus_new_rtu(target,baud,parity,databit,stopbit);
