@@ -267,28 +267,28 @@ PGRFlyCapture::PGRFlyCapture() :
     //paramVal = ito::Param("supported_frame_time", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Possible valued for the frame_time in frames per second").toLatin1().data());
     //m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camSerialNumber", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("Serial number of the attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_serial_number", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("Serial number of the attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camModel", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Model identifier of the attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_model", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Model identifier of the attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camVendor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Name of the attachted camera vendor").toLatin1().data());
+    paramVal = ito::Param("cam_vendor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Name of the attachted camera vendor").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camSensor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Identifier of the chip in attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_sensor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Identifier of the chip in attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camResolution", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Resolution of the chip in attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_resolution", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Resolution of the chip in attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camFirmwareVersion", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Serial number of the firmware used in the attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_firmware_version", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Serial number of the firmware used in the attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camFirmwareBuildTime", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Built time of the firmware used in the attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_firmware_build_time", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Built time of the firmware used in the attachted camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("camInterface", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Interface of camera").toLatin1().data());
+    paramVal = ito::Param("cam_interface", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Interface of camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
 	paramVal = ito::Param("timestamp", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 10000000.0, 0.0, tr("Time in ms since last image (end of exposure)").toLatin1().data());
@@ -805,10 +805,10 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             switch (m_interfaceType)
             {
                 case FlyCapture2::INTERFACE_USB2:
-                    m_params["camInterface"].setVal<char*>("USB2");
+                    m_params["cam_interface"].setVal<char*>("USB2");
                     break;
                 case FlyCapture2::INTERFACE_USB3:
-                    m_params["camInterface"].setVal<char*>("USB3");
+                    m_params["cam_interface"].setVal<char*>("USB3");
                     break;
                 default:
                     retVal += ito::RetVal(ito::retError, 0, "unsupported interface (GigE, IEEE1394...)");
@@ -1258,14 +1258,14 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     if(!retVal.containsError())
     {
           
-        m_params["camSerialNumber"].setVal<int>((int)camInfo.serialNumber);
+        m_params["cam_serial_number"].setVal<int>((int)camInfo.serialNumber);
         setIdentifier(QString("%1 (%2)").arg( camInfo.modelName ).arg( camInfo.serialNumber ));
-        m_params["camModel"].setVal<char*>(camInfo.modelName, (int)strlen(camInfo.modelName));
-        m_params["camVendor"].setVal<char*>(camInfo.vendorName, (int)strlen(camInfo.vendorName));
-        m_params["camSensor"].setVal<char*>(camInfo.sensorInfo, (int)strlen(camInfo.sensorInfo));
-        m_params["camResolution"].setVal<char*>(camInfo.sensorResolution, (int)strlen(camInfo.sensorResolution));
-        m_params["camFirmwareVersion"].setVal<char*>(camInfo.firmwareVersion, (int)strlen(camInfo.firmwareVersion));
-        m_params["camFirmwareBuildTime"].setVal<char*>(camInfo.firmwareBuildTime, (int)strlen(camInfo.firmwareBuildTime));
+        m_params["cam_model"].setVal<char*>(camInfo.modelName, (int)strlen(camInfo.modelName));
+        m_params["cam_vendor"].setVal<char*>(camInfo.vendorName, (int)strlen(camInfo.vendorName));
+        m_params["cam_sensor"].setVal<char*>(camInfo.sensorInfo, (int)strlen(camInfo.sensorInfo));
+        m_params["cam_resolution"].setVal<char*>(camInfo.sensorResolution, (int)strlen(camInfo.sensorResolution));
+        m_params["cam_firmware_version"].setVal<char*>(camInfo.firmwareVersion, (int)strlen(camInfo.firmwareVersion));
+        m_params["cam_firmware_build_time"].setVal<char*>(camInfo.firmwareBuildTime, (int)strlen(camInfo.firmwareBuildTime));
     }
 
 
@@ -1449,13 +1449,19 @@ ito::RetVal PGRFlyCapture::acquire(const int trigger, ItomSharedSemaphore *waitC
     if(grabberStartedCount() <= 0)
     {
         retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of PGRFlyCapture can not be executed, since camera has not been started.").toLatin1().data());
+        m_acquisitionStatus = ito::retOk;
+
+        if(waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+        }
     }
     else
     {
 		m_last_acquireTime = m_acquireTime;
         m_acquireTime = (double)(cv::getTickCount())/cv::getTickFrequency();
 		m_params["timestamp"].setVal<double>((m_acquireTime-m_last_acquireTime)*1000);
-        FlyCapture2::Error retError;
         this->m_isgrabbing = true;
         if(m_RunSoftwareSync)
         {
@@ -1485,13 +1491,23 @@ ito::RetVal PGRFlyCapture::acquire(const int trigger, ItomSharedSemaphore *waitC
         double tempTime = (double)(cv::getTickCount())/cv::getTickFrequency();
         std::cout << "\nAcquire in camera thread\t" << tempTime-m_acquireTime << "\n";
 #endif
-    }
+        if (waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+        }
 
+        if (!retValue.containsError())
+        {
+            m_acquisitionStatus = checkError(m_myCam.RetrieveBuffer(&m_imageBuffer));
 
-    if(waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
+            double tempTime = (double)(cv::getTickCount())/cv::getTickFrequency();
+            std::cout << "\nAcquire in camera thread\t" << tempTime-m_acquireTime << "\n";
+        }
+        else
+        {
+            m_acquisitionStatus = ito::retOk;
+        }
     }
 
     return retValue;
@@ -1591,8 +1607,7 @@ ito::RetVal PGRFlyCapture::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
 {
-    ito::RetVal retValue(ito::retOk);
-    FlyCapture2::Error retError;
+    ito::RetVal retValue = m_acquisitionStatus;
 
     unsigned long imglength = 0;
     long lcopysize = 0;
@@ -1622,7 +1637,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
         return retValue;
     }
 
-    FlyCapture2::Image pImage, convertedImage;
+    FlyCapture2::Image convertedImage;
     
     // time to sleep
 
@@ -1641,21 +1656,15 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
     }
     double intermTime2 = (double)(cv::getTickCount())/cv::getTickFrequency();
 #endif
-
-    retError = m_myCam.RetrieveBuffer( &pImage );
     
 #if EVALSPEED
     double totalTime = (double)(cv::getTickCount())/cv::getTickFrequency();
 #endif
 
-    if (retError != FlyCapture2::PGRERROR_OK)
-    {
-        retValue += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error in retrieveData-function: %s", retError.GetDescription());
-    }
-    else
+    if (!retValue.containsError())
     {
         //int bpp = m_params["bpp"].getVal<int>();
-        int bpp = pImage.GetBitsPerPixel();
+        int bpp = m_imageBuffer.GetBitsPerPixel();
         //int cols = pImage.GetCols();
         //int rows = pImage.GetRows();
         //int buffer = pImage.GetDataSize();
@@ -1673,7 +1682,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
 
         if(bpp <= 8 && !m_colouredOutput)
         {
-            retValue += checkError(pImage.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &convertedImage));
+            retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_MONO8, &convertedImage));
 
             if (!retValue.containsError())
             {
@@ -1691,7 +1700,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
         }
         else if(bpp <= 8 && m_colouredOutput)
         {
-            retValue += checkError(pImage.Convert(FlyCapture2::PIXEL_FORMAT_BGRU, &convertedImage));
+            retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_BGRU, &convertedImage));
 
             if (!retValue.containsError())
             {
@@ -1709,7 +1718,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
         }
         else if(bpp <= 12)
         {
-            retValue += checkError(pImage.Convert(FlyCapture2::PIXEL_FORMAT_MONO16, &convertedImage));
+            retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_MONO16, &convertedImage));
 
             if (!retValue.containsError())
             {
@@ -1735,7 +1744,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
         }
         else if(bpp <= 16)
         {
-            retValue += checkError(pImage.Convert(FlyCapture2::PIXEL_FORMAT_MONO16, &convertedImage));
+            retValue += checkError(m_imageBuffer.Convert(FlyCapture2::PIXEL_FORMAT_MONO16, &convertedImage));
 
             if (!retValue.containsError())
             {
