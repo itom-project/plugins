@@ -1292,15 +1292,19 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 retValue += getErrStr(ret);
             if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);
-#ifndef USE_OLD_API
 
+#ifndef USE_OLD_API
+            // removed ck 09/12/14 due to error (api) not supported
+/*
             // Though in api the dll reports not supported ...
             if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);
 
             if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
                 retValue += getErrStr(ret);
+*/
 #endif
+
             // Though in api the dll reports not supported ...
     //        if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &framerate, sizeof(float), xiTypeFloat)))
     //            retValue += getErrStr(ret);
