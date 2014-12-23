@@ -32,6 +32,7 @@
 
 #include "dialogAerotechA3200.h"
 #include <qmetaobject.h>
+#include <qmessagebox.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @detail This function changes the values of the different GUI-elements according to the input paramVals
