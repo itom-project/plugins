@@ -222,7 +222,7 @@ PGRFlyCapture::PGRFlyCapture() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.05, tr("offset (normalized value 0..1, mapped to PG-parameter BRIGHTNESS)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("exposureEV", ito::ParamBase::Int, 0, 1023, 480, tr("Camera brightness control (EV)").toLatin1().data());
+    paramVal = ito::Param("exposure_ev", ito::ParamBase::Int, 0, 1023, 480, tr("Camera brightness control (EV)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sharpness", ito::ParamBase::Int, 0, 4095, 0, tr("Sharpness").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -254,7 +254,7 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("bottom index of last pixel in ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("colorMode", ito::ParamBase::String | ito::ParamBase::Readonly, "gray", tr("colorMode: 'gray' (default) or 'color' if color camera").toLatin1().data());
+    paramVal = ito::Param("color_mode", ito::ParamBase::String | ito::ParamBase::Readonly, "gray", tr("colorMode: 'gray' (default) or 'color' if color camera").toLatin1().data());
     ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "gray");
     sm->addItem("color");
     paramVal.setMeta(sm, true);
@@ -551,14 +551,14 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             }
 
         }
-        else if (key =="exposureEV")
+        else if (key =="exposure_ev")
         {
             unsigned int value = (uint)(val->getVal<int>());
-            retValue += flyCapSetAndGetParameter("exposureEV", value, FlyCapture2::AUTO_EXPOSURE, false, true);
+            retValue += flyCapSetAndGetParameter("exposure_ev", value, FlyCapture2::AUTO_EXPOSURE, false, true);
 
             if (!retValue.containsError())
             {
-                m_params["exposureEV"].setVal<int>(value);
+                m_params["exposure_ev"].setVal<int>(value);
             }
         }
         else if (key == "trigger_mode")
@@ -894,10 +894,12 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             }
             else if (QString::compare(colorMode, "gray", Qt::CaseInsensitive) == 0)
             {
+                m_params["color_mode"].setVal<char*>("gray");
                 m_colouredOutput = false;
             }
             else
             {
+                m_params["color_mode"].setVal<char*>("color");
                 m_colouredOutput = true;
             }
         }
@@ -1282,18 +1284,18 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 prop.type = FlyCapture2::AUTO_EXPOSURE;
 
                 unsigned int valA;
-                retVal += flyCapGetParameter("exposureEV", valA, FlyCapture2::AUTO_EXPOSURE); 
+                retVal += flyCapGetParameter("exposure_ev", valA, FlyCapture2::AUTO_EXPOSURE); 
 
                 if (!retVal.containsError())
                 {
-                    m_params["exposureEV"].setVal<int>(valA);
-                    m_params["exposureEV"].setMeta( new ito::IntMeta((int)propInfo.min, (int)propInfo.max), true );
-                    retVal += flyCapSetAndGetParameter("exposureEV", valA, FlyCapture2::AUTO_EXPOSURE, false, true);
+                    m_params["exposure_ev"].setVal<int>(valA);
+                    m_params["exposure_ev"].setMeta( new ito::IntMeta((int)propInfo.min, (int)propInfo.max), true );
+                    retVal += flyCapSetAndGetParameter("exposure_ev", valA, FlyCapture2::AUTO_EXPOSURE, false, true);
                 }
             }
             else
             {
-                m_params["exposureEV"].setFlags(ito::ParamBase::Readonly);
+                m_params["exposure_ev"].setFlags(ito::ParamBase::Readonly);
             }
         }
     }
@@ -2230,7 +2232,7 @@ ito::RetVal PGRFlyCapture::flyCapChangeFormat7_(bool changeBpp, bool changeROI, 
 
             if (height < 0 || ((y0 + height) > m_format7Info.maxHeight) || ((height) % m_format7Info.imageVStepSize) != 0)
             {
-                retValue += ito::RetVal::format(ito::retError, 0, "y1 must be in range [0:%i:%i]", m_format7Info.imageVStepSize, m_format7Info.maxHeight-y0);
+                retValue += ito::RetVal::format(ito::retError, 0, "height must be in range [0:%i:%i]", m_format7Info.imageVStepSize, m_format7Info.maxHeight-y0);
             }
 
             if (!retValue.containsError())
