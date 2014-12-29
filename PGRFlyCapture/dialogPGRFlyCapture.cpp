@@ -244,7 +244,7 @@ ito::RetVal DialogPGRFlyCapture::applyParameters()
         }
     }
 
-    if(ui.doubleSpinBox_frame_time->isVisible())
+    if(!ui.checkExtendedShutter->isChecked())
     {
         double dval = ui.doubleSpinBox_frame_time->value()/1000.0;
         if(qAbs(m_currentParameters["frame_time"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
