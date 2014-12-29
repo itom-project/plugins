@@ -629,123 +629,125 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
         {
             retval += ito::RetVal::format(ito::retError,0,"The given orders (%i,%i) requires %i coefficients", n, m, vcols);
         }
-
-        ito::DataObject result;
-        dataZ->convertTo(result, TYPEID);
-        cv::Mat *result_ = (cv::Mat*)result.get_mdata()[ result.seekMat(0) ];
-
-        _Tp offsets[] = { (_Tp)dataZ->getAxisOffset(0), (_Tp)dataZ->getAxisOffset(1) };
-        _Tp scales[] = { (_Tp)dataZ->getAxisScale(0), (_Tp)dataZ->getAxisScale(1) };
-        
-        _Tp *x = new _Tp[result_->cols];
-        _Tp *y = new _Tp[result_->rows];
-
-        for (int i = 0; i < dataZ->getSize(0); ++i)
-        {
-            y[i]  = ((float)i - offsets[0])*scales[0];
-        }
-
-        for (int i = 0; i < dataZ->getSize(1); ++i)
-        {
-            x[i]  = ((float)i - offsets[1])*scales[1];
-        }
-
-        const double *coeff = coefficients.data();
-        int ordercolumn = 1;
-        int lp = (int)coefficients.size();
-
-        //in this implementation, the resulting matrix is handled row by row
-
-        cv::Mat P;
-        cv::Mat *Vrow = NULL;
-
-        if (TYPEID == ito::tFloat32)
-        {
-            Vrow = new cv::Mat(result_->cols, lp, CV_32FC1);
-            P = cv::Mat(lp, 1, CV_32FC1);
-        }
         else
         {
-            Vrow = new cv::Mat(result_->cols, lp, CV_64FC1);
-            P = cv::Mat(lp, 1, CV_64FC1);
-        }     
+            ito::DataObject result;
+            dataZ->convertTo(result, TYPEID);
+            cv::Mat *result_ = (cv::Mat*)result.get_mdata()[ result.seekMat(0) ];
 
-        cv::MatIterator_<_Tp> it = P.begin<_Tp>(), it_end = P.end<_Tp>();
-        int i = 0;
-        for(; it != it_end; ++it)
-        {
-            *it = coefficients[i++];
-        }
+            _Tp offsets[] = { (_Tp)dataZ->getAxisOffset(0), (_Tp)dataZ->getAxisOffset(1) };
+            _Tp scales[] = { (_Tp)dataZ->getAxisScale(0), (_Tp)dataZ->getAxisScale(1) };
+        
+            _Tp *x = new _Tp[result_->cols];
+            _Tp *y = new _Tp[result_->rows];
 
-        int max_order = (std::sqrt((float)(1 + 8*lp)) - 3) / 2;
-
-        //write 1.0 in the first column of Vrow
-        Vrow->col(0) = 1.0;
-
-        int majorColumn = 0;
-        int currentColumn = 0;
-        cv::Mat temp;
-
-        for (int row = 0; row < dataZ->getSize(0); ++row)
-        {
-            majorColumn = 0;
-            currentColumn = 0;
-
-            if (n <= m) // f(x,y) = \sum_{i=0}^n \sum_{j=0}^{m-i} p_{ij} x^i y^j -> coefficients contain p in the order of these sums
+            for (int i = 0; i < dataZ->getSize(0); ++i)
             {
-                for (int i = 0; i <= n; ++i)
-                {
-                    //this handles j = 0 (for i = 0 this is already done above)
-                    if (i > 0)
-                    {
-                        currentColumn ++;
-                        for (int col = 0; col < dataZ->getSize(1); ++col)
-                            CVMATREF_2DREAL(Vrow,col,currentColumn) = x[col] * CVMATREF_2DREAL(Vrow,col,majorColumn);
-                        majorColumn = currentColumn;
-                    }
-
-                    for (int j = 1; j <= m-i; ++j)
-                    {
-                        currentColumn ++;
-                        for (int col = 0; col < dataZ->getSize(1); ++col)
-                            CVMATREF_2DREAL(Vrow,col,currentColumn) = y[row] * CVMATREF_2DREAL(Vrow,col,currentColumn-1);
-                    }
-                }
-            }
-            else // \sum_{j=0}^m \sum_{i=0}^{n-j} p_{ij} y^j x^i -> coefficients contain p in the order of these sums
-            {
-                for (int j = 0; j <= m; ++j)
-                {
-                    //this handles i = 0 (for j = 0 this is already done above)
-                    if (j > 0)
-                    {
-                        currentColumn ++;
-                        for (int col = 0; col < dataZ->getSize(1); ++col)
-                            CVMATREF_2DREAL(Vrow,col,currentColumn) = y[row] * CVMATREF_2DREAL(Vrow,col,majorColumn);
-                        majorColumn = currentColumn;
-                    }
-
-                    for (int i = 1; i <= n-j; ++i)
-                    {
-                        currentColumn ++;
-                        for (int col = 0; col < dataZ->getSize(1); ++col)
-                            CVMATREF_2DREAL(Vrow,col,currentColumn) = x[col] * CVMATREF_2DREAL(Vrow,col,currentColumn-1);
-                    }
-                }
+                y[i]  = ((float)i - offsets[0])*scales[0];
             }
 
-            temp = (*Vrow) * P;
+            for (int i = 0; i < dataZ->getSize(1); ++i)
+            {
+                x[i]  = ((float)i - offsets[1])*scales[1];
+            }
 
-            //here it is assumed that data lies continuously in temp
-            memcpy( result_->ptr(row), temp.data, sizeof(_Tp) * result_->cols );
+            const double *coeff = coefficients.data();
+            int ordercolumn = 1;
+            int lp = (int)coefficients.size();
+
+            //in this implementation, the resulting matrix is handled row by row
+
+            cv::Mat P;
+            cv::Mat *Vrow = NULL;
+
+            if (TYPEID == ito::tFloat32)
+            {
+                Vrow = new cv::Mat(result_->cols, lp, CV_32FC1);
+                P = cv::Mat(lp, 1, CV_32FC1);
+            }
+            else
+            {
+                Vrow = new cv::Mat(result_->cols, lp, CV_64FC1);
+                P = cv::Mat(lp, 1, CV_64FC1);
+            }     
+
+            cv::MatIterator_<_Tp> it = P.begin<_Tp>(), it_end = P.end<_Tp>();
+            int i = 0;
+            for(; it != it_end; ++it)
+            {
+                *it = coefficients[i++];
+            }
+
+            int max_order = (std::sqrt((float)(1 + 8*lp)) - 3) / 2;
+
+            //write 1.0 in the first column of Vrow
+            Vrow->col(0) = 1.0;
+
+            int majorColumn = 0;
+            int currentColumn = 0;
+            cv::Mat temp;
+
+            for (int row = 0; row < dataZ->getSize(0); ++row)
+            {
+                majorColumn = 0;
+                currentColumn = 0;
+
+                if (n <= m) // f(x,y) = \sum_{i=0}^n \sum_{j=0}^{m-i} p_{ij} x^i y^j -> coefficients contain p in the order of these sums
+                {
+                    for (int i = 0; i <= n; ++i)
+                    {
+                        //this handles j = 0 (for i = 0 this is already done above)
+                        if (i > 0)
+                        {
+                            currentColumn ++;
+                            for (int col = 0; col < dataZ->getSize(1); ++col)
+                                CVMATREF_2DREAL(Vrow,col,currentColumn) = x[col] * CVMATREF_2DREAL(Vrow,col,majorColumn);
+                            majorColumn = currentColumn;
+                        }
+
+                        for (int j = 1; j <= m-i; ++j)
+                        {
+                            currentColumn ++;
+                            for (int col = 0; col < dataZ->getSize(1); ++col)
+                                CVMATREF_2DREAL(Vrow,col,currentColumn) = y[row] * CVMATREF_2DREAL(Vrow,col,currentColumn-1);
+                        }
+                    }
+                }
+                else // \sum_{j=0}^m \sum_{i=0}^{n-j} p_{ij} y^j x^i -> coefficients contain p in the order of these sums
+                {
+                    for (int j = 0; j <= m; ++j)
+                    {
+                        //this handles i = 0 (for j = 0 this is already done above)
+                        if (j > 0)
+                        {
+                            currentColumn ++;
+                            for (int col = 0; col < dataZ->getSize(1); ++col)
+                                CVMATREF_2DREAL(Vrow,col,currentColumn) = y[row] * CVMATREF_2DREAL(Vrow,col,majorColumn);
+                            majorColumn = currentColumn;
+                        }
+
+                        for (int i = 1; i <= n-j; ++i)
+                        {
+                            currentColumn ++;
+                            for (int col = 0; col < dataZ->getSize(1); ++col)
+                                CVMATREF_2DREAL(Vrow,col,currentColumn) = x[col] * CVMATREF_2DREAL(Vrow,col,currentColumn-1);
+                        }
+                    }
+                }
+
+                temp = (*Vrow) * P;
+
+                //here it is assumed that data lies continuously in temp
+                memcpy( result_->ptr(row), temp.data, sizeof(_Tp) * result_->cols );
+            }
+
+            delete Vrow;
+
+            delete[] x;
+            delete[] y;
+
+            *dataZ = result;
         }
-
-        delete Vrow;
-
-        delete[] x;
-        delete[] y;
-
-        *dataZ = result;
     }
 
     return retval;
