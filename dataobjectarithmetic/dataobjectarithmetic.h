@@ -116,15 +116,8 @@ class DataObjectArithmetic : public ito::AddInAlgo
         static ito::RetVal getPercentageThreshold(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
 
     private:
-
-        //template<typename _Tp> static ito::RetVal minValueHelper(ito::DataObject *dObj, QVector<ito::ParamBase> *paramsOut);
-        //template<typename _Tp> static ito::RetVal maxValueHelper(ito::DataObject *dObj, QVector<ito::ParamBase> *paramsOut);
-        //template<typename _Tp, typename _BufTp> static ito::RetVal meanValueHelper(ito::DataObject *dObj, QVector<ito::ParamBase> *paramsOut);
-        //template<typename _Tp, typename _BufTp> static ito::RetVal meanValueHelperFloating(ito::DataObject *dObj, QVector<ito::ParamBase> *paramsOut);
-        //template<typename _Tp, typename _BufTp> static ito::RetVal devValueHelper(ito::DataObject *dObj, int flag, QVector<ito::ParamBase> *paramsOut);
-        //template<typename _Tp, typename _BufTp> static ito::RetVal devValueHelperFloating(ito::DataObject *dObj, int flag, QVector<ito::ParamBase> *paramsOut);
-        template<typename _Tp> static ito::RetVal centroidHelper(cv::Mat *mat, const _Tp lowTreshold, const _Tp highTreshold, ito::float64 &xCOG, ito::float64 &yCOG);             
-        template<typename _Tp> static ito::RetVal centroidHelperFor1D(cv::Mat *inMat, cv::Mat *outCOG, cv::Mat *outINT, const _Tp lowTreshold, const ito::float64 dynamicTreshold, const ito::float64 scale, bool alongCols);
+        template<typename _Tp> static ito::RetVal centroidHelper(const cv::Mat *mat, const _Tp &lowTreshold, const _Tp &highTreshold, ito::float64 &xCOG, ito::float64 &yCOG);             
+        template<typename _Tp> static ito::RetVal centroidHelperFor1D(const cv::Mat *inMat, ito::float64 *outCOG, _Tp *outINT, const _Tp &pvThreshold, const _Tp &lowerThreshold, const ito::float64 &dynamicTreshold, const ito::float64 &scale, const ito::float64 &offset, bool alongCols);
 
         template<typename _Tp> static ito::RetVal getPercentageThresholdHelper(const ito::DataObject *dObj, double percentage, double &value);
         template<typename _Tp> static bool cmpLT(_Tp i, _Tp j) { return (i<j); }
