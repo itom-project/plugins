@@ -151,9 +151,9 @@ RetVal DataObjectArithmetic::doubleDObjInputParams(QVector<ito::Param> *paramsMa
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = Param("sourceImage1", ParamBase::DObjPtr, NULL, tr("1. source image data object for operation").toLatin1().data());
+        ito::Param param = Param("sourceImage1", ParamBase::DObjPtr | ParamBase::In, NULL, tr("1. source image data object for operation").toLatin1().data());
         paramsMand->append(param);
-        param = Param("sourceImage2", ParamBase::DObjPtr, NULL, tr("2. source image data object for operation").toLatin1().data());
+        param = Param("sourceImage2", ParamBase::DObjPtr | ParamBase::In, NULL, tr("2. source image data object for operation").toLatin1().data());
         paramsMand->append(param);
 
         paramsOut->append( Param("result", ParamBase::Int | ParamBase::Out, 0, tr("0 if both data objects are not equal, else 1").toLatin1().data()));

@@ -369,8 +369,8 @@ RetVal FittingFilters::subtractRegressionPlaneParams(QVector<ito::Param> *params
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    *paramsMand << Param("sourceImage", ParamBase::DObjPtr, NULL, tr("source image data object").toLatin1().data());
-    *paramsMand << Param("destinationImage", ParamBase::DObjPtr, NULL, tr("destination image data object").toLatin1().data());
+    *paramsMand << Param("sourceImage", ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("source image data object").toLatin1().data());
+    *paramsMand << Param("destinationImage", ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination image data object").toLatin1().data());
 
     paramsOpt->append( Param("method", ParamBase::String | ParamBase::In, "leastSquareFit", tr("fitting method (leastSquareFit [default], leastSquareFitSVD)").toLatin1().data()) );
     return retval;

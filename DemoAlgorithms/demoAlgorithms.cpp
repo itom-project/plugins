@@ -195,7 +195,9 @@ ito::RetVal DemoAlgorithms::filterMethod(QVector<ito::ParamBase> *paramsMand, QV
     else
     {
         //mandatory
-        param = ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, "description");
+        param = ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, "description"); 
+        // Optional comment: if the param is a dataObject and it IS NOT modified but only input please use ito::ParamBase::DObjPtr | ito::ParamBase::In to the type for automatic documentaton
+        // Optional comment: if the param is a dataObject and it IS modifiedif input + output add ito::ParamBase::DObjPtr | ito::ParamBase::In | | ito::ParamBase::Out for automatic documentaton
         paramsMand->append(param);
         param = ito::Param("doubleValue", ito::ParamBase::Double, 0.0, 65535.0, 10.0, "double value between 0.0 and 65535.0, default: 10.0");
         paramsMand->append(param);
@@ -353,7 +355,7 @@ ito::RetVal DemoAlgorithms::demoSnapImageParams(QVector<ito::Param> *paramsMand,
     {
         ito::Param param = ito::Param("camera", ito::ParamBase::HWRef, NULL, "Handle to the Camera");
         paramsMand->append(param);
-        param = ito::Param("image", ito::ParamBase::DObjPtr, NULL, "Empty object, will contain 2D image later");
+        param = ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Empty object, will contain 2D image later");
         paramsMand->append(param);
 
         paramsOpt->clear();
@@ -432,7 +434,7 @@ ito::RetVal DemoAlgorithms::demoSnapMovieParams(QVector<ito::Param> *paramsMand,
     {
         ito::Param param = ito::Param("camera", ito::ParamBase::HWRef, NULL, "Handle to the Camera");
         paramsMand->append(param);
-        param = ito::Param("Movie", ito::ParamBase::DObjPtr, NULL, "Empty resulting data object. Contains 3d data object with acquired data after call.");
+        param = ito::Param("Movie", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Empty resulting data object. Contains 3d data object with acquired data after call.");
         paramsMand->append(param);
         param = ito::Param("images", ito::ParamBase::Int, 0, 1000000 , 1, "Number of images to aquire");
         paramsMand->append(param);

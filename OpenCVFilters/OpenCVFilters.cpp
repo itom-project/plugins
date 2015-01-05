@@ -677,7 +677,7 @@ ito::RetVal OpenCVFilters::cvFFTParams(QVector<ito::Param> *paramsMand, QVector<
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input Object handle, must be a single plane").toLatin1().data());
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Input Object handle, must be a single plane").toLatin1().data());
         paramsMand->append(param);
         //param = ito::Param("destinationImage", ito::ParamBase::DObjPtr, NULL, tr("Output Object handle. Will be come complex-type").toLatin1().data());
         //paramsMand->append(param);

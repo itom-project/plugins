@@ -542,11 +542,11 @@ ito::RetVal BasicFilters::replaceInfAndNaNParams(QVector<ito::Param> *paramsMand
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr, NULL, tr("Input image").toLatin1().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("replaceImg", ito::ParamBase::DObjPtr, NULL, tr("Image with values which will be used for replacement").toLatin1().data());
+        param = ito::Param("replaceImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Image with values which will be used for replacement").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr, NULL, tr("Output image").toLatin1().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image").toLatin1().data());
         paramsMand->append(param);
 
         paramsOut->append( ito::Param("nrOfReplacements", ito::ParamBase::Int | ito::ParamBase::Out, 0, NULL, tr("number of replacments").toLatin1().data()));
@@ -560,9 +560,9 @@ ito::RetVal BasicFilters::mergeColorPlanesParams(QVector<ito::Param> *paramsMand
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr, NULL, tr("Input image with 3 or 4 uint8 planes").toLatin1().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image with 3 or 4 uint8 planes").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr, NULL, tr("Output image with uint32 planes").toLatin1().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image with uint32 planes").toLatin1().data());
         paramsMand->append(param);
 
         param = ito::Param("toggleByteOrder", ito::ParamBase::Int, 0, 3, 0, tr("Switch between RGBA = 0, BGRA = 1, ARGB = 2, ABGR = 3").toLatin1().data());
@@ -2109,11 +2109,11 @@ ito::RetVal BasicFilters::clipAbyBFilterParams(QVector<ito::Param> *paramsMand, 
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("input image [real typed data object]").toLatin1().data());
+    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input image [real typed data object]").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("comparisonImage", ito::ParamBase::DObjPtr, NULL, tr("input image [real typed data object] for comparision").toLatin1().data());
+    param = ito::Param("comparisonImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input image [real typed data object] for comparision").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr, NULL, tr("destination image (inplace possible)").toLatin1().data());
+    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination image (inplace possible)").toLatin1().data());
     paramsMand->append(param);
     param = ito::Param("minValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("lowest value in range").toLatin1().data());
     paramsMand->append(param);
