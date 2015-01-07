@@ -34,14 +34,6 @@ DialogNiDAQmx::DialogNiDAQmx(ito::AddInBase *grabber, void *plugin) :
 {
     ui.setupUi(this);
 
-	// different Tasks
-	ui.taskCombo->insertItem(0, QIcon(), "Counter write", "co");
-	ui.taskCombo->insertItem(0, QIcon(), "Counter read", "ci");
-	ui.taskCombo->insertItem(0, QIcon(), "Digital write", "do");
-	ui.taskCombo->insertItem(0, QIcon(), "Digital read", "di");
-	ui.taskCombo->insertItem(0, QIcon(), "Analog write", "ao");
-	ui.taskCombo->insertItem(0, QIcon(), "Analog read", "ai");
-
 	// Analog Input Config
 	ui.aiConfigCombo->insertItem(0, QIcon(), "PseudoDiff = 4", 4);
 	ui.aiConfigCombo->insertItem(0, QIcon(), "NRSE = 3", 3);
@@ -57,24 +49,59 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
 	// Populate channel boxes
 	m_params.clear();
 	m_params = params;
-	QString channel = QString(params["channel"].getVal<char*>());
-	foreach(const QString &ch, channel.split(","))
+
+	// different Tasks
+	QString p;
+	QMap<QString, QString> tasks;
+	tasks.insert("Counter write", "co");
+	tasks.insert("Counter read", "ci");
+	tasks.insert("Digital write", "do");
+	tasks.insert("Digital read", "di");
+	tasks.insert("Analog write", "ao");
+	tasks.insert("Analog read", "ai");
+
+	ui.taskCombo->clear();
+	foreach(const QString &t, tasks)
 	{
+		p = QString(params["taskStatus"].getVal<char*>());
+		QString post = "";
+		if (p.split(";").filter(t)[0].split(",")[1] == "-1")
+		{
+			post = " (not initialized)";
+		}
+		ui.taskCombo->insertItem(0, QIcon(), tasks.key(t)+post, t);
+	}
+	ui.taskCombo->model()->sort(0);
+
+	ui.aiChannelCombo->clear();
+	ui.aoChannelCombo->clear();
+	ui.dioChannelCombo->clear();
+	ui.cioChannelCombo->clear();
+	QString channel = QString(params["channel"].getVal<char*>());
+	QString associated = QString(params["chAssociated"].getVal<char*>());
+	foreach(const QString &s, channel.split(","))
+	{
+		QString ch = s;
+		if(!associated.contains(ch))
+		{
+			ch.append(" (not created yet)");
+		}
+
 		if (ch.contains("ai"))
 		{
-			ui.aiChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, ch);
+			ui.aiChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, s);
 		}
 		else if (ch.contains("ao"))
 		{
-			ui.aoChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, ch);
+			ui.aoChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, s);
 		}
 		else if (ch.contains("port"))
 		{
-			ui.dioChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, ch);
+			ui.dioChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, s);
 		}
 		else if (ch.contains("ctr"))
 		{
-			ui.cioChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, ch);
+			ui.cioChannelCombo->insertItem(ui.aiChannelCombo->count(), QIcon(), ch, s);
 		}
 	}
 }
@@ -110,7 +137,6 @@ void DialogNiDAQmx::on_taskCombo_currentIndexChanged(int index)
 			QStringList pL = params.split(",", QString::SkipEmptyParts);
 			ui.taskRateSpin->setValue(pL[0].toInt());
 			ui.taskSampleSpin->setValue(pL[1].toInt());
-			ui.taskStatusLabel->setText("status: created");
 			// get corresponding channels
 			if (m_params.contains("chAssociated"))
 			{
@@ -126,7 +152,6 @@ void DialogNiDAQmx::on_taskCombo_currentIndexChanged(int index)
 		}
 		else
 		{
-			ui.taskStatusLabel->setText("status: not created yet");
 			ui.taskRateSpin->setValue(1);
 			ui.taskSampleSpin->setValue(1);
 		}
@@ -140,8 +165,7 @@ void DialogNiDAQmx::on_aiApplyButton_clicked(bool checked)
 	niDAQmx *plugin = (niDAQmx*) m_pPlugin;
 	QString channel = ui.aiChannelCombo->itemData(ui.aiChannelCombo->currentIndex()).toString();
 	QStringList params;
-	params.append(channel.split("/")[0]);
-	params.append(channel.split("/")[1]);
+	params.append(channel);
 	params.append(ui.aiConfigCombo->itemData(ui.aiConfigCombo->currentIndex()).toString());
 	params.append(QString::number(ui.aiMinSpin->value()));
 	params.append(QString::number(ui.aiMaxSpin->value()));
@@ -156,7 +180,7 @@ void DialogNiDAQmx::on_aiChannelCombo_currentIndexChanged(int index)
 		bool found = false;
 		foreach(const QString &ch, chParams)
 		{
-			if (ch.split(",")[0]+"/"+ch.split(",")[1] == ui.aiChannelCombo->itemText(index))
+			if (ch.split(",")[0]+"/"+ch.split(",")[1] == ui.aiChannelCombo->itemData(index).toString())
 			{
 				ui.aiConfigCombo->setCurrentIndex(ch.split(",")[2].toInt());
 				ui.aiMinSpin->setValue(ch.split(",")[3].toInt());
@@ -180,8 +204,7 @@ void DialogNiDAQmx::on_aoApplyButton_clicked(bool checked)
 	niDAQmx *plugin = (niDAQmx*) m_pPlugin;
 	QString channel = ui.aoChannelCombo->itemData(ui.aoChannelCombo->currentIndex()).toString();
 	QStringList params;
-	params.append(channel.split("/")[0]);
-	params.append(channel.split("/")[1]);
+	params.append(channel);
 	params.append(QString::number(ui.aoMinSpin->value()));
 	params.append(QString::number(ui.aoMaxSpin->value()));
 	plugin->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("aoChParams", ito::ParamBase::String, params.join(",").toLatin1().data())),0);
@@ -195,7 +218,7 @@ void DialogNiDAQmx::on_aoChannelCombo_currentIndexChanged(int index)
 		bool found = false;
 		foreach(const QString &ch, chParams)
 		{
-			if (ch.split(",")[0]+"/"+ch.split(",")[1] == ui.aoChannelCombo->itemText(index))
+			if (ch.split(",")[0]+"/"+ch.split(",")[1] == ui.aoChannelCombo->itemData(index).toString())
 			{
 				ui.aoMinSpin->setValue(ch.split(",")[2].toInt());
 				ui.aoMaxSpin->setValue(ch.split(",")[3].toInt());

@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>457</width>
+    <width>432</width>
     <height>502</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_12">
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
@@ -33,7 +33,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <property name="documentMode">
           <bool>false</bool>
@@ -43,7 +43,7 @@
          </property>
          <widget class="QWidget" name="tab_5">
           <attribute name="title">
-           <string>Task</string>
+           <string>Tasks</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
@@ -146,13 +146,6 @@
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
-             <item>
-              <widget class="QLabel" name="taskStatusLabel">
-               <property name="text">
-                <string>status: not created yet</string>
-               </property>
-              </widget>
-             </item>
              <item>
               <spacer name="horizontalSpacer_7">
                <property name="orientation">
@@ -506,17 +499,24 @@
           </layout>
          </widget>
          <widget class="QWidget" name="tab_3">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <attribute name="title">
            <string>Digital</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
-            <widget class="QComboBox" name="dioChannelCombo"/>
+            <widget class="QComboBox" name="dioChannelCombo">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QGroupBox" name="groupBox_5">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="title">
               <string>Channel settings (not implemented yet)</string>
@@ -552,6 +552,9 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="dioApplyButton_3">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>100</width>
@@ -571,6 +574,9 @@
           </layout>
          </widget>
          <widget class="QWidget" name="tab_4">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <attribute name="title">
            <string>Counter</string>
           </attribute>
@@ -581,10 +587,10 @@
            <item>
             <widget class="QGroupBox" name="groupBox_4">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="title">
-              <string>Channel settings</string>
+              <string>Channel settings (not implemented yet)</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_11">
               <item>
@@ -617,6 +623,9 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="cioApplyButton">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>100</width>
@@ -647,10 +656,13 @@
       <locale language="German" country="Germany"/>
      </property>
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Close</set>
+     </property>
+     <property name="centerButtons">
+      <bool>false</bool>
      </property>
     </widget>
    </item>

@@ -13,9 +13,10 @@
 #define PLUGIN_VERSION_PATCH 1
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION_STRING "0.0.1"
-#define PLUGIN_COMPANY        "Your Company Name"
-#define PLUGIN_COPYRIGHT      "Your Copyright"
-#define PLUGIN_NAME           "MyGrabber"
+#define PLUGIN_COMPANY        "ITO Uni Stuttgart"
+#define PLUGIN_AUTHOR         "M. Hoppe (ITO Uni Stuttgart)"
+#define PLUGIN_COPYRIGHT      "(C) 2014, ITO Uni Stuttgart"
+#define PLUGIN_NAME           "NI-DAQmx"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

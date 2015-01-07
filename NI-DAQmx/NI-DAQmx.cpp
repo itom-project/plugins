@@ -119,7 +119,7 @@ niDAQmx::niDAQmx() : AddInDataIO(), m_isgrabbing(false)
     m_params.insert(paramVal.getName(), paramVal);
 
 	// Channel Parameters
-	paramVal = ito::Param("chAssociated", ito::ParamBase::String | ito::ParamBase::In, "", tr("returns a list of all channels that are associated with their tasks").toLatin1().data());
+	paramVal = ito::Param("chAssociated", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("returns a list of all channels that are associated with their tasks").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal); // ai0,ai1,port0,... only the associated ports are listed
 	paramVal = ito::Param("aiChParams", ito::ParamBase::String | ito::ParamBase::In, "", tr("Set Parameterset for analog input channel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
