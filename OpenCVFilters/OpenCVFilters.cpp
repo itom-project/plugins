@@ -1889,6 +1889,85 @@ ito::RetVal OpenCVFilters::cvMergeChannels(QVector<ito::ParamBase> *paramsMand, 
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
+const char *OpenCVFilters::cvResizeDoc = "Resizes an image \n\
+\n\
+The function resize resizes the image 'inputObject' down to or up by the specific factors. \n\
+\n\
+To shrink an image, it will generally look best with CV_INTER_AREA interpolation, whereas to enlarge an image, \n\
+it will generally look best with CV_INTER_CUBIC (slow) or CV_INTER_LINEAR (faster but still looks OK). \n\
+The axisScale properties of the x- and y-axes of the outputObject are divided by fx and fy respectively, while the offset values are multiplied with fx and fy.";
+ito::RetVal OpenCVFilters::cvResizeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input image (2D after an optional squeeze operation)") );
+    paramsMand->append( ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output image, will have the same type than inputObject. Its size corresponds to the size of the input object multiplied with fx and fy respectively.") );
+
+    paramsMand->append( ito::Param("fx", ito::ParamBase::Double, 1e-6, std::numeric_limits<double>::max(), 1.0, "scale factor along the horizontal axis."));
+    paramsMand->append( ito::Param("fy", ito::ParamBase::Double, 1e-6, std::numeric_limits<double>::max(), 1.0, "scale factor along the vertical axis."));
+
+    QString description = "Interpolation method. The following values are possible: ";
+    description += QString("INTER_NEAREST (%1)").arg(cv::INTER_NEAREST);
+    description += QString(", INTER_LINEAR (%1)").arg(cv::INTER_LINEAR);
+    description += QString(", INTER_AREA (%1)").arg(cv::INTER_AREA);
+    description += QString(", INTER_CUBIC (%1)").arg(cv::INTER_CUBIC);
+    description += QString(", INTER_LANCZOS4  (%1)").arg(cv::INTER_LANCZOS4 );
+    paramsOpt->append( ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, cv::INTER_LANCZOS4, cv::INTER_LINEAR, description.toLatin1().data()));
+    return retval;
+}
+
+ito::RetVal OpenCVFilters::cvResize(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, 0, 0);
+
+    if (!paramsMand->at(1).getVal<ito::DataObject*>())
+    {
+        retval += ito::RetVal(ito::retError, 0, "destination is empty");
+    }
+
+    int interpolation = paramsOpt->at(0).getVal<int>();
+    double fx = paramsMand->at(2).getVal<double>();
+    double fy = paramsMand->at(3).getVal<double>();
+
+    if (!retval.containsError())
+    {
+        cv::Mat dst;
+        
+        try
+        {
+            cv::resize(*(src.getCvPlaneMat(0)), dst, cv::Size(), fx, fy, interpolation);
+        }
+        catch (cv::Exception exc)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+        }
+
+        if (!retval.containsError())
+        {
+            retval += itomcv::setOutputArrayToDataObject((*paramsMand)[1], &dst);
+        }
+
+        if (!retval.containsError())
+        {
+            ito::DataObject *dst = (*paramsMand)[1].getVal<ito::DataObject*>();
+            dst->setAxisScale(0, src.getAxisScale(0) / fy);
+            dst->setAxisScale(1, src.getAxisScale(1) / fx);
+            dst->setAxisOffset(0, src.getAxisOffset(0) * fy);
+            dst->setAxisOffset(1, src.getAxisOffset(1) * fx);
+        }
+    }
+
+    return retval;
+}
+        
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
 {
     ito::RetVal retval = ito::retOk;
@@ -1926,6 +2005,9 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
 
     filter = new FilterDef(OpenCVFilters::cvMergeChannels, OpenCVFilters::cvMergeChannelsParams, tr(cvMergeChannelsDoc));
     m_filterList.insert("cvMergeChannels", filter);
+
+    filter = new FilterDef(OpenCVFilters::cvResize, OpenCVFilters::cvResizeParams, tr(cvResizeDoc));
+    m_filterList.insert("cvResize", filter);
 
 
     /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, tr(cvCalcHistDoc));
