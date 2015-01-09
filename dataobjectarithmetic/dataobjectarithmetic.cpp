@@ -873,25 +873,25 @@ ito::RetVal DataObjectArithmetic::centerOfGravity(QVector<ito::ParamBase> *param
         switch(dObj->getType())
         {
             case ito::tInt8:
-                centroidHelper<ito::int8>(plane, cv::saturate_cast<ito::int8>(lowThreshold), cv::saturate_cast<ito::int8>(highThreshold), cx, cy);
+                centroidHelper<ito::int8>(plane, lowThreshold, highThreshold, cx, cy);
             break;
             case ito::tUInt8:
-                centroidHelper<ito::uint8>(plane, cv::saturate_cast<ito::uint8>(lowThreshold), cv::saturate_cast<ito::uint8>(highThreshold), cx, cy);
+                centroidHelper<ito::uint8>(plane, lowThreshold, highThreshold, cx, cy);
             break;
             case ito::tInt16:
-                centroidHelper<ito::int16>(plane, cv::saturate_cast<ito::int16>(lowThreshold), cv::saturate_cast<ito::int16>(highThreshold), cx, cy);
+                centroidHelper<ito::int16>(plane, lowThreshold, highThreshold, cx, cy);
             break;
             case ito::tUInt16:
-                centroidHelper<ito::uint16>(plane, cv::saturate_cast<ito::uint16>(lowThreshold), cv::saturate_cast<ito::uint16>(highThreshold), cx, cy);
+                centroidHelper<ito::uint16>(plane, lowThreshold, highThreshold, cx, cy);
             break;
             case ito::tInt32:
-                centroidHelper<ito::int32>(plane, cv::saturate_cast<ito::int32>(lowThreshold), cv::saturate_cast<ito::int32>(highThreshold), cx, cy);
+                centroidHelper<ito::int32>(plane, lowThreshold, highThreshold, cx, cy);
             break;
             case ito::tFloat32:
-                centroidHelper<ito::float32>(plane, cv::saturate_cast<ito::float32>(lowThreshold), cv::saturate_cast<ito::float32>(highThreshold), cx, cy);
+                centroidHelper<ito::float32>(plane, lowThreshold, highThreshold, cx, cy);
             break;
             case ito::tFloat64:
-                centroidHelper<ito::float64>(plane, cv::saturate_cast<ito::float64>(lowThreshold), cv::saturate_cast<ito::float64>(highThreshold), cx, cy);
+                centroidHelper<ito::float64>(plane, lowThreshold, highThreshold, cx, cy);
             break;
             default:
                 return ito::RetVal(ito::retError, 0, tr("Unknown type or type not implemented for phase shifting evaluation").toLatin1().data());
@@ -916,7 +916,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity(QVector<ito::ParamBase> *param
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv::Mat *mat, const _Tp& lowThreshold, const _Tp &highThreshold, ito::float64 &xCOG, ito::float64 &yCOG)
+template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv::Mat *mat, const ito::float64 &lowThreshold, const ito::float64 &highThreshold, ito::float64 &xCOG, ito::float64 &yCOG)
 {
     ito::int32 x, y;
     ito::float64 val = 0.0, sumva = 0.0, sumXv = 0.0, sumYv = 0.0;
@@ -924,14 +924,17 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv
     
     if(std::numeric_limits<_Tp>::is_exact)
     {
+        const _Tp lowThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(std::numeric_limits<_Tp>::min()), lowThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
+        const _Tp highThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(std::numeric_limits<_Tp>::min()), highThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
+
         for(y = 0; y < mat->rows; ++y)
         {
             pValue = mat->ptr<_Tp>(y);
             for(x = 0; x < mat->cols; ++x)
             {
-                if (pValue[x] >= lowThreshold && pValue[x] <= highThreshold)
+                if (pValue[x] >= lowThres && pValue[x] <= highThres)
                 {
-                    val = (ito::float64) (pValue[x] - lowThreshold);
+                    val = (ito::float64) (pValue[x] - lowThres);
                     sumva += val;
                     sumXv += val * x;
                     sumYv += val * y;  
@@ -941,14 +944,17 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv
     }
     else
     {
+        const _Tp lowThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(-std::numeric_limits<_Tp>::max()), lowThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
+        const _Tp highThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(-std::numeric_limits<_Tp>::max()), highThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
+
         for(y = 0; y < mat->rows; ++y)
         {
             pValue = mat->ptr<_Tp>(y);
             for(x = 0; x < mat->cols; ++x)
             {
-                if(ito::dObjHelper::isFinite<_Tp>(pValue[x]) && pValue[x] >= lowThreshold && pValue[x] <= highThreshold)
+                if(ito::dObjHelper::isFinite<_Tp>(pValue[x]) && pValue[x] >= lowThres && pValue[x] <= highThres)
                 {
-                    val = (ito::float64) (pValue[x] - lowThreshold);
+                    val = (ito::float64) (pValue[x] - lowThres);
                     sumva += val;
                     sumXv += val * x;
                     sumYv += val * y;

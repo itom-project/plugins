@@ -116,7 +116,7 @@ class DataObjectArithmetic : public ito::AddInAlgo
         static ito::RetVal getPercentageThreshold(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
 
     private:
-        template<typename _Tp> static ito::RetVal centroidHelper(const cv::Mat *mat, const _Tp &lowTreshold, const _Tp &highTreshold, ito::float64 &xCOG, ito::float64 &yCOG);             
+        template<typename _Tp> static ito::RetVal centroidHelper(const cv::Mat *mat, const ito::float64 &lowTreshold, const ito::float64 &highTreshold, ito::float64 &xCOG, ito::float64 &yCOG);             
         template<typename _Tp> static ito::RetVal centroidHelperFor1D(const cv::Mat *inMat, ito::float64 *outCOG, _Tp *outINT, const _Tp &pvThreshold, const _Tp &lowerThreshold, const ito::float64 &dynamicTreshold, const ito::float64 &scale, const ito::float64 &offset, bool alongCols);
 
         template<typename _Tp> static ito::RetVal getPercentageThresholdHelper(const ito::DataObject *dObj, double percentage, double &value);
