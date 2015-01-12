@@ -225,6 +225,11 @@ Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnCl
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("badPixel", ito::ParamBase::Int, 0, 1, 1, tr("Enable bad pixel correction").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
+
+   paramVal = ito::Param("gpoMode", ito::ParamBase::Int, XI_GPO_OFF, XI_GPO_BUSY_NEG, XI_GPO_OFF, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("gpiMode", ito::ParamBase::Int, XI_GPI_OFF, XI_GPI_EXT_EVENT, XI_GPI_OFF, tr("Set the input pin mode for the camera, default is off").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
     //now create dock widget for this plugin
     DockWidgetXimea *XI = new DockWidgetXimea(m_params, getID());
 
@@ -877,6 +882,48 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                     m_params["badPixel"].setVal(curVal);
                 }
             }
+            else if (strcmp(paramIt.value().getName(),"gpoMode") == 0)
+            {
+                int mode = m_params["gpoMode"].getVal<int>();
+                int maxVal = 0;
+                int curVal = 0;
+                DWORD pSize = sizeof(int);
+                XI_PRM_TYPE pType = xiTypeInteger;
+
+                if ((ret = pxiSetParam(m_handle, XI_PRM_GPO_MODE, &mode, sizeof(int), xiTypeInteger)))
+                {
+                    retValue += getErrStr(ret);
+                }
+                if (ret = pxiGetParam(m_handle, XI_PRM_GPO_MODE, &curVal, &pSize, &pType))
+                {
+                    retValue += getErrStr(ret);
+                }
+                else
+                {
+                    m_params["gpoMode"].setVal(curVal);
+                }
+            }
+            else if (strcmp(paramIt.value().getName(),"gpiMode") == 0)
+            {
+                int mode = m_params["gpiMode"].getVal<int>();
+                int maxVal = 0;
+                int curVal = 0;
+                DWORD pSize = sizeof(int);
+                XI_PRM_TYPE pType = xiTypeInteger;
+
+                if ((ret = pxiSetParam(m_handle, XI_PRM_GPI_MODE, &mode, sizeof(int), xiTypeInteger)))
+                {
+                    retValue += getErrStr(ret);
+                }
+                if (ret = pxiGetParam(m_handle, XI_PRM_GPI_MODE, &curVal, &pSize, &pType))
+                {
+                    retValue += getErrStr(ret);
+                }
+                else
+                {
+                    m_params["gpiMode"].setVal(curVal);
+                }
+            }
             else if (strcmp(paramIt.value().getName(),"hdr_enable") == 0)
             {
                 int enable = (int)m_params["hdr_enable"].getVal<int>() > 0 ? 1 : 0;
@@ -1451,6 +1498,45 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
         if (!retValue.containsError())
         {
+            int pin = 1;
+            ret = pxiSetParam(m_handle, XI_PRM_GPO_SELECTOR, &pin, sizeof(int), xiTypeInteger);
+            if (ret)
+                retValue += getErrStr(ret);
+        }
+
+        if (!retValue.containsError())
+        {
+            int curVal = 0;
+            DWORD pSize = sizeof(int);
+            XI_PRM_TYPE pType = xiTypeInteger;
+            if (ret = pxiGetParam(m_handle, XI_PRM_GPO_MODE, &curVal, &pSize, &pType))
+            {
+                retValue += getErrStr(ret);
+            }
+            else
+            {
+                m_params["gpoMode"].setVal(curVal);
+            }
+        }
+        if (!retValue.containsError())
+        {
+            int curVal = 0;
+            DWORD pSize = sizeof(int);
+            XI_PRM_TYPE pType = xiTypeInteger;
+
+
+            if (ret = pxiGetParam(m_handle, XI_PRM_GPI_MODE, &curVal, &pSize, &pType))
+            {
+                retValue += getErrStr(ret);
+            }
+            else
+            {
+                m_params["gpiMode"].setVal(curVal);
+            }
+        }
+
+        if (!retValue.containsError())
+        {
             retValue += checkData();
         }
     }
@@ -1550,17 +1636,8 @@ ito::RetVal Ximea::startDevice(ItomSharedSemaphore *waitCond)
 
     if(grabberStartedCount() < 1)
     {
-        int mode = XI_GPO_EXPOSURE_ACTIVE;
-        int pin = 1;
-        XI_RETURN ret;
-        ret = pxiSetParam(m_handle, XI_PRM_GPO_SELECTOR, &pin, sizeof(int), xiTypeInteger);
-        if (ret)
-            retValue += getErrStr(ret);
-        ret = pxiSetParam(m_handle, XI_PRM_GPO_MODE, &mode, sizeof(int), xiTypeInteger);
-        if (ret)
-            retValue += getErrStr(ret);
         setGrabberStarted(0);
-        
+        XI_RETURN ret;
         ret = pxiStartAcquisition(m_handle);
         if (ret)
             retValue += getErrStr(ret);
