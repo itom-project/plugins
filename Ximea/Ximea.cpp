@@ -226,7 +226,11 @@ Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnCl
    paramVal = ito::Param("badPixel", ito::ParamBase::Int, 0, 1, 1, tr("Enable bad pixel correction").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
+#if defined XI_GPO_BUSY_NEG
    paramVal = ito::Param("gpoMode", ito::ParamBase::Int, XI_GPO_OFF, XI_GPO_BUSY_NEG, XI_GPO_OFF, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
+#else
+   paramVal = ito::Param("gpoMode", ito::ParamBase::Int, XI_GPO_OFF, XI_GPO_EXPOSURE_PULSE_NEG, XI_GPO_OFF, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
+#endif
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("gpiMode", ito::ParamBase::Int, XI_GPI_OFF, XI_GPI_EXT_EVENT, XI_GPI_OFF, tr("Set the input pin mode for the camera, default is off").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
