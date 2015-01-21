@@ -158,17 +158,25 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
     paramVal = ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", "name of device");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+    int roi[] = {0, 0, 4048, 4048};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 4048), ito::RangeMeta(0, 4048));
+    paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
+#endif
+
+    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 4047, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toLatin1().data());
+    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 4047, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toLatin1().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 4047, 4047, tr("last pixel index in ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
+    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 4047, 4047, tr("last pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 4048, 4048, tr("width of ROI (x-direction)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 4048, 4048, tr("height of ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 8, 8, tr("bpp").toLatin1().data());
@@ -286,6 +294,13 @@ ito::RetVal MSMediaFoundation::checkCameraAbilities()
     static_cast<ito::IntMeta*>(m_params["y1"].getMeta())->setMax(m_imgRows-1);
     m_params["x1"].setVal<int>(m_imgCols-1);
     m_params["y1"].setVal<int>(m_imgRows-1);
+
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+    int roi[] = {0, 0, m_imgCols, m_imgRows};
+    m_params["roi"].setVal<int*>(roi, 4);
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, m_imgCols/*, 1, 1, m_imgCols*/), ito::RangeMeta(0, m_imgRows/*, 1, 1, m_imgRows*/));
+    m_params["roi"].setMeta(rm, true);
+#endif
 
     //m_params["bpp"].setMin(8);
     //m_params["bpp"].setMax(elemSize1*8);
@@ -448,13 +463,36 @@ ito::RetVal MSMediaFoundation::setParam(QSharedPointer<ito::ParamBase> val, Itom
             retValue += it->copyValueFrom(&(*val));
         }
 
+        if (key == "roi")
+        {
+            const int* roi = val->getVal<int*>();
+            m_params["x0"].setVal<int>(roi[0]);
+            m_params["y0"].setVal<int>(roi[1]);
+            m_params["x1"].setVal<int>(roi[0] + roi[2] - 1);
+            m_params["y1"].setVal<int>(roi[1] + roi[3] - 1);
+            m_params["sizex"].setVal<int>(roi[2]);
+            m_params["sizey"].setVal<int>(roi[3]);
+        }
+
         if (key == "x0" || key == "x1")
         {
             m_params["sizex"].setVal<int>(1 + m_params["x1"].getVal<int>() - m_params["x0"].getVal<int>());
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+            int *roi = m_params["roi"].getVal<int*>();
+            roi[0] = m_params["x0"].getVal<int>();
+            roi[2] = 1 + m_params["x1"].getVal<int>() - roi[0];
+            m_params["roi"].setVal<int*>(roi, 4);
+#endif
         }
         else if (key == "y0" || key == "y1")
         {
             m_params["sizey"].setVal<int>(1 + m_params["y1"].getVal<int>() - m_params["y0"].getVal<int>());
+#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
+            int *roi = m_params["roi"].getVal<int*>();
+            roi[1] = m_params["y0"].getVal<int>();
+            roi[3] = 1 + m_params["y1"].getVal<int>() - roi[1];
+            m_params["roi"].setVal<int*>(roi, 4);
+#endif
         }
     }
 
@@ -576,11 +614,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
 
     if (!retValue.containsError())
     {
-        m_params["sizex"].setVal<int>(m_pVI->getWidth(m_deviceID));
-        m_params["sizey"].setVal<int>(m_pVI->getHeight(m_deviceID));
-        
-
-        synchronizeCameraParametersToParams(true);
+        retValue += synchronizeCameraParametersToParams(true);
     }
 
     if (!retValue.containsError())
@@ -1264,70 +1298,6 @@ ito::RetVal MSMediaFoundation::copyVal(void *vpdObj, ItomSharedSemaphore *waitCo
 
     return retValue;
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! Set changed value from dockWidget
-/*!
-    \type [in] 1: brightness, 2: contrast, 3: gain, 4: saturation, 5: sharpness, 11: brightnessAuto, 22: contrastAuto, 33: gainAuto, 44: saturationAuto, 55: sharpnessAuto
-    \value [in] changed value
-*/
-/*void MSMediaFoundation::dockWidgetValueChanged(int type, double value)
-{
-    ito::RetVal retValue(ito::retOk);
-qDebug() << "----------------- dockWidgetValueChanged type: " << type;
-    switch(type)
-        {
-        case 1:
-            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("brightness", ito::ParamBase::Double, value)), NULL);
-            break;
-        case 2:
-            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("contrast", ito::ParamBase::Double, value)), NULL);
-            break;
-        case 3:
-            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, value)), NULL);
-            break;
-        case 4:
-            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("saturation", ito::ParamBase::Double, value)), NULL);
-            break;
-        case 5:
-            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sharpness", ito::ParamBase::Double, value)), NULL);
-            break;
-
-        case 11:
-            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("brightnessAuto", ito::ParamBase::Int, (int)value)), NULL);
-qDebug() << "----------------- dockWidgetValueChanged brightnessAuto: " << m_params["brightnessAuto"].getVal<int>();
-            break;
-        case 22:
-            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("contrastAuto", ito::ParamBase::Int, (int)value)), NULL);
-qDebug() << "----------------- dockWidgetValueChanged contrastAuto: " << m_params["contrastAuto"].getVal<int>();
-            break;
-        case 33:
-            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gainAuto", ito::ParamBase::Int, (int)value)), NULL);
-qDebug() << "----------------- dockWidgetValueChanged gainAuto: " << m_params["gainAuto"].getVal<int>();
-            break;
-        case 44:
-            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("saturationAuto", ito::ParamBase::Int, (int)value)), NULL);
-qDebug() << "----------------- dockWidgetValueChanged saturationAuto: " << m_params["saturationAuto"].getVal<int>();
-            break;
-        case 55:
-            retValue = setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sharpnessAuto", ito::ParamBase::Int, (int)value)), NULL);
-qDebug() << "----------------- dockWidgetValueChanged sharpnessAuto: " << m_params["sharpnessAuto"].getVal<int>();
-            break;
-        }
-
-    if (retValue.containsError())
-    {
-qDebug() << "----------------- dockWidgetValueChanged Error: " << retValue.errorMessage();
-        if (retValue.errorMessage() == NULL)
-        {
-            QMessageBox::critical(this, tr("error"), tr("unknown error when setting parameter"));
-        }
-        else
-        {
-            QMessageBox::critical(this, tr("error"), retValue.errorMessage());
-        }
-    }
-}*/
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void MSMediaFoundation::dockWidgetVisibilityChanged(bool visible)
