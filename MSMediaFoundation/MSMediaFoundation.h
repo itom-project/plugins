@@ -54,6 +54,10 @@ class MSMediaFoundation : public ito::AddInGrabber
 
     private:
 
+        enum InitState {initNotTested, initSuccessfull, initNotSuccessfull};
+
+        InitState m_initState;
+
         VideoInput *m_pVI;    /*!< Handle to the VideoInput-Class */
         CamParameters m_camParams;
         QHash<QString, Parameter*> m_camParamsHash;
@@ -90,6 +94,7 @@ class MSMediaFoundation : public ito::AddInGrabber
         ito::RetVal synchronizeParam(const Parameter &parameter, ito::Param &paramDbl, ito::Param &paramAutoInt);
         ito::RetVal updateCamParam(Parameter &parameter, const ito::ParamBase &paramDbl, const ito::ParamBase &paramAutoInt);
         ito::RetVal synchronizeCameraParametersToParams(bool deleteIfNotAvailable = false);
+        ito::RetVal checkInitState();
 
     public slots:
         //!< Get Camera-Parameter

@@ -152,7 +152,7 @@ const ito::RetVal MSMediaFoundation::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_pVI(NULL), m_deviceID(0), m_camStatusChecked(false)
+MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_pVI(NULL), m_deviceID(0), m_camStatusChecked(false), m_initState(initNotTested)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MSMediaFoundation", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -631,25 +631,7 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
 
         emit parametersChanged(m_params);
 
-        //acquire test image to wait for the MediaFoundation threads to be initialized and the first image callback arrived
-        int loopy = 3000/50; //max 3 seconds
-        while (loopy > 0) 
-        {
-            Sleep(50);
-            if (m_pVI->isFrameNew(m_deviceID))
-            {
-                break;
-            }
-            else
-            {
-                loopy--;
-            }
-        }
-
-        if (loopy <= 0)
-        {
-            retValue += ito::RetVal(ito::retWarning, 0, "A first test image could not be acquired (timeout after 3 sec)");
-        }
+        
     }
     
     if (waitCond)
@@ -660,6 +642,38 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MSMediaFoundation::checkInitState()
+{
+    if (m_initState == initNotTested)
+    {
+        m_initState = initNotSuccessfull;
+
+        //acquire test image to wait for the MediaFoundation threads to be initialized and the first image callback arrived
+        int loopy = 3000/50; //max 3 seconds
+        while (loopy > 0) 
+        {
+            if (m_pVI->isFrameNew(m_deviceID))
+            {
+                m_initState = initSuccessfull;
+                break;
+            }
+            else
+            {
+                Sleep(50);
+                loopy--;
+            }
+        }
+
+        if (loopy <= 0)
+        {
+            return ito::RetVal(ito::retWarning, 0, "A first test image could not be acquired (timeout after 3 sec)");
+        }
+    }
+
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -881,7 +895,7 @@ ito::RetVal MSMediaFoundation::close(ItomSharedSemaphore *waitCond)
 ito::RetVal MSMediaFoundation::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue = checkInitState();
     
     incGrabberStarted();
     
@@ -897,7 +911,7 @@ ito::RetVal MSMediaFoundation::startDevice(ItomSharedSemaphore *waitCond)
 ito::RetVal MSMediaFoundation::stopDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue = checkInitState();
 
     decGrabberStarted();
 
@@ -919,7 +933,7 @@ ito::RetVal MSMediaFoundation::stopDevice(ItomSharedSemaphore *waitCond)
 ito::RetVal MSMediaFoundation::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue = checkInitState();
     bool RetCode = false;
 
     if (grabberStartedCount() <= 0)
@@ -1254,7 +1268,7 @@ ito::RetVal MSMediaFoundation::checkData(ito::DataObject *externalDataObject)
 ito::RetVal MSMediaFoundation::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue = checkInitState();
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
     retValue += retrieveData();
@@ -1294,7 +1308,7 @@ ito::RetVal MSMediaFoundation::getVal(void *vpdObj, ItomSharedSemaphore *waitCon
 ito::RetVal MSMediaFoundation::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue = checkInitState();
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
     if (!dObj)
