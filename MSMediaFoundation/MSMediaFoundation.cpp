@@ -103,6 +103,8 @@ http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Wi
     paramVal.setMeta(&meta, false);
     m_initParamsOpt.append(paramVal);
 
+    this->m_callInitInNewThread = false;
+
     paramVal = ito::Param("mediaTypeID", ito::ParamBase::Int, -1, 1000, 0, tr("ID of the media format. 0 (default) takes the first from the list (must be MFVideoFormat_RGBA24 as subtype). -1: prints out a list of devices and quits the initialization, other: other index from the list of available types").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
@@ -628,6 +630,26 @@ ito::RetVal MSMediaFoundation::init(QVector<ito::ParamBase> *paramsMand, QVector
         retValue += checkData();
 
         emit parametersChanged(m_params);
+
+        //acquire test image to wait for the MediaFoundation threads to be initialized and the first image callback arrived
+        int loopy = 3000/50; //max 3 seconds
+        while (loopy > 0) 
+        {
+            Sleep(50);
+            if (m_pVI->isFrameNew(m_deviceID))
+            {
+                break;
+            }
+            else
+            {
+                loopy--;
+            }
+        }
+
+        if (loopy <= 0)
+        {
+            retValue += ito::RetVal(ito::retWarning, 0, "A first test image could not be acquired (timeout after 3 sec)");
+        }
     }
     
     if (waitCond)
