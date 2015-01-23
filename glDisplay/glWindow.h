@@ -98,6 +98,7 @@ private:
     QVector<TextureItem> m_textures;
     int m_currentTexture;
     bool m_init;
+    bool m_gammaCorrection;
 
     ito::RetVal m_glErrors;
 

@@ -96,7 +96,7 @@ void main(void) \
 
 //----------------------------------------------------------------------------------------------------------------------------------
 GLWindow::GLWindow(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f)
-    : QGLWidget(format, parent, shareWidget, f),
+    : QGLWidget(format, parent, shareWidget, f), m_gammaCorrection(false),
 #if QT_VERSION >= 0x050000
     m_init(false),
 #if _DEBUG
@@ -223,6 +223,7 @@ void GLWindow::initializeGL()
         shaderProgram.setUniformValue("MVP", unityMatrix);
         shaderProgram.setUniformValue("textureObject", 0);
         shaderProgram.setUniformValue("gamma", 0);
+        m_gammaCorrection = false;
         shaderProgram.setUniformValueArray("lutarr", &templut[0][0], 256, 3);
         shaderProgram.setUniformValue("color", QColor(Qt::white));
         shaderProgram.setUniformValue("gamma", 0);
@@ -414,28 +415,61 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
     const cv::Mat *plane = NULL;
     ito::uint32 *data = NULL;
     const ito::uint8 *cvLinePtr;
+    const ito::Rgba32 *cvLinePtrRgba;
     bool valid;
     ito::DataObjectTagType tag;
     ito::ByteArray tag_;
+    bool uint8NotRgba = true;
 
     ito::DataObject texturesUint8;
-    retval += textures.convertTo(texturesUint8, ito::tUInt8);
 
-    if (textures.getDims() == 2)
+    if (textures.getType() == ito::tRGBA32)
     {
-        nrOfItems = 1;
-        width = textures.getSize(1);
-        height = textures.getSize(0);
-    }
-    else if (textures.getDims() == 3)
-    {
-        nrOfItems = textures.getSize(0);
-        width = textures.getSize(2);
-        height = textures.getSize(1);
+        if (m_gammaCorrection)
+        {
+            retval += ito::RetVal(ito::retWarning, 0, "a rgba32 dataObject will not be properly displayed if gamma correction is True (only red-channel is used for lookup in gamma correction LUT).");
+        }
+
+        texturesUint8 = textures;
+        uint8NotRgba = false;
+
+        if (texturesUint8.getDims() == 2)
+        {
+            nrOfItems = 1;
+            width = texturesUint8.getSize(1);
+            height = texturesUint8.getSize(0);
+        }
+        else if (texturesUint8.getDims() == 3)
+        {
+            nrOfItems = texturesUint8.getSize(0);
+            width = texturesUint8.getSize(2);
+            height = texturesUint8.getSize(1);
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "invalid texture data object");
+        }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, "conversion to 8bit object failed");
+        retval += textures.convertTo(texturesUint8, ito::tUInt8);
+
+        if (texturesUint8.getDims() == 2)
+        {
+            nrOfItems = 1;
+            width = texturesUint8.getSize(1);
+            height = texturesUint8.getSize(0);
+        }
+        else if (texturesUint8.getDims() == 3)
+        {
+            nrOfItems = texturesUint8.getSize(0);
+            width = texturesUint8.getSize(2);
+            height = texturesUint8.getSize(1);
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "conversion to 8bit object failed");
+        }
     }
 
     if (!retval.containsError())
@@ -448,19 +482,35 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
 
         for (int i = 0; i < nrOfItems; ++i)
         {
-            plane = textures.getCvPlaneMat(i);
+            plane = texturesUint8.getCvPlaneMat(i);
 
-            for (int r = 0; r < height; ++r)
+            if (uint8NotRgba)
             {
-
-                cvLinePtr = plane->ptr(r);
-
-                for (int c = 0; c < width; ++c)
+                for (int r = 0; r < height; ++r)
                 {
-                    //a, b, g, r
-                    data[r*width+c] = qRgba(cvLinePtr[c], cvLinePtr[c], cvLinePtr[c], 255);
+                    cvLinePtr = plane->ptr(r);
+
+                    for (int c = 0; c < width; ++c)
+                    {
+                        //a, b, g, r
+                        data[r*width+c] = qRgba(cvLinePtr[c], cvLinePtr[c], cvLinePtr[c], 255);
+                    }
                 }
             }
+            else
+            {
+                for (int r = 0; r < height; ++r)
+                {
+                    cvLinePtrRgba = (ito::Rgba32*)(plane->ptr(r));
+
+                    for (int c = 0; c < width; ++c)
+                    {
+                        //a, b, g, r
+                        data[r*width+c] = qRgba(cvLinePtrRgba[c].b, cvLinePtrRgba[c].g, cvLinePtrRgba[c].r, 255);
+                    }
+                }
+            }
+
             TextureItem item;
 
             glGenTextures(1, &(item.texture));
@@ -740,6 +790,7 @@ ito::RetVal GLWindow::enableGammaCorrection(bool enabled)
     shaderProgram.release();
     doneCurrent();
     updateGL();
+    m_gammaCorrection = enabled;
     return retval;
 }
 
