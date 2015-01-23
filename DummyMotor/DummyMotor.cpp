@@ -95,7 +95,7 @@ expired.";
     m_license = QObject::tr("Licensed under LPGL.");
     m_aboutThis = tr("N.A.");       
     
-    ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 6, new ito::IntMeta(0,10), tr("Number of axis for this motor").toLatin1().data());
+    ito::Param paramVal = ito::Param("numAxis", ito::ParamBase::Int, 6, new ito::IntMeta(1,6), tr("Number of axis for this motor").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("motorName", ito::ParamBase::String, "DummyMotor", tr("Name for this dummyMotor").toLatin1().data());
@@ -151,7 +151,7 @@ DummyMotor::DummyMotor() :
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyMotor", NULL);    // Set up the parameter list
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 10, 1, tr("Number of Axis attached to this stage").toLatin1().data());
+    paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 6, 1, tr("Number of Axis attached to this stage").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     m_numaxis = paramVal.getVal<int>();
 
