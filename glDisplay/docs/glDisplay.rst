@@ -70,3 +70,11 @@ set to False. Else, the red-channel of the coloured data object is used for look
     a[6:9,:] = rgba(0,0,255) #three lines blue
     a[9:10,:] = rgba(255,255,255) #...and one line in white
     gl.exec("addTextures",a)
+    
+Another feature is to edit one or a sequence of texture(s). This work in the same way than adding texture, however by the
+function 'editTextures'. This function requires the texture data object as first argument and the texture index that is replaced (zero-based).
+If the given data object is 3D and has more than one plane, the following textures are replaced as well:
+
+.. code-block:: python
+    
+    gl.exec("editTextures",dataObject.randN([100,100]), firstTextureIndex=0)

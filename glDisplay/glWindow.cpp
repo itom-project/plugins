@@ -402,7 +402,9 @@ void GLWindow::paintGL()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, ItomSharedSemaphore *waitCond)
+//firstTextureIndex == -1: new texture(s) is/are appended to the stack
+//else: the given texture(s) replace the one stored at the given index position and following positions if a 3D data object is given as textures.
+ito::RetVal GLWindow::addOrEditTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, int firstTextureIndex /*= -1*/, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
     makeCurrent();
 
@@ -472,6 +474,11 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
         }
     }
 
+    if (nrOfItems > 0 && firstTextureIndex >= 0 && m_textures.size() < (nrOfItems + firstTextureIndex))
+    {
+        retval += ito::RetVal(ito::retError, 0, "texture cannot be edited since it does not exist. Use 'addTextures' to append a texture first.");
+    }
+
     if (!retval.containsError())
     {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);  //black background
@@ -513,8 +520,16 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
 
             TextureItem item;
 
-            glGenTextures(1, &(item.texture));
-            this->checkGLError();
+            if (firstTextureIndex == -1) //add texture(s)
+            {
+                glGenTextures(1, &(item.texture));
+                this->checkGLError();
+            }
+            else //edit the given texture
+            {
+                item = m_textures[firstTextureIndex + i];
+            }
+
             glBindTexture(GL_TEXTURE_2D, item.texture);
             this->checkGLError();
 
@@ -632,7 +647,10 @@ ito::RetVal GLWindow::addTextures(const ito::DataObject &textures, QSharedPointe
                 }
             }
         
-            m_textures.append(item);
+            if (firstTextureIndex == -1) //add texture(s)
+            {
+                m_textures.append(item);
+            }
         }
 
         delete[] data;

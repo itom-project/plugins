@@ -185,6 +185,9 @@ GLDisplay::GLDisplay() :
     pMand = QVector<ito::Param>() << ito::Param("textures", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("two or three dimensional data object with the texture(s) to add to the stack of textures.").toLatin1().data());
     registerExecFunc("addTextures", pMand, pOpt, pOut, tr("method to add further textures"));
 
+    pMand << ito::Param("firstTextureIndex", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("first index (zero-based) of given texture that is replaced. If a 3D data object is given, the following textures are replaced, too.").toLatin1().data());
+    registerExecFunc("editTextures", pMand, pOpt, pOut, tr("method to edit existing textures and replace them by a new data object"));
+
 
     pMand.clear();
     pOpt.clear();
@@ -722,7 +725,7 @@ ito::RetVal GLDisplay::execFunc(const QString funcName, QSharedPointer<QVector<i
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         const ito::DataObject *dObj = paramsMand->at(0).getVal<const ito::DataObject*>();
         QSharedPointer<int> nrOfTextures(new int);
-        QMetaObject::invokeMethod(m_pWindow, "addTextures", Q_ARG(ito::DataObject, *dObj), Q_ARG(QSharedPointer<int>, nrOfTextures), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(m_pWindow, "addOrEditTextures", Q_ARG(ito::DataObject, *dObj), Q_ARG(QSharedPointer<int>, nrOfTextures), Q_ARG(int, -1), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
         if(locker.getSemaphore()->wait(5000))
         {
@@ -736,6 +739,23 @@ ito::RetVal GLDisplay::execFunc(const QString funcName, QSharedPointer<QVector<i
         else
         {
             retValue += ito::RetVal(ito::retError,0,"timeout while adding textures");
+        }
+    }
+    else if (funcName == "editTextures")
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        const ito::DataObject *dObj = paramsMand->at(0).getVal<const ito::DataObject*>();
+        int index = paramsMand->at(1).getVal<int>();
+        QSharedPointer<int> nrOfTextures(new int);
+        QMetaObject::invokeMethod(m_pWindow, "addOrEditTextures", Q_ARG(ito::DataObject, *dObj), Q_ARG(QSharedPointer<int>, nrOfTextures), Q_ARG(int, index), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        if(locker.getSemaphore()->wait(5000))
+        {
+            retValue += locker.getSemaphore()->returnValue;
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retError,0,"timeout while editing textures");
         }
     }
     else if (funcName == "grabFramebuffer")
