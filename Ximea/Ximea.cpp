@@ -1222,7 +1222,41 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                     int width_old = roi_old[2];
                     int height_old = roi_old[3];
 
-                    if ((offset_x + width_old) >= (width) | !((offset_x_old + width_old) >= width))
+					//set x roi
+					if ((offset_x + width_old) <= width)
+					{
+						if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset_x, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_OFFSET_X", QString::number(offset_x));
+                        if (ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &width, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_WIDTH", QString::number(width));	
+					}
+					else 
+					{
+						if (ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &width, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_WIDTH", QString::number(width));
+						if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset_x, intSize, intType))
+                            retValue += getErrStr(ret, "XI_PRM_OFFSET_X", QString::number(offset_x));
+					}
+
+					// set y roi
+					if ((offset_y + height_old) <= height)
+					{
+						if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_OFFSET_Y", QString::number(offset_y));
+                        if (ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &height, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_HEIGHT", QString::number(height));
+					}
+					else 
+					{
+						if (ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &height, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_HEIGHT", QString::number(height));
+                        if (ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, intSize, intType))
+						    retValue += getErrStr(ret, "XI_PRM_OFFSET_Y", QString::number(offset_y)); 
+					}
+
+
+                    /*
+					if ((offset_x + width_old) >= (width) | ((offset_x_old + width_old) >= width))
                     {                        
                         if (ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &width, intSize, intType))
 						    retValue += getErrStr(ret, "XI_PRM_WIDTH", QString::number(width));
@@ -1236,7 +1270,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                         if (ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &width, intSize, intType))
 						    retValue += getErrStr(ret, "XI_PRM_WIDTH", QString::number(width));	
                     }
-                    if((offset_y + height_old >= height) | !((offset_y_old + height_old) >= height))
+                    if((offset_y + height_old) >= (height) | ((offset_y_old + height_old) >= height))
                     {
                         if (ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &height, intSize, intType))
 						    retValue += getErrStr(ret, "XI_PRM_HEIGHT", QString::number(height));
@@ -1250,6 +1284,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                         if (ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &height, intSize, intType))
 						    retValue += getErrStr(ret, "XI_PRM_HEIGHT", QString::number(height));  
                     }
+					*/
                     
 					if (!retValue.containsError())
 					{
