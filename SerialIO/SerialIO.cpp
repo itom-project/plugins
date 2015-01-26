@@ -1097,7 +1097,7 @@ Example \n\
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("enableDebug", ito::ParamBase::Int, 0, 1, 0, tr("Initialised 'debug'-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("debugIgnoreEmpty", ito::ParamBase::Int, 0, 1, 0, tr("If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored").toLatin1().data());
+    paramVal = ito::Param("debugIgnoreEmpty", ito::ParamBase::Int, 0, 1, 1, tr("If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     return;
