@@ -113,17 +113,17 @@ class Ximea : public ito::AddInGrabber
         };
 
 		enum SyncParams {          
-            sExposure = 2, 
-            sBinning = 4,
-            sRoi = 8,
-            sGain = 1,
-            sOffset = 1,
-            sTriggerMode = 1,
-			sTriggerMode2 = 1,
-			sBpp = 8,
-			sFrameRate = 1,
-			sGamma = 1,
-			sSharpness = 1,
+            sExposure = 0x0001, 
+            sBinning = 0x0002,
+            sRoi = 0x0004,
+            sGain = 0x0008,
+            sOffset = 0x0010,
+            sTriggerMode = 0x0020,
+			sTriggerMode2 = 0x0040,
+			sBpp = 0x0080,
+			sFrameRate = 0x0100,
+			sGamma = 0x0200,
+			sSharpness = 0x0400,
             sAll = sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sTriggerMode2 | sBpp | sFrameRate | sGamma | sSharpness };
 
 		struct RoiMeta
