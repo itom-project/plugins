@@ -2074,7 +2074,7 @@ const char* PclTools::pclRandomSampleDOC = "\n\
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid input point cloud").toLatin1().data()));
     paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with removed NaN values").toLatin1().data()));
-    paramsMand->append(ito::Param("nrOfPoints", ito::ParamBase::Int | ito::ParamBase::In, 1, std::numeric_limits<ito::uint16>::max(), 10000, tr("number of randomly picked points").toLatin1().data()));
+    paramsMand->append(ito::Param("nrOfPoints", ito::ParamBase::Int | ito::ParamBase::In, 1, std::numeric_limits<int>::max(), 10000, tr("number of randomly picked points").toLatin1().data()));
     
     return retval;
 }
