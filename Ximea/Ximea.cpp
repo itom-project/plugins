@@ -892,48 +892,31 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             else
                 m_params["badPixel"].setVal(curVal);
         }
-		else if (QString::compare(key, "gpoMode", Qt::CaseInsensitive) == 0 )
+		else if (QString::compare(key, "gpoMode", Qt::CaseInsensitive) == 0)
         {
-            int mode = m_params["gpoMode"].getVal<int>();
-            int maxVal = 0;
-            int curVal = 0;
-            DWORD pSize = sizeof(int);
+			int mode = val->getVal<int>();       
+			DWORD pSize = sizeof(int);
             XI_PRM_TYPE pType = xiTypeInteger;
-
 
             if ((ret = pxiSetParam(m_handle, XI_PRM_GPO_MODE, &mode, sizeof(int), xiTypeInteger)))
             {
-                retValue = getErrStr(ret, "XI_PRM_GPO_MODE", QString::number(mode));
+                retValue += getErrStr(ret, "XI_PRM_GPO_MODE", QString::number(mode));
             }
-            if (ret = pxiGetParam(m_handle, XI_PRM_GPO_MODE, &curVal, &pSize, &pType))
-            {
-                retValue = getErrStr(ret, "XI_PRM_GPO_MODE", QString::number(curVal));
-            }
-            else
-            {
-                m_params["gpoMode"].setVal(curVal);
-            }
+            if (!retValue.containsError())
+                m_params["gpoMode"].setVal(mode);
         }
-        else if (QString::compare(key, "gpiMode", Qt::CaseInsensitive) == 0 )
+        else if (QString::compare(key, "gpiMode", Qt::CaseInsensitive) == 0)
         {
-            int mode = m_params["gpiMode"].getVal<int>();
-            int maxVal = 0;
-            int curVal = 0;
+            int mode =val->getVal<int>();      
             DWORD pSize = sizeof(int);
             XI_PRM_TYPE pType = xiTypeInteger;
 
             if ((ret = pxiSetParam(m_handle, XI_PRM_GPI_MODE, &mode, sizeof(int), xiTypeInteger)))
             {
-                retValue = getErrStr(ret, "XI_PRM_GPI_MODE2", QString::number(mode));
+                retValue += getErrStr(ret, "XI_PRM_GPI_MODE", QString::number(mode));
             }
-            if (ret = pxiGetParam(m_handle, XI_PRM_GPI_MODE, &curVal, &pSize, &pType))
-            {
-                retValue = getErrStr(ret, "XI_PRM_GPI_MODE2", QString::number(curVal));
-            }
-            else
-            {
-                m_params["gpiMode"].setVal(curVal);
-            }
+            if (!retValue.containsError())
+                m_params["gpiMode"].setVal(mode);
         }
 
         else if (QString::compare(key, "hdr_enable", Qt::CaseInsensitive) == 0)
