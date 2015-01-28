@@ -841,6 +841,7 @@ ito::RetVal niDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+	int error = -1;
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
     //call retrieveData without argument. Retrieve data should then put the currently acquired image into the dataObject m_data of the camera.
     
@@ -848,6 +849,13 @@ ito::RetVal niDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 	{
 		retValue += readAnalog();
 		m_aInIsAcquired = false;
+		// Die folgende zeile stopt den task um ihn erneut starten zu können. Rsourcen bleiben erhalten. Vielleicht in extra funktion auslagern
+		//error = DAQmxTaskControl(m_taskMap.value("ai")->getTaskHandle(),DAQmx_Val_Task_Reserve);
+		error = DAQmxStopTask(m_taskMap.value("ai")->getTaskHandle());
+		if (error != 0)
+		{
+			//retValue += ito::RetVal(ito::retError, 0, tr("Couldn´t stop task").toLatin1().data());
+		}
 	}
 	else if (m_dInIsAcquired)
 	{

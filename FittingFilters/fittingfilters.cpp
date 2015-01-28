@@ -1114,6 +1114,7 @@ Solve this system of linear equations and obtain A,B,C!
 */
 template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *mat, double &A, double &B, double &C)
 {
+    ito::RetVal retVal(ito::retOk);
     int   i, j;
     long   n = 0;
     double sx, sy, sz, sxz, syz, sxx, syy, sxy;
@@ -1174,7 +1175,27 @@ template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *ma
         }
     }
 
-    double denom = syy*sx*sx - 2*sx*sxy*sy + n*sxy*sxy + sxx*sy*sy - n*sxx*syy;
+    double denom = 0.0;
+
+    if(mat->cols != 1 && mat->rows != 1)
+    {
+        denom = syy*sx*sx - 2*sx*sxy*sy + n*sxy*sxy + sxx*sy*sy - n*sxx*syy;
+        
+    }
+    else if (mat->cols == 1 && mat->rows != 1)
+    {
+        syy = 1.0;
+        denom = sx*sx - n*sxx;
+        retVal += ito::RetVal(ito::retWarning, 0, "Please use polynomical fit or 1D-Linefitting for 1xN objects.");
+    }
+    else if (mat->rows == 1 && mat->cols != 1) 
+    {
+        sxx = 1.0;
+        denom = sy*sy - n*syy;
+        retVal += ito::RetVal(ito::retWarning, 0, "Please use polynomical fit or 1D-Linefitting for Mx1 objects.");
+    }
+
+
 
     if (std::abs(denom) < std::numeric_limits<double>::epsilon())
     {
@@ -1205,7 +1226,7 @@ template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *ma
         A = (sz - B*sx - C*sy) / n;
     }
 
-    return retOk;
+    return retVal;
 }
 
 //---------------------------------------------------------------------------------------------------------------

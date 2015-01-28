@@ -144,7 +144,7 @@ ito::RetVal DialogGLDisplay::applyParameters()
     }
 
     //currentIdx
-    if (m_currentParameters["currentIdx"].getVal<int>() != ui.horizontalSlider->value())
+    if ((ui.horizontalSlider->value() >= 0) && (m_currentParameters["currentIdx"].getVal<int>() != ui.horizontalSlider->value()))
     {
         values.append( QSharedPointer<ito::ParamBase>(new ito::ParamBase("currentIdx", ito::ParamBase::Int, ui.horizontalSlider->value())));
     }

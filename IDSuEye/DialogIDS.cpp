@@ -230,11 +230,6 @@ ito::RetVal DialogIDS::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
     bool success = false;
 
-    bool changeX0 = false;
-    bool changeX1 = false;
-    bool changeY0 = false;
-    bool changeY1 = false;
-
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     if(ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {
