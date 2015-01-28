@@ -214,7 +214,9 @@ Ximea::Ximea() :
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, XI_TRG_OFF, XI_TRG_SOFTWARE, XI_TRG_SOFTWARE, tr("Set Triggermode, %1: free run, %2: ext. rising edge, %3: ext. falling edge, %4: software (default).").arg(XI_TRG_OFF).arg(XI_TRG_EDGE_RISING).arg(XI_TRG_EDGE_FALLING).arg(XI_TRG_SOFTWARE).toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("trigger_mode2", ito::ParamBase::Int, 0, 3, 1, tr("Set Triggermode2, 0: Exposure Frame Start, 1: Exposure Frame duration, 2: Frame Burst Start, 3: Frame Burst duration.").toLatin1().data());
+	paramVal = ito::Param("trigger_mode2", ito::ParamBase::Int, XI_TRG_SEL_FRAME_START, XI_TRG_SEL_FRAME_BURST_ACTIVE, XI_TRG_SEL_FRAME_START , tr("Set Triggermode2, %1: Exposure Frame Start, %2: Exposure Frame duration, %3: Frame Burst Start, %4: Frame Burst duration.").arg(XI_TRG_SEL_FRAME_START).arg(XI_TRG_SEL_EXPOSURE_ACTIVE).arg(XI_TRG_SEL_FRAME_BURST_START).arg(XI_TRG_SEL_FRAME_BURST_ACTIVE).toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("frame_burst_count", ito::ParamBase::Int, 0, 3, 1, tr("define and set the number of frames in a burst (trigger_mode2 should be set to XI_TRG_SEL_FRAME_BURST_START.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("timing_mode", ito::ParamBase::Int, XI_ACQ_TIMING_MODE_FREE_RUN, XI_ACQ_TIMING_MODE_FRAME_RATE, XI_ACQ_TIMING_MODE_FREE_RUN, tr("Acquisition timing: %1: free run (default), %2: by frame rate.").arg(XI_ACQ_TIMING_MODE_FREE_RUN).arg(XI_ACQ_TIMING_MODE_FRAME_RATE).toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
@@ -1027,7 +1029,35 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
 				retValue += synchronizeCameraSettings(sGamma);
 			}
-        }    
+        } 
+		else if (QString::compare(key, "frame_burst_count", Qt::CaseInsensitive) == 0)
+		{
+			int N = val->getVal<int>();
+			int queue = N+1;
+			int triggermode2;
+			if (ret = pxiGetParam(m_handle, XI_PRM_TRG_SELECTOR, &triggermode2, &intSize, &intType))
+			{	
+				retValue += getErrStr(ret, "XI_PRM_TRG_SELECTOR", QString::number(triggermode2));
+			}
+			else if (triggermode2 = XI_TRG_SEL_FRAME_BURST_START)
+			{
+				if(ret = pxiSetParam(m_handle, XI_PRM_ACQ_FRAME_BURST_COUNT, &N, sizeof(int), intType))
+					retValue += getErrStr(ret, "XI_PRM_ACQ_FRAME_BURST_COUNT", QString::number(N));
+				if(ret = pxiSetParam(m_handle, XI_PRM_BUFFERS_QUEUE_SIZE, &queue, sizeof(int), intType))
+					retValue += getErrStr(ret, "XI_PRM_BUFFERS_QUEUE_SIZE", QString::number(queue));
+			}
+			else
+			{
+				retValue += ito::RetVal(ito::retWarning, 0, tr("unable to set number of frames").toLatin1().data());
+			}
+
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+				retValue += synchronizeCameraSettings(sTriggerMode | sTriggerMode2 | sFrameRate | sExposure);
+			}
+
+		}
         else if (QString::compare(key, "trigger_mode", Qt::CaseInsensitive) == 0)
         {
 			int trigger_mode = val->getVal<int>();
@@ -1039,12 +1069,17 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 				retValue += synchronizeCameraSettings(sTriggerMode | sTriggerMode2 | sFrameRate | sExposure);
 			}
         }
-#ifndef USE_OLD_API
+
         else if (QString::compare(key, "trigger_mode2", Qt::CaseInsensitive) == 0)
         {
 			int trigger_mode2 = val->getVal<int>();
+			int gpo_mode = XI_GPO_EXPOSURE_PULSE;
             if (ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), intType))
                 retValue += getErrStr(ret, "XI_PRM_TRG_SELECTOR", QString::number(trigger_mode2));
+			if (trigger_mode2 = XI_TRG_SEL_FRAME_BURST_START)
+				if(ret = pxiSetParam(m_handle, XI_PRM_GPO_MODE, &gpo_mode, sizeof(int), intType))
+					retValue += getErrStr(ret, "XI_PRM_GPO_MODE", QString::number(XI_GPO_EXPOSURE_PULSE));
+
 			if (!retValue.containsError())
 			{
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
@@ -1054,7 +1089,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
         else if (QString::compare(key, "timing_mode", Qt::CaseInsensitive) == 0)
         {
-#ifndef USE_OLD_API
+
 			int timing_mode = val->getVal<int>();
             if (ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), intType))
                 retValue += getErrStr(ret, "XI_PRM_ACQ_TIMING_MODE", QString::number(timing_mode));
@@ -1062,11 +1097,8 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			{
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
 			}
-#else
-			retValue += ito::retVal(ito::retError, 0, "timing_mode can only be changed with old Ximea API");
-#endif
+
         }
-#endif
         else if (QString::compare(key, "framerate", Qt::CaseInsensitive) == 0)
         {
 			float frameRate = val->getVal<double>();//TODO set Readonly, if not available
@@ -1532,6 +1564,26 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 				if (ret = pxiGetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, &intSize, &intType))
 					retValue += getErrStr(ret, "XI_PRM_TRG_SOURCE", QString::number(trigger_mode));
 				it->setVal<int>(trigger_mode);
+				
+
+				it = m_params.find("frame_burst_count");
+				int frames, frames_max, frames_min, frames_steps;  	
+
+				if (ret = pxiGetParam(m_handle, XI_PRM_ACQ_FRAME_BURST_COUNT XI_PRM_INFO_MIN, &frames_min, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_ACQ_FRAME_BURST_COUNT XI_PRM_INFO_MIN", QString::number(frames_min));
+				if (ret = pxiGetParam(m_handle, XI_PRM_ACQ_FRAME_BURST_COUNT XI_PRM_INFO_MAX, &frames_max, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_ACQ_FRAME_BURST_COUNT XI_PRM_INFO_MAX", QString::number(frames_max));
+				if (ret = pxiGetParam(m_handle, XI_PRM_ACQ_FRAME_BURST_COUNT XI_PRM_INFO_INCREMENT, &frames_steps, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_ACQ_FRAME_BURST_COUNT XI_PRM_INFO_INCREMENT", QString::number(frames_steps));
+				if (ret = pxiGetParam(m_handle, XI_PRM_ACQ_FRAME_BURST_COUNT, &frames, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_ACQ_FRAME_BURST_COUNT", QString::number(frames));
+				if (frames_steps == 0)
+				{
+					frames_steps = frames_max - frames_min;
+				}	
+				it->setVal<int>(frames);
+				it->setMeta(new ito::IntMeta(frames_min, frames_max, frames_steps), true);
+				
 
 				retValue += synchronizeCameraSettings(sExposure | sBinning | sFrameRate | sOffset | sGamma | sSharpness | sGain | sRoi | sBpp);
 
@@ -2055,20 +2107,18 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         img.bp = m_data.rowPtr(0, 0);
         int curxsize = m_params["sizex"].getVal<int>();
         int curysize = m_params["sizey"].getVal<int>();
-
+		
 
         img.bp_size = curxsize * curysize * (m_data.getType() == ito::tUInt16 ? 2 : 1);
         if (ret = pxiGetImage(m_handle, iPicTimeOut, &img))
         {
             retValue += getErrStr(ret, "pxiGetImage", QString::number(iPicTimeOut));
-			if (ret == 105)
-			{
-				
-
-			}
+	
             m_acqRetVal += retValue;
             m_isgrabbing |= Ximea::grabberGrabError;
         }
+		
+
         if(m_shading.active)
         {
             ito::uint16* ptrSub = m_shading.sub;
