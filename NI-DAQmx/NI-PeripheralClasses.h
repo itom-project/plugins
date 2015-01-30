@@ -124,11 +124,8 @@ class niAnalogInputChannel : public niBaseChannel
 		niAnalogInputChannel();
 		~niAnalogInputChannel();
 
-		int getMaxInputLim(){return m_maxInputLim;};
-		void setMaxInputLim(const int max){m_maxInputLim = max;};
-
-		int getMinInputLim(){return m_minInputLim;};
-		void setMinInputLim(const int min){m_minInputLim = min;};
+		double getInputLim(){return m_inputLim;};
+		void setInputLim(const double max){m_inputLim = max;};
 
 		int getAnalogInputMode(){return m_analogInputMode;};
 		void setAnalogInputMode(const int mode){m_analogInputMode = mode;};
@@ -141,8 +138,7 @@ class niAnalogInputChannel : public niBaseChannel
 
 	private:
 		int m_analogInputConfig;
-		int m_minInputLim;
-		int m_maxInputLim;
+		double m_inputLim;
 		int m_analogInputMode;
 
 };

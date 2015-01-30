@@ -61,6 +61,7 @@ class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
 
 		bool m_firstRun;
 		QMap<QString, ito::Param> m_params;
+		
 
 		Ui::niDAQmx ui;
 
@@ -82,6 +83,11 @@ class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
 
 		void on_cioApplyButton_clicked(bool checked = false);
 		void on_cioChannelCombo_currentIndexChanged(int index);
+
+		void on_aiBitCombo_currentIndexChanged(int index);
+		void on_aiRangeCombo_currentIndexChanged(int index);
+
+		void calculateResolution();
 
 };
 

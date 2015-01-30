@@ -66,14 +66,14 @@ Example: the answer of taskStatus => "ai,0;ao,0;ci,-1;co,-1;di,-1;do,-1"
     Not implemented yet.
 **aiChParams**: {str},
     Set/Get the parameters for an analog input channel. For further information refer to the gui dialog.
-    "<device>/<channel>,<mode>,<minVolt>,<maxVolt>" 
+    "<device>/<channel>,<mode>,<+-VoltageRange>" 
     <mode> can be a number from 0 to 4
     0 = default
     1 = differential
     2 = RSE
     3 = NRSE
     4 = Pseudodiff
-    Example: "Dev1/ai0,4,-10,10"
+    Example: "Dev1/ai0,4,10"
 **aoChParams**: {str},
     Set/Get the parameters for an analog input channel. For further information refer to the gui dialog. !Not tested yet!
     "<device>/<channel>,<minVolt>,<maxVolt>" 
@@ -117,9 +117,9 @@ Create new Instance:
     # 20000 samples/sec; 100 samples; finite mode
     plugin.setParam("aiTaskParams", "20000,100,0")
 
-    # setup the first two Analog-Input-Channel
-    plugin.setParam("aiChParams", "Dev1/ai0,4,-10,10")
-    plugin.setParam("aiChParams", "Dev1/ai1,4,-10,10")
+    # setup the first two Analog-Input-Channel 
+    plugin.setParam("aiChParams", "Dev1/ai0,4,10") # (channel0, PseudoDiff, +-10V)
+    plugin.setParam("aiChParams", "Dev1/ai1,4,42") # (channel1, PseudoDiff, +-42V)
     
     # Acquire the Data (start measurement)
     plugin.acquire(1) # 1 = Analog-Input-Task
@@ -128,7 +128,7 @@ Create new Instance:
     plugin.getVal(d)
 
     # plot dataObject
-    plot(d, "itom1dqwtplot")
+    plot(d, "itom1dqwtplot") # Pay attention, that the scaling of two different channels with different VoltageRange is not as it´s shown in the diagramm
     
 Known Issues
 ============

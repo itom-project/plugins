@@ -391,7 +391,7 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 		if (key == "aiChParams")
         { // (dev-channel,inConfig,minInLim,maxInLim)
 			QStringList in = QString(val->getVal<char*>()).split(",");
-			if (m_channels.contains(in[0]) && in.size() == 4 && m_taskMap.value("ai")->isInitialized()) 
+			if (m_channels.contains(in[0]) && in.size() == 3 && m_taskMap.value("ai")->isInitialized()) 
 			{
 				niAnalogInputChannel *ai = NULL;
 				if (m_channels.value(in[0]) == NULL)
@@ -405,8 +405,7 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 				ai->setDevID(in[0].split('/')[0]);
 				ai->setChID(in[0].split('/')[1]);
 				ai->setAnalogInputConfig(in[1].toInt());
-				ai->setMinInputLim(in[2].toInt());
-				ai->setMaxInputLim(in[3].toInt());
+				ai->setInputLim(in[2].toInt());
 				// Channel is finished and added to the corresponding input task
 				ai->applyParameters(m_taskMap.value("ai"));
 				// increase the corresponding counter

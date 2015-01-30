@@ -25,6 +25,7 @@
 #include <qdialogbuttonbox.h>
 #include <qvector.h>
 #include <qsharedpointer.h>
+#include <qmath.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogNiDAQmx::DialogNiDAQmx(ito::AddInBase *grabber, void *plugin) :
@@ -40,6 +41,22 @@ DialogNiDAQmx::DialogNiDAQmx(ito::AddInBase *grabber, void *plugin) :
 	ui.aiConfigCombo->insertItem(0, QIcon(), "RSE = 2", 2);
 	ui.aiConfigCombo->insertItem(0, QIcon(), "Differential = 1", 1);
 	ui.aiConfigCombo->insertItem(0, QIcon(), "Default = 0", 0);
+
+	// Voltage Ranges
+	ui.aiRangeCombo->insertItem(0, QIcon(), "±0.2 V", 0.2);
+	ui.aiRangeCombo->insertItem(0, QIcon(), "±0.5 V", 0.5);
+	ui.aiRangeCombo->insertItem(0, QIcon(), "±1.0 V", 1.0);
+	ui.aiRangeCombo->insertItem(0, QIcon(), "±2.0V" , 2.0);
+	ui.aiRangeCombo->insertItem(0, QIcon(), "±5.0 V" , 5.0);
+	ui.aiRangeCombo->insertItem(0, QIcon(), "±10.0 V", 10.0);
+	ui.aiRangeCombo->insertItem(0, QIcon(), "±20.0V" , 20.0);
+	ui.aiRangeCombo->insertItem(0, QIcon(), "±42.0 V", 42.0);
+
+	// ADC-Bit
+	ui.aiBitCombo->insertItem(0, QIcon(), "18 Bit", 18);
+	ui.aiBitCombo->insertItem(0, QIcon(), "16 Bit", 16);
+	ui.aiBitCombo->insertItem(0, QIcon(), "12 Bit", 12);
+	
 };
 
 
@@ -67,7 +84,42 @@ void DialogNiDAQmx::parametersChanged(QMap<QString, ito::Param> params)
 		QString post = "";
 		if (p.split(";").filter(t)[0].split(",")[1] == "-1")
 		{
+			if (t == "ai")
+			{
+				ui.aiApplyButton->setEnabled(false);
+			}
+			else if (t == "ao")
+			{
+				ui.aoApplyButton->setEnabled(false);
+			}
+			else if (t[0] == 'd')
+			{
+				ui.dioApplyButton->setEnabled(false);
+			}
+			else if (t[0] == 'c')
+			{
+				ui.cioApplyButton->setEnabled(false);
+			}
 			post = " (not initialized)";
+		}
+		else 
+		{
+			if (t == "ai")
+			{
+				ui.aiApplyButton->setEnabled(true);
+			}
+			else if (t == "ao")
+			{
+				ui.aoApplyButton->setEnabled(true);
+			}
+			else if (t[0] == 'd')
+			{
+				ui.dioApplyButton->setEnabled(true);
+			}
+			else if (t[0] == 'c')
+			{
+				ui.cioApplyButton->setEnabled(true);
+			}
 		}
 		ui.taskCombo->insertItem(0, QIcon(), tasks.key(t)+post, t);
 	}
@@ -167,8 +219,7 @@ void DialogNiDAQmx::on_aiApplyButton_clicked(bool checked)
 	QStringList params;
 	params.append(channel);
 	params.append(ui.aiConfigCombo->itemData(ui.aiConfigCombo->currentIndex()).toString());
-	params.append(QString::number(ui.aiMinSpin->value()));
-	params.append(QString::number(ui.aiMaxSpin->value()));
+	params.append(ui.aiRangeCombo->itemData(ui.aiRangeCombo->currentIndex()).toString());
 	plugin->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("aiChParams", ito::ParamBase::String, params.join(",").toLatin1().data())),0);
 }
 
@@ -183,20 +234,34 @@ void DialogNiDAQmx::on_aiChannelCombo_currentIndexChanged(int index)
 			if (ch.split(",")[0]+"/"+ch.split(",")[1] == ui.aiChannelCombo->itemData(index).toString())
 			{
 				ui.aiConfigCombo->setCurrentIndex(ch.split(",")[2].toInt());
-				ui.aiMinSpin->setValue(ch.split(",")[3].toInt());
-				ui.aiMaxSpin->setValue(ch.split(",")[4].toInt());
+				ui.aiRangeCombo->setCurrentIndex(ch.split(",")[3].toInt());
 				found = true;
 			}
 		}
 		if (!found)
 		{
 			ui.aiConfigCombo->setCurrentIndex(-1);
-			ui.aiMinSpin->setValue(-10);
-			ui.aiMaxSpin->setValue(10);
+			ui.aiRangeCombo->setCurrentIndex(0);
 		}
 	}
 }
 
+void DialogNiDAQmx::on_aiBitCombo_currentIndexChanged(int index)
+{
+	calculateResolution();
+}
+
+void DialogNiDAQmx::on_aiRangeCombo_currentIndexChanged(int index)
+{
+	calculateResolution();
+}
+
+void DialogNiDAQmx::calculateResolution()
+{
+	double range = 2*ui.aiRangeCombo->itemData(ui.aiRangeCombo->currentIndex()).toDouble();
+	int bit = ui.aiBitCombo->itemData(ui.aiBitCombo->currentIndex()).toInt();
+	ui.aiResolutionLabel->setText(QString::number(range/qPow(2,bit)*1000)+" mV/bit");
+}
 
 // Analog Output Slots
 void DialogNiDAQmx::on_aoApplyButton_clicked(bool checked)
@@ -256,10 +321,3 @@ void DialogNiDAQmx::on_cioChannelCombo_currentIndexChanged(int index)
 {
 	// just copy the code from the ai comboBox and adjust the parameters
 }
-
-		
-		
-
-		
-
-		

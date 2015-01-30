@@ -215,7 +215,7 @@ ito::RetVal niAnalogInputChannel::applyParameters(niTask *task)
 			retval += ito::RetVal::format(ito::retError, 0, "Configmode %i is not in range of 0 to 4", m_analogInputConfig);
 		}
 	}
-	int ret = DAQmxCreateAIVoltageChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), config, m_minInputLim, m_maxInputLim, DAQmx_Val_Volts, NULL);
+	int ret = DAQmxCreateAIVoltageChan(*task->getTaskHandle(), physName.toLatin1().data(), m_chName.toLatin1().data(), config, -m_inputLim, m_inputLim, DAQmx_Val_Volts, NULL);
 	task->channelAdded(physName);
 	if (ret > 0)
 	{
@@ -240,8 +240,7 @@ QStringList niAnalogInputChannel::getParameters()
 	p.append(this->getDevID());
 	p.append(this->getChID());
 	p.append(QString::number(this->getAnalogInputConfig()));
-	p.append(QString::number(this->getMinInputLim()));
-	p.append(QString::number(this->getMaxInputLim()));
+	p.append(QString::number(this->getInputLim()));
 	return p;
 }
 
