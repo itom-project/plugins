@@ -45,13 +45,14 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
+//CAREFUL: With NVIDIA drivers >~ 347.xx, no command at all may stay before the #version directive (even no line break or spaces).
+//         else, it will lead to the C0204 error (version directive must be first statement and must not be repeated)
     
 //! fragment and vertex shaders for gl v2 and gl v3
 //! the fragment shader multiplies input vertices with the transformation matrix MVP, the
 //! fragment shader calculates the texture pixel (and color) for each pixel. In addition a 
 //! gamma correction can be applied using a simple lookup vektor (lutarr)
-const char *VERTEX_SHADER = " \
-#version 130                        \n\
+const char *VERTEX_SHADER = "#version 130\n\
 \
 uniform mat4 MVP; \
 \
@@ -65,8 +66,7 @@ void main(void) \
     TexCoord = textureCoordinate; \
 }";
 
-const char *FRAGMENT_SHADER = "     \
-#version 130                      \n\
+const char *FRAGMENT_SHADER = "#version 130\n\
 \
 uniform sampler2D textureObject;    \
 uniform vec4 color;                 \
