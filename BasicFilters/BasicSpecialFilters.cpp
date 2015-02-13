@@ -1262,6 +1262,9 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
     QVector<ito::int32> matStepSize;
     matStepSize.clear();
 
+    valueDescription = dObjSrc->getValueDescription();
+    valueUnit = dObjSrc->getValueUnit();
+
     if( pxX0 == pxX1 ) //pure line in y-direction
     {
         sampleDir = 1;
@@ -1298,8 +1301,8 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
         if(axisDescription == "") axisDescription = "y-axis";
                
-        valueDescription = dObjSrc->getAxisDescription(dims - 2, _unused);
-        valueUnit = dObjSrc->getAxisUnit(dims - 2, _unused);
+        //valueDescription = dObjSrc->getAxisDescription(dims - 2, _unused);
+        //valueUnit = dObjSrc->getAxisUnit(dims - 2, _unused);
     }
     else if( pxY0 == pxY1 ) //pure line in x-direction
     {
@@ -1336,8 +1339,8 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
         axisUnit = dObjSrc->getAxisUnit(dims-1,_unused);
         if(axisDescription == "") axisDescription = "x-axis";
   
-        valueDescription = dObjSrc->getValueDescription();
-        valueUnit = dObjSrc->getValueUnit();
+        //valueDescription = dObjSrc->getValueDescription();
+        //valueUnit = dObjSrc->getValueUnit();
 
     }
     else
@@ -1432,8 +1435,8 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
         if(dObjSrc->getAxisUnit(dims-1,_unused) == dObjSrc->getAxisUnit(dims-2,_unused)) axisUnit = dObjSrc->getAxisUnit(dims-1,_unused);
         else axisUnit = "";
 
-        valueDescription = dObjSrc->getValueDescription();
-        valueUnit = dObjSrc->getValueUnit();
+        //valueDescription = dObjSrc->getValueDescription();
+        //valueUnit = dObjSrc->getValueUnit();
 
     }
 
@@ -1622,6 +1625,9 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
         else dObjDst->setAxisScale(1, stepSizePhys);
 
         dObjDst->setAxisOffset(1, startPx);
+
+        dObjDst->setValueUnit(valueUnit);
+        dObjDst->setValueDescription(valueDescription);
     }
 
     return retval;
