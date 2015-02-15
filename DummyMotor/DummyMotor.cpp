@@ -287,6 +287,12 @@ ito::RetVal DummyMotor::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     m_numaxis =  (*paramsOpt)[0].getVal<int>(); // Get the number of axis
     m_params["numaxis"].setVal<int>(m_numaxis);
 
+    QString name = paramsOpt->at(1).getVal<char*>();
+    if (name != "")
+    {
+        setIdentifier(name);
+    }
+
     int oldLength = m_currentPos.size();
     m_currentPos.resize(m_numaxis);
     m_currentStatus.resize(m_numaxis);
