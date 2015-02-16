@@ -1,7 +1,7 @@
 /* ********************************************************************
-    Plugin "PCOCamera" for itom software
+    Plugin "PCOSensicam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -20,53 +20,58 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PCOCAMERA_H
-#define PCOCAMERA_H
+#ifndef PCOSENSICAM_H
+#define PCOSENSICAM_H
 
 #include "common/addInGrabber.h"
 
-#include "dialogPCOCamera.h"
+#include "dialogPCOSensicam.h"
 
 #include <qsharedpointer.h>
 #include <QTimerEvent>
 
-#include "sc2_defs.h"
-#include "PCO_err.h"
 #define PCO_ERRT_H_CREATE_OBJECT
-#include "sc2_SDKStructures.h"
-#include "SC2_CamExport.h"
+#include "PCO_errt.h"
+#undef PCO_ERRT_H_CREATE_OBJECT
+
+#include "SencamExport.h"
+#include "SC_SDKStructures.h"
+
+#define PCO_SC_CREATE_NAME_OBJECT
+#include "sencam_def.h"
+#undef PCO_SC_CREATE_NAME_OBJECT
 
 
 
 #define PCO_NUMBER_BUFFERS 2
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class PCOCameraInterface : public ito::AddInInterfaceBase
+class PCOSensicamInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-    Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this PCOCameraInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
+    Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this PCOSensicamInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
     PLUGIN_ITOM_API
 
     public:
-        PCOCameraInterface();                    /*!< Constructor */
-        ~PCOCameraInterface();                   /*!< Destructor */
-        ito::RetVal getAddInInst(ito::AddInBase **addInInst);   /*!< creates new instance of PCOCamera and returns this instance */
+        PCOSensicamInterface();                    /*!< Constructor */
+        ~PCOSensicamInterface();                   /*!< Destructor */
+        ito::RetVal getAddInInst(ito::AddInBase **addInInst);   /*!< creates new instance of PCOSensicam and returns this instance */
 
     protected:
 
     private:
-        ito::RetVal closeThisInst(ito::AddInBase **addInInst);  /*!< closes any specific instance of PCOCamera, given by *addInInst */
+        ito::RetVal closeThisInst(ito::AddInBase **addInInst);  /*!< closes any specific instance of PCOSensicam, given by *addInInst */
 
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-class PCOCamera : public ito::AddInGrabber
+class PCOSensicam : public ito::AddInGrabber
 {
     Q_OBJECT
 
     protected:
-        ~PCOCamera();
-        PCOCamera();
+        ~PCOSensicam();
+        PCOSensicam();
 
 //        ito::RetVal checkData();
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);
@@ -74,7 +79,7 @@ class PCOCamera : public ito::AddInGrabber
         void dockWidgetVisibilityChanged(bool visible);
 
     public:
-        friend class PCOCameraInterface;
+        friend class PCOSensicamInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
@@ -85,8 +90,8 @@ class PCOCamera : public ito::AddInGrabber
 
         struct PCOBuffer
         {
-            short bufNr;
-            WORD* bufData;
+            int bufNr;
+            void* bufData;
             bool bufQueued;
             bool bufError;
             HANDLE bufEvent;
@@ -100,9 +105,8 @@ class PCOCamera : public ito::AddInGrabber
         HANDLE m_hEvent;
         WORD m_wActSeg;
 
-        //WORD *m_wBuf;
-        //short m_curBuf;
-        PCO_Description m_caminfo;
+        SC_Camera_Description m_caminfo;
+        ito::RetVal m_acquisitionRetVal;
 
         ito::RetVal setExposure(double exposure);
 
@@ -111,11 +115,6 @@ class PCOCamera : public ito::AddInGrabber
     signals:
 
     public slots:
-        /*ito::RetVal getParam(const char *name, QSharedPointer<char> val, QSharedPointer<int> len, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal getParam(const char *name, QSharedPointer<double> val, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(const char *name, const char *val, const int len, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(const char *name, const double val, ItomSharedSemaphore *waitCond = NULL);*/
-
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
 
@@ -135,4 +134,4 @@ class PCOCamera : public ito::AddInGrabber
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
-#endif // PCOCamera_H
+#endif // PCOSENSICAM_H

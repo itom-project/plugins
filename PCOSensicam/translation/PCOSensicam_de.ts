@@ -198,9 +198,9 @@
     </message>
 </context>
 <context>
-    <name>PCOCamera</name>
+    <name>PCOSensicam</name>
     <message>
-        <location filename="../PCOCamera.cpp" line="+192"/>
+        <location filename="../PCOSensicam.cpp" line="+192"/>
         <source>camera interface</source>
         <translation type="unfinished"></translation>
     </message>
@@ -311,12 +311,12 @@
     </message>
     <message>
         <location line="+845"/>
-        <source>StopDevice of PCOCamera can not be executed, since camera has not been started.</source>
+        <source>StopDevice of PCOSensicam can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+209"/>
-        <source>Acquire of PCOCamera can not be executed, since camera has not been started.</source>
+        <source>Acquire of PCOSensicam can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -333,7 +333,7 @@
         <location line="+10"/>
         <location line="+22"/>
         <location line="+23"/>
-        <source>getVal of PCOCamera failed, since retrieved NULL-Pointer.</source>
+        <source>getVal of PCOSensicam failed, since retrieved NULL-Pointer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -348,7 +348,7 @@
     </message>
     <message>
         <location line="-108"/>
-        <source>getVal of PCOCamera failed, since undefined bitdepth.</source>
+        <source>getVal of PCOSensicam failed, since undefined bitdepth.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
