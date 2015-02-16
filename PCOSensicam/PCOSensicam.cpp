@@ -180,8 +180,6 @@ PCOSensicam::PCOSensicam() :
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PCOSensicam", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("interface", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("camera interface").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.001, 1000.0, 0.01, tr("Integrationtime of CCD programmed in s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("delay_time", ito::ParamBase::Double, 0.0, 1000.0, 0.0, tr("Delay time of CCD programmed in s").toLatin1().data());
@@ -191,7 +189,7 @@ PCOSensicam::PCOSensicam() :
     //m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 1.0, tr("Virtual gain").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.5, tr("Virtual offset").toLatin1().data());
+    paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.0, tr("Virtual offset (not available here)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 101, 101, tr("Binning of different pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -1172,10 +1170,13 @@ ito::RetVal PCOSensicam::acquire(const int trigger, ItomSharedSemaphore *waitCon
     int ret = 0;
     WORD intrigger = 0;
 
-    unsigned short xsize = m_params["sizex"].getVal<int>();
-    unsigned short ysize = m_params["sizey"].getVal<int>();
+    int xsize = m_params["sizex"].getVal<int>();
+    int ysize = m_params["sizey"].getVal<int>();
+	int bpp = m_params["bpp"].getVal<int>();
+	int delay_exp_ms = 1000 + (m_params["integration_time"].getVal<double>() + m_params["delay_time"].getVal<double>()) * 2e3; //give double the theoretical time for the timeout
+	int imgsize = xsize*ysize*((bpp+7)/8);
 
-    if(grabberStartedCount() <= 0)
+    if(grabberStartedCount() <= 0 || !m_isstarted)
     {
         retVal += ito::RetVal(ito::retError, 1002, tr("Acquire of PCOSensicam can not be executed, since camera has not been started.").toLatin1().data());
     }
@@ -1184,7 +1185,8 @@ ito::RetVal PCOSensicam::acquire(const int trigger, ItomSharedSemaphore *waitCon
         m_acquisitionRetVal = ito::retOk;
         if(!retVal.containsError())
         {
-            //retVal += checkError(PCO_ForceTrigger(m_hCamera,&intrigger));
+			//add buffer to list in order to start acquisition
+			retVal += checkError(ADD_BUFFER_TO_LIST(m_hCamera,m_buffers[0].bufNr,imgsize,0,0));
         }
 
         if(retVal.containsError()) // || !intrigger)
@@ -1204,11 +1206,54 @@ ito::RetVal PCOSensicam::acquire(const int trigger, ItomSharedSemaphore *waitCon
         waitCond->release();
     }
 
-    m_acquisitionRetVal = checkError(WAIT_FOR_IMAGE(m_hCamera, 5000));
+	if (!retVal.containsError())
+	{
+		DWORD stat = WaitForSingleObject(m_buffers[0].bufEvent , delay_exp_ms);
+		if(stat == WAIT_OBJECT_0)
+		{
+			int bufstat;
+			m_acquisitionRetVal += checkError(GETBUFFER_STATUS(m_hCamera, m_buffers[0].bufNr, 0, &bufstat, sizeof(bufstat)));
+
+			if (!m_acquisitionRetVal.containsError())
+			{
+				switch (bpp)
+				{
+				case 8:
+					m_data.copyFromData2D<ito::uint8>((ito::uint8*)(m_buffers[0].bufData), xsize, ysize);
+					break;
+				case 12:
+				case 16:
+					m_data.copyFromData2D<ito::uint16>((ito::uint16*)(m_buffers[0].bufData), xsize, ysize);
+					break;
+				}
+			}
+
+			  /*if(err!=PCO_NOERROR)
+			   printf("\nError ADD_BUFFER_TO_LIST bufnr[%d] 0x%x\n",x,err);
+			  printf("pic %d buffer %d done status 0x%x\r",i+1,x,bufstat);
+			  if((count<=20)||((bufstat&0xFFFF)!=0x0072))
+			   printf("\n");
+			  ResetEvent(buffer_event[x]);
+			  err=ADD_BUFFER_TO_LIST(hdriver,bufnr[x],size,0,0);
+			  if(err!=PCO_NOERROR)
+			   printf("\nError ADD_BUFFER_TO_LIST bufnr[%d] 0x%x\n",x,err);
+			  i++;*/
+		}
+		else if (stat == WAIT_TIMEOUT)
+		{
+			m_acquisitionRetVal += ito::RetVal(ito::retError, 0, "timeout while waiting for acquired image");
+			REMOVE_BUFFER_FROM_LIST(m_hCamera, m_buffers[0].bufNr); //if the buffer is still in list remove it (no error check here)
+		}
+
+		ResetEvent(m_buffers[0].bufEvent);
+      
+    }
+
+    /*m_acquisitionRetVal = checkError(WAIT_FOR_IMAGE(m_hCamera, 5000));
     if (!m_acquisitionRetVal.containsError())
     {
         m_acquisitionRetVal += checkError(READ_IMAGE_12BIT(m_hCamera, 0x0000, m_data.getSize(1), m_data.getSize(0), (unsigned short*)(m_data.rowPtr(0,0))));
-    }
+    }*/
 
 	/*QElapsedTimer timer;
     timer.start();

@@ -183,14 +183,6 @@ void DialogPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
         ui.comboBinningY->setCurrentIndex(idx);
     }
 
-    ui.comboPixelrate->setEnabled(!(params["pixelrate"].getFlags() & ito::ParamBase::Readonly));
-    idx = ui.comboPixelrate->findData(params["pixelrate"].getVal<int>(), Qt::UserRole);
-    if (idx >= 0)
-    {
-        ui.comboPixelrate->setCurrentIndex(idx);
-    }
-
-
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
 }
@@ -285,15 +277,6 @@ ito::RetVal DialogPCOSensicam::applyParameters()
         if((m_currentParameters["binning"].getVal<int>() !=  binning))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, binning)));
-        }
-    }
-
-    if (ui.comboPixelrate->isEnabled())
-    {
-        int pixelrate = ui.comboPixelrate->itemData(ui.comboPixelrate->currentIndex(), Qt::UserRole).toInt();
-        if((m_currentParameters["pixelrate"].getVal<int>() !=  pixelrate))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("pixelrate", ito::ParamBase::Int, pixelrate)));
         }
     }
 

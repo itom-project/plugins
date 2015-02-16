@@ -39,7 +39,7 @@
 
 
 
-#define PCO_NUMBER_BUFFERS 2
+#define PCO_NUMBER_BUFFERS 1
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class PCOSensicamInterface : public ito::AddInInterfaceBase
