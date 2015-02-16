@@ -1,7 +1,7 @@
 /* ********************************************************************
-    Plugin "PCOCamera" for itom software
+    Plugin "PCOSensicam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -20,8 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGPCOCAMERA_H
-#define DIALOGPCOCAMERA_H
+#ifndef DIALOGPCOSENSICAM_H
+#define DIALOGPCOSENSICAM_H
 
 #include "common/param.h"
 #include "common/retVal.h"

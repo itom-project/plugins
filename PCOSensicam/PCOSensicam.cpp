@@ -1,7 +1,7 @@
 /* ********************************************************************
-    Plugin "PCOCamera" for itom software
+    Plugin "PCOSensicam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -23,7 +23,7 @@
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "PCOCamera.h"
+#include "PCOSensicam.h"
 #include "pluginVersion.h"
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
@@ -36,7 +36,7 @@
 #include <qdockwidget.h>
 #include <qpushbutton.h>
 #include <qmetaobject.h>
-#include "dockWidgetPCOCamera.h"
+#include "dockWidgetPCOSensicam.h"
 
 #include "common/helperCommon.h"
 
@@ -44,80 +44,67 @@
 
 #include <QElapsedTimer>
 
-//#pragma comment(linker, "/delayload:SC2_Cam.dll")
-
-//#include <qdebug.h>
-//#include <qmessagebox.h>
-
-
-Q_DECLARE_METATYPE(ito::DataObject)
-
-static QLibrary mySC2Lib;
-
 //----------------------------------------------------------------------------------------------------------------------------------
 
 /*!
-    \class PCOCameraInterface
-    \brief Small interface class for class PCOCamera. This class contains basic information about PCOCamera as is able to
-        create one or more new instances of PCOCamera.
+    \class PCOSensicamInterface
+    \brief Small interface class for class PCOSensicam. This class contains basic information about PCOSensicam as is able to
+        create one or more new instances of PCOSensicam.
 */
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! creates new instance of PCOCamera and returns the instance-pointer.
+//! creates new instance of PCOSensicam and returns the instance-pointer.
 /*!
-    \param [in,out] addInInst is a double pointer of type ito::AddInBase. The newly created PCOCamera-instance is stored in *addInInst
+    \param [in,out] addInInst is a double pointer of type ito::AddInBase. The newly created PCOSensicam-instance is stored in *addInInst
     \return retOk
-    \sa PCOCamera
+    \sa PCOSensicam
 */
-ito::RetVal PCOCameraInterface::getAddInInst(ito::AddInBase **addInInst)
+ito::RetVal PCOSensicamInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    NEW_PLUGININSTANCE(PCOCamera)
+    NEW_PLUGININSTANCE(PCOSensicam)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! deletes instance of PCOCamera. This instance is given by parameter addInInst.
+//! deletes instance of PCOSensicam. This instance is given by parameter addInInst.
 /*!
     \param [in] double pointer to the instance which should be deleted.
     \return retOk
-    \sa PCOCamera
+    \sa PCOSensicam
 */
-ito::RetVal PCOCameraInterface::closeThisInst(ito::AddInBase **addInInst)
+ito::RetVal PCOSensicamInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    REMOVE_PLUGININSTANCE(PCOCamera)
+    REMOVE_PLUGININSTANCE(PCOSensicam)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! constructor for interface
 /*!
-    defines the plugin type (dataIO and grabber) and sets the plugins object name. If the real plugin (here: PCOCamera) should or must
+    defines the plugin type (dataIO and grabber) and sets the plugins object name. If the real plugin (here: PCOSensicam) should or must
     be initialized (e.g. by a Python call) with mandatory or optional parameters, please initialize both vectors m_initParamsMand
     and m_initParamsOpt within this constructor.
 */
-PCOCameraInterface::PCOCameraInterface()
+PCOSensicamInterface::PCOSensicamInterface()
 {
     m_autoLoadPolicy = ito::autoLoadKeywordDefined;
     m_autoSavePolicy = ito::autoSaveAlways;
 
     m_type = ito::typeDataIO | ito::typeGrabber;
-    setObjectName("PCOCamera");
+    setObjectName("PCOSensicam");
 
-    m_description = QObject::tr("DLL for PCO-Cameras");
+    m_description = QObject::tr("DLL for PCO-Sensicam cameras");
     
     char docstring[] = \
-"The PCOCamera is a plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000. \n\
-This plugin has been tested with the cameras PCO.1200s, PCO.1300 and PCO.2000. \n\
+"The PCOSensicam is a plugin to access PCO sensicam, dicam pro and hsfc pro cameras. \n\
 \n\
-For compiling this plugin, set the CMake variable **PCO_SDK_DIR** to the base directory of the pco.sdk. \n\
+For compiling this plugin, set the CMake variable **PCO_SENSICAM_SDK_DIR** to the base directory of the pco.sensicam.sdk. \n\
 The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). \n\
-Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board. \n\
-\n\
-For GigE cameras, make sure that the PCO GigE driver is installed and that the camera connection is properly configured.";
+Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board.";
 
     m_detaildescription = QObject::tr(docstring);
     
-    m_author = "W. Lyda, C. Lingel, M. Gronle, ITO, University Stuttgart";
+    m_author = "M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
@@ -126,6 +113,7 @@ For GigE cameras, make sure that the PCO GigE driver is installed and that the c
     
     m_initParamsMand.clear();
     m_initParamsOpt.clear();
+    m_initParamsOpt.append( ito::Param("board_id", ito::ParamBase::Int, 0, MAXBOARD, 0, "board number that should be connected"));
     
     return;
 }
@@ -135,21 +123,21 @@ For GigE cameras, make sure that the PCO GigE driver is installed and that the c
 /*!
     clears both vectors m_initParamsMand and m_initParamsOpt.
 */
-PCOCameraInterface::~PCOCameraInterface()
+PCOSensicamInterface::~PCOSensicamInterface()
 {
     m_initParamsMand.clear();
     m_initParamsOpt.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-// this makro registers the class PCOCameraInterface with the name PCOCamerainterface as plugin for the Qt-System (see Qt-DOC)
-Q_EXPORT_PLUGIN2(PCOCamerainterface, PCOCameraInterface)
+// this makro registers the class PCOSensicamInterface with the name PCOSensicamInterface as plugin for the Qt-System (see Qt-DOC)
+Q_EXPORT_PLUGIN2(PCOSensicamInterface, PCOSensicamInterface)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
 /*!
-    \class PCOCamera
-    \brief Class for the PCOCamera. The PCOCamera is able to create noisy images or simulate a typical WLI or confocal image signal.
+    \class PCOSensicam
+    \brief Class for the PCOSensicam. The PCOSensicam is able to create noisy images or simulate a typical WLI or confocal image signal.
 
     Usually every method in this class can be executed in an own thread. Only the constructor, destructor, showConfDialog will be executed by the 
     main (GUI) thread.
@@ -164,21 +152,21 @@ Q_EXPORT_PLUGIN2(PCOCamerainterface, PCOCameraInterface)
     \return retOk
     \sa dialogPCOCamera
 */
-const ito::RetVal PCOCamera::showConfDialog(void)
+const ito::RetVal PCOSensicam::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogPCOCamera(this, m_caminfo));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! constructor for PCOCamera
+//! constructor for PCOSensicam
 /*!
     In this constructor the m_params-vector with all parameters, which are accessible by getParam or setParam, is built.
-    Additionally the optional docking widget for the PCOCamera's toolbar is instantiated and created by createDockWidget.
+    Additionally the optional docking widget for the PCOSensicam's toolbar is instantiated and created by createDockWidget.
 
-    \param [in] uniqueID is an unique identifier for this PCOCamera-instance
+    \param [in] uniqueID is an unique identifier for this PCOSensicam-instance
     \sa ito::tParam, createDockWidget, setParam, getParam
 */
-PCOCamera::PCOCamera() : 
+PCOSensicam::PCOSensicam() : 
     AddInGrabber(),
     m_isgrabbing(false),
     m_hCamera(NULL),
@@ -187,7 +175,7 @@ PCOCamera::PCOCamera() :
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PCOCamera", "GrabberName");
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PCOSensicam", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("interface", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("camera interface").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -216,8 +204,6 @@ PCOCamera::PCOCamera() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 16, 16, 16, tr("bits per pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    //paramVal = ito::Param("time_out", ito::ParamBase::Double , 0.1, 60.0, 2.0, tr("Timeout for acquiring images").toLatin1().data());
-    //m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("temperatures", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("CCD, camera and power supply temperatures in degree celcius").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("coolingSetPointTemperature", ito::ParamBase::Int, 0, 1000, 0, tr("Desired set point temperature for cooling").toLatin1().data());
@@ -244,13 +230,13 @@ PCOCamera::PCOCamera() :
 /*!
     \sa ~AddInBase
 */
-PCOCamera::~PCOCamera()
+PCOSensicam::~PCOSensicam()
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! adds the PCO error to ito::RetVal and translates the hex error to an error text.
-ito::RetVal PCOCamera::checkError(int error)
+ito::RetVal PCOSensicam::checkError(int error)
 {
     ito::RetVal retVal;
 
@@ -273,6 +259,128 @@ ito::RetVal PCOCamera::checkError(int error)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! init method which is called by the addInManager after the initiation of a new instance of PCOSensicam.
+/*!
+    This init method gets the mandatory and optional parameter vectors of type tParam and must copy these given parameters to the
+    internal m_params-vector. Notice that this method is called after that this instance has been moved to its own (non-gui) thread.
+
+    \param [in] paramsMand is a pointer to the vector of mandatory tParams.
+    \param [in] paramsOpt is a pointer to the vector of optional tParams.
+    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
+    \return retOk
+*/
+ito::RetVal PCOSensicam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retVal;
+    int ret = 0;
+
+    int board_id = paramsOpt->at(0).getVal<int>();
+
+    retVal += checkError( INITBOARD(board_id, &m_hCamera) );
+
+    if (!retVal.containsError())
+    {
+        //open a connection to the camera
+        //and set the camera to idle mode
+        retVal += checkError( SETUP_CAMERA(m_hCamera) );
+    }
+    
+    if(!retVal.containsError())
+    {
+        m_caminfo.wSize =sizeof(SC_Camera_Description);
+        retVal += checkError(GET_CAMERA_DESC(m_hCamera, &m_caminfo));
+    }
+
+    if (!retVal.containsError())
+    {
+        m_params["name"].setVal<char*>(CAMTYPE_NAMES[m_caminfo.wCameraTypeDESC]);
+        setIdentifier(QString("%1 (%2)").arg(CAMTYPE_NAMES[m_caminfo.wCameraTypeDESC]).arg( getID() ));
+    }
+
+    if (!retVal.containsError())
+    {
+        if (m_caminfo.wRoiHorStepsDESC == 0) //no roi functionality available
+        {
+            m_params["x0"].setFlags(ito::ParamBase::Readonly);
+            m_params["x1"].setFlags(ito::ParamBase::Readonly);
+            m_params["y0"].setFlags(ito::ParamBase::Readonly);
+            m_params["y1"].setFlags(ito::ParamBase::Readonly);
+        }
+    }
+
+  /***********************************************************
+    The following step is a must. 
+    In SC2, bin proceeds ROI in control.  
+    ROI "field of definition" is subject to bin settings.
+    Please be advised that this is opposite to SensiCam SDK
+  *************************************************************/
+
+    if(!retVal.containsError())
+    {
+        int bpp = m_caminfo.wDynResDESC;
+        m_params["bpp"].setVal<int>(bpp);
+        m_params["bpp"].setMeta( new ito::IntMeta(bpp,bpp), true);
+    }
+
+    retVal += sychronizeParameters();
+
+
+
+    if(!retVal.containsError())
+    {
+        checkData(); //check if image must be reallocated
+    }
+
+    if(waitCond)
+    {
+        waitCond->returnValue = retVal;
+        waitCond->release();  
+    }
+
+    setInitialized(true); //init method has been finished (independent on retval)
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! close method which is called before that this instance is deleted by the PCOSensicamInterface
+/*!
+    notice that this method is called in the actual thread of this instance.
+
+    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
+    \return retOk
+    \sa ItomSharedSemaphore
+*/
+ito::RetVal PCOSensicam::close(ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    char errbuffer[400]={0};
+    int ret = 0;
+    ito::RetVal retVal = stopCamera();
+
+    retVal += checkError(CLOSEBOARD(&m_hCamera));
+
+    if(m_timerID > 0)
+    {
+        killTimer(m_timerID);
+        m_timerID = 0;
+    }
+
+    if(waitCond)
+    {
+        waitCond->returnValue = ito::retOk;
+        waitCond->release();
+
+        return waitCond->returnValue;
+    }
+    else
+    {
+        return ito::retOk;
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! returns parameter of m_params with key name.
 /*!
     This method copies the string of the corresponding parameter to val with a maximum length of maxLen.
@@ -284,7 +392,7 @@ ito::RetVal PCOCamera::checkError(int error)
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
 */
-ito::RetVal PCOCamera::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
+ito::RetVal PCOSensicam::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retVal;
@@ -339,7 +447,7 @@ ito::RetVal PCOCamera::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
     \return retOk in case that everything is ok, else retError
     \sa ito::tParam, ItomSharedSemaphore
 */
-ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
+ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retVal(ito::retOk);
@@ -603,414 +711,6 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
     return retVal;
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! init method which is called by the addInManager after the initiation of a new instance of PCOCamera.
-/*!
-    This init method gets the mandatory and optional parameter vectors of type tParam and must copy these given parameters to the
-    internal m_params-vector. Notice that this method is called after that this instance has been moved to its own (non-gui) thread.
-
-    \param [in] paramsMand is a pointer to the vector of mandatory tParams.
-    \param [in] paramsOpt is a pointer to the vector of optional tParams.
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-*/
-ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-
-    //PCO_General strGeneral;
-    PCO_CameraType strCamType;
-    //PCO_Sensor strSensor;
-    //PCO_Timing strTiming;
-    //PCO_Storage strStorage;
-    //PCO_Recording strRecording;
-
-    //DWORD dwValidImageCnt;
-    //DWORD dwMaxImageCnt;
-
-    char errbuffer[400]={0};
-    ito::RetVal retVal(ito::retOk,0,"");
-    int ret = 0;
-
-    retVal += checkError(PCO_OpenCamera(&m_hCamera, 0));
-
-    if(!retVal.containsError())
-    {
-        strCamType.wSize = sizeof(PCO_CameraType);
-        retVal += checkError(PCO_GetCameraType(m_hCamera, &strCamType));
-
-        if (!retVal.containsError())
-        {
-            char name[] = {0,0,0,0,0,0,0,0,0,0};
-            switch (strCamType.wCamType)
-            {
-                case CAMERATYPE_PCO1200HS:
-                  _snprintf(name, 9, "PCO.1200");
-                  break;
-                case CAMERATYPE_KODAK1300OEM:
-                case CAMERATYPE_284XS:
-                case CAMERATYPE_PCO1300:
-                  _snprintf(name, 9, "PCO.1300");
-                  break;
-                case CAMERATYPE_PCO1600:
-                  _snprintf(name, 9, "PCO.1600");
-                  break;
-                case CAMERATYPE_PCO2000:
-                  _snprintf(name, 9, "PCO.2000");
-                  break;
-                case CAMERATYPE_PCO4000:
-                  _snprintf(name, 9, "PCO.4000");
-                  break;
-                default:
-                  _snprintf(name, 9, "PCO.????");
-            }
-            m_params["name"].setVal<char*>(name, (int)strlen(name));
-            setIdentifier(QString("%1 (%2)").arg(name).arg( getID() ));
-
-            switch (strCamType.wInterfaceType)
-            {
-                case INTERFACE_FIREWIRE:
-                    m_params["interface"].setVal<char*>("firewire");
-                    break;
-                case INTERFACE_CAMERALINK:
-                    m_params["interface"].setVal<char*>("cameralink");
-                    break;
-                case INTERFACE_USB:
-                    m_params["interface"].setVal<char*>("usb");
-                    break;
-                case INTERFACE_ETHERNET:
-                    m_params["interface"].setVal<char*>("ethernet");
-                    break;
-                case INTERFACE_SERIAL:
-                    m_params["interface"].setVal<char*>("serial");
-                    break;
-#ifndef PCO_SDK_OLD
-                case INTERFACE_USB3:
-                    m_params["interface"].setVal<char*>("usb3");
-                    break;
-                case INTERFACE_CAMERALINKHS:
-                    m_params["interface"].setVal<char*>("cameralinkhs");
-                    break;
-                case INTERFACE_COAXPRESS:
-                    m_params["interface"].setVal<char*>("coaxpress");
-                    break;
-#endif
-            }
-        }
-    }
-    
-    if(!retVal.containsError())
-    {
-        m_caminfo.wSize =sizeof(PCO_Description);
-        retVal += checkError(PCO_GetCameraDescription(m_hCamera, &m_caminfo));
-    }
-
-    if (!retVal.containsError())
-    {
-        if (m_caminfo.wRoiHorStepsDESC == 0) //no roi functionality available
-        {
-            m_params["x0"].setFlags(ito::ParamBase::Readonly);
-            m_params["x1"].setFlags(ito::ParamBase::Readonly);
-            m_params["y0"].setFlags(ito::ParamBase::Readonly);
-            m_params["y1"].setFlags(ito::ParamBase::Readonly);
-        }
-    }
-
-
-    if(!retVal.containsError())
-    {
-        //set min, max, current value of coolingSetPointTemperature
-        ito::IntMeta *intMeta = dynamic_cast<ito::IntMeta*>(m_params["coolingSetPointTemperature"].getMeta());
-        intMeta->setMin(m_caminfo.sMinCoolSetDESC);
-        intMeta->setMax(m_caminfo.sMaxCoolSetDESC);
-        short coolset;
-        int sensError = PCO_GetCoolingSetpointTemperature(m_hCamera, &coolset);
-
-        if ((sensError & PCO_ERROR_SDKDLL_NOTAVAILABLE) == PCO_ERROR_SDKDLL_NOTAVAILABLE)
-        {
-            m_params.remove("coolingSetPointTemperature");
-        }
-        else
-        {
-            retVal += checkError(sensError);
-            if(!retVal.containsError())
-            {
-                m_params["coolingSetPointTemperature"].setVal<int>(coolset);
-            }
-        }
-    }
-
-    if(!retVal.containsError())
-    {
-        //check if camera supports IRSensitivity and sets the value if so
-        WORD IRSens;
-        int sensError = PCO_GetIRSensitivity(m_hCamera, &IRSens);
-
-        if ((sensError & PCO_ERROR_SDKDLL_NOTAVAILABLE) == PCO_ERROR_SDKDLL_NOTAVAILABLE)
-        {
-            m_params.remove("IRSensitivity");
-        }
-        else
-        {
-            retVal += checkError(sensError);
-            //set IRSensitivity status
-            ito::IntMeta *IntMeta = dynamic_cast<ito::IntMeta*>(m_params["IRSensitivity"].getMeta());
-            IntMeta->setMin(0);
-            IntMeta->setMax(1);
-            IntMeta->setStepSize(1);
-        
-            if(!retVal.containsError())
-            {
-                m_params["IRSensitivity"].setVal<int>(IRSens);
-            }
-        }
-    }
-    if(!retVal.containsError())
-    {
-        //set actual Pixelrate
-        ito::IntMeta *intMeta = dynamic_cast<ito::IntMeta*>(m_params["pixelrate"].getMeta());
-        DWORD minPixelRate = std::numeric_limits<DWORD>::max();
-        DWORD maxPixelRate = 0;
-        for (int i = 0; i < 4; i++)
-        {
-            if (m_caminfo.dwPixelRateDESC[i] > 0) minPixelRate = std::min(minPixelRate, m_caminfo.dwPixelRateDESC[i]);
-            maxPixelRate = std::max(maxPixelRate, m_caminfo.dwPixelRateDESC[i]);
-        }
-        intMeta->setMin(minPixelRate / 1e6);
-        intMeta->setMax(maxPixelRate / 1e6);
-
-        if(m_caminfo.dwPixelRateDESC[2]==0)
-        {
-            intMeta->setStepSize(intMeta->getMax() - intMeta->getMin());
-        }
-        else
-        {
-            intMeta->setStepSize(1); // if 3 Pixelrates are possible the StepSize might be not constant between them, so it is set to 1.
-        }
-
-        DWORD Pixelrate;
-        retVal += checkError(PCO_GetPixelRate(m_hCamera, &Pixelrate));
-        if(!retVal.containsError())
-        {
-            m_params["pixelrate"].setVal<int>(Pixelrate / 1e6);
-        }
-    }
-    if(!retVal.containsError())
-    {
-        //set actual Conversion factor
-        ito::DoubleMeta *DoubleMeta = dynamic_cast<ito::DoubleMeta*>(m_params["conversionFactor"].getMeta());
-        DoubleMeta->setMin(m_caminfo.wConvFactDESC[1] / 100.0);
-        DoubleMeta->setMax(m_caminfo.wConvFactDESC[0] / 100.0);
-        if(m_caminfo.wConvFactDESC[2]==0)
-        {
-            DoubleMeta->setStepSize(DoubleMeta->getMax() - DoubleMeta->getMin());
-        }
-        else
-        {
-            DoubleMeta->setStepSize(0.1); // if 3 ConversionFactors are possible the StepSize might be not constant between them, so it is set to 0.1.
-        }
-        WORD ConvFact;
-        retVal += checkError(PCO_GetConversionFactor(m_hCamera, &ConvFact));
-        if(!retVal.containsError())
-        {
-            m_params["conversionFactor"].setVal<double>(ConvFact / 100.0);
-        }
-    }
-    if(!retVal.containsError())
-    {
-        // set the actual temperatures
-        short ccdtemp, camtemp, powtemp;
-            retVal += checkError(PCO_GetTemperature(m_hCamera, &ccdtemp, &camtemp, &powtemp));
-
-            if (!retVal.containsError())
-            {
-                int temps[] = {ccdtemp, camtemp, powtemp};
-                m_params["temperatures"].setVal<int*>(temps,3);                
-            }
-    }
-
-    if(!retVal.containsError())
-    {
-        ito::IntMeta *meta = dynamic_cast<ito::IntMeta*>(m_params["binning"].getMeta());
-        meta->setMin(101);
-        meta->setMax(m_caminfo.wMaxBinHorzDESC * 100 + m_caminfo.wMaxBinVertDESC);
-
-        WORD hbin, vbin;
-        retVal += checkError(PCO_GetBinning(m_hCamera, &hbin, &vbin));
-        if(!retVal.containsError())
-        {
-            m_params["binning"].setVal<int>(hbin*100 + vbin);
-            setParam(QSharedPointer<ito::ParamBase>( new ito::ParamBase("binning", ito::ParamBase::Int, hbin * 100 + vbin) ), NULL); //do this is order to recheck the dependent parameters binning, roi and format, else errors might stop the initialization in the arm method
-        }
-    }
-
-    if(!retVal.containsError())
-    {
-        // Set trigger mode to auto trigger
-        retVal += checkError(PCO_SetTriggerMode(m_hCamera, 0x0000));
-
-        // Set Storage mode to recorder mode
-        retVal += checkError(PCO_SetStorageMode(m_hCamera, 0x0000));
-
-        // Set recorder submode to ring buffer
-        retVal += checkError(PCO_SetRecorderSubmode(m_hCamera, 1));
-
-        // Set acquire mode to auto = all images taken are stored
-        retVal += checkError(PCO_SetAcquireMode(m_hCamera, 0x0000));
-
-        retVal += checkError(PCO_SetSensorFormat(m_hCamera, 0x0000)); //standard format
-    }
-
-  /***********************************************************
-    The following step is a must. 
-    In SC2, bin proceeds ROI in control.  
-    ROI "field of definition" is subject to bin settings.
-    Please be advised that this is opposite to SensiCam SDK
-  *************************************************************/
-
-    if(!retVal.containsError())
-    {
-        int bpp = m_caminfo.wDynResDESC;
-        m_params["bpp"].setVal<int>(bpp);
-        m_params["bpp"].setMeta( new ito::IntMeta(bpp,bpp), true);
-    }
-
-    /***********************************************************
-    ArmCamera validates settings.  
-    recorder must be turned off to ArmCamera
-    *************************************************************/
-  
-    if(!retVal.containsError())
-    {
-        WORD recstate;
-        retVal += checkError(PCO_GetRecordingState(m_hCamera, &recstate));
-        if (recstate > 0)
-        {
-            retVal += checkError(PCO_SetRecordingState(m_hCamera, 0x0000));
-            if(!retVal.containsError())
-            {
-                retVal += checkError(PCO_CancelImages(m_hCamera));
-            }
-        }
-    }
-
-    retVal += sychronizeParameters();
-
-    // prepare delay exposure time
-    if(!retVal.containsError())
-    {
-        m_params["integration_time"].setMeta( new ito::DoubleMeta(m_caminfo.dwMinExposureDESC / 1000000000.0, m_caminfo.dwMaxExposureDESC / 1000.0, m_caminfo.dwMinExposureStepDESC / 1000000000.0), true);
-
-        double exposure = m_params["integration_time"].getVal<double>()*1000;
-        WORD timebase = 2;
-
-        if(exposure < 1)
-        {
-            exposure *= 1000;  
-            timebase--;
-        }
-        if(exposure < 1)
-        {
-            exposure *= 1000;  
-            timebase--;        
-        }
-
-
-        retVal += checkError(PCO_SetDelayExposureTime(m_hCamera,  
-                                        0,        // DWORD dwDelay
-                                        (DWORD)exposure,//(DWORD)dwExposure,
-                                        0,        // WORD wTimeBaseDelay, Timebase: 0-ns; 1-us; 2-ms 
-                                        (WORD)timebase));    // WORD wTimeBaseExposure
-    }
-    
-    /***********************************************************
-    Cam Ram can be partitioned and set active. 
-    by deafult, it is a single piece. An ID is returned
-    *************************************************************/
-  
-    if(!retVal.containsError())
-    {
-        retVal += checkError(PCO_GetActiveRamSegment(m_hCamera, &m_wActSeg));
-    }
-  
-    /***********************************************************
-    ArmCamera validates settings.  
-    recorder must be turned off to ArmCamera
-    *************************************************************/
-  
-    if(!retVal.containsError())
-    {
-        WORD recstate;
-        retVal += checkError(PCO_GetRecordingState(m_hCamera, &recstate));
-        if (recstate > 0)
-        {
-            retVal += checkError(PCO_SetRecordingState(m_hCamera, 0x0000));
-            if(!retVal.containsError())
-            {
-                retVal += checkError(PCO_CancelImages(m_hCamera));
-            }
-        }
-    }
-
-    if(!retVal.containsError())
-    {
-        checkData(); //check if image must be reallocated
-    }
-
-    if(waitCond)
-    {
-        waitCond->returnValue = retVal;
-        waitCond->release();  
-    }
-
-    setInitialized(true); //init method has been finished (independent on retval)
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! close method which is called before that this instance is deleted by the PCOCameraInterface
-/*!
-    notice that this method is called in the actual thread of this instance.
-
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-    \sa ItomSharedSemaphore
-*/
-ito::RetVal PCOCamera::close(ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    char errbuffer[400]={0};
-    int ret = 0;
-    ito::RetVal retVal = stopCamera();
-
-    if (ret != 0)
-    {
-        _snprintf(errbuffer, 399, "PCO_FreeBuffer error(hex): %lx", (unsigned long)ret);
-        retVal += ito::RetVal(ito::retError, 0, errbuffer);
-    }
-
-    ret = PCO_CloseCamera(m_hCamera);// Correct code...
-
-    if(m_timerID > 0)
-    {
-        killTimer(m_timerID);
-        m_timerID = 0;
-    }
-
-    if(waitCond)
-    {
-        waitCond->returnValue = ito::retOk;
-        waitCond->release();
-
-        return waitCond->returnValue;
-    }
-    else
-    {
-        return ito::retOk;
-    }
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // function checkdata moved into addInGrabber.cpp -> standard for all cameras / ADDA
 
@@ -1018,14 +718,14 @@ ito::RetVal PCOCamera::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
 /*!
-    In the PCOCamera, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
+    In the PCOSensicam, this method does nothing. In general, the hardware camera should be intialized in this method and necessary memory should be allocated.
 
     \note This method is similar to VideoCapture::open() of openCV
 
     \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
     \return retOk if starting was successfull, retWarning if startDevice has been calling at least twice.
 */
-ito::RetVal PCOCamera::startDevice(ItomSharedSemaphore *waitCond)
+ito::RetVal PCOSensicam::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retVal = ito::retOk;
@@ -1051,7 +751,7 @@ ito::RetVal PCOCamera::startDevice(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With stopDevice the camera device is stopped (opposite to startDevice)
 /*!
-    In this PCOCamera, this method does nothing. In general, the hardware camera should be closed in this method.
+    In this PCOSensicam, this method does nothing. In general, the hardware camera should be closed in this method.
 
     \note This method is similar to VideoCapture::release() of openCV
 
@@ -1059,7 +759,7 @@ ito::RetVal PCOCamera::startDevice(ItomSharedSemaphore *waitCond)
     \return retOk if everything is ok, retError if camera wasn't started before
     \sa startDevice
 */
-ito::RetVal PCOCamera::stopDevice(ItomSharedSemaphore *waitCond)
+ito::RetVal PCOSensicam::stopDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retVal = ito::retOk;
@@ -1071,7 +771,7 @@ ito::RetVal PCOCamera::stopDevice(ItomSharedSemaphore *waitCond)
     }
     else if(grabberStartedCount() < 0)
     {
-        retVal += ito::RetVal(ito::retError, 1001, tr("StopDevice of PCOCamera can not be executed, since camera has not been started.").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 1001, tr("StopDevice of PCOSensicam can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -1086,114 +786,67 @@ ito::RetVal PCOCamera::stopDevice(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PCOCamera::stopCamera()
+ito::RetVal PCOSensicam::stopCamera()
+{
+    ito::RetVal retVal = checkError( STOP_COC(m_hCamera, 0) );
+
+    retVal += checkError( REMOVE_ALL_BUFFERS_FROM_LIST(m_hCamera) );
+
+    if (!retVal.containsError())
+    {
+        for (short sBufNr = 0; sBufNr < PCO_NUMBER_BUFFERS; ++sBufNr)
+        {
+            PCOBuffer *buffer = &(m_buffers[sBufNr]);
+            retVal += checkError(FREE_BUFFER(m_hCamera, buffer->bufNr));
+            buffer->bufNr = -1; //request new buffer
+            buffer->bufData = NULL;
+        }
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PCOSensicam::startCamera()
 {
     ito::RetVal retVal;
-    WORD wRecState;
-    PCO_GetRecordingState(m_hCamera, &wRecState);
 
-    if (wRecState > 0)
+    int ccdxsize, ccdysize, width, height, bitpix;
+    retVal += checkError(GETSIZES(m_hCamera, &ccdxsize, &ccdysize, &width, &height, &bitpix));
+        
+    if(!retVal.containsError())
     {
-        retVal += checkError(PCO_SetRecordingState(m_hCamera, 0x0000)); //stops recording
-        retVal += checkError(PCO_CancelImages(m_hCamera)); //removes pending buffers from the drivers queue
+        retVal += sychronizeParameters();
 
-        if (!retVal.containsError())
+        if(!retVal.containsError())
         {
+            int imgsize = width*height*((bitpix+7)/8);
+
             for (short sBufNr = 0; sBufNr < PCO_NUMBER_BUFFERS; ++sBufNr)
             {
                 PCOBuffer *buffer = &(m_buffers[sBufNr]);
-                retVal += checkError(PCO_FreeBuffer(m_hCamera, buffer->bufNr));
                 buffer->bufNr = -1; //request new buffer
                 buffer->bufData = NULL;
+                buffer->bufQueued = false;
+                buffer->bufEvent = NULL;
+                buffer->bufError = false;
+                retVal += checkError(ALLOCATE_BUFFER(m_hCamera, &(buffer->bufNr), &imgsize));
+                retVal += checkError(MAP_BUFFER(m_hCamera, buffer->bufNr, imgsize, 0, &(buffer->bufData)));
+                retVal += checkError(SETBUFFER_EVENT(m_hCamera, buffer->bufNr, &(buffer->bufEvent)));
             }
         }
     }
 
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PCOCamera::startCamera()
-{
-    ito::RetVal retVal;
-    WORD wRecState;
-    PCO_GetRecordingState(m_hCamera, &wRecState);
-
-    if (wRecState == 0)
+    if (!retVal.containsError())
     {
-        m_hEvent = NULL;
-
-        //recommended order: setBinning, setROI... (done in setParam), then ARM, GetSizes, AllocateBuffer, SetTriggerMode, SetRecordingState
-        retVal += checkError(PCO_ArmCamera(m_hCamera));
-
-        WORD sizeX, sizeY, sizeXMax, sizeYMax;
-        retVal += checkError(PCO_GetSizes(m_hCamera, &sizeX, &sizeY, &sizeXMax, &sizeYMax));
-        
-        if(!retVal.containsError())
-        {
-            retVal += sychronizeParameters();
-
-            if(!retVal.containsError())
-            {
-                DWORD imgsize = sizeX*sizeY*sizeof(WORD);
-                if (imgsize % 0x1000)
-                {
-                    imgsize = imgsize / 0x1000;
-                    imgsize += 2;
-                    imgsize *= 0x1000;
-                }
-                else
-                {
-                    imgsize += 0x1000;
-                }
-
-                for (short sBufNr = 0; sBufNr < PCO_NUMBER_BUFFERS; ++sBufNr)
-                {
-                    PCOBuffer *buffer = &(m_buffers[sBufNr]);
-                    buffer->bufNr = -1; //request new buffer
-                    buffer->bufData = NULL;
-                    buffer->bufQueued = false;
-                    buffer->bufEvent = NULL;
-                    buffer->bufError = false;
-                    retVal += checkError(PCO_AllocateBuffer(m_hCamera, &(buffer->bufNr), imgsize, &(buffer->bufData), &(buffer->bufEvent)));
-                }
-            }
-        }
-
-        if (!retVal.containsError())
-        {
-            retVal += checkError(PCO_CamLinkSetImageParameters(m_hCamera,sizeX,sizeY));
-        }
-
-        retVal += checkError(PCO_SetTriggerMode(m_hCamera, 0x0001)); //software trigger
-
-        if(!retVal.containsError())
-        {
-            retVal += checkError(PCO_ArmCamera(m_hCamera));
-            retVal += checkError(PCO_SetRecordingState(m_hCamera, 0x0001));
-        }
-
-        if (!retVal.containsError())
-        {
-            //queue all images
-            for (short sBufNr = 0; sBufNr < PCO_NUMBER_BUFFERS; ++sBufNr)
-            {
-                PCOBuffer *buffer = &(m_buffers[sBufNr]);
-                if (buffer->bufNr >= 0 && buffer->bufQueued == false)
-                {
-                    retVal += checkError(PCO_AddBufferEx(m_hCamera, 0, 0, buffer->bufNr, sizeX, sizeY, m_caminfo.wDynResDESC));
-                    buffer->bufQueued = true;
-                }
-                
-            }
-        }
+        retVal += checkError(RUN_COC(m_hCamera,0));
     }
 
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PCOCamera::sychronizeParameters()
+ito::RetVal PCOSensicam::sychronizeParameters()
 {
     ito::RetVal retVal = checkError(PCO_ArmCamera(m_hCamera));
 
@@ -1268,7 +921,7 @@ ito::RetVal PCOCamera::sychronizeParameters()
     \return retOk if everything is ok, retError if camera has not been started or an older image lies in memory which has not be fetched by getVal, yet.
     \sa getVal
 */
-ito::RetVal PCOCamera::acquire(const int trigger, ItomSharedSemaphore *waitCond)
+ito::RetVal PCOSensicam::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retVal = ito::retOk;
@@ -1280,11 +933,11 @@ ito::RetVal PCOCamera::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
     if(grabberStartedCount() <= 0)
     {
-        retVal += ito::RetVal(ito::retError, 1002, tr("Acquire of PCOCamera can not be executed, since camera has not been started.").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 1002, tr("Acquire of PCOSensicam can not be executed, since camera has not been started.").toLatin1().data());
     }
     else
     {
-       
+        m_acquisitionRetVal = ito::retOk;
         if(!retVal.containsError())
         {
             retVal += checkError(PCO_ForceTrigger(m_hCamera,&intrigger));
@@ -1307,11 +960,18 @@ ito::RetVal PCOCamera::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         waitCond->release();
     }
 
-    return retVal;
+    m_acquisitionRetVal = checkError(WAIT_FOR_IMAGE(m_hCamera, 5000));
+    if (!m_acquisitionRetVal.containsError())
+    {
+        m_acquisitionRetVal += checkError(READ_IMAGE_12BIT(m_hCamera, 0x0000, m_data.getSize(1), m_data.getSize(0), (unsigned short*)(m_data.rowPtr(0,0))));
+    }
+
+
+    return retVal + m_acquisitionRetVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PCOCamera::retrieveData(ito::DataObject *externalDataObject)
+ito::RetVal PCOSensicam::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retVal(ito::retOk);
     int ret = 0;
@@ -1394,7 +1054,7 @@ ito::RetVal PCOCamera::retrieveData(ito::DataObject *externalDataObject)
             ito::uint8 *cbuf=(ito::uint8*)wBuf;
             if(cbuf == NULL)
             {
-                retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOCamera failed, since retrieved NULL-Pointer.").toLatin1().data());
+                retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOSensicam failed, since retrieved NULL-Pointer.").toLatin1().data());
             }
             else
             {
@@ -1416,7 +1076,7 @@ ito::RetVal PCOCamera::retrieveData(ito::DataObject *externalDataObject)
             ito::uint16 *cbuf=(ito::uint16*)wBuf;
             if(cbuf == NULL)
             {
-                retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOCamera failed, since retrieved NULL-Pointer.").toLatin1().data());
+                retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOSensicam failed, since retrieved NULL-Pointer.").toLatin1().data());
             }
             else
             {
@@ -1439,7 +1099,7 @@ ito::RetVal PCOCamera::retrieveData(ito::DataObject *externalDataObject)
             ito::int32 *cbuf=(ito::int32*)wBuf;
             if(cbuf == NULL)
             {
-                retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOCamera failed, since retrieved NULL-Pointer.").toLatin1().data());
+                retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOSensicam failed, since retrieved NULL-Pointer.").toLatin1().data());
             }
             {
                 if (bpp < 32)
@@ -1458,7 +1118,7 @@ ito::RetVal PCOCamera::retrieveData(ito::DataObject *externalDataObject)
         }
         else
         {
-            retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOCamera failed, since undefined bitdepth.").toLatin1().data());            
+            retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOSensicam failed, since undefined bitdepth.").toLatin1().data());            
         }
         this->m_isgrabbing = false;
     }
@@ -1513,7 +1173,7 @@ ito::RetVal PCOCamera::retrieveData(ito::DataObject *externalDataObject)
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire
 */
-ito::RetVal PCOCamera::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+ito::RetVal PCOSensicam::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
@@ -1558,7 +1218,7 @@ ito::RetVal PCOCamera::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     \return retOk if everything is ok, retError is camera has not been started or no image has been acquired by the method acquire.
     \sa DataObject, acquire
 */
-ito::RetVal PCOCamera::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
+ito::RetVal PCOSensicam::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retVal(ito::retOk);
@@ -1593,7 +1253,7 @@ ito::RetVal PCOCamera::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PCOCamera::dockWidgetVisibilityChanged(bool visible)
+void PCOSensicam::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
