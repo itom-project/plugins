@@ -20,13 +20,13 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "dockWidgetPCOCamera.h"
+#include "dockWidgetPCOSensicam.h"
 
 
 #include <qmetaobject.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DockWidgetPCOCamera::DockWidgetPCOCamera(ito::AddInDataIO *grabber) :
+DockWidgetPCOSensicam::DockWidgetPCOSensicam(ito::AddInDataIO *grabber) :
     AbstractAddInDockWidget(grabber),
     m_inEditing(false),
     m_firstRun(true)
@@ -35,7 +35,7 @@ DockWidgetPCOCamera::DockWidgetPCOCamera(ito::AddInDataIO *grabber) :
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
+void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
 {
 
     ui.spinBpp->setValue(params["bpp"].getVal<int>());
@@ -72,7 +72,7 @@ void DockWidgetPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetPCOCamera::on_spinBox_gain_valueChanged(int d)
+void DockWidgetPCOSensicam::on_spinBox_gain_valueChanged(int d)
 {
     if (!m_inEditing)
     {
@@ -84,7 +84,7 @@ void DockWidgetPCOCamera::on_spinBox_gain_valueChanged(int d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetPCOCamera::on_spinBox_offset_valueChanged(int d)
+void DockWidgetPCOSensicam::on_spinBox_offset_valueChanged(int d)
 {
     if (!m_inEditing)
     {
@@ -96,7 +96,7 @@ void DockWidgetPCOCamera::on_spinBox_offset_valueChanged(int d)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetPCOCamera::on_doubleSpinBox_integration_time_valueChanged(double d)
+void DockWidgetPCOSensicam::on_doubleSpinBox_integration_time_valueChanged(double d)
 {
     if (!m_inEditing)
     {
@@ -108,7 +108,7 @@ void DockWidgetPCOCamera::on_doubleSpinBox_integration_time_valueChanged(double 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetPCOCamera::identifierChanged(const QString &identifier)
+void DockWidgetPCOSensicam::identifierChanged(const QString &identifier)
 {
     ui.lblID->setText(identifier);
 }

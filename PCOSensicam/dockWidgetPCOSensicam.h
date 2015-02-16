@@ -29,18 +29,18 @@
 #include <qmap.h>
 #include <qstring.h>
 
-#include "ui_dockWidgetPCOCamera.h"
+#include "ui_DockWidgetPCOSensicam.h"
 
-class DockWidgetPCOCamera : public ito::AbstractAddInDockWidget
+class DockWidgetPCOSensicam : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetPCOCamera(ito::AddInDataIO *grabber);
-        ~DockWidgetPCOCamera() {};
+        DockWidgetPCOSensicam(ito::AddInDataIO *grabber);
+        ~DockWidgetPCOSensicam() {};
 
     private:
-        Ui::DockWidgetPCOCamera ui;
+        Ui::DockWidgetPCOSensicam ui;
         bool m_inEditing;
         bool m_firstRun;
 

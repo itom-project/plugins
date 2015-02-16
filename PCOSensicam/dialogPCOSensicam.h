@@ -28,7 +28,7 @@
 #include "common/sharedStructuresQt.h"
 #include "common/abstractAddInConfigDialog.h"
 
-#include "ui_dialogPCOCamera.h"
+#include "ui_dialogPCOSensicam.h"
 
 #include <qstring.h>
 #include <qmap.h>
@@ -36,7 +36,7 @@
 
 #include <Windows.h>
 #define PCO_ERRT_H_CREATE_OBJECT
-#include "sc2_SDKStructures.h"
+#include "SC_SDKStructures.h"
 
 
 namespace ito
@@ -44,13 +44,13 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class DialogPCOCamera : public ito::AbstractAddInConfigDialog 
+class DialogPCOSensicam : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
     public:
-        DialogPCOCamera(ito::AddInBase *grabber, PCO_Description &cameraDescription);
-        ~DialogPCOCamera() {};
+        DialogPCOSensicam(ito::AddInBase *grabber, SC_Camera_Description &cameraDescription);
+        ~DialogPCOSensicam() {};
 
         ito::RetVal applyParameters();
 
@@ -58,8 +58,8 @@ class DialogPCOCamera : public ito::AbstractAddInConfigDialog
         void enableDialog(bool enabled);
         bool m_firstRun;
 
-        Ui::DialogPCOCamera ui;
-        PCO_Description m_camInfo;
+        Ui::DialogPCOSensicam ui;
+        SC_Camera_Description m_camInfo;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
