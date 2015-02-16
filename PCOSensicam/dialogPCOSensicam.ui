@@ -210,14 +210,39 @@
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QLabel" name="lblPixelRate">
+         <widget class="QLabel" name="label_delay_time">
           <property name="text">
-           <string>Pixelrate</string>
+           <string>Delay time</string>
           </property>
          </widget>
         </item>
         <item row="3" column="1" colspan="2">
-         <widget class="QComboBox" name="comboPixelrate"/>
+         <widget class="QDoubleSpinBox" name="doubleSpinBox_delay_time">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="prefix">
+           <string/>
+          </property>
+          <property name="suffix">
+           <string>ms</string>
+          </property>
+          <property name="decimals">
+           <number>3</number>
+          </property>
+          <property name="minimum">
+           <double>0.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>1000000.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>1.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.000000000000000</double>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -246,7 +271,7 @@
              <number>2048</number>
             </property>
             <property name="maximumValue">
-             <number>2048</number>
+             <number>99</number>
             </property>
             <property name="prefix">
              <string/>
@@ -291,7 +316,7 @@
              <number>2048</number>
             </property>
             <property name="maximumValue">
-             <number>2048</number>
+             <number>99</number>
             </property>
             <property name="prefix">
              <string/>
