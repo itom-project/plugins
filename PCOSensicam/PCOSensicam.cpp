@@ -40,7 +40,9 @@
 
 #include "common/helperCommon.h"
 
+#define PCO_ERRT_H_CREATE_OBJECT
 #include "PCO_errt.h"
+#undef PCO_ERRT_H_CREATE_OBJECT
 
 #include <QElapsedTimer>
 
@@ -146,15 +148,15 @@ Q_EXPORT_PLUGIN2(PCOSensicamInterface, PCOSensicamInterface)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! shows the configuration dialog. This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
 /*!
-    creates new instance of dialogPCOCamera, calls the method setVals of dialogPCOCamera, starts the execution loop and if the dialog
+    creates new instance of DialogPCOSensicam, calls the method setVals of DialogPCOSensicam, starts the execution loop and if the dialog
     is closed, reads the new parameter set and deletes the dialog.
 
     \return retOk
-    \sa dialogPCOCamera
+    \sa DialogPCOSensicam
 */
 const ito::RetVal PCOSensicam::showConfDialog(void)
 {
-    return apiShowConfigurationDialog(this, new DialogPCOCamera(this, m_caminfo));
+    return apiShowConfigurationDialog(this, new DialogPCOSensicam(this, m_caminfo));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -170,7 +172,8 @@ PCOSensicam::PCOSensicam() :
     AddInGrabber(),
     m_isgrabbing(false),
     m_hCamera(NULL),
-    m_hEvent(NULL)
+    m_hEvent(NULL),
+	m_isstarted(false)
 {
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
@@ -179,7 +182,9 @@ PCOSensicam::PCOSensicam() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("interface", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("camera interface").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000001, 65.0, 0.01, tr("Integrationtime of CCD programmed in s").toLatin1().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.001, 1000.0, 0.01, tr("Integrationtime of CCD programmed in s").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("delay_time", ito::ParamBase::Double, 0.0, 1000.0, 0.0, tr("Delay time of CCD programmed in s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     // is not used anywhere...
     //paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.05, 10.0, 0.1, tr("Time between two frames").toLatin1().data());
@@ -188,35 +193,37 @@ PCOSensicam::PCOSensicam() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.5, tr("Virtual offset").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("Binning of different pixel").toLatin1().data());
+    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 101, 101, tr("Binning of different pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("First column within the region of interest (zero-based, x0 < x1)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("First row within the region of interest (zero-based, y0 < y1)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Last column within the region of interest (zero-based, x0 < x1)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);    
-    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Last row within the region of interest (zero-based, y0 < y1)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 16, 16, 16, tr("bits per pixel").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("temperatures", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("CCD, camera and power supply temperatures in degree celcius").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("coolingSetPointTemperature", ito::ParamBase::Int, 0, 1000, 0, tr("Desired set point temperature for cooling").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("IRSensitivity", ito::ParamBase::Int, 0, 1, 1, tr("Switch the IR sensitivity of the image sensor, Parameter is not available for all cameras").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("pixelrate", ito::ParamBase::Int, 10, 40, 10, tr("Pixelrate of the image sensor in MHz").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("conversionFactor", ito::ParamBase::Double, 3.5, 3.8, 0.3, tr("Conversion factor in electrons/count").toLatin1().data());
+
+    int roi[] = {0, 0, 4048, 4048};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray | ito::ParamBase::In, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 4048), ito::RangeMeta(0, 4048));
+    paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 4047, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 4047, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 4047, 4047, tr("last pixel index in ROI (x-direction)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 4047, 4047, tr("last pixel index in ROI (y-direction)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 16, 16, 16, tr("bits per pixel").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("trigger", ito::ParamBase::Int | ito::ParamBase::In, 0, 2, 0, tr("trigger: software (0, default), external rising edge (1), external falling edge (2)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+
     //now create dock widget for this plugin
-    DockWidgetPCOCamera *dw = new DockWidgetPCOCamera(this);
+    DockWidgetPCOSensicam *dw = new DockWidgetPCOSensicam(this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
@@ -300,21 +307,8 @@ ito::RetVal PCOSensicam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if (!retVal.containsError())
     {
-        if (m_caminfo.wRoiHorStepsDESC == 0) //no roi functionality available
-        {
-            m_params["x0"].setFlags(ito::ParamBase::Readonly);
-            m_params["x1"].setFlags(ito::ParamBase::Readonly);
-            m_params["y0"].setFlags(ito::ParamBase::Readonly);
-            m_params["y1"].setFlags(ito::ParamBase::Readonly);
-        }
+		retVal += sychronizeParameters();
     }
-
-  /***********************************************************
-    The following step is a must. 
-    In SC2, bin proceeds ROI in control.  
-    ROI "field of definition" is subject to bin settings.
-    Please be advised that this is opposite to SensiCam SDK
-  *************************************************************/
 
     if(!retVal.containsError())
     {
@@ -322,10 +316,6 @@ ito::RetVal PCOSensicam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         m_params["bpp"].setVal<int>(bpp);
         m_params["bpp"].setMeta( new ito::IntMeta(bpp,bpp), true);
     }
-
-    retVal += sychronizeParameters();
-
-
 
     if(!retVal.containsError())
     {
@@ -400,7 +390,7 @@ ito::RetVal PCOSensicam::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
     bool hasIndex = false;
     int index;
     QString suffix;
-    QMap<QString,ito::Param>::iterator it;
+    ParamMapIterator it;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retVal += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
@@ -413,7 +403,7 @@ ito::RetVal PCOSensicam::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 
     if(!retVal.containsError())
     {
-        if (key == "temperatures")
+        /*if (key == "temperatures")
         {
             short ccdtemp, camtemp, powtemp;
             retVal += checkError(PCO_GetTemperature(m_hCamera, &ccdtemp, &camtemp, &powtemp));
@@ -422,7 +412,7 @@ ito::RetVal PCOSensicam::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
                 double temps[] = {(double)ccdtemp/10.0, (double)camtemp, (double)powtemp};
                 it->setVal<double*>(temps,3);                
             }            
-        }
+        }*/
         //finally, save the desired value in the argument val (this is a shared pointer!)
         *val = it.value();
     }
@@ -455,10 +445,7 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     bool hasIndex;
     int index;
     QString suffix;
-    QMap<QString, ito::Param>::iterator it;
-
-    int ret = 0, sizeX = 0, sizeY = 0;
-    int running = 0; // Used to check if grabber was running bevor
+    ParamMapIterator it;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retVal += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
@@ -477,11 +464,9 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         retVal += apiValidateParam(*it, *val, false, true);
     }  
 
-    char errbuffer[400] = {0};
-
     if (!retVal.containsError())
     {
-        if (key == "binning")
+        /*if (key == "binning")
         {
             WORD newbinY = val->getVal<int>() % 100;
             WORD newbinX = (val->getVal<int>() - newbinY) / 100;
@@ -578,114 +563,44 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 }
             }
                     
-        }
-        else if (key == "x0" || key == "x1" || key == "y0" || key == "y1")
+        }*/
+        //if (key == "x0" || key == "x1" || key == "y0" || key == "y1")
+        //{
+        //    if (grabberStartedCount() > 0)
+        //    {
+        //        retVal += stopCamera();
+        //    }
+
+        //    // Adapted parameters and send out depending parameter
+        //    WORD wRoiX0 = (key == "x0") ? val->getVal<int>() : m_params["x0"].getVal<int>();
+        //    WORD wRoiY0 = (key == "y0") ? val->getVal<int>() : m_params["y0"].getVal<int>(); 
+        //    WORD wRoiX1 = (key == "x1") ? val->getVal<int>() : m_params["x1"].getVal<int>(); 
+        //    WORD wRoiY1 = (key == "y1") ? val->getVal<int>() : m_params["y1"].getVal<int>();
+
+        //    //retVal += checkError(PCO_SetROI(m_hCamera, wRoiX0 + 1, wRoiY0 + 1, wRoiX1 + 1, wRoiY1 + 1)); //rois are 1/1-based
+        //    retVal += sychronizeParameters(); //here the current roi is checked and x0,x1,y0,y1,sizex and sizey are adapted!
+        //                
+        //    if (grabberStartedCount() > 0)
+        //    {
+        //        retVal += startCamera(); 
+        //    }
+        //}
+
+        if (key == "integration_time" || key == "delay_time" || key == "trigger")
         {
-            if (grabberStartedCount() > 0)
-            {
-                retVal += stopCamera();
-            }
-
-            // Adapted parameters and send out depending parameter
-            WORD wRoiX0 = (key == "x0") ? val->getVal<int>() : m_params["x0"].getVal<int>();
-            WORD wRoiY0 = (key == "y0") ? val->getVal<int>() : m_params["y0"].getVal<int>(); 
-            WORD wRoiX1 = (key == "x1") ? val->getVal<int>() : m_params["x1"].getVal<int>(); 
-            WORD wRoiY1 = (key == "y1") ? val->getVal<int>() : m_params["y1"].getVal<int>();
-
-            retVal += checkError(PCO_SetROI(m_hCamera, wRoiX0 + 1, wRoiY0 + 1, wRoiX1 + 1, wRoiY1 + 1)); //rois are 1/1-based
-            retVal += sychronizeParameters(); //here the current roi is checked and x0,x1,y0,y1,sizex and sizey are adapted!
-                        
-            if (grabberStartedCount() > 0)
-            {
-                retVal += startCamera(); 
-            }
-        }
-
-        else if (key == "integration_time")
-        {
-            double exposure = val->getVal<double>()*1000;
-
-            WORD timebase = 2;
-
-            if(exposure < 1.0)
-            {
-                exposure *= 1000;  
-                timebase--;
-            }
-            if(exposure < 1.0)
-            {
-                exposure *= 1000;  
-                timebase--;        
-            }
-            retVal += checkError(PCO_SetDelayExposureTime(m_hCamera,  
-                                            0,        // DWORD dwDelay
-                                            (DWORD)exposure,//(DWORD)dwExposure,
-                                            0,        // WORD wTimeBaseDelay, Timebase: 0-ns; 1-us; 2-ms 
-                                            (WORD)timebase));    // WORD wTimeBaseExposure
-
             if (!retVal.containsError())
             {
                 it->copyValueFrom( &(*val));
-            }                   
-        }
-        else if (key == "coolingSetPointTemperature")
-        {
-            short coolset = val->getVal<int>();
-            retVal += checkError(PCO_SetCoolingSetpointTemperature(m_hCamera, coolset));
-            if(!retVal.containsError())
-            {
-                retVal += checkError(PCO_GetCoolingSetpointTemperature(m_hCamera, &coolset));
-                it->setVal<int>(coolset);
-            }
+            }   
 
-        }
-        else if (key == "IRSensitivity")
-        {
-            WORD IRSens = val->getVal<int>();
-            retVal += checkError(PCO_SetIRSensitivity(m_hCamera, IRSens));
-            if(!retVal.containsError())
-            {
-                retVal += checkError(PCO_GetIRSensitivity(m_hCamera, &IRSens));
-                it->setVal<int>(IRSens);
-            }
-        }
-        else if (key == "pixelrate")
-        {
-            DWORD pixelrate = val->getVal<int>() * 1000000;
-
-            for (int i = 0; i < 4; ++i)
-            {
-                if (val->getVal<int>() * 1e6 == m_caminfo.dwPixelRateDESC[i])
-                {
-                    retVal += checkError(PCO_SetPixelRate(m_hCamera, pixelrate));
-                    break;
-                }
-
-                if (i == 3)
-                {
-                    retVal += ito::RetVal::format(ito::retError, 0, "given pixelrate is invalid. %i MHz given, [%i,%i,%i,%i] MHz allowed", val->getVal<int>(), m_caminfo.dwPixelRateDESC[0], m_caminfo.dwPixelRateDESC[1], m_caminfo.dwPixelRateDESC[2], m_caminfo.dwPixelRateDESC[3]);
-                }
-            }
-
-            if(!retVal.containsError())
-            {
-                retVal += checkError(PCO_GetPixelRate(m_hCamera, &pixelrate));
-                it->setVal<int>(pixelrate / 1e6);
-            }
-        }
-        else if (key == "conversionFactor")
-        {
-            WORD ConvFact = val->getVal<double>() * 100.0;
-            retVal += checkError(PCO_SetConversionFactor(m_hCamera, ConvFact));
-            if(!retVal.containsError())
-            {
-                retVal += checkError(PCO_GetConversionFactor(m_hCamera, &ConvFact));
-                it->setVal<double>(ConvFact / 100.0);
-            }
-        }
-        else
-        {
-            retVal += ito::RetVal::format(ito::retError,0, "parameter '%s' cannot be set", it->getName());
+			if (!retVal.containsError())
+			{
+				if (m_isstarted)
+				{
+					retVal += stopCamera();
+					retVal += startCamera();
+				}
+			}
         }
     }
 
@@ -695,12 +610,6 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     }
 
     retVal += checkData(); //check if image must be reallocated
-
-    if (running)
-    {
-        retVal += this->startDevice(0);
-        setGrabberStarted(running);
-    }
 
     if (waitCond) 
     {
@@ -788,20 +697,27 @@ ito::RetVal PCOSensicam::stopDevice(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PCOSensicam::stopCamera()
 {
-    ito::RetVal retVal = checkError( STOP_COC(m_hCamera, 0) );
+    ito::RetVal retVal;
+	
+	if (!m_isstarted)
+	{
+		retVal = checkError( STOP_COC(m_hCamera, 0) );
 
-    retVal += checkError( REMOVE_ALL_BUFFERS_FROM_LIST(m_hCamera) );
+		retVal += checkError( REMOVE_ALL_BUFFERS_FROM_LIST(m_hCamera) );
 
-    if (!retVal.containsError())
-    {
-        for (short sBufNr = 0; sBufNr < PCO_NUMBER_BUFFERS; ++sBufNr)
-        {
-            PCOBuffer *buffer = &(m_buffers[sBufNr]);
-            retVal += checkError(FREE_BUFFER(m_hCamera, buffer->bufNr));
-            buffer->bufNr = -1; //request new buffer
-            buffer->bufData = NULL;
-        }
-    }
+		if (!retVal.containsError())
+		{
+			for (short sBufNr = 0; sBufNr < PCO_NUMBER_BUFFERS; ++sBufNr)
+			{
+				PCOBuffer *buffer = &(m_buffers[sBufNr]);
+				retVal += checkError(FREE_BUFFER(m_hCamera, buffer->bufNr));
+				buffer->bufNr = -1; //request new buffer
+				buffer->bufData = NULL;
+			}
+		}
+	}
+
+	m_isstarted = false;
 
     return retVal;
 }
@@ -810,6 +726,238 @@ ito::RetVal PCOSensicam::stopCamera()
 ito::RetVal PCOSensicam::startCamera()
 {
     ito::RetVal retVal;
+
+	if (m_isstarted)
+	{
+		retVal += stopCamera();
+	}
+
+	//simple status information
+	int sta,temp1,temp2;
+	int x;
+	int roixmin, roixmax, roiymin, roiymax;
+	int hbin, vbin;
+	cam_param campar;
+	int mode, submode, trig;
+	char times[256];
+	memset(times, 0, 256 * sizeof(char));
+
+	retVal += checkError(GET_STATUS(m_hCamera,&sta,&temp1,&temp2));
+	//printf("GET_STATUS returned 0x%x %d %d\n",sta,temp1,temp2);
+
+	retVal += checkError(GET_CAM_PARAM(m_hCamera,&campar));
+	//printf("GET_CAM_PARAM failed with error 0x%x\n",err);
+
+	int exposure_ms = m_params["integration_time"].getVal<double>() * 1e3;
+	int delay_ms = m_params["delay_time"].getVal<double>() * 1e3;
+	int trigger = m_params["trigger"].getVal<int>();
+
+	//camera parameters
+	switch(campar.cam_typ)
+	{
+    default:
+		retVal += ito::RetVal::format(ito::retError, 0, "Invalid camera typ %d found",campar.cam_typ);
+     break;
+
+    case FASTEXP:
+		printf("Fast Shutter camera found\n");
+		mode=M_FAST;
+		submode=NORMALFAST;
+		trig=trigger;
+
+		/*int d,t;
+		GET_STATUS(hdriver,&d,&t,&t);
+		if((((d&0x0E00)>>9)>0x01)&&((d&0x00C0)==0x00C0))
+		printf(", DOUBLE modes avaiable\n");
+		else
+		printf("\n");*/
+
+		//1ms exposure time
+		sprintf(times,"0,1000000,-1,-1"); 
+     break;
+
+    case LONGEXP:
+		printf("Long Exposure camera found\n");
+		mode=M_LONG;
+		submode=NORMALLONG; //VIDEO; //NORMALLONG;
+		trig=trigger;
+		sprintf(times,"%i,%i,-1,-1",delay_ms,exposure_ms); 
+     break;
+
+    case OEM:
+		printf("Long Exposure OEM camera found\n");
+		mode=M_LONG;
+		submode=NORMALLONG;
+		trig=trigger;
+		sprintf(times,"%i,%i,-1,-1",delay_ms,exposure_ms);  
+     break;
+
+    case LONGEXPQE:
+		printf("Long Exposure QE camera found\n");
+		mode=M_LONG;
+		submode=NORMALLONG; //VIDEO; //NORMALLONG;
+		trig=trigger;
+		//10ms exposure time
+		sprintf(times,"0,10,-1,-1"); 
+     break;
+
+    case FASTEXPQE:
+		printf("Fast Exposure QE camera found\n");
+		mode=M_LONG;
+		submode=NORMALLONG; //VIDEO; //NORMALLONG;
+		trig=trigger;
+		//10ms exposure time
+		sprintf(times,"0,10,-1,-1"); 
+     break;
+
+    case DICAM:
+		printf("DicamPro camera found\n");
+		mode=M_DICAM;
+		submode=DPSINGLE;
+		trig=trigger;
+		//phosphor decay 2, mcpgain 990,0 delay,10ms exposure time
+		sprintf(times,"2,990,0,1,0,0,10,0,-1,-1"); 
+	}
+
+	//binning
+	int binning = m_params["binning"].getVal<int>();
+	vbin = binning % 100;
+	hbin = (binning - vbin) / 100;
+
+	//roi
+	const int *roi = m_params["roi"].getVal<int*>();
+	int hstep = m_caminfo.wRoiHorStepsDESC;
+	int vstep = m_caminfo.wRoiVertStepsDESC;
+
+	if (hstep > 0)
+	{
+		roixmin = 1 + roi[0] / hstep;
+		roixmax = std::ceil((float)(roi[0] + roi[2]) / (float)(hstep));
+	}
+	else
+	{
+		roixmin = 1;
+		roixmax = roi[0] + roi[2];
+	}
+
+	if (vstep > 0)
+	{
+		roiymin = 1 + roi[1] / vstep;
+		roiymax = std::ceil((float)(roi[1] + roi[3]) / (float)(vstep));
+	}
+	else
+	{
+		roiymin = 1;
+		roiymax = roi[1] + roi[3];
+	}
+
+	////get camera typ 
+	//switch(campar.cam_ccd)
+	//{
+	//default:
+	//	retVal += ito::RetVal(ito::retError, 0, "Invalid camera CCD-typ found");
+	//break;
+
+	//case CCD74:
+	//	printf("CCD74 640x480 black&white found\n");
+	//	roixmin=roiymin=1;
+	//	roixmax=20;
+	//	roiymax=15;
+	//	hbin=vbin=1;
+	//break;
+
+	//case CCD74C:
+	//	printf("CCD74 640x480 color found\n");
+	//	roixmin=roiymin=1;
+	//	roixmax=20;
+	//	roiymax=15;
+	//	hbin=vbin=1;
+	//break;
+
+	//case CCD85:
+	//	printf("CCD85 1280x1024 black&white found\n");
+	//	roixmin=roiymin=1;
+	//	roixmax=40;
+	//	roiymax=32;
+	//	hbin=vbin=1;
+	//break;
+
+	//case CCD85C:
+	//	printf("CCD85 1280x1024 color found\n");
+	//	roixmin=roiymin=1;
+	//	roixmax=40;
+	//	roiymax=32;
+	//	hbin=vbin=1;
+	//break;
+
+	//case CCD285QE:
+	//	printf("CCD285 1376x1040 black&white found\n");
+	//	roixmin=roiymin=1;
+	//	roixmax=43;
+	//	roiymax=33;
+	//	hbin=vbin=1;
+	//break;
+
+	//case CCD285QEF:
+	//	printf("CCD285 1376x1040 black&white with fast-mode found\n");
+	//	roixmin=roiymin=1;
+	//	roixmax=43;
+	//	roiymax=33;
+	//	hbin=vbin=1;
+	//break;
+
+	//case CCD285QED:
+	//	printf("CCD285 1376x1040 black&white with double-mode found\n");
+	//	roixmin=roiymin=1;
+	//	roixmax=43;
+	//	roiymax=33;
+	//	hbin=vbin=1;
+	//break;
+
+	//case CCDTIEM285:
+	//	printf("CCDTIEM285 1024x1002 black&white with fast-mode found\n");
+	//	roixmin=roiymin=1;
+	//	roixmax=32;
+	//	roiymax=32;
+	//	hbin=vbin=1;
+	//break;
+ //  }
+
+   if (!retVal.containsError())
+   {
+		//test and set camera values
+
+		//normal mode, auto triggger binning 1x1 max roi
+		//test if SET_COC gets right values 
+		int len=sizeof(times);
+		x = mode+(submode<<16);
+
+		int err = TEST_COC(m_hCamera,&x,&trig,&roixmin,&roixmax,&roiymin,&roiymax,&hbin,&vbin,times,&len);
+
+		if(err != PCO_NOERROR)
+		{
+			if((err&0xF000FFFF)==PCO_WARNING_SDKDLL_COC_VALCHANGE)
+			{
+				printf("\nTEST_COC changed some values\n");
+				printf("\nSET_COC(0x%x,%d,%d,%d,%d,%d,%d,%d,\"%s\"\n",
+					x,trig,roixmin,roixmax,roiymin,roiymax,hbin,vbin,times);
+			}
+			else if((err&0xF000FFFF)==PCO_WARNING_SDKDLL_COC_STR_SHORT)
+			{
+				retVal += ito::RetVal::format(ito::retError, err, "TEST_COC buffer for string not large enough need %d bytes",len);
+			}
+			else
+			{
+				retVal += ito::RetVal::format(ito::retError, err, "TEST_COC failed with error 0x%x",err);
+			}
+		}
+   }
+
+	if (!retVal.containsError())
+	{
+		//set camera values
+		retVal += checkError(SET_COC(m_hCamera,x,trig,roixmin,roixmax,roiymin,roiymax,hbin,vbin,times));
+	}
 
     int ccdxsize, ccdysize, width, height, bitpix;
     retVal += checkError(GETSIZES(m_hCamera, &ccdxsize, &ccdysize, &width, &height, &bitpix));
@@ -839,8 +987,13 @@ ito::RetVal PCOSensicam::startCamera()
 
     if (!retVal.containsError())
     {
-        retVal += checkError(RUN_COC(m_hCamera,0));
+        retVal += checkError(RUN_COC(m_hCamera,0)); //run with continuous mode
     }
+
+	if (!retVal.containsError())
+	{
+		m_isstarted = true;
+	}
 
     return retVal;
 }
@@ -848,8 +1001,99 @@ ito::RetVal PCOSensicam::startCamera()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PCOSensicam::sychronizeParameters()
 {
-    ito::RetVal retVal = checkError(PCO_ArmCamera(m_hCamera));
+	int mode, trig, roix1, roix2, roiy1, roiy2, hbin, vbin;
+	int ccdxsize, ccdysize, actxsize, actysize, bit_pix;
+	char table[64];
+	memset(table, 0, 64 * sizeof(char));
+	ParamMapIterator it;
 
+    ito::RetVal retVal = checkError(GET_COC_SETTING(m_hCamera,  &mode, &trig, &roix1, &roix2, &roiy1, &roiy2, &hbin, &vbin, table, 64));
+	retVal += checkError(GETSIZES(m_hCamera, &ccdxsize, &ccdysize, &actxsize, &actysize, &bit_pix));
+	int hstep = m_caminfo.wRoiHorStepsDESC;
+	int vstep = m_caminfo.wRoiVertStepsDESC;
+
+	if (!retVal.containsError())
+	{
+		it = m_params.find("sizex");
+		it->setMeta(new ito::IntMeta(1, ccdxsize), true);
+		it->setVal<int>(actxsize);
+
+		it = m_params.find("sizey");
+		it->setMeta(new ito::IntMeta(1, ccdysize), true);
+		it->setVal<int>(actysize);
+
+		it = m_params.find("x0");
+		if (hstep > 0)
+		{
+			it->setMeta(new ito::IntMeta(0, std::min(roix2*hstep, ccdxsize) - 1, hstep), true);
+		}
+		else
+		{
+			it->setMeta(new ito::IntMeta(0, 0, 1), true);
+			it->setFlags(ito::ParamBase::Readonly);
+		}
+		it->setVal<int>(std::min((roix1 - 1) * hstep, ccdxsize - 1));
+
+		it = m_params.find("x1");
+		if (hstep > 0)
+		{
+			it->setMeta(new ito::IntMeta(std::min((roix1 - 1) * hstep, ccdxsize - 1) + hstep, ccdxsize-1, hstep), true);
+		}
+		else
+		{
+			it->setMeta(new ito::IntMeta(ccdxsize-1, ccdxsize-1, 1), true);
+			it->setFlags(ito::ParamBase::Readonly);
+		}
+		it->setVal<int>(std::min(roix2 * hstep - 1, ccdxsize - 1));
+
+		it = m_params.find("y0");
+		if (hstep > 0)
+		{
+			it->setMeta(new ito::IntMeta(0, std::min(roiy2*vstep, ccdysize)-1, vstep), true);
+		}
+		else
+		{
+			it->setMeta(new ito::IntMeta(0, 0, 1), true);
+			it->setFlags(ito::ParamBase::Readonly);
+		}
+		it->setVal<int>(std::min((roiy1 - 1) * vstep, ccdysize - 1));
+
+		it = m_params.find("y1");
+		if (vstep > 0)
+		{
+			it->setMeta(new ito::IntMeta(std::min((roiy1 - 1) * vstep, ccdysize - 1) + vstep, ccdysize-1, vstep), true);
+		}
+		else
+		{
+			it->setMeta(new ito::IntMeta(ccdysize-1, ccdysize-1, 1), true);
+			it->setFlags(ito::ParamBase::Readonly);
+		}
+		it->setVal<int>(std::min(roiy2 * vstep - 1, ccdysize - 1));
+			
+		it = m_params.find("roi");
+		if (vstep > 0)
+		{
+			ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, ccdxsize, hstep), ito::RangeMeta(0, ccdysize, hstep));
+			it->setMeta(rm, true);
+		}
+		else
+		{
+			ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, ccdxsize, ccdxsize), ito::RangeMeta(0, ccdysize, ccdysize));
+			it->setMeta(rm, true);
+			it->setFlags(ito::ParamBase::Readonly);
+		}
+
+		int roi[4];
+		roi[0] = std::min((roix1 - 1) * hstep, ccdxsize - 1);
+		roi[1] = std::min((roiy1 - 1) * vstep, ccdysize - 1);
+		roi[2] = actxsize;
+		roi[3] = actysize;
+		it->setVal<int*>(roi, 4);
+	}
+	
+	
+	// = checkError(PCO_ArmCamera(m_hCamera));
+	/*
     WORD roiX0, roiY0, roiX1, roiY1;
     WORD sizeX, sizeY, sizeXMax, sizeYMax;
     WORD binX, binY;
@@ -903,7 +1147,7 @@ ito::RetVal PCOSensicam::sychronizeParameters()
         static_cast<ito::IntMeta*>(m_params["sizex"].getMeta())->setMax(m_caminfo.wMaxHorzResStdDESC/binX);
         static_cast<ito::IntMeta*>(m_params["sizey"].getMeta())->setMax(m_caminfo.wMaxVertResStdDESC/binY);
     }
-
+	*/
     return retVal;
 }
 
@@ -940,17 +1184,17 @@ ito::RetVal PCOSensicam::acquire(const int trigger, ItomSharedSemaphore *waitCon
         m_acquisitionRetVal = ito::retOk;
         if(!retVal.containsError())
         {
-            retVal += checkError(PCO_ForceTrigger(m_hCamera,&intrigger));
+            //retVal += checkError(PCO_ForceTrigger(m_hCamera,&intrigger));
         }
 
         if(retVal.containsError()) // || !intrigger)
         {
             retVal += ito::retError;
-            this->m_isgrabbing = false;
+            m_isgrabbing = false;
         }
         else
         {
-            this->m_isgrabbing = true;
+            m_isgrabbing = true;
         }
     }
 
@@ -966,31 +1210,7 @@ ito::RetVal PCOSensicam::acquire(const int trigger, ItomSharedSemaphore *waitCon
         m_acquisitionRetVal += checkError(READ_IMAGE_12BIT(m_hCamera, 0x0000, m_data.getSize(1), m_data.getSize(0), (unsigned short*)(m_data.rowPtr(0,0))));
     }
 
-
-    return retVal + m_acquisitionRetVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PCOSensicam::retrieveData(ito::DataObject *externalDataObject)
-{
-    ito::RetVal retVal(ito::retOk);
-    int ret = 0;
-    int timeOutMS = m_params["integration_time"].getVal<double>() * 2500 + 500; // *1300 because of ms and factor 2.5 and +500 minimum timeout for short integration time    
-    int curxsize = m_params["sizex"].getVal<int>();
-    int curysize = m_params["sizey"].getVal<int>();
-
-    bool hasListeners = false;
-    bool copyExternal = false;
-    if(m_autoGrabbingListeners.size() > 0)
-    {
-        hasListeners = true;
-    }
-    if(externalDataObject != NULL)
-    {
-        copyExternal = true;
-    }
-
-    QElapsedTimer timer;
+	/*QElapsedTimer timer;
     timer.start();
     bool waitingSuccessful = false;
     WORD *wBuf = NULL;
@@ -1009,9 +1229,9 @@ ito::RetVal PCOSensicam::retrieveData(ito::DataObject *externalDataObject)
             bufNumbers[ncount] = i;
             handles[ncount++] = m_buffers[i].bufEvent;
         }
-    }
+    }*/
 
-    while (timer.elapsed() < timeOutMS)
+    /*while (timer.elapsed() < timeOutMS)
     {
         ret = WaitForMultipleObjects(ncount, handles, false, 500);
 
@@ -1040,90 +1260,59 @@ ito::RetVal PCOSensicam::retrieveData(ito::DataObject *externalDataObject)
         {
             setAlive();
         }
-    }
+    }*/
 
-    if (!waitingSuccessful)
+
+    return retVal + m_acquisitionRetVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PCOSensicam::retrieveData(ito::DataObject *externalDataObject)
+{
+    ito::RetVal retVal = m_acquisitionRetVal;
+    int ret = 0;
+
+    bool hasListeners = false;
+    bool copyExternal = false;
+    if(m_autoGrabbingListeners.size() > 0)
     {
-        retVal += ito::RetVal(ito::retError, 1001, tr("timeout while waiting for image from PCO camera device").toLatin1().data());
+        hasListeners = true;
     }
-    else if (!retVal.containsError())
+    if(externalDataObject != NULL)
+    {
+        copyExternal = true;
+		retVal += checkData(externalDataObject);
+    }
+
+	if (!m_isgrabbing)
+	{
+		retVal += ito::RetVal(ito::retError, 0, "no image has been acquired");
+	}
+
+
+	if (!retVal.containsError())
     {      
-        int bpp = m_params["bpp"].getVal<int>();
-        if(bpp <= 8)
-        { 
-            ito::uint8 *cbuf=(ito::uint8*)wBuf;
-            if(cbuf == NULL)
+        if (externalDataObject)
+		{
+			switch (m_params["bpp"].getVal<int>())
             {
-                retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOSensicam failed, since retrieved NULL-Pointer.").toLatin1().data());
+                case 8:
+                    retVal += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)m_data.rowPtr(0,0), m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
+                    break;
+                case 16:
+                case 12:
+                    retVal += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)m_data.rowPtr(0,0), m_params["sizex"].getVal<int>(), m_params["sizey"].getVal<int>());
+                    break;
+                default:
+                    retVal += ito::RetVal(ito::retError, 0, tr("Wrong picture type").toLatin1().data());
+                    break;
             }
-            else
-            {
-                if (bpp < 8)
-                {
-                    //shift values such that range is 0..2**bpp and not (2**(8-bpp))..(2**8)
-                    int shift = (8 - bpp);
-                    for (int i = 0; i < (curxsize * curysize); ++i)
-                    {
-                        cbuf[i] >>= shift;
-                    }
-                }
-                if(copyExternal) retVal += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)cbuf, curxsize, curysize);
-                if(!copyExternal || hasListeners) retVal += m_data.copyFromData2D<ito::uint8>((ito::uint8*)cbuf, curxsize, curysize);
-            }
-        }
-        else if(bpp <= 16)
-        {
-            ito::uint16 *cbuf=(ito::uint16*)wBuf;
-            if(cbuf == NULL)
-            {
-                retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOSensicam failed, since retrieved NULL-Pointer.").toLatin1().data());
-            }
-            else
-            {
-                if (bpp < 16)
-                {
-                    //shift values such that range is 0..2**bpp and not (2**(16-bpp))..(2**16)
-                    int shift = (16 - bpp);
-                    for (int i = 0; i < (curxsize * curysize); ++i)
-                    {
-                        cbuf[i] >>= shift;
-                    }
-                }
-                if(copyExternal) retVal += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf, curxsize, curysize);
-                if(!copyExternal || hasListeners) retVal += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf, curxsize, curysize);
-            }
+		}
 
-        }
-        else if(bpp <= 32)
-        {
-            ito::int32 *cbuf=(ito::int32*)wBuf;
-            if(cbuf == NULL)
-            {
-                retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOSensicam failed, since retrieved NULL-Pointer.").toLatin1().data());
-            }
-            {
-                if (bpp < 32)
-                {
-                    //shift values such that range is 0..2**bpp and not (2**(32-bpp))..(2**32)
-                    int shift = (32 - bpp);
-                    for (int i = 0; i < (curxsize * curysize); ++i)
-                    {
-                        cbuf[i] >>= shift;
-                    }
-                }
-                if(copyExternal) retVal += externalDataObject->copyFromData2D<ito::int32>((ito::int32*)cbuf, curxsize, curysize);
-                if(!copyExternal || hasListeners) retVal += m_data.copyFromData2D<ito::int32>((ito::int32*)cbuf, curxsize, curysize);
-            }
-
-        }
-        else
-        {
-            retVal += ito::RetVal(ito::retError, 1002, tr("getVal of PCOSensicam failed, since undefined bitdepth.").toLatin1().data());            
-        }
-        this->m_isgrabbing = false;
+        m_isgrabbing = false;
     }
 
-    if (bufNr < 255) //try to requeue buffer
+    /*if (bufNr < 255) //try to requeue buffer
     {
         for (short i = 0; i < PCO_NUMBER_BUFFERS; ++i)
         {
@@ -1155,7 +1344,7 @@ ito::RetVal PCOSensicam::retrieveData(ito::DataObject *externalDataObject)
                 
             }
         }
-    }
+    }*/
 
     return retVal;
 }

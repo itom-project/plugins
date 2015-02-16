@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 
-#include "dialogPCOCamera.h"
+#include "DialogPCOSensicam.h"
 
 #include <qdialogbuttonbox.h>
 #include <qvector.h>
@@ -30,7 +30,7 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogPCOCamera::DialogPCOCamera(ito::AddInBase *grabber, PCO_Description &cameraDescription) :
+DialogPCOSensicam::DialogPCOSensicam(ito::AddInBase *grabber, SC_Camera_Description &cameraDescription) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true),
     m_camInfo(cameraDescription)
@@ -43,7 +43,7 @@ DialogPCOCamera::DialogPCOCamera(ito::AddInBase *grabber, PCO_Description &camer
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
+void DialogPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
 {
     m_currentParameters = params;
 
@@ -70,7 +70,7 @@ void DialogPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
         ui.comboBinningX->addItem(QString::number(1), 1);
         ui.comboBinningY->addItem(QString::number(1), 1);
 
-        if (m_camInfo.wBinHorzSteppingDESC > 0) //linear
+        /*if (m_camInfo.wBinHorzSteppingDESC > 0) //linear
         {
             for (int i = 2; i <= m_camInfo.wMaxBinHorzDESC; ++i)
             {
@@ -111,7 +111,7 @@ void DialogPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
             {
                 ui.comboPixelrate->addItem(QString("%1 Mhz").arg(m_camInfo.dwPixelRateDESC[i] / 1e6), (int)(m_camInfo.dwPixelRateDESC[i] / 1e6));
             }
-        }
+        }*/
 
         m_firstRun = false;
     }
@@ -196,7 +196,7 @@ void DialogPCOCamera::parametersChanged(QMap<QString, ito::Param> params)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DialogPCOCamera::applyParameters()
+ito::RetVal DialogPCOSensicam::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
@@ -303,7 +303,7 @@ ito::RetVal DialogPCOCamera::applyParameters()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogPCOCamera::on_buttonBox_clicked(QAbstractButton* btn)
+void DialogPCOSensicam::on_buttonBox_clicked(QAbstractButton* btn)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -324,7 +324,7 @@ void DialogPCOCamera::on_buttonBox_clicked(QAbstractButton* btn)
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void DialogPCOCamera::enableDialog(bool enabled)
+void DialogPCOSensicam::enableDialog(bool enabled)
 {
     ui.groupBoxBinning->setEnabled(enabled);
     ui.groupBoxIntegration->setEnabled(enabled);
@@ -332,7 +332,7 @@ void DialogPCOCamera::enableDialog(bool enabled)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogPCOCamera::on_rangeX01_valuesChanged(int minValue, int maxValue)
+void DialogPCOSensicam::on_rangeX01_valuesChanged(int minValue, int maxValue)
 {
     int min_ = minValue;
     int max_ = maxValue;
@@ -368,7 +368,7 @@ void DialogPCOCamera::on_rangeX01_valuesChanged(int minValue, int maxValue)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogPCOCamera::on_rangeY01_valuesChanged(int minValue, int maxValue)
+void DialogPCOSensicam::on_rangeY01_valuesChanged(int minValue, int maxValue)
 {
     int min_ = minValue;
     int max_ = maxValue;
@@ -404,7 +404,7 @@ void DialogPCOCamera::on_rangeY01_valuesChanged(int minValue, int maxValue)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogPCOCamera::on_btnFullROI_clicked()
+void DialogPCOSensicam::on_btnFullROI_clicked()
 {
     if (m_currentParameters.contains("sizex") && m_currentParameters.contains("sizey"))
     {

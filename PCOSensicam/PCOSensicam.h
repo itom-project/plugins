@@ -30,10 +30,6 @@
 #include <qsharedpointer.h>
 #include <QTimerEvent>
 
-#define PCO_ERRT_H_CREATE_OBJECT
-#include "PCO_errt.h"
-#undef PCO_ERRT_H_CREATE_OBJECT
-
 #include "SencamExport.h"
 #include "SC_SDKStructures.h"
 
@@ -100,6 +96,7 @@ class PCOSensicam : public ito::AddInGrabber
         PCOBuffer m_buffers[PCO_NUMBER_BUFFERS];
 
         bool m_isgrabbing;
+		bool m_isstarted;
         HANDLE m_hCamera;
 
         HANDLE m_hEvent;

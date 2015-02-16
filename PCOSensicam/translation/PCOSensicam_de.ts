@@ -2,9 +2,9 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="de">
 <context>
-    <name>DialogPCOCamera</name>
+    <name>DialogPCOSensicam</name>
     <message>
-        <location filename="../dialogPCOCamera.ui"/>
+        <location filename="../DialogPCOSensicam.ui"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -109,15 +109,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogPCOCamera.cpp" line="+52"/>
+        <location filename="../DialogPCOSensicam.cpp" line="+52"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>DockWidgetPCOCamera</name>
+    <name>DockWidgetPCOSensicam</name>
     <message>
-        <location filename="../dockWidgetPCOCamera.ui"/>
+        <location filename="../DockWidgetPCOSensicam.ui"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
