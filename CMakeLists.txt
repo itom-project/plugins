@@ -222,6 +222,14 @@ IF (WIN32)
   endif (PLUGIN_PCOCamera)
 ENDIF (WIN32)
 
+# PCOSensicam
+IF (WIN32)
+  OPTION(PLUGIN_PCOSensicam "Build with this plugin." ON)
+  if (PLUGIN_PCOSensicam)
+      ADD_SUBDIRECTORY(PCOSensicam)
+  endif (PLUGIN_PCOSensicam)
+ENDIF (WIN32)
+
 # PCOPixelFly
 IF (WIN32)
   OPTION(PLUGIN_PCOPixelFly "Build with this plugin." ON)
