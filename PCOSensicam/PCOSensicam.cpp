@@ -1173,7 +1173,7 @@ ito::RetVal PCOSensicam::acquire(const int trigger, ItomSharedSemaphore *waitCon
     int xsize = m_params["sizex"].getVal<int>();
     int ysize = m_params["sizey"].getVal<int>();
 	int bpp = m_params["bpp"].getVal<int>();
-	int delay_exp_ms = 1000 + (m_params["integration_time"].getVal<double>() + m_params["delay_time"].getVal<double>()) * 2e3; //give double the theoretical time for the timeout
+	int delay_exp_ms = 4000 + (m_params["integration_time"].getVal<double>() + m_params["delay_time"].getVal<double>()) * 2e3; //give double the theoretical time for the timeout
 	int imgsize = xsize*ysize*((bpp+7)/8);
 
     if(grabberStartedCount() <= 0 || !m_isstarted)
