@@ -25,7 +25,8 @@
 
 #include "common/addInInterface.h"
 #include <qsharedpointer.h>
-#include <QFile>
+#include <qfile.h>
+#include <qfileinfo.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class DataObjectIOInterface
@@ -76,6 +77,28 @@ class DataObjectIO : public ito::AddInAlgo
     public:
         friend class DataObjectIOInterface;
 
+        static enum ImageFormat
+        {
+            noFormat = 0x00,
+            tiffFormat = 0x01,
+            pgmFormat = 0x02,
+            ppmFormat = 0x03,
+            jpgFormat = 0x04,
+            jp2000Format = 0x05,
+            bmpFormat = 0x06,
+            pngFormat = 0x07,
+            sunFormat = 0x08
+        };
+
+        static enum
+        {
+            invWrite = 0x00,
+            invIgnor = 0x01,
+            invChange = 0x02,
+            invBAD = 0x03,
+            invHandlingMask = 0x0F
+        } tInvalidHandling;
+
         static ito::RetVal saveDataObject(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal saveDataObjectParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
@@ -91,7 +114,7 @@ class DataObjectIO : public ito::AddInAlgo
         static ito::RetVal saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal saveItomIDOParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
-        static ito::RetVal saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, const unsigned char imageFormat);
+        static ito::RetVal saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, const ImageFormat &imageFormat);
         static ito::RetVal saveTiff(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal saveTiffParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
         static ito::RetVal saveJPG(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
@@ -116,27 +139,7 @@ class DataObjectIO : public ito::AddInAlgo
         static ito::RetVal loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal loadItomIDOParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
-        static enum
-        {
-            noFormat = 0x00,
-            tiffFormat = 0x01,
-            pgmFormat = 0x02,
-            ppmFormat = 0x03,
-            jpgFormat = 0x04,
-            jp2000Format = 0x05,
-            bmpFormat = 0x06,
-            pngFormat = 0x07,
-            sunFormat = 0x08
-        } tImageFormat;
-
-        static enum
-        {
-            invWrite = 0x00,
-            invIgnor = 0x01,
-            invChange = 0x02,
-            invBAD = 0x03,
-            invHandlingMask = 0x0F
-        } tInvalidHandling;
+        
 
     private:
 
@@ -147,6 +150,7 @@ class DataObjectIO : public ito::AddInAlgo
         template<typename _Tp> static ito::RetVal readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int flags, const char seperator);
         static ito::RetVal readNistHeader(QFile &inFile, ito::DataObject &newObject, double &zscale,const int flags);
 
+        static void checkAndModifyFilenameSuffix(QFileInfo &file, const QString &desiredAndAllowedSuffix, const QString &allowedSuffix2 = QString(), const QString &allowedSuffix3 = QString());
 
 
     public slots:

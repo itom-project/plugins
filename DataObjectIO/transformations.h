@@ -687,9 +687,9 @@ template<typename _Tp> ito::RetVal transformImagetoData_ARGB32(QImage *image, it
 /*!
     
 */
-template<typename _TpSrc, typename _TpDest> ito::RetVal transformScaled(cv::Mat &image, cv::Mat *scrMat)  
+template<typename _TpSrc, typename _TpDest> ito::RetVal transformScaled(cv::Mat *image, const cv::Mat *scrMat)  
 {
-    _TpSrc *linePtr = NULL;  
+    const _TpSrc *linePtr = NULL;  
     _TpDest *destPtr = NULL;  
 
     if(std::numeric_limits<_TpSrc>::is_exact)
@@ -700,8 +700,8 @@ template<typename _TpSrc, typename _TpDest> ito::RetVal transformScaled(cv::Mat 
         unsigned char signCorrection = std::numeric_limits<_TpSrc>::is_signed ? 128 : 0;
         for (int row = 0; row < scrMat->rows; row++)
         {
-            destPtr = (_TpDest*)image.ptr<_TpDest>(row);
-            linePtr = (_TpSrc*)scrMat->ptr<_TpSrc>(row);
+            destPtr = (_TpDest*)image->ptr<_TpDest>(row);
+            linePtr = scrMat->ptr<const _TpSrc>(row);
             for (int col = 0; col < scrMat->cols; col++)
             {
                 //destPtr[col] = (_TpDest)(linePtr[col] >> bitShift) +  signCorrection;    
@@ -714,8 +714,8 @@ template<typename _TpSrc, typename _TpDest> ito::RetVal transformScaled(cv::Mat 
         _TpSrc scaling = (double) (1 << (sizeof(_TpDest) * 8));
         for (int row = 0; row < scrMat->rows; row++)
         {
-            destPtr = (_TpDest*)image.ptr<_TpDest>(row);
-            linePtr = (_TpSrc*)scrMat->ptr<_TpSrc>(row);
+            destPtr = image->ptr<_TpDest>(row);
+            linePtr = scrMat->ptr<const _TpSrc>(row);
             for (int col = 0; col < scrMat->cols; col++)
             {
                 destPtr[col] = cv::saturate_cast<_TpDest>(linePtr[col] * scaling);        
@@ -730,10 +730,10 @@ template<typename _TpSrc, typename _TpDest> ito::RetVal transformScaled(cv::Mat 
 /*!
     This Function transforms the pixel value of Format_ARGB32 type Image into respective DataObject.
 */
-template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat &image, cv::Mat *scrMat, const QVector<QRgb> &colorMap)  
+template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat *image, const cv::Mat *scrMat, const QVector<QRgb> &colorMap)  
 {
     
-    _TpSrc *linePtr = NULL;
+    const _TpSrc *linePtr = NULL;
     cv::Vec3b* destPtr = NULL;
 
     unsigned char index;
@@ -747,8 +747,8 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat &image,
 
         for (int row = 0; row < scrMat->rows; row++)
         {
-            linePtr = (_TpSrc*)scrMat->ptr<_TpSrc>(row);
-            destPtr = (cv::Vec3b*)image.ptr<cv::Vec3b>(row);
+            linePtr = scrMat->ptr<const _TpSrc>(row);
+            destPtr = image->ptr<cv::Vec3b>(row);
             for (int col = 0; col < scrMat->cols; col++)
             {
                 //index = (ito::uint8)(linePtr[col] >> bitShift) +  signCorrection;
@@ -764,8 +764,8 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat &image,
         _TpSrc scaling = 255.0;
         for (int row = 0; row < scrMat->rows; row++)
         {
-            linePtr = (_TpSrc*)scrMat->ptr<_TpSrc>(row);
-            destPtr = (cv::Vec3b*)image.ptr<cv::Vec3b>(row);
+            linePtr = scrMat->ptr<const _TpSrc>(row);
+            destPtr = image->ptr<cv::Vec3b>(row);
             for (int col = 0; col < scrMat->cols; col++)
             {
                 index = cv::saturate_cast<ito::uint8>(linePtr[col] * scaling);    
@@ -784,10 +784,10 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat &image,
 /*!
     This Function transforms the pixel value of Format_ARGB32 type Image into respective DataObject.
 */
-template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat &image, cv::Mat *scrMat, const QVector<QRgb> &colorMap)  
+template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat *image, const cv::Mat *scrMat, const QVector<QRgb> &colorMap)  
 {
     
-    _TpSrc *linePtr = NULL;
+    const _TpSrc *linePtr = NULL;
     cv::Vec4b* destPtr = NULL;
     unsigned char index;
 
@@ -800,8 +800,8 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat &image
 
         for (int row = 0; row < scrMat->rows; row++)
         {
-            destPtr = (cv::Vec4b*)image.ptr<cv::Vec4b>(row);
-            linePtr = (_TpSrc*)scrMat->ptr<_TpSrc>(row);
+            destPtr = image->ptr<cv::Vec4b>(row);
+            linePtr = scrMat->ptr<const _TpSrc>(row);
             for (int col = 0; col < scrMat->cols; col++)
             {
                 //index = (ito::uint8)(linePtr[col] >> bitShift) +  signCorrection;
@@ -818,8 +818,8 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat &image
         _TpSrc scaling = 255.0;
         for (int row = 0; row < scrMat->rows; row++)
         {
-            destPtr = (cv::Vec4b*)image.ptr<cv::Vec4b>(row);
-            linePtr = (_TpSrc*)scrMat->ptr<_TpSrc>(row);
+            destPtr = image->ptr<cv::Vec4b>(row);
+            linePtr = scrMat->ptr<const _TpSrc>(row);
             for (int col = 0; col < scrMat->cols; col++)
             {
                 index = cv::saturate_cast<ito::uint8>(linePtr[col] * scaling);    
