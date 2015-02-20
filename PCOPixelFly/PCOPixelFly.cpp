@@ -51,8 +51,6 @@
     #pragma comment(lib, "Version.lib")
 #endif
 
-Q_DECLARE_METATYPE(ito::DataObject)
-
 //int PCOPixelFlyInterface::m_instCounter = 5;  // initialization starts with five due to normal boards are 0..4
 
 static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successfull initialized board (max = 5) */
