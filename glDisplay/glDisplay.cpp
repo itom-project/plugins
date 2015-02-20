@@ -100,9 +100,9 @@ Allowed values for these tags are: \n\
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("y0", ito::ParamBase::Int, -4096, 4096, 0, tr("y0 position of window").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("xsize", ito::ParamBase::Int, 0, 4096, 0, tr("height of window, if 0 (default) the window is positioned in the second screen or gets a default width of 100px if no second screen is available.").toLatin1().data());
+    paramVal = ito::Param("xsize", ito::ParamBase::Int, 0, 4096, 0, tr("width of window, if 0 (default) the window is positioned in the second screen or gets a default width of 100px if no second screen is available.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("ysize", ito::ParamBase::Int, 0, 4096, 0, tr("width of window, if 0 (default) the window is positioned in the second screen or gets a default height of 100px if no second screen is available.").toLatin1().data());
+    paramVal = ito::Param("ysize", ito::ParamBase::Int, 0, 4096, 0, tr("height of window, if 0 (default) the window is positioned in the second screen or gets a default height of 100px if no second screen is available.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table for a gamma correction with 256 values. If given, the gamma correction will be enabled (default: off) and the projected values are then modified with lut[value].").toLatin1().data());
