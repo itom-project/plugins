@@ -40,6 +40,8 @@
 
 #include "common/helperCommon.h"
 
+#include "FlyCapture2Defs.h"
+
 static signed char InitList[MAXPGR + 1];
 static char Initnum = 0;
 
@@ -1593,6 +1595,12 @@ ito::RetVal PGRFlyCapture::acquire(const int trigger, ItomSharedSemaphore *waitC
         if (!retValue.containsError())
         {
             m_acquisitionStatus = checkError(m_myCam.RetrieveBuffer(&m_imageBuffer));
+
+			if (m_acquisitionStatus.containsError() && m_acquisitionStatus.errorCode() == FlyCapture2::PGRERROR_IMAGE_CONSISTENCY_ERROR)
+			{
+				//try one more time
+				m_acquisitionStatus = checkError(m_myCam.RetrieveBuffer(&m_imageBuffer));
+			}
         }
         else
         {
