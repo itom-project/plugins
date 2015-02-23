@@ -182,12 +182,9 @@ PCOSensicam::PCOSensicam() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.001, 1000.0, 0.01, tr("Integrationtime of CCD programmed in s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("delay_time", ito::ParamBase::Double, 0.0, 1000.0, 0.0, tr("Delay time of CCD programmed in s").toLatin1().data());
+	paramVal = ito::Param("delay_time", ito::ParamBase::Double, 0.0, 1000.0, 0.0, tr("Delay time between trigger signal and start of image acquisition in s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    // is not used anywhere...
-    //paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.05, 10.0, 0.1, tr("Time between two frames").toLatin1().data());
-    //m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 1.0, tr("Virtual gain").toLatin1().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.0, tr("Virtual gain").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.0, tr("Virtual offset (not available here)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -214,7 +211,7 @@ PCOSensicam::PCOSensicam() :
     paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 4047, 4047, tr("last pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 16, 16, 16, tr("bits per pixel").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 12, 12, 12, tr("bits per pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("trigger", ito::ParamBase::Int | ito::ParamBase::In, 0, 2, 0, tr("trigger: software (0, default), external rising edge (1), external falling edge (2)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
