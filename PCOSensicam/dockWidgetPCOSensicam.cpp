@@ -24,6 +24,7 @@
 
 
 #include <qmetaobject.h>
+#include "cam_types.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DockWidgetPCOSensicam::DockWidgetPCOSensicam(ito::AddInDataIO *grabber) :
@@ -44,14 +45,30 @@ void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
 
     if (m_firstRun)
     {
-        ui.spinBox_gain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
-        ui.horizontalSlider_gain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
+        ui.comboGainMode->clear();
+        ui.comboGainMode->addItem("normal analog gain", 0);
+        ui.comboGainMode->addItem("extended analog gain", 1);
+        if (params["gain_mode"].getMax() > 1)
+        {
+            ui.comboGainMode->addItem("low light mode", 3);
+        }
 
-        ui.spinBox_offset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
-        ui.horizontalSlider_offset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
-
-        ui.doubleSpinBox_integration_time->setDisabled( params["integration_time"].getFlags() & ito::ParamBase::Readonly );
-
+        switch (params["cam_type"].getVal<int>())
+        {
+            case FASTEXP: //"Fast Exposure"
+            case FASTEXPQE: //"Fast Exposure QE"
+                ui.checkFastMode->setChecked(true);
+                ui.checkFastMode->setEnabled(false);
+                break;
+            case LONGEXPQE: //"Long Exposure QE"
+            case OEM:
+            case LONGEXP: //"Long Exposure"
+            case LONGEXPI: //"Long Exposure special"
+                ui.checkFastMode->setChecked(false);
+                ui.checkFastMode->setEnabled(true);
+                break;
+        }
+        
         m_firstRun = false;
     }
     
@@ -59,49 +76,168 @@ void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
     {
         m_inEditing = true;
 
-        ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
-        ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
-        ui.doubleSpinBox_integration_time->setSingleStep(params["integration_time"].getMin() *1000.0);
-        ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>() *1000.0);
+        switch (params["cam_type"].getVal<int>())
+        {
+            case FASTEXP: //"Fast Exposure"
+            case FASTEXPQE: //"Fast Exposure QE"
+                exposureToSecFactor = 1e-6;
+                ui.slider_delay->setSuffix(" 탎");
+                ui.slider_delay->setMinimum(0.0);
+                ui.slider_delay->setMaximum(1000.0);
+                ui.slider_delay->setSingleStep(0.1);
+                ui.slider_delay->setDecimals(1);
+                ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
 
-        ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
-        ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
+                ui.slider_exposure->setSuffix(" 탎");
+                ui.slider_exposure->setMinimum(0.0);
+                ui.slider_exposure->setMaximum(1000.0);
+                ui.slider_exposure->setSingleStep(0.1);
+                ui.slider_exposure->setDecimals(1);
+                ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                break;
+            case LONGEXPQE: //"Long Exposure QE"
+                {
+                    if (params["fast_mode"].getVal<int>())
+                    {
+                        exposureToSecFactor = 1e-6;
+                        ui.slider_delay->setSuffix(" 탎");
+                        ui.slider_delay->setMinimum(0.0);
+                        ui.slider_delay->setMaximum(50000.0);
+                        ui.slider_delay->setSingleStep(0.1);
+                        ui.slider_delay->setDecimals(1);
+                        ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                        ui.slider_exposure->setSuffix(" 탎");
+                        ui.slider_exposure->setMinimum(0.5);
+                        ui.slider_exposure->setMaximum(10000.0);
+                        ui.slider_exposure->setSingleStep(0.1);
+                        ui.slider_exposure->setDecimals(1);
+                        ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                    }
+                    else
+                    {
+                        exposureToSecFactor = 1e-3;
+                        ui.slider_delay->setSuffix(" ms");
+                        ui.slider_delay->setMinimum(0.0);
+                        ui.slider_delay->setMaximum(1000000.0);
+                        ui.slider_delay->setSingleStep(1);
+                        ui.slider_delay->setDecimals(0);
+                        ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                        ui.slider_exposure->setSuffix(" ms");
+                        ui.slider_exposure->setMinimum(1.0);
+                        ui.slider_exposure->setMaximum(1000000.0);
+                        ui.slider_exposure->setSingleStep(1);
+                        ui.slider_exposure->setDecimals(0);
+                        ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                    }
+                    break;
+                }
+            case OEM:
+            case LONGEXP: //"Long Exposure"
+            case LONGEXPI: //"Long Exposure special"
+                {
+                    if (params["fast_mode"].getVal<int>())
+                    {
+                        exposureToSecFactor = 75.0 / (1e-6);
+                        ui.slider_delay->setSuffix(" * 75 탎");
+                        ui.slider_delay->setMinimum(0.0);
+                        ui.slider_delay->setMaximum(200.0);
+                        ui.slider_delay->setSingleStep(1.0);
+                        ui.slider_delay->setDecimals(0);
+                        ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                        ui.slider_exposure->setSuffix(" * 75 탎");
+                        ui.slider_exposure->setMinimum(1.0);
+                        ui.slider_exposure->setMaximum(200.0);
+                        ui.slider_exposure->setSingleStep(1.0);
+                        ui.slider_exposure->setDecimals(0);
+                        ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                    }
+                    else
+                    {
+                        exposureToSecFactor = 1e-3;
+                        ui.slider_delay->setSuffix(" ms");
+                        ui.slider_delay->setMinimum(0.0);
+                        ui.slider_delay->setMaximum(1000000.0);
+                        ui.slider_delay->setSingleStep(1);
+                        ui.slider_delay->setDecimals(0);
+                        ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                        ui.slider_exposure->setSuffix(" ms");
+                        ui.slider_exposure->setMinimum(1.0);
+                        ui.slider_exposure->setMaximum(1000000.0);
+                        ui.slider_exposure->setSingleStep(1);
+                        ui.slider_exposure->setDecimals(0);
+                        ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                    }
+                    break;
+                }
+        }
+
+        ui.slider_exposure->setMaximum(params["integration_time"].getMax() *1000.0);
+        ui.slider_exposure->setMinimum(params["integration_time"].getMin() *1000.0);
+        ui.slider_exposure->setSingleStep(params["integration_time"].getMin() *1000.0);
+        ui.slider_exposure->setValue(params["integration_time"].getVal<double>() *1000.0);
+
+        ui.checkFastMode->setChecked(params["fast_mode"].getVal<int>() > 0 ? true : false);
+
+        for (int i = 0; i < ui.comboGainMode->count(); ++i)
+        {
+            if (ui.comboGainMode->itemData(i).toInt() == params["gain_mode"].getVal<int>())
+            {
+                ui.comboGainMode->setCurrentIndex(i);
+                break;
+            }
+        }
 
         m_inEditing = false;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetPCOSensicam::on_spinBox_gain_valueChanged(int d)
+void DockWidgetPCOSensicam::on_checkFastMode_toggled(bool checked)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain",ito::ParamBase::Double,d/100.0));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("fast_mode",ito::ParamBase::Int,checked ? 1 : 0));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetPCOSensicam::on_spinBox_offset_valueChanged(int d)
+void DockWidgetPCOSensicam::on_comboGainMode_currentIndexChanged(int index)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("offset",ito::ParamBase::Double,d/100.0));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain_mode",ito::ParamBase::Int, ui.comboGainMode->itemData(index).toInt()));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetPCOSensicam::on_doubleSpinBox_integration_time_valueChanged(double d)
+void DockWidgetPCOSensicam::on_slider_exposure_valueChanged(double d)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,d/1000.0));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,d * exposureToSecFactor));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPCOSensicam::on_slider_delay_valueChanged(double d)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("delay_time",ito::ParamBase::Double,d * exposureToSecFactor));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
