@@ -43,15 +43,17 @@ class DockWidgetPCOSensicam : public ito::AbstractAddInDockWidget
         Ui::DockWidgetPCOSensicam ui;
         bool m_inEditing;
         bool m_firstRun;
+        double exposureToSecFactor;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier);
 
     private slots:
-        void on_spinBox_offset_valueChanged(int d);
-        void on_spinBox_gain_valueChanged(int d);
-        void on_doubleSpinBox_integration_time_valueChanged(double d);
+        void on_checkFastMode_toggled(bool checked);
+        void on_comboGainMode_currentIndexChanged(int index);
+        void on_slider_exposure_valueChanged(double d);
+        void on_slider_delay_valueChanged(double d);
 };
 
 #endif //DOCKWIDGETPCOSENSICAM_H

@@ -80,9 +80,18 @@ class PCOSensicam : public ito::AddInGrabber
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
-        ito::RetVal stopCamera();
-        ito::RetVal startCamera();
-        ito::RetVal sychronizeParameters();
+        struct COCValues
+        {
+            int mode;
+            int trig;
+            int roix1;
+            int roix2;
+            int roiy1;
+            int roiy2;
+            int hbin;
+            int vbin;
+            QByteArray table;
+        };
 
         struct PCOBuffer
         {
@@ -93,14 +102,17 @@ class PCOSensicam : public ito::AddInGrabber
             HANDLE bufEvent;
         };
 
+        ito::RetVal stopCamera();
+        ito::RetVal startCamera();
+        ito::RetVal synchronizeParameters();
+        int test_coc2(COCValues &cocValues);
+
         PCOBuffer m_buffers[PCO_NUMBER_BUFFERS];
 
         bool m_isgrabbing;
 		bool m_isstarted;
         HANDLE m_hCamera;
-
-        HANDLE m_hEvent;
-        WORD m_wActSeg;
+        COCValues m_cocValues;
 
         SC_Camera_Description m_caminfo;
         ito::RetVal m_acquisitionRetVal;

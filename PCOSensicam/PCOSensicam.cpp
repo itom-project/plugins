@@ -172,7 +172,6 @@ PCOSensicam::PCOSensicam() :
     AddInGrabber(),
     m_isgrabbing(false),
     m_hCamera(NULL),
-    m_hEvent(NULL),
 	m_isstarted(false)
 {
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
@@ -184,11 +183,17 @@ PCOSensicam::PCOSensicam() :
     m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("delay_time", ito::ParamBase::Double, 0.0, 1000.0, 0.0, tr("Delay time between trigger signal and start of image acquisition in s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.0, tr("Virtual gain").toLatin1().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("gain (not available here, see gain mode)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.0, tr("Virtual offset (not available here)").toLatin1().data());
+    paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.0, tr("offset (not available here)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 101, 101, tr("Binning of different pixel").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("fast_mode", ito::ParamBase::Int, 0, 1, 0, tr("long exposure camera types can enable a fast acquisition mode. The step size and range of integration_time and delay_time are then changed.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("gain_mode", ito::ParamBase::Int, 0, 1, 0, tr("0: normal analog gain, 1: extended analog gain, 3: low light mode (only for sensicam qe standard and sensicam qe double shutter)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toLatin1().data());
@@ -211,9 +216,16 @@ PCOSensicam::PCOSensicam() :
     paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 4047, 4047, tr("last pixel index in ROI (y-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 12, 12, 12, tr("bits per pixel").toLatin1().data());
+    paramVal = ito::Param("ccd_temperature", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, -30, 65, -12, tr("current temperature of CCD").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("electronic_temperature", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, -30, 65, -12, tr("current temperature of electronics").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 12, 12, 12, tr("bits per pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("trigger", ito::ParamBase::Int | ito::ParamBase::In, 0, 2, 0, tr("trigger: software (0, default), external rising edge (1), external falling edge (2)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("cam_type", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 0, 10, 0, tr("PCO internal type number of camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
 
@@ -296,13 +308,66 @@ ito::RetVal PCOSensicam::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if (!retVal.containsError())
     {
+        cam_param campar;
+        retVal += checkError(GET_CAM_PARAM(m_hCamera,&campar));
+
+        if (!retVal.containsError())
+        {
+            ParamMapIterator it;
+            m_params["cam_type"].setVal<int>(campar.cam_typ);
+
+            switch (campar.cam_typ)
+            {
+            case NOCAM:
+            case DICAM:
+            case TEST:
+                retVal += ito::RetVal::format(ito::retError, 0, "unsupported camera type: %s", CAMTYPE_NAMES[campar.cam_typ]);
+                break;
+            
+            case FASTEXP: //"Fast Exposure"
+            case FASTEXPQE: //"Fast Exposure QE"
+                m_params["fast_mode"].setMeta(new ito::IntMeta(1,1,1), true);
+                m_params["fast_mode"].setFlags(ito::ParamBase::Readonly);
+                it = m_params.find("integration_time");
+                it->setMeta(new ito::DoubleMeta(0.0, 1.0e-3, 100e-9), true); //0 - 1ms in steps of 100ns
+                it->setVal<double>(1e-3); //default: 1ms
+                it = m_params.find("delay_time");
+                it->setMeta(new ito::DoubleMeta(0.0, 1.0e-3, 100e-9), true); //0 - 1e6 in steps of 100ns
+                it->setVal<double>(0.0); //no delay
+                break;
+            case LONGEXPQE: //"Long Exposure QE"
+                it = m_params.find("gain_mode");
+                it->setMeta(new ito::IntMeta(0,3,1), true);
+                it->setVal<int>(0);
+            case OEM:
+            case LONGEXP: //"Long Exposure"
+            case LONGEXPI: //"Long Exposure special"
+                m_params["fast_mode"].setMeta(new ito::IntMeta(0,1,0), true);
+                m_params["fast_mode"].setFlags(0);
+                it = m_params.find("integration_time");
+                it->setMeta(new ito::DoubleMeta(1.0e-3, 1000.0, 1.0e-3), true); //1 - 1000.0s in steps of 1ms
+                it->setVal<double>(10e-3); //default: 10ms
+                it = m_params.find("delay_time");
+                it->setMeta(new ito::DoubleMeta(0.0, 1000.0, 1.0e-3), true); //0 - 1000.0s in steps of 1ms
+                it->setVal<double>(0.0); //no delay
+                break;
+            default:
+                retVal += ito::RetVal::format(ito::retError, 0, "unsupported and unknown camera type");
+                break;
+
+            }
+        }
+    }
+
+    if (!retVal.containsError())
+    {
         m_params["name"].setVal<char*>(CAMTYPE_NAMES[m_caminfo.wCameraTypeDESC]);
         setIdentifier(QString("%1 (%2)").arg(CAMTYPE_NAMES[m_caminfo.wCameraTypeDESC]).arg( getID() ));
     }
 
     if (!retVal.containsError())
     {
-		retVal += sychronizeParameters();
+		retVal += synchronizeParameters();
     }
 
     if(!retVal.containsError())
@@ -398,16 +463,25 @@ ito::RetVal PCOSensicam::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
 
     if(!retVal.containsError())
     {
-        /*if (key == "temperatures")
+        if (key == "ccd_temperature")
         {
-            short ccdtemp, camtemp, powtemp;
-            retVal += checkError(PCO_GetTemperature(m_hCamera, &ccdtemp, &camtemp, &powtemp));
+            cam_values camValues;
+            retVal += checkError(GET_CAM_VALUES(m_hCamera,&camValues));
             if (!retVal.containsError())
             {
-                double temps[] = {(double)ccdtemp/10.0, (double)camtemp, (double)powtemp};
-                it->setVal<double*>(temps,3);                
-            }            
-        }*/
+                it->setVal<int>(camValues.ccdtemp);
+            }          
+        }
+        else if (key == "electronic_temperature")
+        {
+            cam_values camValues;
+            retVal += checkError(GET_CAM_VALUES(m_hCamera,&camValues));
+            if (!retVal.containsError())
+            {
+                it->setVal<int>(camValues.eletemp);
+            }  
+        }
+
         //finally, save the desired value in the argument val (this is a shared pointer!)
         *val = it.value();
     }
@@ -461,127 +535,197 @@ ito::RetVal PCOSensicam::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
     if (!retVal.containsError())
     {
-        /*if (key == "binning")
+        if (key == "x0" || key == "y0" || key == "x1" || key == "y1" || key == "roi")
         {
-            WORD newbinY = val->getVal<int>() % 100;
-            WORD newbinX = (val->getVal<int>() - newbinY) / 100;
-            WORD oldbinY = it->getVal<int>() % 100;
-            WORD oldbinX = (it->getVal<int>() - oldbinY) / 100;
+            it->copyValueFrom( &(*val));
+            int rois[] = {m_params["x0"].getVal<int>(), m_params["y0"].getVal<int>(), m_params["x1"].getVal<int>() - m_params["x0"].getVal<int>() + 1, m_params["y1"].getVal<int>() - m_params["y0"].getVal<int>() + 1};
+            m_params["roi"].setVal<int*>(rois, 4);
 
-            if (newbinX < 1 || newbinY < 1)
-            {
-                retVal += ito::RetVal(ito::retError, 0, tr("binning in X and Y must be >= 1 (>= 101 in total)").toLatin1().data());
-            }
-            else if (newbinX > m_caminfo.wMaxBinHorzDESC) //linear or binary
-            {
-                retVal += ito::RetVal(ito::retError, 0, tr("binning in X must be in range [1,%i]").arg(m_caminfo.wMaxBinHorzDESC).toLatin1().data());
-            }
-            else if (newbinY > m_caminfo.wMaxBinVertDESC) //linear or binary
-            {
-                retVal += ito::RetVal(ito::retError, 0, tr("binning in Y must be in range [1,%i]").arg(m_caminfo.wMaxBinVertDESC).toLatin1().data());
-            }
-            else if (m_caminfo.wBinHorzSteppingDESC == 0) //binary (check steps)
-            {
-                WORD count = 1;
-                while (count < newbinX)
-                {
-                    count <<= 1; //*=2
-                }
+            if (m_isstarted)
+			{
+				retVal += stopCamera();
+				retVal += startCamera();
+			}
+        }
+        else if (key == "roi")
+        {
+            const int *roi = val->getVal<int*>();
+            it->copyValueFrom( &(*val));
+            m_params["x0"].setVal<int>(roi[0]);
+            m_params["x1"].setVal<int>(roi[2] + roi[0] - 1);
+            m_params["y0"].setVal<int>(roi[1]);
+            m_params["y1"].setVal<int>(roi[3] + roi[1] - 1);
 
-                if (count != newbinX)
+            if (m_isstarted)
+			{
+				retVal += stopCamera();
+				retVal += startCamera();
+			}
+        }
+        else if (key == "binning")
+        {
+            int binV = val->getVal<int>() % 100;
+            int binH = (val->getVal<int>() - binV) / 100;
+            if (binV != 1 && binV != 2 && binV != 4 && binV != 8)
+            {
+                retVal += ito::RetVal(ito::retError, 0, "the vertical binning values must be (1,2,4,8), hence, binning = 101, 102, 104, 108, 201, ...");
+            }
+            else if (binH != 1 && binH != 2 && binH != 4 && binH != 8)
+            {
+                retVal += ito::RetVal(ito::retError, 0, "the horizontal binning values must be (1,2,4,8), hence, binning = 101, 201, 401, 801, ...");
+            }
+            else
+            {
+                COCValues coc = m_cocValues;
+                coc.vbin = binV;
+                coc.hbin = binH;
+                int ret = test_coc2(coc);
+                if (ret == PCO_NOERROR)
                 {
-                    retVal += ito::RetVal(ito::retError, 0, tr("binning in X must be in binary steps [1,2,4,8 ...]").toLatin1().data());
+                    it->copyValueFrom( &(*val));
+
+                    if (m_isstarted)
+				    {
+					    retVal += stopCamera();
+					    retVal += startCamera();
+				    }
+                }
+                else if (ret == PCO_WARNING_SDKDLL_COC_VALCHANGE)
+                {
+                    retVal += ito::RetVal::format(ito::retError, 0, "invalid binning values. Camera proposes hbin: %i and vbin: %i", coc.hbin, coc.vbin);
+                }
+                else
+                {
+                    retVal += checkError(ret);
                 }
             }
-            else if (m_caminfo.wBinVertSteppingDESC == 0) //binary (check steps)
+        }
+        else if ("trigger")
+        {
+            COCValues coc = m_cocValues;
+            coc.trig = val->getVal<int>();
+            int ret = test_coc2(coc);
+            if (ret == PCO_NOERROR)
             {
-                WORD count = 1;
-                while (count < newbinY)
-                {
-                    count <<= 1; //*=2
-                }
+                it->copyValueFrom( &(*val));
 
-                if (count != newbinY)
+                if (m_isstarted)
+				{
+					retVal += stopCamera();
+					retVal += startCamera();
+				}
+            }
+            else if (ret == PCO_WARNING_SDKDLL_COC_VALCHANGE)
+            {
+                retVal += ito::RetVal::format(ito::retError, 0, "invalid trigger value. Camera proposes %i", coc.trig);
+            }
+            else
+            {
+                retVal += checkError(ret);
+            }
+        }
+        else if (key == "fast_mode")
+        {
+            cam_param campar;
+            retVal += checkError(GET_CAM_PARAM(m_hCamera,&campar));
+
+            if (!retVal.containsError())
+            {
+                ParamMapIterator it;
+
+                switch (campar.cam_typ)
                 {
-                    retVal += ito::RetVal(ito::retError, 0, tr("binning in Y must be in binary steps [1,2,4,8 ...]").toLatin1().data());
+                case FASTEXP: //"Fast Exposure"
+                case FASTEXPQE: //"Fast Exposure QE"
+                    //readonly, nothing to do, only fast mode available
+                    break;
+                case OEM:
+                case LONGEXP: //"Long Exposure"
+                case LONGEXPI: //"Long Exposure special"
+                case LONGEXPQE: //"Long Exposure QE"
+                {
+                    if (val->getVal<int>() == 0)
+                    {
+                        it = m_params.find("integration_time");
+                        it->setMeta(new ito::DoubleMeta(1.0e-3, 1000.0, 1.0e-3), true); //1 - 1e6 in steps of 1ms
+                        it->setVal<double>(qBound(1.0e-3, it->getVal<double>(), 1000.0));
+                        it = m_params.find("delay_time");
+                        it->setMeta(new ito::DoubleMeta(0.0, 1000.0, 1.0e-3), true); //0 - 1e6 in steps of 1ms
+                        it->setVal<double>(qBound(0.0, it->getVal<double>(), 1000.0));
+                    }
+                    else
+                    {
+                        if (campar.cam_typ == LONGEXPQE) //QE_FAST
+                        {
+                            it = m_params.find("integration_time");
+                            it->setMeta(new ito::DoubleMeta(500.0e-9, 10e-3, 100e-9), true); //500ns to 10ms in steps to 100ns
+                            it->setVal<double>(qBound(500.0e-9, it->getVal<double>(), 10e-3));
+                            it = m_params.find("delay_time");
+                            it->setMeta(new ito::DoubleMeta(0.0, 50e-3, 100e-9), true); //0 - 50ms in steps of 100ns
+                            it->setVal<double>(qBound(0.0, it->getVal<double>(), 50e-3)); //no delay
+                        }
+                        else //EM_FAST
+                        {
+                            it = m_params.find("integration_time");
+                            it->setMeta(new ito::DoubleMeta(75e-6, 15e-3, 75e-6), true); //75 - 15ms in steps of 75mus
+                            it->setVal<double>(qBound(75e-6, it->getVal<double>(), 15e-3));
+                            it = m_params.find("delay_time");
+                            it->setMeta(new ito::DoubleMeta(0.0, 15e-3, 75e-6), true); //0 - 15ms in steps of 75mus
+                            it->setVal<double>(qBound(0.0, it->getVal<double>(), 15e-3));
+                        }
+                    }
+                }
+                    break;
                 }
             }
 
             if (!retVal.containsError())
             {
-                if (grabberStartedCount() > 0)
+                it->copyValueFrom( &(*val));
+                
+            }   
+
+			if (!retVal.containsError())
+			{
+				if (m_isstarted)
+				{
+					retVal += stopCamera();
+					retVal += startCamera();
+				}
+			}
+        }
+        else if (key == "gain_mode")
+        {
+            if (val->getVal<int>() == 2)
+            {
+                retVal += ito::RetVal(ito::retError, 0, "gain_mode = 2 is invalid");
+            }
+            else if (val->getVal<int>() == 3)
+            {
+                //check that camera type is long exposure, qe
+                cam_param campar;
+                retVal += checkError(GET_CAM_PARAM(m_hCamera,&campar));
+                if (campar.cam_typ != LONGEXPQE)
                 {
-                    retVal += stopCamera();
-                }
-
-                WORD wRoiX0, wRoiY0, wRoiX1, wRoiY1;
-                retVal += checkError(PCO_GetROI(m_hCamera, &wRoiX0, &wRoiY0, &wRoiX1, &wRoiY1));
-
-                retVal += checkError(PCO_SetBinning(m_hCamera,newbinX, newbinY));
-
-                if(!retVal.containsError())
-                {
-                    it->setVal<int>(newbinX*100+newbinY);
-
-                    float factorX = (float)newbinX / (float)oldbinX;
-                    float factorY = (float)newbinY / (float)oldbinY;
-
-                    WORD newSizeX = float(1 + wRoiX1 - wRoiX0) / factorX;
-                    WORD newSizeY = float(1 + wRoiY1 - wRoiY0) / factorY;
-                    newSizeX -= m_caminfo.wRoiHorStepsDESC > 1 ? (newSizeX % m_caminfo.wRoiHorStepsDESC) : 0;
-                    newSizeY -= m_caminfo.wRoiVertStepsDESC > 1 ? (newSizeY % m_caminfo.wRoiVertStepsDESC) : 0;
-#ifndef PCO_SDK_OLD
-                    newSizeX = std::max(newSizeX, WORD(m_caminfo.wMinSizeHorzDESC));
-                    newSizeY = std::max(newSizeY, WORD(m_caminfo.wMinSizeVertDESC));
-#endif
-
-                    //adapt ROI to new binning, this also affects sizex, sizey
-                    wRoiX0 = 1 + float(wRoiX0 - 1) / factorX;
-                    wRoiX0 -= m_caminfo.wRoiHorStepsDESC > 1 ? ((wRoiX0-1) % m_caminfo.wRoiHorStepsDESC) : 0; //get back to given discrete step size
-                    wRoiX0 = std::max((WORD)1, wRoiX0);
-
-                    wRoiY0 = 1 + float(wRoiY0 - 1) / factorY;
-                    wRoiY0 -= m_caminfo.wRoiVertStepsDESC > 1 ? ((wRoiY0-1) % m_caminfo.wRoiVertStepsDESC) : 0; //get back to given discrete step size
-                    wRoiY0 = std::max((WORD)1, wRoiY0);
-
-                    wRoiX1 = std::min(wRoiX0 + newSizeX - 1, m_caminfo.wMaxHorzResStdDESC / newbinX);
-                    wRoiY1 = std::min(wRoiY0 + newSizeY - 1, m_caminfo.wMaxVertResStdDESC / newbinX);
-
-                    retVal += checkError(PCO_SetROI(m_hCamera, wRoiX0, wRoiY0, wRoiX1, wRoiY1));
-
-                    retVal += sychronizeParameters();
-                }
-
-                if (grabberStartedCount() > 0)
-                {
-                    retVal += startCamera();
+                    retVal += ito::RetVal(ito::retError, 0, "gain_mode = 3 (low light mode) is only valid for sensicam qe, sensicam qe standard or sensicam qe double shutter.");
                 }
             }
-                    
-        }*/
-        //if (key == "x0" || key == "x1" || key == "y0" || key == "y1")
-        //{
-        //    if (grabberStartedCount() > 0)
-        //    {
-        //        retVal += stopCamera();
-        //    }
 
-        //    // Adapted parameters and send out depending parameter
-        //    WORD wRoiX0 = (key == "x0") ? val->getVal<int>() : m_params["x0"].getVal<int>();
-        //    WORD wRoiY0 = (key == "y0") ? val->getVal<int>() : m_params["y0"].getVal<int>(); 
-        //    WORD wRoiX1 = (key == "x1") ? val->getVal<int>() : m_params["x1"].getVal<int>(); 
-        //    WORD wRoiY1 = (key == "y1") ? val->getVal<int>() : m_params["y1"].getVal<int>();
+            if (!retVal.containsError())
+            {
+                it->copyValueFrom( &(*val));
+            }   
 
-        //    //retVal += checkError(PCO_SetROI(m_hCamera, wRoiX0 + 1, wRoiY0 + 1, wRoiX1 + 1, wRoiY1 + 1)); //rois are 1/1-based
-        //    retVal += sychronizeParameters(); //here the current roi is checked and x0,x1,y0,y1,sizex and sizey are adapted!
-        //                
-        //    if (grabberStartedCount() > 0)
-        //    {
-        //        retVal += startCamera(); 
-        //    }
-        //}
-
-        if (key == "integration_time" || key == "delay_time" || key == "trigger")
+			if (!retVal.containsError())
+			{
+				if (m_isstarted)
+				{
+					retVal += stopCamera();
+					retVal += startCamera();
+				}
+			}
+        }
+        else if (key == "integration_time" || key == "delay_time")
         {
             if (!retVal.containsError())
             {
@@ -728,16 +872,19 @@ ito::RetVal PCOSensicam::startCamera()
 	}
 
 	//simple status information
-	int sta,temp1,temp2;
-	int x;
-	int roixmin, roixmax, roiymin, roiymax;
-	int hbin, vbin;
+    COCValues cocValues = m_cocValues;
+	cam_values camValues;
 	cam_param campar;
-	int mode, submode, trig;
-	char times[256];
-	memset(times, 0, 256 * sizeof(char));
+	int type, submode;
+    int gain;
+    cocValues.table.fill('\0', 256);
 
-	retVal += checkError(GET_STATUS(m_hCamera,&sta,&temp1,&temp2));
+	retVal += checkError(GET_CAM_VALUES(m_hCamera,&camValues));
+    if (!retVal.containsError())
+    {
+        m_params["electronic_temperature"].setVal<int>(camValues.eletemp);
+        m_params["ccd_temperature"].setVal<int>(camValues.ccdtemp);
+    }
 	//printf("GET_STATUS returned 0x%x %d %d\n",sta,temp1,temp2);
 
 	retVal += checkError(GET_CAM_PARAM(m_hCamera,&campar));
@@ -746,19 +893,18 @@ ito::RetVal PCOSensicam::startCamera()
 	int exposure_ms = m_params["integration_time"].getVal<double>() * 1e3;
 	int delay_ms = m_params["delay_time"].getVal<double>() * 1e3;
 	int trigger = m_params["trigger"].getVal<int>();
+    bool fast = m_params["fast_acquisition"].getVal<int>() > 0 ? true : false;
+    int gain_mode = m_params["gain_mode"].getVal<int>();
 
 	//camera parameters
 	switch(campar.cam_typ)
 	{
-    default:
-		retVal += ito::RetVal::format(ito::retError, 0, "Invalid camera typ %d found",campar.cam_typ);
-     break;
-
-    case FASTEXP:
-		printf("Fast Shutter camera found\n");
-		mode=M_FAST;
-		submode=NORMALFAST;
-		trig=trigger;
+    case FASTEXP: //"Fast Exposure" (sensicam fast shutter or sensicam double shutter - double mode not supported)
+		type = M_FAST;
+        gain = gain_mode; //(0: normal analog gain, 1: extended analog gain)
+		submode=NORMALFAST; //CYCLE is not necessary here, DOUBLE and DOUBLEL are not supported yet.
+		cocValues.trig = trigger;
+        sprintf(cocValues.table.data(),"%i,%i,-1,-1",delay_ms * 1.0e6,exposure_ms * 1e6);  //must be in ns
 
 		/*int d,t;
 		GET_STATUS(hdriver,&d,&t,&t);
@@ -766,58 +912,71 @@ ito::RetVal PCOSensicam::startCamera()
 		printf(", DOUBLE modes avaiable\n");
 		else
 		printf("\n");*/
-
-		//1ms exposure time
-		sprintf(times,"0,1000000,-1,-1"); 
      break;
 
-    case LONGEXP:
-		printf("Long Exposure camera found\n");
-		mode=M_LONG;
-		submode=NORMALLONG; //VIDEO; //NORMALLONG;
-		trig=trigger;
-		sprintf(times,"%i,%i,-1,-1",delay_ms,exposure_ms); 
-     break;
+     case FASTEXPQE: //"Fast Exposure QE" 
+		type = M_FAST;
+        gain = gain_mode; //(0: normal analog gain, 1: extended analog gain)
+		submode=NORMALLONG;  //CYCLE is not necessary here
+		cocValues.trig = trigger;
+		sprintf(cocValues.table.data(),"%i,%i,-1,-1",delay_ms * 1.0e6,exposure_ms * 1e6);  //must be in ns
+    break;
 
-    case OEM:
-		printf("Long Exposure OEM camera found\n");
-		mode=M_LONG;
+    case LONGEXP: //"Long Exposure" for 'sensicam long exposure', 'sensicam em' and 'sensicam uv'
+		type = M_LONG;
+        gain = gain_mode; //(0: normal analog gain, 1: extended analog gain)
+		submode = fast ? EM_FAST : NORMALLONG; //EM_FAST is also supported;
+		cocValues.trig = trigger;
+        if (fast)
+        {
+		    sprintf(cocValues.table.data(),"%i,%i,-1,-1",delay_ms * 1.0e3,exposure_ms * 1e3);  //must be mu-secs
+        }
+        else
+        {
+            sprintf(cocValues.table.data(),"%i,%i,-1,-1",delay_ms,exposure_ms); 
+        }
+    break;
+
+    case LONGEXPQE: //"Long Exposure QE" for all 'sensicam qe'
+		type = M_LONG;
+        gain = gain_mode; //(0: normal analog gain, 1: extended analog gain, 3: Low Light Mode: only sensicam qe, sensicam qe standard and sensicam qe double shutter)
+		submode = fast ? QE_FAST : NORMALLONG; //QE_FAST is also supported, QE_DOUBLE not supported
+		cocValues.trig = trigger;
+		//10ms exposure time
+		if (fast)
+        {
+		    sprintf(cocValues.table.data(),"%i,%i,-1,-1",delay_ms * 1.0e6,exposure_ms * 1e6);  //must be in ns
+        }
+        else
+        {
+            sprintf(cocValues.table.data(),"%i,%i,-1,-1",delay_ms,exposure_ms); 
+        }
+    break;
+
+    case OEM: //Long Exposure OEM
+		type = M_LONG;
+        gain = gain_mode;
 		submode=NORMALLONG;
-		trig=trigger;
-		sprintf(times,"%i,%i,-1,-1",delay_ms,exposure_ms);  
-     break;
+		cocValues.trig = trigger;
+		if (fast)
+        {
+		    sprintf(cocValues.table.data(),"%i,%i,-1,-1",delay_ms * 1.0e3,exposure_ms * 1e3);  //must maybe be in mu-secs
+        }
+        else
+        {
+            sprintf(cocValues.table.data(),"%i,%i,-1,-1",delay_ms,exposure_ms); 
+        }
+    break;
 
-    case LONGEXPQE:
-		printf("Long Exposure QE camera found\n");
-		mode=M_LONG;
-		submode=NORMALLONG; //VIDEO; //NORMALLONG;
-		trig=trigger;
-		//10ms exposure time
-		sprintf(times,"0,10,-1,-1"); 
-     break;
-
-    case FASTEXPQE:
-		printf("Fast Exposure QE camera found\n");
-		mode=M_LONG;
-		submode=NORMALLONG; //VIDEO; //NORMALLONG;
-		trig=trigger;
-		//10ms exposure time
-		sprintf(times,"0,10,-1,-1"); 
-     break;
-
-    case DICAM:
-		printf("DicamPro camera found\n");
-		mode=M_DICAM;
-		submode=DPSINGLE;
-		trig=trigger;
-		//phosphor decay 2, mcpgain 990,0 delay,10ms exposure time
-		sprintf(times,"2,990,0,1,0,0,10,0,-1,-1"); 
-	}
+    default:
+		retVal += ito::RetVal::format(ito::retError, 0, "Invalid camera typ %d found",campar.cam_typ);
+    break;
+    }
 
 	//binning
 	int binning = m_params["binning"].getVal<int>();
-	vbin = binning % 100;
-	hbin = (binning - vbin) / 100;
+	cocValues.vbin = binning % 100;
+	cocValues.hbin = (binning - cocValues.vbin) / 100;
 
 	//roi
 	const int *roi = m_params["roi"].getVal<int*>();
@@ -826,97 +985,25 @@ ito::RetVal PCOSensicam::startCamera()
 
 	if (hstep > 0)
 	{
-		roixmin = 1 + roi[0] / hstep;
-		roixmax = std::ceil((float)(roi[0] + roi[2]) / (float)(hstep));
+		cocValues.roix1 = 1 + roi[0] / hstep;
+		cocValues.roix2 = std::ceil((float)(roi[0] + roi[2]) / (float)(hstep));
 	}
 	else
 	{
-		roixmin = 1;
-		roixmax = roi[0] + roi[2];
+		cocValues.roix1 = 1;
+		cocValues.roix2 = roi[0] + roi[2];
 	}
 
 	if (vstep > 0)
 	{
-		roiymin = 1 + roi[1] / vstep;
-		roiymax = std::ceil((float)(roi[1] + roi[3]) / (float)(vstep));
+		cocValues.roiy1 = 1 + roi[1] / vstep;
+		cocValues.roiy2 = std::ceil((float)(roi[1] + roi[3]) / (float)(vstep));
 	}
 	else
 	{
-		roiymin = 1;
-		roiymax = roi[1] + roi[3];
+		cocValues.roiy1 = 1;
+		cocValues.roiy2 = roi[1] + roi[3];
 	}
-
-	////get camera typ 
-	//switch(campar.cam_ccd)
-	//{
-	//default:
-	//	retVal += ito::RetVal(ito::retError, 0, "Invalid camera CCD-typ found");
-	//break;
-
-	//case CCD74:
-	//	printf("CCD74 640x480 black&white found\n");
-	//	roixmin=roiymin=1;
-	//	roixmax=20;
-	//	roiymax=15;
-	//	hbin=vbin=1;
-	//break;
-
-	//case CCD74C:
-	//	printf("CCD74 640x480 color found\n");
-	//	roixmin=roiymin=1;
-	//	roixmax=20;
-	//	roiymax=15;
-	//	hbin=vbin=1;
-	//break;
-
-	//case CCD85:
-	//	printf("CCD85 1280x1024 black&white found\n");
-	//	roixmin=roiymin=1;
-	//	roixmax=40;
-	//	roiymax=32;
-	//	hbin=vbin=1;
-	//break;
-
-	//case CCD85C:
-	//	printf("CCD85 1280x1024 color found\n");
-	//	roixmin=roiymin=1;
-	//	roixmax=40;
-	//	roiymax=32;
-	//	hbin=vbin=1;
-	//break;
-
-	//case CCD285QE:
-	//	printf("CCD285 1376x1040 black&white found\n");
-	//	roixmin=roiymin=1;
-	//	roixmax=43;
-	//	roiymax=33;
-	//	hbin=vbin=1;
-	//break;
-
-	//case CCD285QEF:
-	//	printf("CCD285 1376x1040 black&white with fast-mode found\n");
-	//	roixmin=roiymin=1;
-	//	roixmax=43;
-	//	roiymax=33;
-	//	hbin=vbin=1;
-	//break;
-
-	//case CCD285QED:
-	//	printf("CCD285 1376x1040 black&white with double-mode found\n");
-	//	roixmin=roiymin=1;
-	//	roixmax=43;
-	//	roiymax=33;
-	//	hbin=vbin=1;
-	//break;
-
-	//case CCDTIEM285:
-	//	printf("CCDTIEM285 1024x1002 black&white with fast-mode found\n");
-	//	roixmin=roiymin=1;
-	//	roixmax=32;
-	//	roiymax=32;
-	//	hbin=vbin=1;
-	//break;
- //  }
 
    if (!retVal.containsError())
    {
@@ -924,22 +1011,20 @@ ito::RetVal PCOSensicam::startCamera()
 
 		//normal mode, auto triggger binning 1x1 max roi
 		//test if SET_COC gets right values 
-		int len=sizeof(times);
-		x = mode+(submode<<16);
-
-		int err = TEST_COC(m_hCamera,&x,&trig,&roixmin,&roixmax,&roiymin,&roiymax,&hbin,&vbin,times,&len);
-
+        cocValues.mode = ((type & 0xFF) | ((gain & 0xFF) << 8) | ((submode & 0xFF)<<16));
+        int err = test_coc2(cocValues);
+		
 		if(err != PCO_NOERROR)
 		{
 			if((err&0xF000FFFF)==PCO_WARNING_SDKDLL_COC_VALCHANGE)
 			{
 				printf("\nTEST_COC changed some values\n");
 				printf("\nSET_COC(0x%x,%d,%d,%d,%d,%d,%d,%d,\"%s\"\n",
-					x,trig,roixmin,roixmax,roiymin,roiymax,hbin,vbin,times);
+					cocValues.mode,cocValues.trig,cocValues.roix1,cocValues.roix2,cocValues.roiy1,cocValues.roiy2,cocValues.hbin,cocValues.vbin,cocValues.table.data());
 			}
 			else if((err&0xF000FFFF)==PCO_WARNING_SDKDLL_COC_STR_SHORT)
 			{
-				retVal += ito::RetVal::format(ito::retError, err, "TEST_COC buffer for string not large enough need %d bytes",len);
+				retVal += ito::RetVal::format(ito::retError, err, "TEST_COC buffer for string not large enough need %d bytes",cocValues.table.size());
 			}
 			else
 			{
@@ -951,7 +1036,17 @@ ito::RetVal PCOSensicam::startCamera()
 	if (!retVal.containsError())
 	{
 		//set camera values
-		retVal += checkError(SET_COC(m_hCamera,x,trig,roixmin,roixmax,roiymin,roiymax,hbin,vbin,times));
+		retVal += checkError(SET_COC(m_hCamera,cocValues.mode,cocValues.trig,cocValues.roix1,cocValues.roix2,cocValues.roiy1, \
+            cocValues.roiy2,cocValues.hbin,cocValues.vbin,cocValues.table.data()));
+
+        if (!retVal.containsError())
+        {
+            m_cocValues = cocValues;
+        }
+        else
+        {
+            synchronizeParameters();
+        }
 	}
 
     int ccdxsize, ccdysize, width, height, bitpix;
@@ -959,7 +1054,7 @@ ito::RetVal PCOSensicam::startCamera()
         
     if(!retVal.containsError())
     {
-        retVal += sychronizeParameters();
+        retVal += synchronizeParameters();
 
         if(!retVal.containsError())
         {
@@ -994,16 +1089,49 @@ ito::RetVal PCOSensicam::startCamera()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PCOSensicam::sychronizeParameters()
+int PCOSensicam::test_coc2(COCValues &cocValues)
 {
-	int mode, trig, roix1, roix2, roiy1, roiy2, hbin, vbin;
+    while (true)
+    {
+        int len = cocValues.table.size();
+        int ret = TEST_COC(m_hCamera,  &cocValues.mode, &cocValues.trig, &cocValues.roix1, \
+                                        &cocValues.roix2, &cocValues.roiy1, &cocValues.roiy2, \
+                                        &cocValues.hbin, &cocValues.vbin, cocValues.table.data(), &len);
+
+        if (ret == PCO_NOERROR || PCO_WARNING_SDKDLL_COC_VALCHANGE)
+        {
+            cocValues.table.resize(len);
+            return ret;
+        }
+        else if (ret == PCO_WARNING_SDKDLL_COC_STR_SHORT)
+        {
+            if (cocValues.table.size() < 2048)
+            {
+                cocValues.table.resize(2*std::max(32, cocValues.table.size()));
+            }
+            else
+            {
+                return PCO_ERROR_PROGRAMMER;
+            }
+        }
+    }
+
+    return PCO_ERROR_PROGRAMMER;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PCOSensicam::synchronizeParameters()
+{
 	int ccdxsize, ccdysize, actxsize, actysize, bit_pix;
-	char table[64];
-	memset(table, 0, 64 * sizeof(char));
 	ParamMapIterator it;
 
-    ito::RetVal retVal = checkError(GET_COC_SETTING(m_hCamera,  &mode, &trig, &roix1, &roix2, &roiy1, &roiy2, &hbin, &vbin, table, 64));
+    m_cocValues.table.fill('\0', 64);
+    ito::RetVal retVal = checkError(GET_COC_SETTING(m_hCamera,  &m_cocValues.mode, &m_cocValues.trig, &m_cocValues.roix1, \
+                                                    &m_cocValues.roix2, &m_cocValues.roiy1, &m_cocValues.roiy2, \
+                                                    &m_cocValues.hbin, &m_cocValues.vbin, m_cocValues.table.data(), m_cocValues.table.size()));
+
 	retVal += checkError(GETSIZES(m_hCamera, &ccdxsize, &ccdysize, &actxsize, &actysize, &bit_pix));
+
 	int hstep = m_caminfo.wRoiHorStepsDESC;
 	int vstep = m_caminfo.wRoiVertStepsDESC;
 
@@ -1020,50 +1148,50 @@ ito::RetVal PCOSensicam::sychronizeParameters()
 		it = m_params.find("x0");
 		if (hstep > 0)
 		{
-			it->setMeta(new ito::IntMeta(0, std::min(roix2*hstep, ccdxsize) - 1, hstep), true);
+			it->setMeta(new ito::IntMeta(0, std::min(m_cocValues.roix2*hstep, ccdxsize) - 1, hstep), true);
 		}
 		else
 		{
 			it->setMeta(new ito::IntMeta(0, 0, 1), true);
 			it->setFlags(ito::ParamBase::Readonly);
 		}
-		it->setVal<int>(std::min((roix1 - 1) * hstep, ccdxsize - 1));
+		it->setVal<int>(std::min((m_cocValues.roix1 - 1) * hstep, ccdxsize - 1));
 
 		it = m_params.find("x1");
 		if (hstep > 0)
 		{
-			it->setMeta(new ito::IntMeta(std::min((roix1 - 1) * hstep, ccdxsize - 1) + hstep, ccdxsize-1, hstep), true);
+			it->setMeta(new ito::IntMeta(std::min((m_cocValues.roix1 - 1) * hstep, ccdxsize - 1) + hstep, ccdxsize-1, hstep), true);
 		}
 		else
 		{
 			it->setMeta(new ito::IntMeta(ccdxsize-1, ccdxsize-1, 1), true);
 			it->setFlags(ito::ParamBase::Readonly);
 		}
-		it->setVal<int>(std::min(roix2 * hstep - 1, ccdxsize - 1));
+		it->setVal<int>(std::min(m_cocValues.roix2 * hstep - 1, ccdxsize - 1));
 
 		it = m_params.find("y0");
 		if (hstep > 0)
 		{
-			it->setMeta(new ito::IntMeta(0, std::min(roiy2*vstep, ccdysize)-1, vstep), true);
+			it->setMeta(new ito::IntMeta(0, std::min(m_cocValues.roiy2*vstep, ccdysize)-1, vstep), true);
 		}
 		else
 		{
 			it->setMeta(new ito::IntMeta(0, 0, 1), true);
 			it->setFlags(ito::ParamBase::Readonly);
 		}
-		it->setVal<int>(std::min((roiy1 - 1) * vstep, ccdysize - 1));
+		it->setVal<int>(std::min((m_cocValues.roiy1 - 1) * vstep, ccdysize - 1));
 
 		it = m_params.find("y1");
 		if (vstep > 0)
 		{
-			it->setMeta(new ito::IntMeta(std::min((roiy1 - 1) * vstep, ccdysize - 1) + vstep, ccdysize-1, vstep), true);
+			it->setMeta(new ito::IntMeta(std::min((m_cocValues.roiy1 - 1) * vstep, ccdysize - 1) + vstep, ccdysize-1, vstep), true);
 		}
 		else
 		{
 			it->setMeta(new ito::IntMeta(ccdysize-1, ccdysize-1, 1), true);
 			it->setFlags(ito::ParamBase::Readonly);
 		}
-		it->setVal<int>(std::min(roiy2 * vstep - 1, ccdysize - 1));
+		it->setVal<int>(std::min(m_cocValues.roiy2 * vstep - 1, ccdysize - 1));
 			
 		it = m_params.find("roi");
 		if (vstep > 0)
@@ -1079,8 +1207,8 @@ ito::RetVal PCOSensicam::sychronizeParameters()
 		}
 
 		int roi[4];
-		roi[0] = std::min((roix1 - 1) * hstep, ccdxsize - 1);
-		roi[1] = std::min((roiy1 - 1) * vstep, ccdysize - 1);
+		roi[0] = std::min((m_cocValues.roix1 - 1) * hstep, ccdxsize - 1);
+		roi[1] = std::min((m_cocValues.roiy1 - 1) * vstep, ccdysize - 1);
 		roi[2] = actxsize;
 		roi[3] = actysize;
 		it->setVal<int*>(roi, 4);

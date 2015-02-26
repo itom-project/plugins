@@ -64,6 +64,13 @@ Most parameters not only have a minimum and maximum value but also a step size.
 .. note::
     
     Please consider that the parameters defining the region of interest may change if the binning is changed, since an increased binning value decreases the available image size.
+    
+Non supported features or cameras
+==================================
+
+Currently the following features or cameras are not supported:
+
+* sensicam double shutter or qe double shutter: the double shutter acquisition is not implemented.
 
 Compilation
 ============
