@@ -108,7 +108,7 @@ Download the SDK and install it at any location. Additionally you need to instal
     
     m_author = "M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
+    m_minItomVer = CREATEVERSION(1,3,0);
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL / copyright of the external DLLs belongs to PCO");
     m_aboutThis = QObject::tr("N.A.");      

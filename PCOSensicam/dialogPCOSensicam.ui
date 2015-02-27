@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>419</width>
-    <height>366</height>
+    <width>430</width>
+    <height>368</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -59,7 +59,16 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBinningX"/>
+           <widget class="QComboBox" name="comboBinningX">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </item>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="lblBinningY">
@@ -75,41 +84,16 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBinningY"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QLabel" name="label_bpp_2">
-            <property name="text">
-             <string>Bits per Pixel</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="combo_bpp">
+           <widget class="QComboBox" name="comboBinningY">
             <property name="enabled">
              <bool>false</bool>
             </property>
-            <property name="currentIndex">
-             <number>-1</number>
-            </property>
+            <item>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </item>
            </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </item>
@@ -117,131 +101,78 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBoxIntegration">
-       <property name="enabled">
-        <bool>true</bool>
+      <widget class="QGroupBox" name="groupBoxAcquisition">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
        </property>
        <property name="title">
-        <string>Data Acquisition</string>
+        <string>Acquisition</string>
        </property>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="1" colspan="2">
-         <widget class="SliderWidget" name="sliderGain">
-          <property name="decimals">
-           <number>0</number>
-          </property>
-          <property name="maximum">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="suffix">
-           <string> %</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="SliderWidget" name="sliderOffset">
-          <property name="decimals">
-           <number>0</number>
-          </property>
-          <property name="maximum">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="suffix">
-           <string> %</string>
-          </property>
-          <property name="popupSlider">
-           <bool>false</bool>
-          </property>
-          <property name="invertedAppearance">
-           <bool>false</bool>
-          </property>
-          <property name="invertedControls">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_gain">
-          <property name="text">
-           <string>Gain</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_offset">
-          <property name="text">
-           <string>Offset</string>
-          </property>
-         </widget>
-        </item>
+       <layout class="QFormLayout" name="formLayout">
         <item row="2" column="0">
+         <widget class="QLabel" name="label_integration_time_2">
+          <property name="text">
+           <string>Gain Mode</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="comboGainMode"/>
+        </item>
+        <item row="4" column="0">
          <widget class="QLabel" name="label_integration_time">
           <property name="text">
-           <string>Integrationtime</string>
+           <string>Integration Time</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1" colspan="2">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_integration_time">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="prefix">
-           <string/>
-          </property>
-          <property name="suffix">
-           <string>ms</string>
-          </property>
-          <property name="decimals">
-           <number>3</number>
-          </property>
-          <property name="minimum">
-           <double>0.005000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>65.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>1.000000000000000</double>
-          </property>
-          <property name="value">
-           <double>10.000000000000000</double>
+        <item row="4" column="1">
+         <widget class="SliderWidget" name="slider_exposure"/>
+        </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QCheckBox" name="checkFastMode">
+          <property name="text">
+           <string>Fast Acquisition Mode (changed exposure and delay range)</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="label_delay_time">
           <property name="text">
-           <string>Delay time</string>
+           <string>Delay Time</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1" colspan="2">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_delay_time">
-          <property name="enabled">
-           <bool>false</bool>
+        <item row="5" column="1">
+         <widget class="SliderWidget" name="slider_delay"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_trigger">
+          <property name="text">
+           <string>Trigger Mode</string>
           </property>
-          <property name="prefix">
-           <string/>
-          </property>
-          <property name="suffix">
-           <string>ms</string>
-          </property>
-          <property name="decimals">
-           <number>3</number>
-          </property>
-          <property name="minimum">
-           <double>0.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>1000000.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>1.000000000000000</double>
-          </property>
-          <property name="value">
-           <double>0.000000000000000</double>
-          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboTrigger">
+          <item>
+           <property name="text">
+            <string>Software (0)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>External Rising Edge (1)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>External Falling Edge (2)</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>

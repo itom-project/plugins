@@ -27,7 +27,7 @@
 #include <qvector.h>
 #include <qsharedpointer.h>
 
-
+#include "cam_types.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogPCOSensicam::DialogPCOSensicam(ito::AddInBase *grabber, SC_Camera_Description &cameraDescription) :
@@ -51,16 +51,37 @@ void DialogPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-        
+        ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+        ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+        ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
 
-        ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
-        
-        ui.combo_bpp->clear();
-        int count = 0;
-        for (int i = bppMeta->getMin(); i <= bppMeta->getMax(); i += bppMeta->getStepSize())
+        ui.comboGainMode->clear();
+        ui.comboGainMode->addItem("normal analog gain", 0);
+        ui.comboGainMode->addItem("extended analog gain", 1);
+        if (params["gain_mode"].getMax() > 1)
         {
-            ui.combo_bpp->addItem(QString::number(i));
-            ui.combo_bpp->setItemData(count++, i, 32);
+            ui.comboGainMode->addItem("low light mode", 3);
+        }
+
+        ui.comboTrigger->clear();
+        ui.comboTrigger->addItem("Software (0)", 0);
+        ui.comboTrigger->addItem("External Rising Edge (1)", 1);
+        ui.comboTrigger->addItem("External Falling Edge (2)", 2);
+
+        switch (params["cam_type"].getVal<int>())
+        {
+            case FASTEXP: //"Fast Exposure"
+            case FASTEXPQE: //"Fast Exposure QE"
+                ui.checkFastMode->setChecked(true);
+                ui.checkFastMode->setEnabled(false);
+                break;
+            case LONGEXPQE: //"Long Exposure QE"
+            case OEM:
+            case LONGEXP: //"Long Exposure"
+            case LONGEXPI: //"Long Exposure special"
+                ui.checkFastMode->setChecked(false);
+                ui.checkFastMode->setEnabled(true);
+                break;
         }
 
         //set binning configurations
@@ -70,118 +91,141 @@ void DialogPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
         ui.comboBinningX->addItem(QString::number(1), 1);
         ui.comboBinningY->addItem(QString::number(1), 1);
 
-        /*if (m_camInfo.wBinHorzSteppingDESC > 0) //linear
-        {
-            for (int i = 2; i <= m_camInfo.wMaxBinHorzDESC; ++i)
-            {
-                ui.comboBinningX->addItem(QString::number(i), i);
-            }
-        }
-        else
-        {
-            for (int i = 2; i <= m_camInfo.wMaxBinHorzDESC; )
-            {
-                ui.comboBinningX->addItem(QString::number(i), i);
-                i <<= 1;
-            }
-        }
-
-        if (m_camInfo.wBinVertSteppingDESC > 0) //linear
-        {
-            for (int i = 2; i <= m_camInfo.wMaxBinVertDESC; ++i)
-            {
-                ui.comboBinningY->addItem(QString::number(i), i);
-            }
-        }
-        else
-        {
-            for (int i = 2; i <= m_camInfo.wMaxBinVertDESC; )
-            {
-                ui.comboBinningY->addItem(QString::number(i), i);
-                i <<= 1;
-            }
-        }
-
-
-        ui.comboPixelrate->clear();
-        
-        for (int i = 0; i < 4; ++i)
-        {
-            if (m_camInfo.dwPixelRateDESC[i] != 0)
-            {
-                ui.comboPixelrate->addItem(QString("%1 Mhz").arg(m_camInfo.dwPixelRateDESC[i] / 1e6), (int)(m_camInfo.dwPixelRateDESC[i] / 1e6));
-            }
-        }*/
-
         m_firstRun = false;
     }
 
-    ito::IntMeta *im;
-    im = static_cast<ito::IntMeta*>(params["x0"].getMeta());
-    ui.rangeX01->setSingleStep(im->getStepSize());
-    ui.rangeX01->setMinimum(0);
-    ui.rangeX01->setMinimumValue(0);
-    im = static_cast<ito::IntMeta*>(params["x1"].getMeta());
-    ui.rangeX01->setMaximum(im->getMax());
-    ui.rangeX01->setMaximumValue(im->getMax());
-
-    im = static_cast<ito::IntMeta*>(params["y0"].getMeta());
-    ui.rangeY01->setSingleStep(im->getStepSize());
-    ui.rangeY01->setMinimum(0);
-    ui.rangeY01->setMinimumValue(0);
-    im = static_cast<ito::IntMeta*>(params["y1"].getMeta());
-    ui.rangeY01->setMaximum(im->getMax());
-    ui.rangeY01->setMaximumValue(im->getMax());
-    
-    ui.rangeX01->setValues(params["x0"].getVal<int>(), params["x1"].getVal<int>());
-    ui.rangeY01->setValues(params["y0"].getVal<int>(), params["y1"].getVal<int>());
-    ui.rangeX01->setEnabled(! (params["x0"].getFlags() & ito::ParamBase::Readonly));
-    ui.rangeY01->setEnabled(! (params["y0"].getFlags() & ito::ParamBase::Readonly));
+    //roi
+    int *roi = params["roi"].getVal<int*>();
+    qDebug() << roi[0] << roi[1] << roi[2] << roi[3];
+    ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
+    ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
+    ui.rangeX01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
+    ui.rangeY01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
 
     ui.spinSizeX->setValue(params["sizex"].getVal<int>());
     ui.spinSizeY->setValue(params["sizey"].getVal<int>());
 
-    ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin()*1000);
-    ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax()*1000);
-    ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>()*1000);
-    ui.doubleSpinBox_integration_time->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
+    //fast mode
+    ui.checkFastMode->setChecked(params["fast_mode"].getVal<int>() > 0 ? true : false);
 
-    double dval = params["gain"].getVal<double>();
-    ui.sliderGain->setValue(dval*100.0);
-    ui.sliderGain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
-
-    dval = params["offset"].getVal<double>();
-    ui.sliderOffset->setValue(dval*100.0);
-    ui.sliderOffset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));             
-
-    ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
-    
-    for (int i = 0; i < ui.combo_bpp->count(); ++i)
+    //gain_mode
+    for (int i = 0; i < ui.comboGainMode->count(); ++i)
     {
-        if (ui.combo_bpp->itemData(i, 32).toInt() == params["bpp"].getVal<int>())
+        if (ui.comboGainMode->itemData(i).toInt() == params["gain_mode"].getVal<int>())
         {
-            ui.combo_bpp->setCurrentIndex(i);
+            ui.comboGainMode->setCurrentIndex(i);
             break;
         }
     }
 
-    int ival = params["binning"].getVal<int>();
-    int ivalY = ival % 100;
-    int ivalX = (ival - ivalY) / 100;
-    ui.comboBinningX->setEnabled(!(params["binning"].getFlags() & ito::ParamBase::Readonly));
-    ui.comboBinningY->setEnabled(!(params["binning"].getFlags() & ito::ParamBase::Readonly));
-
-    int idx = ui.comboBinningX->findData(ivalX, Qt::UserRole);
-    if (idx >= 0)
+    //trigger
+    for (int i = 0; i < ui.comboTrigger->count(); ++i)
     {
-        ui.comboBinningX->setCurrentIndex(idx);
+        if (ui.comboTrigger->itemData(i).toInt() == params["trigger"].getVal<int>())
+        {
+            ui.comboTrigger->setCurrentIndex(i);
+            break;
+        }
     }
 
-    idx = ui.comboBinningY->findData(ivalY, Qt::UserRole);
-    if (idx >= 0)
-    {
-        ui.comboBinningY->setCurrentIndex(idx);
-    }
+    switch (params["cam_type"].getVal<int>())
+        {
+            case FASTEXP: //"Fast Exposure"
+            case FASTEXPQE: //"Fast Exposure QE"
+                exposureToSecFactor = 1e-6;
+                ui.slider_delay->setSuffix(" 탎");
+                ui.slider_delay->setMinimum(0.0);
+                ui.slider_delay->setMaximum(1000.0);
+                ui.slider_delay->setSingleStep(0.1);
+                ui.slider_delay->setDecimals(1);
+                ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                ui.slider_exposure->setSuffix(" 탎");
+                ui.slider_exposure->setMinimum(0.0);
+                ui.slider_exposure->setMaximum(1000.0);
+                ui.slider_exposure->setSingleStep(0.1);
+                ui.slider_exposure->setDecimals(1);
+                ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                break;
+            case LONGEXPQE: //"Long Exposure QE"
+            {
+                if (params["fast_mode"].getVal<int>())
+                {
+                    exposureToSecFactor = 1e-6;
+                    ui.slider_delay->setSuffix(" 탎");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(50000.0);
+                    ui.slider_delay->setSingleStep(0.1);
+                    ui.slider_delay->setDecimals(1);
+                    ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" 탎");
+                    ui.slider_exposure->setMinimum(0.5);
+                    ui.slider_exposure->setMaximum(10000.0);
+                    ui.slider_exposure->setSingleStep(0.1);
+                    ui.slider_exposure->setDecimals(1);
+                    ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                }
+                else
+                {
+                    exposureToSecFactor = 1e-3;
+                    ui.slider_delay->setSuffix(" ms");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(1000000.0);
+                    ui.slider_delay->setSingleStep(1);
+                    ui.slider_delay->setDecimals(0);
+                    ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" ms");
+                    ui.slider_exposure->setMinimum(1.0);
+                    ui.slider_exposure->setMaximum(1000000.0);
+                    ui.slider_exposure->setSingleStep(1);
+                    ui.slider_exposure->setDecimals(0);
+                    ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                }
+                break;
+            }
+            case OEM:
+            case LONGEXP: //"Long Exposure"
+            case LONGEXPI: //"Long Exposure special"
+            {
+                if (params["fast_mode"].getVal<int>())
+                {
+                    exposureToSecFactor = 75.0 / (1e-6);
+                    ui.slider_delay->setSuffix(" * 75 탎");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(200.0);
+                    ui.slider_delay->setSingleStep(1.0);
+                    ui.slider_delay->setDecimals(0);
+                    ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" * 75 탎");
+                    ui.slider_exposure->setMinimum(1.0);
+                    ui.slider_exposure->setMaximum(200.0);
+                    ui.slider_exposure->setSingleStep(1.0);
+                    ui.slider_exposure->setDecimals(0);
+                    ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                }
+                else
+                {
+                    exposureToSecFactor = 1e-3;
+                    ui.slider_delay->setSuffix(" ms");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(1000000.0);
+                    ui.slider_delay->setSingleStep(1);
+                    ui.slider_delay->setDecimals(0);
+                    ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" ms");
+                    ui.slider_exposure->setMinimum(1.0);
+                    ui.slider_exposure->setMaximum(1000000.0);
+                    ui.slider_exposure->setSingleStep(1);
+                    ui.slider_exposure->setDecimals(0);
+                    ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                }
+                break;
+            }
+        }
 
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
@@ -200,84 +244,52 @@ ito::RetVal DialogPCOSensicam::applyParameters()
     bool changeY0 = false;
     bool changeY1 = false;
 
-    if(ui.rangeX01->isEnabled())
+    if(ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {
-        int x0;
-        int x1;
+        int x0, x1, y0, y1;
         ui.rangeX01->values(x0,x1);
+        ui.rangeY01->values(y0,y1);
+        int roi[] = {0,0,0,0};
+        memcpy(roi, m_currentParameters["roi"].getVal<int*>(), 4*sizeof(int));
 
-        if((m_currentParameters["x0"].getVal<int>() !=  x0))
+        if (roi[0] != x0 || roi[1] != y0 || roi[2] != (x1-x0+1) || roi[3] != (y1-y0+1))
         {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, x0)));
-        }
-        if((m_currentParameters["x1"].getVal<int>() !=  x1))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, x1)));
+            roi[0] = x0;
+            roi[1] = y0;
+            roi[2] = x1-x0+1;
+            roi[3] = y1-y0+1;
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("roi", ito::ParamBase::IntArray, 4, roi)));
         }
     }
 
-    if(ui.rangeY01->isEnabled())
+    int trigger = ui.comboTrigger->itemData(ui.comboTrigger->currentIndex()).toInt();
+    if(m_currentParameters["trigger"].getVal<int>() != trigger)
     {
-        int y0;
-        int y1;
-        ui.rangeY01->values(y0, y1);
-
-        if((m_currentParameters["y0"].getVal<int>() !=  y0))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, y0)));
-        }
-        if((m_currentParameters["y1"].getVal<int>() !=  y1))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, y1)));
-        }
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger", ito::ParamBase::Int, trigger)));
     }
 
-    if(ui.sliderGain->isEnabled())
+    int gain_mode = ui.comboGainMode->itemData(ui.comboGainMode->currentIndex()).toInt();
+    if(m_currentParameters["gain_mode"].getVal<int>() != gain_mode)
     {
-        double dval = ui.sliderGain->value()/100.0;
-        if(qAbs(m_currentParameters["gain"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
-        }
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain_mode", ito::ParamBase::Int, gain_mode)));
     }
 
-    if(ui.sliderOffset->isEnabled())
+    int fastmode = ui.checkFastMode->isChecked() ? 1 : 0;
+    if(m_currentParameters["fast_mode"].getVal<int>() != fastmode)
     {
-        double dval = ui.sliderOffset->value()/100.0;
-        if(qAbs(m_currentParameters["offset"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, dval)));
-        }
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("fast_mode", ito::ParamBase::Int, fastmode)));
     }
 
-    if(ui.doubleSpinBox_integration_time->isEnabled())
+    double dval = ui.slider_delay->value() * exposureToSecFactor;
+    if(qAbs(m_currentParameters["delay_time"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
     {
-        double dval = ui.doubleSpinBox_integration_time->value()/1000.0;
-        if(qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
-        }
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delay_time", ito::ParamBase::Double, dval)));
     }
 
-    if(ui.combo_bpp->isEnabled())
+    dval = ui.slider_exposure->value() * exposureToSecFactor;
+    if(qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
     {
-        QVariant qvar = ui.combo_bpp->currentIndex();
-        bool ok;
-        int bppNew = ui.combo_bpp->itemData(ui.combo_bpp->currentIndex(), 32).toInt(&ok);
-        
-        if(ok && (bppNew > 0) && (m_currentParameters["bpp"].getVal<int>() !=  bppNew))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bppNew)));
-        }
-    }
-
-    if (ui.comboBinningX->isEnabled())
-    {
-        int binning = ui.comboBinningX->itemData(ui.comboBinningX->currentIndex(), Qt::UserRole).toInt() * 100 + ui.comboBinningY->itemData(ui.comboBinningY->currentIndex(), Qt::UserRole).toInt();
-        if((m_currentParameters["binning"].getVal<int>() !=  binning))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, binning)));
-        }
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
     }
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
@@ -310,80 +322,20 @@ void DialogPCOSensicam::on_buttonBox_clicked(QAbstractButton* btn)
 void DialogPCOSensicam::enableDialog(bool enabled)
 {
     ui.groupBoxBinning->setEnabled(enabled);
-    ui.groupBoxIntegration->setEnabled(enabled);
+    ui.groupBoxAcquisition->setEnabled(enabled);
     ui.groupBoxSize->setEnabled(enabled);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogPCOSensicam::on_rangeX01_valuesChanged(int minValue, int maxValue)
 {
-    int min_ = minValue;
-    int max_ = maxValue;
-    int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["x0"].getMeta() )->getStepSize();
-    int imageOffset = static_cast<ito::IntMeta*>( m_currentParameters["sizex"].getMeta() )->getStepSize();
-    int maxWidth = static_cast<ito::IntMeta*>( m_currentParameters["x1"].getMeta() )->getMax() + 1;
-
-    if ((min_ % stepOffset) != 0)
-    {
-        min_ = stepOffset * qRound((float)min_ / (float)stepOffset);
-        if (min_ >= max_)
-        {
-            min_ = stepOffset * floor((float)min_ / (float)stepOffset);
-        }
-    }
-    min_ = qBound<int>(0, min_, max_);
-
-    if (((max_ - min_ + 1) % imageOffset) != 0)
-    {
-        max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
-    }
-    
-    max_ = qBound<int>(0, max_, maxWidth-1);
-
-    if (min_ != minValue || max_ != maxValue)
-    {
-        ui.rangeX01->setValues(min_,max_);
-    }
-    else
-    {
-        ui.spinSizeX->setValue(maxValue - minValue + 1);
-    }
+    ui.spinSizeX->setValue(maxValue - minValue + 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogPCOSensicam::on_rangeY01_valuesChanged(int minValue, int maxValue)
 {
-    int min_ = minValue;
-    int max_ = maxValue;
-    int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["y0"].getMeta() )->getStepSize();
-    int imageOffset = static_cast<ito::IntMeta*>( m_currentParameters["sizey"].getMeta() )->getStepSize();
-    int maxHeight = static_cast<ito::IntMeta*>( m_currentParameters["y1"].getMeta() )->getMax() + 1;
-
-    if ((min_ % stepOffset) != 0)
-    {
-        min_ = stepOffset * qRound((float)min_ / (float)stepOffset);
-        if (min_ >= max_)
-        {
-            min_ = stepOffset * floor((float)min_ / (float)stepOffset);
-        }
-    }
-    min_ = qBound<int>(0, min_, max_);
-
-    if (((max_ - min_ + 1) % imageOffset) != 0)
-    {
-        max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
-    }
-    
-    max_ = qBound<int>(0, max_, maxHeight - 1);
-
-    if (min_ != minValue || max_ != maxValue)
-    {
-        ui.rangeY01->setValues(min_,max_);
-    }
-    else
-    {
-        ui.spinSizeY->setValue(maxValue - minValue + 1);
-    }
+    ui.spinSizeY->setValue(maxValue - minValue + 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

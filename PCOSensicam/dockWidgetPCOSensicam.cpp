@@ -175,11 +175,6 @@ void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
                 }
         }
 
-        ui.slider_exposure->setMaximum(params["integration_time"].getMax() *1000.0);
-        ui.slider_exposure->setMinimum(params["integration_time"].getMin() *1000.0);
-        ui.slider_exposure->setSingleStep(params["integration_time"].getMin() *1000.0);
-        ui.slider_exposure->setValue(params["integration_time"].getVal<double>() *1000.0);
-
         ui.checkFastMode->setChecked(params["fast_mode"].getVal<int>() > 0 ? true : false);
 
         for (int i = 0; i < ui.comboGainMode->count(); ++i)
