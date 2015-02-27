@@ -81,3 +81,5 @@ Changelog
 ==========
 
 * itom setup 1.2.0: This plugin has been compiled using pco.sdk 1.17.0.632
+* itom setup 1.3.0: This plugin has been compiled using pco.sdk 1.17.0.632
+* itom setup 1.4.0: This plugin has been compiled using pco.sdk 1.17.0.632
