@@ -77,7 +77,7 @@ class DataObjectIO : public ito::AddInAlgo
     public:
         friend class DataObjectIOInterface;
 
-        static enum ImageFormat
+        enum ImageFormat
         {
             noFormat = 0x00,
             tiffFormat = 0x01,
@@ -90,7 +90,7 @@ class DataObjectIO : public ito::AddInAlgo
             sunFormat = 0x08
         };
 
-        static enum
+        enum
         {
             invWrite = 0x00,
             invIgnor = 0x01,

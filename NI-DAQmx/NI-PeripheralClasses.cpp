@@ -133,7 +133,7 @@ ito::RetVal niTask::applyParameters()
 bool niTask::isDone()
 {
 	bool32 done;
-	DAQmxIsTaskDone(this->getTaskHandle(), &done);
+	DAQmxIsTaskDone(*this->getTaskHandle(), &done);
 	return done;
 }
 

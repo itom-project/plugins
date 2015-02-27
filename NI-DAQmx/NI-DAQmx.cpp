@@ -69,6 +69,11 @@ Put a detailed description about what the plugin is doing, what is needed to get
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.
+    
+    m_initParamsMand.clear();
+
+    ito::Param paramVal("device", ito::ParamBase::String, "Dev1", tr("Name of the target Device, Dev1 as default, cDAQ1Mod1 for compactDAQ single module Device. Other names see device description in NI MAX").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -104,6 +109,9 @@ ito::RetVal niDAQmxInterface::closeThisInst(ito::AddInBase **addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 niDAQmx::niDAQmx() : AddInDataIO(), m_isgrabbing(false)
 {
+    ito::Param paramVal("device", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "Dev1", tr("Name of the target device").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
 	// Create the six tasks
     m_taskMap.insert("ai", new niTask("ai"));
 	m_taskMap.insert("ao", new niTask("ao"));
@@ -113,7 +121,7 @@ niDAQmx::niDAQmx() : AddInDataIO(), m_isgrabbing(false)
 	m_taskMap.insert("co", new niTask("co"));
 
 	// General Parameters
-	ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "NI-DAQmx", NULL);	
+	paramVal = ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "NI-DAQmx", NULL);	
     m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("channel", ito::ParamBase::String | ito::ParamBase::Readonly, "", NULL);	
     m_params.insert(paramVal.getName(), paramVal);
@@ -168,8 +176,11 @@ ito::RetVal niDAQmx::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
+    retValue += m_params["device"].copyValueFrom(&((*paramsOpt)[0]));
+    QString device = m_params["device"].getVal<char *>(); //borrowed reference
+
 	// populate m_channels
-	m_channels = niChannelList("Dev1");
+	m_channels = niChannelList(device);
 
 	QStringList dummyReads;
 	dummyReads << "channel" << "chAssociated" << "aiChParams" << "aoChParams" << "diChParams" << "doChParams" << "ciChParams" << "coChParams" 
@@ -849,8 +860,8 @@ ito::RetVal niDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 		retValue += readAnalog();
 		m_aInIsAcquired = false;
 		// Die folgende zeile stopt den task um ihn erneut starten zu können. Rsourcen bleiben erhalten. Vielleicht in extra funktion auslagern
-		//error = DAQmxTaskControl(m_taskMap.value("ai")->getTaskHandle(),DAQmx_Val_Task_Reserve);
-		error = DAQmxStopTask(m_taskMap.value("ai")->getTaskHandle());
+		// error = DAQmxTaskControl(m_taskMap.value("ai")->getTaskHandle(),DAQmx_Val_Task_Reserve);
+		error = DAQmxStopTask(*m_taskMap.value("ai")->getTaskHandle());
 		if (error != 0)
 		{
 			//retValue += ito::RetVal(ito::retError, 0, tr("Couldn´t stop task").toLatin1().data());
