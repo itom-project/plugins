@@ -72,6 +72,12 @@ Currently the following features or cameras are not supported:
 
 * sensicam double shutter or qe double shutter: the double shutter acquisition is not implemented.
 
+Installation
+=============
+
+If the plugin can not be loaded with itom, make sure that you have the PCO board driver (e.g. for pco525 boards) installed.
+This driver puts the required library sen_cam.dll into the C:/Windows/System32 directory.
+
 Compilation
 ============
 
