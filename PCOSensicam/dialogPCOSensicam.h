@@ -60,6 +60,7 @@ class DialogPCOSensicam : public ito::AbstractAddInConfigDialog
 
         Ui::DialogPCOSensicam ui;
         SC_Camera_Description m_camInfo;
+        double exposureToSecFactor;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
