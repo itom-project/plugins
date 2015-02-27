@@ -2228,40 +2228,50 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
         {
             case ito::tUInt8:
                 saveMat = new cv::Mat(*srcData);
-                break;
+            break;
+
             case ito::tInt8:
                 saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
                 ret += itom::io::transformScaled<ito::int8 , ito::uint8>(saveMat, srcData);
-                break;
+            break;
+
             case ito::tUInt16:
                 saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
                 ret += itom::io::transformScaled<ito::uint16, ito::uint8>(saveMat, srcData);
-                break;
+            break;
+
             case ito::tInt16:
                 saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
                 ret += itom::io::transformScaled<ito::int16, ito::uint8>(saveMat, srcData);
-                break;
+            break;
+
             case ito::tUInt32:
                 saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
                 ret += itom::io::transformScaled<ito::uint32, ito::uint8>(saveMat, srcData);
-                break;
+            break;
+
             case ito::tInt32:
                 ret += itom::io::transformScaled< ito::int32, ito::uint8>(saveMat, srcData);
-                break;
+            break;
+
             case ito::tFloat32:
                 saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
                 ret += itom::io::transformScaled<ito::float32, ito::uint8>(saveMat, srcData);
-                break;
+            break;
+
             case ito::tFloat64:
                 saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
                 ret += itom::io::transformScaled<ito::float64, ito::uint8>(saveMat, srcData);
-                break;
+            break;
+
             case ito::tRGBA32:
-                {
-                ito::DataObject gray = dObj->toGray(ito::tUInt8);
+            {
+                // we need a cast to remove constantness here
+                ito::DataObject gray = ((ito::DataObject*)dObj)->toGray(ito::tUInt8);
                 saveMat = new cv::Mat(*(gray.getCvPlaneMat(0)));
-                break;
-                }
+            }
+            break;
+
             default:
                 return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to unsigned int 8-bit.").toLatin1().data());
         }
@@ -2276,33 +2286,41 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
             {
                 case ito::tUInt16:
                     saveMat = new cv::Mat(*srcData);
-                    break;
+                break;
+
                 case ito::tInt16:
                     saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_16U);
                     ret += itom::io::transformScaled<ito::int16, ito::uint16>(saveMat, srcData);
-                    break;
+                break;
+
                 case ito::tUInt32:
                     saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_16U);
                     ret += itom::io::transformScaled<ito::uint32, ito::uint16>(saveMat, srcData);
-                    break;
+                break;
+
                 case ito::tInt32:
                     saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_16U);
                     ret += itom::io::transformScaled<ito::int32, ito::uint16>(saveMat, srcData);
-                    break;
+                break;
+
                 case ito::tFloat32:
                     saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_16U);
                     ret += itom::io::transformScaled<ito::float32, ito::uint16>(saveMat, srcData);
-                    break;
+                break;
+
                 case ito::tFloat64:
                     saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_16U);
                     ret += itom::io::transformScaled<ito::float64, ito::uint16>(saveMat, srcData);
-                    break;
+                break;
+
                 case ito::tRGBA32:
-                    {
-                    ito::DataObject gray = dObj->toGray(ito::tUInt16);
+                {
+                    // we need a cast to removed constantness here
+                    ito::DataObject gray = ((ito::DataObject*)dObj)->toGray(ito::tUInt16);
                     saveMat = new cv::Mat(*(gray.getCvPlaneMat(0)));
-                    break;
-                    }
+                }
+                break;
+
                 default:
                     return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to unsigned int 16-bit.").toLatin1().data());
             }
@@ -2387,34 +2405,44 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
                 {
                     case ito::tUInt8:
                         ret += itom::io::transformScaledIndex8ToRGBA<ito::uint8>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tInt8:
                         ret += itom::io::transformScaledIndex8ToRGBA<ito::int8>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tUInt16:
                         ret += itom::io::transformScaledIndex8ToRGBA<ito::uint16>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tInt16:
                         ret += itom::io::transformScaledIndex8ToRGBA<ito::int16>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tUInt32:
                         ret += itom::io::transformScaledIndex8ToRGBA<ito::uint32>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tInt32:
                         ret += itom::io::transformScaledIndex8ToRGBA<ito::int32>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tFloat32:
                         ret += itom::io::transformScaledIndex8ToRGBA<ito::float32>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tFloat64:
                         ret += itom::io::transformScaledIndex8ToRGBA<ito::float64>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tRGBA32:
-                        {
-                            ito::DataObject gray = dObj->toGray(ito::tUInt8);
-                            ret += itom::io::transformScaledIndex8ToRGBA<ito::uint8>(saveMat, gray.getCvPlaneMat(0), newPalette.colorVector256);
-                            break;
-                        }
+                    {
+                        // we need a cast to removed constantness here
+                        ito::DataObject gray = ((ito::DataObject*)dObj)->toGray(ito::tUInt8);
+                        ret += itom::io::transformScaledIndex8ToRGBA<ito::uint8>(saveMat, gray.getCvPlaneMat(0), newPalette.colorVector256);
+                    }
+                    break;
+
                     default:
                         return ito::RetVal(ito::retError, 0, tr("Data object could not be converted to a gray image with 256 values (indexed8). No color palette could be applied.").toLatin1().data());
                 }
@@ -2427,34 +2455,44 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
                 {
                     case ito::tUInt8:
                         ret += itom::io::transformScaledIndex8ToRGB<ito::uint8>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tInt8:
                         ret += itom::io::transformScaledIndex8ToRGB<ito::int8>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tUInt16:
                         ret += itom::io::transformScaledIndex8ToRGB<ito::uint16>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tInt16:
                         ret += itom::io::transformScaledIndex8ToRGB<ito::int16>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tUInt32:
                         ret += itom::io::transformScaledIndex8ToRGB<ito::uint32>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tInt32:
                         ret += itom::io::transformScaledIndex8ToRGB<ito::int32>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tFloat32:
                         ret += itom::io::transformScaledIndex8ToRGB<ito::float32>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tFloat64:
                         ret += itom::io::transformScaledIndex8ToRGB<ito::float64>(saveMat, srcData, newPalette.colorVector256);
-                        break;
+                    break;
+
                     case ito::tRGBA32:
-                        {
-                            ito::DataObject gray = dObj->toGray(ito::tUInt8);
-                            ret += itom::io::transformScaledIndex8ToRGB<ito::uint8>(saveMat, gray.getCvPlaneMat(0), newPalette.colorVector256);
-                            break;
-                        }
+                    {
+                        // we need a cast to removed constantness here
+                        ito::DataObject gray = ((ito::DataObject*)dObj)->toGray(ito::tUInt8);
+                        ret += itom::io::transformScaledIndex8ToRGB<ito::uint8>(saveMat, gray.getCvPlaneMat(0), newPalette.colorVector256);
+                    }
+                    break;
+
                     default:
                         return ito::RetVal(ito::retError, 0, tr("Data object could not be converted to a gray image with 256 values (indexed8). No color palette could be applied.").toLatin1().data());
                 } 
