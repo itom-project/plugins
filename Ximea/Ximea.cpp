@@ -731,16 +731,19 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         if (paramIt != m_params.end()) // Okay the camera has this parameter so go on
         {
 
-            if (grabberStartedCount())
+            if (strcmp(paramIt.value().getName(),"integration_time") != 0)
             {
-                running = grabberStartedCount();
-                setGrabberStarted(1);
-                retValue += this->stopDevice(0);
-            }
-            else
-            {
-                setGrabberStarted(1);
-                this->stopDevice(0);
+                if (grabberStartedCount())
+                {
+                    running = grabberStartedCount();
+                    setGrabberStarted(1);
+                    retValue += this->stopDevice(0);
+                }
+                else
+                {
+                    setGrabberStarted(1);
+                    this->stopDevice(0);
+                }
             }
 
             if(paramIt->getFlags() & ito::ParamBase::Readonly)
