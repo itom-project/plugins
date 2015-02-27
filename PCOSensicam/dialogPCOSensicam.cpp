@@ -96,7 +96,6 @@ void DialogPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
 
     //roi
     int *roi = params["roi"].getVal<int*>();
-    qDebug() << roi[0] << roi[1] << roi[2] << roi[3];
     ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
     ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
     ui.rangeX01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
@@ -191,7 +190,7 @@ void DialogPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
             {
                 if (params["fast_mode"].getVal<int>())
                 {
-                    exposureToSecFactor = 75.0 / (1e-6);
+                    exposureToSecFactor = 75.0 * (1e-6);
                     ui.slider_delay->setSuffix(" * 75 탎");
                     ui.slider_delay->setMinimum(0.0);
                     ui.slider_delay->setMaximum(200.0);
@@ -238,7 +237,6 @@ ito::RetVal DialogPCOSensicam::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
     bool success = false;
 
-    int ivalFirst, ivalLast;
     bool changeX0 = false;
     bool changeX1 = false;
     bool changeY0 = false;
@@ -345,6 +343,112 @@ void DialogPCOSensicam::on_btnFullROI_clicked()
     {
         ui.rangeX01->setValues(0, m_currentParameters["sizex"].getMax());
         ui.rangeY01->setValues(0, m_currentParameters["sizey"].getMax());
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogPCOSensicam::on_checkFastMode_clicked(bool checked)
+{
+	double current_delay_sec = ui.slider_delay->value() * exposureToSecFactor;
+	double current_exposure_sec = ui.slider_exposure->value() * exposureToSecFactor;
+
+	switch (m_currentParameters["cam_type"].getVal<int>())
+    {
+        case FASTEXP: //"Fast Exposure"
+        case FASTEXPQE: //"Fast Exposure QE"
+            exposureToSecFactor = 1e-6;
+            ui.slider_delay->setSuffix(" 탎");
+            ui.slider_delay->setMinimum(0.0);
+            ui.slider_delay->setMaximum(1000.0);
+            ui.slider_delay->setSingleStep(0.1);
+            ui.slider_delay->setDecimals(1);
+            ui.slider_delay->setValue(current_delay_sec / exposureToSecFactor);
+
+            ui.slider_exposure->setSuffix(" 탎");
+            ui.slider_exposure->setMinimum(0.0);
+            ui.slider_exposure->setMaximum(1000.0);
+            ui.slider_exposure->setSingleStep(0.1);
+            ui.slider_exposure->setDecimals(1);
+            ui.slider_exposure->setValue(current_exposure_sec / exposureToSecFactor);
+            break;
+        case LONGEXPQE: //"Long Exposure QE"
+            {
+                if (checked)
+                {
+                    exposureToSecFactor = 1e-6;
+                    ui.slider_delay->setSuffix(" 탎");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(50000.0);
+                    ui.slider_delay->setSingleStep(0.1);
+                    ui.slider_delay->setDecimals(1);
+                    ui.slider_delay->setValue(current_delay_sec / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" 탎");
+                    ui.slider_exposure->setMinimum(0.5);
+                    ui.slider_exposure->setMaximum(10000.0);
+                    ui.slider_exposure->setSingleStep(0.1);
+                    ui.slider_exposure->setDecimals(1);
+                    ui.slider_exposure->setValue(current_exposure_sec / exposureToSecFactor);
+                }
+                else
+                {
+                    exposureToSecFactor = 1e-3;
+                    ui.slider_delay->setSuffix(" ms");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(1000000.0);
+                    ui.slider_delay->setSingleStep(1);
+                    ui.slider_delay->setDecimals(0);
+                    ui.slider_delay->setValue(current_delay_sec / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" ms");
+                    ui.slider_exposure->setMinimum(1.0);
+                    ui.slider_exposure->setMaximum(1000000.0);
+                    ui.slider_exposure->setSingleStep(1);
+                    ui.slider_exposure->setDecimals(0);
+                    ui.slider_exposure->setValue(current_exposure_sec / exposureToSecFactor);
+                }
+                break;
+            }
+        case OEM:
+        case LONGEXP: //"Long Exposure"
+        case LONGEXPI: //"Long Exposure special"
+            {
+                if (checked)
+                {
+                    exposureToSecFactor = 75.0 * (1e-6);
+                    ui.slider_delay->setSuffix(" * 75 탎");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(200.0);
+                    ui.slider_delay->setSingleStep(1.0);
+                    ui.slider_delay->setDecimals(0);
+                    ui.slider_delay->setValue(current_delay_sec / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" * 75 탎");
+                    ui.slider_exposure->setMinimum(1.0);
+                    ui.slider_exposure->setMaximum(200.0);
+                    ui.slider_exposure->setSingleStep(1.0);
+                    ui.slider_exposure->setDecimals(0);
+                    ui.slider_exposure->setValue(current_exposure_sec / exposureToSecFactor);
+                }
+                else
+                {
+                    exposureToSecFactor = 1e-3;
+                    ui.slider_delay->setSuffix(" ms");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(1000000.0);
+                    ui.slider_delay->setSingleStep(1);
+                    ui.slider_delay->setDecimals(0);
+                    ui.slider_delay->setValue(current_delay_sec / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" ms");
+                    ui.slider_exposure->setMinimum(1.0);
+                    ui.slider_exposure->setMaximum(1000000.0);
+                    ui.slider_exposure->setSingleStep(1);
+                    ui.slider_exposure->setDecimals(0);
+                    ui.slider_exposure->setValue(current_exposure_sec / exposureToSecFactor);
+                }
+                break;
+            }
     }
 }
 
