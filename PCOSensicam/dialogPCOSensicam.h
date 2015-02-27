@@ -70,6 +70,7 @@ class DialogPCOSensicam : public ito::AbstractAddInConfigDialog
         void on_rangeX01_valuesChanged(int minValue, int maxValue);
         void on_rangeY01_valuesChanged(int minValue, int maxValue);
         void on_btnFullROI_clicked();
+		void on_checkFastMode_clicked(bool checked);
 };
 
 #endif

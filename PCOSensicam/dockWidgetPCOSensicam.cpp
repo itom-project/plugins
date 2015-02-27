@@ -43,6 +43,9 @@ void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
     ui.spinWidth->setValue(params["sizex"].getVal<int>());
     ui.spinHeight->setValue(params["sizey"].getVal<int>());
 
+	bool state = m_inEditing;
+    m_inEditing = true;
+
     if (m_firstRun)
     {
         ui.comboGainMode->clear();
@@ -72,122 +75,117 @@ void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
         m_firstRun = false;
     }
     
-    if (!m_inEditing)
+    switch (params["cam_type"].getVal<int>())
     {
-        m_inEditing = true;
+        case FASTEXP: //"Fast Exposure"
+        case FASTEXPQE: //"Fast Exposure QE"
+            exposureToSecFactor = 1e-6;
+            ui.slider_delay->setSuffix(" 탎");
+            ui.slider_delay->setMinimum(0.0);
+            ui.slider_delay->setMaximum(1000.0);
+            ui.slider_delay->setSingleStep(0.1);
+            ui.slider_delay->setDecimals(1);
+            ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
 
-        switch (params["cam_type"].getVal<int>())
-        {
-            case FASTEXP: //"Fast Exposure"
-            case FASTEXPQE: //"Fast Exposure QE"
-                exposureToSecFactor = 1e-6;
-                ui.slider_delay->setSuffix(" 탎");
-                ui.slider_delay->setMinimum(0.0);
-                ui.slider_delay->setMaximum(1000.0);
-                ui.slider_delay->setSingleStep(0.1);
-                ui.slider_delay->setDecimals(1);
-                ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
-
-                ui.slider_exposure->setSuffix(" 탎");
-                ui.slider_exposure->setMinimum(0.0);
-                ui.slider_exposure->setMaximum(1000.0);
-                ui.slider_exposure->setSingleStep(0.1);
-                ui.slider_exposure->setDecimals(1);
-                ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
-                break;
-            case LONGEXPQE: //"Long Exposure QE"
-                {
-                    if (params["fast_mode"].getVal<int>())
-                    {
-                        exposureToSecFactor = 1e-6;
-                        ui.slider_delay->setSuffix(" 탎");
-                        ui.slider_delay->setMinimum(0.0);
-                        ui.slider_delay->setMaximum(50000.0);
-                        ui.slider_delay->setSingleStep(0.1);
-                        ui.slider_delay->setDecimals(1);
-                        ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
-
-                        ui.slider_exposure->setSuffix(" 탎");
-                        ui.slider_exposure->setMinimum(0.5);
-                        ui.slider_exposure->setMaximum(10000.0);
-                        ui.slider_exposure->setSingleStep(0.1);
-                        ui.slider_exposure->setDecimals(1);
-                        ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
-                    }
-                    else
-                    {
-                        exposureToSecFactor = 1e-3;
-                        ui.slider_delay->setSuffix(" ms");
-                        ui.slider_delay->setMinimum(0.0);
-                        ui.slider_delay->setMaximum(1000000.0);
-                        ui.slider_delay->setSingleStep(1);
-                        ui.slider_delay->setDecimals(0);
-                        ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
-
-                        ui.slider_exposure->setSuffix(" ms");
-                        ui.slider_exposure->setMinimum(1.0);
-                        ui.slider_exposure->setMaximum(1000000.0);
-                        ui.slider_exposure->setSingleStep(1);
-                        ui.slider_exposure->setDecimals(0);
-                        ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
-                    }
-                    break;
-                }
-            case OEM:
-            case LONGEXP: //"Long Exposure"
-            case LONGEXPI: //"Long Exposure special"
-                {
-                    if (params["fast_mode"].getVal<int>())
-                    {
-                        exposureToSecFactor = 75.0 / (1e-6);
-                        ui.slider_delay->setSuffix(" * 75 탎");
-                        ui.slider_delay->setMinimum(0.0);
-                        ui.slider_delay->setMaximum(200.0);
-                        ui.slider_delay->setSingleStep(1.0);
-                        ui.slider_delay->setDecimals(0);
-                        ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
-
-                        ui.slider_exposure->setSuffix(" * 75 탎");
-                        ui.slider_exposure->setMinimum(1.0);
-                        ui.slider_exposure->setMaximum(200.0);
-                        ui.slider_exposure->setSingleStep(1.0);
-                        ui.slider_exposure->setDecimals(0);
-                        ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
-                    }
-                    else
-                    {
-                        exposureToSecFactor = 1e-3;
-                        ui.slider_delay->setSuffix(" ms");
-                        ui.slider_delay->setMinimum(0.0);
-                        ui.slider_delay->setMaximum(1000000.0);
-                        ui.slider_delay->setSingleStep(1);
-                        ui.slider_delay->setDecimals(0);
-                        ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
-
-                        ui.slider_exposure->setSuffix(" ms");
-                        ui.slider_exposure->setMinimum(1.0);
-                        ui.slider_exposure->setMaximum(1000000.0);
-                        ui.slider_exposure->setSingleStep(1);
-                        ui.slider_exposure->setDecimals(0);
-                        ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
-                    }
-                    break;
-                }
-        }
-
-        ui.checkFastMode->setChecked(params["fast_mode"].getVal<int>() > 0 ? true : false);
-
-        for (int i = 0; i < ui.comboGainMode->count(); ++i)
-        {
-            if (ui.comboGainMode->itemData(i).toInt() == params["gain_mode"].getVal<int>())
+            ui.slider_exposure->setSuffix(" 탎");
+            ui.slider_exposure->setMinimum(0.0);
+            ui.slider_exposure->setMaximum(1000.0);
+            ui.slider_exposure->setSingleStep(0.1);
+            ui.slider_exposure->setDecimals(1);
+            ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+            break;
+        case LONGEXPQE: //"Long Exposure QE"
             {
-                ui.comboGainMode->setCurrentIndex(i);
+                if (params["fast_mode"].getVal<int>())
+                {
+                    exposureToSecFactor = 1e-6;
+                    ui.slider_delay->setSuffix(" 탎");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(50000.0);
+                    ui.slider_delay->setSingleStep(0.1);
+                    ui.slider_delay->setDecimals(1);
+                    ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" 탎");
+                    ui.slider_exposure->setMinimum(0.5);
+                    ui.slider_exposure->setMaximum(10000.0);
+                    ui.slider_exposure->setSingleStep(0.1);
+                    ui.slider_exposure->setDecimals(1);
+                    ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                }
+                else
+                {
+                    exposureToSecFactor = 1e-3;
+                    ui.slider_delay->setSuffix(" ms");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(1000000.0);
+                    ui.slider_delay->setSingleStep(1);
+                    ui.slider_delay->setDecimals(0);
+                    ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" ms");
+                    ui.slider_exposure->setMinimum(1.0);
+                    ui.slider_exposure->setMaximum(1000000.0);
+                    ui.slider_exposure->setSingleStep(1);
+                    ui.slider_exposure->setDecimals(0);
+                    ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                }
                 break;
             }
-        }
+        case OEM:
+        case LONGEXP: //"Long Exposure"
+        case LONGEXPI: //"Long Exposure special"
+            {
+                if (params["fast_mode"].getVal<int>())
+                {
+                    exposureToSecFactor = 75.0 * (1e-6);
+                    ui.slider_delay->setSuffix(" * 75 탎");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(200.0);
+                    ui.slider_delay->setSingleStep(1.0);
+                    ui.slider_delay->setDecimals(0);
+                    ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
 
-        m_inEditing = false;
+                    ui.slider_exposure->setSuffix(" * 75 탎");
+                    ui.slider_exposure->setMinimum(1.0);
+                    ui.slider_exposure->setMaximum(200.0);
+                    ui.slider_exposure->setSingleStep(1.0);
+                    ui.slider_exposure->setDecimals(0);
+                    ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                }
+                else
+                {
+                    exposureToSecFactor = 1e-3;
+                    ui.slider_delay->setSuffix(" ms");
+                    ui.slider_delay->setMinimum(0.0);
+                    ui.slider_delay->setMaximum(1000000.0);
+                    ui.slider_delay->setSingleStep(1);
+                    ui.slider_delay->setDecimals(0);
+                    ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
+
+                    ui.slider_exposure->setSuffix(" ms");
+                    ui.slider_exposure->setMinimum(1.0);
+                    ui.slider_exposure->setMaximum(1000000.0);
+                    ui.slider_exposure->setSingleStep(1);
+                    ui.slider_exposure->setDecimals(0);
+                    ui.slider_exposure->setValue(params["integration_time"].getVal<double>() / exposureToSecFactor);
+                }
+                break;
+            }
     }
+
+    ui.checkFastMode->setChecked(params["fast_mode"].getVal<int>() > 0 ? true : false);
+
+    for (int i = 0; i < ui.comboGainMode->count(); ++i)
+    {
+        if (ui.comboGainMode->itemData(i).toInt() == params["gain_mode"].getVal<int>())
+        {
+            ui.comboGainMode->setCurrentIndex(i);
+            break;
+        }
+    }
+
+    m_inEditing = state;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
