@@ -56,7 +56,7 @@ void DockWidgetUSBMotion3XIII::identifierChanged(const QString &identifier)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetUSBMotion3XIII::basicInformationChanged(const QString &axis, const const int *axisUnits)
+void DockWidgetUSBMotion3XIII::basicInformationChanged(const QString &axis, const int *axisUnits)
 {
     ui.lblAxis->setText(axis);
 
