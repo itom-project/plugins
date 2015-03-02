@@ -856,7 +856,12 @@ This file format allows displaying volume data from the given 3D data object for
             writer->SetDataModeToAscii();
         }
         writer->SetFileName(filename.data());
-        writer->SetInput(structuredPoints);
+
+#if (VTK_MAJOR_VERSION == 5)
+		writer->SetInput (structuredPoints);
+#else
+		writer->SetInputData (structuredPoints);
+#endif
         writer->Write();
 
         delete dobj;
