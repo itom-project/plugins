@@ -27,6 +27,8 @@
 #include "dialogXimea.h"
 #include <qsharedpointer.h>
 
+#include "xiApi.h" //in order to include windows.h for windows necessary to get the type HANDLE
+
 struct SoftwareShading
 {
     SoftwareShading()
