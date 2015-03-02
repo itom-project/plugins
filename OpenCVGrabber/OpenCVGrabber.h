@@ -30,6 +30,13 @@
 
 #include <qsharedpointer.h>
 
+#ifdef WIN32
+#include <windows.h>
+#else
+// linux
+#include "wintypedefs.h"
+#endif
+
 #define BUFFERNUMBER 1 //Maximal Number of Buffers: 32
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -27,6 +27,8 @@
 #include "dialogXimea.h"
 #include <qsharedpointer.h>
 
+#include "xiApi.h"
+
 struct SoftwareShading
 {
     SoftwareShading()
@@ -152,6 +154,7 @@ class Ximea : public ito::AddInGrabber
         ito::RetVal LoadLib();
         ito::RetVal getErrStr(const int error, const QString &command, const QString &value);
         int m_saveParamsOnClose;
+        
 #if linux
         void *m_handle;
 #else
@@ -159,11 +162,11 @@ class Ximea : public ito::AddInGrabber
 #endif
 
 #if linux
-    void *ximeaLib;
+        void *ximeaLib;
 #else
-    HMODULE ximeaLib;
+        HMODULE ximeaLib;
 #endif
-
+    
         void* m_pvShadingSettings;
 
         SoftwareShading m_shading;

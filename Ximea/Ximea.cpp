@@ -848,7 +848,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                         retValue += getErrStr(ret, "XI_PRM_WIDTH", QString::number(curxsize));                  
                     if (ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &curysize, &intSize, &intType))
                         retValue += getErrStr(ret, "XI_PRM_HEIGHT", QString::number(curysize));
-
+                    
 					maxxsize = (int)(maxxsize / (bin));
 					maxysize = (int)(maxysize / (bin));
 
