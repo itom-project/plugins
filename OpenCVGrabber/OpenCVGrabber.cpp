@@ -34,12 +34,16 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
-#ifdef WIN32
-#include <windows.h>
+#if linux
+  typedef uint32_t* LPDWORD;
+  typedef uint32_t DWORD;
 #else
-// linux
-#include "wintypedefs.h"
+#ifdef WIN32
+    #include <Windows.h>
 #endif
+#endif
+
+#define    FCC(ch4) ((((DWORD)(ch4) & 0xFF) << 24) | (((DWORD)(ch4) & 0xFF00) << 8) | (((DWORD)(ch4) & 0xFF0000) >> 8) |(((DWORD)(ch4) & 0xFF000000) >> 24))
 
 /**
 * \file openCVGrabber.cpp
@@ -209,12 +213,7 @@
 * 
 */
 
-#if linux
-  typedef uint32_t* LPDWORD;
-  typedef uint32_t DWORD;
-#endif
 
-#define    FCC(ch4) ((((DWORD)(ch4) & 0xFF) << 24) | (((DWORD)(ch4) & 0xFF00) << 8) | (((DWORD)(ch4) & 0xFF0000) >> 8) |(((DWORD)(ch4) & 0xFF000000) >> 24))
 
 
 //TODO: '' is reserved for single characters and must not be used to initialize a char array fix this!
