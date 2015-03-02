@@ -34,6 +34,13 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
+#ifdef WIN32
+#include <windows.h>
+#else
+// linux
+#include "wintypedefs.h"
+#endif
+
 /**
 * \file openCVGrabber.cpp
 * \brief 
