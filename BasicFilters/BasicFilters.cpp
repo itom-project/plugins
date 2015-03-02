@@ -53,7 +53,7 @@ BasicFiltersInterface::BasicFiltersInterface()
 \n\
 This plugin does not have any unusual dependencies.";
 
-    m_description = QObject::tr("ITO developed filter-functions for dateObjects");
+    m_description = QObject::tr("ITO developed filter-functions for data objects");
     m_detaildescription = QObject::tr(docstring);
     m_author = "W. Lyda, T. Boettcher, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -123,7 +123,7 @@ const char* BasicFilters::mergeColorPlaneDoc= "Merge 3 or 4 color planes to a si
 If second object is tInt32 and of right size in x and y, the stack object will be convertet to tInt32. In all other cases the object will be tRGBA32 \n\
 \n";
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* BasicFilters::calcMeanOverZDoc= "Calculate meanValue of a 3D-Object stack in z-directon. \n\
+const char* BasicFilters::calcMeanOverZDoc= "Calculate mean value (and optional standard deviation) of a 3D data object in z-direction. \n\
 \n";
 //----------------------------------------------------------------------------------------------------------------------------------
 const char* BasicFilters::calcObjSliceDoc= "Interpolate 1D-slice from along the defined line from a 2D-Object. \n\
@@ -142,10 +142,10 @@ the value given by 'newValue'. In both cases the range boundaries are not clippe
 NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.";
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char *BasicFilters::fillGeometricDoc = "fills a ROI, which defined by a geometric primitiv, of the given dataObject with a defined value\n\
+const char *BasicFilters::fillGeometricDoc = "fills a ROI, which defined by a geometric primitive, of the given dataObject with a defined value\n\
 \n\
 Depending on the parameter 'insideFlag', this filter sets all values of the dataObject depending on the geometric primitiv within (1) or outside (2) or both (3) to \
-the value given by 'newValueInside' and 'newValueOutside'. The 'edgeFlag' is currently not used but shall manage the edge handling of primitiv.";
+the value given by 'newValueInside' and 'newValueOutside'. The 'edgeFlag' is currently not used but shall manage the edge handling of primitive.";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
