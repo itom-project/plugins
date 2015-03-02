@@ -30,6 +30,10 @@
 #include <qsharedpointer.h>
 #include <qbytearray.h>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 //----------------------------------------------------------------------------------------------------------------------------------
 class SerialPort
 {

@@ -47,6 +47,10 @@
 //#include <qdebug.h>
 //#include <qmessagebox.h>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 Q_DECLARE_METATYPE(ito::DataObject)
 
 //----------------------------------------------------------------------------------------------------------------------------------
