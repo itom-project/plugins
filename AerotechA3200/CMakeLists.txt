@@ -108,6 +108,9 @@ ELSE(BUILD_TARGET64)
 
 	ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 	TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${LIB_NAME})
+	if (QT5_FOUND)
+		qt5_use_modules(${target_name} ${QT_COMPONENTS})
+	endif (QT5_FOUND)
 
 	IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		set_target_properties(${target_name} PROPERTIES COMPILE_FLAGS "/Zc:wchar_t-")

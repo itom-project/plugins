@@ -36,6 +36,7 @@
 #include "xyzFormat.h"
 
 #include "DataObject/dataObjectFuncs.h"
+#include "common/apiFunctionsInc.h"
 
 //#include <pcl/surface/reconstruction.h>
 #include <pcl/pcl_config.h>
@@ -69,6 +70,9 @@
     #include <pcl/surface/simplification_remove_unused_vertices.h>
     #include <pcl/surface/poisson.h>
 #endif
+
+#include "vtkImageData.h"
+#include "vtkXMLImageDataWriter.h"
 
 #include <pcl/io/impl/pcd_io.hpp>
 
@@ -663,6 +667,215 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const char *PclTools::saveVTKImageDataDOC = "saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image\n\
+\n\
+This file format allows displaying volume data from the given 3D data object for instance using ParaView.";
+/*static*/ ito::RetVal PclTools::saveVTKImageDataParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->append(ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, tr("data object to save (two or three dimensional, uint8 or uint16)").toLatin1().data()));
+    paramsMand->append(ito::Param("filename", ito::ParamBase::String, "", tr("complete filename, ending .vti will be appended if not available").toLatin1().data()));
+
+    paramsOpt->clear();
+    ito::Param opt1("mode", ito::ParamBase::String, "b", tr("mode (b=binary (default) or t=ascii)").toLatin1().data());
+    ito::StringMeta *sm = new ito::StringMeta(ito::StringMeta::String, "b");
+    sm->addItem("t");
+    opt1.setMeta(sm, true);
+    paramsOpt->append(opt1);
+
+    paramsOpt->append(ito::Param("scalarFieldName", ito::ParamBase::String, "scalars", tr("name of scalar field, e.g. 'scalars' (zero values will be transparent), 'ImageScalars' (zero values will be displayed)...").toLatin1().data()));
+    paramsOpt->append(ito::Param("scalarThreshold", ito::ParamBase::Int, 0, std::numeric_limits<ito::uint16>::max(), 0, tr("values <= threshold will be set to 0 (transparent values for scalar field name 'scalars')").toLatin1().data()));
+    
+
+    return retval;
+}
+
+/*static*/ ito::RetVal PclTools::saveVTKImageData(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    int sizeLimits[] = {1, 10000, 1, 10000, 1, 10000};
+    const ito::DataObject *input = paramsMand->at(0).getVal<const ito::DataObject*>();
+    ito::DataObject *dobj = NULL;
+
+    if (input->getDims() == 3)
+    {
+        switch (input->getType())
+        {
+        case ito::tUInt8:
+            dobj = apiCreateFromDataObject(input, 3, ito::tUInt8, sizeLimits, &retval);
+            break;
+        case ito::tUInt16:
+            dobj = apiCreateFromDataObject(input, 3, ito::tUInt16, sizeLimits, &retval);
+            break;
+        default:
+            retval += ito::RetVal(ito::retError, 0, "dataObject must be uint8 or uint16");
+            break;
+        }
+    }
+    else if (input->getDims() == 2)
+    {
+        switch (input->getType())
+        {
+        case ito::tUInt8:
+            dobj = apiCreateFromDataObject(input, 2, ito::tUInt8, sizeLimits, &retval);
+            break;
+        case ito::tUInt16:
+            dobj = apiCreateFromDataObject(input, 2, ito::tUInt16, sizeLimits, &retval);
+            break;
+        default:
+            retval += ito::RetVal(ito::retError, 0, "dataObject must be uint8 or uint16");
+            break;
+        }
+    }
+
+    QByteArray filename = paramsMand->at(1).getVal<char*>();
+    QByteArray scalarName = paramsOpt->at(1).getVal<char*>();
+    ito::uint16 t = paramsOpt->at(2).getVal<int>();
+
+    if (filename.isEmpty())
+    {
+        retval += ito::RetVal(ito::retError, 0, "filename is empty");
+    }
+    else
+    {
+        QFileInfo fi(filename);
+        if (fi.suffix().compare("vti", Qt::CaseInsensitive) != 0)
+        {
+            filename += ".vti";
+            fi = QFileInfo(filename);
+        }
+
+        filename = fi.absoluteFilePath().toLatin1().data();
+    }
+
+    if (!retval.containsError())
+    {
+        vtkSmartPointer<vtkImageData> structuredPoints = vtkSmartPointer<vtkImageData>::New();
+
+        int xDim, yDim;
+
+        if (dobj->getDims() == 3)
+        {
+            structuredPoints->SetDimensions(dobj->getSize(2), dobj->getSize(1), dobj->getSize(0));
+            structuredPoints->SetSpacing(dobj->getAxisScale(2), dobj->getAxisScale(1), dobj->getAxisScale(0));
+            structuredPoints->SetOrigin(dobj->getAxisOffset(2), dobj->getAxisOffset(1), dobj->getAxisOffset(0));
+            xDim = 2;
+            yDim = 1;
+        }
+        else if (dobj->getDims() == 2)
+        {
+            structuredPoints->SetDimensions(dobj->getSize(1), dobj->getSize(0), 1);
+            structuredPoints->SetSpacing(dobj->getAxisScale(1), dobj->getAxisScale(0), 1.0);
+            structuredPoints->SetOrigin(dobj->getAxisOffset(1), dobj->getAxisOffset(0), 0.0);
+            xDim = 1;
+            yDim = 0;
+        }
+        
+        
+
+#if VTK_MAJOR_VERSION <= 5
+        structuredPoints->SetNumberOfScalarComponents(1);
+        switch (input->getType())
+        {
+        case ito::tUInt8:
+            structuredPoints->SetScalarTypeToUnsignedChar();
+            break;
+        case ito::tUInt16:
+            structuredPoints->SetScalarTypeToUnsignedShort();
+            break;
+        }
+#else
+        switch (input->getType())
+        {
+        case ito::tUInt8:
+            structuredPoints->AllocateScalars(VTK_UNSIGNED_CHAR,1);
+            break;
+        case ito::tUInt16:
+            structuredPoints->AllocateScalars(VTK_UNSIGNED_SHORT,1);
+            break;
+        }
+#endif
+        
+
+        switch (input->getType())
+        {
+        case ito::tUInt8:
+            {
+                const ito::uint8 *ptr;
+                ito::uint8 *scalar;
+                for (int z = 0; z < dobj->getNumPlanes(); ++z)
+                {
+                    for (int y = 0; y < dobj->getSize(yDim); ++y)
+                    {
+                        ptr = (const ito::uint8*)(dobj->rowPtr(z, y));
+                        for (int x = 0; x < dobj->getSize(xDim); ++x)
+                        {
+                            scalar = static_cast<ito::uint8*>(structuredPoints->GetScalarPointer(x,y,z));
+                            scalar[0] = (ptr[x] <= t) ? 0 : ptr[x];
+                        }
+                    }
+                }
+            }
+            break;
+        case ito::tUInt16:
+            {
+                const ito::uint16 *ptr;
+                ito::uint16 *scalar;
+                for (int z = 0; z < dobj->getNumPlanes(); ++z)
+                {
+                    for (int y = 0; y < dobj->getSize(yDim); ++y)
+                    {
+                        ptr = (const ito::uint16*)(dobj->rowPtr(z, y));
+                        for (int x = 0; x < dobj->getSize(xDim); ++x)
+                        {
+                            scalar = static_cast<ito::uint16*>(structuredPoints->GetScalarPointer(x,y,z));
+                            scalar[0] = (ptr[x] <= t) ? 0 : ptr[x];
+                        }
+                    }
+                }
+            }
+            break;
+        }
+
+        structuredPoints->GetPointData()->GetScalars()->SetName(scalarName.data());
+
+        vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkSmartPointer<vtkXMLImageDataWriter>::New();
+        if (paramsOpt->at(0).getVal<char*>()[0] == 'b')
+        {
+            writer->SetDataModeToBinary();
+        }
+        else
+        {
+            writer->SetDataModeToAscii();
+        }
+        writer->SetFileName(filename.data());
+
+#if (VTK_MAJOR_VERSION == 5)
+		writer->SetInput (structuredPoints);
+#else
+		writer->SetInputData (structuredPoints);
+#endif
+        writer->Write();
+
+        delete dobj;
+        dobj = NULL;
+    }
+
+    
+
+    return retval;
+}
+
+
+
+//------------------------------------------------------------------------------------------------------------------------------
 const char* PclTools::savePolygonMeshDOC = "\n\
 \n\
 \n\
@@ -680,7 +893,7 @@ ito::RetVal PclTools::savePolygonMeshParams(QVector<ito::Param> *paramsMand, QVe
     }
 
     paramsMand->append(ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, tr("polygon mesh to save").toLatin1().data()));
-    paramsMand->append(ito::Param("filename", ito::ParamBase::String, "", tr("complete filename (type is either read by suffix of filename or by parameter 'type'").toLatin1().data()));
+    paramsMand->append(ito::Param("filename", ito::ParamBase::String, "", tr("complete filename (type is either read by suffix of filename or by parameter 'type')").toLatin1().data()));
 
     paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('obj' [default],'ply','vtk','stl')").toLatin1().data()));
 
@@ -2074,7 +2287,7 @@ const char* PclTools::pclRandomSampleDOC = "\n\
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid input point cloud").toLatin1().data()));
     paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with removed NaN values").toLatin1().data()));
-    paramsMand->append(ito::Param("nrOfPoints", ito::ParamBase::Int | ito::ParamBase::In, 1, std::numeric_limits<ito::uint16>::max(), 10000, tr("number of randomly picked points").toLatin1().data()));
+    paramsMand->append(ito::Param("nrOfPoints", ito::ParamBase::Int | ito::ParamBase::In, 1, std::numeric_limits<int>::max(), 10000, tr("number of randomly picked points").toLatin1().data()));
     
     return retval;
 }
@@ -3915,6 +4128,9 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::loadPolygonMesh, PclTools::loadPolygonMeshParams, tr("loads polygonMesh from hard drive and returns it (format obj[default], ply, vtk, stl)"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadPolygonMesh, tr("Polygon Mesh (*.obj *.ply *.vtk *.stl)"));
     m_filterList.insert("loadPolygonMesh", filter);
 
+    filter = new FilterDef(PclTools::saveVTKImageData, PclTools::saveVTKImageDataParams, saveVTKImageDataDOC, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("VTK Image Data File (*.vti)"));
+    m_filterList.insert("saveVTKImageData", filter);
+
     filter = new FilterDef(PclTools::transformAffine, PclTools::transformAffineParams, tr("transforms a point cloud with a given homogeneous transformation matrix (4x4 data object)"));
     m_filterList.insert("pclTransformAffine", filter);
 
@@ -4005,6 +4221,7 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclSampleToDataObject, PclTools::pclSampleToDataObjectParams, tr("Uses copy an organized and dense pointcloud to an dataObject."));
     m_filterList.insert("pclSampleToDataObject", filter);
+    
     
 
     if (waitCond)

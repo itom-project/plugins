@@ -731,8 +731,6 @@ ito::RetVal Vistek::retrieveData(ito::DataObject *externalDataObject)
     bool hasListeners = false;
     bool copyExternal = false;
 
-    SVGigE_RETURN ret;
-
     if (m_autoGrabbingListeners.size() > 0)
     {
         hasListeners = true;

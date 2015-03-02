@@ -47,6 +47,9 @@
 #include "math.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//CAREFUL: With NVIDIA drivers >~ 347.xx, no command at all may stay before the #version directive (even no line break or spaces).
+//         else, it will lead to the C0204 error (version directive must be first statement and must not be repeated)
+
     const GLint POSITION = 0;
     GLsizei const ElementCount = 6; //was 4 for GL_QUAD
     
@@ -55,8 +58,7 @@
     //! fragment shader calculates the texture pixel (and color) for each pixel. In addition a 
     //! gamma correction can be applied using a simple lookup vektor (lutarr)
     
-    const char *VERTEX_SHADER_SOURCE = "  \
-    #version 110                    \n\
+    const char *VERTEX_SHADER_SOURCE = "#version 110\n\
                                     \
     uniform mat4 MVP;               \
     attribute vec4 position;        \
@@ -69,8 +71,7 @@
     }                               \
     ";
 
-    const char *VERTEX_SHADER_SOURCE130 = "  \
-    #version 130                    \n\
+    const char *VERTEX_SHADER_SOURCE130 = "#version 130\n\
                                     \
     uniform mat4 MVP;               \
     in vec4 position;               \
@@ -83,8 +84,7 @@
     }                               \
     ";
 
-    const char *FRAGMENT_SHADER_SOURCE = "    \
-    #version 110                        \n\
+    const char *FRAGMENT_SHADER_SOURCE = "#version 110\n\
                                         \
     uniform sampler2D textureObject;          \
     uniform int gamma;                  \
@@ -107,8 +107,7 @@
     }                                   \
     ";
 
-    const char *FRAGMENT_SHADER_SOURCE130 = " \
-    #version 130                        \n\
+    const char *FRAGMENT_SHADER_SOURCE130 = "#version 130\n\
                                         \
     uniform sampler2D textureObject;          \
     uniform int gamma;                  \

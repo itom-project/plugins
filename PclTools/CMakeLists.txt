@@ -21,7 +21,7 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-SET(VTK_INSTALL_EXPORT_NAME 1) #avoid that vtk directly links to an absolute Qt-library, that is located somewhere on their computer configuration.
+#SET(VTK_INSTALL_EXPORT_NAME 1) #avoid that vtk directly links to an absolute Qt-library, that is located somewhere on their computer configuration.
 find_package(ITOM_SDK REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets LinguistTools OpenGL)
@@ -29,11 +29,11 @@ FIND_PACKAGE_QT(ON Widgets LinguistTools OpenGL)
 IF(ITOM_SDK_PCL_SUPPORT)
     find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
     find_package(OpenCV COMPONENTS core REQUIRED)
-    find_package(VTK COMPONENTS vtkIOCore QUIET)
+    find_package(VTK QUIET)
     
     IF(VTK_FOUND)
         
-        find_package(PCL 1.5.1 REQUIRED COMPONENTS common io kdtree search features segmentation filters surface) #io
+        find_package(PCL 1.5.1 REQUIRED COMPONENTS common io kdtree search features segmentation filters surface)
         find_package(VisualLeakDetector QUIET)
 
         include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
@@ -118,9 +118,16 @@ IF(ITOM_SDK_PCL_SUPPORT)
         file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
         #handle translations END STEP 1
 
+		SET(VTK_LIBS "")
+		IF("${VTK_MAJOR_VERSION}" EQUAL 5)
+            foreach(__comps ${VTK_LIBRARIES})
+                set(VTK_LIBS ${VTK_LIBS} debug ${__comps}-gd.lib optimized ${__comps}.lib)
+            endforeach(__comps)
+        ENDIF()
+
         ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
         
-        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${PCL_LIBRARIES} ${VTK_LIBS})
         if (QT5_FOUND)
             qt5_use_modules(${target_name} Widgets UiTools)
         endif (QT5_FOUND)

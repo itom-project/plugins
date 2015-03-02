@@ -7,7 +7,7 @@
 #include "DebugPrintOut.h"
 
 
-
+//----------------------------------------------------------------------------------------
 DWORD WINAPI MainThreadFunction( LPVOID lpParam )
 {
 	ImageGrabberThread *pIGT = (ImageGrabberThread *)lpParam;
@@ -17,6 +17,7 @@ DWORD WINAPI MainThreadFunction( LPVOID lpParam )
 	return 0; 
 }
 
+//----------------------------------------------------------------------------------------
 HRESULT ImageGrabberThread::CreateInstance(ImageGrabberThread **ppIGT, IMFMediaSource *pSource, unsigned int deviceID)
 {
 	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
@@ -35,6 +36,7 @@ HRESULT ImageGrabberThread::CreateInstance(ImageGrabberThread **ppIGT, IMFMediaS
     return S_OK;
 }
 
+//----------------------------------------------------------------------------------------
 ImageGrabberThread::ImageGrabberThread(IMFMediaSource *pSource, unsigned int deviceID): igt_Handle(NULL), igt_stop(false)
 {
 	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
@@ -62,6 +64,18 @@ ImageGrabberThread::ImageGrabberThread(IMFMediaSource *pSource, unsigned int dev
 	}
 }
 
+
+//----------------------------------------------------------------------------------------
+ImageGrabberThread::~ImageGrabberThread(void)
+{
+	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
+
+	DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Destroing ImageGrabberThread\n", igt_DeviceID);
+
+	delete igt_pImageGrabber;
+}
+
+//----------------------------------------------------------------------------------------
 void ImageGrabberThread::setEmergencyStopEvent(void *userData, void(*func)(int, void *))
 {
 	if(func)
@@ -72,15 +86,7 @@ void ImageGrabberThread::setEmergencyStopEvent(void *userData, void(*func)(int, 
 	}
 }
 
-ImageGrabberThread::~ImageGrabberThread(void)
-{
-	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
-
-	DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Destroing ImageGrabberThread\n", igt_DeviceID);
-
-	delete igt_pImageGrabber;
-}
-
+//----------------------------------------------------------------------------------------
 void ImageGrabberThread::stop()
 {
 	igt_stop = true;
@@ -91,6 +97,7 @@ void ImageGrabberThread::stop()
 	}
 }
 
+//----------------------------------------------------------------------------------------
 void ImageGrabberThread::start()
 {
 	igt_Handle = CreateThread( 
@@ -102,6 +109,7 @@ void ImageGrabberThread::start()
             &igt_ThreadIdArray);   // returns the thread identifier 
 }
 
+//----------------------------------------------------------------------------------------
 void ImageGrabberThread::run()
 {
 	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
@@ -134,12 +142,12 @@ void ImageGrabberThread::run()
 		}
 	}
 	else
+    {
 		DPO->printOut(L"IMAGEGRABBERTHREAD VideoDevice %i: Finish thread\n", igt_DeviceID);
-
-	
-
+    }
 }
 
+//----------------------------------------------------------------------------------------
 ImageGrabber *ImageGrabberThread::getImageGrabber()
 {
 	return igt_pImageGrabber;

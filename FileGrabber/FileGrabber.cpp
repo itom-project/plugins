@@ -136,6 +136,7 @@ In the second case, provide the objectStack argument, arguments bpp and sourceFo
     param = ito::Param("preloadImages", ito::ParamBase::Int, 0, new ito::IntMeta(0, 1000), QObject::tr("If 0, no preloading is active, else the first n image are loaded to a stack.").toLatin1().data());
     m_initParamsMand.append(param);
 
+    //param = ito::Param("objectStack", ito::ParamBase::DObjPtr, NULL, QObject::tr("If not NULL and preloading is active, an 3D-Object can to used for the grabber.").toLatin1().data());
     param = ito::Param("objectStack", ito::ParamBase::DObjPtr, NULL, QObject::tr("If not NULL and preloading is active, an 3D-Object can to used for the grabber.").toLatin1().data());
     m_initParamsOpt.append(param);
 

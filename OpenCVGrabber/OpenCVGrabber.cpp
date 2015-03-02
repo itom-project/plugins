@@ -34,6 +34,13 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
+#ifdef WIN32
+#include <windows.h>
+#else
+// linux
+#include "wintypedefs.h"
+#endif
+
 /**
 * \file openCVGrabber.cpp
 * \brief 
@@ -399,8 +406,8 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
         Sleep(100);
         camRetVal = m_pCam->retrieve(m_pDataMatBuffer);
     }
-    //camRetVal = m_pCam->read(m_pDataMatBuffer);
-    if(camRetVal)
+    
+	if(camRetVal)
     {
         m_imgChannels = m_pDataMatBuffer.channels();
         m_imgCols = m_pDataMatBuffer.cols;
@@ -690,11 +697,10 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 #endif
     }
 
-
-    if(!retValue.containsError())
-    {
-        retValue += checkCameraAbilities();
-    }
+    if (checkCameraAbilities().containsError()) //don't check for error here, since some cameras are not able to retrieve a first image at this time. If it fails, we retry it in startDevice.
+	{
+		retValue += ito::RetVal(ito::retWarning, 0, "The configuration of the camera could not be entirely read yet. It is tried again during startDevice.");
+	}
 
     if(!retValue.containsError())
     {
@@ -753,8 +759,17 @@ ito::RetVal OpenCVGrabber::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    
-    incGrabberStarted();
+
+	if (m_camStatusChecked == false)
+	{
+		retValue += checkCameraAbilities();
+		retValue += checkData();
+	}
+
+	if (!retValue.containsError())
+	{
+		incGrabberStarted();
+	}
     
     if (waitCond)
     {
@@ -1025,11 +1040,6 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
 {
-    if(!m_camStatusChecked)
-    {
-        return ito::RetVal(ito::retError,0,tr("current camera status is undefined").toLatin1().data());
-    }
-
     int futureHeight = m_params["sizey"].getVal<int>();
     int futureWidth = m_params["sizex"].getVal<int>();
     int futureChannels;

@@ -41,7 +41,7 @@ For a connection to a serial port, create a new instance of this plugin using:
     The parameter are as follows:
 
     ============ =============== ===================================================================================================
-    port         int             COM-port number (e.g. 1)
+    port         int             Windows: COM-port number (e.g. 1), Linux: ttySx, ttyUSBx or ttyACMx (x is port, see infos below)
     baud         int             Baudrate (see *baudrate* in the parameter description below)
     endline      str             endline character (see *endline* in the parameter description below)
     bits         int, optional   number of bits to be written in line [5,8], default: 8
@@ -58,6 +58,11 @@ An example for opening port **COM 1** with 9600 bauds is:
 .. code-block:: python
     
     serial = dataIO("SerialIO", 1, 9600, endline="\n")
+    
+For linux, the port number may start with zero. If port numbers < 1000 are given, at first the serial port **ttySx** is checked, where
+x is the given port number. If **ttySx** does not exist, **ttyUSBx** is searched. If a port number in the range [1000,1999] is given,
+the device **ttyUSBx** is used, where *x* is (port - 1000). Finally, if port is in the range [2000,2999], the device **ttyACMx** is
+searched, where *x* is (port - 2000).
 
 Parameters
 ==========

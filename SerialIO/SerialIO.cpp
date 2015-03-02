@@ -620,14 +620,44 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
     m_baudRatesSize = (int)(sizeof(baudRates)/sizeof(int));
 
 #ifdef __linux__
-//    _snprintf(device, 50, "/dev/ttyS%d", port);
-    _snprintf(device, 50, "/dev/ttyUSB%d", port);
-    // Open device
-    m_dev = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
-    if (m_dev < 0)
+
+    if (port < 1000) // ttyS of if not found try ttyUSB
     {
-//        _snprintf(device, 50, "/dev/ttyUSB%d", port);
         _snprintf(device, 50, "/dev/ttyS%d", port);
+        // Open device
+        m_dev = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
+        if (m_dev < 0)
+        {
+            _snprintf(device, 50, "/dev/ttyUSB%d", port);
+            m_dev = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
+            if (m_dev < 0)
+            {
+                _snprintf(device, 50, "/dev/ttyACM%d", port);
+                m_dev = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
+                if (m_dev < 0)
+                {
+                    return ito::RetVal(ito::retError, 0, QObject::tr("could not open device").toLatin1().data());      // Device not found
+                }
+                else
+                {
+                    portType = TTYACM;
+                }
+            }
+            else
+            {
+                portType = TTYUSB;
+            }
+        }
+        else
+        {
+            portType = TTYS;
+        }
+        m_serParams.port = port;
+        fcntl(m_dev, F_SETFL, FNDELAY);     // set nonblocking mode
+    }
+    else if ((port > 999) && (port < 2000))
+    {
+        _snprintf(device, 50, "/dev/ttyUSB%d", port-1000);
         m_dev = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
         if (m_dev < 0)
         {
@@ -635,15 +665,26 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
         }
         else
         {
-            portType = TTYS;
+            portType = TTYUSB;
         }
+        m_serParams.port = port;
+        fcntl(m_dev, F_SETFL, FNDELAY);     // set nonblocking mode
     }
-    else
+    else if ((port > 1999) && (port < 3000))
     {
-        portType = TTYUSB;
+        _snprintf(device, 50, "/dev/ttyACM%d", port-2000);
+        m_dev = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
+        if (m_dev < 0)
+        {
+            return ito::RetVal(ito::retError, 0, QObject::tr("could not open device").toLatin1().data());      // Device not found
+        }
+        else
+        {
+            portType = TTYACM;
+        }
+        m_serParams.port = port;
+        fcntl(m_dev, F_SETFL, FNDELAY);     // set nonblocking mode
     }
-    m_serParams.port = port;
-    fcntl(m_dev, F_SETFL, FNDELAY);     // set nonblocking mode
 
     return setparams(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
 #else
@@ -1075,9 +1116,13 @@ Example \n\
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");  
-
+#ifdef __linux__
+    ito::Param paramVal("port", ito::ParamBase::Int, 0, 4095, 1, tr("The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM").toLatin1().data());
+    m_initParamsMand.append(paramVal);
+#else
     ito::Param paramVal("port", ito::ParamBase::Int, 0, 255, 1, tr("The number of the serial port, starting with 1 (linux 0)").toLatin1().data());
     m_initParamsMand.append(paramVal);
+#endif
     paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port").toLatin1().data());
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("endline", ito::ParamBase::String, "\n", tr("The endline character, which is added automatically after every setVal()").toLatin1().data());
@@ -1097,7 +1142,7 @@ Example \n\
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("enableDebug", ito::ParamBase::Int, 0, 1, 0, tr("Initialised 'debug'-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("debugIgnoreEmpty", ito::ParamBase::Int, 0, 1, 0, tr("If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored").toLatin1().data());
+    paramVal = ito::Param("debugIgnoreEmpty", ito::ParamBase::Int, 0, 1, 1, tr("If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     return;
@@ -1135,8 +1180,14 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(fal
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "SerialIO", NULL);
     m_params.insert(paramVal.getName(), paramVal);
+
+#ifdef __linux__
+    paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4095, 0, tr("The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+#else
     paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 255, 0, tr("Serial port number of this device").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+#endif
     paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 50, 4000000, 9600, tr("Current baudrate in bits/s").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("bits", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 5, 8, 8, tr("Number of bits to be written in line").toLatin1().data());

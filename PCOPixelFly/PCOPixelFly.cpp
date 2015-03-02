@@ -51,8 +51,6 @@
     #pragma comment(lib, "Version.lib")
 #endif
 
-Q_DECLARE_METATYPE(ito::DataObject)
-
 //int PCOPixelFlyInterface::m_instCounter = 5;  // initialization starts with five due to normal boards are 0..4
 
 static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successfull initialized board (max = 5) */
@@ -1240,14 +1238,14 @@ ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             retValue = ito::RetVal(ito::retError, 0, tr("Board already initialized. Try with another board number").toLatin1().data());
         }
 
-        Initnum++;  // so we have a new running instance of this grabber (or not)
-
         if (!retValue.containsError())
         {
+			Initnum++;  // so we have a new running instance of this grabber (or not)
+
             iRetCode = initboard(iBoardNumber, &this->m_hdriver);  
             if (!this->m_hdriver)
             {
-                retValue = this->PCOChkError(iRetCode);
+                retValue = PCOChkError(iRetCode);
                 retValue += ito::RetVal(ito::retError, 0, tr("Unable to PCO-initialize board").toLatin1().data());
             }
         
@@ -1260,7 +1258,26 @@ ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             {
                 DWORD output;
                 iRetCode = getboardval(this->m_hdriver,  PCC_VAL_BOARD_INFO, &output);
-                serial = PCC_INFO_NR(output);
+				if (iRetCode == 0)
+				{
+					serial = PCC_INFO_NR(output);
+					iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &output);
+					if (iRetCode == 0)
+					{
+						if (output & 0x08000000)
+						{
+							retValue += ito::RetVal(ito::retError, 0, "camera head is disconnected from board. Please check the connection");
+						}
+					}
+					else
+					{
+						retValue += PCOChkError(iRetCode);
+					}
+				}
+				else
+				{
+					retValue += PCOChkError(iRetCode);
+				}
             }
     #endif
             if(serial == 0)
@@ -1376,10 +1393,6 @@ ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     FreeLibrary(g_libpcocnv);
                     g_libpcocnv= NULL;
                 }
-            }
-            else
-            {
-                std::cerr << "DLLs not unloaded due to further running grabber instances\n" << std::endl;
             }
         }
         else

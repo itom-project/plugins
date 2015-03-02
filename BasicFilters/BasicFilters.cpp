@@ -140,8 +140,7 @@ const char* BasicFilters::clipAbyBDoc = "clip values of image A to newValue (def
 Depending on the parameter 'insideFlag', this filter sets all values in image A depending on image B within (1) or outside (0) of the range (minValue, maxValue) to \
 the value given by 'newValue'. In both cases the range boundaries are not clipped and replaced. If clipping is executed outside of range, \
 NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.";
-//----------------------------------------------------------------------------------------------------------------------------------
-const char *BasicFilters::calcHistDoc = "calculates histgram of real input data object";
+
 //----------------------------------------------------------------------------------------------------------------------------------
 const char *BasicFilters::fillGeometricDoc = "fills a ROI, which defined by a geometric primitiv, of the given dataObject with a defined value\n\
 \n\

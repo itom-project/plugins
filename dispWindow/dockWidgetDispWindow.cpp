@@ -46,6 +46,11 @@ void DockWidgetDispWindow::parametersChanged(QMap<QString, ito::Param> params)
 
     if (m_firstRun || tempNumPhaseShifts != m_curNumPhaseShifts || tempNumGrayCodes != m_curNumGrayCodes)
     {
+        m_curNumPhaseShifts = tempNumPhaseShifts;
+        m_curNumGrayCodes = tempNumGrayCodes;
+
+        m_firstRun = false;
+
         m_curNumPhaseShifts = params["phaseshift"].getVal<int>();
         m_curNumGrayCodes = params["numgraybits"].getVal<int>();
 
@@ -63,11 +68,6 @@ void DockWidgetDispWindow::parametersChanged(QMap<QString, ito::Param> params)
         {
             ui.comboBox->addItem(tr("gray images %1").arg(x + 1), 0);
         }
-
-        m_curNumPhaseShifts = tempNumPhaseShifts ;
-        m_curNumGrayCodes = tempNumGrayCodes;
-
-        m_firstRun = false;
     }
 
     if (!m_inEditing)

@@ -22,7 +22,17 @@
 
 #define CHECK_HR(x) if (FAILED(x)) { goto done; }
 
-ImageGrabber::ImageGrabber(unsigned int deviceID): m_cRef(1), ig_DeviceID(deviceID), ig_pSource(NULL), ig_pSession(NULL), ig_pTopology(NULL), ig_RIE(true), ig_Close(false)
+ImageGrabber::ImageGrabber(unsigned int deviceID): 
+    m_cRef(1), 
+    ig_DeviceID(deviceID), 
+    ig_pSource(NULL), 
+    ig_pSession(NULL), 
+    ig_pTopology(NULL), 
+    ig_RIE(true), 
+    ig_Close(false),
+    ig_RIFirst(NULL),
+    ig_RISecond(NULL),
+    ig_RIOut(NULL)
 {
 }
 
@@ -39,6 +49,11 @@ ImageGrabber::~ImageGrabber(void)
 	//SafeRelease(&ig_pTopology);
 
 	DebugPrintOut *DPO = &DebugPrintOut::getInstance();
+
+    delete ig_RIFirst;
+    ig_RIFirst = NULL;
+    delete ig_RISecond;
+    ig_RISecond = NULL;
 
 	DPO->printOut(L"IMAGEGRABBER VideoDevice %i: Destroing instance of the ImageGrabber class \n", ig_DeviceID);
 

@@ -542,11 +542,11 @@ ito::RetVal BasicFilters::replaceInfAndNaNParams(QVector<ito::Param> *paramsMand
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr, NULL, tr("Input image").toLatin1().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("replaceImg", ito::ParamBase::DObjPtr, NULL, tr("Image with values which will be used for replacement").toLatin1().data());
+        param = ito::Param("replaceImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Image with values which will be used for replacement").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr, NULL, tr("Output image").toLatin1().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image").toLatin1().data());
         paramsMand->append(param);
 
         paramsOut->append( ito::Param("nrOfReplacements", ito::ParamBase::Int | ito::ParamBase::Out, 0, NULL, tr("number of replacments").toLatin1().data()));
@@ -560,9 +560,9 @@ ito::RetVal BasicFilters::mergeColorPlanesParams(QVector<ito::Param> *paramsMand
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr, NULL, tr("Input image with 3 or 4 uint8 planes").toLatin1().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image with 3 or 4 uint8 planes").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr, NULL, tr("Output image with uint32 planes").toLatin1().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image with uint32 planes").toLatin1().data());
         paramsMand->append(param);
 
         param = ito::Param("toggleByteOrder", ito::ParamBase::Int, 0, 3, 0, tr("Switch between RGBA = 0, BGRA = 1, ARGB = 2, ABGR = 3").toLatin1().data());
@@ -1262,6 +1262,9 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
     QVector<ito::int32> matStepSize;
     matStepSize.clear();
 
+    valueDescription = dObjSrc->getValueDescription();
+    valueUnit = dObjSrc->getValueUnit();
+
     if( pxX0 == pxX1 ) //pure line in y-direction
     {
         sampleDir = 1;
@@ -1298,8 +1301,8 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
         if(axisDescription == "") axisDescription = "y-axis";
                
-        valueDescription = dObjSrc->getAxisDescription(dims - 2, _unused);
-        valueUnit = dObjSrc->getAxisUnit(dims - 2, _unused);
+        //valueDescription = dObjSrc->getAxisDescription(dims - 2, _unused);
+        //valueUnit = dObjSrc->getAxisUnit(dims - 2, _unused);
     }
     else if( pxY0 == pxY1 ) //pure line in x-direction
     {
@@ -1336,8 +1339,8 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
         axisUnit = dObjSrc->getAxisUnit(dims-1,_unused);
         if(axisDescription == "") axisDescription = "x-axis";
   
-        valueDescription = dObjSrc->getValueDescription();
-        valueUnit = dObjSrc->getValueUnit();
+        //valueDescription = dObjSrc->getValueDescription();
+        //valueUnit = dObjSrc->getValueUnit();
 
     }
     else
@@ -1432,8 +1435,8 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
         if(dObjSrc->getAxisUnit(dims-1,_unused) == dObjSrc->getAxisUnit(dims-2,_unused)) axisUnit = dObjSrc->getAxisUnit(dims-1,_unused);
         else axisUnit = "";
 
-        valueDescription = dObjSrc->getValueDescription();
-        valueUnit = dObjSrc->getValueUnit();
+        //valueDescription = dObjSrc->getValueDescription();
+        //valueUnit = dObjSrc->getValueUnit();
 
     }
 
@@ -1622,6 +1625,9 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
         else dObjDst->setAxisScale(1, stepSizePhys);
 
         dObjDst->setAxisOffset(1, startPx);
+
+        dObjDst->setValueUnit(valueUnit);
+        dObjDst->setValueDescription(valueDescription);
     }
 
     return retval;
@@ -2109,11 +2115,11 @@ ito::RetVal BasicFilters::clipAbyBFilterParams(QVector<ito::Param> *paramsMand, 
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("input image [real typed data object]").toLatin1().data());
+    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input image [real typed data object]").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("comparisonImage", ito::ParamBase::DObjPtr, NULL, tr("input image [real typed data object] for comparision").toLatin1().data());
+    param = ito::Param("comparisonImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input image [real typed data object] for comparision").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr, NULL, tr("destination image (inplace possible)").toLatin1().data());
+    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination image (inplace possible)").toLatin1().data());
     paramsMand->append(param);
     param = ito::Param("minValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("lowest value in range").toLatin1().data());
     paramsMand->append(param);
@@ -2392,35 +2398,33 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function calculates a the histogram for a plane
    \param[in]   planeIn  Inputplane
-   \param[in|out]   histOut   Preallocated histogramm buffer
-   \param[in]   min   Lowest value in this histogramm
-   \param[in]   max   Highest value in this histogramm
+   \param[in|out]   histOut   Preallocated histogram buffer
+   \param[in]   min   Lowest value in this histogram
+   \param[in]   max   Highest value in this histogram
    \author ITO
    \sa  mcppfilters::calcHistParams, mcppfilters::calcHistFilter
    \date
 */
-template<typename _Tp> ito::RetVal HistogrammBlock(cv::Mat *planeIn, cv::Mat *histOut, double min, double max)
+template<typename _Tp> ito::RetVal HistogramBlock(const cv::Mat *planeIn, cv::Mat *histOut, const double &min, const double &max)
 {
     ito::int32 * rowPtrOut;
     rowPtrOut = (ito::int32*)histOut->ptr(0);
     memset(rowPtrOut, 0, histOut->cols * sizeof(ito::int32));
-    ito::int32 x, y;
+
     ito::float64 indexfaktor = (histOut->cols - 1) / (max - min);
 
-    for (y = 0; y < planeIn->rows; y++)
+    for (int y = 0; y < planeIn->rows; y++)
     {
         #if (USEOMP)
         #pragma omp parallel num_threads(NTHREADS)
         {
         #endif
         ito::int32 index;
-        const _Tp* rowPtrIn;
-
-        rowPtrIn = (_Tp*)planeIn->ptr(y);
+        const _Tp* rowPtrIn = (_Tp*)planeIn->ptr(y);
         #if (USEOMP)
         #pragma omp for schedule(guided)
         #endif
-        for (x = 0; x < planeIn->cols; x++)
+        for (int x = 0; x < planeIn->cols; x++)
         {
             index = static_cast<ito::int32>((rowPtrIn[x] - min) * indexfaktor);
             if(index >= 0 && index < histOut->cols)
@@ -2440,14 +2444,14 @@ template<typename _Tp> ito::RetVal HistogrammBlock(cv::Mat *planeIn, cv::Mat *hi
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function calculates a the histogram for a plane
    \param[in]   planeIn  Inputplane
-   \param[in|out]   histOut   Preallocated histogramm buffer
-   \param[in]   min   Lowest value in this histogramm
-   \param[in]   max   Highest value in this histogramm
+   \param[in|out]   histOut   Preallocated histogram buffer
+   \param[in]   min   Lowest value in this histogram
+   \param[in]   max   Highest value in this histogram
    \author ITO
    \sa  mcppfilters::calcHistParams, mcppfilters::calcHistFilter
    \date
 */
-template<> ito::RetVal HistogrammBlock<ito::Rgba32>(cv::Mat *planeIn, cv::Mat *histOut, double min, double max)
+template<> ito::RetVal HistogramBlock<ito::Rgba32>(const cv::Mat *planeIn, cv::Mat *histOut, const double &min, const double &max)
 {
     ito::int32 * rowPtrOutR = (ito::int32*)histOut->ptr(2);
     ito::int32 * rowPtrOutG = (ito::int32*)histOut->ptr(1);
@@ -2459,23 +2463,21 @@ template<> ito::RetVal HistogrammBlock<ito::Rgba32>(cv::Mat *planeIn, cv::Mat *h
     memset(rowPtrOutB, 0, histOut->cols * sizeof(ito::int32));
     memset(rowPtrOutGray, 0, histOut->cols * sizeof(ito::int32));
     
-    ito::int32 x, y;
     ito::float64 indexfaktor = (histOut->cols - 1) / (max - min);
 
-    for (y = 0; y < planeIn->rows; y++)
+    for (int y = 0; y < planeIn->rows; y++)
     {
         #if (USEOMP)
         #pragma omp parallel num_threads(NTHREADS)
         {
         #endif
         ito::int32 index;
-        const ito::Rgba32* rowPtrIn;
+        const ito::Rgba32* rowPtrIn = (ito::Rgba32*)planeIn->ptr(y);
 
-        rowPtrIn = (ito::Rgba32*)planeIn->ptr(y);
         #if (USEOMP)
         #pragma omp for schedule(guided)
         #endif
-        for (x = 0; x < planeIn->cols; x++)
+        for (int x = 0; x < planeIn->cols; x++)
         {
             index = static_cast<ito::int32>((rowPtrIn[x].r - min) * indexfaktor);
             if(index >= 0 && index < histOut->cols)
@@ -2517,6 +2519,8 @@ template<> ito::RetVal HistogrammBlock<ito::Rgba32>(cv::Mat *planeIn, cv::Mat *h
     return ito::retOk;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+const char *BasicFilters::calcHistDoc = "calculates histgram of real input data object.";
+
 ito::RetVal BasicFilters::calcHistParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
     ito::Param param;
@@ -2524,11 +2528,17 @@ ito::RetVal BasicFilters::calcHistParams(QVector<ito::Param> *paramsMand, QVecto
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Image of type Integer or float").toLatin1().data());
+    param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D or multidimensional source data object ((u)int8, (u)int16, (u)int32, float32, float64 or rgba32)").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("(Empty) dataObject-hanlde. Will be source type later").toLatin1().data());
+    param = ito::Param("destinationImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("histogram data object (will be int32, [higher-dimensions x 1 x bins] where higher-dimensions corresponds to the dimensions higher than x and y of the source object. A source object of type rgba32 will lead to [higher-dimensions x 4 x bins] where the 4-sized dimension is the histogram if the [r,g,b,gray] value channels. If the given object already fits to the type and size requirements, it is used without allocating a new object.").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("Steps", ito::ParamBase::Int, 0, 2048, 0, tr("Number of steps").toLatin1().data());
+    param = ito::Param("bins", ito::ParamBase::Int, 0, 4096, 0, tr("Number of bins ((u)int16, (u)int32, float32 and float64 only, default: 0 leads to 1024 bins), for (u)int8 and rgba32 the number of bins is given by the total number of values represented by the data type.").toLatin1().data());
+    paramsOpt->append(param);
+    param = ito::Param("autoInterval", ito::ParamBase::Int, -1, 1, -1, tr("Defines how to determine the interval of the histogram: -1 (default) use the limits of (u)int8 and rgba32 and auto-calculate the min/max values for floating point data types, 0: use the values given by interval, 1: automatically calculate the min/max values for all data types.").toLatin1().data());
+    paramsOpt->append(param);
+    double limits[] = {-std::numeric_limits<double>::max(), std::numeric_limits<double>::max()};
+    param = ito::Param("interval", ito::ParamBase::DoubleArray, 2, limits, tr("Interval of the histogram (depending on parameter 'autoInterval'). The first value is included in the first bin, the last value is included in the last bin.").toLatin1().data());
+    param.setMeta(new ito::DoubleIntervalMeta(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max()), true);
     paramsOpt->append(param);
 
     return retval;
@@ -2539,7 +2549,7 @@ ito::RetVal BasicFilters::calcHistParams(QVector<ito::Param> *paramsMand, QVecto
    \param[in|out]   paramsOpt   Optinal parameters for the filter function
    \param[out]   outVals   Outputvalues, not implemented for this function
    \author ITO
-   \sa  mcppfilters::calcHistFilter, HistogrammBlock
+   \sa  mcppfilters::calcHistFilter, HistogramBlock
    \date
 */
 ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
@@ -2564,9 +2574,12 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
         return ito::RetVal(ito::retError, 0, tr("Error: source is not a matrix or image stack").toLatin1().data());
     }
 
-    int hbins = (*paramsOpt)[0].getVal<int>();
-    double maxVal = 0;
-    double minVal = 0;
+    int hbins = paramsOpt->at(0).getVal<int>();
+    int autoInterval = paramsOpt->at(1).getVal<int>();
+    double *interval = paramsOpt->at(2).getVal<double*>();
+    
+    double maxVal = 0.0;
+    double minVal = 0.0;
     bool recalcMinMax = false;
 
     int rows = 1;
@@ -2575,15 +2588,33 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
     {
         case ito::tInt8:
             hbins = 256;
-            minVal = -128;
-            maxVal = 127;
+
+            if (autoInterval == 0)
+            {
+                minVal = interval[0];
+                maxVal = interval[1];
+            }
+            else //autoInterval -1 and 1 are the same here
+            {
+                minVal = -128;
+                maxVal = 127;
+            }
             break;
         case ito::tRGBA32:
             rows = 4;
         case ito::tUInt8:
             hbins = 256;
-            minVal = 0;
-            maxVal = 255;
+
+            if (autoInterval == 0)
+            {
+                minVal = interval[0];
+                maxVal = interval[1];
+            }
+            else //autoInterval -1 and 1 are the same here
+            {
+                minVal = 0;
+                maxVal = 255;
+            }
             break;
         case ito::tUInt16:
         case ito::tInt16:
@@ -2595,21 +2626,26 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
             {
                 hbins = 1024;
             }
-            recalcMinMax = true;
+
+            if (autoInterval == -1 || autoInterval == 1)
+            {
+                recalcMinMax = true;
+            }
+            else if (autoInterval == 0)
+            {
+                minVal = interval[0];
+                maxVal = interval[1];
+            }
             break;
         default:
-            return ito::RetVal(ito::retError, 0, tr("Unknown type or type not implemented").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, tr("Histogram can only be calculated for (u)int8, (u)int16, (u)int32, float32, float64 or rgba32").toLatin1().data());
     }
 
-    ito::uint32 minLoc[3] = {0, 0, 0};
-    ito::uint32 maxLoc[3] = {0, 0, 0};
 
-    ito::dObjHelper::minMaxValue(dObjImages, minVal, minLoc, maxVal, maxLoc);
 
     int z_length = dObjImages->calcNumMats();
 
-    int * sizesVector;
-    sizesVector = (int*)calloc(dObjImages->getDims(), sizeof(int));
+    int *sizesVector = new int[dObjImages->getDims()];
 
     for(int i = 0; i < dObjImages->getDims()-2; i++)
     {
@@ -2619,95 +2655,126 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
     sizesVector[dObjImages->getDims()-2] = rows;
     sizesVector[dObjImages->getDims()-1] = hbins;
 
-    ito::DataObject dObjDestination(dObjImages->getDims(), sizesVector, ito::tInt32);
+    ito::DataObject *dObjDestination = NULL;
 
-    free(sizesVector);
+    if (dObjDst->getType() == ito::tInt32 && dObjDst->getDims() == dObjImages->getDims())
+    {
+        dObjDestination = dObjDst;
+        for (int i = 0; i < dObjDst->getDims(); ++i)
+        {
+            if (dObjDst->getSize(i) != sizesVector[i])
+            {
+                dObjDestination = NULL;
+                break;
+            }
+        }
+    }
+
+    if (dObjDestination == NULL) //given destination object does not fit to requirements, allocate a new one
+    {
+        dObjDestination = new ito::DataObject(dObjImages->getDims(), sizesVector, ito::tInt32);
+    }
+
+    delete sizesVector;
+    sizesVector = NULL;
 
     cv::Mat *cvMatIn;
     cv::Mat *cvMatOut;
-    
-    if(fabs(maxVal - minVal) < std::numeric_limits<double>::epsilon() * hbins)
+
+    if (recalcMinMax)
     {
-        if(maxVal < minVal)
+        ito::uint32 minLoc[3] = {0, 0, 0};
+        ito::uint32 maxLoc[3] = {0, 0, 0};
+
+        //for fixed-point data types, the min/max values are pre-defined above
+        ito::dObjHelper::minMaxValue(dObjImages, minVal, minLoc, maxVal, maxLoc);
+    
+        if(fabs(maxVal - minVal) < std::numeric_limits<double>::epsilon() * hbins)
         {
-            minVal += (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
-            maxVal -= (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
-        }
-        else
-        {
-            minVal -= (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
-            maxVal += (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
+            if(maxVal < minVal)
+            {
+                minVal += (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
+                maxVal -= (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
+            }
+            else
+            {
+                minVal -= (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
+                maxVal += (std::numeric_limits<double>::epsilon() * hbins - fabs(maxVal - minVal)) / 2.0;
+            }
         }
     }
 
     for(int z = 0; z < z_length; z++)
     {
-        cvMatIn = ((cv::Mat *)dObjImages->get_mdata()[dObjImages->seekMat(z)]);
-        cvMatOut = ((cv::Mat *)dObjDestination.get_mdata()[dObjDestination.seekMat(z)]);
+        cvMatIn = dObjImages->getCvPlaneMat(z);
+        cvMatOut = dObjDestination->getCvPlaneMat(z);
 
         switch(dObjImages->getType())
         {
             case ito::tUInt8:
-                HistogrammBlock<ito::uint8>(cvMatIn, cvMatOut, minVal, maxVal);
+                retval += HistogramBlock<ito::uint8>(cvMatIn, cvMatOut, minVal, maxVal);
             break;
             case ito::tInt8:
-                HistogrammBlock<ito::int8>(cvMatIn, cvMatOut, minVal, maxVal);
+                retval += HistogramBlock<ito::int8>(cvMatIn, cvMatOut, minVal, maxVal);
             break;
             case ito::tUInt16:
-                HistogrammBlock<ito::uint16>(cvMatIn, cvMatOut, minVal, maxVal);
+                retval += HistogramBlock<ito::uint16>(cvMatIn, cvMatOut, minVal, maxVal);
             break;
             case ito::tInt16:
-                HistogrammBlock<ito::int16>(cvMatIn, cvMatOut, minVal, maxVal);
+                retval += HistogramBlock<ito::int16>(cvMatIn, cvMatOut, minVal, maxVal);
             break;
             case ito::tUInt32:
-                HistogrammBlock<ito::uint32>(cvMatIn, cvMatOut, minVal, maxVal);
+                retval += HistogramBlock<ito::uint32>(cvMatIn, cvMatOut, minVal, maxVal);
             break;
             case ito::tInt32:
-                HistogrammBlock<ito::int32>(cvMatIn, cvMatOut, minVal, maxVal);
+                retval += HistogramBlock<ito::int32>(cvMatIn, cvMatOut, minVal, maxVal);
             break;
             case ito::tFloat32:
-                HistogrammBlock<ito::float32>(cvMatIn, cvMatOut, minVal, maxVal);
+                retval += HistogramBlock<ito::float32>(cvMatIn, cvMatOut, minVal, maxVal);
             break;
             case ito::tFloat64:
-                HistogrammBlock<ito::float64>(cvMatIn, cvMatOut, minVal, maxVal);
+                retval += HistogramBlock<ito::float64>(cvMatIn, cvMatOut, minVal, maxVal);
             break;
             case ito::tRGBA32:
-                HistogrammBlock<ito::Rgba32>(cvMatIn, cvMatOut, minVal, maxVal);
+                retval += HistogramBlock<ito::Rgba32>(cvMatIn, cvMatOut, minVal, maxVal);
             break;
         }
     }
 
     // Add scale and offset
-
-
     if(!retval.containsError())
     {
 
         // Add scale and offset for all z + (y and x)
         for(int planes = 0; planes < dObjImages->getDims()-2; planes++)
         {
-            dObjDestination.setAxisOffset(planes, dObjImages->getAxisOffset(planes));
-            dObjDestination.setAxisScale(planes, dObjImages->getAxisScale(planes));
+            dObjDestination->setAxisOffset(planes, dObjImages->getAxisOffset(planes));
+            dObjDestination->setAxisScale(planes, dObjImages->getAxisScale(planes));
 
             bool isValid = false;
             std::string tempDes = dObjImages->getAxisDescription(planes, isValid);
-            if(isValid) dObjDestination.setAxisDescription(planes, tempDes);
+            if(isValid) dObjDestination->setAxisDescription(planes, tempDes);
             isValid = false;
             std::string tempUnit = dObjImages->getAxisUnit(planes, isValid);
-            if(isValid) dObjDestination.setAxisUnit(planes, tempUnit);
+            if(isValid) dObjDestination->setAxisUnit(planes, tempUnit);
         }
 
-        dObjDestination.setAxisOffset(dObjDestination.getDims()-1, -minVal/(maxVal-minVal) * hbins);
-        dObjDestination.setAxisScale(dObjDestination.getDims()-1, (maxVal-minVal) / (hbins-1));
-        dObjDestination.setAxisDescription(dObjDestination.getDims()-1,std::string((*dObjImages).getValueDescription()));
-        dObjDestination.setAxisUnit(dObjDestination.getDims()-1,std::string((*dObjImages).getValueUnit()));;
+        double scale = (maxVal-minVal) / (hbins-1);
+        dObjDestination->setAxisOffset(dObjDestination->getDims()-1, -minVal / scale);
+        dObjDestination->setAxisScale(dObjDestination->getDims()-1, scale);
+        dObjDestination->setAxisDescription(dObjDestination->getDims()-1,std::string((*dObjImages).getValueDescription()));
+        dObjDestination->setAxisUnit(dObjDestination->getDims()-1,std::string((*dObjImages).getValueUnit()));;
 
-        // Add Protokoll
-        dObjImages->copyTagMapTo(dObjDestination);
-        QString msg = tr("Calculated Histogramm between %1 : %2").arg(minVal).arg(maxVal);
-        dObjDestination.addToProtocol(std::string(msg.toLatin1().data()));
+        // add protocol
+        dObjImages->copyTagMapTo(*dObjDestination);
+        QString msg = tr("Calculated histogramm between %1 : %2").arg(minVal).arg(maxVal);
+        dObjDestination->addToProtocol(std::string(msg.toLatin1().data()));
 
-        *dObjDst = dObjDestination;
+        if (dObjDst != dObjDestination)
+        {
+            *dObjDst = *dObjDestination;
+            delete dObjDestination;
+        }
     }
 
 

@@ -61,11 +61,9 @@ class DialogMSMediaFoundation : public ito::AbstractAddInConfigDialog
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
-        void on_spinX0_valueChanged(int i);
-        void on_spinX1_valueChanged(int i);
-        void on_spinY0_valueChanged(int i);
-        void on_spinY1_valueChanged(int i);
-        void on_btnSetFullROI_clicked();
+        void on_rangeX01_valuesChanged(int minValue, int maxValue);
+        void on_rangeY01_valuesChanged(int minValue, int maxValue);
+        void on_btnFullROI_clicked();
 };
 
 #endif

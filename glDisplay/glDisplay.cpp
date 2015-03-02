@@ -100,9 +100,9 @@ Allowed values for these tags are: \n\
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("y0", ito::ParamBase::Int, -4096, 4096, 0, tr("y0 position of window").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("xsize", ito::ParamBase::Int, 0, 4096, 0, tr("height of window, if 0 (default) the window is positioned in the second screen or gets a default width of 100px if no second screen is available.").toLatin1().data());
+    paramVal = ito::Param("xsize", ito::ParamBase::Int, 0, 4096, 0, tr("width of window, if 0 (default) the window is positioned in the second screen or gets a default width of 100px if no second screen is available.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("ysize", ito::ParamBase::Int, 0, 4096, 0, tr("width of window, if 0 (default) the window is positioned in the second screen or gets a default height of 100px if no second screen is available.").toLatin1().data());
+    paramVal = ito::Param("ysize", ito::ParamBase::Int, 0, 4096, 0, tr("height of window, if 0 (default) the window is positioned in the second screen or gets a default height of 100px if no second screen is available.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("lut", ito::ParamBase::CharArray, NULL, tr("Lookup table for a gamma correction with 256 values. If given, the gamma correction will be enabled (default: off) and the projected values are then modified with lut[value].").toLatin1().data());
@@ -185,6 +185,9 @@ GLDisplay::GLDisplay() :
     pMand = QVector<ito::Param>() << ito::Param("textures", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("two or three dimensional data object with the texture(s) to add to the stack of textures.").toLatin1().data());
     registerExecFunc("addTextures", pMand, pOpt, pOut, tr("method to add further textures"));
 
+    pMand << ito::Param("firstTextureIndex", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("first index (zero-based) of given texture that is replaced. If a 3D data object is given, the following textures are replaced, too.").toLatin1().data());
+    registerExecFunc("editTextures", pMand, pOpt, pOut, tr("method to edit existing textures and replace them by a new data object"));
+
 
     pMand.clear();
     pOpt.clear();
@@ -263,7 +266,7 @@ GLDisplay::GLDisplay() :
     }
 	else
 	{
-		constructionResult += ito::RetVal(ito::retError,0,"Supported OpenGL Version is lower than 2.0 and therefore not supported");
+		constructionResult += ito::RetVal(ito::retError, 0, tr("Supported OpenGL Version is lower than 2.0 and therefore not supported").toLatin1().data());
 	}
 
 	qDebug() << fmt.majorVersion();
@@ -317,13 +320,13 @@ ito::RetVal GLDisplay::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (QString::compare(key, "currentIdx", Qt::CaseInsensitive) == 0)
         {
@@ -383,9 +386,9 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
     QMap<QString, ito::Param>::iterator it;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
@@ -393,7 +396,7 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         //readonly are 'name', 'numgraybits', 
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
@@ -401,7 +404,7 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (QString::compare(key, "lut", Qt::CaseInsensitive) == 0)
         {
@@ -425,7 +428,7 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 
                 if (index < 0 || index >= lutLen)
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, "Currently the lut only has %i values, therefore the index must be in the range [0,%i]", lutLen, lutLen-1);
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("Currently the lut only has %i values, therefore the index must be in the range [0,%i]").toLatin1().data(), lutLen, lutLen-1);
                 }
                 else
                 {
@@ -433,7 +436,7 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
                     QVector<unsigned char> lutVals(lutLen);
                     unsigned char *gwptr = (unsigned char*)it->getVal<char*>(); //stored values in m_params
                     gwptr[index] = (unsigned char)val->getVal<char>();
-                    memcpy( lutVals.data(), gwptr, sizeof(unsigned char) * lutLen );
+                    memcpy(lutVals.data(), gwptr, sizeof(unsigned char) * lutLen);
                     QMetaObject::invokeMethod(m_pWindow, "setLUT", Qt::BlockingQueuedConnection, Q_ARG(QVector<unsigned char>&, lutVals));
                 }
             }
@@ -441,7 +444,7 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
         {
             QMetaObject::invokeMethod(m_pWindow, "enableGammaCorrection", Qt::BlockingQueuedConnection, Q_ARG(bool, val->getVal<int>() > 0));
-			it->copyValueFrom( &(*val) );
+			it->copyValueFrom(&(*val));
         }
         else if (QString::compare(key, "color", Qt::CaseInsensitive) == 0)
         {
@@ -491,7 +494,7 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
@@ -527,12 +530,12 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, "timeout getting initialization status of OpenGL display");
+            retval += ito::RetVal(ito::retError, 0, tr("timeout getting initialization status of OpenGL display").toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, "OpenGL display window is not available");
+        retval += ito::RetVal(ito::retError, 0, tr("OpenGL display window is not available").toLatin1().data());
     }
         
 
@@ -572,7 +575,7 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         {
             if (lutLen != 256)
             {
-                retval += ito::RetVal(ito::retError, 0, "you need to pass a lut with 256 values");
+                retval += ito::RetVal(ito::retError, 0, tr("You need to pass a lut with 256 values").toLatin1().data());
             }
             else
             {
@@ -722,9 +725,9 @@ ito::RetVal GLDisplay::execFunc(const QString funcName, QSharedPointer<QVector<i
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         const ito::DataObject *dObj = paramsMand->at(0).getVal<const ito::DataObject*>();
         QSharedPointer<int> nrOfTextures(new int);
-        QMetaObject::invokeMethod(m_pWindow, "addTextures", Q_ARG(ito::DataObject, *dObj), Q_ARG(QSharedPointer<int>, nrOfTextures), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(m_pWindow, "addOrEditTextures", Q_ARG(ito::DataObject, *dObj), Q_ARG(QSharedPointer<int>, nrOfTextures), Q_ARG(int, -1), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-        if(locker.getSemaphore()->wait(5000))
+        if (locker.getSemaphore()->wait(5000))
         {
             retValue += locker.getSemaphore()->returnValue;
             m_params["numImages"].setVal<int>(*nrOfTextures);
@@ -735,7 +738,24 @@ ito::RetVal GLDisplay::execFunc(const QString funcName, QSharedPointer<QVector<i
         }
         else
         {
-            retValue += ito::RetVal(ito::retError,0,"timeout while adding textures");
+            retValue += ito::RetVal(ito::retError, 0, tr("timeout while adding textures").toLatin1().data());
+        }
+    }
+    else if (funcName == "editTextures")
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        const ito::DataObject *dObj = paramsMand->at(0).getVal<const ito::DataObject*>();
+        int index = paramsMand->at(1).getVal<int>();
+        QSharedPointer<int> nrOfTextures(new int);
+        QMetaObject::invokeMethod(m_pWindow, "addOrEditTextures", Q_ARG(ito::DataObject, *dObj), Q_ARG(QSharedPointer<int>, nrOfTextures), Q_ARG(int, index), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        if (locker.getSemaphore()->wait(5000))
+        {
+            retValue += locker.getSemaphore()->returnValue;
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retError, 0, tr("timeout while editing textures").toLatin1().data());
         }
     }
     else if (funcName == "grabFramebuffer")
@@ -745,13 +765,13 @@ ito::RetVal GLDisplay::execFunc(const QString funcName, QSharedPointer<QVector<i
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(m_pWindow, "grabFramebuffer", Q_ARG(QString, filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-        if(locker.getSemaphore()->wait(5000))
+        if (locker.getSemaphore()->wait(5000))
         {
             retValue += locker.getSemaphore()->returnValue;
         }
         else
         {
-            retValue += ito::RetVal(ito::retError,0,"timeout while grabbing current OpenGL frame");
+            retValue += ito::RetVal(ito::retError, 0, tr("timeout while grabbing current OpenGL frame").toLatin1().data());
         }
     }
     else

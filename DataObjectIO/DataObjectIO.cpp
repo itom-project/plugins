@@ -67,12 +67,15 @@ DataObjectIOInterface::DataObjectIOInterface()
 "This filter contains two different export- / import-functionalities for dataObjects, image or raw.\n\
 \n\
 Image-export functions converts dataObjects to image data and saves them as common image-formats.\n\
-uint8 or uint16 are saved as gray-values (8bit or if suppored as 16bit) or if the image format allows color are saved according to the defined color palette.\n\
-float32 or float64 are saved as gray-values (8bit or if suppored as 16bit) or according to the defined color palette. Therefore the values must be between 0.0 and 1.0.\n\
-Values outside these borders are clipped. If the image format supports RGBA, invalid values are saved as 00 00 00 FF else as 00 00 00.\n\
 \n\
-Basic export-filter definition: source-obj, filename, palette, ...\n\
-Basic import-filter definition: dst-obj, filename, chanel-specification, ...\n\
+* uint8 or uint16 are saved as gray-values (8bit or if supported as 16bit) or if the image format allows color are saved according to the defined color palette.\n\
+* float32 or float64 are saved as gray-values (8bit or if suppored as 16bit) or according to the defined color palette. Therefore the values must be between 0.0 and 1.0.\n\
+  Values outside these borders are clipped. If the image format supports RGBA, invalid values are saved as transparent values (alpha=zero) else as black values.\n\
+* rgba32 can be saved as 'rgb' (full opacity), 'rgba' (alpha channel is considered, not supported by all formats) or gray formats, where the color image is transformed to gray. \n\
+  if a format from a color palette is indicated, the color image is transformed to gray first and then interpreted using the indicated color palette. \n\
+\n\
+Basic export-filter definition: source object, filename, palette, ...\n\
+Basic import-filter definition: destination object, filename, channel-specification, ...\n\
 \n\
 Raw-export functions write/read the data to/from txt-based or binary file formats.";
 
@@ -82,14 +85,7 @@ Raw-export functions write/read the data to/from txt-based or binary file format
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr("Fill in about dialog content");         
-    
- //    ito::tParam paramVal = ito::tParam("Number of Axis", ito::ParamBase::Int, 0, 10, 6, "Number of axis for this Motor");
-//    m_initParamsOpt.append(paramVal);
-
-    //m_initParamsMand.append(paramVal);
-
-    return;
+    m_aboutThis         = "";         
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1821,7 +1817,7 @@ ito::RetVal DataObjectIO::saveJPGParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor" , tr("Color palette name [gray, gray16, ...]. 'gray16' supported for '.jp2' only").toLatin1().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor" , tr("Color palette name [gray, gray16, rgb, rgba, <any-name-of-a-color-palette>]. 'gray16' supported for '.jp2' only").toLatin1().data());
         paramsMand->append(param);
 
         param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 100, 90, tr("Compression rate, 0: high, 100: low").toLatin1().data());
@@ -1865,12 +1861,12 @@ ito::RetVal DataObjectIO::savePNGParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, gray16, ...].").toLatin1().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, gray16, rgba, rgb, <any-name-of-a-color-palette>].").toLatin1().data());
         paramsMand->append(param);
 
         param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 9, tr("Compression rate, 0: high, 9: low").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("addAlphaChannel",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If enabled and in case of floating point values, invalid will have alpha low else high").toLatin1().data());
+        param = ito::Param("addAlphaChannel",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If enabled and in case of floating point values, invalid values will we transparent (alpha=0), else full opacity.").toLatin1().data());
         paramsOpt->append(param);
     }
     return retval;
@@ -1888,7 +1884,6 @@ ito::RetVal DataObjectIO::savePNGParams(QVector<ito::Param> *paramsMand, QVector
 */
 ito::RetVal DataObjectIO::savePNG(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
-    ito::RetVal retVal(ito::retOk);
     return saveDataObjectOpenCV(paramsMand, paramsOpt, paramsOut, DataObjectIO::pngFormat);
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1911,7 +1906,7 @@ ito::RetVal DataObjectIO::saveBMPParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, ...]").toLatin1().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, rgb, <any-name-of-a-color-palette>, ...]").toLatin1().data());
         paramsMand->append(param);
     }
     return retval;
@@ -1929,7 +1924,6 @@ ito::RetVal DataObjectIO::saveBMPParams(QVector<ito::Param> *paramsMand, QVector
 */
 ito::RetVal DataObjectIO::saveBMP(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
-    ito::RetVal retVal(ito::retOk);
     return saveDataObjectOpenCV(paramsMand, paramsOpt, paramsOut, DataObjectIO::bmpFormat);
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1952,7 +1946,7 @@ ito::RetVal DataObjectIO::savePPMParams(QVector<ito::Param> *paramsMand, QVector
         paramsMand->append(param);
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, ...]").toLatin1().data());
+        param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "falseColor", tr("Color palette name [gray, <any-name-of-a-color-palette>, ...]").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toLatin1().data());
         paramsOpt->append(param);
@@ -1972,7 +1966,6 @@ ito::RetVal DataObjectIO::savePPMParams(QVector<ito::Param> *paramsMand, QVector
 */
 ito::RetVal DataObjectIO::savePPM(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
-    ito::RetVal retVal(ito::retOk);
     return saveDataObjectOpenCV(paramsMand, paramsOpt, paramsOut, DataObjectIO::ppmFormat);
 }
 
@@ -2016,7 +2009,6 @@ ito::RetVal DataObjectIO::savePGMParams(QVector<ito::Param> *paramsMand, QVector
 */
 ito::RetVal DataObjectIO::savePGM(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
-    ito::RetVal retVal(ito::retOk);
     return saveDataObjectOpenCV(paramsMand, paramsOpt, paramsOut, DataObjectIO::pgmFormat);
 }
 
@@ -2058,8 +2050,32 @@ ito::RetVal DataObjectIO::saveRASParams(QVector<ito::Param> *paramsMand, QVector
 */
 ito::RetVal DataObjectIO::saveRAS(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
-    ito::RetVal retVal(ito::retOk);
     return saveDataObjectOpenCV(paramsMand, paramsOpt, paramsOut, DataObjectIO::sunFormat);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DataObjectIO::checkAndModifyFilenameSuffix(QFileInfo &file, const QString &desiredAndAllowedSuffix, const QString &allowedSuffix2 /*= QString()*/, const QString &allowedSuffix3 /*= QString()*/)
+{
+    QString suffix = file.suffix();
+    bool wrongSuffix = true;
+    if (!desiredAndAllowedSuffix.isNull() && suffix.compare(desiredAndAllowedSuffix, Qt::CaseInsensitive) == 0)
+    {
+        wrongSuffix = false;
+    }
+    else if (!allowedSuffix2.isNull() && suffix.compare(allowedSuffix2, Qt::CaseInsensitive) == 0)
+    {
+        wrongSuffix = false;
+    }
+    else if (!allowedSuffix3.isNull() && suffix.compare(allowedSuffix3, Qt::CaseInsensitive) == 0)
+    {
+        wrongSuffix = false;
+    }
+
+    if (wrongSuffix)
+    {
+        QString fixedName = QString("%1/%2.%3").arg(file.absolutePath()).arg(file.completeBaseName()).arg(desiredAndAllowedSuffix);
+        file = QDir::toNativeSeparators(fixedName);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2073,23 +2089,21 @@ ito::RetVal DataObjectIO::saveRAS(QVector<ito::ParamBase> *paramsMand, QVector<i
 *   This Function accepts parameters from itom Python application according to specification provided by "save-Format-Params" function.
 *    It converts passed DataObject into corresponding Image as per given Image Format and stores it to specific location provided on Hard drive.
 */
-ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/, const unsigned char imageFormat)
+ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/, const ImageFormat &imageFormat)
 {
     ito::RetVal ret = ito::retOk;
     
     // Optional parameters (sourceImage, filename, Format, bitscaling)
-    ito::DataObject *dObj = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-    char *filename = NULL;
-    filename = (*paramsMand)[1].getVal<char*>();
+    const ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
+    const char *filename = (*paramsMand)[1].getVal<char*>();
 
-    char *palette = NULL;
-    palette = (*paramsMand)[2].getVal<char*>();
+    const char *palette = (*paramsMand)[2].getVal<char*>();
 
-    if(filename == NULL)
+    if (filename == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("File name empty.").toLatin1().data());
     }
-    if(palette == NULL)
+    if (palette == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Palette name empty.").toLatin1().data());
     }
@@ -2111,8 +2125,8 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
         return ret;
     }
 
-    cv::Mat saveMat;
-    cv::Mat *scrData = NULL;
+    cv::Mat *saveMat = NULL;
+    const cv::Mat *srcData = NULL;
 
     QString imgPalette(palette);
     QFileInfo fileName(filename);
@@ -2139,132 +2153,68 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
         case DataObjectIO::tiffFormat:
             gray16Supported = true;
             colorSupported = true;
-            if(fileName.suffix().compare("tif", Qt::CaseInsensitive) != 0 && fileName.suffix().compare("tiff", Qt::CaseInsensitive) != 0)
-            {
-                QString fixedName(fileName.absolutePath());
-                fixedName.append("/");
-                fixedName.append(fileName.completeBaseName());
-                fixedName.append(".tif");
-                fileName = fixedName;
-            }
-
+            checkAndModifyFilenameSuffix(fileName, "tif", "tiff");
             break;
+
         case DataObjectIO::ppmFormat:
             save_params.push_back(CV_IMWRITE_PXM_BINARY);
             save_params.push_back((*paramsOpt)[0].getVal<int>());
-
-            if(fileName.suffix().compare("ppm", Qt::CaseInsensitive) != 0)
-            {
-                QString fixedName(fileName.absolutePath());
-                fixedName.append("/");
-                fixedName.append(fileName.completeBaseName());                
-                fileName = fixedName;                
-            }
-
+            checkAndModifyFilenameSuffix(fileName, "ppm");
             gray16Supported = false;
             colorSupported = true;
             break;
+
         case DataObjectIO::pgmFormat:
             
             save_params.push_back(CV_IMWRITE_PXM_BINARY);
             save_params.push_back((*paramsOpt)[0].getVal<int>());
-
             gray16Supported = true;
             colorSupported = false;
-
-            if(fileName.suffix().compare("pgm", Qt::CaseInsensitive) != 0 && fileName.suffix().compare("pbm", Qt::CaseInsensitive) != 0)
-            {
-                QString fixedName(fileName.absolutePath());
-                fixedName.append("/");
-                fixedName.append(fileName.completeBaseName());
-
-                fixedName.append(".pgm");
-                
-                fileName = fixedName;
-                
-            }
-            else if(fileName.suffix().compare("pbm", Qt::CaseInsensitive) == 0)
+            checkAndModifyFilenameSuffix(fileName, "pgm", "pbm");
+            if(fileName.suffix().compare("pbm", Qt::CaseInsensitive) == 0)
             {
                 gray16Supported = false;
             }
-
             break;
 
         case DataObjectIO::jpgFormat:
         case DataObjectIO::jp2000Format:
-
-            if(fileName.suffix().compare("jpg", Qt::CaseInsensitive) != 0 && fileName.suffix().compare("jpeg", Qt::CaseInsensitive) != 0 && fileName.suffix().compare("jp2", Qt::CaseInsensitive) != 0)
-            {
-                QString fixedName(fileName.absolutePath());
-                fixedName.append("/");
-                fixedName.append(fileName.completeBaseName());
-                fixedName.append(".jpg");
-                fileName = fixedName;
-                gray16Supported = false;
-            }
+            save_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+            save_params.push_back((*paramsOpt)[0].getVal<int>());
+            checkAndModifyFilenameSuffix(fileName, "jpg", "jpeg", "jp2");
 
             if(fileName.suffix().compare("jp2", Qt::CaseInsensitive) == 0)
             {
                 gray16Supported = true;
             }
-
-            colorSupported = true;
-            save_params.push_back(CV_IMWRITE_JPEG_QUALITY);
-            save_params.push_back((*paramsOpt)[0].getVal<int>());
-            
-            break;
-        case DataObjectIO::bmpFormat:
-            if(fileName.suffix().compare("bmp", Qt::CaseInsensitive) != 0 && fileName.suffix().compare("dib", Qt::CaseInsensitive) != 0)
+            else
             {
-                QString fixedName(fileName.absolutePath());
-                fixedName.append("/");
-                fixedName.append(fileName.completeBaseName());
-
-                fixedName.append(".bmp");
-                
-                fileName = fixedName;
-                
+                gray16Supported = false;
             }
+            colorSupported = true;
+            break;
+
+        case DataObjectIO::bmpFormat:
+            checkAndModifyFilenameSuffix(fileName, "bmp", "dib");
             gray16Supported = false;
             colorSupported = true;
-
             break;
+
         case DataObjectIO::pngFormat:
-
-            if(fileName.suffix().compare("png", Qt::CaseInsensitive) != 0)
-            {
-                QString fixedName(fileName.absolutePath());
-                fixedName.append("/");
-                fixedName.append(fileName.completeBaseName());
-
-                fixedName.append(".png");
-                
-                fileName = fixedName;
-                
-            }
-
             save_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
             save_params.push_back((*paramsOpt)[0].getVal<int>());
+            checkAndModifyFilenameSuffix(fileName, "png");
             addAlpha = (*paramsOpt)[1].getVal<int>() != 0 ? true : false;
             gray16Supported = true;
             colorSupported = true;
             break;
 
         case DataObjectIO::sunFormat:
-            if(fileName.suffix().compare("sr", Qt::CaseInsensitive) != 0 && fileName.suffix().compare("ras", Qt::CaseInsensitive) != 0)
-            {
-                QString fixedName(fileName.absolutePath());
-                fixedName.append("/");
-                fixedName.append(fileName.completeBaseName());
-
-                fixedName.append(".ras");
-                
-                fileName = fixedName;
-                
-            }
+            checkAndModifyFilenameSuffix(fileName, "ras", "sr");
             gray16Supported = false;
             colorSupported = true;
             break;
+
         default:
             return ito::RetVal(ito::retError, 0, tr("Image Format not valid.").toLatin1().data());
     }
@@ -2272,35 +2222,56 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
     //Creating an Image in Mono Format
     if(imgPalette.compare("gray") == 0)
     {
-        scrData = (cv::Mat *)(dObj->get_mdata()[dObj->seekMat(0)]);
-        saveMat.create(scrData->rows, scrData->cols, CV_8U);
+        srcData = dObj->getCvPlaneMat(0);
 
         switch(dObj->getType())
         {
             case ito::tUInt8:
-                scrData->copyTo(saveMat);
-                break;
+                saveMat = new cv::Mat(*srcData);
+            break;
+
             case ito::tInt8:
-                ret += itom::io::transformScaled<ito::int8 , ito::uint8>(saveMat, scrData);
-                break;
+                saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
+                ret += itom::io::transformScaled<ito::int8 , ito::uint8>(saveMat, srcData);
+            break;
+
             case ito::tUInt16:
-                ret += itom::io::transformScaled<ito::uint16, ito::uint8>(saveMat, scrData);
-                break;
+                saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
+                ret += itom::io::transformScaled<ito::uint16, ito::uint8>(saveMat, srcData);
+            break;
+
             case ito::tInt16:
-                ret += itom::io::transformScaled<ito::int16, ito::uint8>(saveMat, scrData);
-                break;
+                saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
+                ret += itom::io::transformScaled<ito::int16, ito::uint8>(saveMat, srcData);
+            break;
+
             case ito::tUInt32:
-                ret += itom::io::transformScaled<ito::uint32, ito::uint8>(saveMat, scrData);
-                break;
+                saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
+                ret += itom::io::transformScaled<ito::uint32, ito::uint8>(saveMat, srcData);
+            break;
+
             case ito::tInt32:
-                ret += itom::io::transformScaled< ito::int32, ito::uint8>(saveMat, scrData);
-                break;
+                ret += itom::io::transformScaled< ito::int32, ito::uint8>(saveMat, srcData);
+            break;
+
             case ito::tFloat32:
-                ret += itom::io::transformScaled<ito::float32, ito::uint8>(saveMat, scrData);
-                break;
+                saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
+                ret += itom::io::transformScaled<ito::float32, ito::uint8>(saveMat, srcData);
+            break;
+
             case ito::tFloat64:
-                ret += itom::io::transformScaled<ito::float64, ito::uint8>(saveMat, scrData);
-                break;
+                saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8U);
+                ret += itom::io::transformScaled<ito::float64, ito::uint8>(saveMat, srcData);
+            break;
+
+            case ito::tRGBA32:
+            {
+                // we need a cast to remove constantness here
+                ito::DataObject gray = ((ito::DataObject*)dObj)->toGray(ito::tUInt8);
+                saveMat = new cv::Mat(*(gray.getCvPlaneMat(0)));
+            }
+            break;
+
             default:
                 return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to unsigned int 8-bit.").toLatin1().data());
         }
@@ -2309,43 +2280,102 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
     {
         if(gray16Supported)
         {
-            scrData = (cv::Mat *)(dObj->get_mdata()[dObj->seekMat(0)]);
-            saveMat.create(scrData->rows, scrData->cols, CV_16U);
+            srcData = dObj->getCvPlaneMat(0);
 
             switch(dObj->getType())
             {
                 case ito::tUInt16:
-                    scrData->copyTo(saveMat);
-                    break;
+                    saveMat = new cv::Mat(*srcData);
+                break;
+
                 case ito::tInt16:
-                    ret += itom::io::transformScaled<ito::int16, ito::uint16>(saveMat, scrData);
-                    break;
+                    saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_16U);
+                    ret += itom::io::transformScaled<ito::int16, ito::uint16>(saveMat, srcData);
+                break;
+
                 case ito::tUInt32:
-                    ret += itom::io::transformScaled<ito::uint32, ito::uint16>(saveMat, scrData);
-                    break;
+                    saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_16U);
+                    ret += itom::io::transformScaled<ito::uint32, ito::uint16>(saveMat, srcData);
+                break;
+
                 case ito::tInt32:
-                    ret += itom::io::transformScaled<ito::int32, ito::uint16>(saveMat, scrData);
-                    break;
+                    saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_16U);
+                    ret += itom::io::transformScaled<ito::int32, ito::uint16>(saveMat, srcData);
+                break;
+
                 case ito::tFloat32:
-                    ret += itom::io::transformScaled<ito::float32, ito::uint16>(saveMat, scrData);
-                    break;
+                    saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_16U);
+                    ret += itom::io::transformScaled<ito::float32, ito::uint16>(saveMat, srcData);
+                break;
+
                 case ito::tFloat64:
-                    ret += itom::io::transformScaled<ito::float64, ito::uint16>(saveMat, scrData);
-                    break;
+                    saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_16U);
+                    ret += itom::io::transformScaled<ito::float64, ito::uint16>(saveMat, srcData);
+                break;
+
+                case ito::tRGBA32:
+                {
+                    // we need a cast to removed constantness here
+                    ito::DataObject gray = ((ito::DataObject*)dObj)->toGray(ito::tUInt16);
+                    saveMat = new cv::Mat(*(gray.getCvPlaneMat(0)));
+                }
+                break;
+
                 default:
                     return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to unsigned int 16-bit.").toLatin1().data());
             }
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, tr("Image format does not support 16-Bit Gray value.").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, tr("Image format does not support 16-Bit gray values.").toLatin1().data());
         }
     }
-    else if(imgPalette.compare("RGBA") == 0)
+    else if(imgPalette.compare("rgba", Qt::CaseInsensitive) == 0)
     {
         if(colorSupported)
         {
-            return ito::RetVal(ito::retError, 0, tr("Saving RGB-Image currently not supported.").toLatin1().data());
+            switch(dObj->getType())
+            {
+                case ito::tRGBA32:
+                    {
+                        srcData = dObj->getCvPlaneMat(0);
+                        //saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8UC4);
+                        //int from_to[] = {0,0, 1,1, 2,2, 3,3};
+                        //cv::mixChannels(srcData, 1, saveMat, 1, from_to, 4);
+                        saveMat = new cv::Mat(*srcData);
+                        break;
+                    }
+                default:
+                    return ito::RetVal(ito::retError, 0, tr("DataObject must be of type rgba32 in order to save it to the rgba color format.").toLatin1().data());
+            }
+        }
+        else
+        {
+            return ito::RetVal(ito::retError, 0, tr("Image format does not support color values.").toLatin1().data());
+        }
+        
+    }
+    else if(imgPalette.compare("rgb", Qt::CaseInsensitive) == 0)
+    {
+        if(colorSupported)
+        {
+            switch(dObj->getType())
+            {
+                case ito::tRGBA32:
+                    {
+                        srcData = dObj->getCvPlaneMat(0);
+                        std::vector<cv::Mat> srcDataChannels;
+                        srcDataChannels.resize(4);
+                        cv::split(*srcData, srcDataChannels);
+                        srcDataChannels[3] = 255; //set alpha to full opacity
+                        cv::Mat dest;
+                        cv::merge(srcDataChannels, dest);
+                        saveMat = new cv::Mat(dest);
+                        break;
+                    }
+                default:
+                    return ito::RetVal(ito::retError, 0, tr("DataObject must be of type rgba32 in order to save it to the rgb color format.").toLatin1().data());
+            }
         }
         else
         {
@@ -2363,74 +2393,108 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
             return ret;
         }
 
-        scrData = (cv::Mat *)(dObj->get_mdata()[dObj->seekMat(0)]);
+        srcData = dObj->getCvPlaneMat(0);
 
         if(colorSupported)
         {
             if(addAlpha)
             {
-                saveMat.create(scrData->rows, scrData->cols, CV_8UC4);
+                saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8UC4);
+
                 switch(dObj->getType())
                 {
                     case ito::tUInt8:
-                        ret += itom::io::transformScaledIndex8ToRGBA<ito::uint8>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGBA<ito::uint8>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tInt8:
-                        ret += itom::io::transformScaledIndex8ToRGBA<ito::int8>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGBA<ito::int8>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tUInt16:
-                        ret += itom::io::transformScaledIndex8ToRGBA<ito::uint16>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGBA<ito::uint16>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tInt16:
-                        ret += itom::io::transformScaledIndex8ToRGBA<ito::int16>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGBA<ito::int16>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tUInt32:
-                        ret += itom::io::transformScaledIndex8ToRGBA<ito::uint32>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGBA<ito::uint32>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tInt32:
-                        ret += itom::io::transformScaledIndex8ToRGBA<ito::int32>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGBA<ito::int32>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tFloat32:
-                        ret += itom::io::transformScaledIndex8ToRGBA<ito::float32>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGBA<ito::float32>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tFloat64:
-                        ret += itom::io::transformScaledIndex8ToRGBA<ito::float64>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGBA<ito::float64>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
+                    case ito::tRGBA32:
+                    {
+                        // we need a cast to removed constantness here
+                        ito::DataObject gray = ((ito::DataObject*)dObj)->toGray(ito::tUInt8);
+                        ret += itom::io::transformScaledIndex8ToRGBA<ito::uint8>(saveMat, gray.getCvPlaneMat(0), newPalette.colorVector256);
+                    }
+                    break;
+
                     default:
-                        return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to index8 scaled images.").toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, tr("Data object could not be converted to a gray image with 256 values (indexed8). No color palette could be applied.").toLatin1().data());
                 }
             }
             else
             {
-                saveMat.create(scrData->rows, scrData->cols, CV_8UC3);
+                saveMat = new cv::Mat(srcData->rows, srcData->cols, CV_8UC3);
+
                 switch(dObj->getType())
                 {
                     case ito::tUInt8:
-                        ret += itom::io::transformScaledIndex8ToRGB<ito::uint8>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGB<ito::uint8>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tInt8:
-                        ret += itom::io::transformScaledIndex8ToRGB<ito::int8>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGB<ito::int8>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tUInt16:
-                        ret += itom::io::transformScaledIndex8ToRGB<ito::uint16>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGB<ito::uint16>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tInt16:
-                        ret += itom::io::transformScaledIndex8ToRGB<ito::int16>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGB<ito::int16>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tUInt32:
-                        ret += itom::io::transformScaledIndex8ToRGB<ito::uint32>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGB<ito::uint32>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tInt32:
-                        ret += itom::io::transformScaledIndex8ToRGB<ito::int32>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGB<ito::int32>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tFloat32:
-                        ret += itom::io::transformScaledIndex8ToRGB<ito::float32>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGB<ito::float32>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
                     case ito::tFloat64:
-                        ret += itom::io::transformScaledIndex8ToRGB<ito::float64>(saveMat, scrData, newPalette.colorVector256);
-                        break;
+                        ret += itom::io::transformScaledIndex8ToRGB<ito::float64>(saveMat, srcData, newPalette.colorVector256);
+                    break;
+
+                    case ito::tRGBA32:
+                    {
+                        // we need a cast to removed constantness here
+                        ito::DataObject gray = ((ito::DataObject*)dObj)->toGray(ito::tUInt8);
+                        ret += itom::io::transformScaledIndex8ToRGB<ito::uint8>(saveMat, gray.getCvPlaneMat(0), newPalette.colorVector256);
+                    }
+                    break;
+
                     default:
-                        return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to index8 scaled images.").toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, tr("Data object could not be converted to a gray image with 256 values (indexed8). No color palette could be applied.").toLatin1().data());
                 } 
             }
         }
@@ -2448,7 +2512,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
     {
         try 
         {
-            bool test = cv::imwrite(fileName.absoluteFilePath().toLatin1().data(), saveMat, save_params);
+            bool test = cv::imwrite(fileName.absoluteFilePath().toLatin1().data(), *saveMat, save_params);
             if(test == false)
             {
                 ret += ito::RetVal(ito::retError, 0, tr("cv::imwrite exited with false!").toLatin1().data());
@@ -2457,6 +2521,12 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
         catch (cv::Exception exc)
         {
             ret += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
+        }
+
+        if (saveMat)
+        {
+            delete saveMat;
+            saveMat = NULL;
         }
     }
     
@@ -2489,9 +2559,9 @@ ito::RetVal DataObjectIO::loadImageParams(QVector<ito::Param> *paramsMand, QVect
         m->addItem("G");
         m->addItem("B");
         m->addItem("RGB");
-        m->addItem("ARGB");
+        m->addItem("RGBA");
         m->addItem("GRAY");
-        param = ito::Param("ColorElement", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Color element character: asIs (default) | alpha | R | G | B | RGB | ARGB | GRAY").toLatin1().data());
+        param = ito::Param("ColorElement", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Color element: asIs (default) | alpha | R | G | B | RGB | ARGB | GRAY; 'asIs' ignores alpha channel from supported file types (use rgba instead).").toLatin1().data());
         param.setMeta(m,true); //takes ownership of m
         paramsOpt->append(param);
     }
@@ -2528,35 +2598,35 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
     int flags = 0;
     QString colorFormat(colorElement);
 
-    bool reduceChanel = false;
+    bool reduceChannel = false;
 
     if(colorFormat.isEmpty() || colorFormat.compare("asIs", Qt::CaseInsensitive) == 0)
     {
         flags = CV_LOAD_IMAGE_ANYDEPTH;
         flags *= -1;
-        reduceChanel = false;
+        reduceChannel = false;
     }
     else if(colorFormat.compare("alpha", Qt::CaseInsensitive) == 0)
     {
         flags = CV_LOAD_IMAGE_COLOR;
         flags *= -1;
-        reduceChanel = true;
+        reduceChannel = true;
     }
     else if(colorFormat.compare("R", Qt::CaseInsensitive) == 0 || colorFormat.compare("G", Qt::CaseInsensitive) == 0 || colorFormat.compare("B", Qt::CaseInsensitive) == 0)
     {
         flags = CV_LOAD_IMAGE_COLOR;
         flags *= -1;
-        reduceChanel = true;
+        reduceChannel = true;
     }
     else if(colorFormat.compare("gray", Qt::CaseInsensitive) == 0 || colorFormat.compare("grey", Qt::CaseInsensitive) == 0)
     {
         flags = CV_LOAD_IMAGE_GRAYSCALE;
 
-        reduceChanel = false;
+        reduceChannel = false;
     }
     else
     {
-        reduceChanel = false;
+        reduceChannel = false;
         flags = CV_LOAD_IMAGE_COLOR;
         flags *= -1;        
     }
@@ -2601,33 +2671,55 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                 imageType = ito::tUInt16;
                 break;
             case CV_8UC3:
+                if(reduceChannel) 
+                {
+                    imageType = ito::tUInt8;
+                }
+                else
+                {
+                    imageType = ito::tRGBA32;
+                }
+                break;
             case CV_8UC4:
-                if(reduceChanel) imageType = ito::tUInt8;
-                else imageType = ito::tRGBA32;
+                if(reduceChannel) 
+                {
+                    imageType = ito::tUInt8;
+                }
+                else
+                {
+                    imageType = ito::tRGBA32;
+                }
                 break;
             case CV_16UC3:
             case CV_16UC4:
-                if(reduceChanel) imageType = ito::tUInt16;
-                else return ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toLatin1().data());
+                if(reduceChannel) 
+                {
+                    imageType = ito::tUInt16;
+                }
+                else
+                {
+                    return ito::RetVal(ito::retError,0,tr("The loaded image has multiple channels with a bitdepth of uint16 each. This is currently unsupported.").toLatin1().data());
+                }
                 break;
             default:
                 return ito::RetVal(ito::retError,0,tr("Format of the image is currently not supported by itom.").toLatin1().data());
         }
 
         tempObject = ito::DataObject(image.rows, image.cols, imageType);
+        cv::Mat* tempObject_ = tempObject.getCvPlaneMat(0);
 
-        if(!reduceChanel)
+        if(!reduceChannel)
         {
 
             if(image.type() == CV_8UC3)
             {
                 ito::Rgba32* dst = NULL;
-                cv::Vec3b* scr = NULL;
+                const cv::Vec3b* scr = NULL;
 
                 for(int y = 0; y < image.rows; y++)
                 {
                     dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::Rgba32>(y);
-                    scr = image.ptr<cv::Vec3b>(y);
+                    scr = image.ptr<const cv::Vec3b>(y);
                     for(int x = 0; x < image.cols; x++)
                     {
                         dst[x].alpha() = 255;
@@ -2639,33 +2731,51 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
             }
             else if(image.type() == CV_16UC3)
             {
-                ret += ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toLatin1().data());
+                ret += ito::RetVal(ito::retError,0,tr("Color import of channels with uint16 bitdepth not supported.").toLatin1().data());
             }
             else if(image.type() == CV_8UC4)
             {
                 ito::Rgba32* dst = NULL;
-                cv::Vec4b* scr = NULL;
+                const cv::Vec4b* scr = NULL;
 
-                for(int y = 0; y < image.rows; y++)
+                if (colorFormat.compare("rgb", Qt::CaseInsensitive) == 0)
                 {
-                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::Rgba32>(y);
-                    scr = image.ptr<cv::Vec4b>(y);
-                    for(int x = 0; x < image.cols; x++)
+                    for(int y = 0; y < image.rows; y++)
                     {
-                        dst[x].alpha() = scr[x][0];
-                        dst[x].red()   = scr[x][3];
-                        dst[x].green() = scr[x][2];
-                        dst[x].blue()  = scr[x][1];
+                        dst = tempObject_->ptr<ito::Rgba32>(y);
+                        scr = image.ptr<const cv::Vec4b>(y);
+                        for(int x = 0; x < image.cols; x++)
+                        {
+                            dst[x].alpha() = 255;
+                            dst[x].red()   = scr[x][2];
+                            dst[x].green() = scr[x][1];
+                            dst[x].blue()  = scr[x][0];
+                        }
+                    }
+                }
+                else
+                {
+                    for(int y = 0; y < image.rows; y++)
+                    {
+                        dst = tempObject_->ptr<ito::Rgba32>(y);
+                        scr = image.ptr<const cv::Vec4b>(y);
+                        for(int x = 0; x < image.cols; x++)
+                        {
+                            dst[x].alpha() = scr[x][3];
+                            dst[x].red()   = scr[x][2];
+                            dst[x].green() = scr[x][1];
+                            dst[x].blue()  = scr[x][0];
+                        }
                     }
                 }
             }
             else if(image.type() == CV_16UC4)
             {
-                ret += ito::RetVal(ito::retError,0,tr("Color import is currently not managed. Wait for next itom version (approx end of 2014).").toLatin1().data());
+                ret += ito::RetVal(ito::retError,0,tr("Color import of channels with uint16 bitdepth not supported.").toLatin1().data());
             }
             else
             {
-                image.copyTo(*((cv::Mat*)(tempObject.get_mdata()[0])));
+                image.copyTo(*tempObject_);
             }
             
         }
@@ -2674,97 +2784,106 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
             int colIndex;
             if(colorFormat.compare("R", Qt::CaseInsensitive) == 0)
             {
-                colIndex = 3;
+                colIndex = 2;
             }
             else if(colorFormat.compare("G", Qt::CaseInsensitive) == 0)
             {
-                colIndex = 2;
+                colIndex = 1;
             }
             else if(colorFormat.compare("B", Qt::CaseInsensitive) == 0)
             {
-                colIndex = 1;
+                colIndex = 0;
             }
             else if(colorFormat.compare("alpha", Qt::CaseInsensitive) == 0)
             {
-                colIndex = 0;
+                colIndex = 3;
             }
             else
             {
                 colIndex = -1;
-                return ito::RetVal(ito::retError,0,tr("Color format of the file is currently not compatible with itom. Wait for next itom version.").toLatin1().data());
+                ret += ito::RetVal(ito::retError,0,tr("Color format of the file is currently not compatible with itom. Wait for next itom version.").toLatin1().data());
             }
 
-            if(image.type() == CV_8UC3)
+            if (!ret.containsError())
             {
-                colIndex--;
-
-                ito::uint8* dst = NULL;
-                cv::Vec3b* scr = NULL;
-
-                for(int y = 0; y < image.rows; y++)
+                if(image.type() == CV_8UC3)
                 {
-                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::uint8>(y);
-                    scr = image.ptr<cv::Vec3b>(y);
-                    for(int x = 0; x < image.cols; x++)
+                    if (colIndex < 0 || colIndex > 3)
                     {
-                        dst[x] = scr[x][colIndex];
+                        ret += ito::RetVal(ito::retError, 0, "loaded image does not contain the required channel");
+                    }
+                    else
+                    {
+                        ito::uint8* dst = NULL;
+                        const cv::Vec3b* scr = NULL;
+
+                        for(int y = 0; y < image.rows; y++)
+                        {
+                            dst = tempObject_->ptr<ito::uint8>(y);
+                            scr = image.ptr<const cv::Vec3b>(y);
+                            for(int x = 0; x < image.cols; x++)
+                            {
+                                dst[x] = scr[x][colIndex];
+                            }
+                        }
                     }
                 }
-            }
-            else if(image.type() == CV_8UC4)
-            {
-                colIndex--;
-
-                ito::uint8* dst = NULL;
-                cv::Vec4b* scr = NULL;
-
-                for(int y = 0; y < image.rows; y++)
+                else if(image.type() == CV_8UC4)
                 {
-                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::uint8>(y);
-                    scr = image.ptr<cv::Vec4b>(y);
-                    for(int x = 0; x < image.cols; x++)
+                    ito::uint8* dst = NULL;
+                    const cv::Vec4b* scr = NULL;
+
+                    for(int y = 0; y < image.rows; y++)
                     {
-                        dst[x] = scr[x][colIndex];
+                        dst = tempObject_->ptr<ito::uint8>(y);
+                        scr = image.ptr<const cv::Vec4b>(y);
+                        for(int x = 0; x < image.cols; x++)
+                        {
+                            dst[x] = scr[x][colIndex];
+                        }
                     }
                 }
-            }
-            else if(image.type() == CV_16UC3)
-            {
-                colIndex--;
-
-                ito::uint16* dst = NULL;
-                cv::Vec3w* scr = NULL;
-
-                for(int y = 0; y < image.rows; y++)
+                else if(image.type() == CV_16UC3)
                 {
-                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::uint16>(y);
-                    scr = image.ptr<cv::Vec3w>(y);
-                    for(int x = 0; x < image.cols; x++)
+                    if (colIndex < 0 || colIndex > 3)
                     {
-                        dst[x] = scr[x][colIndex];
+                        ret += ito::RetVal(ito::retError, 0, "loaded image does not contain the required channel");
+                    }
+                    else
+                    {
+                        ito::uint16* dst = NULL;
+                        const cv::Vec3w* scr = NULL;
+
+                        for(int y = 0; y < image.rows; y++)
+                        {
+                            dst = tempObject_->ptr<ito::uint16>(y);
+                            scr = image.ptr<const cv::Vec3w>(y);
+                            for(int x = 0; x < image.cols; x++)
+                            {
+                                dst[x] = scr[x][colIndex];
+                            }
+                        }
                     }
                 }
-            }
-            else if(image.type() == CV_16UC4)
-            {
-                colIndex--;
-
-                ito::uint16* dst = NULL;
-                cv::Vec4w* scr = NULL;
-
-                for(int y = 0; y < image.rows; y++)
+                else if(image.type() == CV_16UC4)
                 {
-                    dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::uint16>(y);
-                    scr = image.ptr<cv::Vec4w>(y);
-                    for(int x = 0; x < image.cols; x++)
+                    ito::uint16* dst = NULL;
+                    const cv::Vec4w* scr = NULL;
+
+                    for(int y = 0; y < image.rows; y++)
                     {
-                        dst[x] = scr[x][colIndex];
+                        dst = tempObject_->ptr<ito::uint16>(y);
+                        scr = image.ptr<const cv::Vec4w>(y);
+                        for(int x = 0; x < image.cols; x++)
+                        {
+                            dst[x] = scr[x][colIndex];
+                        }
                     }
                 }
-            }
-            else
-            {
-                return ito::RetVal(ito::retError,0,tr("Color channel not supported for extraction!").toLatin1().data());
+                else
+                {
+                    ret += ito::RetVal(ito::retError,0,tr("No coloured data object with 3 or 4 color channels has been loaded.").toLatin1().data());
+                }
             }
         }
     }

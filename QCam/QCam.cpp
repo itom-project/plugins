@@ -1132,7 +1132,6 @@ ito::RetVal QCam::errorCheck(QCam_Err errcode)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal QCam::supportedFormats(bool &mono, bool &colorFilter, bool &colorBayer)
 {
-	ito::uint32 mask;
 	unsigned long ccdType;
 	ito::RetVal retval;
 	QCam_Err qerr;

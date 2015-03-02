@@ -98,13 +98,14 @@ private:
     QVector<TextureItem> m_textures;
     int m_currentTexture;
     bool m_init;
+    bool m_gammaCorrection;
 
     ito::RetVal m_glErrors;
 
 public slots:
     ito::RetVal getErrors(ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal shutdown();
-    ito::RetVal addTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal addOrEditTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, int firstTextureIndex = -1, ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal setColor(const QColor &color);
     ito::RetVal setClearColor(const QColor &color);
     ito::RetVal grabFramebuffer(const QString &filename, ItomSharedSemaphore *waitCond = NULL);

@@ -1792,10 +1792,10 @@ ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
                     retValue += AlliedChkError(dc1394_format7_set_color_coding(camera, DC1394_VIDEO_MODE_FORMAT7_0, coding));
                 }
 
-                if (!retValue.containsError())
-                {
-                    m_isgrabbing = true;
-                }
+               // if (!retValue.containsError())
+               // {
+               //     m_isgrabbing = true;
+               // }
 
                 //Starts/stops the isochronous data transmission. In other words, use this to control the image flow.
                 //retValue += AlliedChkError(dc1394_video_set_transmission(camera, DC1394_ON));
@@ -1900,8 +1900,9 @@ ito::RetVal FireGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCon
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 #ifdef linux
-    if(m_isgrabbing==true){
+    if(grabberStartedCount() > 0){
         retValue += AlliedChkError(dc1394_capture_enqueue(camera,frame));
+
         m_acquireReady = true;
     }
     else

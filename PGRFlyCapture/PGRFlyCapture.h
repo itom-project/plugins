@@ -37,7 +37,10 @@
 class PGRFlyCaptureInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-    Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this PGRFlyCaptureInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
+#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
+#endif
+    Q_INTERFACES(ito::AddInInterfaceBase)
     PLUGIN_ITOM_API
 
     public:
@@ -89,7 +92,7 @@ class PGRFlyCapture : public ito::AddInGrabber
         ito::RetVal flyCapGetParameter(const QString &name, unsigned int &value, FlyCapture2::PropertyType type);
         ito::RetVal flyCapGetParameter(const QString &name, float &value, FlyCapture2::PropertyType type);
 
-        ito::RetVal flyCapChangeFormat7(bool changeBpp, bool changeROI, int bpp = -1, int x0 = -1, int y0 = -1, int x1 = -1, int y1 = -1);
+        ito::RetVal flyCapChangeFormat7_(bool changeBpp, bool changeROI, int bpp = -1, int x0 = -1, int y0 = -1, int width = -1, int height = -1);
         ito::RetVal flyCapSetExtendedShutter(bool enabled);
         ito::RetVal flyCapSynchronizeFrameRateShutter();
 
@@ -107,9 +110,8 @@ class PGRFlyCapture : public ito::AddInGrabber
         double m_offsetMin;
 
         ExtendedShutterType m_extendedShutter;
-
-        double m_acquireTime;    /*!< Timestamp for acquire in seconds relative to cpu ticks */
-		double m_last_acquireTime;
+        FlyCapture2::EmbeddedImageInfo m_embeddedInfo;
+        bool m_hasFrameInfo;
        
         FlyCapture2::Format7ImageSettings m_currentFormat7Settings;
         FlyCapture2::Format7PacketInfo m_currentPacketInfo;
@@ -117,11 +119,16 @@ class PGRFlyCapture : public ito::AddInGrabber
         FlyCapture2::InterfaceType m_interfaceType;
         bool m_hasFormat7;
 
+        ito::RetVal m_acquisitionStatus;
+        FlyCapture2::Image m_imageBuffer;
+        double m_firstTimestamp;
+
         unsigned int GetBppFromPixelFormat( FlyCapture2::PixelFormat pixelFormat );
         bool GetPixelFormatFromVideoMode( FlyCapture2::VideoMode mode, bool stippled, FlyCapture2::PixelFormat* pixFormat);
         bool GetResolutionFromVideoMode( FlyCapture2::VideoMode mode, int &sizeX, int &sizeY);
         double GetFrameTimeFromFrameRate( FlyCapture2::FrameRate frameRate );
         FlyCapture2::FrameRate GetSuitAbleFrameRateFromFrameTime( double frameTime );
+        double timeStampToDouble(const FlyCapture2::TimeStamp &timestamp);
 
         ito::RetVal checkError(const FlyCapture2::Error &error);
 
