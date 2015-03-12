@@ -531,6 +531,8 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
         cv::Mat* planeIn = (cv::Mat*)(m_pInpObj->get_mdata()[m_pInpObj->seekMat(zPlaneCnt)]);
         cv::Mat* planeOut = (cv::Mat*)(m_pOutObj->get_mdata()[m_pOutObj->seekMat(zPlaneCnt)]);
 
+        clearFunc();
+
         if (!err.containsWarningOrError())
         {
             for (ito::int16 kernRow = 0; kernRow <  m_kernelSizeY - 1; ++kernRow /*kernRow++*/)
@@ -680,7 +682,12 @@ template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
 #endif
     }
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void LowValueFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    return;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> /*ito::RetVal*/ void LowValueFilter<_Tp>::filterFunc()
 {
@@ -821,7 +828,12 @@ template<typename _Tp> HighValueFilter<_Tp>::~HighValueFilter()
         #endif
     }
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void HighValueFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    return;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> /*ito::RetVal*/ void HighValueFilter<_Tp>::filterFunc()
 {
@@ -1287,7 +1299,12 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
         kbufPtr[i] = (_Tp*)&(kbuf[i]);
     #endif
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void MedianFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    return;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 {
@@ -1698,6 +1715,13 @@ template<typename _Tp> LowPassFilter<_Tp>::~LowPassFilter()
     {
         delete m_colwiseSumBuffer;
     }
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void LowPassFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    m_isFilled = false;
+    return;
 }
 //-----------------------------------------------------------------------------------------------
 template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
@@ -2233,6 +2257,13 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
 
 
     this->m_isFilled = false;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void GaussianFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    m_isFilled = false;
+    return;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> GaussianFilter<_Tp>::~GaussianFilter()

@@ -200,6 +200,7 @@ template<typename _Tp> class GenericFilterEngine
         ito::int32 m_dx, m_dy;           //< Size of filter region
         ito::int32 m_AnchorX, m_AnchorY; //< Position of the data output in respect to the kernel (anchor)
         virtual void filterFunc() = 0;
+        virtual void clearFunc() = 0;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -229,6 +230,7 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
         ~LowValueFilter();
 
         void filterFunc();
+        void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -258,6 +260,7 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
         ~HighValueFilter();
 
         void filterFunc();
+        void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -289,6 +292,7 @@ template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
         ~MedianFilter();
 
         void filterFunc();
+        void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -316,6 +320,7 @@ template<typename _Tp> class LowPassFilter : public GenericFilterEngine<_Tp>
         ~LowPassFilter();
 
         void filterFunc();
+        void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -355,6 +360,7 @@ template<typename _Tp> class GaussianFilter : public GenericFilterEngine<_Tp>
         ~GaussianFilter();
 
         void filterFunc();
+        void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
