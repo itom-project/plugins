@@ -55,20 +55,16 @@ niDAQmxInterface::niDAQmxInterface()
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"This template can be used for implementing a new type of camera or grabber plugin \n\
-\n\
-Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
+"The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. \n\
+The installation needs the NI-DAQmx Library that can be downloaded from the NI website (http://www.ni.com/download/ni-daqmx-14.2/5046/en/)";
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "Authors of the plugin";
+    m_author = "Martin Hoppe, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("The plugin's license string");
+    m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr(""); 
-
-    //add mandatory and optional parameters for the initialization here.
-    //append them to m_initParamsMand or m_initParamsOpt.
     
     m_initParamsMand.clear();
 
@@ -176,8 +172,17 @@ ito::RetVal niDAQmx::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    retValue += m_params["device"].copyValueFrom(&((*paramsOpt)[0]));
+    retValue += m_params["device"].copyValueFrom(&(paramsOpt->at(0)));
     QString device = m_params["device"].getVal<char *>(); //borrowed reference
+
+	char buffer[1024];
+	memset(buffer, '\0', 1024 * sizeof(char));
+	DAQmxGetSysDevNames(buffer, sizeof(buffer));
+
+	if (!QString(buffer).split(",").contains(device, Qt::CaseSensitive))
+	{
+		retValue += ito::RetVal::format(ito::retError, 0, "Your device does not exist in your system. The following devices were found: %s", buffer);
+	}
 
 	// populate m_channels
 	m_channels = niChannelList(device);
@@ -192,14 +197,15 @@ ito::RetVal niDAQmx::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 		getParam(val, NULL);
 	}
 
-	parametersChanged(m_params);	
+	emit parametersChanged(m_params);	
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    //setInitialized(true); //init method has been finished (independent on retval)
+
+    setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
 }
 
@@ -549,12 +555,24 @@ ito::RetVal niDAQmx::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         {
 			QString taskID = key.left(2);
 			QStringList in = QString(val->getVal<char*>()).split(",");
-			if (in.size() == 3)
+			if (in.size() >= 3) // minimum parameter count ok
 			{
 				m_taskMap.value(taskID)->setRateHz(in[0].toInt());
 				m_taskMap.value(taskID)->setSamplesToRW(in[1].toInt());
 				m_taskMap.value(taskID)->setMode(in[2].toInt());
 				retValue += it->copyValueFrom( &(*val) );
+				if (in.size() > 3) // Trigger source defined
+				{
+					m_taskMap.value(taskID)->setTriggerPort(in[3]);
+					if (in[4] == "rising")
+					{
+						m_taskMap.value(taskID)->setTriggerEdge(DAQmx_Val_Rising);
+					}
+					else if (in[4] == "falling")
+					{
+						m_taskMap.value(taskID)->setTriggerEdge(DAQmx_Val_Falling);
+					}
+				}
 			}
 			else 
 			{
@@ -648,34 +666,29 @@ ito::RetVal niDAQmx::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
 
-	int error = -1;
-
 	if (trigger & 1)
 	{
-		m_taskMap.value("ai")->applyParameters();
-		error = DAQmxStartTask(*m_taskMap.value("ai")->getTaskHandle());
+		retval += m_taskMap.value("ai")->run();
 		m_aInIsAcquired = true;
 	}
 	if (trigger & 2)
 	{
-		m_taskMap.value("di")->applyParameters();
-		error = DAQmxStartTask(*m_taskMap.value("di")->getTaskHandle());
+		retval += m_taskMap.value("di")->run();
 		m_dInIsAcquired = true;
 	}
 	if (trigger & 4)
 	{
-		m_taskMap.value("ci")->applyParameters();
-		error = DAQmxStartTask(*m_taskMap.value("ci")->getTaskHandle());
+		retval += m_taskMap.value("ci")->run();
 		m_cInIsAcquired = true;
 	}
 
-	if (error > 0)
+	if (retval.containsWarning())
 	{
-		retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while starting read task. \n Code: %i", error);
+		retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while starting read task. \n Code: %i", retval.errorCode());
 	}
-	else if (error < 0)
+	else if (retval.containsError())
 	{
-		retval += ito::RetVal::format(ito::retError, 0, "Error occured while starting read task. \n Code: %i", error);
+		retval += ito::RetVal::format(ito::retError, 0, "Error occured while starting read task. \n Code: %i", retval.errorCode());
 	}
 	else
 	{
@@ -728,6 +741,9 @@ ito::RetVal niDAQmx::readAnalog(ito::DataObject *externalDataObject)
 		m_data.setAxisUnit(1, "sec");
 		m_data.setAxisDescription(1, "time");
 		
+		// TODO: Hier muss die Skala an den hoechsten Range angepasst werden und alle Reihen im Datenobject entsprechend ihres Ranges durchmultipliziert werden
+		//m_channels m_taskMap.value("ai")->getChList()
+		//m_channels.getAllChannelOfType(niBaseChannel::chTypeAnalog)[0]->
 		m_data.setAxisScale(2, vScale);
 		m_data.setAxisUnit(2, "volt");
 		m_data.setAxisDescription(2, "voltage");
@@ -859,7 +875,7 @@ ito::RetVal niDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 	{
 		retValue += readAnalog();
 		m_aInIsAcquired = false;
-		// Die folgende zeile stopt den task um ihn erneut starten zu können. Rsourcen bleiben erhalten. Vielleicht in extra funktion auslagern
+		// Die folgende zeile stoppt den task um ihn erneut starten zu können. Rsourcen bleiben erhalten. Vielleicht in extra funktion auslagern
 		// error = DAQmxTaskControl(m_taskMap.value("ai")->getTaskHandle(),DAQmx_Val_Task_Reserve);
 		error = DAQmxStopTask(*m_taskMap.value("ai")->getTaskHandle());
 		if (error != 0)
@@ -887,6 +903,8 @@ ito::RetVal niDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 			(*dObj) = m_data; //copy reference to externally given object
 		}
 	}
+
+	retValue += m_taskMap.value("ai")->resetTaskHandle();
 
     if (waitCond) 
     {

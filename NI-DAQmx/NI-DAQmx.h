@@ -79,7 +79,7 @@ class niDAQmx : public ito::AddInDataIO
 		bool m_dOutIsAcquired;
 		bool m_cOutIsAcquired;
 		
-
+		QString m_device;
 		QMap<QString, niTask*> m_taskMap;
 		niChannelList m_channels;
 		ito::DataObject m_data;
