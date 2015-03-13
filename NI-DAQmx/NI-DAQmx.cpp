@@ -734,9 +734,16 @@ ito::RetVal niDAQmx::readAnalog(ito::DataObject *externalDataObject)
 
 		int size = channels * samples;
 		int32 retSize = -1;
-		int err = DAQmxReadAnalogF64(*m_taskMap.value("ai")->getTaskHandle(), -1, DAQmx_Val_WaitInfinitely, DAQmx_Val_GroupByChannel, (ito::float64*)m_data.rowPtr(0,0), size, &retSize, NULL);
+		//int err = -1;
+		//while (err != 0)
+		//{
+		//	err = DAQmxReadAnalogF64(*m_taskMap["ai"]->getTaskHandle(), -1, 1.0 /*sec*/, DAQmx_Val_GroupByChannel, (ito::float64*)m_data.rowPtr(0,0), size, &retSize, NULL);
+		//	setAlive();
+		//}
+
+		int err = DAQmxReadAnalogF64(*m_taskMap["ai"]->getTaskHandle(), -1, DAQmx_Val_WaitInfinitely, DAQmx_Val_GroupByChannel, (ito::float64*)m_data.rowPtr(0,0), size, &retSize, NULL);
 		double vScale = 1;
-		double tScale = 1/(double)m_taskMap.value("ai")->getRateHz();
+		double tScale = 1/(double)m_taskMap["ai"]->getRateHz();
 		m_data.setAxisScale(1, tScale);
 		m_data.setAxisUnit(1, "sec");
 		m_data.setAxisDescription(1, "time");
@@ -877,11 +884,7 @@ ito::RetVal niDAQmx::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 		m_aInIsAcquired = false;
 		// Die folgende zeile stoppt den task um ihn erneut starten zu können. Rsourcen bleiben erhalten. Vielleicht in extra funktion auslagern
 		// error = DAQmxTaskControl(m_taskMap.value("ai")->getTaskHandle(),DAQmx_Val_Task_Reserve);
-		error = DAQmxStopTask(*m_taskMap.value("ai")->getTaskHandle());
-		if (error != 0)
-		{
-			//retValue += ito::RetVal(ito::retError, 0, tr("Couldn´t stop task").toLatin1().data());
-		}
+		retValue += m_taskMap.value("ai")->stop();
 	}
 	else if (m_dInIsAcquired)
 	{
