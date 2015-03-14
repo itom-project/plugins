@@ -7,6 +7,12 @@ OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET(ITOM_DIR "" CACHE PATH "base path to itom") 
 
+# Avoid plugins with OpenMP when it is not available, e.g. when using clang
+FIND_PACKAGE( OpenMP QUIET)
+if(NOT OPENMP_FOUND)
+    message("OpenMP was not found. Some plugins might not be build.")
+endif()
+
 # AerotechA3200
 IF (WIN32)
     OPTION(PLUGIN_aerotechA3200 "Build with this plugin." ON)
@@ -22,7 +28,6 @@ IF (WIN32)
             ADD_SUBDIRECTORY(AerotechEnsemble)
     endif (PLUGIN_aerotechEnsemble)
 ENDIF (WIN32)
-
 
 # AndorSDK3
 OPTION(PLUGIN_andorSDK3 "Build with this plugin." ON)
@@ -96,10 +101,12 @@ if (PLUGIN_FileGrabber)
 endif (PLUGIN_FileGrabber)
 
 # FittingFilters
-OPTION(PLUGIN_FittingFilters "Build with this plugin." ON)
-if (PLUGIN_FittingFilters)
-    ADD_SUBDIRECTORY(FittingFilters)
-endif (PLUGIN_FittingFilters)
+if(OPENMP_FOUND)
+    OPTION(PLUGIN_FittingFilters "Build with this plugin." ON)
+    if (PLUGIN_FittingFilters)
+        ADD_SUBDIRECTORY(FittingFilters)
+    endif (PLUGIN_FittingFilters)
+endif(OPENMP_FOUND)
 
 # FireGrabber
 OPTION(PLUGIN_FireGrabber "Build with this plugin." ON)
@@ -108,10 +115,12 @@ if (PLUGIN_FireGrabber)
 endif (PLUGIN_FireGrabber)
 
 # FringeProj
-OPTION(PLUGIN_FringeProj "Build with this plugin." ON)
-if (PLUGIN_FringeProj)
-    ADD_SUBDIRECTORY(FringeProj)
-endif (PLUGIN_FringeProj)
+if(OPENMP_FOUND)
+    OPTION(PLUGIN_FringeProj "Build with this plugin." ON)
+    if (PLUGIN_FringeProj)
+        ADD_SUBDIRECTORY(FringeProj)
+    endif (PLUGIN_FringeProj)
+endif(OPENMP_FOUND)
 
 # glDisplay
 OPTION(PLUGIN_GLDisplay "Build with this plugin." ON)
@@ -293,12 +302,12 @@ IF (WIN32)
 ENDIF (WIN32)
 
 # V4L2
-IF (UNIX)
+IF (UNIX AND NOT APPLE)
     OPTION(PLUGIN_V4L2 "Build with this plugin." ON)
     if (PLUGIN_V4L2)
         ADD_SUBDIRECTORY(V4L2)
     endif (PLUGIN_V4L2)
-ENDIF (UNIX)
+ENDIF (UNIX AND NOT APPLE)
 
 # Vistek
 IF (WIN32)

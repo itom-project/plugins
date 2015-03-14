@@ -29,7 +29,7 @@ find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(LAPACKE)
 find_package(VisualLeakDetector QUIET)
 
-FIND_PACKAGE( OpenMP REQUIRED)
+FIND_PACKAGE( OpenMP QUIET REQUIRED)
 if(OPENMP_FOUND)
     message(STATUS "OPENMP FOUND")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
