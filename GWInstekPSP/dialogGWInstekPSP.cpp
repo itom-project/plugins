@@ -23,7 +23,7 @@
 #include "dialogGWInstekPSP.h"
 #include "GWInstekPSP.h"
 
-#ifdef __linux__
+#ifndef WIN32
     #include <unistd.h>
 #else
     #include <windows.h>

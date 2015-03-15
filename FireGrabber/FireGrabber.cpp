@@ -27,7 +27,7 @@
 
 //#include "stdafx.h"
 
-#ifndef linux
+#ifdef WIN32
     #include <stdio.h>
     #include <conio.h>
 #endif
@@ -75,13 +75,13 @@ firewire. \n\
 This plugin can only be loaded and used once the AVT FirePackage driver has been correctly installed on your computer. For more information about AVT FirePackage and their \
 license browse to http://www.alliedvisiontec.com. This plugin was mainly tested with the cameras AVT Malin, Guppy and Pike. Not all parameters are supported by this plugin.";
 
-#ifdef linux
+#ifndef WIN32
     m_description = QObject::tr("FireForLinux (Firewire)");
 #else
     m_description = QObject::tr("Fire Package Capture (Firewire)");
 #endif
     m_detaildescription = QObject::tr(docstring);
-#ifdef linux
+#ifndef WIN32
     m_author = "G. Baer, M. Gronle, ITO, University Stuttgart";
 #else
     m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart";
@@ -90,7 +90,7 @@ license browse to http://www.alliedvisiontec.com. This plugin was mainly tested 
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
 
-#ifdef linux
+#ifndef WIN32
     m_license = QObject::tr("LGPL; you need an installed fireForLinux driver, which requires further licenses if you are not using any AVT camera (see fireForLinux documentation).");
 #else
     m_license = QObject::tr("LGPL; you need an installed AVT FirePackage driver, which requires further licenses if you are not using any AVT camera (see AVT FirePackage documentation).");
@@ -104,7 +104,7 @@ license browse to http://www.alliedvisiontec.com. This plugin was mainly tested 
     // TODO: implement other selection possibilities.. (see windows implementation.
     // TODO: check if code runs for multiple cameras at same time. (not done yet)
 
-#ifndef linux
+#ifdef WIN32
     m_initParamsOpt.append(ito::Param("cameraID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("specific number of the camera, don't use with cameraNumber (0 = unused)").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("vendorID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("number of the vendor (e.g. Allied: vendorID=673537), don't use with cameraNumber (0 = unused)").toLatin1().data()));
 #endif
@@ -222,7 +222,7 @@ ito::RetVal FireGrabber::AlliedChkError(int errornumber)
 		const char* text;
 	} 
 
-#ifndef linux // for windos firepackage
+#ifdef WIN32 // for windos firepackage
     static const errors[] =
 	{	/* All Errormassages are taken from the Fire Grab-Manual. */ 	
 		{ FCE_NOERROR          /*   0  */,   "No Error"},
@@ -394,7 +394,7 @@ ito::RetVal FireGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
     return retValue;
 }
 
-#ifdef linux
+#ifndef WIN32
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
@@ -671,7 +671,7 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 //----------------------------------------------------------------------------------------------------------------------------------
 
 
-#ifdef linux
+#ifndef WIN32
 ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
 {
     ito::RetVal retval;
@@ -859,7 +859,7 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#ifdef linux
+#ifndef WIN32
 ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
 	ItomSharedSemaphoreLocker locker(waitCond);
@@ -1677,7 +1677,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#ifdef linux
+#ifndef WIN32
 ito::RetVal FireGrabber::close(ItomSharedSemaphore *waitCond)
 {
 	ItomSharedSemaphoreLocker locker(waitCond);
@@ -1758,7 +1758,7 @@ int FireGrabber::exposureSecToShutter(double exposure)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#ifdef linux
+#ifndef WIN32
 ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
 {
 	ItomSharedSemaphoreLocker locker(waitCond);
@@ -1859,7 +1859,7 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     decGrabberStarted();
 
     
-#ifdef linux
+#ifndef WIN32
     if (grabberStartedCount() == 0 && camera!=0)
     {
         // Stop image device
@@ -1899,7 +1899,7 @@ ito::RetVal FireGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCon
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-#ifdef linux
+#ifndef WIN32
     if(grabberStartedCount() > 0){
         retValue += AlliedChkError(dc1394_capture_enqueue(camera,frame));
 
@@ -1924,7 +1924,7 @@ ito::RetVal FireGrabber::acquire(const int trigger, ItomSharedSemaphore *waitCon
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-#ifdef linux
+#ifndef WIN32
 ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue(ito::retOk);

@@ -34,13 +34,11 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
-#if linux
+#ifndef WIN32
   typedef uint32_t* LPDWORD;
   typedef uint32_t DWORD;
 #else
-#ifdef WIN32
     #include <Windows.h>
-#endif
 #endif
 
 #define    FCC(ch4) ((((DWORD)(ch4) & 0xFF) << 24) | (((DWORD)(ch4) & 0xFF00) << 8) | (((DWORD)(ch4) & 0xFF0000) >> 8) |(((DWORD)(ch4) & 0xFF000000) >> 24))
