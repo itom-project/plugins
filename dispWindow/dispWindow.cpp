@@ -32,7 +32,7 @@
 #include <QtCore/QtPlugin>
 #include <qdesktopwidget.h>
 
-#if linux
+#ifndef WIN32
     #include <unistd.h>
 #endif
 
