@@ -16,6 +16,12 @@
 #include <visa.h>
 #include "TLCCS.h"
 
+#if defined(linux) || defined(__APPLE__) 
+    //#include <unistd.h>
+#else
+    #include <windows.h>
+#endif
+
 //----------------------------------------------------------------------------------------------------------------------------------
  /**
   *\class    MyGrabberInterface 
@@ -86,7 +92,7 @@ class ThorlabsCCS : public ito::AddInGrabber
             {
                 Sleep(1);
                 s = tlccs_getDeviceStatus(m_instrument,  &status);
-                qDebug() << "Status: " << s;
+                //qDebug() << "Status: " << s;
             }
 
             return checkError(s);
