@@ -26,7 +26,7 @@
 #include "common/addInGrabber.h"
 #include "dialogFireGrabber.h"
 
-#ifdef WIN32
+#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
     #include <FGCamera.h>
 #else
     #include <FireGrab/dc1394/dc1394.h>
@@ -97,7 +97,7 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
         
     private:        
-        #ifdef WIN32
+        #if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
             CFGCamera  Camera;
         #else
             dc1394camera_t *camera;
@@ -123,7 +123,7 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
         };
 
         ExposureParameters m_exposureParams;
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
         unsigned int  m_xSize, m_ySize;
 #else
         unsigned long  m_xSize, m_ySize;
@@ -138,7 +138,7 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
 
         static int m_numberOfInstances;
 
-#ifdef WIN32
+#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
         QMap<QString, FGPINFO> m_camProperties;
 #endif
         // cast shutter time to internal whatever

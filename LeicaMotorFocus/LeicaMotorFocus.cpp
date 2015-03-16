@@ -30,7 +30,7 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
     #include <unistd.h>
 #else
     #include <windows.h>

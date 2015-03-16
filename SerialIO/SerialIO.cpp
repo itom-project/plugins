@@ -48,7 +48,7 @@
 //#include <qdebug.h>
 //#include <qmessagebox.h>
 
-#ifdef WIN32
+#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
     #include <Windows.h>
 //#define CCTS_OFLOW      0x00010000      /* CTS flow control of output */
 //#define CRTSCTS         (CCTS_OFLOW | CRTS_IFLOW)
@@ -115,7 +115,7 @@ const bool SerialPort::isValidBaudRate(const int baud)
 const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 {
     ito::RetVal ret(ito::retOk);
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
     struct termios options;      // Structure with the device's options
 
     // Set parameters
@@ -621,7 +621,7 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
 
     m_baudRatesSize = (int)(sizeof(baudRates)/sizeof(int));
 
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
 
     if (port < 1000) // ttyS of if not found try ttyUSB
     {
@@ -719,7 +719,7 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialPort::sclose(void)
 {
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
     if (m_dev)
     {
         close(m_dev);
@@ -739,7 +739,7 @@ const ito::RetVal SerialPort::sclose(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 int SerialPort::sreadable(void) const
 {
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
     int bytes;
 
     ioctl(m_dev, FIONREAD, &bytes);
@@ -765,7 +765,7 @@ int SerialPort::sreadable(void) const
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
 {
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
     int ret = 0;
 
     if (!m_dev)
@@ -861,7 +861,7 @@ const ito::RetVal SerialPort::swrite(const char c) const
         length += (int)strlen(m_serParams.endline);
     }
 
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
     if (m_dev == 0)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
@@ -918,7 +918,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
         memcpy(&(outbuf[len]), &m_serParams.endline, endlinelen); // Attend to outbuffer, after buf,  endline
     }
 
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
     if (m_dev == 0)
     {
         free(outbuf);
@@ -1002,7 +1002,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
 */
 const ito::RetVal SerialPort::sclearbuffer(int BufferType)
 {
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
     int errorCode;
     if (m_dev == 0)
     {
@@ -1118,7 +1118,7 @@ Example \n\
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");  
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
     ito::Param paramVal("port", ito::ParamBase::Int, 0, 4095, 1, tr("The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM").toLatin1().data());
     m_initParamsMand.append(paramVal);
 #else
@@ -1183,7 +1183,7 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(fal
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "SerialIO", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
     paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4095, 0, tr("The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 #else

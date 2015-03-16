@@ -30,7 +30,7 @@
 #include <qsharedpointer.h>
 #include <qbytearray.h>
 
-#ifdef WIN32
+#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
 #include <windows.h>
 #endif
 
@@ -65,7 +65,7 @@ class SerialPort
         serParams m_serParams;
         char *m_pDevice;
 
-#ifdef WIN32
+#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
         HANDLE m_dev;
 #else
         int m_dev;
