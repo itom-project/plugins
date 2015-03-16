@@ -34,10 +34,10 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
-#ifndef WIN32
+#ifndef Q_OS_WIN32
   typedef uint32_t* LPDWORD;
   typedef uint32_t DWORD;
-#else
+#elif defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
     #include <Windows.h>
 #endif
 
