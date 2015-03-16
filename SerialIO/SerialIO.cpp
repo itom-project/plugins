@@ -619,7 +619,7 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
 
     m_baudRatesSize = (int)(sizeof(baudRates)/sizeof(int));
 
-#ifdef __linux__
+#ifdef linux
 
     if (port < 1000) // ttyS of if not found try ttyUSB
     {
@@ -717,7 +717,7 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialPort::sclose(void)
 {
-#ifdef __linux__
+#ifdef linux
     if (m_dev)
     {
         close(m_dev);
@@ -737,7 +737,7 @@ const ito::RetVal SerialPort::sclose(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 int SerialPort::sreadable(void) const
 {
-#ifdef __linux__
+#ifdef linux
     int bytes;
 
     ioctl(m_dev, FIONREAD, &bytes);
@@ -763,7 +763,7 @@ int SerialPort::sreadable(void) const
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
 {
-#ifdef __linux__
+#ifdef linux
     int ret = 0;
 
     if (!m_dev)
@@ -859,7 +859,7 @@ const ito::RetVal SerialPort::swrite(const char c) const
         length += (int)strlen(m_serParams.endline);
     }
 
-#ifdef __linux__
+#ifdef linux
     if (m_dev == 0)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("com port not open").toLatin1().data());
@@ -916,7 +916,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
         memcpy(&(outbuf[len]), &m_serParams.endline, endlinelen); // Attend to outbuffer, after buf,  endline
     }
 
-#ifdef __linux__
+#ifdef linux
     if (m_dev == 0)
     {
         free(outbuf);
@@ -1000,7 +1000,7 @@ const ito::RetVal SerialPort::swrite(const char *buf, const int len, const int s
 */
 const ito::RetVal SerialPort::sclearbuffer(int BufferType)
 {
-#ifdef __linux__
+#ifdef linux
     int errorCode;
     if (m_dev == 0)
     {
@@ -1116,7 +1116,7 @@ Example \n\
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");  
-#ifdef __linux__
+#ifdef linux
     ito::Param paramVal("port", ito::ParamBase::Int, 0, 4095, 1, tr("The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM").toLatin1().data());
     m_initParamsMand.append(paramVal);
 #else
@@ -1181,7 +1181,7 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(fal
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "SerialIO", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-#ifdef __linux__
+#ifdef linux
     paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4095, 0, tr("The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 #else

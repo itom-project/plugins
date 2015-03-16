@@ -37,7 +37,7 @@
 #if linux
   typedef uint32_t* LPDWORD;
   typedef uint32_t DWORD;
-#elif defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
+#elif defined(WIN32)
     #include <Windows.h>
 #endif
 

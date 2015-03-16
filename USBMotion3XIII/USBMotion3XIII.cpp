@@ -32,7 +32,7 @@
 #include <qmutex.h>
 #include <qwaitcondition.h>
 
-#ifdef __linux__
+#ifdef linux
     #include <unistd.h>
 #else
     #include <windows.h>
@@ -151,10 +151,10 @@ ito::RetVal USBMotion3XIIIInterface::loadDLL()
         return ito::retOk;
     }
 
-#if defined Q_OS_WIN64
+#ifdef _WIN64
     //mLib.setFileName(":/library/USB3xIII"); //if you want to load the library from the resource.qrc file
     mLib.setFileName("plugins/USBMotion3XIII/USB3xIII64");
-#elif defined Q_OS_WIN32
+#elif defined WIN32
     mLib.setFileName("plugins/USBMotion3XIII/USB3xIII");
 #endif
 
@@ -632,7 +632,7 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
     else
     {
 
-#if defined Q_OS_WIN64
+#if defined _WIN64
         /*if(enumdevices() > 1)
         {
             retValue += ito::RetVal(retWarning,0,tr("64bit problem: currently only the first connected controller").toLatin1().data());
@@ -645,7 +645,7 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
         errorCode = opendevicebyserial( wserial );
         delete[] wserial;
         wserial = NULL;
-#elif defined Q_OS_WIN32
+#elif defined WIN32
         errorCode = opendevicebyserial( serialName.toLatin1().data() );
 #endif
         retValue += errorCheck(errorCode);

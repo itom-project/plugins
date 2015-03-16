@@ -30,7 +30,7 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
-#ifdef __linux__
+#ifdef linux
     #include <unistd.h>
 #else
     #include <windows.h>

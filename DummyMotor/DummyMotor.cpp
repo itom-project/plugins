@@ -45,7 +45,7 @@
 
 #include "common/helperCommon.h"
 
-#ifdef __linux__
+#ifdef linux
     #include <unistd.h>
 #else
     #include <windows.h>

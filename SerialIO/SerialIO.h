@@ -65,7 +65,7 @@ class SerialPort
         serParams m_serParams;
         char *m_pDevice;
 
-#ifndef __linux__
+#ifdef WIN32
         HANDLE m_dev;
 #else
         int m_dev;
