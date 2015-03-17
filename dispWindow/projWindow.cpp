@@ -19,7 +19,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
+#ifndef WIN32
     #include <unistd.h>
 #endif
 

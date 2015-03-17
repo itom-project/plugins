@@ -28,7 +28,7 @@
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 #include "math.h"
 
-#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
+#ifndef WIN32
     #include <unistd.h>
 #endif
 #include <qstring.h>
@@ -47,7 +47,7 @@
 //#include <qdebug.h>
 //#include <qmessagebox.h>
 
-#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
+#ifdef WIN32
 #include <windows.h>
 #endif
 

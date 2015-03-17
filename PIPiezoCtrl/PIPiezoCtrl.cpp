@@ -38,7 +38,7 @@
 #define PI_READTIMEOUT 256
 
 #ifdef GCS2
-#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
+#ifdef WIN32
     #include "windows.h"
 #endif
     #include "PI_GCS2_DLL.h"
@@ -504,7 +504,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         if (baudrate > 0)
         {
-#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
+#ifndef WIN32
             m_deviceID = PI_ConnectRS232ByDevName(deviceName, baudrate);
 #else
             bool ok;

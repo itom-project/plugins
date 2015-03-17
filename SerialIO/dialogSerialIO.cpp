@@ -25,7 +25,7 @@
 
 #include <QMessageBox>
 
-#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
+#ifndef WIN32
     #include <unistd.h>
     #include <string.h>
 #else

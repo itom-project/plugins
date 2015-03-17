@@ -33,7 +33,7 @@
 #include <qdesktopwidget.h>
 #include <qapplication.h>
 
-#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
+#ifndef WIN32
     #include <unistd.h>
 #endif
 
