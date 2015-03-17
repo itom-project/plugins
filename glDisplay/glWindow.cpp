@@ -30,7 +30,7 @@
 #include <qfileinfo.h>
 #include <qdir.h>
 
-#if (defined WIN32)
+#ifdef WIN32
         #define NOMINMAX
         #include <Windows.h>
         #include <gl/GL.h>

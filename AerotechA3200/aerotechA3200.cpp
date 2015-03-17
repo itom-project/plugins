@@ -36,6 +36,9 @@
 
 #include "errno.h"
 
+#include "dialogAerotechA3200.h"	//! This is the configuration dialog
+#include "dockWidgetAerotechA3200.h"	//! This is the controll dialog
+
 using namespace ito;
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -20,7 +20,7 @@
 
 
 
-#if defined Q_OS_WIN64
+#if defined _WIN64
     //in 64bit, char* returns a 2byte character (respectively).
     //therefore the methods are forwarded to wchar_t. In 64bit it is necessary to set /Zc:wchar_t- compiler flag
     /*Original message (10.04.2013): 

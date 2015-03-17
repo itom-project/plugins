@@ -25,10 +25,10 @@
 
 #include "GWInstekPSP.h"
 
-#ifndef WIN32
-    #include <unistd.h>
-#else
+#ifdef WIN32
     #include <windows.h>
+#else
+    #include <unistd.h>
 #endif
 
 #include <qstring.h>

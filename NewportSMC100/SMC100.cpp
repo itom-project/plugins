@@ -36,7 +36,7 @@
 #include <qelapsedtimer.h>
 #include <qdatetime.h>
 
-#if (WIN32 || _WIN64 || _WINDOWS)
+#ifdef WIN32
     #define NOMINMAX //avoid inclusion of min,max macros in windows.h
     #include <Windows.h> //for sleep command
 #endif

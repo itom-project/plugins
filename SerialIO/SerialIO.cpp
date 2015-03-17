@@ -622,7 +622,6 @@ const ito::RetVal SerialPort::sopen(const int port, const int baud, const char* 
     m_baudRatesSize = (int)(sizeof(baudRates)/sizeof(int));
 
 #ifndef WIN32
-
     if (port < 1000) // ttyS of if not found try ttyUSB
     {
         _snprintf(device, 50, "/dev/ttyS%d", port);
@@ -1117,7 +1116,7 @@ Example \n\
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("N.A.");  
+    m_aboutThis = QObject::tr("N.A.");
 #ifndef WIN32
     ito::Param paramVal("port", ito::ParamBase::Int, 0, 4095, 1, tr("The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM").toLatin1().data());
     m_initParamsMand.append(paramVal);

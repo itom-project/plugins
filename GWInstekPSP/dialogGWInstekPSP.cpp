@@ -23,11 +23,12 @@
 #include "dialogGWInstekPSP.h"
 #include "GWInstekPSP.h"
 
-#ifndef WIN32
-    #include <unistd.h>
+#ifdef WIN32
+#include <windows.h>
 #else
-    #include <windows.h>
+#include <unistd.h>
 #endif
+
 //----------------------------------------------------------------------------------------------------------------------------------
 dialogGWInstekPSP::dialogGWInstekPSP(void *dataIO) : m_dataIO(dataIO)
 {
