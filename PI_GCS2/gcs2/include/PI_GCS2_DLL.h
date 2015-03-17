@@ -20,7 +20,7 @@
 extern "C" {
 #endif
 
-#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
+#ifdef WIN32
 	#undef PI_FUNC_DECL
 	#ifdef PI_DLL_EXPORTS
 		#ifndef UNKNOWN_GCS_DLL
@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 
-#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
+#ifndef WIN32
 	#ifndef BOOL
 	#define BOOL int
 	#endif
@@ -141,7 +141,7 @@ int PI_FUNC_DECL PI_GetControllerID(int threadID);
 
 BOOL PI_FUNC_DECL PI_CancelConnect(int threadI);
 
-#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
+#ifndef WIN32
 int 	PI_FUNC_DECL	PI_ConnectRS232ByDevName(const char* szDevName, int BaudRate);
 #endif
 int 	PI_FUNC_DECL	PI_OpenRS232DaisyChain(int iPortNumber, int iBaudRate, int* pNumberOfConnectedDaisyChainDevices, char* szDeviceIDNs, int iBufferSize);

@@ -54,7 +54,7 @@
 #endif
 
 #if !defined(Z_HAVE_UNISTD_H) && !defined(_LARGEFILE64_SOURCE)
-#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64) /* unlink already in stdio.h for WIN32 */
+#ifndef WIN32 /* unlink already in stdio.h for WIN32 */
   extern int unlink OF((const char *));
 #endif
 #endif
