@@ -24,9 +24,9 @@
 #include "GWInstekPSP.h"
 
 #ifdef WIN32
-#include <windows.h>
+    #include <windows.h>
 #else
-#include <unistd.h>
+    #include <unistd.h>
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -7,12 +7,6 @@ OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET(ITOM_DIR "" CACHE PATH "base path to itom") 
 
-# Avoid plugins with OpenMP when it is not available, e.g. when using clang
-FIND_PACKAGE( OpenMP QUIET)
-if(NOT OPENMP_FOUND)
-    message("OpenMP was not found. Some plugins might not be build.")
-endif()
-
 # AerotechA3200
 IF (WIN32)
     OPTION(PLUGIN_aerotechA3200 "Build with this plugin." ON)
@@ -101,12 +95,10 @@ if (PLUGIN_FileGrabber)
 endif (PLUGIN_FileGrabber)
 
 # FittingFilters
-if(OPENMP_FOUND)
-    OPTION(PLUGIN_FittingFilters "Build with this plugin." ON)
-    if (PLUGIN_FittingFilters)
-        ADD_SUBDIRECTORY(FittingFilters)
-    endif (PLUGIN_FittingFilters)
-endif(OPENMP_FOUND)
+OPTION(PLUGIN_FittingFilters "Build with this plugin." ON)
+if (PLUGIN_FittingFilters)
+    ADD_SUBDIRECTORY(FittingFilters)
+endif (PLUGIN_FittingFilters)
 
 # FireGrabber
 OPTION(PLUGIN_FireGrabber "Build with this plugin." ON)
@@ -115,12 +107,10 @@ if (PLUGIN_FireGrabber)
 endif (PLUGIN_FireGrabber)
 
 # FringeProj
-if(OPENMP_FOUND)
-    OPTION(PLUGIN_FringeProj "Build with this plugin." ON)
-    if (PLUGIN_FringeProj)
-        ADD_SUBDIRECTORY(FringeProj)
-    endif (PLUGIN_FringeProj)
-endif(OPENMP_FOUND)
+OPTION(PLUGIN_FringeProj "Build with this plugin." ON)
+if (PLUGIN_FringeProj)
+    ADD_SUBDIRECTORY(FringeProj)
+endif (PLUGIN_FringeProj)
 
 # glDisplay
 OPTION(PLUGIN_GLDisplay "Build with this plugin." ON)
@@ -159,7 +149,6 @@ OPTION(PLUGIN_BasicGPLFilters "Build with this plugin." ON)
 if (PLUGIN_BasicGPLFilters)
     ADD_SUBDIRECTORY(BasicGPLFilters)
 endif (PLUGIN_BasicGPLFilters) 
-
 
 # LeicaMotorFocus
 OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." ON)

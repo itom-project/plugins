@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-#ifdef WIN32
+#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64)
 	#undef PI_FUNC_DECL
 	#define PI_FUNC_DECL WINAPI
 #else
@@ -25,7 +25,7 @@ extern "C" {
 #endif
 
 
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
 	#ifndef BOOL
 	#define BOOL int
 	#endif
@@ -97,7 +97,7 @@ extern "C" {
 // DLL initialization and comm functions
 typedef int (PI_FUNC_DECL * PFPI_InterfaceSetupDlg)(const char* szRegKeyName);
 typedef int (PI_FUNC_DECL * PFPI_ConnectRS232)(int nPortNr, int iBaudRate);
-#ifndef WIN32
+#if !defined(Q_OS_WIN32) && !defined(Q_OS_WIN64)
 typedef int (PI_FUNC_DECL * PFPI_ConnectRS232ByDevName)(const char* szDevName, int BaudRate);
 #endif
 typedef int (PI_FUNC_DECL * PFPI_OpenRS232DaisyChain)(int iPortNumber, int iBaudRate, int* pNumberOfConnectedDaisyChainDevices, char* szDeviceIDNs, int iBufferSize);
