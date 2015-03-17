@@ -25,7 +25,7 @@
 
 #include <QMessageBox>
 
-#ifdef linux
+#ifndef WIN32
     #include <unistd.h>
     #include <string.h>
 #else

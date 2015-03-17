@@ -19,7 +19,7 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-#if linux
+#ifndef WIN32
     #include <unistd.h>
 #endif
 
@@ -40,6 +40,11 @@
         #include <Windows.h>
         #include <gl/GL.h>
         #include <gl/GLU.h>
+#endif
+
+#ifdef (defined __APPLE__)
+    #include <OpenGL/gl.h>
+    #include <OpenGL/glu.h>
 #endif
 
 #include "projWindow.h"

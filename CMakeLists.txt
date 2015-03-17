@@ -23,7 +23,6 @@ IF (WIN32)
     endif (PLUGIN_aerotechEnsemble)
 ENDIF (WIN32)
 
-
 # AndorSDK3
 OPTION(PLUGIN_andorSDK3 "Build with this plugin." ON)
 if (PLUGIN_andorSDK3)
@@ -150,7 +149,6 @@ OPTION(PLUGIN_BasicGPLFilters "Build with this plugin." ON)
 if (PLUGIN_BasicGPLFilters)
     ADD_SUBDIRECTORY(BasicGPLFilters)
 endif (PLUGIN_BasicGPLFilters) 
-
 
 # LeicaMotorFocus
 OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." ON)
@@ -293,12 +291,12 @@ IF (WIN32)
 ENDIF (WIN32)
 
 # V4L2
-IF (UNIX)
+IF (UNIX AND NOT APPLE)
     OPTION(PLUGIN_V4L2 "Build with this plugin." ON)
     if (PLUGIN_V4L2)
         ADD_SUBDIRECTORY(V4L2)
     endif (PLUGIN_V4L2)
-ENDIF (UNIX)
+ENDIF (UNIX AND NOT APPLE)
 
 # Vistek
 IF (WIN32)

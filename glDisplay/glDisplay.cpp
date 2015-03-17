@@ -33,7 +33,7 @@
 #include <qdesktopwidget.h>
 #include <qapplication.h>
 
-#if linux
+#ifndef WIN32
     #include <unistd.h>
 #endif
 

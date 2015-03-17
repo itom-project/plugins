@@ -504,7 +504,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         if (baudrate > 0)
         {
-#if linux
+#ifndef WIN32
             m_deviceID = PI_ConnectRS232ByDevName(deviceName, baudrate);
 #else
             bool ok;
