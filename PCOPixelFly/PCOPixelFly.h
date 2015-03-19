@@ -27,6 +27,10 @@
 #include "dialogPCOPixelFly.h"
 #include <qsharedpointer.h>
 
+#ifdef WIN32
+    #include <Windows.h>
+#endif
+
 #define BUFFERNUMBER 1 //Maximal Number of Buffers: 32
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -81,10 +85,10 @@ class PCOPixelFly : public ito::AddInGrabber
 
         int m_libraryMajor;
 
-        BOOL m_isgrabbing; /*!< Check if acquire was called */
-        BOOL m_saveParamsOnClose; /*!< Check if the parameters shoudl be saved on close */
+        bool m_isgrabbing; /*!< Check if acquire was called */
+        bool m_saveParamsOnClose; /*!< Check if the parameters shoudl be saved on close */
         
-        BOOL m_waited[BUFFERNUMBER]; /*!< Checkvaraible for WaitGrab in getVal-function */
+        bool m_waited[BUFFERNUMBER]; /*!< Checkvaraible for WaitGrab in getVal-function */
 
         ito::RetVal PCOLoadLibrary(void);    /*!< Loads the pccam.dll and pcocnv.dll and defines sdk-function-handles */
         ito::RetVal PCOChkError(int errornumber); /*!< Map PCO-Error-Number to ITOM-Errortype and Message */

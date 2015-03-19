@@ -204,7 +204,7 @@ PCOPixelFly::PCOPixelFly() :
 
     memset((void*) &(this->m_bufnumber[0]), 0, BUFFERNUMBER*sizeof(int));
     memset((void*) &(this->m_event[0]), 0, BUFFERNUMBER*sizeof(HANDLE));
-    memset((void*) &(this->m_waited[0]), 0, BUFFERNUMBER*sizeof(BOOL));
+    memset((void*) &(this->m_waited[0]), 0, BUFFERNUMBER*sizeof(bool));
     memset((void*) &(this->m_pAdr[0]), 0, BUFFERNUMBER*sizeof(void*));
 
 

@@ -44,6 +44,10 @@
 #include <qelapsedtimer.h>
 #include <qthread.h>
 
+#ifdef WIN32
+    #include <Windows.h>
+#endif
+
 
 VistekContainer* VistekContainer::m_pVistekContainer = NULL;
 
