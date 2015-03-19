@@ -42,7 +42,7 @@
         #include <gl/GLU.h>
 #endif
 
-#ifdef (defined __APPLE__)
+#ifdef __APPLE__
     #include <OpenGL/gl.h>
     #include <OpenGL/glu.h>
 #endif
