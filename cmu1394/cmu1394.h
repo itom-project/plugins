@@ -36,10 +36,16 @@
 
 #include <qsharedpointer.h>
 
+#ifdef WIN32
+    #include <windows.h>
+#endif
+
 #ifndef Q_MOC_RUN
 #define MY1394CAMERA_EXPORTS 1
 #include "./cmu1394/include/1394Camera.h"
 #endif
+
+
 
 #ifdef USEOPENMP
     #define USEOMP 1
