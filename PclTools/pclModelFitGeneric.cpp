@@ -645,7 +645,7 @@
                     double points[] = { fitCoefficients->values[0], fitCoefficients->values[1], fitCoefficients->values[2] };
                     double normal[] = { fitCoefficients->values[4], fitCoefficients->values[5], fitCoefficients->values[6] };
                     paramsOut->data()[0].setVal<double*>(points, 3); // Positions
-                    paramsOut->data()[1].setVal<double*>(normal, 3); // Positions
+                    paramsOut->data()[1].setVal<double*>(normal, 3); // Normal
                     paramsOut->data()[2].setVal<double>(fitCoefficients->values[3]); //radius
                 
                     paramsOut->data()[3].setVal<int>(fitInliers->indices.size());

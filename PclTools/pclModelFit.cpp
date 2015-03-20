@@ -85,11 +85,73 @@ bool PclTools::checkFitNormals(const int &fitObj)
 
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitModelDOC = "\n\
+const char* PclTools::pclFitModelDOC = "fits a geometric model to the given input point cloud using a RANSAC based approach. \n\
 \n\
+The method used for this fit is from the sample consensus module of point cloud library. \n\
+(See http://docs.pointclouds.org/1.7.0/group__sample__consensus.html). \n\
 \n\
+The following models are available: \n\
 \n\
-\n";
+Plane (0). Hessian Normal Form (n_vec * pt + d = 0). Coefficients: \n\
+\n\
+* n_x \n\
+* n_y \n\
+* n_z \n\
+* d \n\
+\n\
+Line (1). Output is the line vector (v) and one point (p) on the line. Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* p_z \n\
+* v_x \n\
+* v_y \n\
+* v_z \n\
+\n\
+Circle 2D (2). Output is the center point (p) of the circle and its radius (r) - (Fit in X, Y direction only). Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* r \n\
+\n\
+Circle 3D (3). Output is the normal vector (v), the center point (p) of the circle and the circle radius (r). Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* p_z \n\
+* r \n\
+* v_x \n\
+* v_y \n\
+* v_z \n\
+\n\
+Sphere (4). Output is the center point (p) and the radius (r). Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* p_z \n\
+* r \n\
+\n\
+Cylinder (5)*. Output is the orientation vector (v), one point (p) on the line and the cylinder radius (r). Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* p_z \n\
+* v_x \n\
+* v_y \n\
+* v_z \n\
+* r \n\
+\n\
+Cone (6)*. Output is the orientation vector (v), the tip point (p) and the opening angle in rad. Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* p_z \n\
+* v_x \n\
+* v_y \n\
+* v_z \n\
+* angle \n\
+\n\
+Models with * need an input cloud where normal vectors are defined.";
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitModelParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -104,18 +166,22 @@ const char* PclTools::pclFitModelDOC = "\n\
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
     paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, pcl::SACMODEL_PLANE, tr("Model type according to enum pcl::SacModel").toLatin1().data()));
+    
     paramsOpt->clear();
     paramsOpt->append(ito::Param("radiusLimits", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("radius limits [min, max]").toLatin1().data()));
+    double limits[] = { 0.0, std::numeric_limits<double>::max()};
+    paramsOpt->last().setVal<double*>(limits, 2);
+
     paramsOpt->append(ito::Param("axis", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("(normal-)axis to fit to [x, y, z]").toLatin1().data()));
-    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model oriantation in radiant").toLatin1().data()));
+    paramsOpt->append(ito::Param("maxAngle", ito::ParamBase::Double | ito::ParamBase::In, 0.0, M_PI, M_PI, tr("maximum divergence between (normal-)axis and model orientation in radiant").toLatin1().data()));
     paramsOpt->append(ito::Param("normalDistanceWeight", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.1, tr("Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]").toLatin1().data()));
     paramsOpt->append(ito::Param("maxIterations", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000000, 10000, tr("maximum number of RANSAC iterations [default: 10000]").toLatin1().data()));
     paramsOpt->append(ito::Param("distanceThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1000000.0, 0.05, tr("distanceThreshold of pcl [default: 0.05]").toLatin1().data()));
-    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
+    paramsOpt->append(ito::Param("optimizeParameters", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("if 1: A nonlinear optimization over all 7 parameters is applied (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)").toLatin1().data()));
     paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
 
     paramsOut->clear();
-    paramsOut->append(ito::Param("coeffizientsModel", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("Vector with the model coeffizients according to model definition.").toLatin1().data()));
+    paramsOut->append(ito::Param("coefficientsModel", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("Vector with the model coefficients according to model definition.").toLatin1().data()));
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
     return retval;
 }
@@ -126,11 +192,74 @@ const char* PclTools::pclFitModelDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitModelDObjDOC = "\n\
+const char* PclTools::pclFitModelDObjDOC = "fits a geometric model to the given input data object using a RANSAC based approach. \n\
 \n\
+The input data object is transformed to a point cloud where the values are the Z coordinates, the X and Y coordinates are \n\
+calculated using a meshgrid based on the axis scales and offsets. \n\
 \n\
+The method used for this fit is from the sample consensus module of point cloud library. \n\
+(See http://docs.pointclouds.org/1.7.0/group__sample__consensus.html). \n\
 \n\
-\n";
+The following models are available: \n\
+\n\
+Plane (0). Hessian Normal Form (n_vec * pt + d = 0). Coefficients: \n\
+\n\
+* n_x \n\
+* n_y \n\
+* n_z \n\
+* d \n\
+\n\
+Line (1). Output is the line vector (v) and one point (p) on the line. Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* p_z \n\
+* v_x \n\
+* v_y \n\
+* v_z \n\
+\n\
+Circle 2D (2). Output is the center point (p) of the circle and its radius (r) - (Fit in X, Y direction only). Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* r \n\
+\n\
+Circle 3D (3). Output is the normal vector (v), the center point (p) of the circle and the circle radius (r). Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* p_z \n\
+* r \n\
+* v_x \n\
+* v_y \n\
+* v_z \n\
+\n\
+Sphere (4). Output is the center point (p) and the radius (r). Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* p_z \n\
+* r \n\
+\n\
+Cylinder (5). Output is the orientation vector (v), one point (p) on the line and the cylinder radius (r). Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* p_z \n\
+* v_x \n\
+* v_y \n\
+* v_z \n\
+* r \n\
+\n\
+Cone (6). Output is the orientation vector (v), the tip point (p) and the opening angle in rad. Coefficients: \n\
+\n\
+* p_x \n\
+* p_y \n\
+* p_z \n\
+* v_x \n\
+* v_y \n\
+* v_z \n\
+* angle";
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitModelDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -144,8 +273,8 @@ const char* PclTools::pclFitModelDObjDOC = "\n\
         return retval;
     }
 
-    paramsMand->first() = ito::Param("dataObjIn", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input dataObject (const)").toLatin1().data());
-    paramsMand->append(ito::Param("randomSamples", ito::ParamBase::Int | ito::ParamBase::In, 256, 65356, 65356, tr("Number of random samples or all if >65355").toLatin1().data()));
+    paramsMand->first() = ito::Param("dataObjIn", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input data object").toLatin1().data());
+    paramsMand->append(ito::Param("randomSamples", ito::ParamBase::Int | ito::ParamBase::In, 256, 65356, 65356, tr("Number of random samples. If this number is in the range [256,65355], randomly selected values from the data object are taken into account for the fit, else all values are used for the ransac fit").toLatin1().data()));
 
     return retval;
 }
@@ -242,11 +371,7 @@ const char* PclTools::pclFitModelDObjDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitCylinderDOC = "\n\
-\n\
-\n\
-\n\
-\n";
+const char* PclTools::pclFitCylinderDOC = "fits a cylindrical model to the given input point cloud using a RANSAC based approach (must have normals defined).";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitCylinderParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -271,9 +396,9 @@ const char* PclTools::pclFitCylinderDOC = "\n\
     paramsOpt->append(ito::Param("probability", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("the probability of choosing at least one sample free from outliers. [default: 0.99]").toLatin1().data()));
 
     paramsOut->clear();
-    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on axis of symmetrie of cylinder").toLatin1().data()));
-    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting axis of symmetrie of cylinder").toLatin1().data()));
-    paramsOut->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting fitted radius of cylinder").toLatin1().data()));
+    paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("point on axis of symmetry of cylinder").toLatin1().data()));
+    paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("axis of symmetry of cylinder").toLatin1().data()));
+    paramsOut->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("fitted radius of cylinder").toLatin1().data()));
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
     return retval;
 }
@@ -285,11 +410,7 @@ const char* PclTools::pclFitCylinderDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitSphereDOC = "\n\
-\n\
-\n\
-\n\
-\n";
+const char* PclTools::pclFitSphereDOC = "fits a spherical model to the given input point cloud using a RANSAC based approach";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitSphereParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -327,11 +448,7 @@ const char* PclTools::pclFitSphereDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitCircle2DDOC = "\n\
-\n\
-\n\
-\n\
-\n";
+const char* PclTools::pclFitCircle2DDOC = "fits a planar circle model to the given input point cloud using a RANSAC based approach";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitCircle2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -369,11 +486,7 @@ const char* PclTools::pclFitCircle2DDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitCircle3DDOC = "\n\
-\n\
-\n\
-\n\
-\n";
+const char* PclTools::pclFitCircle3DDOC = "fits a 3D-circle model to the given input point cloud using a RANSAC based approach";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitCircle3DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -416,11 +529,7 @@ const char* PclTools::pclFitCircle3DDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitPlaneDOC = "\n\
-\n\
-\n\
-\n\
-\n";
+const char* PclTools::pclFitPlaneDOC = "fits a plane model to the given input point cloud using a RANSAC based approach";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -461,11 +570,7 @@ const char* PclTools::pclFitPlaneDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitLineDOC = "\n\
-\n\
-\n\
-\n\
-\n";
+const char* PclTools::pclFitLineDOC = "fits a line model to the given input point cloud using a RANSAC based approach";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitLineParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -506,11 +611,7 @@ const char* PclTools::pclFitLineDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitConeDOC = "\n\
-\n\
-\n\
-\n\
-\n";
+const char* PclTools::pclFitConeDOC = "fits a conical model to the given input point cloud using a RANSAC based approach (must have normals defined)";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitConeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)

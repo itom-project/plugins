@@ -4134,31 +4134,31 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::transformAffine, PclTools::transformAffineParams, tr("transforms a point cloud with a given homogeneous transformation matrix (4x4 data object)"));
     m_filterList.insert("pclTransformAffine", filter);
 
-    filter = new FilterDef(PclTools::pclFitModel, PclTools::pclFitModelParams, tr("fits a model of type pcl::SAC_MODEL to the given input point cloud using a RANSAC based fit (some types must have normals defined).\nInternally wrapped to pclFitModelGeneric.\nSee http://docs.pointclouds.org/1.7.0/group__sample__consensus.html for detailes"));
+    filter = new FilterDef(PclTools::pclFitModel, PclTools::pclFitModelParams, tr(pclFitModelDOC));
     m_filterList.insert("pclFitModel", filter);
 
-    filter = new FilterDef(PclTools::pclFitModelDObj, PclTools::pclFitModelDObjParams, tr("fits a model of type pcl::SAC_MODEL to the given input dataObject using a RANSAC based fit.\nInternally wrapped to pclFitModelGeneric.\nSee http://docs.pointclouds.org/1.7.0/group__sample__consensus.html for detailes"));
+    filter = new FilterDef(PclTools::pclFitModelDObj, PclTools::pclFitModelDObjParams, tr(pclFitModelDObjDOC)); 
     m_filterList.insert("pclFitModelDObj", filter);
 
-    filter = new FilterDef(PclTools::pclFitCylinder, PclTools::pclFitCylinderParams, tr("fits a cylindrical model to the given input point cloud using a RANSAC based fit (must have normals defined). Internally wrapped to pclFitModelGeneric but with adapted output."));
+    filter = new FilterDef(PclTools::pclFitCylinder, PclTools::pclFitCylinderParams, tr(pclFitCylinderDOC));
     m_filterList.insert("pclFitCylinder", filter);
 
-    filter = new FilterDef(PclTools::pclFitSphere, PclTools::pclFitSphereParams, tr("fits a spherical model to the given input point cloud using a RANSAC based fit. Internally wrapped to pclFitModelGeneric but with adapted output."));
+    filter = new FilterDef(PclTools::pclFitSphere, PclTools::pclFitSphereParams, tr(pclFitSphereDOC));
     m_filterList.insert("pclFitSphere", filter);
 
-    filter = new FilterDef(PclTools::pclFitCircle2D, PclTools::pclFitCircle2DParams, tr("fits a planar circle model to the given input point cloud using a RANSAC based fit Internally wrapped to pclFitModelGeneric but with adapted output."));
+    filter = new FilterDef(PclTools::pclFitCircle2D, PclTools::pclFitCircle2DParams, tr(pclFitCircle2DDOC));
     m_filterList.insert("pclFitCircle2D", filter);
 
-    filter = new FilterDef(PclTools::pclFitCircle3D, PclTools::pclFitCircle3DParams, tr("fits a 3D-circle model to the given input point cloud using a RANSAC based fit. Internally wrapped to pclFitModelGeneric but with adapted output."));
+    filter = new FilterDef(PclTools::pclFitCircle3D, PclTools::pclFitCircle3DParams, tr(pclFitCircle3DDOC));
     m_filterList.insert("pclFitCircle3D", filter);
 
-    filter = new FilterDef(PclTools::pclFitLine, PclTools::pclFitLineParams, tr("fits a line model to the given input point cloud using a RANSAC based fit. Internally wrapped to pclFitModelGeneric but with adapted output."));
+    filter = new FilterDef(PclTools::pclFitLine, PclTools::pclFitLineParams, tr(pclFitLineDOC));
     m_filterList.insert("pclFitLine", filter);
 
-    filter = new FilterDef(PclTools::pclFitPlane, PclTools::pclFitPlaneParams, tr("fits a plane model to the given input point cloud using a RANSAC based fit. Internally wrapped to pclFitModelGeneric but with adapted output."));
+    filter = new FilterDef(PclTools::pclFitPlane, PclTools::pclFitPlaneParams, tr(pclFitPlaneDOC));
     m_filterList.insert("pclFitPlane", filter);
 
-    filter = new FilterDef(PclTools::pclFitCone, PclTools::pclFitConeParams, tr("fits a conical model to the given input point cloud using a RANSAC based fit (must have normals defined). Internally wrapped to pclFitModelGeneric but with adapted output."));
+    filter = new FilterDef(PclTools::pclFitCone, PclTools::pclFitConeParams, tr(pclFitConeDOC));
     m_filterList.insert("pclFitCone", filter);
 
     filter = new FilterDef(PclTools::pclDistanceToModel, PclTools::pclDistanceToModelParams, tr("Calculates the distances of points of a point cloud to a given model."));
