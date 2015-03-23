@@ -655,6 +655,34 @@ const char* PclTools::pclFitConeDOC = "fits a conical model to the given input p
     return pclFitModelGeneric(paramsMand, paramsOpt, paramsOut, pcl::SACMODEL_CONE);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
+const char* PclTools::pclDistanceToModelDOC = "Calculates the distances of points of a point cloud to a given model. \n\
+\n\
+Possible types are: \n\
+--------------------\n\
+SACMODEL_SPHERE = 4, \n\
+SACMODEL_CYLINDER = 5, \n\
+\n\
+Not supported yet: \n\
+------------------- \n\
+SACMODEL_PLANE = 0, \n\
+SACMODEL_LINE = 1, \n\
+SACMODEL_CIRCLE2D = 2, \n\
+SACMODEL_CIRCLE3D = 3, \n\
+SACMODEL_CONE = 6, \n\
+SACMODEL_TORUS = 7, \n\
+SACMODEL_PARALLEL_LINE = 8, \n\
+SACMODEL_PERPENDICULAR_PLANE = 9, \n\
+SACMODEL_PARALLEL_LINES = 10, \n\
+SACMODEL_NORMAL_PLANE = 11, \n\
+SACMODEL_NORMAL_SPHERE = 12, \n\
+SACMODEL_REGISTRATION = 13, \n\
+SACMODEL_REGISTRATION_2D = 14, \n\
+SACMODEL_PARALLEL_PLANE = 15, \n\
+SACMODEL_NORMAL_PARALLEL_PLANE = 16, \n\
+SACMODEL_STICK = 17 \n\
+\n";
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclDistanceToModelParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -669,7 +697,7 @@ const char* PclTools::pclFitConeDOC = "fits a conical model to the given input p
     paramsMand->clear();
     paramsMand->append(ito::Param("pointCloudIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Input point cloud with normal values").toLatin1().data()));
     paramsMand->append(ito::Param("pointCloudOut", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output point cloud with distances").toLatin1().data()));
-    paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Model type according to enum pcl::SacModel").toLatin1().data()));
+    paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Model type according to enum pcl::SacModel (sphere: 4, cylinder: 5)").toLatin1().data()));
 
     paramsOpt->clear();
 
@@ -681,32 +709,6 @@ const char* PclTools::pclFitConeDOC = "fits a conical model to the given input p
 
     return retval;
 }
-
-//------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclDistanceToModelDOC = "\n\
-\n\
-\n\
-Possible types are: \n\
---------------------\n\
-SACMODEL_PLANE = 0, \n\
-SACMODEL_LINE = 1, \n\
-SACMODEL_CIRCLE2D = 2, \n\
-SACMODEL_CIRCLE3D = 3, \n\
-SACMODEL_SPHERE = 4, \n\
-SACMODEL_CYLINDER = 5, \n\
-SACMODEL_CONE = 6, \n\
-SACMODEL_TORUS = 7, \n\
-SACMODEL_PARALLEL_LINE = 8, \n\
-SACMODEL_PERPENDICULAR_PLANE = 9, \n\
-SACMODEL_PARALLEL_LINES = 10, \n\
-SACMODEL_NORMAL_PLANE = 11, \n\
-SACMODEL_NORMAL_SPHERE = 12, \n\
-SACMODEL_REGISTRATION = 13, \n\
-SACMODEL_REGISTRATION_2D = 14, \n\
-SACMODEL_PARALLEL_PLANE = 15, \n\
-SACMODEL_NORMAL_PARALLEL_PLANE = 16, \n\
-SACMODEL_STICK = 17 \n\
-\n";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ double PclTools::pointToLineDist(const float inPt[3], const float modelCoefficients[7])
@@ -1435,4 +1437,178 @@ SACMODEL_STICK = 17 \n\
 
     return retval;
 #endif  
+}
+
+
+
+//--------------------------------------------------------------------------------------------------------
+/*static*/ const char *PclTools::pclDistanceToModelDObjDOC = "calculates the distance from points in a given data object to a model.";
+/*static*/ ito::RetVal PclTools::pclDistanceToModelDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut).containsError();
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("inObj", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input data object (real type)").toLatin1().data()));
+    paramsMand->append(ito::Param("distanceObj", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output distance object (inplace allowed)").toLatin1().data()));
+    paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Model type according to enum pcl::SacModel (sphere: 4, cylinder: 5)").toLatin1().data()));
+    paramsMand->append(ito::Param("coefficients", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("model coefficients (sphere: p_x, p_y, p_z, r; cylinder: p_x, p_y, p_z, v_x, v_y, v_z, r)").toLatin1().data()));
+    
+    paramsOpt->clear();
+    paramsOut->clear();
+
+    return retval;
+}
+
+template<typename _Tp> ito::RetVal distanceToModelDObjHelper(const ito::DataObject *in, ito::DataObject *out, const int modelType, const double *coefficients)
+{
+    ito::RetVal retval;
+    const cv::Mat *inMat = NULL;
+    cv::Mat *outMat = NULL;
+    const _Tp *rowIn = NULL;
+    _Tp *rowOut = NULL;
+    int dims = in->getDims();
+    bool isInsideImage;
+    double diff1, diff2, diff3;
+    Eigen::Vector4d line_dir;
+    Eigen::Vector4d line_pt(coefficients[0], coefficients[1], coefficients[2], 0);
+    Eigen::Vector4d pt(0.0, 0.0, 0.0, 0.0);
+    double line_dir_norm;
+    
+    switch (modelType)
+    {
+    case pcl::SACMODEL_CYLINDER:
+        line_dir = Eigen::Vector4d(coefficients[4], coefficients[5], coefficients[6], 0);
+        line_dir_norm = line_dir.squaredNorm();
+        break;
+    }
+
+
+    for (int p = 0; p < in->calcNumMats(); ++p)
+    {
+        inMat = in->getCvPlaneMat(p);
+        outMat = out->getCvPlaneMat(p);
+
+        for (int m = 0; m < inMat->rows; ++m)
+        {
+            rowIn = inMat->ptr<_Tp>(m);
+            rowOut = outMat->ptr<_Tp>(m);
+            pt[1] = in->getPixToPhys(dims - 2, m, isInsideImage);
+
+            for (int n = 0; n < inMat->cols; ++n)
+            {
+                pt[0] = in->getPixToPhys(dims - 1, n, isInsideImage);
+                pt[2] = cv::saturate_cast<double>(rowIn[n]);
+                switch (modelType)
+                {
+                case pcl::SACMODEL_SPHERE:
+                    diff1 = pt.x() - coefficients[0];
+                    diff2 = pt.y() - coefficients[1];
+                    diff3 = pt.z() - coefficients[2];
+                    rowOut[n] = cv::saturate_cast<_Tp>(std::sqrt(diff1*diff1 + diff2*diff2 + diff3*diff3) - coefficients[3]);
+                    break;
+                case pcl::SACMODEL_CYLINDER:
+                    rowOut[n] = cv::saturate_cast<_Tp>(std::sqrt((line_dir.cross3 (line_pt - pt)).squaredNorm () / line_dir_norm) - coefficients[6]);
+                    break;
+                }
+            }
+        }
+    }
+
+    return retval;
+}
+
+/*static*/ ito::RetVal PclTools::pclDistanceToModelDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    int modelType = paramsMand->at(2).getVal<int>();
+    double *coeffs = paramsMand->at(3).getVal<double*>();
+    int coeffsLen = paramsMand->at(3).getLen();
+    const ito::DataObject *inObj = paramsMand->at(0).getVal<const ito::DataObject*>();
+    ito::DataObject *outObj = paramsMand->at(1).getVal<ito::DataObject*>();
+    ito::DataObject outObjTemp;
+    bool newOutObj = false;
+
+    //check modelType and coefficients
+    switch (modelType)
+    {
+    case pcl::SACMODEL_SPHERE:
+        if (coeffsLen != 4)
+        {
+            retval += ito::RetVal(ito::retError, 0, "four coefficients are required for a sphere model (p_x, p_y, p_z, r)");
+        }
+        break;
+    case pcl::SACMODEL_CYLINDER:
+        if (coeffsLen != 7)
+        {
+            retval += ito::RetVal(ito::retError, 0, "seven coefficients are required for a sphere model (p_x, p_y, p_z, v_x, v_y, v_z, r)");
+        }
+        break;
+    default:
+        retval += ito::RetVal::format(ito::retError, 0, "modelType %i not supported.", modelType);
+        break;
+    }
+
+    //check input data object
+    retval += ito::dObjHelper::verifyDataObjectType(inObj, "inObj", 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
+
+    if (!retval.containsError())
+    {
+        if (inObj == outObj) //inplace
+        {
+            outObjTemp = *outObj;
+        }
+        else
+        {
+            if (inObj->getType() != outObj->getType() || inObj->getSize() != outObj->getSize())
+            {
+                newOutObj = true;
+                outObjTemp = ito::DataObject(inObj->getDims(), inObj->getSize(), inObj->getType(), inObj->getContinuous());
+                inObj->copyAxisTagsTo(outObjTemp);
+            }
+            else
+            {
+                outObjTemp = *outObj;
+            }
+        }
+
+        switch (inObj->getType())
+        {
+        case ito::tUInt8:
+            retval += distanceToModelDObjHelper<ito::uint8>(inObj, &outObjTemp, modelType, coeffs);
+            break;
+        case ito::tInt8:
+            retval += distanceToModelDObjHelper<ito::int8>(inObj, &outObjTemp, modelType, coeffs);
+            break;
+        case ito::tUInt16:
+            retval += distanceToModelDObjHelper<ito::uint16>(inObj, &outObjTemp, modelType, coeffs);
+            break;
+        case ito::tInt16:
+            retval += distanceToModelDObjHelper<ito::int16>(inObj, &outObjTemp, modelType, coeffs);
+            break;
+        case ito::tUInt32:
+            retval += distanceToModelDObjHelper<ito::uint32>(inObj, &outObjTemp, modelType, coeffs);
+            break;
+        case ito::tInt32:
+            retval += distanceToModelDObjHelper<ito::int32>(inObj, &outObjTemp, modelType, coeffs);
+            break;
+        case ito::tFloat32:
+            retval += distanceToModelDObjHelper<ito::float32>(inObj, &outObjTemp, modelType, coeffs);
+            break;
+        case ito::tFloat64:
+            retval += distanceToModelDObjHelper<ito::float64>(inObj, &outObjTemp, modelType, coeffs);
+            break;
+        }
+
+        if (!retval.containsError() && newOutObj)
+        {
+            *outObj = outObjTemp;
+        }
+    }
+
+    return retval;
 }

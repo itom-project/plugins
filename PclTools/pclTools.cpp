@@ -4161,8 +4161,11 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::pclFitCone, PclTools::pclFitConeParams, tr(pclFitConeDOC));
     m_filterList.insert("pclFitCone", filter);
 
-    filter = new FilterDef(PclTools::pclDistanceToModel, PclTools::pclDistanceToModelParams, tr("Calculates the distances of points of a point cloud to a given model."));
+    filter = new FilterDef(PclTools::pclDistanceToModel, PclTools::pclDistanceToModelParams, tr(pclDistanceToModelDOC));
     m_filterList.insert("pclDistanceToModel", filter);
+
+    filter = new FilterDef(PclTools::pclDistanceToModelDObj, PclTools::pclDistanceToModelDObjParams, tr(pclDistanceToModelDObjDOC));
+    m_filterList.insert("pclDistanceToModelDObj", filter);
 
     filter = new FilterDef(PclTools::pclProjectOnModel, PclTools::pclProjectOnModelParams, tr("Projects points onto a given model."));
     m_filterList.insert("pclProjectOnModel", filter);
