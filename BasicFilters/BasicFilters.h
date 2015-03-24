@@ -106,6 +106,7 @@ class BasicFilters : public ito::AddInAlgo
         static const char* calcHistDoc;
         static const char* clipAbyBDoc;
         static const char* fillGeometricDoc;
+        
 
         static ito::RetVal replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal replaceInfAndNaNParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
@@ -153,6 +154,10 @@ class BasicFilters : public ito::AddInAlgo
         // Filter 
         static ito::RetVal fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal fillGeometricParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const char* calcRadialMeanFilterDoc;
+        static ito::RetVal calcRadialMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/);
+        static ito::RetVal calcRadialMeanFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut);
 
     private:
 

@@ -155,20 +155,27 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 
     filter = new FilterDef(BasicFilters::replaceInfAndNaN, BasicFilters::replaceInfAndNaNParams, tr(replaceInfAndNaNDoc));
     m_filterList.insert("replaceInfAndNaN", filter);
+
     filter = new FilterDef(BasicFilters::flaten3Dto2D, BasicFilters::stdParams2Objects, tr(flaten3Dto2DDoc));
     m_filterList.insert("flatten3Dto2D", filter);
+
     filter = new FilterDef(BasicFilters::swapByteOrder, BasicFilters::stdParams2Objects, tr(swapByteOrderDoc));
     m_filterList.insert("swapByteOrder", filter);
+
     filter = new FilterDef(BasicFilters::mergeColorPlane, BasicFilters::mergeColorPlanesParams, tr(mergeColorPlaneDoc));
     m_filterList.insert("mergeColorPlane", filter);
 
     filter = new FilterDef(BasicFilters::calcMeanOverZ, BasicFilters::calcMeanOverZParams, tr(calcMeanOverZDoc));
     m_filterList.insert("calcMeanZ", filter);
+
     filter = new FilterDef(BasicFilters::calcObjSlice, BasicFilters::calcObjSliceParams, tr(calcObjSliceDoc));
     m_filterList.insert("calcObjSlice", filter);
 
     filter = new FilterDef(BasicFilters::calcHistFilter, BasicFilters::calcHistParams, tr(calcHistDoc));
     m_filterList.insert("calcHist", filter);
+
+    filter = new FilterDef(BasicFilters::calcRadialMeanFilter, BasicFilters::calcRadialMeanFilterParams, tr(calcRadialMeanFilterDoc));
+    m_filterList.insert("calcRadialMean", filter);
 
     filter = new FilterDef(BasicFilters::clipValueFilter, BasicFilters::clipValueFilterParams, tr(clipValueDoc));
     m_filterList.insert("clipValues", filter);
@@ -178,19 +185,23 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 
     filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("Set each pixel to the lowest value within the kernel (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("lowValueFilter", filter);
+
     filter = new FilterDef(BasicFilters::genericHighValueFilter, BasicFilters::genericStdParams, tr("Set each pixel to the highest value within the kernel (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("highValueFilter", filter);
+
     filter = new FilterDef(BasicFilters::genericMedianFilter, BasicFilters::genericStdParams, tr("Performs a median filter with kernelsize (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("medianFilter", filter);
+
     filter = new FilterDef(BasicFilters::genericLowPassFilter, BasicFilters::genericStdParams, tr("Performs a low-pass filter with kernelsize (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("lowPassFilter", filter);
 
     filter = new FilterDef(BasicFilters::genericGaussianEpsilonFilter, BasicFilters::genericGaussianEpsilonParams, tr("Performs a gaussian blur filter according to sigma and epsilon using the generic mcpp filter engine. The kernelsize (x ,y) will be estimated."));
     m_filterList.insert("gaussianFilterEpsilon", filter);
+
     filter = new FilterDef(BasicFilters::genericGaussianFilter, BasicFilters::genericGaussianParams, tr("Performs a gaussian blur filter with kernelsize (x ,y) and according to sigmaX and sigmaY using the generic mcpp filter engine"));
     m_filterList.insert("gaussianFilter", filter);
 
-    filter = new FilterDef(BasicFilters::spikeMedianFilter, BasicFilters::spikeMedianFilterStdParams, tr("Performs a median filter with kernelsize (x ,y) and pixelwise comparison of filterd image and original image to remove spikes according to delta value."));
+    filter = new FilterDef(BasicFilters::spikeMedianFilter, BasicFilters::spikeMedianFilterStdParams, tr("Performs a median filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value."));
     m_filterList.insert("spikeMedianFilter", filter);
 
     filter = new FilterDef(BasicFilters::fillGeometricPrimitiv, BasicFilters::fillGeometricParams, tr(fillGeometricDoc));

@@ -3322,3 +3322,203 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
     return retval;
 }
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* BasicFilters::calcRadialMeanFilterDoc= "Calculates the mean value for radial circles with a given center point an a radius step size \n\
+\n\
+The radiuses are the distances from the given center point to the physical coordinates of each pixel.";
+ito::RetVal BasicFilters::calcRadialMeanFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(!retval.containsError())
+    {
+        ito::Param param = ito::Param("scrImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image (1xN) of the same type than the input image, where N corresponds to different radiuses.").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("radiusStep", ito::ParamBase::Double | ito::ParamBase::In, 1e-9, std::numeric_limits<double>::max(), 0.01, tr("step size of the radius for the discretization").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("centerX", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("x-coordinate of radial center").toLatin1().data());
+        paramsOpt->append(param);
+        param = ito::Param("centerY", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("y-coordinate of radial center").toLatin1().data());
+        paramsOpt->append(param);
+    }
+
+    return retval;
+}
+
+template<typename _T1, typename _T2> void calcRadialMeanHelper(const ito::DataObject &input, cv::Mat *bucket, double &cx, double &cy, double &rStep, int &usedBuckets)
+{
+    cv::Mat counts = cv::Mat::zeros(1, bucket->cols, CV_32SC1);
+    ito::int32 *countsPtr = counts.ptr<ito::int32>(0);
+    const _T1 *rowPtr = NULL;
+    _T2 *bucketPtr = bucket->ptr<_T2>(0);
+    double yScale = input.getAxisScale(0);
+    double xScale = input.getAxisScale(1);
+    double yOffset = input.getAxisOffset(0);
+    double xOffset = input.getAxisOffset(1);
+    //phys = (px - offset)* scale
+    double dy, dx, r;
+    int idx;
+    usedBuckets = 0;
+
+    for (int y = 0; y < input.getSize(0); ++y)
+    {
+        dy = (y - yOffset) * yScale - cy;
+        rowPtr = (_T1*)(input.rowPtr(0, y));
+
+        for (int x = 0; x <input.getSize(1); ++x)
+        {
+            if (ito::dObjHelper::isFinite(rowPtr[x]))
+            {
+                dx = (x - xOffset) * xScale - cx;
+                r = std::sqrt(dx*dx + dy*dy);
+                idx = qRound(r / rStep);
+                countsPtr[idx]++;
+                bucketPtr[idx] += cv::saturate_cast<_T2>(rowPtr[x]);
+                usedBuckets = std::max(idx, usedBuckets);
+            }
+        }
+    }
+
+    for (int y = 0; y < bucket->cols; ++y)
+    {
+        if (countsPtr[y] > 0)
+        {
+            bucketPtr[y] /= countsPtr[y];
+        }
+    }
+}
+
+ito::RetVal BasicFilters::calcRadialMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal retval;
+    double cX = paramsOpt->at(0).getVal<double>();
+    double cY = paramsOpt->at(1).getVal<double>();
+    const ito::DataObject input = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(), "scrImage", ito::Range::all(), ito::Range::all(), retval, -1, 10, ito::tUInt8, ito::tUInt16, ito::tUInt32, ito::tInt8, ito::tInt16, ito::tInt32, ito::tFloat32, ito::tFloat64, ito::tComplex64, ito::tComplex128);
+    ito::DataObject *output = paramsMand->at(1).getVal<ito::DataObject*>();
+    double rStep = paramsMand->at(2).getVal<double>();
+    double maxRadiusQuad = 0.0;
+    double dx, dy;
+    int height, width;
+    int nrBuckets;
+
+    if (!retval.containsError())
+    {
+        height = input.getSize(0);
+        width = input.getSize(1);
+
+        //check corners for maximal radius
+        dx = input.getPixToPhys(1, 0.0) - cX; 
+        dy = input.getPixToPhys(0, 0.0) - cY;
+        maxRadiusQuad = std::max(dx*dx + dy*dy, maxRadiusQuad);
+
+        dx = input.getPixToPhys(1, width - 1) - cX; 
+        dy = input.getPixToPhys(0, 0.0) - cY;
+        maxRadiusQuad = std::max(dx*dx + dy*dy, maxRadiusQuad);
+
+        dx = input.getPixToPhys(1, 0.0) - cX; 
+        dy = input.getPixToPhys(0, height - 1) - cY;
+        maxRadiusQuad = std::max(dx*dx + dy*dy, maxRadiusQuad);
+
+        dx = input.getPixToPhys(1, width - 1) - cX; 
+        dy = input.getPixToPhys(0, height - 1) - cY;
+        maxRadiusQuad = std::max(dx*dx + dy*dy, maxRadiusQuad);
+
+        nrBuckets = std::ceil(std::sqrt(maxRadiusQuad) / rStep);
+
+        if (nrBuckets == 0)
+        {
+            retval += ito::RetVal(ito::retError, 0, "radiusStep is too big. The maximum available radius value is much smaller");
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        
+        ito::DataObject vals;
+        int usedBuckets;
+
+        switch (input.getType())
+        {
+        case ito::tUInt8:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::uint8, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tUInt8);
+            break;
+        case ito::tUInt16:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::uint16, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tUInt16);
+            break;
+        case ito::tUInt32:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::uint32, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tUInt32);
+            break;
+        case ito::tInt8:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::int8, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tInt8);
+            break;
+        case ito::tInt16:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::int16, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tInt16);
+            break;
+        case ito::tInt32:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::int32, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            *output = vals;
+            break;
+        case ito::tFloat32:
+            vals.zeros(nrBuckets, ito::tFloat64);
+            calcRadialMeanHelper<ito::float32, ito::float64>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tFloat32);
+            break;
+        case ito::tFloat64:
+            vals.zeros(nrBuckets, ito::tFloat64);
+            calcRadialMeanHelper<ito::float64, ito::float64>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            *output = vals;
+            break;
+        case ito::tComplex64:
+            vals.zeros(nrBuckets, ito::tComplex128);
+            calcRadialMeanHelper<ito::complex64, ito::complex128>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tComplex64);
+            break;
+        case ito::tComplex128:
+            vals.zeros(nrBuckets, ito::tComplex128);
+            calcRadialMeanHelper<ito::complex128, ito::complex128>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            *output = vals;
+            break;
+        }
+
+        if (!retval.containsError())
+        {
+            bool valid;
+            output->setAxisOffset(1, 0.0);
+            output->setAxisScale(1, rStep);
+            output->setAxisUnit(1, input.getAxisUnit(1, valid));
+            output->setAxisDescription(1, "Radius");
+            output->setValueUnit(input.getValueUnit());
+            output->setValueDescription(input.getValueDescription());
+        }
+
+    }
+
+
+    return retval;
+}
+
