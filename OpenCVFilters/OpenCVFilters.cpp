@@ -1922,7 +1922,7 @@ ito::RetVal OpenCVFilters::cvResizeParams(QVector<ito::Param> *paramsMand, QVect
 ito::RetVal OpenCVFilters::cvResize(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, 0, 0);
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, -1, 0);
 
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {

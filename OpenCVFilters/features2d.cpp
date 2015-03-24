@@ -217,7 +217,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
     int flags = paramsOpt->at(1).getVal<int>();
     int color = paramsOpt->at(0).getVal<int>();
 
-    const ito::DataObject image = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(),"image", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, 0, 2, ito::tUInt8, ito::tRGBA32);
+    const ito::DataObject image = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(),"image", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, -1, 2, ito::tUInt8, ito::tRGBA32);
     cv::Mat image_;
 
     if (!retval.containsError())
@@ -249,7 +249,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
 
         if (flags & cv::DrawMatchesFlags::DRAW_OVER_OUTIMG)
         {
-            const ito::DataObject outImageIn = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<const ito::DataObject*>(),"outImage", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, 0, 2, ito::tUInt8, ito::tRGBA32);
+            const ito::DataObject outImageIn = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<const ito::DataObject*>(),"outImage", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, -1, 2, ito::tUInt8, ito::tRGBA32);
             if (!retval.containsError())
             {
                 if (outImageIn.getType() == ito::tUInt8)
@@ -330,8 +330,8 @@ This function draws matches of keypoints from two images in the output image. Ma
     int matchColor = paramsOpt->at(0).getVal<int>();
     int singlePointColor = paramsOpt->at(1).getVal<int>();
     double max_match_distance = paramsOpt->at(3).getVal<double>();
-    const ito::DataObject first_image = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(),"first_image", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, 0, 2, ito::tUInt8, ito::tRGBA32);
-    const ito::DataObject second_image = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<const ito::DataObject*>(),"second_image", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, 0, 2, ito::tUInt8, ito::tRGBA32);
+    const ito::DataObject first_image = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(),"first_image", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, -1, 2, ito::tUInt8, ito::tRGBA32);
+    const ito::DataObject second_image = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<const ito::DataObject*>(),"second_image", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, -1, 2, ito::tUInt8, ito::tRGBA32);
     
     cv::Mat first_image_, second_image_;
 
@@ -396,7 +396,7 @@ This function draws matches of keypoints from two images in the output image. Ma
 
         if (flags & cv::DrawMatchesFlags::DRAW_OVER_OUTIMG)
         {
-            const ito::DataObject outImageIn = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(5).getVal<const ito::DataObject*>(),"out_img", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, 0, 2, ito::tUInt8, ito::tRGBA32);
+            const ito::DataObject outImageIn = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(5).getVal<const ito::DataObject*>(),"out_img", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, -1, 2, ito::tUInt8, ito::tRGBA32);
             if (!retval.containsError())
             {
                 if (outImageIn.getType() == ito::tUInt8)

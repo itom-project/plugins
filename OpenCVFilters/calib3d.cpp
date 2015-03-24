@@ -734,7 +734,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 /*static*/ ito::RetVal OpenCVFilters::cvUndistortPoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(1,INT_MAX), ito::Range(2,2), retval, 0, 1, ito::tFloat32);
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(1,INT_MAX), ito::Range(2,2), retval, -1, 1, ito::tFloat32);
 
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {
@@ -907,15 +907,15 @@ indices in a table of interpolation coefficients.";
 /*static*/ ito::RetVal OpenCVFilters::cvRemap(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(2,2), ito::Range(1,INT_MAX), retval, 0, 0);
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(2,2), ito::Range(1,INT_MAX), retval, -1, 0);
 
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {
         retval += ito::RetVal(ito::retError, 0, "destination is empty");
     }
 
-    ito::DataObject map1 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<ito::DataObject*>(),"map1", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, 0, 2, ito::tUInt16, ito::tFloat32);
-    ito::DataObject map2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(3).getVal<ito::DataObject*>(),"map2", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, 0, 2, ito::tUInt16, ito::tFloat32);
+    ito::DataObject map1 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<ito::DataObject*>(),"map1", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, -1, 2, ito::tUInt16, ito::tFloat32);
+    ito::DataObject map2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(3).getVal<ito::DataObject*>(),"map2", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, -1, 2, ito::tUInt16, ito::tFloat32);
 
     int interpolation = paramsOpt->at(0).getVal<int>();
     int borderType = paramsOpt->at(1).getVal<int>();
@@ -1053,8 +1053,8 @@ Normally just one matrix is found. But in case of the 7-point algorithm, the fun
 /*static*/ ito::RetVal OpenCVFilters::cvFindFundamentalMat(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject points1 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"points1", ito::Range(0,INT_MAX), ito::Range(2,2), retval, 0, 2, ito::tFloat32, ito::tFloat64);
-    ito::DataObject points2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<ito::DataObject*>(),"points2", ito::Range(0,INT_MAX), ito::Range(2,2), retval, 0, 2, ito::tFloat32, ito::tFloat64);
+    ito::DataObject points1 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"points1", ito::Range(0,INT_MAX), ito::Range(2,2), retval, -1, 2, ito::tFloat32, ito::tFloat64);
+    ito::DataObject points2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<ito::DataObject*>(),"points2", ito::Range(0,INT_MAX), ito::Range(2,2), retval, -1, 2, ito::tFloat32, ito::tFloat64);
 
     bool sendStatus = (paramsOpt->at(3).getVal<void*>() != NULL);
     double param1 = paramsOpt->at(1).getVal<double>();
@@ -1133,7 +1133,7 @@ Line coefficients are defined up to a scale. They are normalized so that a_i^2+b
 {
     ito::RetVal retval;
     ito::DataObject points = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"points", ito::Range(0,INT_MAX), ito::Range(2,2), retval, ito::tFloat32, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    ito::DataObject F = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<ito::DataObject*>(),"F", ito::Range(3,3), ito::Range(3,3), retval, 0, 2, ito::tFloat32, ito::tFloat64);
+    ito::DataObject F = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<ito::DataObject*>(),"F", ito::Range(3,3), ito::Range(3,3), retval, -1, 2, ito::tFloat32, ito::tFloat64);
 
     int whichImage = paramsMand->at(1).getVal<int>();
 
