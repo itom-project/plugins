@@ -297,7 +297,7 @@ ito::RetVal X3pIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::P
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
 
-    filter = new FilterDef(X3pIO::saveDObj, X3pIO::saveDObjParams, QObject::tr("saves dataObject to x3p file"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("X3P Files (*.x3p)"));
+    filter = new FilterDef(X3pIO::saveDObj, X3pIO::saveDObjParams, QObject::tr("saves dataObject to x3p file. x3p defines all axes in meter, if the unit of any axis is m, cm, mm, µm or nm they are correctly converted to m."), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("X3P Files (*.x3p)"));
     m_filterList.insert("saveX3p", filter);
 
     filter = new FilterDef(X3pIO::loadDObj, X3pIO::loadDObjParams, QObject::tr("loads dataObject from x3p file"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("X3P Files (*.x3p)"));
@@ -816,14 +816,21 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     wchar_t xdatat, ydatat, zdatat;
     double xscale, yscale, zscale, xoffset, yoffset, zoffset;
 
-    ito::DataObject *dObj = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-    char *filename = NULL;
-    filename = (*paramsMand)[1].getVal<char*>();
+    ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
+    char *filename = (*paramsMand)[1].getVal<char*>();
 
     if (!dObj)
+    {
         return ito::RetVal(ito::retError, 0, QObject::tr("empty data object").toLatin1().data());
+    }
     if (!filename)
+    {
         return ito::RetVal(ito::retError, 0, QObject::tr("no filename specified").toLatin1().data());
+    }
+    if (dObj->getDims() < 2)
+    {
+        return ito::RetVal(ito::retError, 0, "data object must have at least two dimensions");
+    }
 
 
     switch (dObj->getType())
@@ -890,6 +897,23 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     zscale = dObj->getValueScale();
     zoffset = dObj->getValueOffset();
 
+    //check if the units are known, if yes get the conversion to meter, which is the default unit of x3p in all dimensions
+    double xUnitScale = 1.0;
+    double yUnitScale = 1.0;
+    double valueUnitScale = 1.0;
+    bool valid;
+    std::string unitString = dObj->getAxisUnit(dObj->getDims() - 1, valid);
+    if (valid)
+        retval += parseUnit(unitString, xUnitScale);
+
+    unitString = dObj->getAxisUnit(dObj->getDims() - 2, valid);
+    if (valid)
+        retval += parseUnit(unitString, yUnitScale);
+
+    unitString = dObj->getValueUnit();
+    if (valid)
+        retval += parseUnit(unitString, valueUnitScale);
+
     // for simplicity we will store always as 2D data, even for vetor type data. X- and y-axis will
     // always be stored as incremental axes
     // Create RECORD1
@@ -897,29 +921,25 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     Record1Type::FeatureType_type featureType(OGPS_FEATURE_TYPE_SURFACE_NAME);
 
     Record1Type::Axes_type::CX_type::AxisType_type xaxisType(Record1Type::Axes_type::CX_type::AxisType_type::I); // absolute
-//    Record1Type::Axes_type::CX_type::DataType_type xdataType(Record1Type::Axes_type::CX_type::DataType_type::D); // int32
     Record1Type::Axes_type::CX_type::DataType_type xdataType((Record1Type::Axes_type::CX_type::DataType_type::value) xdatat);
     Record1Type::Axes_type::CX_type xaxis(xaxisType);
     xaxis.DataType(xdataType);
-    xaxis.Increment(xscale / 1000.0); // 10 micrometres
-    xaxis.Offset(xoffset * xscale); // 1 millimetre
+    xaxis.Increment(xscale * xUnitScale); // scale must be in meter/pixel
+    xaxis.Offset(xoffset * xscale * xUnitScale); // offset must be in meter/pixel
 
     Record1Type::Axes_type::CY_type::AxisType_type yaxisType(Record1Type::Axes_type::CY_type::AxisType_type::I); // absolute
-//    Record1Type::Axes_type::CY_type::DataType_type ydataType(Record1Type::Axes_type::CY_type::DataType_type::D); // float
     Record1Type::Axes_type::CY_type::DataType_type ydataType((Record1Type::Axes_type::CY_type::DataType_type::value) ydatat);
     Record1Type::Axes_type::CY_type yaxis(yaxisType);
     yaxis.DataType(ydataType);
-    yaxis.Increment(yscale / 1000.0); // set to 1 for float and double axis
-    yaxis.Offset(yoffset * yscale); // -1 milli metre
+    yaxis.Increment(yscale * yUnitScale); // scale must be in meter/pixel
+    yaxis.Offset(yoffset * yscale * yUnitScale); // offset must be in meter/pixel
 
     Record1Type::Axes_type::CZ_type::AxisType_type zaxisType(Record1Type::Axes_type::CZ_type::AxisType_type::A); // absolute
-//    Record1Type::Axes_type::CZ_type::DataType_type zdataType(Record1Type::Axes_type::CZ_type::DataType_type::D); // 16 bit integer
     Record1Type::Axes_type::CZ_type::DataType_type zdataType((Record1Type::Axes_type::CZ_type::DataType_type::value) zdatat); // 16 bit integer
     Record1Type::Axes_type::CZ_type zaxis(zaxisType);
     zaxis.DataType(zdataType);
-    zaxis.Increment(zscale / 1000.0); // set to 1 for float and double axis
-//    zaxis.Increment(1); // set to 1 for float and double axis
-    zaxis.Offset(zoffset * zscale); // 1 milli metre
+    zaxis.Increment(zscale * valueUnitScale); // scale must be in meter/pixel
+    zaxis.Offset(zoffset * zscale * valueUnitScale); // offset must be in meter/pixel
 
     Record1Type::Axes_type axis(xaxis, yaxis, zaxis);
 
@@ -1030,6 +1050,38 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal X3pIO::parseUnit(const std::string &unitString, double &unitScale)
+{
+    ito::RetVal retval;
+    if (unitString == "" || unitString == "m")
+    {
+        unitScale = 1.0;
+    }
+    else if (unitString == "cm")
+    {
+        unitScale = 1.0e-2;
+    }
+    else if (unitString == "mm")
+    {
+        unitScale = 1.0e-3;
+    }
+    else if (unitString == "µm")
+    {
+        unitScale = 1.0e-6;
+    }
+    else if (unitString == "nm")
+    {
+        unitScale = 1.0e-9;
+    }
+    else
+    {
+        unitScale = 1.0;
+        retval += ito::RetVal::format(ito::retWarning, 0, "unit '%s' cannot be interpreted. Meter as default unit is assumed", unitString.data());
+    }
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal X3pIO::loadDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
@@ -1040,22 +1092,87 @@ ito::RetVal X3pIO::loadDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, QObject::tr("source file name").toLatin1().data());
         paramsMand->append(param);
 
+        param = ito::Param("xyUnit", ito::ParamBase::String | ito::ParamBase::In, "mm", tr("Unit of x and y axes. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: mm").toLatin1().data());
+        ito::StringMeta sm(ito::StringMeta::String, "m");
+        sm.addItem("cm");
+        sm.addItem("mm");
+        sm.addItem("µm");
+        sm.addItem("nm");
+        param.setMeta(&sm, false);
+        paramsOpt->append(param);
+
+        param = ito::Param("valueUnit", ito::ParamBase::String | ito::ParamBase::In, "µm", tr("Unit of value axis. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: µm").toLatin1().data());
+        ito::StringMeta sm2(ito::StringMeta::String, "m");
+        sm2.addItem("cm");
+        sm2.addItem("mm");
+        sm2.addItem("µm");
+        sm2.addItem("nm");
+        param.setMeta(&sm2, false);
+        paramsOpt->append(param);
     }
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
+ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
    ito::RetVal retval = ito::retOk;
-   ito::DataObject *dObj = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-   char *filename = NULL;
-   filename = (*paramsMand)[1].getVal<char*>();
+   ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
+   char *filename = (*paramsMand)[1].getVal<char*>();
+   std::string xyUnit = paramsOpt->at(0).getVal<char*>();
+   std::string valueUnit = paramsOpt->at(1).getVal<char*>();
 
    if (!dObj)
       return ito::RetVal(ito::retError, 0, QObject::tr("empty data object").toLatin1().data());
    if (!filename)
       return ito::RetVal(ito::retError, 0, QObject::tr("no filename specified").toLatin1().data());
+
+   double xyScaleFactor = 1.0;
+
+   if (xyUnit == "m")
+   {
+       xyScaleFactor = 1.0; //m is the default unit of x3p
+   }
+   else if (xyUnit == "cm")
+   {
+       xyScaleFactor = 100.0;
+   }
+   else if (xyUnit == "mm")
+   {
+       xyScaleFactor = 1000.0;
+   }
+   else if (xyUnit == "µm")
+   {
+       xyScaleFactor = 1.0e6;
+   }
+   else if (xyUnit == "nm")
+   {
+       xyScaleFactor = 1.0e9;
+   }
+
+   double valueScaleFactor = 1.0;
+
+   if (valueUnit == "m")
+   {
+       valueScaleFactor = 1.0; //m is the default unit of x3p
+   }
+   else if (valueUnit == "cm")
+   {
+       valueScaleFactor = 100.0;
+   }
+   else if (valueUnit == "mm")
+   {
+       valueScaleFactor = 1000.0;
+   }
+   else if (valueUnit == "µm")
+   {
+       valueScaleFactor = 1.0e6;
+   }
+   else if (valueUnit == "nm")
+   {
+       valueScaleFactor = 1.0e9;
+   }
+
 
    // Open the file, hopefully everything went well...
    OpenGPS::String fname;
@@ -1148,33 +1265,36 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
            return ito::RetVal(ito::retError, 0, QObject::tr("could neither retrieve list nor matrix dimensions").toLatin1().data());
        }
 
-       double xscale = 0.001, xoffset = 0.0;
+       double xscale = 1.0, xoffset = 0.0;
        // we must check if scaling and offset are present, otherwise they are filled with random values
        if (document->Record1().Axes().CX().Increment().present())
-           xscale = document->Record1().Axes().CX().Increment().get();
+           xscale = document->Record1().Axes().CX().Increment().get();          // the lateral unit of x3p is m/px
        if (document->Record1().Axes().CX().Offset().present())
-           xoffset = document->Record1().Axes().CX().Offset().get() / xscale;
-       dObj->setAxisScale(dObj->getDims() - 1, xscale * 1000.0);
+           xoffset = document->Record1().Axes().CX().Offset().get() / xscale;   // in itom, the offset is in pixel, x3p returns the offset in m/px
+       dObj->setAxisScale(dObj->getDims() - 1, xscale * xyScaleFactor); //
        dObj->setAxisOffset(dObj->getDims() - 1, xoffset);
+       dObj->setAxisUnit(dObj->getDims() - 1, xyUnit);
 
-       double yscale = 0.001, yoffset = 0.0;
+       double yscale = 1.0, yoffset = 0.0;
        // we must check if scaling and offset are present, otherwise they are filled with random values
        if (document->Record1().Axes().CY().Increment().present())
-           yscale = document->Record1().Axes().CY().Increment().get();
+           yscale = document->Record1().Axes().CY().Increment().get();          // the lateral unit of x3p is m/px
        if (document->Record1().Axes().CY().Offset().present())
-           yoffset = document->Record1().Axes().CY().Offset().get() / yscale;
-       dObj->setAxisScale(dObj->getDims() - 2, yscale * 1000.0);
+           yoffset = document->Record1().Axes().CY().Offset().get() / yscale;   // in itom, the offset is in pixel, x3p returns the offset in m/px
+       dObj->setAxisScale(dObj->getDims() - 2, yscale * xyScaleFactor);
        dObj->setAxisOffset(dObj->getDims() - 2, yoffset);
+       dObj->setAxisUnit(dObj->getDims() - 2, xyUnit);
 
        // we currently do not support v/zscale and offset so if they are not standard we have to
        // use them writing data into dataObject
        // we must check if scaling and offset are present, otherwise they are filled with random values
-       double zscale = 0.001, zoffset = 0.0;
+       double zscale = 1.0, zoffset = 0.0;
        if (document->Record1().Axes().CZ().Increment().present())
             zscale = document->Record1().Axes().CZ().Increment().get();
        if (document->Record1().Axes().CZ().Offset().present())
             zoffset = document->Record1().Axes().CZ().Offset().get() / zscale;
-       zscale *= 1000.0;
+       zscale *= valueScaleFactor;
+       dObj->setValueUnit(valueUnit);
 
        OpenGPS::String tempStr;
        tempStr = document->Record2()->Instrument().Manufacturer();

@@ -81,6 +81,7 @@ class X3pIO : public ito::AddInAlgo
         static ito::RetVal loadDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
     private:
+        static ito::RetVal parseUnit(const std::string &unitString, double &unitScale);
 
     public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
