@@ -1092,7 +1092,7 @@ ito::RetVal X3pIO::loadDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, QObject::tr("source file name").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("xyUnit", ito::ParamBase::String | ito::ParamBase::In, "mm", tr("Unit of x and y axes. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: mm").toLatin1().data());
+        param = ito::Param("xyUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of x and y axes. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than 'm' lead to a multiplication of all values that might exceed the data type limit.)").toLatin1().data());
         ito::StringMeta sm(ito::StringMeta::String, "m");
         sm.addItem("cm");
         sm.addItem("mm");
@@ -1101,7 +1101,7 @@ ito::RetVal X3pIO::loadDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::
         param.setMeta(&sm, false);
         paramsOpt->append(param);
 
-        param = ito::Param("valueUnit", ito::ParamBase::String | ito::ParamBase::In, "µm", tr("Unit of value axis. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: µm").toLatin1().data());
+        param = ito::Param("valueUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of value axis. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than 'm' lead to a multiplication of all values that might exceed the data type limit.)").toLatin1().data());
         ito::StringMeta sm2(ito::StringMeta::String, "m");
         sm2.addItem("cm");
         sm2.addItem("mm");
