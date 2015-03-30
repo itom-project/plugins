@@ -2857,7 +2857,7 @@ ito::RetVal BasicFilters::genericGaussianEpsilonFilter(QVector<ito::ParamBase> *
 \sa  BasicFilters::genericLowPassFilter, 
 \date
 */
-ito::RetVal BasicFilters::spikeMedianFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+ito::RetVal BasicFilters::spikeCompFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
@@ -2999,6 +2999,26 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
 */
 ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut)
 {
+    return spikeGenericFilter(paramsMand, paramsOpt, paramsOut, tGenericMedian);
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+\detail This function use the generic filter engine with the median filter to set values to remove spikes from an image
+\param[in|out]   paramsMand  Mandatory parameters for the filter function
+\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   outVals   Outputvalues, not implemented for this function
+\param[in]   lowHigh  Flag which toggles low or high filter
+\author ITO
+\sa  BasicFilters::genericStdParams
+\date
+*/
+ito::RetVal BasicFilters::spikeMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut)
+{
+    return spikeGenericFilter(paramsMand, paramsOpt, paramsOut, tGenericLowPass);
+}
+
+ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, const tFilterType filter )
+{
     ito::RetVal retval = ito::retOk;
     ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
@@ -3135,12 +3155,31 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
         paramsOutMedianBase.append((ito::ParamBase)paramsOutMedian[i]);
     }
 
-    retval += genericMedianFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
-    if(retval.containsError())
+    switch(filter)
     {
-        retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
-        return retval;        
+        case tGenericLowPass:  
+            retval += genericLowPassFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
+            if(retval.containsError())
+            {
+                retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
+                return retval;        
+            }
+        break;
+        case tGenericMedian:  
+            retval += genericMedianFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
+            if(retval.containsError())
+            {
+                retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
+                return retval;        
+            }
+        break;
+        default:
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error: filter type not implemented for generic spike filter").toLatin1().data());  
+        }
     }
+
+
 
     switch(dObjSrc->getType())
     {

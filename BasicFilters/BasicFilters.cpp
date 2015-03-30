@@ -201,8 +201,11 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(BasicFilters::genericGaussianFilter, BasicFilters::genericGaussianParams, tr("Performs a gaussian blur filter with kernelsize (x ,y) and according to sigmaX and sigmaY using the generic mcpp filter engine"));
     m_filterList.insert("gaussianFilter", filter);
 
-    filter = new FilterDef(BasicFilters::spikeMedianFilter, BasicFilters::spikeMedianFilterStdParams, tr("Performs a median filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value."));
+    filter = new FilterDef(BasicFilters::spikeMedianFilter, BasicFilters::spikeCompFilterStdParams, tr("Performs a median filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value."));
     m_filterList.insert("spikeMedianFilter", filter);
+
+    filter = new FilterDef(BasicFilters::spikeMeanFilter, BasicFilters::spikeCompFilterStdParams, tr("Performs a low pass filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value."));
+    m_filterList.insert("spikeMeanFilter", filter);
 
     filter = new FilterDef(BasicFilters::fillGeometricPrimitiv, BasicFilters::fillGeometricParams, tr(fillGeometricDoc));
     m_filterList.insert("fillObject", filter);

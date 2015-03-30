@@ -91,7 +91,14 @@ class BasicFilters : public ito::AddInAlgo
 
     public:
         friend class BasicFiltersInterface;
-         
+        
+        enum tFilterType
+        {
+            tGenericLowPass,
+            tGenericMedian,
+            tGenericGauss
+        };
+
         // Defined in BasicFilters.cpp
         static ito::RetVal stdParams2Objects(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                     /**< Get the standard IO-Parameters for filters with two objects */
                   
@@ -148,9 +155,10 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal genericGaussianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
 
         // Further filters using the Generic Engine
+        static ito::RetVal spikeMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal spikeMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
-        static ito::RetVal spikeMedianFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
-
+        static ito::RetVal spikeCompFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        
         // Filter 
         static ito::RetVal fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal fillGeometricParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
@@ -160,6 +168,8 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal calcRadialMeanFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut);
 
     private:
+        static ito::RetVal spikeGenericFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, const tFilterType filter);
+
 
         template<typename _Tp> static void fillGeoCircle(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radius, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal);
         template<typename _Tp> static void fillGeoEllipse(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radiusX, const ito::float64 radiusY, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal);
