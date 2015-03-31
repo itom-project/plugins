@@ -1976,7 +1976,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
                 if (copyExternal)
                 {
                     //with respect to the byte-order of the camera-channel (big-endian) it must be swapped to little-endian for itom
-                    mat = (cv::Mat*)externalDataObject->get_mdata()[0];
+                    mat = externalDataObject->getCvPlaneMat(0);
                     frameIdx = 0;
 
                     for (size_t m = 0; m < m_ySize ; m++)
@@ -1998,7 +1998,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
                 if (!copyExternal || hasLiveList)
                 {
                     //with respect to the byte-order of the camera-channel (big-endian) it must be swapped to little-endian for itom
-                    mat = (cv::Mat*)m_data.get_mdata()[0];
+                    mat = m_data.get_mdata()[0];
                     frameIdx = 0;
                     for (size_t m = 0; m < m_ySize ; m++)
                     {
@@ -2099,7 +2099,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
             if (copyExternal)
             {
                 //with respect to the byte-order of the camera-channel (big-endian) it must be swapped to little-endian for itom
-			    mat = (cv::Mat*)externalDataObject->get_mdata()[0];
+			    mat = externalDataObject->getCvPlaneMat(0);
                 frameIdx = 0;
 			
 			    for (size_t m = 0; m < m_ySize ; m++)
@@ -2121,7 +2121,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
             if (!copyExternal || hasLiveList)
             {
                 //with respect to the byte-order of the camera-channel (big-endian) it must be swapped to little-endian for itom
-			    mat = (cv::Mat*)m_data.get_mdata()[0];
+			    mat = m_data.get_mdata()[0];
                 frameIdx = 0;
 			    for (size_t m = 0; m < m_ySize ; m++)
 			    {

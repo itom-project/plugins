@@ -51,8 +51,6 @@
 #include <windows.h>
 #endif
 
-Q_DECLARE_METATYPE(ito::DataObject)
-
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @func   fastrand
 *   @brief  function for pseudo random values
