@@ -227,7 +227,7 @@ ito::RetVal PIPiezoCtrl::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
             }
             else
             {
-                if (answerString.contains("loc") || answerString.contains("LOC"))
+                if (answerString.contains("loc") || answerString.contains("LOC") || answerString.contains("Local") || answerString.contains("Loc"))
                 {
                     it->setVal<int>(1);
                 }
