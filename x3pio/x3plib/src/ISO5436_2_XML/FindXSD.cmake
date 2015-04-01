@@ -17,6 +17,9 @@ SET (XSD_POSSIBLE_ROOT_DIRS
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3"
   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3"
+  "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/bin"
+  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/bin"
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/bin"
   ${CMAKE_SOURCE_DIR}/../xsd/libxsd
  "$ENV{PATH}"
   )
