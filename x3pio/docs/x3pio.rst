@@ -42,7 +42,7 @@ After compilation, the following libraries and files are copied into the lib pat
 
 * iso5436-2.xsd
 * iso5436-2-xml.dll (x3p library)
-* xerces-c_3_1D_vc100.dll (library from CodeSynthesis XSD)
+* xerces-c_3_1_vc100.dll (library from CodeSynthesis XSD)
 
 Since the xerces library is copied to the lib folder, CodeSynthesis must not be included into the Path environment variable. Therefore you can uncheck
 the corresponding option in the setup of CodeSynthesis.
