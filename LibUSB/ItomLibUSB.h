@@ -53,7 +53,8 @@ class ItomUSBDevice : public ito::AddInDataIO //, public DummyGrabberInterface
         bool m_debugMode;   /*! Enables / Disables live connection to dockingwidge-protocol */
         static int m_instCounter;
         int m_timeoutMS;
-        int m_endpoint;
+        int m_endpoint_read;
+        int m_endpoint_write;
     signals:
         void serialLog(QByteArray data, const char InOutChar);
         void uniqueIDChanged(const int);

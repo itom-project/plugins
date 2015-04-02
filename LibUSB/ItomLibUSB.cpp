@@ -41,9 +41,6 @@
 
 #ifndef linux
     #include <Windows.h>
-
-#else
-
 #endif
 
 
@@ -99,7 +96,7 @@ The setVal and getVal functions will write and read on the specified endpoint.";
 
     ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x1cbe, tr("The vendor id of the device to connect to").toLatin1().data());
     m_initParamsMand.append(paramVal);
-    paramVal = ito::Param("ProdictID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x0003, tr("The product id of the device to connect to").toLatin1().data());
+    paramVal = ito::Param("ProductID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x0003, tr("The product id of the device to connect to").toLatin1().data());
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 127, 1, tr("The endpoint to communicate with.").toLatin1().data());
     m_initParamsMand.append(paramVal);
@@ -140,7 +137,7 @@ const ito::RetVal ItomUSBDevice::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL), m_autoDetach(true), m_timeoutMS(4000), m_endpoint(1)
+ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL), m_autoDetach(true), m_timeoutMS(4000), m_endpoint_read(1), m_endpoint_write(1)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "ItomUSBDevice", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -148,18 +145,10 @@ ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NU
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 5, 0, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 255, 1, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
+    paramVal = ito::Param("endpoint_read", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for reading operations. The used index is LIBUSB_ENDPOINT_IN + endpoint_read, with LIBUSB_ENDPOINT_IN = %1 (default: initialization parameter 'endpoint')").arg(LIBUSB_ENDPOINT_IN).toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-
-    //register exec functions
-    QVector<ito::Param> pMand;
-    QVector<ito::Param> pOpt;
-    QVector<ito::Param> pOut;
-    registerExecFunc("clearInputBuffer", pMand, pOpt, pOut, tr("Clears the input buffer of serial port"));
-    registerExecFunc("clearOutputBuffer", pMand, pOpt, pOut, tr("Clears the output buffer of serial port"));
-
-    pMand << ito::Param("bufferType", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Clears input (0) or output (1) buffer").toLatin1().data());
-    registerExecFunc("clearBuffer", pMand, pOpt, pOut, tr("Clears the input or output buffer of serial port"));
+    paramVal = ito::Param("endpoint_write", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for writing operations. The used index is LIBUSB_ENDPOINT_OUT + endpoint_read, with LIBUSB_ENDPOINT_OUT = %1  (default: initialization parameter 'endpoint')").arg(LIBUSB_ENDPOINT_OUT).toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
 
@@ -199,34 +188,47 @@ ItomUSBDevice::~ItomUSBDevice()
 */
 ito::RetVal ItomUSBDevice::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+        ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
+    QMap<QString,ito::Param>::iterator it;
 
-    if (key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-        if (paramIt != m_params.constEnd())
+        //put your switch-case.. for getting the right value here
+
+        //finally, save the desired value in the argument val (this is a shared pointer!)
+        //if the requested parameter name has an index, e.g. roi[0], then the sub-value of the
+        //array is split and returned using the api-function apiGetParam
+        if (hasIndex)
         {
-            *val = paramIt.value();
+            *val = apiGetParam(*it, hasIndex, index, retValue);
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
+            *val = *it;
         }
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -234,65 +236,91 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
 
-    if (key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+
+    if(!retValue.containsError())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
-        if (paramIt != m_params.end())
+        //here the new parameter is checked whether its type corresponds or can be cast into the
+        // value in m_params and whether the new type fits to the requirements of any possible
+        // meta structure.
+        retValue += apiValidateParam(*it, *val, false, true);
+
+        //if you program for itom 1.4.0 or higher (Interface version >= 1.3.1) you should use this
+        //API method instead of the one above: The difference is, that incoming parameters that are
+        //compatible but do not have the same type than the corresponding m_params value are cast
+        //to the type of the internal parameter and incoming double values are rounded to the
+        //next value (depending on a possible step size, if different than 0.0)
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
+    }
+
+    if(!retValue.containsError())
+    {
+        if(key == "timeout")
         {
-          
+            //check the new value and if ok, assign it to the internal parameter
+            retValue += it->copyValueFrom( &(*val) );
 
-            if ( /*paramIt->getFlags() & ito::ParamBase::Readonly*/ true)    //check read-only
+            if (!retValue.containsError())
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
-                goto end;
+                m_timeoutMS = (int)(it->getVal<double>() * 1000 + 0.5);
             }
-            else if (val->isNumeric() && paramIt->isNumeric())
-            {
-                double curval = val->getVal<double>();
-                if (curval > paramIt->getMax())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else if (curval < paramIt->getMin())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else
-                {
-                    paramIt.value().setVal<double>(curval);
-                }
-            }
-            else if (paramIt->getType() == val->getType())
-            {
-                retValue += paramIt.value().copyValueFrom(&(*val));
-            }
-            else
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
-                goto end;
-            }
+        }
+        else if(key == "debug")
+        {
+            //check the new value and if ok, assign it to the internal parameter
+            retValue += it->copyValueFrom( &(*val) );
 
-            m_timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000 + 0.5);
-            m_endpoint = m_params["endpoint"].getVal<int>();
-            m_debugMode = m_params["debug"].getVal<int>() > 0;
+            if (!retValue.containsError())
+            {
+                m_debugMode = it->getVal<int>() > 0;
+            }
+        }
+        else if (key == "endpoint_read")
+        {
+            //check the new value and if ok, assign it to the internal parameter
+            retValue += it->copyValueFrom( &(*val) );
 
+            if (!retValue.containsError())
+            {
+                m_endpoint_read = it->getVal<int>();
+            }
+        }
+        else if (key == "endpoint_write")
+        {
+            //check the new value and if ok, assign it to the internal parameter
+            retValue += it->copyValueFrom( &(*val) );
+
+            if (!retValue.containsError())
+            {
+                m_endpoint_write = it->getVal<int>();
+            }
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("Parameter not found").toLatin1().data());
+            //all parameters that don't need further checks can simply be assigned
+            //to the value in m_params (the rest is already checked above)
+            retValue += it->copyValueFrom( &(*val) );
         }
     }
-    emit parametersChanged(m_params);
 
-end:
+    if(!retValue.containsError())
+    {
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -327,7 +355,8 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     }
     else
     {
-        retval += m_params["endpoint"].copyValueFrom(&((*paramsMand)[2]));
+        retval += m_params["endpoint_read"].copyValueFrom(&((*paramsMand)[2]));
+        retval += m_params["endpoint_write"].copyValueFrom(&((*paramsMand)[2]));
     }
     // optional parameters
     if (paramsOpt == NULL)
@@ -341,7 +370,8 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     }
 
     m_timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000 + 0.5);
-    m_endpoint = m_params["endpoint"].getVal<int>();
+    m_endpoint_read = m_params["endpoint_read"].getVal<int>();
+    m_endpoint_write = m_params["endpoint_write"].getVal<int>();
     m_debugMode = m_params["debug"].getVal<int>() > 0;
 
 	unsigned int vid = (unsigned int)((*paramsMand)[0].getVal<int>() & 0x0000FFFF);
@@ -558,6 +588,7 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
@@ -642,7 +673,7 @@ ito::RetVal ItomUSBDevice::getVal(QSharedPointer<char> data, QSharedPointer<int>
 
     dataIn = (unsigned char*)calloc(*(length.data()) * 2, sizeof(unsigned char));
     //int status = libusb_claim_interface(m_pDevice, 0);
-    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_IN + m_endpoint, dataIn, *(length.data()), &actual_length, m_timeoutMS);
+    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_IN + m_endpoint_read, dataIn, *(length.data()), &actual_length, m_timeoutMS);
     if (status != 0) 
     {
         retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
@@ -684,7 +715,7 @@ ito::RetVal ItomUSBDevice::setVal(const char *data, const int datalength, ItomSh
         emit serialLog(QByteArray((char*)buf,datalength), '>');
     }
     //status = libusb_claim_interface(m_pDevice, 0);
-    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_OUT + m_endpoint, buf, datalength, &actual_length, m_timeoutMS);
+    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_OUT + m_endpoint_write, buf, datalength, &actual_length, m_timeoutMS);
     if (status != 0) 
     {
         retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
@@ -707,24 +738,6 @@ ito::RetVal ItomUSBDevice::execFunc(const QString funcName, QSharedPointer<QVect
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
-
-    if (funcName == "clearInputBuffer")
-    {
-        //retval = m_serport.sclearbuffer(0);
-    }
-    else if (funcName == "clearOutputBuffer")
-    {
-        //retval = m_serport.sclearbuffer(1);
-    }
-    else if (funcName == "clearBuffer")
-    {
-        ito::ParamBase *bufferType = NULL;
-        bufferType = &((*paramsMand)[0]);
-        if (!retval.containsError())
-        {
-            //retval = m_serport.sclearbuffer(static_cast<bool>(bufferType->getVal<int>()));
-        }
-    }
 
     if (waitCond)
     {
