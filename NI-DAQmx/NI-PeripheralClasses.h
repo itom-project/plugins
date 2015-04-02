@@ -26,7 +26,7 @@
 #include <qstring.h>
 #include <qvector.h>
 #include <common\retVal.h>
-#include "NIDAQmx-LibHeader.h"		// include NI-DAQmx Library functions
+#include "NIDAQmx.h"
 #include <qobject.h>
 #include <qstandarditemmodel.h>
 
