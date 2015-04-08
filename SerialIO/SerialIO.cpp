@@ -1238,14 +1238,7 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(fal
 //----------------------------------------------------------------------------------------------------------------------------------
 SerialIO::~SerialIO()
 {
-   m_pThread->quit();
-   m_pThread->wait(5000);
-   delete m_pThread;
-   m_pThread = NULL;
-
    m_params.clear();
-
-   return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
