@@ -104,7 +104,7 @@ private:
 
 public slots:
     ito::RetVal getErrors(ItomSharedSemaphore *waitCond = NULL);
-    ito::RetVal shutdown();
+    ito::RetVal shutdown(ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal addOrEditTextures(const ito::DataObject &textures, QSharedPointer<int> nrOfTotalTextures, int firstTextureIndex = -1, ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal setColor(const QColor &color);
     ito::RetVal setClearColor(const QColor &color);
