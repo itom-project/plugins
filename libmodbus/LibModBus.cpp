@@ -160,14 +160,7 @@ LibModBus::LibModBus() : AddInDataIO(), m_pCTX(NULL), m_connected(false)
 //----------------------------------------------------------------------------------------------------------------------------------
 LibModBus::~LibModBus()
 {
-   m_pThread->quit();
-   m_pThread->wait(5000);
-   delete m_pThread;
-   m_pThread = NULL;
-
-   m_params.clear();
-
-   return;
+    m_params.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -333,14 +333,7 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
 */
 GWInstekPSP::~GWInstekPSP()
 {
-   m_pThread->quit();
-   m_pThread->wait(5000);
-   delete m_pThread;
-   m_pThread = NULL;
-
    m_params.clear();
-
-   return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
