@@ -25,6 +25,7 @@
 
 #include "x3pio.h"
 #include "DataObject/dataobj.h"
+#include "DataObject/dataObjectFuncs.h"
 //#include "../../common/helperCommon.h"
 #include "pluginVersion.h"
 #include <opengps/cxx/opengps.hxx>
@@ -318,30 +319,115 @@ ito::RetVal X3pIO::saveDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::
         param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
         paramsMand->append(param);
         paramsOpt->clear();
+        paramsOpt->append(ito::Param("binary", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Save data in binary (1, default) or ascii format - use binary for big objects (> 5000 Points)").toLatin1().data()));
     }
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, ito::DataObject *dObj)
+ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *dObj, bool zScalingNecessary, double zFactor)
 {
     // Add data points
     // 1. Create point vector buffer for three points.
     OGPS_PointVectorPtr vector = ogps_CreatePointVector();
-    unsigned char *pDataRow = NULL;
+    const unsigned char *pDataRow = NULL;
+    int numMats = dObj->getNumPlanes();
+    int ySize = dObj->getSize(dObj->getDims() - 2);
+    int xSize = dObj->getSize(dObj->getDims() - 1);
+    const cv::Mat* plane;
 
-    switch (dObj->getType())
+    for (int nMat = 0; nMat < numMats; ++nMat)
     {
-        case ito::tUInt8:
-        case ito::tInt8:
-            for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-            {
-                for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
+        plane = dObj->get_mdata()[dObj->seekMat(0, numMats)];
+
+        switch (dObj->getType())
+        {
+            case ito::tUInt8:
+            case ito::tInt8:
+                if (zScalingNecessary)
                 {
-                    pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                    for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
+                    for (int y = 0; y < ySize; y++)
                     {
-                        ogps_SetInt16Z(vector, ((ito::uint8*)pDataRow)[x]);
+                        pDataRow = plane->ptr(y);
+                        for (int x = 0; x < xSize; x++)
+                        {
+                            ogps_SetDoubleZ(vector, zFactor * ((ito::uint8*)pDataRow)[x]);
+                            ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+
+                            if(ogps_HasError())
+                            {
+                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        pDataRow = plane->ptr(y);
+                        for (int x = 0; x < xSize; x++)
+                        {
+                            ogps_SetInt16Z(vector, ((ito::uint8*)pDataRow)[x]);
+                            ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+
+                            if(ogps_HasError())
+                            {
+                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            }
+                        }
+                    }
+                }
+            break;
+
+            case ito::tUInt16:
+            case ito::tInt16:
+                if (zScalingNecessary)
+                {
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        pDataRow = plane->ptr(y);
+                        for (int x = 0; x < xSize; x++)
+                        {
+                            ogps_SetDoubleZ(vector, zFactor * ((ito::uint16*)pDataRow)[x]);
+                            ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+
+                            if(ogps_HasError())
+                            {
+                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        pDataRow = plane->ptr(y);
+                        for (int x = 0; x < xSize; x++)
+                        {
+                            ogps_SetInt16Z(vector, ((ito::uint16*)pDataRow)[x]);
+                            ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+
+                            if(ogps_HasError())
+                            {
+                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            }
+                        }
+                    }
+                }
+            break;
+
+            case ito::tUInt32:
+            case ito::tInt32:
+                if (zScalingNecessary)
+                {
+                    for (int y = 0; y < ySize; y++)
+                {
+                    pDataRow = plane->ptr(y);
+                    for (int x = 0; x < xSize; x++)
+                    {
+                        ogps_SetDoubleZ(vector, zFactor * ((ito::uint32*)pDataRow)[x]);
                         ogps_SetMatrixPoint(handle, x, y, nMat, vector);
 
                         if(ogps_HasError())
@@ -350,20 +436,146 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, ito::DataObject *dObj)
                         }
                     }
                 }
-            }
-        break;
-
-        case ito::tUInt16:
-        case ito::tInt16:
-            for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-            {
-                for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
+                }
+                else
                 {
-                    pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                    for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
+                    for (int y = 0; y < ySize; y++)
                     {
-                        ogps_SetInt16Z(vector, ((ito::uint16*)pDataRow)[x]);
-                        ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+                        pDataRow = plane->ptr(y);
+                        for (int x = 0; x < xSize; x++)
+                        {
+                            ogps_SetInt32Z(vector, ((ito::uint32*)pDataRow)[x]);
+                            ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+
+                            if(ogps_HasError())
+                            {
+                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            }
+                        }
+                    }
+                }
+            break;
+
+            case ito::tFloat32:
+                if (zScalingNecessary)
+                {
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        pDataRow = plane->ptr(y);
+                        for (int x = 0; x < xSize; x++)
+                        {
+                            if (ito::dObjHelper::isFinite(((ito::float32*)pDataRow)[x]))
+                            {
+                                ogps_SetFloatZ(vector, zFactor * ((ito::float32*)pDataRow)[x]);
+                                ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+                            }
+                            else
+                            {
+                                ogps_SetMatrixPoint(handle, x, y, nMat , NULL);
+                            }
+
+                            if(ogps_HasError())
+                            {
+                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        pDataRow = plane->ptr(y);
+                        for (int x = 0; x < xSize; x++)
+                        {
+                            if (ito::dObjHelper::isFinite(((ito::float32*)pDataRow)[x]))
+                            {
+                                ogps_SetFloatZ(vector, ((ito::float32*)pDataRow)[x]);
+                                ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+                            }
+                            else
+                            {
+                                ogps_SetMatrixPoint(handle, x, y, nMat , NULL);
+                            }
+
+                            if(ogps_HasError())
+                            {
+                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            }
+                        }
+                    }
+                }
+            break;
+
+            case ito::tFloat64:
+                if (zScalingNecessary)
+                {
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        pDataRow = plane->ptr(y);
+                        for (int x = 0; x < xSize; x++)
+                        {
+                            if (ito::dObjHelper::isFinite(((ito::float64*)pDataRow)[x]))
+                            {
+                                ogps_SetDoubleZ(vector, zFactor * ((ito::float64*)pDataRow)[x]);
+                                ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+                            }
+                            else
+                            {
+                                ogps_SetMatrixPoint(handle, x, y, nMat , NULL);
+                            }
+
+                            if(ogps_HasError())
+                            {
+                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        pDataRow = plane->ptr(y);
+                        for (int x = 0; x < xSize; x++)
+                        {
+                            if (ito::dObjHelper::isFinite(((ito::float64*)pDataRow)[x]))
+                            {
+                                ogps_SetDoubleZ(vector, ((ito::float64*)pDataRow)[x]);
+                                ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+                            }
+                            else
+                            {
+                                ogps_SetMatrixPoint(handle, x, y, nMat , NULL);
+                            }
+
+                            if(ogps_HasError())
+                            {
+                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            }
+                        }
+                    }
+                }
+            break;
+
+            case ito::tComplex64:
+                for (int y = 0; y < ySize; y++)
+                {
+                    pDataRow = plane->ptr(y);
+                    for (int x = 0; x < xSize; x++)
+                    {
+                        if (ito::dObjHelper::isFinite(((ito::complex64*)pDataRow)[x]))
+                        {
+                            ogps_SetFloatZ(vector, zFactor * ((ito::complex64*)pDataRow)[x].real());
+                            ogps_SetMatrixPoint(handle, x, y, nMat * 2, vector);
+                            ogps_SetFloatZ(vector, zFactor * ((ito::complex64*)pDataRow)[x].imag());
+                            ogps_SetMatrixPoint(handle, x, y, nMat * 2 + 1, vector);
+                        }
+                        else
+                        {
+                            ogps_SetMatrixPoint(handle, x, y, nMat * 2 , NULL);
+                            ogps_SetMatrixPoint(handle, x, y, nMat * 2 + 1 , NULL);
+                        }
 
                         if(ogps_HasError())
                         {
@@ -371,20 +583,26 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, ito::DataObject *dObj)
                         }
                     }
                 }
-            }
-        break;
+            break;
 
-        case ito::tUInt32:
-        case ito::tInt32:
-            for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-            {
-                for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
+            case ito::tComplex128:
+                for (int y = 0; y < ySize; y++)
                 {
-                    pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                    for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
+                    pDataRow = plane->ptr(y);
+                    for (int x = 0; x < xSize; x++)
                     {
-                        ogps_SetInt32Z(vector, ((ito::uint32*)pDataRow)[x]);
-                        ogps_SetMatrixPoint(handle, x, y, nMat, vector);
+                        if (ito::dObjHelper::isFinite(((ito::complex128*)pDataRow)[x]))
+                        {
+                            ogps_SetDoubleZ(vector, zFactor * ((ito::complex128*)pDataRow)[x].real());
+                            ogps_SetMatrixPoint(handle, x, y, nMat * 2, vector);
+                            ogps_SetDoubleZ(vector, zFactor * ((ito::complex128*)pDataRow)[x].imag());
+                            ogps_SetMatrixPoint(handle, x, y, nMat * 2 + 1, vector);
+                        }
+                        else
+                        {
+                            ogps_SetMatrixPoint(handle, x, y, nMat * 2 , NULL);
+                            ogps_SetMatrixPoint(handle, x, y, nMat * 2 + 1 , NULL);
+                        }
 
                         if(ogps_HasError())
                         {
@@ -392,93 +610,9 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, ito::DataObject *dObj)
                         }
                     }
                 }
-            }
-        break;
-
-        case ito::tFloat32:
-            for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-            {
-                for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
-                {
-                    pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                    for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                    {
-                        ogps_SetFloatZ(vector, ((ito::float32*)pDataRow)[x]);
-                        ogps_SetMatrixPoint(handle, x, y, nMat, vector);
-
-                        if(ogps_HasError())
-                        {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
-                        }
-                    }
-                }
-            }
-        break;
-
-        case ito::tFloat64:
-            for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-            {
-                for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
-                {
-                    pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                    for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                    {
-                        ogps_SetDoubleZ(vector, ((ito::float64*)pDataRow)[x]);
-                        ogps_SetMatrixPoint(handle, x, y, nMat, vector);
-
-                        if(ogps_HasError())
-                        {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
-                        }
-                    }
-                }
-            }
-        break;
-
-        case ito::tComplex64:
-            for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-            {
-                for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
-                {
-                    pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                    for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                    {
-                        ogps_SetFloatZ(vector, ((ito::complex64*)pDataRow)[x].real());
-                        ogps_SetMatrixPoint(handle, x, y, nMat * 2, vector);
-                        ogps_SetFloatZ(vector, ((ito::complex64*)pDataRow)[x].imag());
-                        ogps_SetMatrixPoint(handle, x, y, nMat * 2 + 1, vector);
-
-                        if(ogps_HasError())
-                        {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
-                        }
-                    }
-                }
-            }
-        break;
-
-        case ito::tComplex128:
-            for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-            {
-                for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
-                {
-                    pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                    for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                    {
-                        ogps_SetDoubleZ(vector, ((ito::complex128*)pDataRow)[x].real());
-                        ogps_SetMatrixPoint(handle, x, y, nMat * 2, vector);
-                        ogps_SetDoubleZ(vector, ((ito::complex128*)pDataRow)[x].imag());
-                        ogps_SetMatrixPoint(handle, x, y, nMat * 2 + 1, vector);
-
-                        if(ogps_HasError())
-                        {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
-                        }
-                    }
-                }
-            }
-        break;
-    }
+            break;
+        }
+    } //end for loop over nMats
 
     // Free buffer
     ogps_FreePointVector(&vector);
@@ -505,7 +639,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, ito::DataObject *dObj)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, _OGPS_DATA_POINT_TYPE &pointType, ito::DataObject *dObj, double zscale, double zoffset)
+ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, OGPS_DataPointType &pointType, ito::DataObject *dObj, int xSize, int ySize, double zscale, double zoffset)
 {
     ito::RetVal retval;
 
@@ -517,272 +651,119 @@ ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, _OGPS_DATA_POINT_TYPE 
     // in xml directly or in external binary file).
     OpenGPS::PointVector vector;
     OpenGPS::DataPoint *dp = NULL;
+    int numMats = dObj->getNumPlanes();
+    cv::Mat* plane;
 
     try
     {
-
         switch (pointType)
         {
             case OGPS_Int16PointType:
-                switch (dObj->getType())
+            {
+                ito::int16 tempVal;
+                ito::int16 *rowPtr;
+                for (int nMat = 0; nMat < numMats; nMat++)
                 {
-                    case ito::tUInt8:
-                        for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
+                    plane = dObj->get_mdata()[dObj->seekMat(nMat, numMats)];
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        rowPtr = plane->ptr<ito::int16>(y);
+                        for (int x = 0; x < xSize; x++)
                         {
-                            ito::int16 tempVal;
-                            for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
-                            {
-                                pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                                for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                                {
-                                    iterator->GetCurrent(vector);
-                                    vector.GetZ()->Get(&tempVal);
-                                    ((ito::uint8*)pDataRow)[x] = (ito::uint8)(tempVal * zscale + zoffset);
-                                    iterator->MoveNext();
-                                }
-                            }
+                            iterator->GetCurrent(vector);
+                            vector.GetZ()->Get(&tempVal);
+                            rowPtr[x] = (ito::int16)(tempVal * zscale + zoffset);
+                            iterator->MoveNext();
                         }
-                    break;
-
-                    case ito::tInt8:
-                        for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-                        {
-                            ito::int16 tempVal;
-                            for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
-                            {
-                                pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                                for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                                {
-                                    iterator->GetCurrent(vector);
-                                    vector.GetZ()->Get(&tempVal);
-                                    ((ito::int8*)pDataRow)[x] = (ito::int8)(tempVal * zscale + zoffset);
-                                    iterator->MoveNext();
-                                }
-                            }
-                        }
-                    break;
-
-                    case ito::tUInt16:
-                        for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-                        {
-                            ito::int16 tempVal;
-                            for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
-                            {
-                                pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                                for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                                {
-                                    iterator->GetCurrent(vector);
-                                    vector.GetZ()->Get(&tempVal);
-                                    ((ito::uint16*)pDataRow)[x] = (ito::uint16)(tempVal * zscale + zoffset);
-                                    iterator->MoveNext();
-                                }
-                            }
-                        }
-                    break;
-
-                    case ito::tInt16:
-                        for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-                        {
-                            ito::int16 tempVal;
-                            for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
-                            {
-                                pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                                for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                                {
-                                    iterator->GetCurrent(vector);
-                                    vector.GetZ()->Get(&tempVal);
-                                    ((ito::int16*)pDataRow)[x] = (ito::int16)(tempVal * zscale + zoffset);
-                                    iterator->MoveNext();
-                                }
-                            }
-                        }
-                    break;
-
-                    default:
-                        retval += ito::RetVal(ito::retError, 0, QObject::tr("data type mismatch").toLatin1().data());
-                    break;
+                    }
                 }
+            }
             break;
 
             case OGPS_Int32PointType:
-                switch (dObj->getType())
+            {
+                ito::int32 tempVal;
+                ito::int32 *rowPtr;
+                for (int nMat = 0; nMat < numMats; nMat++)
                 {
-                   case ito::tUInt32:
-                      for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-                      {
-                          ito::int32 tempVal;
-                          for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
-                          {
-                              pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                              for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                              {
-                                  iterator->GetCurrent(vector);
-                                  vector.GetZ()->Get(&tempVal);
-                                  ((ito::uint32*)pDataRow)[x] = (ito::uint32)(tempVal * zscale + zoffset);
-                                  iterator->MoveNext();
-                              }
-                          }
-                      }
-                   break;
-
-                   case ito::tInt32:
-                      for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-                      {
-                          ito::int32 tempVal;
-                          for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
-                          {
-                              pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                              for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                              {
-                                  iterator->GetCurrent(vector);
-                                  vector.GetZ()->Get(&tempVal);
-                                  ((ito::int32*)pDataRow)[x] = (ito::int32)(tempVal * zscale + zoffset);
-                                  iterator->MoveNext();
-                              }
-                          }
-                      }
-                   break;
-
-                    default:
-                        retval += ito::RetVal(ito::retError, 0, QObject::tr("data type mismatch").toLatin1().data());
-                    break;
+                    plane = dObj->get_mdata()[dObj->seekMat(nMat, numMats)];      
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        rowPtr = plane->ptr<ito::int32>(y);
+                        for (int x = 0; x < xSize; x++)
+                        {
+                            iterator->GetCurrent(vector);
+                            vector.GetZ()->Get(&tempVal);
+                            rowPtr[x] = (ito::int32)(tempVal * zscale + zoffset);
+                            iterator->MoveNext();
+                        }
+                    }
                 }
+            }
             break;
 
             case OGPS_FloatPointType:
-                switch (dObj->getType())
-                {
-                    case ito::tFloat32:
-                        for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
+            {
+                ito::float32 tempVal;
+                ito::float32 *rowPtr;
+                for (int nMat = 0; nMat < numMats; nMat++)
+                {   
+                    plane = dObj->get_mdata()[dObj->seekMat(nMat, numMats)];
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        rowPtr = plane->ptr<ito::float32>(y);
+                        for (int x = 0; x < xSize; x++)
                         {
-                            ito::float32 tempVal;
-                            for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
+                            iterator->GetCurrent(vector);
+                            dp = vector.GetZ();
+
+                            if(dp->IsValid())
                             {
-                                pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                                for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                                {
-                                    iterator->GetCurrent(vector);
-                                    dp = vector.GetZ();
-
-                                    if(dp->IsValid())
-                                    {
-                                        vector.GetZ()->Get(&tempVal);
-                                        ((ito::float32*)pDataRow)[x] = tempVal * zscale + zoffset;
-                                    }
-                                    else
-                                    {
-                                        ((ito::float32*)pDataRow)[x] = std::numeric_limits<ito::float32>::signaling_NaN();
-                                    }
-
-
-                                    iterator->MoveNext();
-                                }
+                                vector.GetZ()->Get(&tempVal);
+                                rowPtr[x] = tempVal * zscale + zoffset;
                             }
-                        }
-
-
-                    break;
-
-                    case ito::tComplex64:
-                        for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-                        {
-                            float tempValRe, tempValIm;
-                            for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
+                            else
                             {
-                                pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                                for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                                {
-                                    iso5436_2.GetMatrixPoint(x, y, nMat, vector);
-
-                                    if(vector.IsValid())
-                                    {
-                                        vector.GetZ()->Get(&tempValRe);
-                                        iso5436_2.GetMatrixPoint(x, y, nMat * 2, vector);
-                                        vector.GetZ()->Get(&tempValIm);
-                                        ((ito::complex64*)pDataRow)[x].real(tempValRe * zscale + zoffset);
-                                        ((ito::complex64*)pDataRow)[x].imag(tempValIm * zscale + zoffset);
-                                    }
-                                    else
-                                    {
-                                        ((ito::complex64*)pDataRow)[x] = std::numeric_limits<ito::complex64>::signaling_NaN();
-                                    }
-
-                                    iterator->MoveNext();
-                                }
+                                rowPtr[x] =  std::numeric_limits<ito::float32>::quiet_NaN();
                             }
-                        }
-                    break;
 
-                    default:
-                        retval += ito::RetVal(ito::retError, 0, QObject::tr("data type mismatch").toLatin1().data());
-                    break;
+
+                            iterator->MoveNext();
+                        }
+                    }
                 }
+            }
             break;
 
             case OGPS_DoublePointType:
-                switch (dObj->getType())
-                {
-                    case ito::tFloat64:
-                        for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
+            {
+                ito::float64 tempVal;
+                ito::float64 *rowPtr;
+                for (int nMat = 0; nMat < numMats; nMat++)
+                {    
+                    plane = dObj->get_mdata()[dObj->seekMat(nMat, numMats)];
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        rowPtr = plane->ptr<ito::float64>(y);
+                        for (int x = 0; x < xSize; x++)
                         {
-                            double tempVal;
-                            for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
+                            iterator->GetCurrent(vector);
+                            dp = vector.GetZ();
+
+                            if(dp->IsValid())
                             {
-                                pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                                for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                                {
-                                    iterator->GetCurrent(vector);
-                                    dp = vector.GetZ();
-
-                                    if(dp->IsValid())
-                                    {
-                                        vector.GetZ()->Get(&tempVal);
-                                        ((ito::float64*)pDataRow)[x] = tempVal * zscale + zoffset;
-                                    }
-                                    else
-                                    {
-                                        ((ito::float64*)pDataRow)[x] = std::numeric_limits<ito::float64>::signaling_NaN();
-                                    }
-                                    iterator->MoveNext();
-                                }
+                                vector.GetZ()->Get(&tempVal);
+                                rowPtr[x] =  tempVal * zscale + zoffset;
                             }
-                        }
-                    break;
-
-                    case ito::tComplex128:
-                        for (int nMat = 0; nMat < dObj->calcNumMats(); nMat++)
-                        {
-                            double tempValRe, tempValIm;
-                            for (int y = 0; y < dObj->getSize(dObj->getDims() - 2); y++)
+                            else
                             {
-                                pDataRow = (((cv::Mat *)dObj->get_mdata()[dObj->seekMat(nMat)])->ptr(y));
-                                for (int x = 0; x < dObj->getSize(dObj->getDims() - 1); x++)
-                                {
-                                    iso5436_2.GetMatrixPoint(x, y, nMat, vector);
-
-                                    if(vector.IsValid())
-                                    {
-                                        vector.GetZ()->Get(&tempValRe);
-                                        iso5436_2.GetMatrixPoint(x, y, nMat * 2, vector);
-                                        vector.GetZ()->Get(&tempValIm);
-                                        ((ito::complex128*)pDataRow)[x].real(tempValRe * zscale + zoffset);
-                                        ((ito::complex128*)pDataRow)[x].imag(tempValIm * zscale + zoffset);
-                                    }
-                                    else
-                                    {
-                                        ((ito::complex128*)pDataRow)[x] = std::numeric_limits<ito::complex128>::signaling_NaN();
-                                    }
-
-                                    iterator->MoveNext();
-                                }
+                                rowPtr[x] =  std::numeric_limits<ito::float64>::quiet_NaN();
                             }
+                            iterator->MoveNext();
                         }
-                    break;
-
-                    default:
-                        retval += ito::RetVal(ito::retError, 0, QObject::tr("data type mismatch").toLatin1().data());
-                    break;
+                    }
                 }
+            }
             break;
 
             default:
@@ -810,14 +791,18 @@ ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, _OGPS_DATA_POINT_TYPE 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
+ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal retval = ito::retOk;
-    wchar_t xdatat, ydatat, zdatat;
+    Record1Type::Axes_type::CX_type::DataType_type::value xdatat;
+    Record1Type::Axes_type::CY_type::DataType_type::value ydatat;
+    Record1Type::Axes_type::CZ_type::DataType_type::value zdatat;
     double xscale, yscale, zscale, xoffset, yoffset, zoffset;
+    bool binary = paramsOpt->at(0).getVal<int>() ? true : false;
 
-    ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
+    const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
     char *filename = (*paramsMand)[1].getVal<char*>();
+    bool zScalingNecessary = false;
 
     if (!dObj)
     {
@@ -920,28 +905,53 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     Record1Type::Revision_type revision(OGPS_ISO5436_2000_REVISION_NAME);
     Record1Type::FeatureType_type featureType(OGPS_FEATURE_TYPE_SURFACE_NAME);
 
-    Record1Type::Axes_type::CX_type::AxisType_type xaxisType(Record1Type::Axes_type::CX_type::AxisType_type::I); // absolute
-    Record1Type::Axes_type::CX_type::DataType_type xdataType((Record1Type::Axes_type::CX_type::DataType_type::value) xdatat);
+    Record1Type::Axes_type::CX_type::AxisType_type xaxisType(Record1Type::Axes_type::CX_type::AxisType_type::I); // incremental
+    //Record1Type::Axes_type::CX_type::DataType_type xdataType(xdatat);
     Record1Type::Axes_type::CX_type xaxis(xaxisType);
-    xaxis.DataType(xdataType);
+    xaxis.DataType(xdatat);
     xaxis.Increment(xscale * xUnitScale); // scale must be in meter/pixel
     xaxis.Offset(xoffset * xscale * xUnitScale); // offset must be in meter/pixel
 
-    Record1Type::Axes_type::CY_type::AxisType_type yaxisType(Record1Type::Axes_type::CY_type::AxisType_type::I); // absolute
-    Record1Type::Axes_type::CY_type::DataType_type ydataType((Record1Type::Axes_type::CY_type::DataType_type::value) ydatat);
+    Record1Type::Axes_type::CY_type::AxisType_type yaxisType(Record1Type::Axes_type::CY_type::AxisType_type::I); // incremental
     Record1Type::Axes_type::CY_type yaxis(yaxisType);
-    yaxis.DataType(ydataType);
+    yaxis.DataType(ydatat);
     yaxis.Increment(yscale * yUnitScale); // scale must be in meter/pixel
     yaxis.Offset(yoffset * yscale * yUnitScale); // offset must be in meter/pixel
 
-    Record1Type::Axes_type::CZ_type::AxisType_type zaxisType(Record1Type::Axes_type::CZ_type::AxisType_type::A); // absolute
-    Record1Type::Axes_type::CZ_type::DataType_type zdataType((Record1Type::Axes_type::CZ_type::DataType_type::value) zdatat); // 16 bit integer
+    Record1Type::Axes_type::CZ_type::AxisType_type zaxisType(Record1Type::Axes_type::CZ_type::AxisType_type::A); // absolute (must always be absolute)
     Record1Type::Axes_type::CZ_type zaxis(zaxisType);
-    zaxis.DataType(zdataType);
-    zaxis.Increment(zscale * valueUnitScale); // scale must be in meter/pixel
-    zaxis.Offset(zoffset * zscale * valueUnitScale); // offset must be in meter/pixel
+
+    if (std::abs(zscale * valueUnitScale - 1.0) > std::numeric_limits<double>::epsilon())
+    {
+        if (zdatat != Record1Type::Axes_type::CX_type::DataType_type::F && zdatat != Record1Type::Axes_type::CX_type::DataType_type::D)
+        {
+            retval += ito::RetVal(ito::retWarning, 0, "x3p stores its data in meter, therefore a scaling factor has to be applied. The format of the stored data is changed to double");
+            zdatat = Record1Type::Axes_type::CX_type::DataType_type::D;
+        }
+        zaxis.DataType(zdatat);
+        zaxis.Increment(1); // scale must be in meter/pixel
+        zaxis.Offset(zoffset * zscale * valueUnitScale); // offset must be in meter/pixel
+        zScalingNecessary = true;
+    }
+    else
+    {
+        zaxis.DataType(zdatat);
+        zaxis.Increment(1); // scale must be in meter/pixel
+        zaxis.Offset(zoffset); // offset must be in meter/pixel
+        zScalingNecessary = false;
+    }
+
+    
+
 
     Record1Type::Axes_type axis(xaxis, yaxis, zaxis);
+
+    double r11, r12, r13, r21, r22, r23, r31,r32, r33;
+    dObj->getXYRotationalMatrix(r11, r12, r13, r21, r22, r23, r31,r32, r33);
+    if (r11 != 1 || r22 != 1 || r33 != 1)
+    {
+        axis.Rotation(AxesType::Rotation_type(r11,r12,r13,r21,r22,r23,r31,r32,r33));
+    }
 
     Record1Type record1(revision, featureType, axis);
 
@@ -984,9 +994,17 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     if (tmpStr.length() && foundTag)
     {
         if (wcscmp(tmpStr.c_str(), _T("Contacting")) == 0)
+        {
             type = Record2Type::ProbingSystem_type::Type_type::Contacting;
+        }
         else if (wcscmp(tmpStr.c_str(), _T("NonContacting")) == 0)
+        {
             type = Record2Type::ProbingSystem_type::Type_type::NonContacting;
+        }
+        else if (wcscmp(tmpStr.c_str(), _T("Software")) == 0)
+        {
+            type = Record2Type::ProbingSystem_type::Type_type::Software;
+        }
     }
 
     tmpStr.FromChar(dObj->getTag(std::string("probingSystemID"), foundTag).getVal_ToString().data());
@@ -1005,7 +1023,7 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     record2.Comment(comment);
 
     // Create MATRIX
-    int nMats = dObj->calcNumMats();
+    int nMats = dObj->getNumPlanes();
     MatrixDimensionType matrix(0, 0, 0);
     if ((dObj->getType() == ito::tComplex64) || (dObj->getType() == ito::tComplex128))
     {
@@ -1023,10 +1041,9 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     // Create ISO5436_2 container
     OpenGPS::String fname;
     fname.FromChar(filename);
-    OGPS_ISO5436_2Handle handle = ogps_CreateMatrixISO5436_2(fname.c_str(), NULL, record1, &record2, matrix, TRUE);
-//    OGPS_ISO5436_2Handle handle = ogps_CreateMatrixISO5436_2(_T("test.xp3"), NULL, record1, &record2, matrix, TRUE);
+    OGPS_ISO5436_2Handle handle = ogps_CreateMatrixISO5436_2(fname.c_str(), NULL, record1, &record2, matrix, binary ? TRUE : FALSE);
 
-    retval += fillDataMatrix(handle, dObj);
+    retval += fillDataMatrix(handle, dObj, zScalingNecessary, zscale * valueUnitScale);
 
     bool ismatrix=ogps_IsMatrix(handle);
     if (ogps_HasError())
@@ -1117,15 +1134,21 @@ ito::RetVal X3pIO::loadDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::
 ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
    ito::RetVal retval = ito::retOk;
-   ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
+   ito::DataObject *dObjIn = (*paramsMand)[0].getVal<ito::DataObject*>();
    char *filename = (*paramsMand)[1].getVal<char*>();
    std::string xyUnit = paramsOpt->at(0).getVal<char*>();
    std::string valueUnit = paramsOpt->at(1).getVal<char*>();
 
-   if (!dObj)
+   if (!dObjIn)
+   {
       return ito::RetVal(ito::retError, 0, QObject::tr("empty data object").toLatin1().data());
+   }
    if (!filename)
+   {
       return ito::RetVal(ito::retError, 0, QObject::tr("no filename specified").toLatin1().data());
+   }
+
+   ito::DataObject dObj;
 
    double xyScaleFactor = 1.0;
 
@@ -1174,154 +1197,263 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
    }
 
 
-   // Open the file, hopefully everything went well...
-   OpenGPS::String fname;
-   fname.FromChar(filename);
-   OpenGPS::ISO5436_2 iso5436_2(fname.c_str());
-   // Check for error opening
-   if(ogps_HasError())
-   {
-      //     std::cerr << "Error opening file \"" << fileName << "\"" << endl;
-      return ito::RetVal(ito::retError, 0, QObject::tr("error opening file").toLatin1().data());
-   }
+    // Open the file, hopefully everything went well...
+    OpenGPS::String fname;
+    fname.FromChar(filename);
+    OpenGPS::ISO5436_2 iso5436_2(fname);
+    // Check for error opening
+    if(ogps_HasError())
+    {
+        return ito::RetVal(ito::retError, 0, QObject::tr("error opening file").toLatin1().data());
+    }
 
-   // Try to open in read only mode
-   try
-   {
-      iso5436_2.Open(TRUE);
-   }
-   catch(OpenGPS::Exception &e)
-   {
-      OpenGPS::String err=e.details();
-      //     std::cerr << "Error opening file \"" << fileName << "\"" << endl
-      //               << err << endl;
-      //err.ToChar()
-      return ito::RetVal::format(ito::retError, 0, QObject::tr("error opening file: %s").toLatin1().data(), err.ToChar() );
-   }
+    // Try to open in read only mode
+    try
+    {
+        iso5436_2.Open(TRUE);
+    }
+    catch(OpenGPS::Exception &e)
+    {
+        OpenGPS::String err=e.details();
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("error opening file: %s").toLatin1().data(), err.ToChar() );
+    }
 
-   // Obtain handle to xml document.
-   const ISO5436_2Type* const document = iso5436_2.GetDocument();
+    // Obtain handle to xml document.
+    const ISO5436_2Type* document = iso5436_2.GetDocument();
 
-   if(document)
-   {
-      // Print meta data
-      //     PrintMetaData(document);
-      // Is data list? / Is matrix? - don't care; we use point iterator.
-//      ISO5436_2Type::Record1_type record1 = document->Record1();
-//      ISO5436_2Type::Record2_optional record2 = document->Record2();
-//      ISO5436_2Type::Record3_type record3 = document->Record3();
+    if(document)
+    {
+        // Is data list? / Is matrix? - don't care; we use point iterator.
+        const ISO5436_2Type::Record1_type record1 = document->Record1();
+        const ISO5436_2Type::Record2_optional record2 = document->Record2();
+        const ISO5436_2Type::Record3_type record3 = document->Record3();
 
-// here we need to read the ITO(tm) dimensions and data type from the vendor specific extensions ;-)
-        OpenGPS::PointIteratorAutoPtr iterator = iso5436_2.CreateNextPointIterator();
-        OpenGPS::PointVector vector;
-        int dObjType;
+        int x_idx = 2;
+        int y_idx = 1;
+        int z_idx = 0;
+        int x_size, y_size, z_size;
+        ito::tDataType dtype;
+        double xscale = 1.0, xoffset = 0.0;
+        double yscale = 1.0, yoffset = 0.0;
+        double zscale = 1.0, zoffset = 0.0;
+        OGPS_DataPointType pointType = OGPS_MissingPointType;
+        bool isListType = false;
 
-        //iterate through points until the first valid element comes (valid != pointTypeMissing ... )
-        do
+        if (record1.FeatureType() != Record1Type::FeatureType_type::SUR &&
+            record1.FeatureType() != Record1Type::FeatureType_type::PRF)
         {
-            iterator->GetCurrent(vector);
-            iterator->MoveNext();
-        } while(!vector.IsValid());
-
-        _OGPS_DATA_POINT_TYPE pointType = vector.GetZ()->GetPointType();
-
-        switch (pointType)
+            retval += ito::RetVal(ito::retError, 0, "only feature types SUR (surface) or PRF (profile) are supported.");
+        }
+        else
         {
-            case OGPS_Int16PointType:
-                dObjType = ito::tInt16;
-            break;
+            //Record 3: Data.
+            if (record3.MatrixDimension().present())
+            {
+                const Record3Type::MatrixDimension_type matDim = record3.MatrixDimension().get();
+                x_size = matDim.SizeX();
+                y_size = matDim.SizeY();
+                z_size = matDim.SizeZ();
 
-            case OGPS_Int32PointType:
-                dObjType = ito::tInt16;
-            break;
-
-            case OGPS_FloatPointType:
-                dObjType = ito::tFloat32;
-            break;
-
-            case OGPS_DoublePointType:
-                dObjType = ito::tFloat64;
-            break;
-
-            default:
-                dObjType = ito::tFloat32;
-            break;
+                if (x_size * y_size * z_size == 0)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "x3p file does not contain any data");
+                }
+                else
+                {
+                    if (matDim.SizeZ() <= 1)
+                    {
+                        z_size = 0;
+                        x_idx = 1;
+                        y_idx = 0;
+                    }
+                }
+            }
+            else if (record3.ListDimension().present())
+            {
+                const Record3Type::ListDimension_type listDim = record3.ListDimension().get();
+                y_size = 1;
+                x_size = listDim;
+                z_size = 0;
+                x_idx = 1;
+                y_idx = 0;
+                isListType = true;
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "x3p file does not contain organized matrix or list data. Unordered list data is not supported.");
+            }
         }
 
-        iterator.release();
+        if (!retval.containsError())
+        {
+            // here we need to read the ITO(tm) dimensions and data type from the vendor specific extensions ;-)
+            OpenGPS::PointIteratorAutoPtr iterator = iso5436_2.CreateNextPointIterator();
+            OpenGPS::PointVector vector;
+            iterator->GetCurrent(vector);
 
-       if (document->Record3().ListDimension().present())
-       {
-           Record3Type::ListDimension_type matDim = document->Record3().ListDimension().get();
-           dObj->zeros(matDim, dObjType);
-       }
-       else if (document->Record3().MatrixDimension().present())
-       {
-           Record3Type::MatrixDimension_type matDim = document->Record3().MatrixDimension().get();
-           dObj->zeros(matDim.SizeZ(), matDim.SizeY(), matDim.SizeX(), dObjType);
-       }
-       else
-       {
-           return ito::RetVal(ito::retError, 0, QObject::tr("could neither retrieve list nor matrix dimensions").toLatin1().data());
-       }
+            //iterate through points until the first valid element comes (valid != pointTypeMissing ... )
+            while(!vector.IsValid() && iterator->HasNext())
+            {
+                iterator->MoveNext();
+                iterator->GetCurrent(vector); 
+            }
 
-       double xscale = 1.0, xoffset = 0.0;
-       // we must check if scaling and offset are present, otherwise they are filled with random values
-       if (document->Record1().Axes().CX().Increment().present())
-           xscale = document->Record1().Axes().CX().Increment().get();          // the lateral unit of x3p is m/px
-       if (document->Record1().Axes().CX().Offset().present())
-           xoffset = document->Record1().Axes().CX().Offset().get() / xscale;   // in itom, the offset is in pixel, x3p returns the offset in m/px
-       dObj->setAxisScale(dObj->getDims() - 1, xscale * xyScaleFactor); //
-       dObj->setAxisOffset(dObj->getDims() - 1, xoffset);
-       dObj->setAxisUnit(dObj->getDims() - 1, xyUnit);
+            pointType = vector.GetZ()->GetPointType();
 
-       double yscale = 1.0, yoffset = 0.0;
-       // we must check if scaling and offset are present, otherwise they are filled with random values
-       if (document->Record1().Axes().CY().Increment().present())
-           yscale = document->Record1().Axes().CY().Increment().get();          // the lateral unit of x3p is m/px
-       if (document->Record1().Axes().CY().Offset().present())
-           yoffset = document->Record1().Axes().CY().Offset().get() / yscale;   // in itom, the offset is in pixel, x3p returns the offset in m/px
-       dObj->setAxisScale(dObj->getDims() - 2, yscale * xyScaleFactor);
-       dObj->setAxisOffset(dObj->getDims() - 2, yoffset);
-       dObj->setAxisUnit(dObj->getDims() - 2, xyUnit);
+            switch (pointType)
+            {
+                case OGPS_Int16PointType:
+                    dtype = ito::tInt16;
+                break;
 
-       // we currently do not support v/zscale and offset so if they are not standard we have to
-       // use them writing data into dataObject
-       // we must check if scaling and offset are present, otherwise they are filled with random values
-       double zscale = 1.0, zoffset = 0.0;
-       if (document->Record1().Axes().CZ().Increment().present())
-            zscale = document->Record1().Axes().CZ().Increment().get();
-       if (document->Record1().Axes().CZ().Offset().present())
-            zoffset = document->Record1().Axes().CZ().Offset().get() / zscale;
-       zscale *= valueScaleFactor;
-       dObj->setValueUnit(valueUnit);
+                case OGPS_Int32PointType:
+                    dtype = ito::tInt16;
+                break;
 
-       OpenGPS::String tempStr;
-       tempStr = document->Record2()->Instrument().Manufacturer();
-       dObj->setTag("manufacturer", std::string(tempStr.ToChar()));
+                case OGPS_FloatPointType:
+                    dtype = ito::tFloat32;
+                break;
 
-       tempStr = document->Record2()->Instrument().Model();
-       dObj->setTag("model", std::string(tempStr.ToChar()));
+                case OGPS_DoublePointType:
+                    dtype = ito::tFloat64;
+                break;
 
-       tempStr = document->Record2()->Instrument().Serial();
-       dObj->setTag("serial", std::string(tempStr.ToChar()));
+                default:
+                    dtype = ito::tFloat32;
+                break;
+            }
 
-       tempStr = TimeStamp((::xml_schema::date_time &) document->Record2()->CalibrationDate());
-       dObj->setTag("calibrationDate", std::string(tempStr.ToChar()));
+            iterator.release();
 
-       tempStr = document->Record2()->ProbingSystem().Type();
-       dObj->setTag("probingSystemType", std::string(tempStr.ToChar()));
+            //create dObj with appropriate dimensions...
+            if (z_size > 0)
+            {
+                dObj.zeros(z_size, y_size, x_size, dtype);
+            }
+            else
+            {
+                dObj.zeros(y_size, x_size, dtype);
+            }
+        }
 
-       tempStr = document->Record2()->ProbingSystem().Identification();
-       dObj->setTag("probingSystemID", std::string(tempStr.ToChar()));
+        //x- and y- axis must be incremental
+        if (!retval.containsError())
+        {
+            if (x_size > 1 && y_size > 1)
+            {
+                //x- and y- axis must be incremental
+                if (record1.Axes().CX().AxisType() != AxisType::I ||
+                    record1.Axes().CY().AxisType() != AxisType::I)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "x- and y-axes must have an incremental axis type. absolute x- and y-axes not supported.");
+                }
+            }
+            else if (y_size == 1) //list, x- axis must be incremental
+            {
+                if (record1.Axes().CX().AxisType() != AxisType::I)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "x-axis must have an incremental axis type.");
+                }
+            }
+        }
 
-       tempStr = document->Record2()->Comment().get();
-       dObj->setTag("comment", std::string(tempStr.ToChar()));
+        //check Record1 for scaling, rotation matrix...
+        if (!retval.containsError())
+        {
+            // we must check if scaling and offset are present, otherwise they are filled with random values
+            if (record1.Axes().CX().Increment().present())
+            {
+                xscale = document->Record1().Axes().CX().Increment().get();          // the lateral unit of x3p is m/px
+            }
+            if (record1.Axes().CX().Offset().present())
+            {
+                xoffset = record1.Axes().CX().Offset().get() / xscale;   // in itom, the offset is in pixel, x3p returns the offset in m/px
+            }
+            dObj.setAxisScale(x_idx, xscale * xyScaleFactor); //
+            dObj.setAxisOffset(x_idx, xoffset);
+            dObj.setAxisUnit(x_idx, xyUnit);
 
-       retval += loadDataMatrix(iso5436_2, pointType, dObj, zscale, zoffset);
+            // we must check if scaling and offset are present, otherwise they are filled with random values
+            if (record1.Axes().CY().Increment().present())
+            {
+                yscale = record1.Axes().CY().Increment().get();          // the lateral unit of x3p is m/px
+            }
+            if (record1.Axes().CY().Offset().present())
+            {
+                yoffset = record1.Axes().CY().Offset().get() / yscale;   // in itom, the offset is in pixel, x3p returns the offset in m/px
+            }
+            dObj.setAxisScale(y_idx, yscale * xyScaleFactor);
+            dObj.setAxisOffset(y_idx, yoffset);
+            dObj.setAxisUnit(y_idx, xyUnit);
+
+            // we must check if scaling and offset are present, otherwise they are filled with random values
+            if (record1.Axes().CZ().AxisType() == AxisType::A)
+            {
+                zscale = 1.0; //per definition, the scaling of an absolute axis is 1.0
+            }
+            else if (record1.Axes().CZ().Increment().present())
+            {
+                zscale = record1.Axes().CZ().Increment().get();
+            }
+
+            //offset can always be available, since it is part of the rotation and translation component
+            if (record1.Axes().CZ().Offset().present())
+            {
+                zoffset = record1.Axes().CZ().Offset().get() / zscale;
+            }
+            zscale *= valueScaleFactor;
+            dObj.setValueUnit(valueUnit);
+
+            if (record1.Axes().Rotation().present())
+            {
+                const AxesType::Rotation_type &rot = record1.Axes().Rotation().get();
+                dObj.setXYRotationalMatrix(rot.r11(), rot.r12(), rot.r13(), rot.r21(), rot.r22(), rot.r23(), rot.r31(), rot.r32(), rot.r33());
+            }
+        }
+
+        //Read meta information from Record2
+        if (!retval.containsError())
+        {
+            //Read meta information from Record2
+            OpenGPS::String tempStr;
+            tempStr = record2->Instrument().Manufacturer();
+            dObj.setTag("manufacturer", std::string(tempStr.ToChar()));
+
+            tempStr = record2->Instrument().Model();
+            dObj.setTag("model", std::string(tempStr.ToChar()));
+
+            tempStr = record2->Instrument().Serial();
+            dObj.setTag("serial", std::string(tempStr.ToChar()));
+
+            tempStr = TimeStamp((::xml_schema::date_time &) document->Record2()->CalibrationDate());
+            dObj.setTag("calibrationDate", std::string(tempStr.ToChar()));
+
+            tempStr = record2->ProbingSystem().Type();
+            dObj.setTag("probingSystemType", std::string(tempStr.ToChar()));
+
+            tempStr = record2->ProbingSystem().Identification();
+            dObj.setTag("probingSystemID", tempStr.ToChar());
+
+            if (record2->Comment().present())
+            {
+                tempStr = record2->Comment().get();
+                dObj.setTag("comment", tempStr.ToChar());
+            }
+        }
+
+        if (!retval.containsError())
+        {
+            //load data
+            retval += loadDataMatrix(iso5436_2, pointType, &dObj, x_size, y_size, zscale, zoffset);
+        }
    }
 
    iso5436_2.Close();
+
+   if (!retval.containsError())
+   {
+       (*dObjIn) = dObj;
+   }
 
    return retval;
 }
