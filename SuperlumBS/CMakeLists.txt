@@ -60,10 +60,6 @@ LINK_DIRECTORIES(
 )
 
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsInc.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogSuperlumBS.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetSuperlumBS.h
     ${CMAKE_CURRENT_SOURCE_DIR}/SuperlumBS.h

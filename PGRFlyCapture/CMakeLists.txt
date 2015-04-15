@@ -72,11 +72,6 @@ IF(PGRFLYCAP_INCLUDE_DIR)
     endif(BUILD_TARGET64)
 
     set(plugin_HEADERS
-        ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogPGRFlyCapture.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPGRFlyCapture.h
         ${CMAKE_CURRENT_SOURCE_DIR}/PGRFlyCapture.h

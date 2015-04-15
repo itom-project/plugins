@@ -53,9 +53,6 @@ INCLUDE_DIRECTORIES(
 )
 
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogUSBMotion3XIII.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetUSBMotion3XIII.h
     ${CMAKE_CURRENT_SOURCE_DIR}/USB3xIII_dll.h

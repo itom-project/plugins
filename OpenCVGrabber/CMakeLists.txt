@@ -21,7 +21,7 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-find_package(ITOM_SDK REQUIRED)
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core highgui imgproc REQUIRED)
@@ -37,9 +37,6 @@ IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-# enable some qt stuff
-#SET (QT_USE_QTXML TRUE)
-
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
@@ -52,44 +49,20 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${QT_QTCORE_INCLUDE_DIR}
     ${OpenCV_DIR}/include
-    ${ITOM_SDK_INCLUDE_DIR}
+    ${ITOM_SDK_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
-LINK_DIRECTORIES(
-    ${OpenCV_DIR}/lib
-)
-
-if (NOT QT5_FOUND)
-    INCLUDE(${QT_USE_FILE})
-endif (NOT QT5_FOUND)
-
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsInc.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogOpenCVGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/OpenCVGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
-if (NOT QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-endif (NOT QT5_FOUND)
-
 set(plugin_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogOpenCVGrabber.ui
 )
-
-if (QT5_FOUND)
-    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-else (QT5_FOUND)
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-endif (QT5_FOUND)
 
 set(plugin_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogOpenCVGrabber.cpp
@@ -101,16 +74,23 @@ if(MSVC)
     list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
+if (QT5_FOUND)
+    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+    QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+else (QT5_FOUND)
+    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+    QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+endif (QT5_FOUND)
+
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 #handle translations END STEP 1
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
 if (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${OpenCV_opencv_highgui_LIBRARY} ${OpenCV_opencv_imgproc_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
-    
-    qt5_use_modules(${target_name} Widgets UiTools Xml)
-else (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${OpenCV_opencv_highgui_LIBRARY} ${OpenCV_opencv_imgproc_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
+    qt5_use_modules(${target_name} ${QT_COMPONENTS})
 endif (QT5_FOUND)
 
 #translation
