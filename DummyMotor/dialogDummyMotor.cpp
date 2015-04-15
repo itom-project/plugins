@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -31,126 +31,110 @@
 */
 
 #include "dialogDummyMotor.h"
+
+#include "common/addInInterface.h"
+
+#include <qdialogbuttonbox.h>
 #include <qmetaobject.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** @detail This function changes the values of the different GUI-elements according to the input paramVals
-*
-*\param[in] motor    A handle to the motor attached to this dialog
-*\param[in] axisnums The number of axis this attached motor offer
-*
-*\sa DummyMotor
-*/
-dialogDummyMotor::dialogDummyMotor(ito::AddInActuator *motor, int axisnums) : m_pDummyMotor(motor), m_numaxis(axisnums)
+DialogDummyMotor::DialogDummyMotor(ito::AddInBase *actuator) :
+    AbstractAddInConfigDialog(actuator),
+    m_actuator(actuator),
+    m_firstRun(true),
+    m_numaxis(0)
 {
-    memset(m_enable, 0, 10 * sizeof(int));
     ui.setupUi(this);
+    memset(m_enable, 0, 10 * sizeof(int));
+    
+    //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
+    enableGUI(false);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** @detail This function changes the values of the different GUI-elements according to the input paramVals
-*
-*\param[in] paramVals    Parameterlist with Motorparamters (m_params)
-*\warning If the Keywords (parameters) "speed" and "accel" do not exist in the Parameterlist and the find is not used , this will crash!!
-*\sa DummyMotor
-*/
-int dialogDummyMotor::setVals(QMap<QString, ito::Param> *paramVals)
+DialogDummyMotor::~DialogDummyMotor()
 {
-    QVariant qvar;
-    double dtemp  = 0.0;
-    
-    setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
+}
 
-    QMap<QString, ito::Param>::const_iterator paramIt = (*paramVals).constFind("speed");    // To check if this parameter exists
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogDummyMotor::parametersChanged(QMap<QString, ito::Param> params)
+{
+    if (m_firstRun)
+    {
+        m_numaxis = params["numaxis"].getVal<int>();
+        setWindowTitle(QString(params["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-    if (paramIt != ((*paramVals).constEnd()))
-    {
-        dtemp = ((*paramVals)["speed"]).getMax(); 
-        ui.doubleSpinBox_Speed->setMaximum(dtemp);
-        dtemp = ((*paramVals)["speed"]).getMin(); 
-        ui.doubleSpinBox_Speed->setMinimum(dtemp);
-        dtemp = ((*paramVals)["speed"]).getVal<double>();   
-        ui.doubleSpinBox_Speed->setValue(dtemp);
-    }
-    else
-    {
-        ui.doubleSpinBox_Speed->setEnabled(0);
+        m_firstRun = false;
     }
 
-    paramIt = (*paramVals).constFind("accel");    // To check if this parameter exists
-
-    if (paramIt != ((*paramVals).constEnd()))
+    switch (m_numaxis)
     {
-        dtemp = ((*paramVals)["accel"]).getMax(); 
-        ui.doubleSpinBox_Accel->setMaximum(dtemp);
-        dtemp = ((*paramVals)["accel"]).getMin(); 
-        ui.doubleSpinBox_Accel->setMinimum(dtemp);
-        dtemp = ((*paramVals)["accel"]).getVal<double>();   
-        ui.doubleSpinBox_Accel->setValue(dtemp);
-    }
-    else
-    {
-        ui.doubleSpinBox_Accel->setEnabled(0);
-    }
-
-    if(m_numaxis>0)
-    {
-        ui.checkBox_EnableX->setEnabled(1);
-        ui.checkBox_EnableX->setChecked(1);
-    }
-    if(m_numaxis>1)
-    {
-        ui.checkBox_EnableY->setEnabled(1);
-        ui.checkBox_EnableY->setChecked(1);
-    }
-    if(m_numaxis>2)
-    {
-        ui.checkBox_EnableZ->setEnabled(1);
-        ui.checkBox_EnableZ->setChecked(1);
-    }
-    if(m_numaxis>3)
-    {
-        ui.checkBox_EnableA->setEnabled(1);
-        ui.checkBox_EnableA->setChecked(1);
-    }
-    if(m_numaxis>4)
-    {
-        ui.checkBox_EnableB->setEnabled(1);
-        ui.checkBox_EnableB->setChecked(1);
-    }
-    if(m_numaxis>5)
-    {
+    case 6:
         ui.checkBox_EnableC->setEnabled(1);
         ui.checkBox_EnableC->setChecked(1);
-    }
-  
-    // Futher axis not implementet yet
+    case 5:
+        ui.checkBox_EnableB->setEnabled(1);
+        ui.checkBox_EnableB->setChecked(1);
+    case 4:
+        ui.checkBox_EnableA->setEnabled(1);
+        ui.checkBox_EnableA->setChecked(1);
+    case 3:
+        ui.checkBox_EnableZ->setEnabled(1);
+        ui.checkBox_EnableZ->setChecked(1);
+    case 2:
+        ui.checkBox_EnableY->setEnabled(1);
+        ui.checkBox_EnableY->setChecked(1);
+    case 1:
+        ui.checkBox_EnableX->setEnabled(1);
+        ui.checkBox_EnableX->setChecked(1);
+    };
 
-    return 0;
+    ui.doubleSpinBox_Speed->setMaximum(params["speed"].getMax());
+    ui.doubleSpinBox_Speed->setMinimum(params["speed"].getMin());
+    ui.doubleSpinBox_Speed->setValue(params["speed"].getVal<double>());
+    ui.doubleSpinBox_Speed->setDisabled(params["speed"].getFlags() & ito::ParamBase::Readonly);
+
+    ui.doubleSpinBox_Accel->setMaximum(params["accel"].getMax());
+    ui.doubleSpinBox_Accel->setMinimum(params["accel"].getMin());
+    ui.doubleSpinBox_Accel->setValue(params["accel"].getVal<double>());
+    ui.doubleSpinBox_Accel->setDisabled(params["accel"].getFlags() & ito::ParamBase::Readonly);
+        
+    // set ui to new parameters
+    ui.checkAsync->setChecked(params["async"].getVal<int>());
+    
+    //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
+    enableGUI(true);
+
+    m_currentParameters = params;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int dialogDummyMotor::getVals(QMap<QString, ito::Param> * /*paramVals*/)
+ito::RetVal DialogDummyMotor::applyParameters()
 {
-    double dtemp = 0.0;
-    QVariant qvar;
+    ito::RetVal retValue(ito::retOk);
+    QVector<QSharedPointer<ito::ParamBase> > values;
 
-    if(ui.doubleSpinBox_Speed->isEnabled())    //If true than the getVal found the parameters during construction
+    if (ui.checkAsync->isChecked() != (m_currentParameters["async"].getVal<int>() > 0))
     {
-        dtemp = ui.doubleSpinBox_Speed->value();
-        m_pDummyMotor->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed",ito::ParamBase::Double, dtemp)));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, ui.checkAsync->isChecked() ? 1 : 0)));
     }
 
-    if(ui.doubleSpinBox_Accel->isEnabled())
+    if(qAbs(ui.doubleSpinBox_Speed->value() - m_currentParameters["speed"].getVal<double>()) > std::numeric_limits<double>::epsilon())    //If true than the getVal found the parameters during construction
     {
-        dtemp = ui.doubleSpinBox_Accel->value();
-        m_pDummyMotor->setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel",ito::ParamBase::Double, dtemp)));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed", ito::ParamBase::Double, ui.doubleSpinBox_Speed->value())));
     }
-    return 0;
+
+    if(qAbs(ui.doubleSpinBox_Accel->value() - m_currentParameters["accel"].getVal<double>()) > std::numeric_limits<double>::epsilon())    //If true than the getVal found the parameters during construction
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel", ito::ParamBase::Double, ui.doubleSpinBox_Accel->value())));
+    }
+    
+    retValue += setPluginParameters(values, msgLevelWarningAndError);
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void dialogDummyMotor::on_pushButtonCalib_clicked()
+void DialogDummyMotor::on_pushButtonCalib_clicked()
 {
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int i;
@@ -161,28 +145,57 @@ void dialogDummyMotor::on_pushButtonCalib_clicked()
         if(m_enable[i])
             axis << i;
     }
-    QMetaObject::invokeMethod(m_pDummyMotor,"calib",Q_ARG(QVector<int>,axis),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
-    locker.getSemaphore()->wait(60000);
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+    enableGUI(false);
+    ui.buttonBox->setDisabled(true);
+    QMetaObject::invokeMethod(m_actuator,"calib",Q_ARG(QVector<int>,axis),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
-    return;
+    observeInvocation(locker.getSemaphore(), msgLevelWarningAndError);
+    ui.buttonBox->setEnabled(true);
+    enableGUI(true);
+    QApplication::restoreOverrideCursor();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void dialogDummyMotor::on_checkBox_EnableX_clicked()
+void DialogDummyMotor::on_checkBox_EnableX_clicked()
 {
     m_enable[0]=ui.checkBox_EnableX->isChecked();
-    return;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void dialogDummyMotor::on_checkBox_EnableY_clicked()
+void DialogDummyMotor::on_checkBox_EnableY_clicked()
 {
     m_enable[1]=ui.checkBox_EnableY->isChecked();
-    return;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void dialogDummyMotor::on_checkBox_EnableZ_clicked()
+void DialogDummyMotor::on_checkBox_EnableZ_clicked()
 {
-    m_enable[2]=ui.checkBox_EnableZ->isChecked();
-    return;
+    m_enable[2] = ui.checkBox_EnableZ->isChecked();
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
+void DialogDummyMotor::on_buttonBox_clicked(QAbstractButton* btn)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    QDialogButtonBox::ButtonRole role = ui.buttonBox->buttonRole(btn);
+
+    if (role == QDialogButtonBox::RejectRole)
+    {
+        reject(); //close dialog with reject
+    }
+    else if (role == QDialogButtonBox::AcceptRole)
+    {
+        accept(); //AcceptRole
+    }
+    else
+    {
+        applyParameters(); //ApplyRole
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogDummyMotor::enableGUI(bool enabled)
+{
+    ui.groupBoxProperties->setEnabled(enabled);
+    ui.groupBoxAxis->setEnabled(enabled);
+}
