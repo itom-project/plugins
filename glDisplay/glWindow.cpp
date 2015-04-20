@@ -113,6 +113,13 @@ GLWindow::GLWindow(const QGLFormat &format, QWidget *parent, const QGLWidget *sh
 GLWindow::~GLWindow()
 {
 #if QT_VERSION >= 0x050000
+#if _DEBUG
+	if (m_pLogger)
+	{
+		delete m_pLogger;
+		m_pLogger = NULL;
+	}
+#endif
     if (m_glf)
     {
         delete m_glf;
@@ -136,22 +143,23 @@ void GLWindow::initializeGL()
 	//initializeGLFunctions(); 
 #endif
 
-#if QT_VERSION > 0x050000 && _DEBUG
-    
-
-	m_pLogger = new QOpenGLDebugLogger( this );
-
-    connect( m_pLogger, SIGNAL( messageLogged( QOpenGLDebugMessage ) ),
-             this, SLOT( onMessageLogged( QOpenGLDebugMessage ) ),
-             Qt::DirectConnection );
-
-	//initialization will fail if GL_KHR_debug extension of OpenGL is not available
-    if ( m_pLogger->initialize() ) 
-	{
-        m_pLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
-        m_pLogger->enableMessages();
-    }
-#endif
+//OpenGL debugging in Qt5 requires a debug-context (see Qt5 help). However, this context needs to be manually created and passed
+//to the constructor of GLWindow. This is not done yet.
+//#if QT_VERSION > 0x050000 && _DEBUG
+//    
+//	m_pLogger = new QOpenGLDebugLogger( this );
+//
+//    connect( m_pLogger, SIGNAL( messageLogged( QOpenGLDebugMessage ) ),
+//             this, SLOT( onMessageLogged( QOpenGLDebugMessage ) ),
+//             Qt::DirectConnection );
+//
+//	//initialization will fail if GL_KHR_debug extension of OpenGL is not available
+//    if ( m_pLogger->initialize() ) 
+//	{
+//        m_pLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
+//        m_pLogger->enableMessages();
+//    }
+//#endif
 
     glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
@@ -281,7 +289,7 @@ void GLWindow::initializeGL()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal GLWindow::shutdown()
+ito::RetVal GLWindow::shutdown(ItomSharedSemaphore *waitCond /*= NULL*/)
 {
 #if QT_VERSION >= 0x050000
     m_vertexBuffer.destroy();
@@ -291,6 +299,12 @@ ito::RetVal GLWindow::shutdown()
     shaderProgram.release();
 
     m_init = false;
+
+	if (waitCond)
+	{
+		waitCond->release();
+	}
+
     return ito::retOk;
 }
 

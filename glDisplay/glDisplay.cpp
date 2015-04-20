@@ -302,7 +302,9 @@ GLDisplay::~GLDisplay()
 {
     if (m_pWindow)
     {
-        delete(m_pWindow);
+		m_pWindow->shutdown();
+		m_pWindow->deleteLater();
+        //delete(m_pWindow);
     }
 }
 
@@ -606,7 +608,9 @@ ito::RetVal GLDisplay::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
-    QMetaObject::invokeMethod(m_pWindow, "shutdown");
+	/*ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
+    QMetaObject::invokeMethod(m_pWindow, "shutdown", Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
+	qDebug() << locker2->waitAndProcessEvents(10000);*/
 
     if (waitCond)
     {

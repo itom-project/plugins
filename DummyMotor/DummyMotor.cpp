@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -40,6 +40,8 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
+#include <qelapsedtimer.h>
+#include <qwaitcondition.h>
 
 #include "pluginVersion.h"
 
@@ -120,14 +122,7 @@ DummyMotorInterface::~DummyMotorInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal DummyMotor::showConfDialog(void)
 {
-    dialogDummyMotor *confDialog = new dialogDummyMotor(qobject_cast<ito::AddInActuator*>(this), m_numaxis);    // Create dialog
-    confDialog->setVals(&m_params);    // Set up dialog parameters
-    if (confDialog->exec())    // Is dialog is endet with exec and not with cancel
-    {
-        confDialog->getVals(&m_params);    // get parameters from dialog
-    }    
-    delete confDialog;    // destray dialog
-    return ito::retOk;
+    return apiShowConfigurationDialog(this, new DialogDummyMotor(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -827,7 +822,7 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
         for (int i=0;i<m_numaxis;i++) _axis.append(i);
     }
     
-    QTime timer;
+    QElapsedTimer timer;
     timer.start();
     QMutex waitMutex;
     QWaitCondition waitCondition;

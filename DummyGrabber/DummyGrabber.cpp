@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -44,9 +44,6 @@
 #include "pluginVersion.h"
 #include "common/helperCommon.h"
 
-//#include <qdebug.h>
-//#include <qmessagebox.h>
-
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -57,251 +54,40 @@
 *
 *   This function delivers the noise for the image.
 */
-template<typename _Tp> inline _Tp fastrand(ito::uint32 &seed, _Tp maxval)
+template<typename _Tp> inline _Tp fastrand(ito::uint32 &seed, _Tp maxval, float offset, float gain)
 {
     seed <<= 1;
     if ((ito::int32)seed <= 0)
+    {
         seed ^= 0x1d872b41;
-    return (_Tp)(seed & maxval);
+    }
+    return cv::saturate_cast<_Tp>(offset * maxval + gain * (seed & maxval));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/** @func   waitForImage
-*   @brief  This function waits until the grab is done.
+/** @func   fastrand
+*   @brief  function for pseudo random values
 *
-*   During the wait a real camera should fill the buffer. In this simulation it is done manually
+*   This function delivers the noise for the image.
 */
-int SimulatedCam::waitForImage(int /*timeoutMS*/)
+template<typename _Tp> inline _Tp fastrand_mean(ito::uint32 &seed, _Tp maxval, ito::uint8 numMeans, float offset, float gain)
 {
-    static ito::uint32 seed = 0;
-    int maxElemsBpp = (1 << m_bpp) - 1;
-    int64 start = cv::getCPUTickCount();
+    ito::uint32 val = 0;
 
-    if (!this->m_started)
+    for (ito::uint8 i = 0; i < numMeans; ++i)
     {
-        return SimulatedCam::missingStart;
-    }
-
-    if (!this->m_grabbed)
-    {
-        return SimulatedCam::missingAcquire;
-    }
-
-    if (m_myInternalBuffer == NULL)
-    {
-        return SimulatedCam::missingBuffer;
-    }
-
-    if (m_bpp < 9)
-    {
-        ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(maxElemsBpp);
-        ito::uint8* ptrBuf = (ito::uint8*)m_myInternalBuffer;
-        for (int n = 0; n < m_xsize * m_ysize; n++)
+        seed <<= 1;
+        if ((ito::int32)seed <= 0)
         {
-
-            *ptrBuf++ = fastrand<ito::uint8>(seed, maxInt);
+            seed ^= 0x1d872b41;
         }
-    }
-    else if (m_bpp < 17)
-    {
-        ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(maxElemsBpp);
-        ito::uint16* ptrBuf = (ito::uint16*)m_myInternalBuffer;
-        for (int n = 0; n < m_xsize * m_ysize; n++)
-        {
 
-            *ptrBuf++ = fastrand<ito::uint16>(seed, maxInt);
-        }
-    }
-    else if (m_bpp < 32)
-    {
-        ito::int32 maxInt = cv::saturate_cast<ito::int32>(maxElemsBpp);
-        ito::int32* ptrBuf = (ito::int32*)m_myInternalBuffer;
-        for (int n = 0; n < m_xsize * m_ysize; n++)
-        {
-            *ptrBuf++ = fastrand<ito::int32>(seed, maxInt);
-        }
-    }
-    else
-    {
-        return wrongBPP;
+        val += seed & maxval;
     }
 
-    start = cv::getCPUTickCount() -start;
-    int waitTime = (int)(m_frameTimeMS - start/cv::getTickFrequency() * 1000 + 0.5);
-    if (waitTime > 0)
-    {
-        Sleep(waitTime);
-    }
-    return SimulatedCam::okay;
+    return cv::saturate_cast<_Tp>(offset * maxval + (gain / numMeans) * val);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-SimulatedCam::SimulatedCam(void):
-    m_frameTimeMS(0),
-    m_binX(1),
-    m_binY(1),
-    m_xsize_max(42),
-    m_ysize_max(42),
-    m_xsize(42),
-    m_ysize(42),
-    m_bpp(8),
-    m_initDone(false),
-    m_started(false),
-    m_grabbed (false),
-    m_myInternalBuffer(NULL)
-{}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-SimulatedCam::~SimulatedCam(void)
-{
-    if (m_myInternalBuffer != NULL)
-    {
-        free(m_myInternalBuffer);
-        m_myInternalBuffer = NULL;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-int SimulatedCam::initCamera(int maxXSize, int maxYSize, int maxBitDepth)
-{
-    if (m_myInternalBuffer != NULL)
-    {
-        return SimulatedCam::triedInitTwice;
-    }
-
-    if (m_initDone)
-    {
-        return SimulatedCam::triedInitTwice;
-    }
-
-    m_bpp = maxBitDepth;
-    int bytesPerPixel  = 1;
-
-    if (m_bpp < 9)
-    {
-        //nichts
-    }
-    else if (m_bpp < 17)
-    {
-        bytesPerPixel = 2;
-    }
-    else if (m_bpp < 33)
-    {
-        bytesPerPixel = 4;
-    }
-    else
-    {
-        return SimulatedCam::wrongBPP;
-    }
-    m_xsize_max = m_xsize = maxXSize;
-    m_ysize_max = m_ysize = maxYSize;
-
-    m_myInternalBuffer = calloc(bytesPerPixel, m_xsize * m_ysize);
-
-    if (m_myInternalBuffer == NULL)
-    {
-        return SimulatedCam::initFailedBuffer;
-    }
-    m_initDone = true;
-    return SimulatedCam::okay;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-int SimulatedCam::setBinning(int binX, int binY)
-{
-    if (!m_initDone)
-    {
-        return missingInit;
-    }
-    if (m_started)
-    {
-        return stillRunning;
-    }
-
-    if (binX > 4 || binY > 4 || binX < 1 || binY < 1)
-    {
-        return binningFailed;
-    }
-    if (m_xsize_max % binX != 0 || m_ysize_max % binY != 0)
-    {
-        return binningFailed;
-    }
-    m_binX = binX;
-    m_binY = binY;
-    m_xsize = m_xsize_max/binX;
-    m_ysize = m_ysize_max/binY;
-    return okay;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-int SimulatedCam::getBinning(int &binX, int &binY)
-{
-    if (!m_initDone)
-    {
-        return missingInit;
-    }
-    binX = m_binX;
-    binY = m_binY;
-    return okay;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-int SimulatedCam::getSize(int &sizeX, int &sizeY)
-{
-    if (!m_initDone)
-    {
-        return missingInit;
-    }
-    sizeX = m_xsize;
-    sizeY = m_ysize;
-    return okay;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-char* SimulatedCam::getImageBuffer(void)
-{
-    if (m_grabbed == true)
-    {
-        m_grabbed = false;
-        return (char*)m_myInternalBuffer;
-    }
-    return NULL;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-int SimulatedCam::acquireImage(void)
-{
-    if (m_started != true)
-    {
-        return SimulatedCam::missingStart;
-    }
-    m_grabbed = true;
-    return SimulatedCam::okay;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-int SimulatedCam::prepareCamera(void)
-{
-    if (m_initDone != true)
-    {
-        return SimulatedCam::missingInit;
-    }
-    m_started = true;
-    return SimulatedCam::okay;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-int SimulatedCam::stopCamera(void)
-{
-    if (m_initDone == true)
-    {
-        m_started = false;
-        m_grabbed = false;
-        return SimulatedCam::okay;
-    }
-    else
-        return SimulatedCam::missingInit;
-}
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \class DummyGrabberInterface
@@ -376,20 +162,20 @@ please also check the plugin 'emulationGrabber'";
     m_detaildescription = QObject::tr(docstring);
     m_author = "C. Kohler, W. Lyda, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
-    m_minItomVer = MINVERSION;
+    m_minItomVer = CREATEVERSION(1,4,0);
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("Licensed under LPGL.");
     m_aboutThis = tr("N.A.");      
     
     m_initParamsMand.clear();
 
-    ito::Param param("maxXSize", ito::ParamBase::Int, 640, new ito::IntMeta(1, 4096), tr("Maximum x size of image").toLatin1().data());
+    ito::Param param("maxXSize", ito::ParamBase::Int, 640, new ito::IntMeta(4, 4096, 4), tr("Width of virtual sensor chip").toLatin1().data());
     m_initParamsOpt.append(param);
 
-    param = ito::Param("maxYSize", ito::ParamBase::Int, 480, new ito::IntMeta(1, 4096), tr("Maximum y size of image").toLatin1().data());
+    param = ito::Param("maxYSize", ito::ParamBase::Int, 480, new ito::IntMeta(4, 4096, 4), tr("Height of virtual sensor chip").toLatin1().data());
     m_initParamsOpt.append(param);
 
-    param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(1, 32), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
+    param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
     m_initParamsOpt.append(param);
 }
 
@@ -433,23 +219,7 @@ DummyGrabberInterface::~DummyGrabberInterface()
 */
 const ito::RetVal DummyGrabber::showConfDialog(void)
 {
-    dialogDummyGrabber *confDialog = new dialogDummyGrabber(this);
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    QMetaObject::invokeMethod(this, "sendParameterRequest");
-
-    if (confDialog->exec())
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-        confDialog->sendVals();
-    }
-    else
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    }
-    delete confDialog;
-
-    return ito::retOk;
+    return apiShowConfigurationDialog(this, new DialogDummyGrabber(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -463,51 +233,43 @@ const ito::RetVal DummyGrabber::showConfDialog(void)
 */
 DummyGrabber::DummyGrabber() :
     AddInGrabber(),
-    m_isgrabbing(false)
+    m_isgrabbing(false),
+    m_totalBinning(1)
 {
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyGrabber", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.005, 100.0, 12.5, tr("Integrationtime of CCD [s]").toLatin1().data());
+    paramVal = ito::Param("frame_time", ito::ParamBase::Double, 0.0, 60.0, 0.0, tr("Minimum time between the start of two consecutive acquisitions [s], default: 0.0.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.05, 150.0, 33.333333, tr("Time between two frames").toLatin1().data());
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.0, 60.0, 0.0, tr("Minimum integration time for on acquisition [s], default: 0.0 (as fast as possible).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("Virtual gain").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Virtual offset").toLatin1().data());
+    paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Virtual offset").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("Binning of different pixel").toLatin1().data());
+    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("Binning of different pixel, binning = x-factor * 100 + y-factor").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("size in x (cols) [px]").toLatin1().data());
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 4, 4096, 4096, tr("size in x (cols) [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("size in y (rows) [px]").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("first pixel in x (cols) within ROI [zero-based, <= x1]").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("first pixel in y (rows) within ROI [zero-based, <= y1]").toLatin1().data());
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 4, 4096, 4096, tr("size in y (rows) [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("last pixel in x (cols) within ROI [zero-based, >= x0]").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("last pixel in y (rows) within ROI [zero-based, >= y0]").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 64, 8, tr("bitdepth of images").toLatin1().data());
+    int roi[] = {0, 0, 2048, 2048};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2048), ito::RangeMeta(0, 2048));
+    paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("time_out", ito::ParamBase::Double, 0.1, 60.0, 60.0, tr("Timeout for acquiring images [s]").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("bitdepth of images").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
-    DockWidgetDummyGrabber *dw = new DockWidgetDummyGrabber(m_params, getID());
+    DockWidgetDummyGrabber *dw = new DockWidgetDummyGrabber(this);
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
-
-    checkData();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -517,6 +279,89 @@ DummyGrabber::DummyGrabber() :
 */
 DummyGrabber::~DummyGrabber()
 {
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! init method which is called by the addInManager after the initiation of a new instance of DummyGrabber.
+/*!
+    This init method gets the mandatory and optional parameter vectors of type tParam and must copy these given parameters to the
+    internal m_params-vector. Notice that this method is called after that this instance has been moved to its own (non-gui) thread.
+
+    \param [in] paramsMand is a pointer to the vector of mandatory tParams.
+    \param [in] paramsOpt is a pointer to the vector of optional tParams.
+    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
+    \return retOk
+*/
+ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+
+    ito::RetVal retVal;
+
+    int sizeX = paramsOpt->at(0).getVal<int>();     // first optional parameter, corresponding to the grabber width
+    int sizeY = paramsOpt->at(1).getVal<int>();     // second optional parameter, corresponding to the grabber heigth
+    int bpp = paramsOpt->at(2).getVal<int>();       // third optional parameter, corresponding to the grabber bit depth per pixel
+    m_params["bpp"].setVal<int>(bpp);
+
+    m_params["sizex"].setVal<int>(sizeX);
+    m_params["sizex"].setMeta(new ito::IntMeta(4, sizeX, 4), true);
+
+    m_params["sizey"].setVal<int>(sizeY);
+    m_params["sizey"].setMeta(new ito::IntMeta(4, sizeY, 4), true);
+
+    int roi[] = {0, 0, sizeX, sizeY};
+    m_params["roi"].setVal<int*>(roi, 4);
+    m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX, 4, 4, sizeX, 4), ito::RangeMeta(0, sizeY, 4,  4, sizeY, 4)), true);
+
+    if (!retVal.containsError())
+    {
+        checkData(); //check if image must be reallocated
+
+        emit parametersChanged(m_params);
+    }
+
+    setIdentifier(QString::number(getID()));
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retVal;
+        waitCond->release();
+    }
+
+    setInitialized(true); //init method has been finished (independent on retval)
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! close method which is called before that this instance is deleted by the DummyGrabberInterface
+/*!
+    notice that this method is called in the actual thread of this instance.
+
+    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
+    \return retOk
+    \sa ItomSharedSemaphore
+*/
+ito::RetVal DummyGrabber::close(ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+
+    if (m_timerID > 0)
+    {
+        killTimer(m_timerID);
+        m_timerID = 0;
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = ito::retOk;
+        waitCond->release();
+
+        return waitCond->returnValue;
+    }
+    else
+    {
+        return ito::retOk;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -537,7 +382,7 @@ ito::RetVal DummyGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSem
     bool hasIndex = false;
     int index;
     QString suffix;
-    QMap<QString,ito::Param>::iterator it;
+    ParamMapIterator it;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
@@ -576,14 +421,13 @@ ito::RetVal DummyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
-    QString key = val->getName();
-    int ret = 0, sizeX = 0, sizeY = 0;
+    QString key;
     int running = 0; // Used to check if grabber was running bevor
 
     bool hasIndex;
     int index;
     QString suffix;
-    QMap<QString,ito::Param>::iterator it;
+    ParamMapIterator it;
 
     retValue += ito::parseParamName(val->getName(), key, hasIndex, index, suffix);
 
@@ -598,92 +442,103 @@ ito::RetVal DummyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
-    if (!retValue.containsError())
+    //first check parameters that influence the size or data type of m_data
+    if (key == "roi" || key == "binning" || key == "bpp")
     {
-        if (grabberStartedCount())
+        if (!retValue.containsError())
         {
-            running = grabberStartedCount();
-            setGrabberStarted(1);
-            retValue += stopDevice(0);
+            if (grabberStartedCount() > 0)
+            {
+                running = grabberStartedCount();
+                setGrabberStarted(1);
+                retValue += stopDevice(NULL);
+            }
         }
-        else
+
+        if (key == "bpp")
         {
-            setGrabberStarted(1);
-            stopDevice(0);
+            retValue += it->copyValueFrom(&(*val));
         }
-    }
-
-    if (!retValue.containsError())
-    {
-        if (key == "binning")
+        else if (key == "roi")
         {
-            int newValue = val->getVal<int>();
-            int newbinX = newValue/100;
-            int newbinY = newValue-newbinX *100;
-
-            int maxbinX = (int)it->getMax()/100;
-            int maxbinY = (int)it->getMax()- maxbinX * 100;
-
-            int minbinX = (int)it->getMin()/100;
-            int minbinY = (int)it->getMin()- minbinX * 100;
-
-            if (newbinX > maxbinX)
+            if (!hasIndex)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("New value in X is larger than maximal value, input ignored").toLatin1().data());
-            }
-            else if (newbinY > maxbinY)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is larger than maximal value, input ignored").toLatin1().data());
-            }
-            else if (newbinX < minbinX)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("New value in X is smaller than parameter range, input ignored").toLatin1().data());
-            }
-            else if (newbinY < minbinY)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is smaller than parameter range, input ignored").toLatin1().data());
+                retValue += it->copyValueFrom(&(*val));
+                m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
+                m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);
             }
             else
             {
-                ret = myCam.setBinning(newbinX, newbinY);
-                if (ret)
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("Set binning failed").toLatin1().data());
-                }
-                ret = myCam.getBinning(newbinX, newbinY);
-                it->setVal<int>(newbinX*100+newbinY);
+                val->getVal<int*>()[index] = val->getVal<int>();
+                m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
+                m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);
             }
         }
-        else //all other parameters
+        else if (key == "binning")
         {
-            retValue += it->copyValueFrom(&(*val));
+            int oldval = it->getVal<int>();
 
-            //check further dependent stuff
-            // Adapted parameters and send out depending parameter
-            if (!retValue.containsError() && (key == "x0" || key == "y0" || key == "x1" || key == "y1"))
+            int ival = val->getVal<int>();
+            int newY = ival % 100;
+            int newX = (ival - newY) / 100;
+
+            if ((newX != 1 && newX != 2 && newX != 4) || (newY != 1 && newY != 2 && newY != 4))
             {
-                static_cast<ito::IntMeta*>(m_params["x0"].getMeta())->setMax(m_params["x1"].getVal<int>());
-                static_cast<ito::IntMeta*>(m_params["y0"].getMeta())->setMax(m_params["y1"].getVal<int>());
+                retValue += ito::RetVal(ito::retError, 0, "horizontal and vertical binning must be 1, 2 or 4 (hence vertical * 100 + horizontal)");
+            }
+            else
+            {
+                m_totalBinning = newX * newY;
 
-                static_cast<ito::IntMeta*>(m_params["x1"].getMeta())->setMin(m_params["x0"].getVal<int>());
-                static_cast<ito::IntMeta*>(m_params["y1"].getMeta())->setMin(m_params["y0"].getVal<int>());
+                retValue += it->copyValueFrom(&(*val));
 
-                m_params["sizex"].setVal<int>(m_params["x1"].getVal<int>()-m_params["x0"].getVal<int>()+1);
-                m_params["sizey"].setVal<int>(m_params["y1"].getVal<int>()-m_params["y0"].getVal<int>()+1);
+                if (oldval != ival)
+                {
+                    int oldY = oldval % 100;
+                    int oldX = (oldval - oldY) / 100;
+                    float factorX = (float)oldX / (float)newX;
+                    float factorY = (float)oldY / (float)newY;
+
+                    int width = m_params["sizex"].getVal<int>() * factorX;
+                    int height = m_params["sizey"].getVal<int>() * factorY;
+
+                    int maxWidth = m_params["sizex"].getMax();
+                    int maxHeight = m_params["sizey"].getMax();
+
+                    m_params["sizex"].setVal<int>(width);
+                    m_params["sizex"].setMeta(new ito::IntMeta(4/newX, maxWidth * factorX, 4/newX), true);
+
+                    m_params["sizey"].setVal<int>(height);
+                    m_params["sizey"].setMeta(new ito::IntMeta(4/newY, maxHeight * factorY, 4/newY), true);
+
+                    int sizeX = m_params["roi"].getVal<int*>()[2] * factorX;
+                    int sizeY = m_params["roi"].getVal<int*>()[3] * factorY;
+                    int offsetX = m_params["roi"].getVal<int*>()[0] * factorX;
+                    int offsetY = m_params["roi"].getVal<int*>()[1] * factorY;
+                    int roi[] = {offsetX, offsetY, sizeX, sizeY};
+                    m_params["roi"].setVal<int*>(roi, 4);
+                    m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, width,4/newX,4/newX,maxWidth * factorX,4/newX), ito::RangeMeta(0, height,4/newY,4/newY,maxHeight * factorY,4/newY)), true);
+                }
             }
         }
-    }
 
-    if (!retValue.containsError())
-    {
+
         retValue += checkData(); //check if image must be reallocated
 
         if (running)
         {
-            retValue += this->startDevice(0);
+            retValue += startDevice(NULL);
             setGrabberStarted(running);
         }
+    }
+    else
+    {
+        retValue += it->copyValueFrom(&(*val));
+    }
 
+
+    if (!retValue.containsError())
+    {
         emit parametersChanged(m_params);
     }
 
@@ -696,115 +551,6 @@ ito::RetVal DummyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
 
     return retValue;
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! init method which is called by the addInManager after the initiation of a new instance of DummyGrabber.
-/*!
-    This init method gets the mandatory and optional parameter vectors of type tParam and must copy these given parameters to the
-    internal m_params-vector. Notice that this method is called after that this instance has been moved to its own (non-gui) thread.
-
-    \param [in] paramsMand is a pointer to the vector of mandatory tParams.
-    \param [in] paramsOpt is a pointer to the vector of optional tParams.
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-*/
-ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-
-    ito::RetVal retVal(ito::retOk,0,"");
-
-    int sizeX = (*paramsOpt)[0].getVal<int>();    // is the first parameter in the opt-List, corresponding to the gabber width
-    if (sizeX % 4 != 0)
-    {
-        retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber: SizeX must be a dividable of 4").toLatin1().data());
-    }
-
-    int sizeY = (*paramsOpt)[1].getVal<int>();    // is the second parameter in the opt-List, corresponding to the gabber heigth
-    if (sizeY == 1)
-    {
-        static_cast<ito::IntMeta*>(m_params["binning"].getMeta())->setMax(401);
-    }
-    else if (sizeY % 4 != 0)
-    {
-        retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber: SizeY must be a dividable of 4").toLatin1().data());
-    }
-
-    int bpp = (*paramsOpt)[2].getVal<int>();    // is the third parameter in the opt-List, corresponding to the gabber bit depth per pixel
-    m_params["bpp"].setVal<int>(bpp);
-
-    m_params["sizex"].setVal<int>(sizeX);
-    static_cast<ito::IntMeta*>(m_params["sizex"].getMeta())->setMax(sizeX);
-    static_cast<ito::IntMeta*>(m_params["x0"].getMeta())->setMax(sizeX-1);
-    static_cast<ito::IntMeta*>(m_params["x1"].getMeta())->setMax(sizeX-1);
-    m_params["x1"].setVal<int>(sizeX-1);
-
-    m_params["sizey"].setVal<int>(sizeY);
-    static_cast<ito::IntMeta*>(m_params["sizey"].getMeta())->setMax(sizeY);
-    static_cast<ito::IntMeta*>(m_params["y0"].getMeta())->setMax(sizeY-1);
-    static_cast<ito::IntMeta*>(m_params["y1"].getMeta())->setMax(sizeY-1);
-    m_params["y1"].setVal<int>(sizeY-1);
-
-    int ret = myCam.initCamera(sizeX, sizeY, bpp);
-    if (ret)
-    {
-        retVal += ito::RetVal(ito::retError, 0, tr("Error during initialisation of DummyGrabber").toLatin1().data());
-    }
-
-    if (!retVal.containsError())
-    {
-        checkData(); //check if image must be reallocated
-    }
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retVal;
-        waitCond->release();
-
-        setInitialized(true); //init method has been finished (independent on retval)
-        return retVal;
-    }
-    else
-    {
-        setInitialized(true); //init method has been finished (independent on retval)
-        return retVal;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! close method which is called before that this instance is deleted by the DummyGrabberInterface
-/*!
-    notice that this method is called in the actual thread of this instance.
-
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-    \sa ItomSharedSemaphore
-*/
-ito::RetVal DummyGrabber::close(ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-
-    if (m_timerID > 0)
-    {
-        killTimer(m_timerID);
-        m_timerID = 0;
-    }
-
-    if (waitCond)
-    {
-        waitCond->returnValue = ito::retOk;
-        waitCond->release();
-
-        return waitCond->returnValue;
-    }
-    else
-    {
-        return ito::retOk;
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-// function checkData() moved into addInGrabber.cpp -> standard for all cameras / ADDA
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! With startDevice this camera is initialized.
@@ -827,11 +573,8 @@ ito::RetVal DummyGrabber::startDevice(ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() == 1)
     {
-        int ret = myCam.prepareCamera();
-        if (ret)
-        {
-            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera preparation.").toLatin1().data());
-        }
+        m_startOfLastAcquisition = 0;
+        m_isgrabbing = false;
     }
 
     if (waitCond)
@@ -860,18 +603,9 @@ ito::RetVal DummyGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue = ito::retOk;
 
     decGrabberStarted();
-    if (grabberStartedCount() == 0)
+    if (grabberStartedCount() < 0)
     {
-        int ret = myCam.stopCamera();
-        if (ret)
-        {
-            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera stop command.").toLatin1().data());
-        }
-
-    }
-    else if (grabberStartedCount() < 0)
-    {
-        retValue += ito::RetVal(ito::retWarning, 1001, tr("StopDevice of DummyGrabber can not be executed, since camera has not been started.").toLatin1().data());
+        retValue += ito::RetVal(ito::retWarning, 1001, tr("stopDevice of DummyGrabber can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -903,26 +637,138 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
 
-    if (grabberStartedCount() <= 0)
-    {
-        retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of DummyGrabber can not be executed, since camera has not been started.").toLatin1().data());
-    }
-    else
-    {
-        this->m_isgrabbing = true;
-        int ret = myCam.acquireImage();
-        if (ret)
-        {
-            retValue += ito::RetVal(ito::retError, ret, tr("Error during virtual camera acquisition.").toLatin1().data());
-        }
-
-    }
+    double frame_time = m_params["frame_time"].getVal<double>();
+    double integration_time = m_params["integration_time"].getVal<double>();
+    int bpp = m_params["bpp"].getVal<double>();
+    float gain = m_params["gain"].getVal<double>();
+    float offset = m_params["offset"].getVal<double>();
 
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
+    }
+
+    if (bpp < 8 || bpp >= 32)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("wrong bit depth").toLatin1().data());
+    }
+    else if (grabberStartedCount() <= 0)
+    {
+        retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of DummyGrabber can not be executed, since camera has not been started.").toLatin1().data());
+    }
+    else
+    {
+        m_isgrabbing = true;
+
+        if (frame_time > 0.0)
+        {
+            double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();
+
+            if (diff < frame_time)
+            {
+                Sleep((frame_time - diff) * 1000.0);
+            }
+        }
+
+        m_startOfLastAcquisition = cv::getTickCount();
+        ito::uint32 seed = m_startOfLastAcquisition % std::numeric_limits<ito::uint32>::max();
+
+        if (m_totalBinning == 1)
+        {
+            if (bpp < 9)
+            {
+                ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
+                ito::uint8 *linePtr;
+                for (int m = 0; m < m_data.getSize(0); ++m)
+                {
+                    linePtr = (ito::uint8*)m_data.rowPtr(0, m);
+                    for (int n = 0; n < m_data.getSize(1); ++n)
+                    {
+                        *linePtr++ = fastrand<ito::uint8>(seed, maxInt, offset, gain);
+                    }
+                }
+            }
+            else if (bpp < 17)
+            {
+                ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
+                ito::uint16 *linePtr;
+                for (int m = 0; m < m_data.getSize(0); ++m)
+                {
+                    linePtr = (ito::uint16*)m_data.rowPtr(0, m);
+                    for (int n = 0; n < m_data.getSize(1); ++n)
+                    {
+                        *linePtr++ = fastrand<ito::uint16>(seed, maxInt, offset, gain);
+                    }
+                }
+            }
+            else if (bpp < 32)
+            {
+                ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
+                ito::int32 *linePtr;
+                for (int m = 0; m < m_data.getSize(0); ++m)
+                {
+                    linePtr = (ito::int32*)m_data.rowPtr(0, m);
+                    for (int n = 0; n < m_data.getSize(1); ++n)
+                    {
+                        *linePtr++ = fastrand<ito::int32>(seed, maxInt, offset, gain);
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (bpp < 9)
+            {
+                ito::uint8 maxInt = cv::saturate_cast<ito::uint8>(cv::pow(2.0, bpp)-1);
+                ito::uint8 *linePtr;
+                for (int m = 0; m < m_data.getSize(0); ++m)
+                {
+                    linePtr = (ito::uint8*)m_data.rowPtr(0, m);
+                    for (int n = 0; n < m_data.getSize(1); ++n)
+                    {
+                        *linePtr++ = fastrand_mean<ito::uint8>(seed, maxInt, m_totalBinning, offset, gain);
+                    }
+                }
+            }
+            else if (bpp < 17)
+            {
+                ito::uint16 maxInt = cv::saturate_cast<ito::uint16>(cv::pow(2.0, bpp)-1);
+                ito::uint16 *linePtr;
+                for (int m = 0; m < m_data.getSize(0); ++m)
+                {
+                    linePtr = (ito::uint16*)m_data.rowPtr(0, m);
+                    for (int n = 0; n < m_data.getSize(1); ++n)
+                    {
+                        *linePtr++ = fastrand_mean<ito::uint16>(seed, maxInt,m_totalBinning, offset, gain);
+                    }
+                }
+            }
+            else if (bpp < 32)
+            {
+                ito::int32 maxInt = cv::saturate_cast<ito::int32>(cv::pow(2.0, bpp)-1);
+                ito::int32 *linePtr;
+                for (int m = 0; m < m_data.getSize(0); ++m)
+                {
+                    linePtr = (ito::int32*)m_data.rowPtr(0, m);
+                    for (int n = 0; n < m_data.getSize(1); ++n)
+                    {
+                        *linePtr++ = fastrand_mean<ito::int32>(seed, maxInt, m_totalBinning, offset, gain);
+                    }
+                }
+            }
+        }
+
+        if (integration_time > 0.0)
+        {
+            double diff = (cv::getTickCount() - m_startOfLastAcquisition) / cv::getTickFrequency();
+
+            if (diff < integration_time)
+            {
+                Sleep((integration_time - diff) * 1000.0);
+            }
+        }
     }
 
     return retValue;
@@ -1020,6 +866,29 @@ ito::RetVal DummyGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DummyGrabber::retrieveData(ito::DataObject *externalDataObject)
+{
+    ito::RetVal retValue(ito::retOk);
+
+    if (m_isgrabbing == false)
+    {
+        retValue += ito::RetVal(ito::retError, 1002, tr("image could not be obtained since no image has been acquired.").toLatin1().data());
+    }
+    else
+    {
+        if (externalDataObject)
+        {
+            m_data.deepCopyPartial(*externalDataObject);
+        }
+
+        m_isgrabbing = false;
+    }
+
+    return retValue;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked if gain or offset parameters in docking toolbox have been manually changed
 /*!
     \param [in] gain
@@ -1035,7 +904,6 @@ void DummyGrabber::GainOffsetPropertiesChanged(double gain, double offset)
     {
         m_params["gain"].setVal<double>(gain);
     }
-    updateCamParams();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1049,155 +917,7 @@ void DummyGrabber::IntegrationPropertiesChanged(double integrationtime)
     if (checkNumericParamRange(m_params["integration_time"], integrationtime))
     {
         m_params["integration_time"].setVal<double>(integrationtime);
-        updateCamParams();
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if gain or offset parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-ito::RetVal DummyGrabber::updateCamParams(void)
-{
-    double intTime = m_params["integration_time"].getVal<double>();
-    double gain = m_params["gain"].getVal<double>();
-    double offset = m_params["offset"].getVal<double>();
-    ito::RetVal retValue = ito::RetVal(ito::retOk, 0,"");
-
-    int ret = myCam.setFrameTime(intTime);
-    if (ret)
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("Set integrationtime failed").toLatin1().data());
-    }
-    ret = myCam.setOffsetGain(gain, offset);
-    if (ret)
-    {
-        retValue += ito::RetVal(ito::retError, 0, tr("Set offset and gain failed").toLatin1().data());
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DummyGrabber::retrieveData(ito::DataObject *externalDataObject)
-{
-    ito::RetVal retValue(ito::retOk);
-    int ret = 0;
-    int timeOutMS = (int)(m_params["time_out"].getVal<double>() * 1000 + 0.5);
-
-//    unsigned long imglength = 0;
-//    long lcopysize = 0;
-    long lsrcstrpos = 0;
-//    int y  = 0;
-    int maxxsize = (int)m_params["sizex"].getMax();
-    int maxysize = (int)m_params["sizey"].getMax();
-    int curxsize = m_params["sizex"].getVal<int>();
-    int curysize = m_params["sizey"].getVal<int>();
-    int x0 = m_params["x0"].getVal<int>();
-    int y0 = m_params["y0"].getVal<int>();
-
-    bool hasListeners = false;
-    bool copyExternal = false;
-    if (m_autoGrabbingListeners.size() > 0)
-    {
-        hasListeners = true;
-    }
-    if (externalDataObject != NULL)
-    {
-        copyExternal = true;
-    }
-
-    ret = myCam.waitForImage(timeOutMS);
-    //if (grabberStartedCount() <= 0 || this->m_isgrabbing != true)
-    if (ret)
-    {
-        if (ret == SimulatedCam::missingAcquire)
-        {
-            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber can not be executed, since acquire was called.").toLatin1().data());
-        }
-        else if (ret == SimulatedCam::missingStart)
-        {
-            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber can not be executed, since camera has not been started.").toLatin1().data());
-        }
-        else if (ret == SimulatedCam::missingBuffer)
-        {
-            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber can not be executed, since no buffer allocated.").toLatin1().data());
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed.").toLatin1().data());
-        }
-    }
-    else
-    {
-        int bpp = m_params["bpp"].getVal<int>();
-        if (bpp <= 8)
-        {
-            ito::uint8 *cbuf=(ito::uint8*)myCam.getImageBuffer();
-            if (cbuf == NULL)
-            {
-                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since retrived NULL-Pointer.").toLatin1().data());
-            }
-            else if (curxsize == maxxsize)
-            {
-                lsrcstrpos = y0 * maxxsize;
-                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)cbuf+lsrcstrpos, maxxsize, curysize);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)cbuf+lsrcstrpos, maxxsize, curysize);
-            }
-            else
-            {
-                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
-            }
-        }
-        else if (bpp <= 16)
-        {
-            ito::uint16 *cbuf=(ito::uint16*)myCam.getImageBuffer();
-            if (cbuf == NULL)
-            {
-                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since retrived NULL-Pointer.").toLatin1().data());
-            }
-            else if (curxsize == maxxsize)
-            {
-                lsrcstrpos = y0 * maxxsize;
-                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, curysize);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, curysize);
-            }
-            else
-            {
-                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
-            }
-        }
-        else if (bpp <= 32)
-        {
-            ito::int32 *cbuf=(ito::int32*)myCam.getImageBuffer();
-            if (cbuf == NULL)
-            {
-                retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since retrived NULL-Pointer.").toLatin1().data());
-            }
-            else if (curxsize == maxxsize)
-            {
-                lsrcstrpos = y0 * maxxsize;
-                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::int32>((ito::int32*)cbuf+lsrcstrpos, maxxsize, curysize);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::int32>((ito::int32*)cbuf+lsrcstrpos, maxxsize, curysize);
-            }
-            else
-            {
-                if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::int32>((ito::int32*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
-                if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::int32>((ito::int32*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
-            }
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 1002, tr("getVal of DummyGrabber failed, since undefined bitdepth.").toLatin1().data());
-        }
-        this->m_isgrabbing = false;
-    }
-
-    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1205,20 +925,15 @@ void DummyGrabber::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
-        DockWidgetDummyGrabber *dw = qobject_cast<DockWidgetDummyGrabber*>(getDockWidget()->widget());
+        QWidget *widget = getDockWidget()->widget();
         if (visible)
         {
-            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            connect(dw, SIGNAL(GainOffsetPropertiesChanged(double,double)), this, SLOT(GainOffsetPropertiesChanged(double,double)));
-            connect(dw, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
-
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
             emit parametersChanged(m_params);
         }
         else
         {
-            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            disconnect(dw, SIGNAL(GainOffsetPropertiesChanged(double,double)), this, SLOT(GainOffsetPropertiesChanged(double,double)));
-            disconnect(dw, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
         }
     }
 }

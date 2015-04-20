@@ -51,12 +51,6 @@ INCLUDE_DIRECTORIES(
 )
 
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/helperActuator.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/helperGrabber.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/demoAlgorithms.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )

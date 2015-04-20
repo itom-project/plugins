@@ -13,8 +13,30 @@
 Overview
 ========
 
-.. pluginsummaryextended::
-    :plugin: x3pio
+This plugin provides methods to save and load dataObjects in/from the file format 'x3p'.
+This format is specified in ISO 25178 - Geometrical product specification (GPS).
+
+The library ISO 5436-2 XML, that is necessary for this plugin and included in the sources,
+is licensed under the LGPL license and uses further libraries. For more information about the license
+of the library itself see www.opengps.eu.
+
+For loading a x3p file, this plugin only supports the feature types SUR (surface) and PRF (profile), where profile
+is always loaded in a 1xN data object. The x- and y- axis of loaded x3p files must always be incremental, no absolute x- 
+or y-axes are supported.
+
+Data objects that should be stored in a x3p file are always stored as feature type SUR, such that 1xN or Mx1 data objects
+are also stored as surfaces.
+
+The plugin supports to load multi-layer surface files. The layers are then stored as z-layers.
+
+You can save data in a binary (default) or ascii format. Ascii should only be used for few data points (e.g. < 5000).
+
+Please consider, that the axes and value unit of x3p is always meter. This plugins tries to guess the unit of a data object
+by evaluating the axisUnits and valueUnit strings. For axes, the scaling factor to get from the unit string (e.g. µm) to
+the x3p unit (m) is considered in the increment of the incremental axes descriptions. For all values, the increment value does
+not exist, such that the scaling factor is multiplied to each value before storing it in the x3p file. You need to consider this,
+since this might lead to precision loss. If a scaling is required for fixed point data types, the values are stored as double values
+in x3p, such that there is enough space for the scaled values.
 
 These filters are defined in the plugin:
 

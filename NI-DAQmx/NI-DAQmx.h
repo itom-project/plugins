@@ -15,7 +15,8 @@
 #include <DataObject\dataobj.h>
 
 #include "dialogNI-DAQmx.h"
-#include "NIDAQmx-LibHeader.h"  // include NI-DAQmx Library functions       
+#include "NIDAQmx.h"
+//#include "NIDAQmx-LibHeader.h"  // include NI-DAQmx Library functions       
 #include "NI-PeripheralClasses.h" // Classes that encapsulate general stuff like channels and tasks
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -28,13 +28,13 @@
 #ifndef PLUGINVERSION_H
 #define PLUGINVERSION_H
 
-#define PLUGIN_VERSION_MAJOR 0
+#define PLUGIN_VERSION_MAJOR 1
 #define PLUGIN_VERSION_MINOR 0
-#define PLUGIN_VERSION_PATCH 2
+#define PLUGIN_VERSION_PATCH 0
 #define PLUGIN_VERSION_REVISION 0
-#define PLUGIN_VERSION_STRING "0.0.2"
+#define PLUGIN_VERSION_STRING "1.0.0"
 #define PLUGIN_COMPANY        "Institut fuer Technische Optik, University Stuttgart"
-#define PLUGIN_COPYRIGHT      "(C) 2014, ITO, University Stuttgart"
+#define PLUGIN_COPYRIGHT      "(C) 2015, ITO, University Stuttgart"
 #define PLUGIN_NAME           "x3pio"
 
 //----------------------------------------------------------------------------------------------------------------------------------

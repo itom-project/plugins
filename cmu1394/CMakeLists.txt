@@ -67,12 +67,6 @@ else(BUILD_TARGET64)
 endif(BUILD_TARGET64)
 
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedFunctionsQt.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/cmu1394.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogcmu1394.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetcmu1394.h

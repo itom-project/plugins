@@ -72,7 +72,8 @@ Usage
 =====
 
 Values can be read or written via modbus communication using the *getVal(dObj)* and *setVal(dObj)* functions. The dataObject *dObj* needs to be two dimensional with the first dimension set to 1, 
-the second dimension has to have the exact size of the numbers of written or read registers. As modbus uses 16bit integer values, dObj must be initialized as 'uint16'.
+the second dimension has to have the exact size of the numbers of written or read registers. As modbus uses 16bit integer values, dObj must be initialized as 'uint16' for modbus register values.
+To read or write coils, dObj must be initialized as 'uint8' as the decision for using read/write coil or read/write register only depends on the data type of the input data object.
 
 .. code-block:: python
     
@@ -85,8 +86,10 @@ The parameter is useful if the same registers need to be read/written multiple t
     
     lmb = dataIO("LibModBus", '127.0.0.1', 502)
     lmb.setParam('registers','10,2;34,1;77,4;100,1;101,1;102,1')
-    obj = dataObject([1,10],'uint16')
+    obj = dataObject([1,10],'uint16')           #initializes register-object
+    coilObj = dataObject([1,10],'uint8')        #initializes coil-object
     lmb.getVal(obj)                             #reads registers 10,11,34,77..80,100..102 and saves them to obj consecutive
+    lmb.getVal(coilObj)                         #reads coils 10,11,34,77..80,100..102 and saves them to obj consecutive
     obj.setTag('registers','105,4;200,4;204,2') #sets registers-tag
     lmb.setVal(obj)                             #writes previously read values to registers 105..108,200..203,204,205
     obj.setTag('registers','105,4;200,4')

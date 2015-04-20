@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyMotor" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -48,7 +48,7 @@
 class DummyMotorInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
     Q_INTERFACES(ito::AddInInterfaceBase)

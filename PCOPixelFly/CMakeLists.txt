@@ -21,9 +21,9 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-find_package(ITOM_SDK REQUIRED)
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
-FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
+FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
@@ -54,12 +54,6 @@ INCLUDE_DIRECTORIES(
 )
 
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedFunctionsQt.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogPCOPixelFly.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetPCOPixelFly.h
     ${CMAKE_CURRENT_SOURCE_DIR}/PCOPixelFly.h
@@ -86,24 +80,21 @@ if(MSVC)
 endif(MSVC)
 
 if (QT5_FOUND)
-	#if automoc if OFF, you also need to call QT5_WRAP_CPP here
-	QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-	QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+    QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 else (QT5_FOUND)
-	QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-	QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-	QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+    QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
 endif (QT5_FOUND)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})  
 if (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
-    
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
-else (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES})
 endif (QT5_FOUND)
 
 #translation

@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -24,6 +24,7 @@
 #define DUMMYGRABBER_H
 
 #include "common/addInGrabber.h"
+#include "common/typeDefs.h"
 #include "dialogDummyGrabber.h"
 
 #include <qsharedpointer.h>
@@ -33,7 +34,7 @@
 class DummyGrabberInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
     Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this DummyGrabberInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
@@ -49,57 +50,6 @@ class DummyGrabberInterface : public ito::AddInInterfaceBase
 
 };
 
-class SimulatedCam
-{
-    protected:
-        ~SimulatedCam();
-        SimulatedCam();
-
-public:
-        friend class DummyGrabber;
-        
-        enum errorValues
-        {
-            okay = 0,
-            triedInitTwice = -1,
-            initFailedBuffer = -2,
-            wrongBPP = -3,
-            missingInit = -4,
-            missingAcquire = -10,
-            missingBuffer = -11,
-            missingStart = -12,
-            binningFailed = -21,
-            stillRunning = -22,
-        };
-
-        int initCamera(int maxXSize, int maxYSize, int maxBitDepth);
-        int waitForImage(int timeoutMS);
-        char* getImageBuffer(void);
-        int acquireImage(void);
-        int prepareCamera(void);
-        int stopCamera(void);
-        int setFrameTime(int newframeTimeMS){m_frameTimeMS = newframeTimeMS; return okay;}
-        int getFrameTime(void){return m_frameTimeMS;}
-        int setOffsetGain(int /*gain*/, int /*offset*/){return okay;}
-        int setBinning(int binX, int binY);
-        int getBinning(int &binX, int &binY);
-        int getSize(int &sizeX, int &sizeY);
-
-    private:
-        int m_frameTimeMS;
-        int m_binX;
-        int m_binY;
-        int m_xsize_max; 
-        int m_ysize_max;
-        int m_xsize; 
-        int m_ysize;
-        int m_bpp;
-        bool m_initDone;
-        bool m_started;
-        bool m_grabbed;
-        void * m_myInternalBuffer;
-};
-
 //----------------------------------------------------------------------------------------------------------------------------------
 class DummyGrabber : public ito::AddInGrabber
 {
@@ -109,7 +59,6 @@ class DummyGrabber : public ito::AddInGrabber
         ~DummyGrabber();
         DummyGrabber();
 
-//        ito::RetVal checkData();
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);
 
     public:
@@ -119,16 +68,12 @@ class DummyGrabber : public ito::AddInGrabber
 
     private:
         bool m_isgrabbing;
-        SimulatedCam myCam;
+        int64 m_startOfLastAcquisition;
+        ito::uint8 m_totalBinning;
 
     signals:
 
     public slots:
-        /*ito::RetVal getParam(const char *name, QSharedPointer<char> val, QSharedPointer<int> len, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal getParam(const char *name, QSharedPointer<double> val, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(const char *name, const char *val, const int len, ItomSharedSemaphore *waitCond = NULL);
-        ito::RetVal setParam(const char *name, const double val, ItomSharedSemaphore *waitCond = NULL);*/
-
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL);
 
@@ -140,15 +85,11 @@ class DummyGrabber : public ito::AddInGrabber
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getVal(void *dObj, ItomSharedSemaphore *waitCond);
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-        //ito::RetVal setVal(const void *dObj, const int length, ItomSharedSemaphore *waitCond);
 
-        //void dataParametersChanged(int sizex, int sizey, int bpp);
         void GainOffsetPropertiesChanged(double gain, double offset);
         void IntegrationPropertiesChanged(double integrationtime);
 
     private slots:
-        ito::RetVal updateCamParams(void);
-
         void dockWidgetVisibilityChanged(bool visible);
 
 
