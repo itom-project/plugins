@@ -674,26 +674,17 @@ ito::RetVal ItomUSBDevice::acquire(const int /*trigger*/, ItomSharedSemaphore *w
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ItomUSBDevice::getVal(QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond)
 {
-//    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
-    //retval = m_serport.sread(data.data(), length.data(), 0);
-    int status = 0;
-    unsigned char *dataIn = NULL;
     int actual_length = 0;
 
-    dataIn = (unsigned char*)calloc(*(length.data()) * 2, sizeof(unsigned char));
-    //int status = libusb_claim_interface(m_pDevice, 0);
-    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_IN + m_endpoint_read, dataIn, *(length.data()), &actual_length, m_timeoutMS);
-    if (status != 0) 
+    int status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_IN + m_endpoint_read, (unsigned char*)data.data(), *length, &actual_length, m_timeoutMS);
+    if (status != LIBUSB_SUCCESS) 
     {
         retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
     }
 
-    *(length.data()) = actual_length; 
-
-    memcpy(data.data(), dataIn, actual_length < *(length.data()) ? actual_length : *(length.data()));
-    free(dataIn);
+    *length = actual_length; 
 
     if (m_debugMode)
     {
@@ -713,27 +704,23 @@ ito::RetVal ItomUSBDevice::getVal(QSharedPointer<char> data, QSharedPointer<int>
 ito::RetVal ItomUSBDevice::setVal(const char *data, const int datalength, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    unsigned char *buf = (unsigned char*)data;
     ito::RetVal retval(ito::retOk);
-
-    int status = 0;
 
     int actual_length = 0;
 
-    //m_serport.getendline(endline);
     if (m_debugMode)
     {
-        emit serialLog(QByteArray((char*)buf,datalength), '>');
+        emit serialLog(QByteArray(data, datalength), '>');
     }
-    //status = libusb_claim_interface(m_pDevice, 0);
-    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_OUT + m_endpoint_write, buf, datalength, &actual_length, m_timeoutMS);
-    if (status != 0) 
+
+    int status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_OUT + m_endpoint_write, (unsigned char*)data, datalength, &actual_length, m_timeoutMS);
+    if (status != LIBUSB_SUCCESS) 
     {
         retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
     }
-    if(actual_length != datalength)
+    else if(actual_length != datalength)
     {
-        //retval += ito::RetVal(ito::retError, 0, tr("Number of written characters differ from designated dataLength").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Number of written characters differ from designated size").toLatin1().data());
     }
 
     if (waitCond)
