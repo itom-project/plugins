@@ -32,6 +32,10 @@
 #include <QtCore/QtPlugin>
 #include "pluginVersion.h"
 
+#ifdef WIN32
+	#include <Windows.h>
+#endif
+
 static unsigned long AvantesAvaSpec000Base = 0x10000L; // or 64k for Master Mode
 static int AvantesAvaSpecADLow=31, AvantesAvaSpecADHigh=133;
 
