@@ -1561,6 +1561,9 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 				it = m_params.find("triggermode");
 				//Sets trigger mode
 				int trigger_mode = 3; //default trigger_mode is software trigger
+                if (ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), intType))
+                    retValue += getErrStr(ret, "XI_PRM_TRG_SOURCE", QString::number(trigger_mode));
+
 				if (ret = pxiGetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, &intSize, &intType))
 					retValue += getErrStr(ret, "XI_PRM_TRG_SOURCE", QString::number(trigger_mode));
 				it->setVal<int>(trigger_mode);
