@@ -1394,7 +1394,7 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
     ito::RetVal retVal;
 
     int axis = paramsMand->at(1).getVal<int>(); //0, 1
-    ito::DataObject dObj = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "dataObj", ito::Range::all(), ito::Range::all(), retVal, 0, 3, ito::tUInt8, ito::tUInt16, ito::tUInt32);
+    ito::DataObject dObj = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "dataObj", ito::Range::all(), ito::Range::all(), retVal, -1, 3, ito::tUInt8, ito::tUInt16, ito::tUInt32);
     ito::DataObject *pattern = paramsOpt->at(0).getVal<ito::DataObject*>();
     bool offsetAutoCenter = paramsOpt->at(2).getVal<int>() > 0;
     int offset = paramsOpt->at(1).getVal<int>();

@@ -22,11 +22,9 @@
 
 #include "common/addInInterface.h"
 
+#define NOMINMAX //instead min, max is defined as macro in winDef.h, included by vld.h
 #include <windows.h>
 #include "AerSys.h"
-
-#include "dialogAerotechA3200.h"	//! This is the configuration dialog
-#include "dockWidgetAerotechA3200.h"	//! This is the controll dialog
 
 #include <qsharedpointer.h>
 #include <qmetatype.h>
@@ -34,12 +32,17 @@
 #include <qevent.h>
 //#include <WinNT.h>
 
+class DockWidgetAerotechA3200;
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class AerotechA3200Interface
 */
 class AerotechA3200Interface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
+#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
+    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
+#endif
     Q_INTERFACES(ito::AddInInterfaceBase)
     PLUGIN_ITOM_API
 

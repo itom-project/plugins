@@ -30,6 +30,24 @@
 #include <qsharedpointer.h>
 #include <qbytearray.h>
 
+struct USBDevice
+{
+    USBDevice() : vendorID(0), productID(0), busNr(0), deviceAddr(0) {};
+    USBDevice(uint16_t vendor_id, uint16_t product_id, uint8_t bus_nr, uint8_t device_addr) :
+        vendorID(vendor_id), productID(product_id), busNr(bus_nr), deviceAddr(device_addr) {}
+    bool operator == (const USBDevice& dev) const
+    {
+        return (vendorID == dev.vendorID) &&
+               (productID == dev.productID) &&
+               (busNr == dev.busNr) &&
+               (deviceAddr == dev.deviceAddr);
+    }
+    uint16_t vendorID;
+    uint16_t productID;
+    uint8_t busNr;
+    uint8_t deviceAddr;
+};
+
 //----------------------------------------------------------------------------------------------------------------------------------
 class ItomUSBDevice : public ito::AddInDataIO //, public DummyGrabberInterface
 {
@@ -43,7 +61,6 @@ class ItomUSBDevice : public ito::AddInDataIO //, public DummyGrabberInterface
         friend class ItomUSBDeviceInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; } //!< indicates that this plugin has got a configuration dialog
-        int isOpen() {  }
 
     private:
 
@@ -53,7 +70,13 @@ class ItomUSBDevice : public ito::AddInDataIO //, public DummyGrabberInterface
         bool m_debugMode;   /*! Enables / Disables live connection to dockingwidge-protocol */
         static int m_instCounter;
         int m_timeoutMS;
-        int m_endpoint;
+        int m_endpoint_read;
+        int m_endpoint_write;
+        USBDevice m_currentDevice;
+
+        static QVector<USBDevice> openedDevices;
+        static QMutex openedDevicesReadWriteMutex;
+
     signals:
         void serialLog(QByteArray data, const char InOutChar);
         void uniqueIDChanged(const int);
@@ -88,8 +111,11 @@ class ItomUSBDevice : public ito::AddInDataIO //, public DummyGrabberInterface
 class ItomUSBDeviceInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-        Q_INTERFACES(ito::AddInInterfaceBase)
-        PLUGIN_ITOM_API
+#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
+    Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
+#endif
+    Q_INTERFACES(ito::AddInInterfaceBase)
+    PLUGIN_ITOM_API
 
     protected:
 

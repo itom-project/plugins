@@ -15,7 +15,8 @@
 #include <DataObject\dataobj.h>
 
 #include "dialogNI-DAQmx.h"
-#include "NIDAQmx-LibHeader.h"  // include NI-DAQmx Library functions       
+#include "NIDAQmx.h"
+//#include "NIDAQmx-LibHeader.h"  // include NI-DAQmx Library functions       
 #include "NI-PeripheralClasses.h" // Classes that encapsulate general stuff like channels and tasks
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -79,7 +80,6 @@ class niDAQmx : public ito::AddInDataIO
 		bool m_dOutIsAcquired;
 		bool m_cOutIsAcquired;
 		
-
 		QMap<QString, niTask*> m_taskMap;
 		niChannelList m_channels;
 		ito::DataObject m_data;

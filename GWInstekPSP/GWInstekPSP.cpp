@@ -25,10 +25,10 @@
 
 #include "GWInstekPSP.h"
 
-#ifdef __linux__
-    #include <unistd.h>
-#else
+#ifdef WIN32
     #include <windows.h>
+#else
+    #include <unistd.h>
 #endif
 
 #include <qstring.h>
@@ -333,14 +333,7 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
 */
 GWInstekPSP::~GWInstekPSP()
 {
-   m_pThread->quit();
-   m_pThread->wait(5000);
-   delete m_pThread;
-   m_pThread = NULL;
-
    m_params.clear();
-
-   return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

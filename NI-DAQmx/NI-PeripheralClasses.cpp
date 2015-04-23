@@ -34,18 +34,9 @@
 // Constructor I
 niTask::niTask(QString name)
 {
-	ito::RetVal retval;
 	m_name = name;
-	int err = DAQmxCreateTask(name.toLatin1(), &m_task);
-	if (err > 0)
-	{
-		retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while creating Task. \n Code: %i", err);
-	}
-	else if (err < 0)
-	{
-		retval += ito::RetVal::format(ito::retError, 0, "Error occured while creating Task. \n Code: %i", err);
-	}	
-	m_chCount = 0;
+	m_task = NULL;
+	this->resetTaskHandle();
 	m_mode = niTaskModeFinite;
 }
 
@@ -79,13 +70,19 @@ uInt32 niTask::getChCount()
 //------------------------------------------------------------------------------------------------------
 QStringList niTask::getChList()
 {
-	return taskNames;
+	return m_chList;
 }
+
+//------------------------------------------------------------------------------------------------------
+//QList<niBaseChannel*> niTask::getChannelPointer()
+//{
+//
+//}
 
 //------------------------------------------------------------------------------------------------------
 void niTask::channelAdded(const QString name)
 {
-	taskNames.append(name);
+	m_chList.append(name);
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -119,6 +116,11 @@ ito::RetVal niTask::applyParameters()
 			retval += ito::RetVal::format(ito::retError, 0, "The given mode does not exist. \n Mode: %i", m_mode);
 		}
 	}
+	// If a triggerport is defined, set task to triggermode
+	if (this->getTriggerPort() != "")
+	{
+		err = DAQmxCfgDigEdgeStartTrig(m_task, this->getTriggerPort().toLatin1().data(), this->getTriggerEdge());
+	}
 	if (err > 0 && retval == ito::retOk)
 	{
 		retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while configuring channel. \n Code: %i", err);
@@ -130,11 +132,65 @@ ito::RetVal niTask::applyParameters()
 	return retval;
 }
 
+ito::RetVal niTask::resetTaskHandle()
+{
+	ito::RetVal retval;
+	if (m_task != NULL)
+	{	// if task was already in use, reset everything
+		this->free();
+		m_rateHz = 0;
+		m_samplesToRW = 0;
+		m_mode = -1;
+		m_chList.clear();
+		m_triggerPort = "";
+		m_triggerEdge = 0;
+	}
+	int err = DAQmxCreateTask(m_name.toLatin1(), &m_task);
+	if (err > 0)
+	{
+		retval += ito::RetVal::format(ito::retWarning, 0, "Warning occured while creating Task. \n Code: %i", err);
+	}
+	else if (err < 0)
+	{
+		retval += ito::RetVal::format(ito::retError, 0, "Error occured while creating Task. \n Code: %i", err);
+	}	
+	m_chCount = 0;
+	return retval;
+}
+
+ito::RetVal niTask::run()
+{
+	ito::RetVal retVal = ito::retOk;
+	int err = 0;
+	if (this->isInitialized())
+	{
+		 this->applyParameters();
+		 err = DAQmxStartTask(*this->getTaskHandle());
+	}
+	if (err != 0)
+	{
+		retVal += ito::RetVal::format(ito::retError, 0, "Error occured while starting task. \n Code: %i", retVal.errorCode());
+	}
+	return retVal;
+}
+
 bool niTask::isDone()
 {
 	bool32 done;
 	DAQmxIsTaskDone(*this->getTaskHandle(), &done);
 	return done;
+}
+
+ito::RetVal niTask::stop()
+{
+	return DAQmxStopTask(*this->getTaskHandle());
+}
+
+ito::RetVal niTask::free()
+{
+	ito::RetVal retVal;
+	retVal = DAQmxClearTask(*this->getTaskHandle());
+	return retVal;
 }
 
 //*****************************************//

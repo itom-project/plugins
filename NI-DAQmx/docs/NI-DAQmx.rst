@@ -8,7 +8,7 @@
 **License**:    :pluginlicense:`NI-DAQmx`
 **Platforms**:  Windows, Linux
 **Devices**:    NI-ADDA Converter
-**Author**:     :pluginauthor:`NI-DAQmx`
+**Author**:     :pluginauthor:`Martin Hoppe`
 **Requires**:   NI-DAQmx Lib and DLL
 =============== ========================================================================================================
  
@@ -48,12 +48,15 @@ Example: the answer of taskStatus => "ai,0;ao,0;ci,-1;co,-1;di,-1;do,-1"
     Example:("aiTaskParams", "250000,100,0")
     aiTaskParams: {str},
     Initializes the analog input task. The parameters are:
-    "<samplesPerSec>,<NoOfSamples>,<mode>"
+    "<samplesPerSec>,<NoOfSamples>,<mode>" and optional for an external trigger: "</TriggerChannel>,<rising/falling>".
     <mode> can be a number from 0 to 2
     0 = finite (best for usage with itom. Size of dataobject can be defined and read when task is done)
     1 = continuous (not tested)
     2 = on demand (not tested)
+    The optional parameters are for an external trigger. The trigger can be connected to PFIX for example. The task will be triggered after if a <rising/falling> (digital) edge occurs on the defined trigger input. 
+    Pay attention to the naming of the trigger input: /Dev1/ with a leading "/"
     Example: "20000,100,0"
+    Example: "20000,100,0,/Dev1/PFI0,rising"
     aoTaskParams    : {str},
     Not tested yet.
     ciTaskParams: {str},

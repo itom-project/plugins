@@ -24,4 +24,10 @@ The following parameters are mandatory or optional for initializing an instance 
     
     .. plugininitparams::
         :plugin: LibUSB
+        
+Compilation
+===========
+In order to compile LibUSB, get the sources or binaries from LibUSB from libusb.info. Then set LibUSB_DIR to the base
+directory of the 3rd party libusb. libusb is statically linked to the libUSB plugin.
+
 

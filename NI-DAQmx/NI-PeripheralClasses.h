@@ -26,7 +26,7 @@
 #include <qstring.h>
 #include <qvector.h>
 #include <common\retVal.h>
-#include "NIDAQmx-LibHeader.h"		// include NI-DAQmx Library functions
+#include "NIDAQmx.h"
 #include <qobject.h>
 #include <qstandarditemmodel.h>
 
@@ -47,12 +47,22 @@ class niTask
 		int getMode(){return m_mode;};
 		void setMode(const int mode){m_mode = mode;};
 
+		QString getTriggerPort(){return m_triggerPort;};
+		void setTriggerPort(const QString port){m_triggerPort = port;};
+
+		int getTriggerEdge(){return m_triggerEdge;};
+		void setTriggerEdge(const int edge){m_triggerEdge = edge;};
+
 		QString getName(){return m_name;};
 		void setName(const QString s){m_name = s;};
 
+		ito::RetVal resetTaskHandle();
+		ito::RetVal run();
 		bool isDone();
-
+		ito::RetVal stop();
+		ito::RetVal free();
 		bool isInitialized();
+		//niChannelList getChannelPointer();
 		TaskHandle* getTaskHandle(){return &m_task;};
 		uInt32 getChCount();
 		QStringList getChList();
@@ -64,10 +74,13 @@ class niTask
 		int m_rateHz;
 		int m_samplesToRW;
 		int m_mode;
+		int m_triggerEdge;
+		//niChannelList m_channel;
+		QString m_triggerPort;
 		QString m_name;
 		uInt32 m_chCount;
 		TaskHandle m_task;
-		QStringList taskNames;
+		QStringList m_chList;
 };
 
 class niBaseChannel
@@ -208,7 +221,7 @@ class niCounterChannel : public niBaseChannel
 class niChannelList : public QMap<QString, niBaseChannel*>
 {
 	public:
-		niChannelList(QString device = "Dev1");
+		niChannelList(QString device = "Dev1"); // TODO: Wie kann man hier den default weg lassen? muss dafür die "getchannelsofdevice" static werden?
 		~niChannelList();
 
 		void getChannelsOfDevice(const QString dev); // DAQmxGetDevAIPhysicalChans

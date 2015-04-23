@@ -57,7 +57,7 @@ template<> inline ito::float64 myAbs<ito::float64>(ito::float64 val) {return fab
 class BasicFiltersInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
     Q_INTERFACES(ito::AddInInterfaceBase)
@@ -91,7 +91,14 @@ class BasicFilters : public ito::AddInAlgo
 
     public:
         friend class BasicFiltersInterface;
-         
+        
+        enum tFilterType
+        {
+            tGenericLowPass,
+            tGenericMedian,
+            tGenericGauss
+        };
+
         // Defined in BasicFilters.cpp
         static ito::RetVal stdParams2Objects(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                     /**< Get the standard IO-Parameters for filters with two objects */
                   
@@ -106,6 +113,7 @@ class BasicFilters : public ito::AddInAlgo
         static const char* calcHistDoc;
         static const char* clipAbyBDoc;
         static const char* fillGeometricDoc;
+        
 
         static ito::RetVal replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal replaceInfAndNaNParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
@@ -147,14 +155,21 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal genericGaussianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
 
         // Further filters using the Generic Engine
+        static ito::RetVal spikeMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal spikeMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
-        static ito::RetVal spikeMedianFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
-
+        static ito::RetVal spikeCompFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        
         // Filter 
         static ito::RetVal fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal fillGeometricParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const char* calcRadialMeanFilterDoc;
+        static ito::RetVal calcRadialMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/);
+        static ito::RetVal calcRadialMeanFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut);
+
     private:
+        static ito::RetVal spikeGenericFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, const tFilterType filter);
+
 
         template<typename _Tp> static void fillGeoCircle(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radius, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal);
         template<typename _Tp> static void fillGeoEllipse(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radiusX, const ito::float64 radiusY, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal);
@@ -200,6 +215,7 @@ template<typename _Tp> class GenericFilterEngine
         ito::int32 m_dx, m_dy;           //< Size of filter region
         ito::int32 m_AnchorX, m_AnchorY; //< Position of the data output in respect to the kernel (anchor)
         virtual void filterFunc() = 0;
+        virtual void clearFunc() = 0;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -229,6 +245,7 @@ template<typename _Tp> class LowValueFilter : public GenericFilterEngine<_Tp>
         ~LowValueFilter();
 
         void filterFunc();
+        void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -258,6 +275,7 @@ template<typename _Tp> class HighValueFilter : public GenericFilterEngine<_Tp>
         ~HighValueFilter();
 
         void filterFunc();
+        void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -289,6 +307,7 @@ template<typename _Tp> class MedianFilter : public GenericFilterEngine<_Tp>
         ~MedianFilter();
 
         void filterFunc();
+        void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -316,6 +335,7 @@ template<typename _Tp> class LowPassFilter : public GenericFilterEngine<_Tp>
         ~LowPassFilter();
 
         void filterFunc();
+        void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -355,6 +375,7 @@ template<typename _Tp> class GaussianFilter : public GenericFilterEngine<_Tp>
         ~GaussianFilter();
 
         void filterFunc();
+        void clearFunc();
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

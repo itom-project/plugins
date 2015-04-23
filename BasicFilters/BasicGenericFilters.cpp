@@ -466,9 +466,10 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 {
     ito::RetVal err = ito::retOk;
 
-    ito::float64 invalid = std::numeric_limits<ito::float64>::quiet_NaN();
-
+    _Tp invalid = 0;
+    
     if(std::numeric_limits<_Tp>::is_exact) replaceNaN = true;
+    else invalid = std::numeric_limits<_Tp>::quiet_NaN();
 
     if(!m_initilized)
     {
@@ -530,6 +531,8 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
     {
         cv::Mat* planeIn = (cv::Mat*)(m_pInpObj->get_mdata()[m_pInpObj->seekMat(zPlaneCnt)]);
         cv::Mat* planeOut = (cv::Mat*)(m_pOutObj->get_mdata()[m_pOutObj->seekMat(zPlaneCnt)]);
+
+        clearFunc();
 
         if (!err.containsWarningOrError())
         {
@@ -680,7 +683,12 @@ template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
 #endif
     }
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void LowValueFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    return;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> /*ito::RetVal*/ void LowValueFilter<_Tp>::filterFunc()
 {
@@ -821,7 +829,12 @@ template<typename _Tp> HighValueFilter<_Tp>::~HighValueFilter()
         #endif
     }
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void HighValueFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    return;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> /*ito::RetVal*/ void HighValueFilter<_Tp>::filterFunc()
 {
@@ -1287,7 +1300,12 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
         kbufPtr[i] = (_Tp*)&(kbuf[i]);
     #endif
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void MedianFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    return;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 {
@@ -1698,6 +1716,13 @@ template<typename _Tp> LowPassFilter<_Tp>::~LowPassFilter()
     {
         delete m_colwiseSumBuffer;
     }
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void LowPassFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    m_isFilled = false;
+    return;
 }
 //-----------------------------------------------------------------------------------------------
 template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
@@ -2233,6 +2258,13 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
 
 
     this->m_isFilled = false;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void GaussianFilter<_Tp>::clearFunc()
+{
+    // Do nothing
+    m_isFilled = false;
+    return;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> GaussianFilter<_Tp>::~GaussianFilter()
@@ -2825,7 +2857,7 @@ ito::RetVal BasicFilters::genericGaussianEpsilonFilter(QVector<ito::ParamBase> *
 \sa  BasicFilters::genericLowPassFilter, 
 \date
 */
-ito::RetVal BasicFilters::spikeMedianFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+ito::RetVal BasicFilters::spikeCompFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
@@ -2967,6 +2999,26 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
 */
 ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut)
 {
+    return spikeGenericFilter(paramsMand, paramsOpt, paramsOut, tGenericMedian);
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+\detail This function use the generic filter engine with the median filter to set values to remove spikes from an image
+\param[in|out]   paramsMand  Mandatory parameters for the filter function
+\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   outVals   Outputvalues, not implemented for this function
+\param[in]   lowHigh  Flag which toggles low or high filter
+\author ITO
+\sa  BasicFilters::genericStdParams
+\date
+*/
+ito::RetVal BasicFilters::spikeMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut)
+{
+    return spikeGenericFilter(paramsMand, paramsOpt, paramsOut, tGenericLowPass);
+}
+
+ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, const tFilterType filter )
+{
     ito::RetVal retval = ito::retOk;
     ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
@@ -3103,12 +3155,31 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
         paramsOutMedianBase.append((ito::ParamBase)paramsOutMedian[i]);
     }
 
-    retval += genericMedianFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
-    if(retval.containsError())
+    switch(filter)
     {
-        retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
-        return retval;        
+        case tGenericLowPass:  
+            retval += genericLowPassFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
+            if(retval.containsError())
+            {
+                retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
+                return retval;        
+            }
+        break;
+        case tGenericMedian:  
+            retval += genericMedianFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
+            if(retval.containsError())
+            {
+                retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
+                return retval;        
+            }
+        break;
+        default:
+        {
+            return ito::RetVal(ito::retError, 0, tr("Error: filter type not implemented for generic spike filter").toLatin1().data());  
+        }
     }
+
+
 
     switch(dObjSrc->getType())
     {

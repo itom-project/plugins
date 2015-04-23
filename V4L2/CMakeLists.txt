@@ -61,11 +61,6 @@ LINK_DIRECTORIES(
 )
 
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsInc.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInGrabber.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogV4L2.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetV4L2.h
     ${CMAKE_CURRENT_SOURCE_DIR}/V4L2.h

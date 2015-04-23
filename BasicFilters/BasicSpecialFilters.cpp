@@ -298,9 +298,6 @@ ito::RetVal BasicFilters::flaten3Dto2D(QVector<ito::ParamBase> *paramsMand, QVec
     if(!retval.containsError())
     {
         // Add scale and offset for all z + (y and x)
-//        char prot[81] = {0};
-//        _snprintf(prot, 80, "Flattened object from 3d to 2d");
-//        dObjDst->addToProtocol(std::string(prot));
         QString msg = tr("Flattened object from 3d to 2d");
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
@@ -386,9 +383,6 @@ ito::RetVal BasicFilters::swapByteOrder(QVector<ito::ParamBase> *paramsMand, QVe
     if(!retval.containsError())
     {
         // Add scale and offset for all z + (y and x)
-//        char prot[81] = {0};
-//        _snprintf(prot, 80, "Flattened object from 3d to 2d");
-//        dObjDst->addToProtocol(std::string(prot));
         QString msg = tr("Swap byte order");
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
@@ -401,9 +395,9 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
 {
     ito::RetVal retval = ito::retOk;
 
-    ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-    ito::DataObject *dObjReplace = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
-    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[2].getVal<void*>();
+    ito::DataObject *dObjSrc = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject *dObjReplace = (*paramsMand)[1].getVal<ito::DataObject*>();
+    ito::DataObject *dObjDst = (*paramsMand)[2].getVal<ito::DataObject*>();
 
     if (!dObjSrc)
     {
@@ -443,30 +437,26 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
     else
     {
         (*dObjDst) = ito::DataObject(dObjSrc->getDims(), dObjSrc->getSize(), dObjSrc->getType(), dObjSrc->getContinuous());
-        //(*dObjDst).setT(dObjSrc->isT());
         dObjSrc->copyAxisTagsTo(*dObjDst);
         dObjSrc->copyTagMapTo(*dObjDst);
     }
 
     int numMats = dObjSrc->calcNumMats();
-    int srcIdx, replaceIdx, destIdx;
-    cv::Mat *srcMat = NULL;
-    cv::Mat *replaceMat = NULL;
+    const cv::Mat *srcMat = NULL;
+    const cv::Mat *replaceMat = NULL;
     cv::Mat *destMat = NULL;
 
-    ito::float32 *floatLinePtr1, *floatLinePtr2, *floatLinePtr3;
-    ito::float64 *doubleLinePtr1, *doubleLinePtr2, *doubleLinePtr3;
+    const ito::float32 *floatLinePtr1, *floatLinePtr2;
+    ito::float32 *floatLinePtr3;
+    const ito::float64 *doubleLinePtr1, *doubleLinePtr2;
+    ito::float64 *doubleLinePtr3;
     int nrOfReplacements = 0;
 
-    for(int z = 0; z<numMats;z++)
+    for(int z = 0; z < numMats; z++)
     {
-        srcIdx = dObjSrc->seekMat(z);
-        replaceIdx = dObjReplace->seekMat(z);
-        destIdx = dObjDst->seekMat(z);
-
-        srcMat = ((cv::Mat*)((dObjSrc->get_mdata())[srcIdx]));
-        replaceMat = ((cv::Mat*)((dObjReplace->get_mdata())[replaceIdx]));
-        destMat = ((cv::Mat*)((dObjDst->get_mdata())[destIdx]));
+        srcMat = dObjSrc->getCvPlaneMat(z);
+        replaceMat = dObjReplace->getCvPlaneMat(z);
+        destMat = dObjDst->getCvPlaneMat(z);
 
         if(dObjSrc->getType() == ito::tFloat32)
         {
@@ -519,17 +509,10 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
     // if no errors reported -> create new dataobject with values stored in cvMatOut
     if(!retval.containsError())
     {
-        // Add Protokoll
-
-//        char prot[81] = {0};
-//        _snprintf(prot, 80, "replace NaN and infinity values");
-//        dObjDst->addToProtocol(std::string(prot));
+        // add protocol
         QString msg = tr("replace NaN and infinity values");
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
-
-    /*QVariant nrOfRepl(nrOfReplacements);
-    outVals->append(nrOfRepl);*/
 
     (*paramsOut)[0].setVal<int>(nrOfReplacements);
 
@@ -542,14 +525,14 @@ ito::RetVal BasicFilters::replaceInfAndNaNParams(QVector<ito::Param> *paramsMand
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image").toLatin1().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input object of type float32 or float64 whose non-finite values will be replaced with the values in replaceImg.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("replaceImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Image with values which will be used for replacement").toLatin1().data());
+        param = ito::Param("replaceImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("replacement data object of same type and shape than srcImg.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image").toLatin1().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output object of same type and shape than srcImg (inplace possible).").toLatin1().data());
         paramsMand->append(param);
 
-        paramsOut->append( ito::Param("nrOfReplacements", ito::ParamBase::Int | ito::ParamBase::Out, 0, NULL, tr("number of replacments").toLatin1().data()));
+        paramsOut->append( ito::Param("nrOfReplacements", ito::ParamBase::Int | ito::ParamBase::Out, 0, NULL, tr("number of values that have been replaced.").toLatin1().data()));
     }
 
     return retval;
@@ -562,10 +545,10 @@ ito::RetVal BasicFilters::mergeColorPlanesParams(QVector<ito::Param> *paramsMand
     {
         ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image with 3 or 4 uint8 planes").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image with uint32 planes").toLatin1().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image with of type rgba32").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("toggleByteOrder", ito::ParamBase::Int, 0, 3, 0, tr("Switch between RGBA = 0, BGRA = 1, ARGB = 2, ABGR = 3").toLatin1().data());
+        param = ito::Param("toggleByteOrder", ito::ParamBase::Int | ito::ParamBase::In, 0, 3, 0, tr("Switch between RGBA = 0, BGRA = 1, ARGB = 2, ABGR = 3").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -577,7 +560,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
 {
     ito::RetVal retval = ito::retOk;
 
-    ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+    const ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
     
     ito::DataObject tempDest;
@@ -594,7 +577,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         return ito::RetVal(ito::retError, 0, tr("Error: replace image ptr empty").toLatin1().data());
     }
 
-    int numMats = dObjSrc->calcNumMats();
+    int numMats = dObjSrc->getNumPlanes();
 
     if(numMats == 3 && toggleByteOrder > 1)
     {
@@ -603,9 +586,9 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
 
 //    if(dObjSrc->getType() != ito::tUInt8 && dObjSrc->getDims() != 3 && (numMats != 3 || numMats != 4))
 	// TODO: malformed if statement changed || to && is this what was intended?
-    if(dObjSrc->getType() != ito::tUInt8 && dObjSrc->getDims() != 3 && (numMats != 3 && numMats != 4))
+    if(dObjSrc->getType() != ito::tUInt8 || (dObjSrc->getDims() != 3) || (numMats != 3 && numMats != 4))
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: The primary object must be of type tUInt8").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("SrcImg must be three dimensional, of type uint8 and contain three or four planes.").toLatin1().data());
     }
 
     int planeSize[2] = {dObjSrc->getSize(1), dObjSrc->getSize(2)};
@@ -624,7 +607,6 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         tempDest = (*dObjDst);
     }
     
-    //tempDest.setT(dObjSrc->isT());
     dObjSrc->copyTagMapTo(tempDest);
     tempDest.setAxisDescription(0, dObjSrc->getAxisDescription(1, check));
     tempDest.setAxisDescription(1, dObjSrc->getAxisDescription(2, check));
@@ -636,37 +618,37 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
     tempDest.setAxisOffset(1, dObjSrc->getAxisOffset(2));
  
 
-    cv::Mat_<ito::uint8>* matR = NULL;
-    cv::Mat_<ito::uint8>* matG = NULL;
-    cv::Mat_<ito::uint8>* matB = NULL;
-    cv::Mat_<ito::uint8>* matA = NULL;
-    cv::Mat_<ito::int32>* matRes = (cv::Mat_<ito::int32>*)(tempDest.get_mdata()[0]);;
+    const cv::Mat_<ito::uint8>* matR = NULL;
+    const cv::Mat_<ito::uint8>* matG = NULL;
+    const cv::Mat_<ito::uint8>* matB = NULL;
+    const cv::Mat_<ito::uint8>* matA = NULL;
+    cv::Mat_<ito::int32>* matRes = (cv::Mat_<ito::int32>*)(tempDest.getCvPlaneMat(0));
 
     switch(toggleByteOrder)
     {
         case 0:
-            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[0]);
-            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[1]);
-            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[2]);
-            if(numMats == 4) matA = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[3]);
+            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
+            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
+            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
+            if(numMats == 4) matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));
         break;
         case 1:
-            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[0]);
-            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[1]);
-            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[2]);
-            if(numMats == 4) matA = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[3]);
+            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
+            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
+            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
+            if(numMats == 4) matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));
         break;
         case 2:
-            matA = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[0]);
-            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[1]);
-            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[2]);
-            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[3]);  
+            matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
+            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
+            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
+            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));  
         break;
         case 3:
-            matA = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[0]);
-            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[1]);
-            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[2]);
-            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->get_mdata()[3]);         
+            matA = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(0));
+            matB = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(1));
+            matG = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(2));
+            matR = (cv::Mat_<ito::uint8>*)(dObjSrc->getCvPlaneMat(3));         
         break;
     }
 
@@ -674,10 +656,10 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
 
     if(numMats == 4 && convertToInt32)
     {
-        ito::uint8* rowPtrR;
-        ito::uint8* rowPtrG;
-        ito::uint8* rowPtrB;
-        ito::uint8* rowPtrA;
+        const ito::uint8* rowPtrR;
+        const ito::uint8* rowPtrG;
+        const ito::uint8* rowPtrB;
+        const ito::uint8* rowPtrA;
         ito::int32* rowPtrDst;
 
         for( int y = 0; y < planeSize[0]; y++)
@@ -698,9 +680,9 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
     }
     else if(convertToInt32)
     {
-        ito::uint8* rowPtrR;
-        ito::uint8* rowPtrG;
-        ito::uint8* rowPtrB;
+        const ito::uint8* rowPtrR;
+        const ito::uint8* rowPtrG;
+        const ito::uint8* rowPtrB;
         ito::int32* rowPtrDst;
 
         for( int y = 0; y < planeSize[0]; y++)
@@ -720,10 +702,10 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
     }
     else if(numMats == 4)
     {
-        ito::uint8* rowPtrR;
-        ito::uint8* rowPtrG;
-        ito::uint8* rowPtrB;
-        ito::uint8* rowPtrA;
+        const ito::uint8* rowPtrR;
+        const ito::uint8* rowPtrG;
+        const ito::uint8* rowPtrB;
+        const ito::uint8* rowPtrA;
         ito::RgbaBase32* rowPtrDst;
 
         for( int y = 0; y < planeSize[0]; y++)
@@ -745,9 +727,9 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
     }
     else
     {
-        ito::uint8* rowPtrR;
-        ito::uint8* rowPtrG;
-        ito::uint8* rowPtrB;
+        const ito::uint8* rowPtrR;
+        const ito::uint8* rowPtrG;
+        const ito::uint8* rowPtrB;
         ito::RgbaBase32* rowPtrDst;
 
         for( int y = 0; y < planeSize[0]; y++)
@@ -771,11 +753,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
     // if no errors reported -> create new dataobject with values stored in cvMatOut
     if(!retval.containsError())
     {
-        // Add Protokoll
-
-//        char prot[81] = {0};
-//        _snprintf(prot, 80, "replace NaN and infinity values");
-//        dObjDst->addToProtocol(std::string(prot));
+        // Add protocol
         QString msg = tr("Merged from multiplane color object");
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
@@ -790,15 +768,15 @@ ito::RetVal BasicFilters::calcMeanOverZParams(QVector<ito::Param> *paramsMand, Q
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input object with multiple z-planes").toLatin1().data());
+        ito::Param param = ito::Param("srcImg", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("3D input object of dimension [ZxMxN] with Z different planes.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image with 1 or 2 float64 planes").toLatin1().data());
+        param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image of same type than input object and dimension [1xMxN] or [2xMxN] depending on parameter 'calcStd'.").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("ignoreInf", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Ignore invalid-Values for floating point").toLatin1().data());
+        param = ito::Param("ignoreInf", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If 1, Inf or NaN values will not be taken into account when calculating the mean value (default, only important for floating point data types).").toLatin1().data());
         paramsOpt->append(param);
 
-        param = ito::Param("calcStd", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If true, calculate standard deviation").toLatin1().data());
+        param = ito::Param("calcStd", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If 1, the standard deviation is also calculated and put into the second plane of 'destImg'.").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -994,8 +972,8 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
 {
     ito::RetVal retval = ito::retOk;
 
-    ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
+    ito::DataObject *dObjSrc = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
 
     bool overWrite = true;
     int xsize = 1;
@@ -3344,3 +3322,203 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
 
     return retval;
 }
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const char* BasicFilters::calcRadialMeanFilterDoc= "Calculates the mean value for radial circles with a given center point an a radius step size \n\
+\n\
+The radiuses are the distances from the given center point to the physical coordinates of each pixel.";
+ito::RetVal BasicFilters::calcRadialMeanFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(!retval.containsError())
+    {
+        ito::Param param = ito::Param("scrImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image (1xN) of the same type than the input image, where N corresponds to different radiuses.").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("radiusStep", ito::ParamBase::Double | ito::ParamBase::In, 1e-9, std::numeric_limits<double>::max(), 0.01, tr("step size of the radius for the discretization").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("centerX", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("x-coordinate of radial center").toLatin1().data());
+        paramsOpt->append(param);
+        param = ito::Param("centerY", ito::ParamBase::Double | ito::ParamBase::In, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("y-coordinate of radial center").toLatin1().data());
+        paramsOpt->append(param);
+    }
+
+    return retval;
+}
+
+template<typename _T1, typename _T2> void calcRadialMeanHelper(const ito::DataObject &input, cv::Mat *bucket, double &cx, double &cy, double &rStep, int &usedBuckets)
+{
+    cv::Mat counts = cv::Mat::zeros(1, bucket->cols, CV_32SC1);
+    ito::int32 *countsPtr = counts.ptr<ito::int32>(0);
+    const _T1 *rowPtr = NULL;
+    _T2 *bucketPtr = bucket->ptr<_T2>(0);
+    double yScale = input.getAxisScale(0);
+    double xScale = input.getAxisScale(1);
+    double yOffset = input.getAxisOffset(0);
+    double xOffset = input.getAxisOffset(1);
+    //phys = (px - offset)* scale
+    double dy, dx, r;
+    int idx;
+    usedBuckets = 0;
+
+    for (int y = 0; y < input.getSize(0); ++y)
+    {
+        dy = (y - yOffset) * yScale - cy;
+        rowPtr = (_T1*)(input.rowPtr(0, y));
+
+        for (int x = 0; x <input.getSize(1); ++x)
+        {
+            if (ito::dObjHelper::isFinite(rowPtr[x]))
+            {
+                dx = (x - xOffset) * xScale - cx;
+                r = std::sqrt(dx*dx + dy*dy);
+                idx = qRound(r / rStep);
+                countsPtr[idx]++;
+                bucketPtr[idx] += cv::saturate_cast<_T2>(rowPtr[x]);
+                usedBuckets = std::max(idx, usedBuckets);
+            }
+        }
+    }
+
+    for (int y = 0; y < bucket->cols; ++y)
+    {
+        if (countsPtr[y] > 0)
+        {
+            bucketPtr[y] /= countsPtr[y];
+        }
+    }
+}
+
+ito::RetVal BasicFilters::calcRadialMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal retval;
+    double cX = paramsOpt->at(0).getVal<double>();
+    double cY = paramsOpt->at(1).getVal<double>();
+    const ito::DataObject input = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(), "scrImage", ito::Range::all(), ito::Range::all(), retval, -1, 10, ito::tUInt8, ito::tUInt16, ito::tUInt32, ito::tInt8, ito::tInt16, ito::tInt32, ito::tFloat32, ito::tFloat64, ito::tComplex64, ito::tComplex128);
+    ito::DataObject *output = paramsMand->at(1).getVal<ito::DataObject*>();
+    double rStep = paramsMand->at(2).getVal<double>();
+    double maxRadiusQuad = 0.0;
+    double dx, dy;
+    int height, width;
+    int nrBuckets;
+
+    if (!retval.containsError())
+    {
+        height = input.getSize(0);
+        width = input.getSize(1);
+
+        //check corners for maximal radius
+        dx = input.getPixToPhys(1, 0.0) - cX; 
+        dy = input.getPixToPhys(0, 0.0) - cY;
+        maxRadiusQuad = std::max(dx*dx + dy*dy, maxRadiusQuad);
+
+        dx = input.getPixToPhys(1, width - 1) - cX; 
+        dy = input.getPixToPhys(0, 0.0) - cY;
+        maxRadiusQuad = std::max(dx*dx + dy*dy, maxRadiusQuad);
+
+        dx = input.getPixToPhys(1, 0.0) - cX; 
+        dy = input.getPixToPhys(0, height - 1) - cY;
+        maxRadiusQuad = std::max(dx*dx + dy*dy, maxRadiusQuad);
+
+        dx = input.getPixToPhys(1, width - 1) - cX; 
+        dy = input.getPixToPhys(0, height - 1) - cY;
+        maxRadiusQuad = std::max(dx*dx + dy*dy, maxRadiusQuad);
+
+        nrBuckets = std::ceil(std::sqrt(maxRadiusQuad) / rStep);
+
+        if (nrBuckets == 0)
+        {
+            retval += ito::RetVal(ito::retError, 0, "radiusStep is too big. The maximum available radius value is much smaller");
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        
+        ito::DataObject vals;
+        int usedBuckets;
+
+        switch (input.getType())
+        {
+        case ito::tUInt8:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::uint8, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tUInt8);
+            break;
+        case ito::tUInt16:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::uint16, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tUInt16);
+            break;
+        case ito::tUInt32:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::uint32, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tUInt32);
+            break;
+        case ito::tInt8:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::int8, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tInt8);
+            break;
+        case ito::tInt16:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::int16, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tInt16);
+            break;
+        case ito::tInt32:
+            vals.zeros(nrBuckets, ito::tInt32);
+            calcRadialMeanHelper<ito::int32, ito::int32>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            *output = vals;
+            break;
+        case ito::tFloat32:
+            vals.zeros(nrBuckets, ito::tFloat64);
+            calcRadialMeanHelper<ito::float32, ito::float64>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tFloat32);
+            break;
+        case ito::tFloat64:
+            vals.zeros(nrBuckets, ito::tFloat64);
+            calcRadialMeanHelper<ito::float64, ito::float64>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            *output = vals;
+            break;
+        case ito::tComplex64:
+            vals.zeros(nrBuckets, ito::tComplex128);
+            calcRadialMeanHelper<ito::complex64, ito::complex128>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            retval += vals.convertTo(*output, ito::tComplex64);
+            break;
+        case ito::tComplex128:
+            vals.zeros(nrBuckets, ito::tComplex128);
+            calcRadialMeanHelper<ito::complex128, ito::complex128>(input, vals.getCvPlaneMat(0), cX, cY, rStep, usedBuckets);
+            vals = vals.at(ito::Range::all(), ito::Range(0, usedBuckets));
+            *output = vals;
+            break;
+        }
+
+        if (!retval.containsError())
+        {
+            bool valid;
+            output->setAxisOffset(1, 0.0);
+            output->setAxisScale(1, rStep);
+            output->setAxisUnit(1, input.getAxisUnit(1, valid));
+            output->setAxisDescription(1, "Radius");
+            output->setValueUnit(input.getValueUnit());
+            output->setValueDescription(input.getValueDescription());
+        }
+
+    }
+
+
+    return retval;
+}
+

@@ -53,7 +53,7 @@ BasicFiltersInterface::BasicFiltersInterface()
 \n\
 This plugin does not have any unusual dependencies.";
 
-    m_description = QObject::tr("ITO developed filter-functions for dateObjects");
+    m_description = QObject::tr("ITO developed filter-functions for data objects");
     m_detaildescription = QObject::tr(docstring);
     m_author = "W. Lyda, T. Boettcher, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -123,7 +123,7 @@ const char* BasicFilters::mergeColorPlaneDoc= "Merge 3 or 4 color planes to a si
 If second object is tInt32 and of right size in x and y, the stack object will be convertet to tInt32. In all other cases the object will be tRGBA32 \n\
 \n";
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* BasicFilters::calcMeanOverZDoc= "Calculate meanValue of a 3D-Object stack in z-directon. \n\
+const char* BasicFilters::calcMeanOverZDoc= "Calculate mean value (and optional standard deviation) of a 3D data object in z-direction. \n\
 \n";
 //----------------------------------------------------------------------------------------------------------------------------------
 const char* BasicFilters::calcObjSliceDoc= "Interpolate 1D-slice from along the defined line from a 2D-Object. \n\
@@ -142,10 +142,10 @@ the value given by 'newValue'. In both cases the range boundaries are not clippe
 NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.";
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char *BasicFilters::fillGeometricDoc = "fills a ROI, which defined by a geometric primitiv, of the given dataObject with a defined value\n\
+const char *BasicFilters::fillGeometricDoc = "fills a ROI, which defined by a geometric primitive, of the given dataObject with a defined value\n\
 \n\
 Depending on the parameter 'insideFlag', this filter sets all values of the dataObject depending on the geometric primitiv within (1) or outside (2) or both (3) to \
-the value given by 'newValueInside' and 'newValueOutside'. The 'edgeFlag' is currently not used but shall manage the edge handling of primitiv.";
+the value given by 'newValueInside' and 'newValueOutside'. The 'edgeFlag' is currently not used but shall manage the edge handling of primitive.";
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
@@ -155,20 +155,27 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 
     filter = new FilterDef(BasicFilters::replaceInfAndNaN, BasicFilters::replaceInfAndNaNParams, tr(replaceInfAndNaNDoc));
     m_filterList.insert("replaceInfAndNaN", filter);
+
     filter = new FilterDef(BasicFilters::flaten3Dto2D, BasicFilters::stdParams2Objects, tr(flaten3Dto2DDoc));
     m_filterList.insert("flatten3Dto2D", filter);
+
     filter = new FilterDef(BasicFilters::swapByteOrder, BasicFilters::stdParams2Objects, tr(swapByteOrderDoc));
     m_filterList.insert("swapByteOrder", filter);
+
     filter = new FilterDef(BasicFilters::mergeColorPlane, BasicFilters::mergeColorPlanesParams, tr(mergeColorPlaneDoc));
     m_filterList.insert("mergeColorPlane", filter);
 
     filter = new FilterDef(BasicFilters::calcMeanOverZ, BasicFilters::calcMeanOverZParams, tr(calcMeanOverZDoc));
     m_filterList.insert("calcMeanZ", filter);
+
     filter = new FilterDef(BasicFilters::calcObjSlice, BasicFilters::calcObjSliceParams, tr(calcObjSliceDoc));
     m_filterList.insert("calcObjSlice", filter);
 
     filter = new FilterDef(BasicFilters::calcHistFilter, BasicFilters::calcHistParams, tr(calcHistDoc));
     m_filterList.insert("calcHist", filter);
+
+    filter = new FilterDef(BasicFilters::calcRadialMeanFilter, BasicFilters::calcRadialMeanFilterParams, tr(calcRadialMeanFilterDoc));
+    m_filterList.insert("calcRadialMean", filter);
 
     filter = new FilterDef(BasicFilters::clipValueFilter, BasicFilters::clipValueFilterParams, tr(clipValueDoc));
     m_filterList.insert("clipValues", filter);
@@ -178,20 +185,27 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 
     filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("Set each pixel to the lowest value within the kernel (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("lowValueFilter", filter);
+
     filter = new FilterDef(BasicFilters::genericHighValueFilter, BasicFilters::genericStdParams, tr("Set each pixel to the highest value within the kernel (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("highValueFilter", filter);
+
     filter = new FilterDef(BasicFilters::genericMedianFilter, BasicFilters::genericStdParams, tr("Performs a median filter with kernelsize (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("medianFilter", filter);
+
     filter = new FilterDef(BasicFilters::genericLowPassFilter, BasicFilters::genericStdParams, tr("Performs a low-pass filter with kernelsize (x ,y) using the generic mcpp filter engine"));
     m_filterList.insert("lowPassFilter", filter);
 
     filter = new FilterDef(BasicFilters::genericGaussianEpsilonFilter, BasicFilters::genericGaussianEpsilonParams, tr("Performs a gaussian blur filter according to sigma and epsilon using the generic mcpp filter engine. The kernelsize (x ,y) will be estimated."));
     m_filterList.insert("gaussianFilterEpsilon", filter);
+
     filter = new FilterDef(BasicFilters::genericGaussianFilter, BasicFilters::genericGaussianParams, tr("Performs a gaussian blur filter with kernelsize (x ,y) and according to sigmaX and sigmaY using the generic mcpp filter engine"));
     m_filterList.insert("gaussianFilter", filter);
 
-    filter = new FilterDef(BasicFilters::spikeMedianFilter, BasicFilters::spikeMedianFilterStdParams, tr("Performs a median filter with kernelsize (x ,y) and pixelwise comparison of filterd image and original image to remove spikes according to delta value."));
+    filter = new FilterDef(BasicFilters::spikeMedianFilter, BasicFilters::spikeCompFilterStdParams, tr("Performs a median filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value."));
     m_filterList.insert("spikeMedianFilter", filter);
+
+    filter = new FilterDef(BasicFilters::spikeMeanFilter, BasicFilters::spikeCompFilterStdParams, tr("Performs a low pass filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value."));
+    m_filterList.insert("spikeMeanFilter", filter);
 
     filter = new FilterDef(BasicFilters::fillGeometricPrimitiv, BasicFilters::fillGeometricParams, tr(fillGeometricDoc));
     m_filterList.insert("fillObject", filter);

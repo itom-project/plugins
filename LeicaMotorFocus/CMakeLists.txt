@@ -65,9 +65,6 @@ if (NOT QT5_FOUND)
 endif (NOT QT5_FOUND)
 
 set(plugin_HEADERS
-    ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-    ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogLeicaMotorFocus.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetLeicaMotorFocus.h
     ${CMAKE_CURRENT_SOURCE_DIR}/LeicaMotorFocus.h

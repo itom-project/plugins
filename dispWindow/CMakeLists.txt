@@ -21,7 +21,7 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-find_package(ITOM_SDK REQUIRED)
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets Xml OpenGL LinguistTools)
 
@@ -66,10 +66,6 @@ IF(GLEW_FOUND OR QT5_FOUND)
     ENDIF(NOT QT5_FOUND)
 
     set(plugin_HEADERS
-        ${ITOM_SDK_INCLUDE_DIR}/common/addInInterface.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-        ${ITOM_SDK_INCLUDE_DIR}/common/helperCommon.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogDispWindow.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetDispWindow.h
         ${CMAKE_CURRENT_SOURCE_DIR}/dispWindow.h
@@ -121,11 +117,9 @@ IF(GLEW_FOUND OR QT5_FOUND)
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    TARGET_LINK_LIBRARIES(${target_name} ${OPENGL_LIBRARIES} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${GLEW_LIBRARIES})
     if (QT5_FOUND)
-            TARGET_LINK_LIBRARIES(${target_name} ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES}) # glu32 opengl32)
-            qt5_use_modules(${target_name} ${QT_COMPONENTS})
-    else (QT5_FOUND)
-        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTXML_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_dataobject_LIBRARY} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES}) # glu32 opengl32)
+        qt5_use_modules(${target_name} ${QT_COMPONENTS})
     endif (QT5_FOUND)
     
     #translation

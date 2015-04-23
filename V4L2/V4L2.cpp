@@ -836,18 +836,18 @@ ito::RetVal V4L2::retrieveData(ito::DataObject *externalDataObject)
                 {
                     if(tempImage.channels() == 1)
                     {
-                        internalMat = (cv::Mat*)(dataObj->get_mdata()[0]);
+                        internalMat = dataObj->getCvPlaneMat(0);
                         tempImage.copyTo( *(internalMat) );
 
                         if(externalDataObject && hasListeners)
                         {
-                            internalMat = (cv::Mat*)(m_data.get_mdata()[0]);
+                            internalMat = m_data.get_mdata()[0];
                             tempImage.copyTo( *(internalMat) );
                         }
                     }
                     else if(tempImage.channels() == 3 && (m_colorMode == modeAuto || m_colorMode == modeColor))
                     {
-                        cv::Mat out[] = { *(cv::Mat*)(dataObj->get_mdata()[0]) }; //{ *(cv::Mat*)(dataObj->get_mdata()[0]) , *(cv::Mat*)(dataObj->get_mdata()[1]) , *(cv::Mat*)(dataObj->get_mdata()[2]) };
+                        cv::Mat out[] = { *(dataObj->getCvPlaneMat(0)) }; //{ *(cv::Mat*)(dataObj->get_mdata()[0]) , *(cv::Mat*)(dataObj->get_mdata()[1]) , *(cv::Mat*)(dataObj->get_mdata()[2]) };
                         int fromTo[] = {0,0,1,1,2,2}; //{0,2,1,1,2,0}; //implicit BGR (camera) -> BGR (dataObject style) conversion
                         
                         //qDebug() << "tempImage.channels():" << tempImage.channels() << " elem1size:" << tempImage.elemSize1() << " elemSize:" << tempImage.elemSize() << "[" << tempImage.rows << "x" << tempImage.cols << "] depth:" << tempImage.depth();
@@ -857,13 +857,13 @@ ito::RetVal V4L2::retrieveData(ito::DataObject *externalDataObject)
 
                         if(externalDataObject && hasListeners)
                         {
-                            cv::Mat out[] = { *(cv::Mat*)(dataObj->get_mdata()[0]) }; //{ *(cv::Mat*)(m_data.get_mdata()[0]) , *(cv::Mat*)(m_data.get_mdata()[1]) , *(cv::Mat*)(m_data.get_mdata()[2]) };
+                            cv::Mat out[] = { *(dataObj->getCvPlaneMat(0)) }; //{ *(cv::Mat*)(m_data.get_mdata()[0]) , *(cv::Mat*)(m_data.get_mdata()[1]) , *(cv::Mat*)(m_data.get_mdata()[2]) };
                             cv::mixChannels( &tempImage, 1, out, 1, fromTo, 3 );
                         }
                     }
                     else if(tempImage.channels() == 3) //R,G,B selection
                     {
-                        cv::Mat out[] = { *(cv::Mat*)(dataObj->get_mdata()[0]) };
+                        cv::Mat out[] = { *(dataObj->getCvPlaneMat(0)) };
                         int fromTo[] = {0,0};
                         switch(m_colorMode)
                         {
@@ -875,7 +875,7 @@ ito::RetVal V4L2::retrieveData(ito::DataObject *externalDataObject)
 
                         if(externalDataObject && hasListeners)
                         {
-                        cv::Mat out[] = { *(cv::Mat*)(m_data.get_mdata()[0]) };
+                        cv::Mat out[] = { *(m_data.get_mdata()[0]) };
                         cv::mixChannels( &tempImage, 1, out, 1, fromTo, 1 );
                         }
                     }

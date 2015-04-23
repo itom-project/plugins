@@ -30,6 +30,10 @@
 #include <qsharedpointer.h>
 #include <qbytearray.h>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 //----------------------------------------------------------------------------------------------------------------------------------
 class SerialPort
 {
@@ -61,7 +65,7 @@ class SerialPort
         serParams m_serParams;
         char *m_pDevice;
 
-#ifndef __linux__
+#ifdef WIN32
         HANDLE m_dev;
 #else
         int m_dev;
@@ -143,7 +147,7 @@ class SerialIO : public ito::AddInDataIO //, public DummyGrabberInterface
 class SerialIOInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
     Q_INTERFACES(ito::AddInInterfaceBase)

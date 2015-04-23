@@ -147,7 +147,7 @@ RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito
 {
     ito::RetVal retval = ito::retOk;
     const ito::DataObject dObjImages = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "sourceImage", ito::Range::all(), ito::Range::all(), \
-                                                                                  retval, 0, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
+                                                                                  retval, -1, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
     char *temp = (*paramsOpt)[0].getVal<char*>();
     QString method = static_cast<char*>( temp ); //borrowed reference
 
@@ -810,7 +810,7 @@ the rectangle. If this is not possible, NaN is returned as value.";
     double validPointProbability = paramsOpt->at(2).getVal<double>();
     double allowedErrorProbability = paramsOpt->at(3).getVal<double>();
 
-    ito::DataObject dataObj = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "dataObj", ito::Range::all(), ito::Range::all(), retval, 0, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    ito::DataObject dataObj = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "dataObj", ito::Range::all(), ito::Range::all(), retval, -1, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
     ito::DataObject coords = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<ito::DataObject*>(), "coordsSubPix", ito::Range::all(), ito::Range(2,2), retval, ito::tFloat64, 0);
 
     if (!retval.containsError())

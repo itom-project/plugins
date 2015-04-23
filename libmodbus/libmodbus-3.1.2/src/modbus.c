@@ -1877,7 +1877,7 @@ void modbus_mapping_free(modbus_mapping_t *mb_mapping)
     free(mb_mapping);
 }
 
-#ifndef HAVE_STRLCPY
+#if (!defined __APPLE__) && (!defined HAVE_STRLCPY)
 /*
  * Function strlcpy was originally developed by
  * Todd C. Miller <Todd.Miller@courtesan.com> to simplify writing secure code.

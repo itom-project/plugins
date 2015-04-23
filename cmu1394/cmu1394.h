@@ -36,10 +36,16 @@
 
 #include <qsharedpointer.h>
 
+#ifdef WIN32
+    #include <windows.h>
+#endif
+
 #ifndef Q_MOC_RUN
 #define MY1394CAMERA_EXPORTS 1
 #include "./cmu1394/include/1394Camera.h"
 #endif
+
+
 
 #ifdef USEOPENMP
     #define USEOMP 1
@@ -150,7 +156,7 @@ class CMU1394 : public ito::AddInGrabber
 class CMU1394Interface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
+#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
     Q_INTERFACES(ito::AddInInterfaceBase)

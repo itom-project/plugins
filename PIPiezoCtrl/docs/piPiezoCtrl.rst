@@ -50,7 +50,7 @@ parameters can be changed using *setParam*.
 	this feature. If the feature is available in the controller, the real ranges are set to these parameters at startup.
 **delayProp**, **delayOffset**: {double}
 	If the controller has no possibility to check whether the stage already is on target (param 'hasOnTargetFlag') or if these checks are disabled (param 'checkFlags'), a virtual
-	sleep is inserted after each movement in sychronous mode. The positioning command will then only return after this delay time. The virtual delay is
+	sleep is inserted after each movement in synchronous mode. The positioning command will then only return after this delay time. The virtual delay is
 	calculated by 'delayOffset' (in sec) + 'delayProp' (in sec/mm) * distance to drive (in mm).
 **hasOnTargetFlag**: {int} [0,1]
 	defines whether the device has the ability to check the 'on-target'-status (1), else (0)
@@ -59,7 +59,7 @@ parameters can be changed using *setParam*.
 **hasLocalRemote**: {int} [0,1]
 	returns if the piezo can switch between a local (0) and remote control (1).
 **async**: {int} [0,1]
-	defines if the piezo should be moved in a sychronous or asynchronous mode (default: synchronous (0)). In asychronous mode, the positioning commands will immediately
+	defines if the piezo should be moved in a synchronous or asynchronous mode (default: synchronous (0)). In asynchronous mode, the positioning commands will immediately
 	return after starting the movement without waiting for the end of the movement.
 **checkFlags**: {int}, [0,7]
 	Bitmask that is used to set if more of less checks should be executed during the positioning. More checks result in more information but need a little bit more

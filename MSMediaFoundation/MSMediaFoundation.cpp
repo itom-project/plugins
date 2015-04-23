@@ -1103,34 +1103,31 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
                 {
                     if (tempImage.channels() == 1)
                     {
-                        internalMat = (cv::Mat*)(dataObj->get_mdata()[0]);
+                        internalMat = dataObj->getCvPlaneMat(0);
                         tempImage.copyTo(*(internalMat));
 
                         if (externalDataObject && hasListeners)
                         {
-                            internalMat = (cv::Mat*)(m_data.get_mdata()[0]);
+                            internalMat = m_data.get_mdata()[0];
                             tempImage.copyTo(*(internalMat));
                         }
                     }
                     else if (tempImage.channels() == 3 && (m_colorMode == modeAuto || m_colorMode == modeColor))
                     {
-                        cv::Mat out[] = { *(cv::Mat*)(dataObj->get_mdata()[0]) }; //{ *(cv::Mat*)(dataObj->get_mdata()[0]) , *(cv::Mat*)(dataObj->get_mdata()[1]) , *(cv::Mat*)(dataObj->get_mdata()[2]) };
+                        cv::Mat out[] = { *(dataObj->getCvPlaneMat(0)) }; //{ *(cv::Mat*)(dataObj->get_mdata()[0]) , *(cv::Mat*)(dataObj->get_mdata()[1]) , *(cv::Mat*)(dataObj->get_mdata()[2]) };
                         int fromTo[] = {0, 0, 1, 1, 2, 2}; //{0,2,1,1,2,0}; //implicit BGR (camera) -> BGR (dataObject style) conversion
                         
-                        //qDebug() << "tempImage.channels():" << tempImage.channels() << " elem1size:" << tempImage.elemSize1() << " elemSize:" << tempImage.elemSize() << "[" << tempImage.rows << "x" << tempImage.cols << "] depth:" << tempImage.depth();
-                        //qDebug() << "out.channels():" << out[0].channels() << " elem1size:" << out[0].elemSize1() << " elemSize:" << out[0].elemSize() << "[" << out[0].rows << "x" << out[0].cols << "] depth:" << out[0].depth();
-
                         cv::mixChannels(&tempImage, 1, out, 1, fromTo, 3);
 
                         if (externalDataObject && hasListeners)
                         {
-                            cv::Mat out[] = { *(cv::Mat*)(dataObj->get_mdata()[0]) }; //{ *(cv::Mat*)(m_data.get_mdata()[0]) , *(cv::Mat*)(m_data.get_mdata()[1]) , *(cv::Mat*)(m_data.get_mdata()[2]) };
+                            cv::Mat out[] = { *(dataObj->getCvPlaneMat(0)) }; //{ *(cv::Mat*)(m_data.get_mdata()[0]) , *(cv::Mat*)(m_data.get_mdata()[1]) , *(cv::Mat*)(m_data.get_mdata()[2]) };
                             cv::mixChannels(&tempImage, 1, out, 1, fromTo, 3);
                         }
                     }
                     else if (tempImage.channels() == 3) //R,G,B selection
                     {
-                        cv::Mat out[] = { *(cv::Mat*)(dataObj->get_mdata()[0]) };
+                        cv::Mat out[] = { *(dataObj->getCvPlaneMat(0)) };
                         int fromTo[] = {0, 0};
                         switch(m_colorMode)
                         {
@@ -1142,7 +1139,7 @@ ito::RetVal MSMediaFoundation::retrieveData(ito::DataObject *externalDataObject)
 
                         if (externalDataObject && hasListeners)
                         {
-                            cv::Mat out[] = { *(cv::Mat*)(m_data.get_mdata()[0]) };
+                            cv::Mat out[] = { *(m_data.get_mdata()[0]) };
                             cv::mixChannels(&tempImage, 1, out, 1, fromTo, 1);
                         }
                     }
@@ -1244,13 +1241,13 @@ ito::RetVal MSMediaFoundation::checkData(ito::DataObject *externalDataObject)
         {
             *externalDataObject = ito::DataObject(futureHeight,futureWidth,futureType);
         }
-        else if (externalDataObject->calcNumMats () > 1)
+        else if (externalDataObject->calcNumMats () != 1)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());            
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or an uninitialized image.").toLatin1().data());            
         }
         else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
         {
-            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitialized image.").toLatin1().data());
         }
 
         if (futureType == ito::tRGBA32)

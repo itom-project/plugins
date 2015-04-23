@@ -67,9 +67,9 @@ LibModBusInterface::LibModBusInterface()
     char docstring[] = \
 "LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.\n\
 The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.\n\
-Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus. \n\
+Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions. \n\
 The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. \n\
-The content of the registers is expected as data in the uint16 data object, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
+The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
 If no MetaTag is set, values of m_params['registers'] is tried to be used for addressing.";
 
     m_detaildescription = tr(docstring);
@@ -160,14 +160,7 @@ LibModBus::LibModBus() : AddInDataIO(), m_pCTX(NULL), m_connected(false)
 //----------------------------------------------------------------------------------------------------------------------------------
 LibModBus::~LibModBus()
 {
-   m_pThread->quit();
-   m_pThread->wait(5000);
-   delete m_pThread;
-   m_pThread = NULL;
-
-   m_params.clear();
-
-   return;
+    m_params.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -448,6 +441,7 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 	bool validOp=true;
     bool output_mode=false;
 	uint16_t tab_reg[64];
+	uint8_t coil_reg[64];
 	ito::DataObjectTagType registers;
 	int listcounter,registercounter,i,j,tmpInt;
 	int regNumbers = 0;
@@ -459,9 +453,10 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
 	ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-	if (dObj->getType()!=3)
+	int inputDataType= dObj->getType();
+	if (inputDataType!=3 && inputDataType!=1)
 	{
-		retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16").toLatin1().data());
+			retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16 for registers or uint8 for coils").toLatin1().data());
 	}
 	if (!retval.containsError())
     {
@@ -500,14 +495,35 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 			{
 				for (i=0;i<regAddr.size();i++)
 				{
-					registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
+					if (inputDataType==1)
+					{
+						registercounter = modbus_read_bits(m_pCTX, regAddr.at(i), regNb.at(i), coil_reg);
+					}
+					else
+					{
+						registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
+					}
 					for (j=0; j < registercounter; j++) 
 					{
                         if (output_mode)
                         {
-						    std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
+							if (inputDataType==1)
+							{
+								std::cout << "coil[" << regAddr.at(i)+j << "]=" << coil_reg[j] << "\n" << std::endl;
+							}
+							else
+							{
+								std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
+							}
                         }
-						dObj->at<ito::uint16>(0,dObjPos)=tab_reg[j];
+						if (inputDataType==1)
+						{
+							dObj->at<ito::uint8>(0,dObjPos)=coil_reg[j];						
+						}
+						else
+						{
+							dObj->at<ito::uint16>(0,dObjPos)=tab_reg[j];
+						}
 						dObjPos++;
 					}
 				}
@@ -553,6 +569,7 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
 	bool validOp=true;
     bool output_mode=false;
 	uint16_t tab_reg[64];
+	uint8_t coil_reg[64];
 	ito::DataObjectTagType registers;
 	int listcounter,registercounter,i,tmpInt;
 	int regNumbers = 0;
@@ -561,15 +578,15 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
 	QString regContent;
 	QStringList regList,addrList;
     output_mode = m_params["output_mode"].getVal<int>();
-
     ItomSharedSemaphoreLocker locker(waitCond);
 	const ito::DataObject *dObj = reinterpret_cast<const ito::DataObject*>(data);
     //const char *buf = data;
     char endline[3] = {0, 0, 0};
     ito::RetVal retval(ito::retOk);
-	if (dObj->getType()!=3)
+	int inputDataType=dObj->getType(); 
+	if (inputDataType!=3 && inputDataType!=1)
 	{
-		retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16").toLatin1().data());
+			retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16 for registers or uint8 for coils").toLatin1().data());
 	}
 	if (!retval.containsError())
     {
@@ -608,12 +625,27 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
 			{
 				for (i=0;i<regNumbers;i++)
 				{
-					tab_reg[i]=dObj->at<ito::uint16>(0,i);
+					if (inputDataType==1)
+					{
+						coil_reg[i]=dObj->at<ito::uint8>(0,i);
+					}
+					else
+					{
+						tab_reg[i]=dObj->at<ito::uint16>(0,i);
+					}
 				}
 				for (i=0;i<regAddr.size();i++)
 				{
-					uint16_t *tab_reg_nb = tab_reg + dObjPos;
-					registercounter = modbus_write_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg_nb);
+					if (inputDataType==1)
+					{
+						uint8_t *coil_reg_nb = coil_reg + dObjPos;
+						registercounter = modbus_write_bits(m_pCTX, regAddr.at(i), regNb.at(i), coil_reg_nb);
+					}
+					else
+					{
+						uint16_t *tab_reg_nb = tab_reg + dObjPos;
+						registercounter = modbus_write_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg_nb);
+					}
 					if (registercounter == regNb.at(i))
 					{
                         if (output_mode)

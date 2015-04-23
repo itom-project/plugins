@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -23,32 +23,30 @@
 #ifndef DOCKWIDGETDUMMYGRABBER_H
 #define DOCKWIDGETDUMMYGRABBER_H
 
-#include "common/sharedStructures.h"
+#include "common/abstractAddInDockWidget.h"
+#include "common/addInGrabber.h"
 
-#include <QtGui>
-#include <qwidget.h>
 #include <qmap.h>
 #include <qstring.h>
 
 #include "ui_dockWidgetDummyGrabber.h"
 
-class DockWidgetDummyGrabber : public QWidget
+class DockWidgetDummyGrabber : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetDummyGrabber(QMap<QString, ito::Param> params, int uniqueID);
+        DockWidgetDummyGrabber(ito::AddInDataIO *grabber);
         ~DockWidgetDummyGrabber() {};
 
     private:
         Ui::DockWidgetDummyGrabber ui;
-
-    signals:
-        void GainOffsetPropertiesChanged(double gain, double offset);
-        void IntegrationPropertiesChanged(double integrationtime);
+        bool m_inEditing;
+        bool m_firstRun;
 
     public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);
+        void parametersChanged(QMap<QString, ito::Param> params);
+        void identifierChanged(const QString &identifier);
 
 
     private slots:

@@ -41,10 +41,10 @@
 
 #ifndef linux
     #include <Windows.h>
-
-#else
-
 #endif
+
+/*static*/ QVector<USBDevice> ItomUSBDevice::openedDevices;
+/*static*/ QMutex ItomUSBDevice::openedDevicesReadWriteMutex;
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -99,14 +99,16 @@ The setVal and getVal functions will write and read on the specified endpoint.";
 
     ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x1cbe, tr("The vendor id of the device to connect to").toLatin1().data());
     m_initParamsMand.append(paramVal);
-    paramVal = ito::Param("ProdictID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x0003, tr("The product id of the device to connect to").toLatin1().data());
+    paramVal = ito::Param("ProductID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x0003, tr("The product id of the device to connect to").toLatin1().data());
     m_initParamsMand.append(paramVal);
     paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 127, 1, tr("The endpoint to communicate with.").toLatin1().data());
     m_initParamsMand.append(paramVal);
     
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("enableDebug", ito::ParamBase::Int, 0, 5, 0, tr("Initialised 'debug'-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget").toLatin1().data());
+    paramVal = ito::Param("debugLevel", ito::ParamBase::Int, 0, 5, 0, tr("Debug level: 0 (LIBUSB_LOG_LEVEL_NONE): no messages ever printed by the library. 1 (ERROR): error messages are printed to stderr, 2 (WARNING): warning and error messages are printed to stderr, 3 (INFO): informational messages are printed to stdout, warning and error messages are printed to stderr, 4 (DEBUG): like 3 but debug messages are also printed to stdout.").toLatin1().data());
+    m_initParamsOpt.append(paramVal);
+    paramVal = ito::Param("printInfoAboutAllDevices", ito::ParamBase::Int, 0, 1, 0, tr("If true, all information about connected devices is print to the console.").toLatin1().data());
     m_initParamsOpt.append(paramVal);
 
     return;
@@ -118,7 +120,9 @@ ItomUSBDeviceInterface::~ItomUSBDeviceInterface()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(ItomUSBDeviceinterface, ItomUSBDeviceInterface)
+#if QT_VERSION < 0x050000
+    Q_EXPORT_PLUGIN2(ItomUSBDeviceinterface, ItomUSBDeviceInterface)
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -138,7 +142,7 @@ const ito::RetVal ItomUSBDevice::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL), m_autoDetach(true), m_timeoutMS(4000), m_endpoint(1)
+ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL), m_autoDetach(true), m_timeoutMS(4000), m_endpoint_read(1), m_endpoint_write(1)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "ItomUSBDevice", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -146,22 +150,12 @@ ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NU
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 5, 0, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("endpoint", ito::ParamBase::Int, 0, 255, 1, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
+    paramVal = ito::Param("endpoint_read", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for reading operations. The used index is LIBUSB_ENDPOINT_IN + endpoint_read, with LIBUSB_ENDPOINT_IN = %1 (default: initialization parameter 'endpoint')").arg(LIBUSB_ENDPOINT_IN).toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("endpoint_write", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for writing operations. The used index is LIBUSB_ENDPOINT_OUT + endpoint_read, with LIBUSB_ENDPOINT_OUT = %1  (default: initialization parameter 'endpoint')").arg(LIBUSB_ENDPOINT_OUT).toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    //register exec functions
-    QVector<ito::Param> pMand;
-    QVector<ito::Param> pOpt;
-    QVector<ito::Param> pOut;
-    registerExecFunc("clearInputBuffer", pMand, pOpt, pOut, tr("Clears the input buffer of serial port"));
-    registerExecFunc("clearOutputBuffer", pMand, pOpt, pOut, tr("Clears the output buffer of serial port"));
-
-    pMand << ito::Param("bufferType", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Clears input (0) or output (1) buffer").toLatin1().data());
-    registerExecFunc("clearBuffer", pMand, pOpt, pOut, tr("Clears the input or output buffer of serial port"));
-
     //now create dock widget for this plugin
-
-    qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
 
     //now create dock widget for this plugin
     DockWidgetLibUSB *dw = new DockWidgetLibUSB(m_params, getID() );
@@ -173,14 +167,7 @@ ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NU
 //----------------------------------------------------------------------------------------------------------------------------------
 ItomUSBDevice::~ItomUSBDevice()
 {
-   m_pThread->quit();
-   m_pThread->wait(5000);
-   delete m_pThread;
-   m_pThread = NULL;
-
    m_params.clear();
-
-   return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -197,34 +184,47 @@ ItomUSBDevice::~ItomUSBDevice()
 */
 ito::RetVal ItomUSBDevice::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+        ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
+    QMap<QString,ito::Param>::iterator it;
 
-    if (key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-        if (paramIt != m_params.constEnd())
+        //put your switch-case.. for getting the right value here
+
+        //finally, save the desired value in the argument val (this is a shared pointer!)
+        //if the requested parameter name has an index, e.g. roi[0], then the sub-value of the
+        //array is split and returned using the api-function apiGetParam
+        if (hasIndex)
         {
-            *val = paramIt.value();
+            *val = apiGetParam(*it, hasIndex, index, retValue);
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
+            *val = *it;
         }
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -232,65 +232,92 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
 
-    if (key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+
+    if(!retValue.containsError())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
-        if (paramIt != m_params.end())
+        //here the new parameter is checked whether its type corresponds or can be cast into the
+        // value in m_params and whether the new type fits to the requirements of any possible
+        // meta structure.
+        retValue += apiValidateParam(*it, *val, false, true);
+
+        //if you program for itom 1.4.0 or higher (Interface version >= 1.3.1) you should use this
+        //API method instead of the one above: The difference is, that incoming parameters that are
+        //compatible but do not have the same type than the corresponding m_params value are cast
+        //to the type of the internal parameter and incoming double values are rounded to the
+        //next value (depending on a possible step size, if different than 0.0)
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
+    }
+
+    if(!retValue.containsError())
+    {
+        if(key == "timeout")
         {
-          
+            //check the new value and if ok, assign it to the internal parameter
+            retValue += it->copyValueFrom( &(*val) );
 
-            if ( /*paramIt->getFlags() & ito::ParamBase::Readonly*/ true)    //check read-only
+            if (!retValue.containsError())
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
-                goto end;
+                m_timeoutMS = (int)(it->getVal<double>() * 1000 + 0.5);
             }
-            else if (val->isNumeric() && paramIt->isNumeric())
-            {
-                double curval = val->getVal<double>();
-                if (curval > paramIt->getMax())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else if (curval < paramIt->getMin())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else
-                {
-                    paramIt.value().setVal<double>(curval);
-                }
-            }
-            else if (paramIt->getType() == val->getType())
-            {
-                retValue += paramIt.value().copyValueFrom(&(*val));
-            }
-            else
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
-                goto end;
-            }
+        }
+        else if(key == "debug")
+        {
+            //check the new value and if ok, assign it to the internal parameter
+            retValue += it->copyValueFrom( &(*val) );
 
-            m_timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000 + 0.5);
-            m_endpoint = m_params["endpoint"].getVal<int>();
-            m_debugMode = m_params["debug"].getVal<int>() > 0;
+            if (!retValue.containsError())
+            {
+                m_debugMode = it->getVal<int>() > 0;
+                libusb_set_debug(NULL, it->getVal<int>());
+            }
+        }
+        else if (key == "endpoint_read")
+        {
+            //check the new value and if ok, assign it to the internal parameter
+            retValue += it->copyValueFrom( &(*val) );
 
+            if (!retValue.containsError())
+            {
+                m_endpoint_read = it->getVal<int>();
+            }
+        }
+        else if (key == "endpoint_write")
+        {
+            //check the new value and if ok, assign it to the internal parameter
+            retValue += it->copyValueFrom( &(*val) );
+
+            if (!retValue.containsError())
+            {
+                m_endpoint_write = it->getVal<int>();
+            }
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("Parameter not found").toLatin1().data());
+            //all parameters that don't need further checks can simply be assigned
+            //to the value in m_params (the rest is already checked above)
+            retValue += it->copyValueFrom( &(*val) );
         }
     }
-    emit parametersChanged(m_params);
 
-end:
+    if(!retValue.containsError())
+    {
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -314,177 +341,193 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 	const char *type = NULL;
 
 	int status = 0;
-    bool foundDevice = false;
 
-    libusb_device *currentDevice = NULL, **deviceList = NULL;
+    libusb_device *currentDevice = NULL;
+    libusb_device **deviceList = NULL;
 	
-    // mandatory parameters
-    if (paramsMand == NULL)
-    {
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("Mandatory paramers are NULL").toLatin1().data());
-    }
-    else
-    {
-        retval += m_params["endpoint"].copyValueFrom(&((*paramsMand)[2]));
-    }
-    // optional parameters
-    if (paramsOpt == NULL)
-    {
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("Optinal paramers are NULL").toLatin1().data());
-    }
-    else
-    {
-        retval += m_params["timeout"].copyValueFrom(&((*paramsOpt)[0]));
-        retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[1]));
-    }
+    retval += m_params["endpoint_read"].copyValueFrom(&((*paramsMand)[2]));
+    retval += m_params["endpoint_write"].copyValueFrom(&((*paramsMand)[2]));
+
+    retval += m_params["timeout"].copyValueFrom(&((*paramsOpt)[0]));
+    retval += m_params["debug"].copyValueFrom(&((*paramsOpt)[1]));
 
     m_timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000 + 0.5);
-    m_endpoint = m_params["endpoint"].getVal<int>();
+    m_endpoint_read = m_params["endpoint_read"].getVal<int>();
+    m_endpoint_write = m_params["endpoint_write"].getVal<int>();
     m_debugMode = m_params["debug"].getVal<int>() > 0;
+    bool printInfo = paramsOpt->at(2).getVal<int>() > 0;
 
-	unsigned int vid = (unsigned int)((*paramsMand)[0].getVal<int>() & 0x0000FFFF);
-    unsigned int pid = (unsigned int)((*paramsMand)[1].getVal<int>() & 0x0000FFFF);
+	uint16_t vid = paramsMand->at(0).getVal<int>() & 0x0000FFFF;
+    uint16_t pid = paramsMand->at(1).getVal<int>() & 0x0000FFFF;
 
 	unsigned int busnum = 0, devaddr = 0, tmpBusnum, tmpDevaddr;
 
     /* open the device using libusb */
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         status = libusb_init(NULL);
 	    if (status < 0) 
         {
             retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
 	    }
-        if(!retval.containsError() && m_debugMode)
+        else
         {
 	        libusb_set_debug(NULL, m_params["debug"].getVal<int>());
         } 
     }
 
-
-	
-/* We think we know what we are doing!!!! */
-        
-    if (vid > 0 &&  pid > 0) 
+    if (!retval.containsError())
     {
-        if(!retval.containsError())
+        status = libusb_get_device_list(NULL, &deviceList); //deviceList must be freed with libusb_free_device_list (if != NULL)
+		if (status < 0) 
         {
-		    m_pDevice = libusb_open_device_with_vid_pid(NULL, (uint16_t)vid, (uint16_t)pid);
-		    if (m_pDevice == NULL) 
-            {
-                retval += ito::RetVal(ito::retError, 0, tr("Try to open device directly failed!").toLatin1().data());
-            }
-            else
-            {
-                foundDevice = true;
-            }
-        }
-    }
-    else //((type == NULL) || (device_id == NULL) || (device_path != NULL)) /* try to pick up missing parameters from known devices */
-    {
-        if(!retval.containsError())
+			retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
+		}
+        else
         {
-            status = libusb_get_device_list(NULL, &deviceList);
-		    if (status < 0) 
-            {
-			    retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
-		    }
-        
-        }
-
-        /* try to pick up missing parameters from known devices */
-        if(!retval.containsError())
-        {
-
             int listIdx = 0;
-            while(deviceList[listIdx] != NULL && !foundDevice)
+            struct libusb_device_descriptor desc;
+            QMap<int,USBDevice> possibleIndices;
+            USBDevice device;
+
+            while(deviceList[listIdx] != NULL)
             {
                 currentDevice = deviceList[listIdx];
 
-			    tmpBusnum = libusb_get_bus_number(currentDevice);
-			    tmpDevaddr = libusb_get_device_address(currentDevice);
-
-                struct libusb_device_descriptor desc;
 				status = libusb_get_device_descriptor(currentDevice, &desc);
+                if (status < 0)
+                {
+                    retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
+                }
+                else
+                {
+                    tmpBusnum = libusb_get_bus_number(currentDevice);
+			        tmpDevaddr = libusb_get_device_address(currentDevice);
 
-			    if ((type != NULL) && (device_path != NULL)) 
-                {
-				    // if both a type and bus,addr were specified, we just need to find our match
-				    if ((tmpBusnum == busnum) && (tmpDevaddr == devaddr))
-			        {
-                        foundDevice = true;
-                        break;
-                    }
-			    }
-                /*
-                else 
-                {
-                    struct libusb_device_descriptor desc;
-				    status = libusb_get_device_descriptor(currentDevice, &desc);
-				    if (status >= 0) 
+			        if ((type != NULL) && (device_path != NULL)) 
                     {
-					    if (debugLevel >= 3) 
+                        tmpBusnum = libusb_get_bus_number(currentDevice);
+			            tmpDevaddr = libusb_get_device_address(currentDevice);
+
+				        // if both a type and bus,addr were specified, we just need to find our match
+				        if ((tmpBusnum == busnum) && (tmpDevaddr == devaddr))
+			            {
+                            device = USBDevice(desc.idVendor, desc.idProduct, tmpBusnum, tmpDevaddr);
+                            possibleIndices[listIdx] = device;
+                            break;
+                        }
+			        }
+                    else if (vid > 0 && pid > 0 && desc.idVendor == vid && desc.idProduct == pid)
+                    {
+                        device = USBDevice(desc.idVendor, desc.idProduct, tmpBusnum, tmpDevaddr);
+                        possibleIndices[listIdx] = device;
+                    }
+
+                    if (printInfo)
+                    {
+                        char s[128] = {0};
+                        char m[128] = {0};
+                        char t[128] = {0};
+
+                        if (libusb_open(deviceList[listIdx], &m_pDevice) >= 0)
                         {
-                            qDebug( QString("examining %1:%2 (%3,%4)\n").arg(QString::number(desc.idVendor), QString::number(desc.idProduct), QString::number(tmpBusnum), QString::number(tmpDevaddr) ).toLatin1().data() );
-					    }
-                        int curKnownDeviceIndex;
-					    for (curKnownDeviceIndex = 0; curKnownDeviceIndex < ARRAYSIZE(known_device); curKnownDeviceIndex++) 
+                            libusb_get_string_descriptor_ascii(m_pDevice, desc.iSerialNumber, (unsigned char*)s, 128);
+                            libusb_get_string_descriptor_ascii(m_pDevice, desc.iManufacturer, (unsigned char*)m, 128);
+                            libusb_get_string_descriptor_ascii(m_pDevice, desc.iProduct, (unsigned char*)t, 128);
+
+                            QString output = QString("Device %1: Bus: %2, Address %3, VendorID: %4, ProductID: %5, %6, %7, %8\n").arg(listIdx).arg(tmpBusnum).arg(tmpDevaddr).arg(desc.idVendor).arg(desc.idProduct).arg(m).arg(t).arg(s);
+                            std::cout << output.toLatin1().data() << std::endl;
+
+                            libusb_close(m_pDevice);
+                            m_pDevice = NULL;
+                        }
+                        else
                         {
-						    if ((desc.idVendor == known_device[curKnownDeviceIndex].vid) && (desc.idProduct == known_device[curKnownDeviceIndex].pid)) 
-                            {
-							    if (// nothing was specified
-								    ((type == NULL) && (device_id == NULL) && (device_path == NULL)) ||
-								    // vid:pid was specified and we have a match
-								    ((type == NULL) && (device_id != NULL) && (vid == desc.idVendor) && (pid == desc.idProduct)) ||
-								    // bus,addr was specified and we have a match
-								    ((type == NULL) && (device_path != NULL) && (busnum == tmpBusnum) && (devaddr == tmpDevaddr)) ||
-								    // type was specified and we have a match
-								    ((type != NULL) && (device_id == NULL) && (device_path == NULL) && (fx_type == known_device[curKnownDeviceIndex].type)) ) 
-                                {
-								    fx_type = known_device[curKnownDeviceIndex].type;
-								    vid = desc.idVendor;
-								    pid = desc.idProduct;
-								    busnum = tmpBusnum;
-								    devaddr = tmpDevaddr;
-                                    foundDevice = true;
-								    break;
-							    }
-						    }
-					    }
-					    if (curKnownDeviceIndex < ARRAYSIZE(known_device)) 
-                        {
-						    if (debugLevel)
-                            {
-                                qDebug( QString("found device %1:%2 (%3,%4)\n").arg(QString(known_device[curKnownDeviceIndex].designation), QString::number(vid), QString::number(pid), QString::number(busnum), QString::number(devaddr) ).toLatin1().data() );
-                                foundDevice = true;
-                                break;
-                            }
-					    }
-				    }
-			    }*/
+                            QString output = QString("Device %1: Bus: %2, Address %3, VendorID: %4, ProductID: %5, no further information\n").arg(listIdx).arg(tmpBusnum).arg(tmpDevaddr).arg(desc.idVendor).arg(desc.idProduct);
+                            std::cout << output.toLatin1().data() << std::endl;
+                        }
+                    }
+                }
+
                 listIdx++;
 		    }
+
+            int indexToOpen = -1;
+
+            if (possibleIndices.size() == 0)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("could not find a known device - please specify type and/or vid:pid and/or bus,dev").toLatin1().data());
+            }
+            else if (possibleIndices.size() == 1)
+            {
+                QMap<int, USBDevice>::const_iterator i = possibleIndices.constBegin();
+                indexToOpen = i.key();
+            }
+            else /*if (possibleIndices.size() > 1)*/
+            {
+                openedDevicesReadWriteMutex.lock();
+                QMap<int, USBDevice>::const_iterator i = possibleIndices.constBegin();
+
+                while (i != possibleIndices.constEnd()) 
+                {
+                    if (openedDevices.contains(i.value()) == false)
+                    {
+                        //not yet opened, open it
+                        indexToOpen = i.key();
+                        break;
+                    }
+                    i++;
+                }
+
+                if (indexToOpen < 0)
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("no of the %1 devices that fit to the vendor and product ID can be opened since they are already in use.").arg(possibleIndices.size()).toLatin1().data());
+                }
+
+                openedDevicesReadWriteMutex.unlock();
+            }
+
+            if (indexToOpen == -1)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("no device found to open").toLatin1().data());
+            }
+            else if(!retval.containsError())
+            {
+                status = libusb_open(deviceList[indexToOpen], &m_pDevice);
+		        if (status < 0) 
+                {
+			        retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
+		        }
+                else
+                {
+                    if (libusb_get_device_descriptor(deviceList[indexToOpen], &desc) >= 0)
+                    {
+                        char s[128] = {0};
+                        char m[128] = {0};
+                        char t[128] = {0};
+
+                        libusb_get_string_descriptor_ascii(m_pDevice, desc.iSerialNumber, (unsigned char*)s, 128);
+                        libusb_get_string_descriptor_ascii(m_pDevice, desc.iManufacturer, (unsigned char*)m, 128);
+                        libusb_get_string_descriptor_ascii(m_pDevice, desc.iProduct, (unsigned char*)t, 128);
+
+                        QString serial = s;
+                        QString manufacturer = m;
+                        QString product = t;
+                        setIdentifier(QString("%1, %2 (%3)").arg(manufacturer.trimmed(),product.trimmed(),serial.trimmed()));
+                    }
+
+                    openedDevicesReadWriteMutex.lock();
+                    m_currentDevice = possibleIndices[indexToOpen];
+                    openedDevices.append(possibleIndices[indexToOpen]);
+                    openedDevicesReadWriteMutex.unlock();
+                }
+            }
         }
 
-        if (currentDevice == NULL  || !foundDevice) 
+        if(deviceList != NULL)
         {
-            retval += ito::RetVal(ito::retError, status, tr("could not find a known device - please specify type and/or vid:pid and/or bus,dev").toLatin1().data());
-		}
-
-        if(!retval.containsError())
-        {
-		    status = libusb_open(currentDevice, &m_pDevice);
-		    if (status < 0) 
-            {
-			    retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
-		    }
-		    libusb_free_device_list(deviceList, 1);
-	    } 
-    }
-
-    if(deviceList != NULL)
-    {
-    	libusb_free_device_list(deviceList, 1);
+    	    libusb_free_device_list(deviceList, 1);
+        }
     }
 
     if(!retval.containsError()) /* We need to claim the first interface */
@@ -522,15 +565,6 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 		        }
 		    }
 		}
-        
-
-        //status = libusb_set_configuration(m_pDevice, test);
-		//if (status < 0) 
-        //{
-		//	retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
-		//}
-
-        
 
         test = 0;
 	    status = libusb_claim_interface(m_pDevice, test);
@@ -538,12 +572,7 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         {
 			retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
 		}
-        libusb_free_config_descriptor(conf_desc);
-//        status = libusb_release_interface(m_pDevice, test);
-//		if (status < 0) 
-//        {
-//			retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
-//		}        
+        libusb_free_config_descriptor(conf_desc);     
 	}
 
     if(!retval.containsError()) /* We need to claim the first interface */
@@ -556,6 +585,7 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
@@ -568,6 +598,20 @@ ito::RetVal ItomUSBDevice::close(ItomSharedSemaphore *waitCond)
 
     if(m_pDevice)
     {
+        openedDevicesReadWriteMutex.lock();
+        
+        QVector<USBDevice>::iterator it = openedDevices.begin();
+        while (it != openedDevices.end())
+        {
+            if ((*it) == m_currentDevice)
+            {
+                openedDevices.erase(it);
+                break;
+            }
+            it++;
+        }
+        openedDevicesReadWriteMutex.unlock();
+
 	    libusb_release_interface(m_pDevice, 0);
         if (!m_autoDetach) 
         {
@@ -630,26 +674,17 @@ ito::RetVal ItomUSBDevice::acquire(const int /*trigger*/, ItomSharedSemaphore *w
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ItomUSBDevice::getVal(QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond)
 {
-//    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
-    //retval = m_serport.sread(data.data(), length.data(), 0);
-    int status = 0;
-    unsigned char *dataIn = NULL;
     int actual_length = 0;
 
-    dataIn = (unsigned char*)calloc(*(length.data()) * 2, sizeof(unsigned char));
-    //int status = libusb_claim_interface(m_pDevice, 0);
-    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_IN + m_endpoint, dataIn, *(length.data()), &actual_length, m_timeoutMS);
-    if (status != 0) 
+    int status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_IN + m_endpoint_read, (unsigned char*)data.data(), *length, &actual_length, m_timeoutMS);
+    if (status != LIBUSB_SUCCESS) 
     {
         retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
     }
 
-    *(length.data()) = actual_length; 
-
-    memcpy(data.data(), dataIn, actual_length < *(length.data()) ? actual_length : *(length.data()));
-    free(dataIn);
+    *length = actual_length; 
 
     if (m_debugMode)
     {
@@ -669,27 +704,23 @@ ito::RetVal ItomUSBDevice::getVal(QSharedPointer<char> data, QSharedPointer<int>
 ito::RetVal ItomUSBDevice::setVal(const char *data, const int datalength, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    unsigned char *buf = (unsigned char*)data;
     ito::RetVal retval(ito::retOk);
-
-    int status = 0;
 
     int actual_length = 0;
 
-    //m_serport.getendline(endline);
     if (m_debugMode)
     {
-        emit serialLog(QByteArray((char*)buf,datalength), '>');
+        emit serialLog(QByteArray(data, datalength), '>');
     }
-    //status = libusb_claim_interface(m_pDevice, 0);
-    status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_OUT + m_endpoint, buf, datalength, &actual_length, m_timeoutMS);
-    if (status != 0) 
+
+    int status = libusb_bulk_transfer(m_pDevice, LIBUSB_ENDPOINT_OUT + m_endpoint_write, (unsigned char*)data, datalength, &actual_length, m_timeoutMS);
+    if (status != LIBUSB_SUCCESS) 
     {
         retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
     }
-    if(actual_length != datalength)
+    else if(actual_length != datalength)
     {
-        //retval += ito::RetVal(ito::retError, 0, tr("Number of written characters differ from designated dataLength").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Number of written characters differ from designated size").toLatin1().data());
     }
 
     if (waitCond)
@@ -705,24 +736,6 @@ ito::RetVal ItomUSBDevice::execFunc(const QString funcName, QSharedPointer<QVect
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
-
-    if (funcName == "clearInputBuffer")
-    {
-        //retval = m_serport.sclearbuffer(0);
-    }
-    else if (funcName == "clearOutputBuffer")
-    {
-        //retval = m_serport.sclearbuffer(1);
-    }
-    else if (funcName == "clearBuffer")
-    {
-        ito::ParamBase *bufferType = NULL;
-        bufferType = &((*paramsMand)[0]);
-        if (!retval.containsError())
-        {
-            //retval = m_serport.sclearbuffer(static_cast<bool>(bufferType->getVal<int>()));
-        }
-    }
 
     if (waitCond)
     {

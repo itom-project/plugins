@@ -30,10 +30,10 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 
-#ifdef __linux__
-    #include <unistd.h>
-#else
+#ifdef WIN32
     #include <windows.h>
+#else
+    #include <unistd.h>
 #endif
 
 enum lmfUnit {

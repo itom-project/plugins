@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "DummyGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -22,94 +22,91 @@
 
 #include "dockWidgetDummyGrabber.h"
 
- DockWidgetDummyGrabber::DockWidgetDummyGrabber(QMap<QString, ito::Param> params, int uniqueID)
+//----------------------------------------------------------------------------------------------------------------------------------
+DockWidgetDummyGrabber::DockWidgetDummyGrabber(ito::AddInDataIO *grabber) :
+    AbstractAddInDockWidget(grabber),
+    m_inEditing(false),
+    m_firstRun(true)
+{
+    ui.setupUi(this);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ void DockWidgetDummyGrabber::parametersChanged(QMap<QString, ito::Param> params)
  {
-    ui.setupUi(this); 
+    ui.spinBpp->setValue(params["bpp"].getVal<int>());
+    ui.spinWidth->setValue(params["sizex"].getVal<int>());
+    ui.spinHeight->setValue(params["sizey"].getVal<int>());
+
+    if (m_firstRun)
+    {
+        ui.spinBox_gain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
+        ui.horizontalSlider_gain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
+
+        ui.spinBox_offset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
+        ui.horizontalSlider_offset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
+
+        ui.doubleSpinBox_integration_time->setDisabled( params["integration_time"].getFlags() & ito::ParamBase::Readonly );
+
+        m_firstRun = false;
+    }
     
-    ui.lblID->setText(QString::number(uniqueID));
-
-    valuesChanged(params);
- }
-
- void DockWidgetDummyGrabber::valuesChanged(QMap<QString, ito::Param> params)
- {
-    if(params.contains("bpp"))
+    if (!m_inEditing)
     {
-        ui.spinBpp->setValue(params["bpp"].getVal<int>());
-    }
+        m_inEditing = true;
 
-    if(params.contains("sizex"))
-    {
-        ui.spinWidth->setValue(params["sizex"].getVal<int>());
-    }
-
-    if(params.contains("sizey"))
-    {
-        ui.spinHeight->setValue(params["sizey"].getVal<int>());
-    }
-
-    if(params.contains("gain"))
-    {
-        if(!(params["gain"].getFlags() & ito::ParamBase::Readonly))
-        {
-            ui.spinBox_gain->setEnabled(true);
-        }
-        else
-        {
-            ui.spinBox_gain->setEnabled(false);
-        }
-        ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
-    }
-    else
-        ui.spinBox_gain->setEnabled(false);
-
-    if(params.contains("offset"))
-    {
-        if(!(params["offset"].getFlags() & ito::ParamBase::Readonly))
-        {
-            ui.spinBox_offset->setEnabled(true);
-        }
-        else
-        {
-            ui.spinBox_offset->setEnabled(false);
-        }
-        ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
-    }
-    else
-        ui.spinBox_offset->setEnabled(false);
-
-    if(params.contains("integration_time"))
-    {
-        if(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
-        {
-            ui.doubleSpinBox_integration_time->setEnabled(true);
-        }
-        else
-        {
-            ui.doubleSpinBox_integration_time->setEnabled(false);
-        }
         ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
         ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
-        ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>()*1000.0);
-    }
-    else
-        ui.doubleSpinBox_integration_time->setEnabled(false);
+        ui.doubleSpinBox_integration_time->setSingleStep(1);
+        ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>() *1000.0);
 
+        ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
+        ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
+
+        m_inEditing = false;
+    }
  }
 
-void DockWidgetDummyGrabber::on_spinBox_gain_valueChanged(int /*d*/)
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetDummyGrabber::identifierChanged(const QString &identifier)
 {
-    emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
+    ui.lblID->setText(identifier);
 }
 
-void DockWidgetDummyGrabber::on_spinBox_offset_valueChanged(int /*d*/)
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetDummyGrabber::on_spinBox_gain_valueChanged(int d)
 {
-    emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, ui.spinBox_offset->value()/100.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain",ito::ParamBase::Double,d/100.0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }
 
-void DockWidgetDummyGrabber::on_doubleSpinBox_integration_time_valueChanged(double /*d*/)
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetDummyGrabber::on_spinBox_offset_valueChanged(int d)
 {
-    emit IntegrationPropertiesChanged( ui.doubleSpinBox_integration_time->value() / 1000.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("offset",ito::ParamBase::Double,d/100.0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetDummyGrabber::on_doubleSpinBox_integration_time_valueChanged(double d)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,d/1000.0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }
 
 
