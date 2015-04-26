@@ -377,7 +377,7 @@ ito::RetVal PclTools::savePointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
     }
     catch(pcl::IOException exc)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("pointCloud could not be saved: %s").toLatin1().data(), exc.detailedMessage().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("pointCloud could not be saved: %s").toLatin1().data(), exc.detailedMessage());
         ret = 1;
     }
 
@@ -652,7 +652,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
         }
         catch(pcl::InvalidConversionException exp)
         {
-            const char* msg = exp.detailedMessage().data();
+            const char* msg = exp.detailedMessage();
             retval += ito::RetVal::format(ito::retError, 0, tr("Error while loading the point cloud. Message: %s").toLatin1().data(), msg);
             pc = ito::PCLPointCloud(ito::pclInvalid);
         }
