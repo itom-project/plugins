@@ -552,6 +552,41 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             }
         }
 
+        if (printInfo && conf_desc)
+        {
+            std::cout << "Interfaces: " << (int)conf_desc->bNumInterfaces <<"\n-----------------------------\n" << std::endl;
+            const libusb_interface *inter;
+	        const libusb_interface_descriptor *interdesc;
+	        const libusb_endpoint_descriptor *epdesc;
+	        for(int i = 0; i<(int)conf_desc->bNumInterfaces; i++) 
+            {
+		        inter = &conf_desc->interface[i];
+		        std::cout<<"Number of alternate settings: "<<inter->num_altsetting<<"\n" << std::endl;
+		        for(int j=0; j<inter->num_altsetting; j++) 
+                {
+			        interdesc = &inter->altsetting[j];
+			        std::cout<<"    Interface Number: "<<(int)interdesc->bInterfaceNumber<<"\n";
+			        std::cout<<"    Number of endpoints: "<<(int)interdesc->bNumEndpoints<<"\n" << std::endl;
+			        
+                    for(int k=0; k<(int)interdesc->bNumEndpoints; k++) 
+                    {
+				        epdesc = &interdesc->endpoint[k];
+				        std::cout << "        Descriptor Type: "<<(int)epdesc->bDescriptorType<<"\n";
+				        std::cout << "        EP Address: "<<(int)epdesc->bEndpointAddress<<"\n";
+                        if (epdesc->bEndpointAddress > LIBUSB_ENDPOINT_IN)
+                        {
+                            std::cout << "        EP Address (IN): " << LIBUSB_ENDPOINT_IN << "+" << ((int)epdesc->bEndpointAddress - LIBUSB_ENDPOINT_IN) << "\n";
+                        }
+                        else
+                        {
+                            std::cout << "        EP Address (OUT): " << LIBUSB_ENDPOINT_OUT << "+" << ((int)epdesc->bEndpointAddress - LIBUSB_ENDPOINT_OUT) << "\n";
+                        }
+                        std::cout<<"        Attributes: "<<(int)epdesc->bmAttributes<<"\n" << std::endl;
+			        }
+		        }
+	        }
+        }
+
         status = libusb_set_configuration(m_pDevice, test);
 		if (status < 0) 
         {
