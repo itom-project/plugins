@@ -97,7 +97,7 @@ on 64bit Windows systems.";
     m_license = QObject::tr("LGPL / the contained camera SDK belongs to PCO - Computer Optics GmbH");
     m_aboutThis = QObject::tr("N.A.");        
     
-    ito::Param paramVal = ito::Param("Board Number", ito::ParamBase::Int, 0, 3, 0, NULL);
+    ito::Param paramVal = ito::Param("boardNumber", ito::ParamBase::Int, 0, 3, 0, NULL);
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("restoreLast", ito::ParamBase::Int, 0, 1, 0, NULL);
     m_initParamsOpt.append(paramVal);
@@ -160,9 +160,6 @@ PCOPixelFly::PCOPixelFly() :
     m_horizontalBinning(0),
     m_libraryMajor(0)
 {
-    //qRegisterMetaType<ito::DataObject>("ito::DataObject");
-    //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
-
    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "PCOPixelFly", NULL);
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 0.065, 0.01, tr("Integrationtime of CCD programmed in s").toLatin1().data());
@@ -170,9 +167,9 @@ PCOPixelFly::PCOPixelFly() :
    paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 1/13.0, 1/13.0, 1/13.0, tr("Shortest time between two frames").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Toggle nighvision ON/OFF").toLatin1().data());
+   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Standard light mode (0, default), low light mode (1)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Currently not used").toLatin1().data());
+   paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.0, tr("Not implemented for PixelFly QE").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1391, 0, tr("Startvalue for ROI").toLatin1().data());
@@ -188,7 +185,7 @@ PCOPixelFly::PCOPixelFly() :
    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1024, 1024, tr("ROI-Size in y").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("Grabdepth in bpp").toLatin1().data());
+   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("bit depth in bits per pixel").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 202, 101, tr("Activate 2x2 binning").toLatin1().data());
@@ -209,12 +206,7 @@ PCOPixelFly::PCOPixelFly() :
 
 
     //now create dock widget for this plugin
-    DockWidgetPCOPixelFly *myDockWidget = new DockWidgetPCOPixelFly(m_params, getID() );
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), myDockWidget, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    connect(myDockWidget, SIGNAL(GainPropertiesChanged(double)), this, SLOT(GainPropertiesChanged(double)));
-    connect(myDockWidget, SIGNAL(OffsetPropertiesChanged(double)), this, SLOT(OffsetPropertiesChanged(double)));
-    connect(myDockWidget, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
-
+    DockWidgetPCOPixelFly *myDockWidget = new DockWidgetPCOPixelFly(this);
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, myDockWidget);
@@ -224,7 +216,6 @@ PCOPixelFly::PCOPixelFly() :
 //----------------------------------------------------------------------------------------------------------------------------------
 PCOPixelFly::~PCOPixelFly()
 {
-   m_params.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -473,6 +464,7 @@ ito::RetVal PCOPixelFly::PCOLoadLibrary(void)
     return retValue;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
 ito::RetVal PCOPixelFly::libraryVersionNumber(const QByteArray &fileName, QString &version)
 {
     //source: http://stackoverflow.com/questions/940707/how-do-i-programatically-get-the-version-of-a-dll-or-exe-file
@@ -637,7 +629,6 @@ ito::RetVal PCOPixelFly::PCOChkError(int errornumber)
     {
         if (errors[i].value == errornumber)
         {
-			//std::cerr << "PixelFly Debug: " << errornumber << " " << errors[i].text << "\n" << std::endl;
             return ito::RetVal(ito::retError, errornumber, errors[i].text);
         }
     }
@@ -893,33 +884,41 @@ ito::RetVal PCOPixelFly::PCOFreeAllocatedBuffer(void)
 ito::RetVal PCOPixelFly::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
+    QMap<QString,ito::Param>::iterator it;
 
-    if(key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-        if (paramIt != m_params.constEnd())
+        if (hasIndex)
         {
-            *val = paramIt.value();
+            *val = apiGetParam(*it, hasIndex, index, retValue);
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
+            *val = *it;
         }
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1113,20 +1112,14 @@ ito::RetVal PCOPixelFly::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
                 m_params["x1"].setVal<int>(maxxsize-1);
                 m_params["y1"].setVal<int>(maxysize-1);
-                /*m_params["x1"].setMax(maxxsize-1);
-                m_params["y1"].setMax(maxysize-1);*/
                 static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMax(maxxsize-1);
                 static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMax(maxysize-1);
 
-                /*m_params["x0"].setMax(m_params["x1"].getVal<double>());
-                m_params["y0"].setMax(m_params["y1"].getVal<double>());*/
                 static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax( m_params["x1"].getVal<int>() );
                 static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax( m_params["y1"].getVal<int>() );
                 m_params["x0"].setVal<int>(0);
                 m_params["y0"].setVal<int>(0);
 
-                /*m_params["x1"].setMin(m_params["x0"].getVal<double>());
-                m_params["y1"].setMin(m_params["x0"].getVal<double>());*/
                 static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMin(maxxsize);
                 static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMin(maxysize);
 
@@ -1141,13 +1134,9 @@ ito::RetVal PCOPixelFly::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                    !paramIt.key().compare("y0") ||
                    !paramIt.key().compare("y1"))
             {
-                /*m_params["x0"].setMax(m_params["x1"].getVal<double>());
-                m_params["y0"].setMax(m_params["y1"].getVal<double>());*/
                 static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax( m_params["x1"].getVal<int>() );
                 static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax( m_params["y1"].getVal<int>() );
 
-                /*m_params["x1"].setMin(m_params["x0"].getVal<double>());
-                m_params["y1"].setMin(m_params["x0"].getVal<double>());*/
                 static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMin(m_params["x0"].getVal<int>());
                 static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMin(m_params["x0"].getVal<int>());
 
@@ -1213,7 +1202,7 @@ ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     int integration_time = 10000;
     unsigned int boardparam[5] = {0, 0, 0, 0, 0};
     
-    double gain = 0;
+    int gain = 0;
     dword serial = 0;
 
     QFile paramFile = NULL;
@@ -1345,14 +1334,10 @@ ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 maxxsize = (int)(maxxsize /(m_verticalBinning+1));
                 maxysize = (int)(maxysize /(m_horizontalBinning+1));
 
-                /*m_params["sizex"].setMax(maxxsize);
-                m_params["sizey"].setMax(maxysize);*/
                 static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax(maxxsize);
                 static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax(maxysize);
                 m_params["sizex"].setVal<int>(curxsize);
                 m_params["sizey"].setVal<int>(curysize);
-                /*m_params["x0"].setMax(maxxsize-1);
-                m_params["y0"].setMax(maxysize-1);*/
                 static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax(maxxsize-1);
                 static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax(maxysize-1);
                 m_params["x0"].setVal<int>(0);
@@ -1859,44 +1844,25 @@ ito::RetVal PCOPixelFly::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     return retValue;
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if gain parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void PCOPixelFly::GainPropertiesChanged(double gain)
+void PCOPixelFly::dockWidgetVisibilityChanged(bool visible)
 {
-    if(checkNumericParamRange(m_params["gain"], gain))
+    if (getDockWidget())
     {
-        setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", m_params["gain"].getType(), gain)));
+        QWidget *widget = getDockWidget()->widget();
+        if (visible)
+        {
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            emit parametersChanged(m_params);
+        }
+        else
+        {
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+        }
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if  offset parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void PCOPixelFly::OffsetPropertiesChanged(double offset)
-{
-    setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", m_params["offset"].getType(), offset)));
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if integrationtime parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void PCOPixelFly::IntegrationPropertiesChanged(double integrationtime)
-{
-    if(checkNumericParamRange(m_params["integration_time"], integrationtime))
-    {
-        setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", m_params["integration_time"].getType(), integrationtime)));
-    }
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // PIXELFLY GRABBER
