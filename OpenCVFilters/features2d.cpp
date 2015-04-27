@@ -145,23 +145,26 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
                 ito::DataObject bestKeypoints2(best_matches_idx.size(), 7, ito::tFloat32);
                 ito::float32 *rowPtrDest;
                 ito::float32 *rowPtrSrc;
+				int count = 0;
 
                 foreach( const int idx, best_matches_idx)
                 {
                     //copy matches line
                     rowPtrSrc = (ito::float32*)(matchesOut->rowPtr(0, idx));
-                    rowPtrDest = (ito::float32*)(bestMatches.rowPtr(0, idx));
+                    rowPtrDest = (ito::float32*)(bestMatches.rowPtr(0, count));
                     memcpy(rowPtrDest, rowPtrSrc, sizeof(ito::float32) * 4);
 
                     //copy first keypoints line
                     rowPtrSrc = (ito::float32*)(first_keypoints_.rowPtr(Dmatches[idx].queryIdx, idx));
-                    rowPtrDest = (ito::float32*)(bestKeypoints1.rowPtr(0, idx));
+                    rowPtrDest = (ito::float32*)(bestKeypoints1.rowPtr(0, count));
                     memcpy(rowPtrDest, rowPtrSrc, sizeof(ito::float32) * 7);
 
                     //copy second keypoints line
                     rowPtrSrc = (ito::float32*)(second_keypoints_.rowPtr(Dmatches[idx].trainIdx, idx));
-                    rowPtrDest = (ito::float32*)(bestKeypoints2.rowPtr(0, idx));
+                    rowPtrDest = (ito::float32*)(bestKeypoints2.rowPtr(0, count));
                     memcpy(rowPtrDest, rowPtrSrc, sizeof(ito::float32) * 7);
+
+					count++;
                 }
 
                 *((*paramsOpt)[3].getVal<ito::DataObject*>()) = bestKeypoints1;
@@ -396,6 +399,8 @@ This function draws matches of keypoints from two images in the output image. Ma
 
         if (flags & cv::DrawMatchesFlags::DRAW_OVER_OUTIMG)
         {
+
+
             const ito::DataObject outImageIn = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(5).getVal<const ito::DataObject*>(),"out_img", ito::Range(0,INT_MAX), ito::Range(0,INT_MAX), retval, -1, 2, ito::tUInt8, ito::tRGBA32);
             if (!retval.containsError())
             {
