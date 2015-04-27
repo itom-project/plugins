@@ -177,7 +177,7 @@ ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::M
                 cameraMatrixType = ito::tRGBA32;
 
                 cv::Mat in[] = {*mat, cv::Mat( mat->rows, mat->cols, CV_8UC1 )}; //bgr + alpha (all 255)
-                in[2].setTo(255);
+                in[1].setTo(255);
                 cv::Mat out;
                 cv::merge(in, 2, out);
                 out.convertTo(mat_, cv::DataType<ito::Rgba32>::type);
