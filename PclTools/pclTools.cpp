@@ -96,7 +96,6 @@
 
 int PclTools::nthreads = 2;
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclToolsInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -154,7 +153,6 @@ PclToolsInterface::~PclToolsInterface()
 #if QT_VERSION < 0x050000
 	Q_EXPORT_PLUGIN2(PclTools, PclToolsInterface)
 #endif
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -388,6 +386,7 @@ ito::RetVal PclTools::savePointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 
     return retval;
 }
+
 //------------------------------------------------------------------------------------------------------------------------------
 const char* PclTools::loadPointCloudDOC = "\n\
 \n\
@@ -652,7 +651,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
         }
         catch(pcl::InvalidConversionException exp)
         {
-            const char* msg = exp.detailedMessage();
+            const char* msg = string_to_char(exp.detailedMessage());
             retval += ito::RetVal::format(ito::retError, 0, tr("Error while loading the point cloud. Message: %s").toLatin1().data(), msg);
             pc = ito::PCLPointCloud(ito::pclInvalid);
         }
@@ -697,6 +696,7 @@ This file format allows displaying volume data from the given 3D data object for
     return retval;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::saveVTKImageData(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -777,8 +777,6 @@ This file format allows displaying volume data from the given 3D data object for
             xDim = 1;
             yDim = 0;
         }
-        
-        
 
 #if VTK_MAJOR_VERSION <= 5
         structuredPoints->SetNumberOfScalarComponents(1);
@@ -803,7 +801,6 @@ This file format allows displaying volume data from the given 3D data object for
         }
 #endif
         
-
         switch (input->getType())
         {
         case ito::tUInt8:
@@ -868,12 +865,8 @@ This file format allows displaying volume data from the given 3D data object for
         dobj = NULL;
     }
 
-    
-
     return retval;
 }
-
-
 
 //------------------------------------------------------------------------------------------------------------------------------
 const char* PclTools::savePolygonMeshDOC = "\n\
@@ -881,6 +874,7 @@ const char* PclTools::savePolygonMeshDOC = "\n\
 \n\
 \n\
 \n";
+
 //------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::savePolygonMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -968,12 +962,14 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 
     return retval;
 }
+
 //------------------------------------------------------------------------------------------------------------------------------
 const char* PclTools::loadPolygonMeshDOC = "\n\
 \n\
 \n\
 \n\
 \n";
+
 //------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::loadPolygonMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1218,7 +1214,6 @@ const char* PclTools::transformAffineDOC = "\n\
     return retval;
 }
 
-
 //------------------------------------------------------------------------------------------------------------------------------
 const char* PclTools::pclEstimateNormalsDOC = "\n\
 \n\
@@ -1269,7 +1264,7 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
 
     bool areTheSame = false;
 
-    if(pclIn == pclOut)
+    if (pclIn == pclOut)
     {
         // Houston we have a problem
         areTheSame = true;
@@ -1285,7 +1280,6 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
     int nr_threads_ = QThread::idealThreadCount();
     unsigned int nr_threads =  std::max(1, nr_threads_ - 1); //let one thread for the rest
 
-
     if (!retval.containsError())
     {
         switch(pclIn->getType())
@@ -1297,7 +1291,7 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
             {
 
                 pcl::PointCloud<pcl::PointXYZ> *srcTempPCL = NULL;
-                if(areTheSame)
+                if (areTheSame)
                 {
                     srcTempPCL = new pcl::PointCloud<pcl::PointXYZ>();
                     pcl::copyPointCloud(*(pclIn->toPointXYZ()), *srcTempPCL);
@@ -1324,14 +1318,12 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
                 }
                 ne.compute(*normals);
 
-
                 pcl::concatenateFields(*(srcTempPCL), *normals, *(pclOut->toPointXYZNormal()));
 
-                if(areTheSame)
+                if (areTheSame)
                 {
                     delete srcTempPCL;
                 }
-                              
             }
             break;
         case ito::pclXYZI:
@@ -1340,7 +1332,7 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
                 pcl::search::KdTree<pcl::PointXYZI>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZI> ());
 
                 pcl::PointCloud<pcl::PointXYZI> *srcTempPCL = NULL;
-                if(areTheSame)
+                if (areTheSame)
                 {
                     srcTempPCL = new pcl::PointCloud<pcl::PointXYZI>();
                     pcl::copyPointCloud(*(pclIn->toPointXYZI()), *srcTempPCL);
@@ -1367,11 +1359,10 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
                 
                 pcl::concatenateFields(*(srcTempPCL), *normals, *(pclOut->toPointXYZINormal()));
 
-                if(areTheSame)
+                if (areTheSame)
                 {
                     delete srcTempPCL;
                 }
-
             }
             break;
         case ito::pclXYZRGBA:
@@ -1397,7 +1388,6 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
                     ne.setViewPoint(viewPoint[0], viewPoint[1], viewPoint[2]);
                 }
                 ne.compute(*normals);
-
 
                 retval += ito::RetVal(ito::retWarning, 0, tr("the alpha values of the input point cloud cannot be copied to the output point cloud [not supported]").toLatin1().data());
                 pcl::concatenateFields(rgbCloud, *normals, *(pclOut->toPointXYZRGBNormal()));
@@ -1775,7 +1765,6 @@ adjust its position and orientation. The rotation vector are the euler angles rx
     Eigen::Vector3f translation(trans[0], trans[1], trans[2]);
 
     int negative = (*paramsOpt)[4].getVal<int>();
-
 
     if (pclIn == pclOut)
     {
@@ -2936,7 +2925,6 @@ const char* PclTools::pclGetHistogramDOC = "\n\
                 }
             }
         }
-
         break;
     }
 
@@ -3015,7 +3003,6 @@ const char* PclTools::pclCylinderClipper3DDOC = "\n\
     ito::PCLPointCloud *pclOut = (ito::PCLPointCloud*)(*paramsMand)[1].getVal<void*>();
 
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
-
     bool inplace = false; //no real inplace is possible
 
     if (pclIn == NULL || pclOut == NULL)
@@ -3104,7 +3091,6 @@ const char* PclTools::pclCylinderClipper3DDOC = "\n\
     *pclOut = ito::PCLPointCloud(*pclIn, clipped);
 
     return ito::retOk;
-
 #else
     return ito::RetVal(ito::retError, 0, tr("CylinderClipper3D not supported in PCL version < 1.7.0").toLatin1().data());
 #endif
@@ -3448,7 +3434,7 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
     bool getIntensity = intensityMap != NULL;
     bool getDeviation = deviationMap != NULL;
 
-    if(!pointCloud->isOrganized() && !pointCloud->is_dense())
+    if (!pointCloud->isOrganized() && !pointCloud->is_dense())
     {
         return ito::RetVal(ito::retError, 0, tr("point cloud must be organized and dense").toLatin1().data());
     }
@@ -3478,7 +3464,7 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
         return ito::RetVal(ito::retError, 0, tr("curvature output dataObject must differ from disperity dataObject").toLatin1().data());
     }
 
-    if(getDisperity)
+    if (getDisperity)
     {
         *disperityMap = ito::DataObject(height, width, ito::tFloat32);
     }
@@ -3487,14 +3473,14 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
     cv::Mat* intMat = NULL;
     cv::Mat* devMat = NULL;
 
-    if(getIntensity)
+    if (getIntensity)
     {
-        if(pointCloud->getType() == ito::pclXYZI  || pointCloud->getType() == ito::pclXYZINormal)
+        if (pointCloud->getType() == ito::pclXYZI  || pointCloud->getType() == ito::pclXYZINormal)
         {
             *intensityMap = ito::DataObject(height, width, ito::tFloat32);
         }
         /*
-        else if(pointCloud->getType() == ito::pclXYZRGBA || pointCloud->getType() == ito::pclXYZRGBNormal)
+        else if (pointCloud->getType() == ito::pclXYZRGBA || pointCloud->getType() == ito::pclXYZRGBNormal)
         {
             *deviationMap = ito::DataObject(height, width, ito::tRGBA32);
         }
@@ -3506,9 +3492,9 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
         intMat = (cv::Mat*)(intensityMap->get_mdata()[intensityMap->seekMat(0)]);
     }
 
-    if(getDeviation)
+    if (getDeviation)
     {
-        if(pointCloud->getType() == ito::pclXYZNormal  || pointCloud->getType() == ito::pclXYZINormal || pointCloud->getType() == ito::pclXYZRGBNormal)
+        if (pointCloud->getType() == ito::pclXYZNormal  || pointCloud->getType() == ito::pclXYZINormal || pointCloud->getType() == ito::pclXYZRGBNormal)
         {
             *deviationMap = ito::DataObject(height, width, ito::tFloat32);
         }
@@ -3519,8 +3505,6 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
         }
         devMat = (cv::Mat*)(deviationMap->get_mdata()[deviationMap->seekMat(0)]);
     }
-
-
 
     switch(pointCloud->getType())
     {
@@ -3555,7 +3539,6 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
         {
             pcl::PointCloud<pcl::PointXYZI>::Ptr pclSrc = pointCloud->toPointXYZI();
 
-
             #if (USEOMP)
             #pragma omp parallel num_threads(nthreads)
             {
@@ -3563,7 +3546,7 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
 
             ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
             
-            if(getIntensity)
+            if (getIntensity)
             {
                 ito::float32* intPtr = intMat->ptr<ito::float32>(0);
 
@@ -3609,7 +3592,7 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
             #endif 
             ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
             
-            if(getDeviation)
+            if (getDeviation)
             {
                 ito::float32* devPtr = devMat->ptr<ito::float32>(0);
 
@@ -3647,8 +3630,7 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
             #endif 
             ito::float32* rowPtr = dispMat->ptr<ito::float32>(0);
             
-
-            if(getIntensity && getDeviation)
+            if (getIntensity && getDeviation)
             {
                 ito::float32* intPtr = intMat->ptr<ito::float32>(0);
                 ito::float32* devPtr = devMat->ptr<ito::float32>(0);
@@ -3663,7 +3645,7 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
                     devPtr[np] = pclSrc->at(np).curvature;
                 }
             }
-            else if(getIntensity)
+            else if (getIntensity)
             {
                 ito::float32* intPtr = intMat->ptr<ito::float32>(0);
 
@@ -3676,7 +3658,7 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
                     intPtr[np] = pclSrc->at(np).intensity;
                 }
             }
-            else if(getDeviation)
+            else if (getDeviation)
             {
                 ito::float32* devPtr = devMat->ptr<ito::float32>(0);
 
@@ -3734,11 +3716,10 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
     paramsMand->append(ito::Param("disperityMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output dataObject with z-Values").toLatin1().data()));
     paramsMand->append(ito::Param("width", ito::ParamBase::Int | ito::ParamBase::In , 1, std::numeric_limits<int>::max(), 1280, tr("Output dataObject with z-Values").toLatin1().data()));
     paramsMand->append(ito::Param("height", ito::ParamBase::Int | ito::ParamBase::In , 1, std::numeric_limits<int>::max(), 1024, tr("Output dataObject with z-Values").toLatin1().data()));
-    paramsOpt->append( ito::Param("intensityMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output dataObject with intensity-Values").toLatin1().data()));
-    paramsOpt->append( ito::Param("curvatureMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output dataObject with curvature-Values").toLatin1().data()));
+    paramsOpt->append(ito::Param("intensityMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output dataObject with intensity-Values").toLatin1().data()));
+    paramsOpt->append(ito::Param("curvatureMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output dataObject with curvature-Values").toLatin1().data()));
     return retval;
 }
-
 
 //------------------------------------------------------------------------------------------------------------------------------
 const char* PclTools::pclOrganizedFastMeshDOC = "\n\
@@ -3849,13 +3830,13 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             //create mesh
             pcl::OrganizedFastMesh<pcl::PointXYZ> fastMesh;
             fastMesh.setInputCloud(pointCloud->toPointXYZConst());
-            fastMesh.setTriangulationType( type );
+            fastMesh.setTriangulationType(type);
             fastMesh.storeShadowedFaces(storeShadowFaces);
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
 #endif
-            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+            fastMesh.reconstruct(*(polygonMesh->polygonMesh()));
         }
         break;
     case ito::pclXYZI: //pcl::PointXYZI, toPointXYZI
@@ -3863,13 +3844,13 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             //create mesh
             pcl::OrganizedFastMesh<pcl::PointXYZI> fastMesh;
             fastMesh.setInputCloud(pointCloud->toPointXYZIConst());
-            fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZI>::TriangulationType)type );
+            fastMesh.setTriangulationType((pcl::OrganizedFastMesh<pcl::PointXYZI>::TriangulationType)type);
             fastMesh.storeShadowedFaces(storeShadowFaces);
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
 #endif
-            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+            fastMesh.reconstruct(*(polygonMesh->polygonMesh()));
         }
         break;
     case ito::pclXYZRGBA: //pcl::PointXYZRGBA, toPointXYZRGBA
@@ -3877,13 +3858,13 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             //create mesh
             pcl::OrganizedFastMesh<pcl::PointXYZRGBA> fastMesh;
             fastMesh.setInputCloud(pointCloud->toPointXYZRGBAConst());
-            fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZRGBA>::TriangulationType)type );
+            fastMesh.setTriangulationType((pcl::OrganizedFastMesh<pcl::PointXYZRGBA>::TriangulationType)type);
             fastMesh.storeShadowedFaces(storeShadowFaces);
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
 #endif
-            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+            fastMesh.reconstruct(*(polygonMesh->polygonMesh()));
         }
         break;
     case ito::pclXYZNormal: //pcl::PointNormal, toPointXYZNormal
@@ -3891,13 +3872,13 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             //create mesh
             pcl::OrganizedFastMesh<pcl::PointNormal> fastMesh;
             fastMesh.setInputCloud(pointCloud->toPointXYZNormalConst());
-            fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointNormal>::TriangulationType)type );
+            fastMesh.setTriangulationType((pcl::OrganizedFastMesh<pcl::PointNormal>::TriangulationType)type);
             fastMesh.storeShadowedFaces(storeShadowFaces);
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
 #endif
-            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+            fastMesh.reconstruct(*(polygonMesh->polygonMesh()));
         }
         break;
     case ito::pclXYZINormal: //pcl::PointXYZINormal, toPointXYZINormal
@@ -3905,13 +3886,13 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             //create mesh
             pcl::OrganizedFastMesh<pcl::PointXYZINormal> fastMesh;
             fastMesh.setInputCloud(pointCloud->toPointXYZINormalConst());
-            fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZINormal>::TriangulationType)type );
+            fastMesh.setTriangulationType((pcl::OrganizedFastMesh<pcl::PointXYZINormal>::TriangulationType)type);
             fastMesh.storeShadowedFaces(storeShadowFaces);
  #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
 #endif
-            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+            fastMesh.reconstruct(*(polygonMesh->polygonMesh()));
         }
         break;
     case ito::pclXYZRGBNormal: //pcl::PointXYZRGBNormal, toPointXYZRGBNormal
@@ -3919,13 +3900,13 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
             //create mesh
             pcl::OrganizedFastMesh<pcl::PointXYZRGBNormal> fastMesh;
             fastMesh.setInputCloud(pointCloud->toPointXYZRGBNormalConst());
-            fastMesh.setTriangulationType( (pcl::OrganizedFastMesh<pcl::PointXYZRGBNormal>::TriangulationType)type );
+            fastMesh.setTriangulationType((pcl::OrganizedFastMesh<pcl::PointXYZRGBNormal>::TriangulationType)type);
             fastMesh.storeShadowedFaces(storeShadowFaces);
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
             fastMesh.setTrianglePixelSizeRows(psRows);
             fastMesh.setTrianglePixelSizeColumns(psCols);
 #endif
-            fastMesh.reconstruct( *(polygonMesh->polygonMesh()) );
+            fastMesh.reconstruct(*(polygonMesh->polygonMesh()));
         }
 
         break;
@@ -3969,7 +3950,6 @@ ito::RetVal PclTools::pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVect
 
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
 	retval += ito::RetVal(ito::retError, 0, "Only tested / implemented for version 1.7.0");
-	
 #else
     ito::PCLPolygonMesh *meshIn = (ito::PCLPolygonMesh*)(*paramsMand)[0].getVal<void*>();
     ito::PCLPolygonMesh *meshOut = (ito::PCLPolygonMesh*)(*paramsMand)[1].getVal<void*>();
@@ -4065,7 +4045,7 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
             pcl::Poisson<pcl::PointNormal> meshCleaner;
             meshCleaner.setDepth(depth);
             meshCleaner.setInputCloud(cloudIn->toPointXYZNormal());
-            if(degree > 0 ) meshCleaner.setDegree(degree);
+            if (degree > 0) meshCleaner.setDegree(degree);
             meshCleaner.reconstruct(*(meshOut->polygonMesh()));
         }
         break;
@@ -4074,7 +4054,7 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
             pcl::Poisson<pcl::PointXYZINormal> meshCleaner;
             meshCleaner.setDepth(depth);
             meshCleaner.setInputCloud(cloudIn->toPointXYZINormal());
-            if(degree > 0 ) meshCleaner.setDegree(degree);
+            if (degree > 0) meshCleaner.setDegree(degree);
             meshCleaner.reconstruct(*(meshOut->polygonMesh()));
         }
         break;
@@ -4083,13 +4063,11 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
             pcl::Poisson<pcl::PointXYZRGBNormal> meshCleaner;
             meshCleaner.setDepth(depth);
             meshCleaner.setInputCloud(cloudIn->toPointXYZRGBNormal());
-            if(degree > 0 ) meshCleaner.setDegree(degree);
+            if (degree > 0) meshCleaner.setDegree(degree);
             meshCleaner.reconstruct(*(meshOut->polygonMesh()));
         }
         break;
-
     }
-
 #endif
     return retval;
 }
@@ -4221,11 +4199,8 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::pclPoisson, PclTools::pclPoissonParams, tr("Uses pcl::Poisson-filter to reduce a mesh / estimate the surface of an object."));
     m_filterList.insert("pclSurfaceByPoisson", filter);
 
-
     filter = new FilterDef(PclTools::pclSampleToDataObject, PclTools::pclSampleToDataObjectParams, tr("Uses copy an organized and dense pointcloud to an dataObject."));
     m_filterList.insert("pclSampleToDataObject", filter);
-    
-    
 
     if (waitCond)
     {

@@ -249,7 +249,10 @@ class PclTools : public ito::AddInAlgo
         static double pointToLineDist(const float pt[3], const float modelCoefficients[7]);
         static bool checkFitWithOutNormals(const int &fitObj);
         static bool checkFitNormals(const int &fitObj);
-    public slots:
+		static const char* string_to_char(const char *string) { return string; };
+		static const char* string_to_char(const std::string &string) { return string.c_str(); };
+
+	public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal close(ItomSharedSemaphore *waitCond);
 };
