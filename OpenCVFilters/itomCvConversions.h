@@ -33,7 +33,7 @@ namespace itomcv
 {
     cv::Size getCVSizeFromParam(const ito::ParamBase &intArrayParam, bool squareSizeIfOneElement = false, ito::RetVal *retval = NULL, bool returnEmptySizeIfEmpty = false);
     cv::TermCriteria getCVTermCriteriaFromParam(const ito::ParamBase &intMaxCountParam, const ito::ParamBase &doubleEpsParam, ito::RetVal *retval = NULL);
-    std::vector<cv::Mat> getInputArrayOfArraysFromDataObject(const ito::DataObject *dObj, ito::RetVal *retval = NULL);
+    std::vector<cv::Mat> getInputArrayOfArraysFromDataObject(const ito::DataObject *dObj, bool continuous = false, ito::RetVal *retval = NULL);
     ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::Mat* mat);
     std::vector<cv::KeyPoint> getKeypointsFromParam(const ito::ParamBase &keypointParam, const char* name, ito::RetVal *retval = NULL);
     std::vector<cv::DMatch> getDMatchesFromParam(const ito::ParamBase &dmatchesParam, const char* name, ito::RetVal *retval = NULL);

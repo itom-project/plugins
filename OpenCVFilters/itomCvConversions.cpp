@@ -112,7 +112,7 @@ cv::TermCriteria getCVTermCriteriaFromParam(const ito::ParamBase &intMaxCountPar
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------
-std::vector<cv::Mat> getInputArrayOfArraysFromDataObject(const ito::DataObject *dObj, ito::RetVal *retval /*= NULL*/)
+std::vector<cv::Mat> getInputArrayOfArraysFromDataObject(const ito::DataObject *dObj, bool continuous /*= false*/, ito::RetVal *retval /*= NULL*/)
 {
     ito::RetVal ret;
     std::vector<cv::Mat> output;
@@ -125,15 +125,30 @@ std::vector<cv::Mat> getInputArrayOfArraysFromDataObject(const ito::DataObject *
     {
         if (dObj->getDims() == 2)
         {
-            int plane = dObj->seekMat(0);
-            output.push_back( *((cv::Mat*)(dObj->get_mdata()[plane])) );
+            if (!continuous)
+            {
+                output.push_back( *(dObj->getCvPlaneMat(0)) );
+            }
+            else
+            {
+                output.push_back(dObj->getContinuousCvPlaneMat(0));
+            }
         }
         else if (dObj->getDims() == 3)
         {
-            for (int i = 0; i < dObj->getSize(0); ++i)
+            if (continuous)
             {
-                int plane = dObj->seekMat(0);
-                output.push_back( *(dObj->getCvPlaneMat(i)) );
+                for (int i = 0; i < dObj->getSize(0); ++i)
+                {
+                    output.push_back( dObj->getContinuousCvPlaneMat(i) );
+                }
+            }
+            else
+            {
+                for (int i = 0; i < dObj->getSize(0); ++i)
+                {
+                    output.push_back( *(dObj->getCvPlaneMat(i)) );
+                }
             }
         }
         else
