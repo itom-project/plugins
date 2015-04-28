@@ -994,10 +994,14 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
     if (!retval.containsError())
     {
         cv::Mat homography;
+		const cv::Mat *src_plane = src.getCvPlaneMat(0);
+		const cv::Mat *dst_plane = dst.getCvPlaneMat(0);
+		cv::Mat src_ = (src_plane->isContinuous()) ? *src_plane : src_plane->clone(); //findHomography requires a continuous matrix (no ROI)
+		cv::Mat dst_ = (dst_plane->isContinuous()) ? *dst_plane : dst_plane->clone(); //findHomography requires a continuous matrix (no ROI)
         
         try
         {
-            homography = cv::findHomography(*(src.getCvPlaneMat(0)), *(src.getCvPlaneMat(0)), method, ransacReprojThreshold);
+            homography = cv::findHomography(src_, dst_, method, ransacReprojThreshold);
         }
         catch (cv::Exception exc)
         {
