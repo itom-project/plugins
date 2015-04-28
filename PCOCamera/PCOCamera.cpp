@@ -46,11 +46,6 @@
 
 //#pragma comment(linker, "/delayload:SC2_Cam.dll")
 
-//#include <qdebug.h>
-//#include <qmessagebox.h>
-
-
-Q_DECLARE_METATYPE(ito::DataObject)
 
 static QLibrary mySC2Lib;
 
@@ -216,6 +211,13 @@ PCOCamera::PCOCamera() :
     m_params.insert(paramVal.getName(), paramVal);    
     paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Last row within the region of interest (zero-based, y0 < y1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+
+    int roi[] = {0, 0, 2048, 2048};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height)").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2048), ito::RangeMeta(0, 2048));
+    paramVal.setMeta(rm, true);
+    m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 16, 16, 16, tr("bits per pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     //paramVal = ito::Param("time_out", ito::ParamBase::Double , 0.1, 60.0, 2.0, tr("Timeout for acquiring images").toLatin1().data());
@@ -473,20 +475,43 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
             }
                     
         }
-        else if (key == "x0" || key == "x1" || key == "y0" || key == "y1")
+        else if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi")
         {
             if (grabberStartedCount() > 0)
             {
                 retVal += stopCamera();
             }
 
-            // Adapted parameters and send out depending parameter
-            WORD wRoiX0 = (key == "x0") ? val->getVal<int>() : m_params["x0"].getVal<int>();
-            WORD wRoiY0 = (key == "y0") ? val->getVal<int>() : m_params["y0"].getVal<int>(); 
-            WORD wRoiX1 = (key == "x1") ? val->getVal<int>() : m_params["x1"].getVal<int>(); 
-            WORD wRoiY1 = (key == "y1") ? val->getVal<int>() : m_params["y1"].getVal<int>();
+            if (key == "roi")
+            {
+                if (hasIndex)
+                {
+                    const int *roi_ = val->getVal<int*>();
+                    // Adapted parameters and send out depending parameter
+                    WORD wRoiX0 = (index == 0) ? val->getVal<int>() : roi_[0];
+                    WORD wRoiY0 = (index == 1) ? val->getVal<int>() : roi_[1];
+                    WORD wRoiX1 = (index == 2) ? roi_[0] + val->getVal<int>() - 1 : roi_[0] + roi_[2] - 1;
+                    WORD wRoiY1 = (index == 3) ? roi_[1] + val->getVal<int>() - 1 : roi_[1] + roi_[3] - 1;
 
-            retVal += checkError(PCO_SetROI(m_hCamera, wRoiX0 + 1, wRoiY0 + 1, wRoiX1 + 1, wRoiY1 + 1)); //rois are 1/1-based
+                    retVal += checkError(PCO_SetROI(m_hCamera, wRoiX0 + 1, wRoiY0 + 1, wRoiX1 + 1, wRoiY1 + 1)); //rois are 1/1-based
+                }
+                else
+                {
+                    const int *roi_ = val->getVal<int*>();
+                    retVal += checkError(PCO_SetROI(m_hCamera, roi_[0] + 1, roi_[1] + 1, roi_[0] + roi_[2], roi_[1] + roi_[3])); //rois are 1/1-based
+                }
+            }
+            else
+            {
+                // Adapted parameters and send out depending parameter
+                WORD wRoiX0 = (key == "x0") ? val->getVal<int>() : m_params["x0"].getVal<int>();
+                WORD wRoiY0 = (key == "y0") ? val->getVal<int>() : m_params["y0"].getVal<int>(); 
+                WORD wRoiX1 = (key == "x1") ? val->getVal<int>() : m_params["x1"].getVal<int>(); 
+                WORD wRoiY1 = (key == "y1") ? val->getVal<int>() : m_params["y1"].getVal<int>();
+
+                retVal += checkError(PCO_SetROI(m_hCamera, wRoiX0 + 1, wRoiY0 + 1, wRoiX1 + 1, wRoiY1 + 1)); //rois are 1/1-based
+            }
+
             retVal += sychronizeParameters(); //here the current roi is checked and x0,x1,y0,y1,sizex and sizey are adapted!
                         
             if (grabberStartedCount() > 0)
@@ -716,6 +741,7 @@ ito::RetVal PCOCamera::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             m_params["x1"].setFlags(ito::ParamBase::Readonly);
             m_params["y0"].setFlags(ito::ParamBase::Readonly);
             m_params["y1"].setFlags(ito::ParamBase::Readonly);
+            m_params["roi"].setFlags(ito::ParamBase::Readonly);
         }
     }
 
@@ -1214,6 +1240,11 @@ ito::RetVal PCOCamera::sychronizeParameters()
         m_params["y0"].setVal<int>(roiY0 - 1);
         m_params["x1"].setVal<int>(roiX1 - 1);
         m_params["y1"].setVal<int>(roiY1 - 1);
+        int *roi = m_params["roi"].getVal<int*>();
+        roi[0] = roiX0 - 1;
+        roi[1] = roiY0 - 1;
+        roi[2] = roiX1 - roiX0 + 1;
+        roi[3] = roiY1 - roiY0 + 1;
 
         ito::IntMeta *im;
 
@@ -1246,6 +1277,18 @@ ito::RetVal PCOCamera::sychronizeParameters()
 #endif
         im->setMax(m_caminfo.wMaxVertResStdDESC/binY - 1);
         im->setStepSize(std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1));
+
+        //roi
+#ifdef PCO_SDK_OLD
+        ito::RectMeta *rm = new ito::RectMeta( \
+            ito::RangeMeta(0, m_caminfo.wMaxHorzResStdDESC/binX, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1),  0, m_caminfo.wMaxHorzResStdDESC/binX, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1)), \
+            ito::RangeMeta(0, m_caminfo.wMaxVertResStdDESC/binY, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1), 0, m_caminfo.wMaxVertResStdDESC/binY, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1)));
+#else
+        ito::RectMeta *rm = new ito::RectMeta( \
+            ito::RangeMeta(0, m_caminfo.wMaxHorzResStdDESC/binX, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1),  m_caminfo.wMinSizeHorzDESC, m_caminfo.wMaxHorzResStdDESC/binX, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1)), \
+            ito::RangeMeta(0, m_caminfo.wMaxVertResStdDESC/binY, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1), m_caminfo.wMinSizeVertDESC, m_caminfo.wMaxVertResStdDESC/binY, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1)));
+#endif
+        m_params["roi"].setMeta(rm, true);
 
         m_params["sizex"].setVal<int>(sizeX);
         m_params["sizey"].setVal<int>(sizeY);
