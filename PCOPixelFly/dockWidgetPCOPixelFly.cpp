@@ -1,7 +1,7 @@
 /* ********************************************************************
-    Plugin "PcoPixelFly" for itom software
+    Plugin "PCOPixelFly" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -22,88 +22,71 @@
 
 #include "dockWidgetPCOPixelFly.h"
 
- DockWidgetPCOPixelFly::DockWidgetPCOPixelFly(QMap<QString, ito::Param> params, int uniqueID)
- {
-    ui.setupUi(this); 
-    
-    char* temp = params["name"].getVal<char*>(); //borrowed reference
-//    ui.lblName->setText(temp);
-    ui.lblID->setText(QString::number(uniqueID));
+//----------------------------------------------------------------------------------------------------------------------------------
+DockWidgetPCOPixelFly::DockWidgetPCOPixelFly(ito::AddInDataIO *grabber) :
+    AbstractAddInDockWidget(grabber),
+    m_inEditing(false),
+    m_firstRun(true)
+{
+    ui.setupUi(this);
+}
 
-    valuesChanged(params);
- }
-
- void DockWidgetPCOPixelFly::valuesChanged(QMap<QString, ito::Param> params)
+//----------------------------------------------------------------------------------------------------------------------------------
+ void DockWidgetPCOPixelFly::parametersChanged(QMap<QString, ito::Param> params)
  {
     ui.spinBpp->setValue(params["bpp"].getVal<int>());
     ui.spinWidth->setValue(params["sizex"].getVal<int>());
     ui.spinHeight->setValue(params["sizey"].getVal<int>());
 
+    if (m_firstRun)
+    {
+        ui.checkLowLightMode->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
+        ui.doubleSpinBox_integration_time->setDisabled( params["integration_time"].getFlags() & ito::ParamBase::Readonly );
 
-    if(!(params["gain"].getFlags() & ito::ParamBase::Readonly))
-    {
-        ui.spinBox_gain->setEnabled(true);
+        m_firstRun = false;
     }
-    else
+    
+    if (!m_inEditing)
     {
-        ui.spinBox_gain->setEnabled(false);
-    }
-    ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
-    ui.horizontalSlider_gain->setValue(ui.spinBox_gain->value());
+        m_inEditing = true;
 
-    if(!(params["offset"].getFlags() & ito::ParamBase::Readonly))
-    {
-        ui.spinBox_offset->setEnabled(true);
-    }
-    else
-    {
-        ui.spinBox_offset->setEnabled(false);
-    }
-    ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
-    ui.horizontalSlider_offset->setValue(ui.spinBox_offset->value());
+        ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
+        ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
+        ui.doubleSpinBox_integration_time->setSingleStep(1);
+        ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>() *1000.0);
 
-    if(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
-    {
-        ui.doubleSpinBox_integration_time->setEnabled(true);
-    }
-    else
-    {
-        ui.doubleSpinBox_integration_time->setEnabled(false);
-    }
+        ui.checkLowLightMode->setChecked(params["gain"].getVal<double>() > 0.0);
 
-    ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
-    ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
-    ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>()*1000.0);
+        m_inEditing = false;
+    }
  }
 
-void DockWidgetPCOPixelFly::on_spinBox_gain_editingFinished()
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPCOPixelFly::identifierChanged(const QString &identifier)
 {
-    ui.horizontalSlider_gain->setValue(ui.spinBox_gain->value());
-    emit GainPropertiesChanged( ui.spinBox_gain->value()/100.0);
+    ui.lblID->setText(identifier);
 }
 
-void DockWidgetPCOPixelFly::on_horizontalSlider_gain_sliderMoved(int d)
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPCOPixelFly::on_checkLowLightMode_clicked(bool checked)
 {
-    ui.spinBox_gain->setValue(d);
-    emit GainPropertiesChanged(ui.spinBox_gain->value()/100.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain",ito::ParamBase::Double,checked ? 1.0 : 0.0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }
 
-void DockWidgetPCOPixelFly::on_spinBox_offset_editingFinished()
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetPCOPixelFly::on_doubleSpinBox_integration_time_valueChanged(double d)
 {
-    ui.horizontalSlider_offset->setValue(ui.spinBox_offset->value());
-    emit OffsetPropertiesChanged(ui.spinBox_offset->value()/100.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,d/1000.0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }
-
-void DockWidgetPCOPixelFly::on_horizontalSlider_offset_sliderMoved(int d)
-{
-    ui.spinBox_offset->setValue(d);
-    emit OffsetPropertiesChanged(ui.spinBox_offset->value()/100.0);
-}
-
-void DockWidgetPCOPixelFly::on_doubleSpinBox_integration_time_editingFinished()
-{
-    emit IntegrationPropertiesChanged( ui.doubleSpinBox_integration_time->value() / 1000.0);
-}
-
-
-

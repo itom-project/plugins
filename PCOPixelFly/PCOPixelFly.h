@@ -106,15 +106,6 @@ class PCOPixelFly : public ito::AddInGrabber
         //void parametersChanged(QMap<QString, ito::Param> params);    /*! Signal send changed or all parameters to listeners */
 
     public slots:
-        //! Get string Camera-Parameter
-        //ito::RetVal getParam(const char *name, QSharedPointer<char> val, QSharedPointer<int> len, ItomSharedSemaphore *waitCond = NULL);
-        //! Get numeric Camera-Parameter
-        //ito::RetVal getParam(const char *name, QSharedPointer<double> val, ItomSharedSemaphore *waitCond = NULL);
-        //! Set string Camera-Parameter
-        //ito::RetVal setParam(const char *name, const char *val, const int len, ItomSharedSemaphore *waitCond = NULL);
-        //! Set numeric Camera-Parameter
-        //ito::RetVal setParam(const char *name, const double val, ItomSharedSemaphore *waitCond = NULL);
-        
         //! returns parameter of m_params with key name.
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);
         //! sets parameter of m_params with key name. 
@@ -136,15 +127,8 @@ class PCOPixelFly : public ito::AddInGrabber
         //! Calls retrieveData(vpdObj), than deep copy the picture to dObj of right type and size
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
-        //void updateParameters(QMap<QString, ito::tParam> params);
-
-        void GainPropertiesChanged(double gain);
-        void OffsetPropertiesChanged(double offset);
-        void IntegrationPropertiesChanged(double integrationtime);
-
-
     private slots:
-
+        void dockWidgetVisibilityChanged(bool visible);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

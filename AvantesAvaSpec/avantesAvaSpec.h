@@ -50,7 +50,8 @@ class AvantesAvaSpec : public ito::AddInGrabber
 
     protected:
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);    /*! <Wait for acquired picture */
-//        ito::RetVal checkData(void);    /*!< Check if objekt has to be reallocated */
+		ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
+		//        ito::RetVal checkData(void);    /*!< Check if objekt has to be reallocated */
 
     private:
         ito::RetVal sendCommand(const char* cmd, int cmd_size, unsigned char* buf, int &buf_size);
@@ -97,7 +98,7 @@ class AvantesAvaSpec : public ito::AddInGrabber
         void updateParameters(QMap<QString, ito::ParamBase> params);
 
     private slots:
-
+        void dockWidgetVisibilityChanged(bool visible);
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------

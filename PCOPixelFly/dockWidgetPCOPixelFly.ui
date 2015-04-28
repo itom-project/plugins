@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>231</width>
-    <height>219</height>
+    <width>311</width>
+    <height>193</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
-    <height>219</height>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -194,47 +194,6 @@
        <number>8</number>
       </property>
       <item row="0" column="0">
-       <widget class="QLabel" name="label_offset">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Offset</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QSlider" name="horizontalSlider_offset">
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="pageStep">
-         <number>1</number>
-        </property>
-        <property name="tracking">
-         <bool>false</bool>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QSpinBox" name="spinBox_offset">
-        <property name="suffix">
-         <string>%</string>
-        </property>
-        <property name="minimum">
-         <number>0</number>
-        </property>
-        <property name="maximum">
-         <number>100</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
        <widget class="QLabel" name="label_gain">
         <property name="font">
          <font>
@@ -246,36 +205,14 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QSlider" name="horizontalSlider_gain">
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="pageStep">
-         <number>1</number>
-        </property>
-        <property name="tracking">
-         <bool>false</bool>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+      <item row="0" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkLowLightMode">
+        <property name="text">
+         <string>Low Light Mode</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QSpinBox" name="spinBox_gain">
-        <property name="suffix">
-         <string>%</string>
-        </property>
-        <property name="minimum">
-         <number>0</number>
-        </property>
-        <property name="maximum">
-         <number>100</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
+      <item row="2" column="0">
        <widget class="QLabel" name="label_integration_time">
         <property name="font">
          <font>
@@ -283,17 +220,17 @@
          </font>
         </property>
         <property name="text">
-         <string>Integrationtime</string>
+         <string>Integration Time</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
+      <item row="2" column="1" colspan="2">
        <widget class="QDoubleSpinBox" name="doubleSpinBox_integration_time">
         <property name="prefix">
          <string/>
         </property>
         <property name="suffix">
-         <string>ms</string>
+         <string> ms</string>
         </property>
         <property name="decimals">
          <number>3</number>

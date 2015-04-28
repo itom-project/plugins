@@ -1,8 +1,7 @@
 /* ********************************************************************
-    Plugin "PcoPixelFly" for itom software
-    URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Plugin "AvantesAvaSpec" for itom software
+    URL: http://www.bitbucket.org/itom/plugins
+	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -20,8 +19,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DOCKWIDGETPCOPixelFly_H
-#define DOCKWIDGETPCOPixelFly_H
+#ifndef DOCKWIDGETAVANTESAVASPEC_H
+#define DOCKWIDGETAVANTESAVASPEC_H
 
 #include "common/abstractAddInDockWidget.h"
 #include "common/addInGrabber.h"
@@ -29,18 +28,19 @@
 #include <qmap.h>
 #include <qstring.h>
 
-#include "ui_dockWidgetPCOPixelFly.h"
+#include "ui_dockWidgetAvantesAvaSpec.h"
 
-class DockWidgetPCOPixelFly : public ito::AbstractAddInDockWidget
+class DockWidgetAvantesAvaSpec : public ito::AbstractAddInDockWidget
 {
     Q_OBJECT
 
     public:
-        DockWidgetPCOPixelFly(ito::AddInDataIO *grabber);
-        ~DockWidgetPCOPixelFly() {};
+        DockWidgetAvantesAvaSpec(ito::AddInDataIO *grabber);
+        ~DockWidgetAvantesAvaSpec() {};
 
     private:
-        Ui::DockWidgetPCOPixelFly ui;
+        Ui::DockWidgetAvantesAvaSpec ui;
+		QMap<QString, ito::Param> m_currentParams;
         bool m_inEditing;
         bool m_firstRun;
 
@@ -48,8 +48,11 @@ class DockWidgetPCOPixelFly : public ito::AbstractAddInDockWidget
         void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier);
 
+
     private slots:
-        void on_checkLowLightMode_clicked(bool checked);
+        void on_spinBox_average_valueChanged(int d);
+		void on_rangeWidget_ROI_minimumValueChanged(int d);
+        void on_rangeWidget_ROI_maximumValueChanged(int d);
         void on_doubleSpinBox_integration_time_valueChanged(double d);
 };
 

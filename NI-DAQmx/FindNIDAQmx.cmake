@@ -13,16 +13,24 @@
 # Useful variables
 
 if ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-  list(APPEND NIDAQMX_DIR "C:/Program Files (x86)/National Instruments/NI-DAQ/DAQmx ANSI C Dev")
+  list(APPEND NIDAQMX_DIR 
+	"C:/Program Files (x86)/National Instruments/NI-DAQ/DAQmx ANSI C Dev" 
+	"C:/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C")
+  SET(SUFFIXES "lib/msvc"
+		"lib32/msvc")
 else ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-  list(APPEND NIDAQMX_DIR "C:/Program Files/National Instruments/NI-DAQ/DAQmx ANSI C Dev")
+  list(APPEND NIDAQMX_DIR 
+	"C:/Program Files/National Instruments/NI-DAQ/DAQmx ANSI C Dev" 
+	"C:/Program Files (x86)/National Instruments/Shared/ExternalCompilerSupport/C")
+  SET(SUFFIXES "lib/msvc"
+		"lib64/msvc")
 endif ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
 
 # Find installed library using CMake functions
 find_library(NIDAQMX_LIBRARY
 	NAMES "NIDAQmx"
 	PATHS ${NIDAQMX_DIR}
-	PATH_SUFFIXES "lib/msvc")
+	PATH_SUFFIXES ${SUFFIXES})
 
 find_path(NIDAQMX_INCLUDE_DIR
 	NAMES "NIDAQmx.h"
