@@ -20,7 +20,7 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets UiTools Xml LinguistTools)
 find_package(VisualLeakDetector QUIET)
@@ -54,16 +54,19 @@ set(plugin_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/avantesAvaSpec.h
     ${CMAKE_CURRENT_SOURCE_DIR}/avantesDefines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogAvantesAvaSpec.h
+	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
 )
 
 set(plugin_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/avantesAvaSpec.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogAvantesAvaSpec.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.cpp
 )
 
 set(plugin_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogAvantesAvaSpec.ui
+	${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetAvantesAvaSpec.ui
 )
 
 set(plugin_RCC
