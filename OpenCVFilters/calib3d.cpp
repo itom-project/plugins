@@ -267,11 +267,10 @@ The function draws individual chessboard corners detected either as red circles 
     if (!retval.containsError())
     {
         cv::Mat image_ = *(image->getCvPlaneMat(0)); //image_ has four channels, the alpha channel will be set to 0 by drawChessboardCorners. This needs to be corrected to 255 again afterwards.
-        const cv::Mat corners_ = *(corners->getCvPlaneMat(0));
 
         try
         {
-            cv::drawChessboardCorners(image_, patternSize, corners_, patternWasFound);
+            cv::drawChessboardCorners(image_, patternSize, corners->getContinuousCvPlaneMat(0), patternWasFound);
 
             ito::uint8* rowPtr;
             for (int row = 0; row < image_.rows; ++row)
@@ -352,15 +351,22 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
         const cv::Mat *image_ = image->getCvPlaneMat(0);
         cv::Mat *corners_ = corners->getCvPlaneMat(0);
 
-        try
+        if (corners_->isContinuous() == false)
         {
-            cv::cornerSubPix(*image_, *corners_, winSize, zeroZone, criteria);
-
-            retval += itomcv::setOutputArrayToDataObject((*paramsMand)[1], corners_);
+            retval += ito::RetVal(ito::retError, 0, "corners must be a continuous data object. If you passed a subset of columns of a data object, get a region-only copy before calling this function");
         }
-        catch (cv::Exception exc)
+        else
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            try
+            {
+                cv::cornerSubPix(*image_, *corners_, winSize, zeroZone, criteria);
+
+                retval += itomcv::setOutputArrayToDataObject((*paramsMand)[1], corners_);
+            }
+            catch (cv::Exception exc)
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            }
         }
 
     }
@@ -467,8 +473,8 @@ before using it in the way that for each view, the last rows are cut where eithe
 
     if (!retval.containsError() && objectPoints && imagePoints)
     {
-        std::vector<cv::Mat> objectPoints_ = itomcv::getInputArrayOfArraysFromDataObject(objectPoints);
-        std::vector<cv::Mat> imagePoints_ = itomcv::getInputArrayOfArraysFromDataObject(imagePoints);
+        std::vector<cv::Mat> objectPoints_ = itomcv::getInputArrayOfArraysFromDataObject(objectPoints, true);
+        std::vector<cv::Mat> imagePoints_ = itomcv::getInputArrayOfArraysFromDataObject(imagePoints, true);
 
         //adjust rois of objectPoints_ and imagePoints_ such that rows with non-finite values in the first column are truncated at the end
         cv::Mat *mat1, *mat2;
@@ -610,13 +616,11 @@ The function estimates an optimal 3D affine transformation between two 3D point 
 
     if (!retval.containsError())
     {
-        const cv::Mat sources_ = *(sources->getCvPlaneMat(0));
-        const cv::Mat destinations_ = *(destinations->getCvPlaneMat(0));
         cv::Mat output_, inliers_;
 
         try
         {
-            int ret = cv::estimateAffine3D(sources_, destinations_, output_, inliers_, ransacThreshold, confidence);
+            int ret = cv::estimateAffine3D(sources->getContinuousCvPlaneMat(0), destinations->getContinuousCvPlaneMat(0), output_, inliers_, ransacThreshold, confidence);
 
             if (ret > 0)
             {
@@ -994,14 +998,10 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
     if (!retval.containsError())
     {
         cv::Mat homography;
-		const cv::Mat *src_plane = src.getCvPlaneMat(0);
-		const cv::Mat *dst_plane = dst.getCvPlaneMat(0);
-		cv::Mat src_ = (src_plane->isContinuous()) ? *src_plane : src_plane->clone(); //findHomography requires a continuous matrix (no ROI)
-		cv::Mat dst_ = (dst_plane->isContinuous()) ? *dst_plane : dst_plane->clone(); //findHomography requires a continuous matrix (no ROI)
         
         try
         {
-            homography = cv::findHomography(src_, dst_, method, ransacReprojThreshold);
+            homography = cv::findHomography(src.getContinuousCvPlaneMat(0), dst.getContinuousCvPlaneMat(0), method, ransacReprojThreshold);
         }
         catch (cv::Exception exc)
         {
@@ -1147,7 +1147,7 @@ Line coefficients are defined up to a scale. They are normalized so that a_i^2+b
 
         try
         {
-            cv::computeCorrespondEpilines(*(points.getCvPlaneMat(0)), whichImage, *(F.getCvPlaneMat(0)), lines);
+            cv::computeCorrespondEpilines(points.getContinuousCvPlaneMat(0), whichImage, *(F.getCvPlaneMat(0)), lines);
         }
         catch (cv::Exception exc)
         {
