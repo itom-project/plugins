@@ -984,7 +984,7 @@ const char* DataObjectArithmetic::centerOfGravity1DimDoc = "Calculate center of 
 \n\
 This methods creates the two given data objects 'destCOG' and 'destIntensity' in the following way: \n\
 \n\
-- destCOG, ito::float64, sizes: [nrOfPlanes x sizeOfElements], contains the sub-pixel wise one-dimensional coordinate of the center of gravity or NaN if it could not be determined. \n\
+- destCOG, ito::float64, sizes: [nrOfPlanes x sizeOfElements], contains the sub-pixel wise one-dimensional coordinate of the center of gravity (in physical coordinates) or NaN if it could not be determined. \n\
 - destIntensity, same type than input object, sizes: [nrOfPlanes x sizeOfElements], contains the absolute maximum along the search direction. \n\
 \n\
 If the center of gravity should be calculated along each row of each plane inside of the given 'sourceStack' data object, the parameter 'columnWise' must be 0, for a column-wise \n\
@@ -1107,26 +1107,26 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
     if(columnWise)
     {
         retvalTemp = ito::dObjHelper::verify2DDataObject(dObjCogOut, "destCOG", sizeZ, sizeZ, sizeX, sizeX, 1, ito::tFloat64);
+
+        if (retvalTemp.containsError())
+        {
+            *dObjCogOut = ito::DataObject(sizeZ, sizeX, ito::tFloat64);
+        }
+
+        scaleVert = dObjIN->getAxisScale(dObjIN->getDims()-2);
+        offsetVert = dObjIN->getAxisOffset(dObjIN->getDims()-2); 
     }
     else
     {
         retvalTemp = ito::dObjHelper::verify2DDataObject(dObjCogOut, "destCOG", sizeZ, sizeZ, sizeY, sizeY, 1, ito::tFloat64);
-    }
 
-    if(retvalTemp.containsError())
-    {
-        if(columnWise)
+        if (retvalTemp.containsError())
         {
-            scaleVert = dObjIN->getAxisScale(dObjIN->getDims()-2);
-            offsetVert = dObjIN->getAxisOffset(dObjIN->getDims()-2); 
-            *dObjCogOut = ito::DataObject(sizeZ, sizeX, ito::tFloat64);
-        }
-        else
-        {
-            scaleVert = dObjIN->getAxisScale(dObjIN->getDims()-1);
-            offsetVert = dObjIN->getAxisOffset(dObjIN->getDims()-1);
             *dObjCogOut = ito::DataObject(sizeZ, sizeY, ito::tFloat64);
         }
+
+        scaleVert = dObjIN->getAxisScale(dObjIN->getDims()-1);
+        offsetVert = dObjIN->getAxisOffset(dObjIN->getDims()-1);
     }
 
     if(columnWise)
@@ -1255,21 +1255,16 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
             dObjCogOut->setAxisOffset(0,        dObjIN->getAxisOffset(dObjINDims - 3));
             dObjCogOut->setAxisUnit(0,          dObjIN->getAxisUnit(dObjINDims - 3, test));
             dObjCogOut->setAxisDescription(0,   dObjIN->getAxisDescription(dObjINDims - 3, test));
-            dObjCogOut->setValueDescription("Center of Gravity");
 
             dObjIntOut->setAxisScale(0,         dObjIN->getAxisScale(dObjINDims - 3));
             dObjIntOut->setAxisOffset(0,        dObjIN->getAxisOffset(dObjINDims - 3));
             dObjIntOut->setAxisUnit(0,          dObjIN->getAxisUnit(dObjINDims - 3, test));
             dObjIntOut->setAxisDescription(0,   dObjIN->getAxisDescription(dObjINDims - 3, test));
-            dObjIntOut->setValueDescription("intensity");
-            dObjIntOut->setValueUnit("a.u.");
         }
-        else
-        {
-            dObjCogOut->setValueDescription("Center of Gravity");
-            dObjIntOut->setValueDescription("intensity");
-            dObjIntOut->setValueUnit("a.u.");
-        }
+
+        dObjCogOut->setValueDescription("Center of Gravity");
+        dObjIntOut->setValueDescription("intensity");
+        dObjIntOut->setValueUnit("a.u.");
 
         dObjIN->copyTagMapTo(*dObjCogOut);
         dObjIN->copyTagMapTo(*dObjIntOut);
@@ -1444,7 +1439,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
         //calculate and save current cog position
         if(ito::dObjHelper::isNotZero<ito::float64>(sumI))
         {
-            outCOG[pixelCnt] = (sumPxI / sumI) / scale + offset; //sumPxI / sumI is in pixel-coordinates, outCOG is in physical coordinates: (px/scale + offset = phys)
+            outCOG[pixelCnt] = ((sumPxI / sumI) - offset) * scale; //sumPxI / sumI is in pixel-coordinates, outCOG is in physical coordinates: (px - offset) * scaling = phys
         }
         else
         {
