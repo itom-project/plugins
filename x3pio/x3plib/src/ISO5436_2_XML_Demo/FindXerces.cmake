@@ -5,16 +5,21 @@
 #  XERCESC_INCLUDE - the Xerces-C include directory
 #  XERCESC_LIBRARY - Link these to use Xerces-C
 #  XERCESC_VERSION - Xerces-C found version
+#  XERCESC_BINARY - The binary file of Xerces-C
 
+IF ((CMAKE_MAJOR_VERSION GREATER 2) AND (CMAKE_MAJOR_VERSION LESS 4) AND (CMAKE_MINOR_VERSION GREATER 1))
+	MESSAGE(STATUS "policy")
+	cmake_policy(SET CMP0053 OLD)
+ENDIF ((CMAKE_MAJOR_VERSION GREATER 2) AND (CMAKE_MAJOR_VERSION LESS 4) AND (CMAKE_MINOR_VERSION GREATER 1))
+ 
 IF (XERCESC_INCLUDE AND XERCESC_LIBRARY)
   # in cache already
   SET(XERCESC_FIND_QUIETLY TRUE)
 ENDIF (XERCESC_INCLUDE AND XERCESC_LIBRARY)
 
-OPTION(XERCESC_STATIC "Set to ON to link your project with static library (instead of DLL)." ON)
-
 IF (NOT  ${XERCESC_WAS_STATIC} STREQUAL ${XERCESC_STATIC})
   UNSET(XERCESC_LIBRARY CACHE)
+  UNSET(XERCESC_BINARY CACHE)
   UNSET(XERCESC_LIBRARY_DEBUG CACHE)
 ENDIF (NOT  ${XERCESC_WAS_STATIC} STREQUAL ${XERCESC_STATIC})
 
@@ -38,38 +43,60 @@ IF (DEFINED MSVC_VERSION)
   ELSEIF (MSVC_VERSION EQUAL 1600)
     SET(XERCES_LIB_POSTFIX "_vc100")
     SET(XERCES_LIBPATH_VERS_POSTFIX "vc-10.0/")  
+  ELSEIF (MSVC_VERSION EQUAL 1800)
+    SET(XERCES_LIB_POSTFIX "_vc120")
+    SET(XERCES_LIBPATH_VERS_POSTFIX "vc-12.0/")  	
   ELSE (MSVC_VERSION EQUAL 1300)
     # since we don't knwo wether we are on windows or not, we just undefined and see what happens
     UNSET(XERCES_LIB_PATH_POSTFIX)
   ENDIF (MSVC_VERSION EQUAL 1300)
 
   # Wiora: Set 64 bit target dir (currently this is windows only. How does this work on linux/mac?)
-  IF (XERCESC_STATIC)  
-	  IF (BUILD_TARGET64)
-		SET (XERCES_LIBPATH_POSTFIX lib64/)
-	  ELSE (BUILD_TARGET64)
-		SET (XERCES_LIBPATH_POSTFIX lib/)
-	  ENDIF (BUILD_TARGET64)
-	  SET(XERCES_LIBPATH_POSTFIX ${XERCES_LIBPATH_POSTFIX}${XERCES_LIBPATH_VERS_POSTFIX})
-  ELSE (XERCESC_STATIC)
-# this is dynamical linking anyway compiler normally asks for lib files so it should be the same as above  
-#	  IF (BUILD_TARGET64)
-#		SET (XERCES_LIBPATH_POSTFIX bin64/)
-#	  ELSE (BUILD_TARGET64)
-#		SET (XERCES_LIBPATH_POSTFIX bin/)
-#	  ENDIF (BUILD_TARGET64)
-	  IF (BUILD_TARGET64)
-		SET (XERCES_LIBPATH_POSTFIX lib64/)
-	  ELSE (BUILD_TARGET64)
-		SET (XERCES_LIBPATH_POSTFIX lib/)
-	  ENDIF (BUILD_TARGET64)
-	  SET(XERCES_LIBPATH_POSTFIX ${XERCES_LIBPATH_POSTFIX}${XERCES_LIBPATH_VERS_POSTFIX})
-  ENDIF (XERCESC_STATIC)
+  IF (BUILD_SHARED_LIBS)  
+     IF (CMAKE_CL_64)
+        SET (XERCES_LIBPATH_POSTFIX lib64/)
+        SET (XERCES_BINPATH_POSTFIX bin64/)
+      ELSE (CMAKE_CL_64)
+        SET (XERCES_LIBPATH_POSTFIX lib/)
+        SET (XERCES_BINPATH_POSTFIX bin/)
+      ENDIF (CMAKE_CL_64)
+      SET(XERCES_LIBPATH_POSTFIX ${XERCES_LIBPATH_POSTFIX}${XERCES_LIBPATH_VERS_POSTFIX})
+  ELSE (BUILD_SHARED_LIBS)
+      if(CMAKE_CL_64)
+        SET (XERCES_LIBPATH_POSTFIX lib64/)
+        SET (XERCES_BINPATH_POSTFIX bin64/)
+      ELSE (CMAKE_CL_64)
+        SET (XERCES_LIBPATH_POSTFIX lib/)
+        SET (XERCES_BINPATH_POSTFIX bin/)
+      ENDIF (CMAKE_CL_64)
+      SET(XERCES_LIBPATH_POSTFIX ${XERCES_LIBPATH_POSTFIX}${XERCES_LIBPATH_VERS_POSTFIX})
+  ENDIF (BUILD_SHARED_LIBS)
 
 ELSE(DEFINED MSVC_VERSION)
   SET(XERCES_LIB_PATH_POSTFIX "")
   SET(XERCES_LIB_POSTFIX "")
 ENDIF (DEFINED MSVC_VERSION)
+
+
+SET (XERCESC_POSSIBLE_ROOT_DIRS
+  "$ENV{XERCESC_INCLUDE_DIR}/.."
+  "${XERCESC_INCLUDE_DIR}/.."
+  "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3"
+  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3"
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3"
+  "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0"
+  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0"
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0"
+  /usr/local
+  /usr
+ "$ENV{PATH}"
+  )
+
+  FIND_PATH(XERCESC_ROOT_DIR 
+  NAMES 
+  include/xercesc/util/XercesVersion.hpp  
+  PATHS ${XERCESC_POSSIBLE_ROOT_DIRS}
+  )
 
 FIND_PATH(XERCESC_INCLUDE NAMES xercesc/util/XercesVersion.hpp
   PATHS
@@ -78,51 +105,35 @@ FIND_PATH(XERCESC_INCLUDE NAMES xercesc/util/XercesVersion.hpp
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/include"
   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/include"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/include"
+  "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/include"
+  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/include"
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/include"  
   /usr/local/include
   /usr/include
+  "${XERCESC_ROOT_DIR}/include"
 )
 
-IF (XERCESC_STATIC)
-  FIND_LIBRARY(XERCESC_LIBRARY NAMES xerces-c_static_3 xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c-3.1 xerces-c_3 xerces-c libxerces-c.a
-   PATHS
-   $ENV{XERCESC_LIBRARY_DIR}
-   ${XERCESC_LIBRARY_DIR}
-   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
-   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
-   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
-   /usr/lib
-   /usr/local/lib
-   PATH_SUFFIXES ${XERCES_LIBPATH_POSTFIX} ""
-   DOC "Xerces library static linking"
-  )
-  
-  FIND_LIBRARY(XERCESC_LIBRARY_DEBUG NAMES xerces-c_static_3D xerces-c_3_1D${XERCES_LIB_POSTFIX} xerces-c-3.1D xerces-c_3D libxerces-c.la 
-   PATHS
-   $ENV{XERCESC_LIBRARY_DIR}
-   ${XERCESC_LIBRARY_DIR}
-  "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
-  "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
-   /usr/lib
-   /usr/local/lib
-   PATH_SUFFIXES ${XERCES_LIBPATH_POSTFIX} ""
-   DOC "Xerces library static linking debug"
- )
+IF (BUILD_SHARED_LIBS)
 
-  #ADD_DEFINITIONS( -DXERCES_STATIC_LIBRARY ) #REMOVED
-ELSE (XERCESC_STATIC)
-  # Use DYNAMIC version of Xerces library
+ # Use DYNAMIC version of Xerces library
   # Find release dynamic link libraries
   # BUG (Wiora): This works only on windows if dlls have .lib files asside. This is not the case and not necessary. No idea how to fix this.
   FIND_LIBRARY(XERCESC_LIBRARY NAMES xerces-c_3 xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c-3.1${XERCES_LIB_POSTFIX} libxerces-c-3.1.dylib libxerces-c.dylib
    PATHS
    $ENV{XERCESC_LIBRARY_DIR}
-   ${XERCESC_LIBRARY_DIR}
-  "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
-  "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "${XERCESC_LIBRARY_DIR}"
+   "${XERCESC_INCLUDE_DIR}/../lib"
+   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"  
    /usr/lib
    /usr/local/lib
+    "${XERCESC_ROOT_DIR}"
+   "${XERCESC_ROOT_DIR}/${XERCES_LIBPATH_POSTFIX}"
+   "${XERCESC_ROOT_DIR}/lib"
    DOC "Xerces library dynamic linking"
   )
   
@@ -130,60 +141,152 @@ ELSE (XERCESC_STATIC)
   FIND_LIBRARY(XERCESC_LIBRARY_DEBUG NAMES xerces-c_3D xerces-c_3_1D${XERCES_LIB_POSTFIX} xerces-c-3.1${XERCES_LIB_POSTFIX} libxerces-c-3.1.dylib libxerces-c.dylib
    PATHS
    $ENV{XERCESC_LIBRARY_DIR}
-   ${XERCESC_LIBRARY_DIR}
-  "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
-  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
-  "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "${XERCESC_LIBRARY_DIR}"
+   "${XERCESC_INCLUDE_DIR}/../lib"
+   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"  
    /usr/lib
    /usr/local/lib
+    "${XERCESC_ROOT_DIR}"
+   "${XERCESC_ROOT_DIR}/${XERCES_LIBPATH_POSTFIX}"
+   "${XERCESC_ROOT_DIR}/lib"
    PATH_SUFFIXES ${XERCES_LIBPATH_POSTFIX} ""
    DOC "Xerces library dynamic linking debug"
   )
+	
+	FIND_FILE(XERCESC_BINARY NAMES xerces-c_3_1 xerces-c_3_1.dll xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c_3_1${XERCES_LIB_POSTFIX}.dll
+	    PATHS
+	    $ENV{XERCESC_LIBRARY_DIR}
+	    "${XERCESC_LIBRARY_DIR}"
+	    "${XERCESC_INCLUDE_DIR}/../bin"
+	    "${XERCESC_INCLUDE_DIR}/../${XERCES_BINPATH_POSTFIX}"
+	    "${XERCESC_INCLUDE_DIR}/../${XERCES_BINPATH_POSTFIX}"
+	    "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/${XERCES_BINPATH_POSTFIX}"
+	    "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/${XERCES_BINPATH_POSTFIX}"
+	    "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_BINPATH_POSTFIX}"
+   		"$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   		"$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+	    "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"  
+	    /usr/lib
+	    /usr/local/lib
+	    "${XERCESC_ROOT_DIR}"
+	    "${XERCESC_ROOT_DIR}/${XERCES_BINPATH_POSTFIX}"
+	    "${XERCESC_ROOT_DIR}/lib"
+	    PATH_SUFFIXES ${XERCES_BINPATH_POSTFIX} ""
+	    DOC "Xerces binary"
+	)
 
-ENDIF (XERCESC_STATIC)
+
+
+ELSE (BUILD_SHARED_LIBS)
+     FIND_LIBRARY(XERCESC_LIBRARY NAMES xerces-c_static_3 xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c-3.1 xerces-c_3 xerces-c libxerces-c.a
+   PATHS
+   $ENV{XERCESC_LIBRARY_DIR}
+   "${XERCESC_INCLUDE_DIR}/../lib"
+   "${XERCESC_LIBRARY_DIR}"
+   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   /usr/lib
+   /usr/local/lib
+   "${XERCESC_ROOT_DIR}"
+   "${XERCESC_ROOT_DIR}/${XERCES_LIBPATH_POSTFIX}"
+   "${XERCESC_ROOT_DIR}/lib"
+   PATH_SUFFIXES ${XERCES_LIBPATH_POSTFIX} ""
+   DOC "Xerces library static linking"
+  )
+  
+  FIND_LIBRARY(XERCESC_LIBRARY_DEBUG NAMES xerces-c_static_3D xerces-c_3_1D${XERCES_LIB_POSTFIX} xerces-c-3.1D xerces-c_3D libxerces-c.la 
+   PATHS
+   $ENV{XERCESC_LIBRARY_DIR}
+   "${XERCESC_LIBRARY_DIR}"
+   "${XERCESC_INCLUDE_DIR}/../lib"
+   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"   
+   /usr/lib
+   /usr/local/lib
+    "${XERCESC_ROOT_DIR}"
+   "${XERCESC_ROOT_DIR}/${XERCES_LIBPATH_POSTFIX}"
+   "${XERCESC_ROOT_DIR}/lib"
+   PATH_SUFFIXES ${XERCES_LIBPATH_POSTFIX} ""
+   DOC "Xerces library static linking debug"
+ )
+    FIND_FILE(XERCESC_BINARY NAMES xerces-c_3_1 xerces-c_3_1.dll xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c_3_1${XERCES_LIB_POSTFIX}.dll
+        PATHS
+        $ENV{XERCESC_LIBRARY_DIR}
+        "${XERCESC_LIBRARY_DIR}"
+        "${XERCESC_INCLUDE_DIR}/../bin"
+        "${XERCESC_INCLUDE_DIR}/../${XERCES_BINPATH_POSTFIX}"
+        "${XERCESC_INCLUDE_DIR}/../${XERCES_BINPATH_POSTFIX}"
+        "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/${XERCES_BINPATH_POSTFIX}"
+        "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/${XERCES_BINPATH_POSTFIX}"
+        "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/${XERCES_BINPATH_POSTFIX}"
+   		"$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+   	 	"$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+	    "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/${XERCES_LIBPATH_POSTFIX}"
+        /usr/lib
+        /usr/local/lib
+        "${XERCESC_ROOT_DIR}"
+        "${XERCESC_ROOT_DIR}/${XERCES_BINPATH_POSTFIX}"
+        "${XERCESC_ROOT_DIR}/lib"
+        DOC "Xerces binary"
+    )
+
+  #ADD_DEFINITIONS( -DXERCES_STATIC_LIBRARY ) #REMOVED
+ENDIF (BUILD_SHARED_LIBS)
 
 IF (XERCESC_INCLUDE AND XERCESC_LIBRARY)
-	SET(XERCESC_FOUND TRUE)
+    SET(XERCESC_FOUND TRUE)
 ELSE (XERCESC_INCLUDE AND XERCESC_LIBRARY)
-	SET(XERCESC_FOUND FALSE)
+    SET(XERCESC_FOUND FALSE)
 ENDIF (XERCESC_INCLUDE AND XERCESC_LIBRARY)
 
 IF(XERCESC_FOUND)
+    FIND_PATH(XERCESC_XVERHPPPATH NAMES XercesVersion.hpp PATHS
+     ${XERCESC_INCLUDE}
+     PATH_SUFFIXES xercesc/util)
 
-FIND_PATH(XERCESC_XVERHPPPATH NAMES XercesVersion.hpp PATHS
- ${XERCESC_INCLUDE}
- PATH_SUFFIXES xercesc/util)
+    IF ( ${XERCESC_XVERHPPPATH} STREQUAL XERCESC_XVERHPPPATH-NOTFOUND )
+     SET(XERCES_VERSION "0")
+    ELSE( ${XERCESC_XVERHPPPATH} STREQUAL XERCESC_XVERHPPPATH-NOTFOUND )
+     FILE(READ ${XERCESC_XVERHPPPATH}/XercesVersion.hpp XVERHPP)
 
-IF ( ${XERCESC_XVERHPPPATH} STREQUAL XERCESC_XVERHPPPATH-NOTFOUND )
- SET(XERCES_VERSION "0")
-ELSE( ${XERCESC_XVERHPPPATH} STREQUAL XERCESC_XVERHPPPATH-NOTFOUND )
- FILE(READ ${XERCESC_XVERHPPPATH}/XercesVersion.hpp XVERHPP)
+     STRING(REGEX MATCHALL "\n *#define XERCES_VERSION_MAJOR +[0-9]+" XVERMAJ
+       ${XVERHPP})
+     STRING(REGEX MATCH "\n *#define XERCES_VERSION_MINOR +[0-9]+" XVERMIN
+       ${XVERHPP})
+     STRING(REGEX MATCH "\n *#define XERCES_VERSION_REVISION +[0-9]+" XVERREV
+       ${XVERHPP})
 
- STRING(REGEX MATCHALL "\n *#define XERCES_VERSION_MAJOR +[0-9]+" XVERMAJ
-   ${XVERHPP})
- STRING(REGEX MATCH "\n *#define XERCES_VERSION_MINOR +[0-9]+" XVERMIN
-   ${XVERHPP})
- STRING(REGEX MATCH "\n *#define XERCES_VERSION_REVISION +[0-9]+" XVERREV
-   ${XVERHPP})
+     STRING(REGEX REPLACE "\n *#define XERCES_VERSION_MAJOR +" ""
+       XVERMAJ ${XVERMAJ})
+     STRING(REGEX REPLACE "\n *#define XERCES_VERSION_MINOR +" ""
+       XVERMIN ${XVERMIN})
+     STRING(REGEX REPLACE "\n *#define XERCES_VERSION_REVISION +" ""
+       XVERREV ${XVERREV})
 
- STRING(REGEX REPLACE "\n *#define XERCES_VERSION_MAJOR +" ""
-   XVERMAJ ${XVERMAJ})
- STRING(REGEX REPLACE "\n *#define XERCES_VERSION_MINOR +" ""
-   XVERMIN ${XVERMIN})
- STRING(REGEX REPLACE "\n *#define XERCES_VERSION_REVISION +" ""
-   XVERREV ${XVERREV})
+     SET(XERCESC_VERSION ${XVERMAJ}.${XVERMIN}.${XVERREV})
 
- SET(XERCESC_VERSION ${XVERMAJ}.${XVERMIN}.${XVERREV})
+    ENDIF ( ${XERCESC_XVERHPPPATH} STREQUAL XERCESC_XVERHPPPATH-NOTFOUND )
 
-ENDIF ( ${XERCESC_XVERHPPPATH} STREQUAL XERCESC_XVERHPPPATH-NOTFOUND )
-
-IF(NOT XERCESC_FIND_QUIETLY)
- MESSAGE(STATUS "Found Xerces-C: ${XERCESC_LIBRARY}")
- MESSAGE(STATUS "              : ${XERCESC_INCLUDE}")
- MESSAGE(STATUS "       Version: ${XERCESC_VERSION}")
-ENDIF(NOT XERCESC_FIND_QUIETLY)
-ELSE(XERCESC_FOUND)
+    IF(NOT XERCESC_FIND_QUIETLY)
+     MESSAGE(STATUS "Found Xerces-C: ${XERCESC_LIBRARY}")
+     MESSAGE(STATUS "              : ${XERCESC_INCLUDE}")
+     MESSAGE(STATUS "       Version: ${XERCESC_VERSION}")
+    ENDIF(NOT XERCESC_FIND_QUIETLY)
+    
+ELSEIF(XERCESC_FIND_REQUIRED)
    MESSAGE(FATAL_ERROR "Could not find Xerces-C !")
 ENDIF(XERCESC_FOUND)
 
-MARK_AS_ADVANCED(XERCESC_INCLUDE XERCESC_LIBRARY)
