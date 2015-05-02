@@ -2062,6 +2062,9 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
 
     filter = new FilterDef(OpenCVFilters::cvDrawMatcher, OpenCVFilters::cvDrawMatcherParams, tr(cvDrawMatcherDoc));
     m_filterList.insert("cvDrawMatcher", filter);
+    
+    filter = new FilterDef(OpenCVFilters::cvWarpPerspective, OpenCVFilters::cvWarpPerspectiveParams, tr(cvWarpPerspectiveDoc));
+    m_filterList.insert("cvWarpPerspective", filter);
 
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 

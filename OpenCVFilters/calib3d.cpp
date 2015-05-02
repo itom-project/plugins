@@ -1164,6 +1164,72 @@ Line coefficients are defined up to a scale. They are normalized so that a_i^2+b
 }
 
 
+//----------------------------------------------------------------------------------------------------------------------------------
+const char *OpenCVFilters::cvWarpPerspectiveDoc = "Applies a perspective transformation to an image \n\
+\n\
+The function warpPerspective transforms the source image using the specified matrix H";
+
+
+ito::RetVal OpenCVFilters::cvWarpPerspectiveParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input image"));
+    paramsMand->append( ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output image that has the size dsize and the same type as input image") );
+    paramsMand->append( ito::Param("M", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "3x3 transformation matrix"));
+    
+
+    QString description = "Interpolation method. The following values are possible: ";
+    description += QString("INTER_LINEAR (%1)").arg(cv::INTER_LINEAR);
+    description += QString(", INTER_NEAREST (%1)").arg(cv::INTER_NEAREST);
+    paramsOpt->append( ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, cv::INTER_NEAREST, cv::INTER_LINEAR, cv::INTER_LINEAR, description.toLatin1().data()));
+    return retval;
+}
+
+ito::RetVal OpenCVFilters::cvWarpPerspective(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    ito::DataObject src = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(),"source", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, -1, 0);
+    ito::DataObject M = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<ito::DataObject*>(),"M", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, -1, 0);
+
+    if (!paramsMand->at(1).getVal<ito::DataObject*>())
+    {
+        retval += ito::RetVal(ito::retError, 0, "destination is empty");
+    }
+
+    int interpolation = paramsOpt->at(0).getVal<int>();
+
+    if (!retval.containsError())
+    {
+        cv::Mat dst;
+        
+        try
+        {
+            cv::warpPerspective(*(src.getCvPlaneMat(0)), dst, *(M.getCvPlaneMat(0)), cv::Size(), interpolation);
+        }
+        catch (cv::Exception exc)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+        }
+
+        if (!retval.containsError())
+        {
+            retval += itomcv::setOutputArrayToDataObject((*paramsMand)[1], &dst);
+        }
+
+        if (!retval.containsError())
+        {
+ 
+        }
+    }
+
+    return retval;
+}
+
+
 ////----------------------------------------------------------------------------------------------------------------------------------
 ///*static*/ const char *OpenCVFilters::cvStereoRectifyDoc = "Computes rectification transforms for each head of a calibrated stereo camera. \n\
 //\n\
