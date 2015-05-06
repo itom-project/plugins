@@ -26,6 +26,7 @@
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
 #include <qnumeric.h>
+#include <QList>
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
@@ -155,12 +156,12 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
                     memcpy(rowPtrDest, rowPtrSrc, sizeof(ito::float32) * 4);
 
                     //copy first keypoints line
-                    rowPtrSrc = (ito::float32*)(first_keypoints_.rowPtr(Dmatches[idx].queryIdx, idx));
+                    rowPtrSrc = (ito::float32*)(first_keypoints_.rowPtr(Dmatches[idx].queryIdx, 0));
                     rowPtrDest = (ito::float32*)(bestKeypoints1.rowPtr(0, count));
                     memcpy(rowPtrDest, rowPtrSrc, sizeof(ito::float32) * 7);
 
                     //copy second keypoints line
-                    rowPtrSrc = (ito::float32*)(second_keypoints_.rowPtr(Dmatches[idx].trainIdx, idx));
+                    rowPtrSrc = (ito::float32*)(second_keypoints_.rowPtr(Dmatches[idx].trainIdx, 0));
                     rowPtrDest = (ito::float32*)(bestKeypoints2.rowPtr(0, count));
                     memcpy(rowPtrDest, rowPtrSrc, sizeof(ito::float32) * 7);
 
