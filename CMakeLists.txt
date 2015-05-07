@@ -296,6 +296,14 @@ IF (WIN32)
     endif (PLUGIN_USBMotion3XIII)
 ENDIF (WIN32)
 
+# Xeneth
+IF (WIN32)
+    OPTION(PLUGIN_Xeneth "Build with this plugin." ON)
+    if (PLUGIN_Xeneth)
+        ADD_SUBDIRECTORY(Xeneth)
+    endif (PLUGIN_Xeneth)
+ENDIF (WIN32)
+
 # V4L2
 IF (UNIX AND NOT APPLE)
     OPTION(PLUGIN_V4L2 "Build with this plugin." ON)
