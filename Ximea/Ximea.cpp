@@ -208,6 +208,9 @@ Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnCl
    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1024, tr("ROI-Size in y").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
+   paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 60.0, 2.0, tr("Camera time out").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+
    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("Grabdepth in bpp").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
@@ -1729,7 +1732,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             waitCond->release();
         }
 
-        int iPicTimeOut = 2000; //timeout in ms
+        int iPicTimeOut = (int)(m_params["timeout"].getVal<double>() * 1000 + 1.0); //timeout in ms
         XI_IMG img;
         img.size = sizeof(XI_IMG);
         img.bp = m_data.rowPtr(0, 0);
