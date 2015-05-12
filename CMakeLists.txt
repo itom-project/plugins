@@ -52,6 +52,14 @@ IF (WIN32)
     endif (PLUGIN_cmu1394)
 ENDIF (WIN32)
 
+# CommonVisionBlox
+IF (WIN32)
+    OPTION(PLUGIN_CommonVisionBlox "Build with this plugin." OFF)
+    if (PLUGIN_CommonVisionBlox)
+            ADD_SUBDIRECTORY(CommonVisionBlox)
+    endif (PLUGIN_CommonVisionBlox)
+ENDIF (WIN32)
+
 # dataobjectarithmetic
 OPTION(PLUGIN_dataobjectarithmetic "Build with this plugin." ON)
 if (PLUGIN_dataobjectarithmetic)
