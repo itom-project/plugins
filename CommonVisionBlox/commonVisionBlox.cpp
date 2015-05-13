@@ -56,6 +56,18 @@ CommonVisionBlox::CommonVisionBlox() :
     paramVal = ito::Param("heartbeat_timeout", ito::ParamBase::Int, 0, 10000, 100, tr("Heartbeat timeout of GigE Vision Transport Layer.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("acquisition_mode", ito::ParamBase::String, "snap", tr("'snap' is a single image acquisition (only possible in trigger_mode 'off'), 'grab' is a continuous acquisition").toLatin1().data());
+    ito::StringMeta sm(ito::StringMeta::String);
+    sm.addItem("snap");
+    sm.addItem("grab");
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("trigger_mode", ito::ParamBase::String, "off", tr("'off': camera is not explicitely triggered but operated in freerun mode. The next acquired image is provided upon acquire, 'software' sets trigger mode to On and fires a software trigger at acquire (only possible in acquisition_mode 'grab').").toLatin1().data());
+    ito::StringMeta sm2(ito::StringMeta::String);
+    sm2.addItem("off");
+    sm2.addItem("software");
+    m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
@@ -77,20 +89,17 @@ CommonVisionBlox::CommonVisionBlox() :
 	paramVal = ito::Param("raw", ito::ParamBase::String ,"", tr("use raw:paramname to set internal paramname of camera to value").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("vendor_name", ito::ParamBase::String | ito::ParamBase::Readonly ,"unknown", tr("vendor name").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("model_name", ito::ParamBase::String | ito::ParamBase::Readonly ,"unknown", tr("model name").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
+
     int roi[] = {0, 0, 640, 512};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
     ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 640), ito::RangeMeta(0, 512));
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
-
-
-    ////now create dock widget for this plugin
-    //DockWidgetIDS *dw = new DockWidgetIDS(this);
-
-    //Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-    //QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    //createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -167,7 +176,19 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
 	{
         QString desiredPixelType;
         desiredPixelType = QString("Mono%1").arg(bpp);
-        retVal += setParamString("PixelFormat", desiredPixelType.toLatin1().data());
+        ito::RetVal r = setParamString("PixelFormat", desiredPixelType.toLatin1().data());
+
+        if (r.containsError())
+        {
+            if (r.errorCode() == CVC_E_PARAMETER)
+            {
+                retVal += ito::RetVal(ito::retError, 0, "chosen bitdepth is not supported by this camera.");
+            }
+            else
+            {
+                 retVal += r;
+            }
+        }
 
         if (!retVal.containsError())
         {
@@ -215,6 +236,16 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
             setIdentifier(serialNumber);
         }
 
+        if (!getParamString("DeviceVendorName", serialNumber).containsError())
+        {
+            m_params["vendor_name"].setVal<char*>(serialNumber.data());
+        }
+
+        if (!getParamString("DeviceModelName", serialNumber).containsError())
+        {
+            m_params["model_name"].setVal<char*>(serialNumber.data());
+        }
+
         //try to set some default things
 
         //Xenics Bobcat:
@@ -250,6 +281,11 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
             retVal += ito::RetVal(ito::retError, 0, "no node 'ExposureTime' or 'ExposureTimeAbs' available");
         }
 
+        if (setParamString("TriggerMode", "Off").containsError())
+        {
+            m_params["trigger_mode"].setFlags(ito::ParamBase::Readonly);
+        }
+
 		retVal += synchronize();
 	}
 
@@ -281,6 +317,12 @@ ito::RetVal CommonVisionBlox::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
+
+    if (grabberStartedCount() > 0)
+    {
+        setGrabberStarted(1);
+        retValue += stopDevice(NULL);
+    }
 
 	if (m_hNodeMap)
 	{
@@ -359,12 +401,12 @@ ito::RetVal CommonVisionBlox::getParam(QSharedPointer<ito::Param> val, ItomShare
 					    NInfoAsString(node, NI_AccessMode, info, nodeNameSize);
 					    ReleaseObject(node);
 					
-					    if (strcmp(info, "Read Only") != 0)
-					    {
+					    //if (strcmp(info, "Read Only") != 0)
+					    //{
 						    //NI_AccessMode
 						    this->getParamString(nodeName, value);
 						    std::cout << i << ": " << nodeName << ": " << value.data() << "(" << info << ")\n" << std::endl;
-					    }
+					    //}
 				    }
 			    }
             }
@@ -554,7 +596,7 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 		        retValue += ito::RetVal(ito::retError, 0, "you need to indiciate a suffix for the node you want to set");	    
             }
         }
-		else if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi")
+		else if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi" || key == "acquisition_mode" || key == "trigger_mode")
 		{
 			int started = this->grabberStartedCount();
 			if (started > 0)
@@ -620,10 +662,43 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
 					}
 					retValue += synchronize(roi);
 
-
 					checkData();
 				}
 			}
+            else if (key == "trigger_mode")
+            {
+                if (val->getVal<char*>()[0] == 's')
+                {
+                    if (m_params["acquisition_mode"].getVal<char*>()[0] == 's')
+                    {
+                        retValue += ito::RetVal(ito::retError, 0, "trigger_mode 'software' can only be set in acquisition_mode 'grab'");
+                    }
+                    else
+                    {
+                        retValue += setParamString("TriggerMode", "On");
+                    }
+                }
+                else
+                {
+                    retValue += setParamString("TriggerMode", "Off");
+                }
+
+                if (!retValue.containsError())
+                {
+                    it->copyValueFrom(&(*val));
+                }
+            }
+            else if (key == "acquisition_mode")
+            {
+                if (val->getVal<char*>()[0] == 's' && m_params["trigger_mode"].getVal<char*>()[0] == 's')
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "acquisition_mode 'snap' can only be set in trigger_mode 'off'");
+                }
+                else
+                {
+                    it->copyValueFrom(&(*val));
+                }
+            }
 #if 0
 			else if (key == "x0")
 			{
@@ -719,7 +794,10 @@ ito::RetVal CommonVisionBlox::startDevice(ItomSharedSemaphore *waitCond)
 
 		if (grabberStartedCount() == 1)
 		{
-			//retValue += checkError(G2Grab(m_hCamera)); 
+            if (strcmp(m_params["acquisition_mode"].getVal<char*>(), "grab") == 0)
+            {
+			    retValue += checkError(G2Grab(m_hCamera)); 
+            }
 		}
     }
 
@@ -752,8 +830,12 @@ ito::RetVal CommonVisionBlox::stopDevice(ItomSharedSemaphore *waitCond)
 
 	if (grabberStartedCount() == 0)
 	{
-		// stop the grab (kill = false: wait for ongoing frame acquisition to stop)
-		//retValue += checkError(G2Freeze(m_hCamera, true));
+        double active = 0;
+        if (G2GetGrabStatus(m_hCamera, GRAB_INFO_GRAB_ACTIVE, active) == CVC_E_OK && active)
+        {
+            // stop the grab (kill = false: wait for ongoing frame acquisition to stop)
+            retValue += checkError(G2Freeze(m_hCamera, true));
+        }
 	}
 
     if(grabberStartedCount() < 0)
@@ -798,6 +880,22 @@ ito::RetVal CommonVisionBlox::acquire(const int trigger, ItomSharedSemaphore *wa
     {
         m_isGrabbing = true;
         m_acquisitionRetVal = ito::retOk;
+
+        if (strcmp(m_params["acquisition_mode"].getVal<char*>(), "grab") == 0)
+        {
+            double images_pendig;
+
+            //delete all old frames in grab mode
+            while (G2GetGrabStatus(m_hCamera, GRAB_INFO_NUMBER_IMAGES_PENDIG, images_pendig) == CVC_E_OK && images_pendig > 0)
+            {
+                G2Wait(m_hCamera);
+            }
+        }
+
+        if (m_params["trigger_mode"].getVal<char*>()[0] == 's') //software trigger
+        {
+            retValue += setParamBool("TriggerSoftware", true);
+        }
     }
     
     if(waitCond)
@@ -813,9 +911,19 @@ ito::RetVal CommonVisionBlox::acquire(const int trigger, ItomSharedSemaphore *wa
 		int height = m_params["sizey"].getVal<int>();
 		const int* roi = m_params["roi"].getVal<int*>();
 
-		//retValue += checkError(G2Wait(m_hCamera));
-		retValue += checkError(Snap(m_hCamera));
-		//retValue += checkError(STTrigger(m_hCamera, 0));
+        
+        //checkStatus();
+
+        if (strcmp(m_params["acquisition_mode"].getVal<char*>(), "grab") == 0)
+        {
+		    retValue += checkError(G2Wait(m_hCamera));
+        }
+        else
+        {
+		    retValue += checkError(Snap(m_hCamera));
+        }
+
+        //checkStatus();
 
 		if (!retValue.containsError())
 		{
@@ -884,6 +992,49 @@ ito::RetVal CommonVisionBlox::acquire(const int trigger, ItomSharedSemaphore *wa
 	}
 
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void CommonVisionBlox::checkStatus()
+{
+    double cam_detected, triggers_lost, active, images_pendig, images_locked, images_lost_locked, images_lost, images_acquired;
+
+    if (G2GetGrabStatus(m_hCamera, GRAB_INFO_NUMBER_IMAGES_AQCUIRED, images_acquired) != CVC_E_OK)
+    {
+        images_acquired = -1;
+    }
+    if (G2GetGrabStatus(m_hCamera, GRAB_INFO_NUMBER_IMAGES_LOST, images_lost) != CVC_E_OK)
+    {
+        images_lost = -1;
+    }
+    if (G2GetGrabStatus(m_hCamera, GRAB_INFO_NUMBER_IMAGES_LOST_LOCKED, images_lost_locked) != CVC_E_OK)
+    {
+        images_lost_locked = -1;
+    }
+    if (G2GetGrabStatus(m_hCamera, GRAB_INFO_NUMBER_IMAGES_LOCKED, images_locked) != CVC_E_OK)
+    {
+        images_locked = -1;
+    }
+    if (G2GetGrabStatus(m_hCamera, GRAB_INFO_NUMBER_IMAGES_PENDIG, images_pendig) != CVC_E_OK)
+    {
+        images_pendig = -1;
+    }
+    if (G2GetGrabStatus(m_hCamera, GRAB_INFO_GRAB_ACTIVE, active) != CVC_E_OK)
+    {
+        active = -1;
+    }
+    if (G2GetGrabStatus(m_hCamera, GRAB_INFO_NUMBER_TRIGGERS_LOST, triggers_lost) != CVC_E_OK)
+    {
+        triggers_lost = -1;
+    }
+    if (G2GetGrabStatus(m_hCamera, GRAB_INFO_CAMERA_DETECTED, cam_detected) != CVC_E_OK)
+    {
+        cam_detected = -1;
+    }
+
+    std::cout << "CAM_DETECTED:" << cam_detected << ", NUM_TRIGGERS_LOST:" << triggers_lost << ", GRAB_ACTIVE:" << active << ", IMAGES_PENDIG:" << images_pendig;
+    std::cout << ", IMG_LOCKED:" << images_locked << ", IMG_LOST_LOCKED:" << images_lost_locked << "IMG_LOST:" << images_lost << "IMG_ACQUIRED:" << images_acquired << "\n" << std::endl;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1039,16 +1190,23 @@ ito::RetVal CommonVisionBlox::synchronize(const sections &what /*= all*/)
 	{
 		cvbint64_t current;
 		//retval_temp = checkError(XC_GetPropertyRangeF(m_handle, "IntegrationTime", &low, &high));
-		retval_temp += getParamInt("ExposureTimeAbs", current);
+		retval_temp = getParamInt(m_nameConverter["integration_time"], current);
 		if (!retval_temp.containsError())
 		{
 			ito::DoubleMeta dm(0.0, 0.0);
-			retval_temp += getParamFloatInfo("ExposureTimeAbs", dm, 1e-6);
 
-			if (!retval_temp.containsError())
-			{
-				m_params["integration_time"].setMeta(&dm);
-			}
+            //with DALSA Genie there was an error obtaining the max value. Afterwards, no new image could be acquired.
+            if (strcmp(m_params["vendor_name"].getVal<char*>(), "DALSA") != 0)
+            {
+			    if (getParamFloatInfo(m_nameConverter["integration_time"], dm, 1e-6).containsError() == false)
+			    {
+				    m_params["integration_time"].setMeta(&dm);
+			    }
+                else
+                {
+                    m_params["integration_time"].setFlags(ito::ParamBase::Readonly);
+                }
+            }
 
 			m_params["integration_time"].setVal<double>(double(current) * 1.0e-6);
 
@@ -1061,7 +1219,7 @@ ito::RetVal CommonVisionBlox::synchronize(const sections &what /*= all*/)
 	{
 		cvbint64_t current_x0, xmax, current_width, current_y0, ymax, current_height;
 
-		retval_temp += getParamInt("WidthMax", xmax);
+		retval_temp = getParamInt("WidthMax", xmax);
 		retval_temp += getParamInt("Width", current_width);
 		retval_temp += getParamInt("OffsetX", current_x0);
 		retval_temp += getParamInt("HeightMax", ymax);
@@ -1341,18 +1499,45 @@ ito::RetVal CommonVisionBlox::getParamFloatInfo(const char *name, ito::DoubleMet
 		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
 		if(!retVal.containsError())
 		{
-			double mi, ma, inc;
-			// value camera dependent
-			retVal += checkError(NInfoAsFloat(node, NI_Min, mi), name);
-			retVal += checkError(NInfoAsFloat(node, NI_Max, ma), name);
-            cvbres_t res = NInfoAsFloat(node, NI_Increment, inc);
-            if (CVC_ERROR_FROM_HRES(res) != CVC_E_NOTSUPPORTED)
+            TNodeType type;
+            NType(node, type);
+            double mi, ma, inc;
+
+            if (type == NT_Integer)
             {
-			    retVal += checkError(res, name);
+                cvbint64_t mi_, ma_, inc_;
+                // value camera dependent
+			    retVal += checkError(NInfoAsInteger(node, NI_Min, mi_), name);
+			    retVal += checkError(NInfoAsInteger(node, NI_Max, ma_), name);
+                cvbres_t res = NInfoAsInteger(node, NI_Increment, inc_);
+                if (CVC_ERROR_FROM_HRES(res) != CVC_E_NOTSUPPORTED)
+                {
+			        retVal += checkError(res, name);
+                }
+                else
+                {
+                    inc_ = 0.0;
+                }
+
+                mi = mi_;
+                ma = ma_;
+                inc = inc_;
             }
             else
             {
-                inc = 0.0;
+			    
+			    // value camera dependent
+			    retVal += checkError(NInfoAsFloat(node, NI_Min, mi), name);
+			    retVal += checkError(NInfoAsFloat(node, NI_Max, ma), name);
+                cvbres_t res = NInfoAsFloat(node, NI_Increment, inc);
+                if (CVC_ERROR_FROM_HRES(res) != CVC_E_NOTSUPPORTED)
+                {
+			        retVal += checkError(res, name);
+                }
+                else
+                {
+                    inc = 0.0;
+                }
             }
 
 			meta.setMin(mi * scale);
@@ -1370,7 +1555,7 @@ ito::RetVal CommonVisionBlox::getParamFloatInfo(const char *name, ito::DoubleMet
 	return retVal;
 }
 
-
+//-----------------------------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::getParamIntInfo(const char *name, ito::IntMeta &meta)
 {
     ito::RetVal retVal;

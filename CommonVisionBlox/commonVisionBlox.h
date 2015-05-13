@@ -84,11 +84,11 @@ class CommonVisionBlox : public ito::AddInGrabber
         ito::RetVal getParamEnumerationInfo(const char *name, ito::StringMeta &meta);
 
         bool nodeExists(const char *name) const;
+        void checkStatus();
 
 		ito::RetVal scan_for_cameras();
 
         QMap<QByteArray, QByteArray> m_nameConverter;
-
 
     signals:
 
