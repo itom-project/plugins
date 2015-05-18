@@ -127,32 +127,32 @@ Ximea::Ximea() :
 
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>()
-                               << ito::Param("darkImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
-                               << ito::Param("whiteImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data())
+                               << ito::Param("dark_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
+                               << ito::Param("white_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data())
                                << ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1280, 0, tr("Position of ROI in x").toLatin1().data())
                                << ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1024, 0, tr("Position of ROI in y").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>();
 
     QVector<ito::Param> pOut = QVector<ito::Param>();
-    registerExecFunc("initializeShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction. At the moment you can only use one set of data which will be rescaled each time"));
+    registerExecFunc("initialize_shading", pMand, pOpt, pOut, tr("Initialize pixel shading correction. At the moment you can only use one set of data which will be rescaled each time"));
 
     pMand = QVector<ito::Param>()
             << ito::Param("illumination", ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 0, tr("Current intensity value").toLatin1().data());
     pOpt = QVector<ito::Param>();
     pOut = QVector<ito::Param>();
-    registerExecFunc("updateShading", pMand, pOpt, pOut, tr("Change value of the shading correction"));
+    registerExecFunc("update_shading", pMand, pOpt, pOut, tr("Change value of the shading correction"));
 
     pMand = QVector<ito::Param>()
             << ito::Param("integration_time", ito::ParamBase::Double, 0.0, 0.00, 0.000, tr("Integrationtime of CCD programmed in s").toLatin1().data())
-            << ito::Param("shadingCorrectionFaktor", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("Corresponding values for shading correction").toLatin1().data());
+            << ito::Param("shading_correction_factor", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("Corresponding values for shading correction").toLatin1().data());
     pOpt = QVector<ito::Param>();
     pOut = QVector<ito::Param>();
-    registerExecFunc("shadingCorrectionValues", pMand, pOpt, pOut, tr("Change value of the shading correction"));
+    registerExecFunc("shading_correction_values", pMand, pOpt, pOut, tr("Change value of the shading correction"));
     /*
     pMand = QVector<ito::Param>();
-    pOpt = QVector<ito::Param>() << ito::Param("darkImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
-                                 << ito::Param("whiteImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data());
-    registerExecFunc("updateShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
+    pOpt = QVector<ito::Param>() << ito::Param("dark_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
+                                 << ito::Param("white_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data());
+    registerExecFunc("update_shading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
     registerExecFunc("calculateShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
     pOpt.clear();
     */
@@ -222,18 +222,18 @@ Ximea::Ximea() :
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("framerate", ito::ParamBase::Double, 0.0, 1000.0, 60.0, tr("Set framerate (in fps). Must be supported by sensor.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("camNumber", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Number / ximea-internal IDX of this camera.").toLatin1().data());
+	paramVal = ito::Param("cam_number", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Number / ximea-internal IDX of this camera.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("badPixel", ito::ParamBase::Int, 0, 1, 1, tr("Enable bad pixel correction.").toLatin1().data());
+	paramVal = ito::Param("bad_pixel", ito::ParamBase::Int, 0, 1, 1, tr("Enable bad pixel correction.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 #if defined XI_GPO_BUSY_NEG
-    paramVal = ito::Param("gpoMode", ito::ParamBase::Int, XI_GPO_OFF, XI_GPO_BUSY_NEG, XI_GPO_OFF, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
+    paramVal = ito::Param("gpo_mode", ito::ParamBase::Int, XI_GPO_OFF, XI_GPO_BUSY_NEG, XI_GPO_OFF, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
 #else
-   paramVal = ito::Param("gpoMode", ito::ParamBase::Int, XI_GPO_OFF, XI_GPO_EXPOSURE_PULSE_NEG, XI_GPO_OFF, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
+   paramVal = ito::Param("gpo_mode", ito::ParamBase::Int, XI_GPO_OFF, XI_GPO_EXPOSURE_PULSE_NEG, XI_GPO_OFF, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
 #endif
-	paramVal = ito::Param("gpiMode", ito::ParamBase::Int, XI_GPI_OFF, XI_GPI_EXT_EVENT, XI_GPI_OFF, tr("Set the input pin mode for the camera, default is off").toLatin1().data());
+	paramVal = ito::Param("gpi_mode", ito::ParamBase::Int, XI_GPI_OFF, XI_GPI_EXT_EVENT, XI_GPI_OFF, tr("Set the input pin mode for the camera, default is off").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("serialNumber", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, 1, 1, tr("Serial Number of device.").toLatin1().data());
+	paramVal = ito::Param("serial_number", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, 1, 1, tr("Serial Number of device.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("sensor_type", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Sensor type of the attached camera").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
@@ -554,8 +554,8 @@ ito::RetVal Ximea::LoadLib(void)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());*/
         
 
-        if ((pInitializeShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) dlsym(ximeaLib, "mmInitializeShading")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
+        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) dlsym(ximeaLib, "mminitialize_shading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mminitialize_shading").toLatin1().data());
 
         /*if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) dlsym(ximeaLib, "mmSetShadingRaw")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());*/
@@ -597,8 +597,8 @@ ito::RetVal Ximea::LoadLib(void)
         /*if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShadingRaw")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShadingRaw").toLatin1().data());*/
 
-        if ((pInitializeShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) GetProcAddress(ximeaLib, "mmInitializeShading")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
+        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) GetProcAddress(ximeaLib, "mminitialize_shading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mminitialize_shading").toLatin1().data());
 
         /*if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) GetProcAddress(ximeaLib, "mmSetShadingRaw")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());*/
@@ -880,7 +880,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			if (ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING_TYPE, &type, sizeof(int), intType))
                 retValue += getErrStr(ret, "XI_PRM_DOWNSAMPLING_TYPE", QString::number(type));
 		}
-        else if (QString::compare(key, "badPixel", Qt::CaseInsensitive) == 0 )
+        else if (QString::compare(key, "bad_pixel", Qt::CaseInsensitive) == 0 )
         {
             int enable = val->getVal<int>() > 0 ? 1 : 0;
             int maxVal = 0;
@@ -892,9 +892,9 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             if (ret = pxiGetParam(m_handle, XI_PRM_BPC, &curVal, &intSize, &intType))
                 retValue += getErrStr(ret, "XI_PRM_BPC", QString::number(curVal));
             else
-                m_params["badPixel"].setVal(curVal);
+                m_params["bad_pixel"].setVal(curVal);
         }
-		else if (QString::compare(key, "gpoMode", Qt::CaseInsensitive) == 0)
+		else if (QString::compare(key, "gpo_mode", Qt::CaseInsensitive) == 0)
         {
 			int mode = val->getVal<int>();       
 			DWORD pSize = sizeof(int);
@@ -905,9 +905,9 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 retValue += getErrStr(ret, "XI_PRM_GPO_MODE", QString::number(mode));
             }
             if (!retValue.containsError())
-                m_params["gpoMode"].setVal(mode);
+                m_params["gpo_mode"].setVal(mode);
         }
-        else if (QString::compare(key, "gpiMode", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(key, "gpi_mode", Qt::CaseInsensitive) == 0)
         {
             int mode =val->getVal<int>();      
             DWORD pSize = sizeof(int);
@@ -918,7 +918,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 retValue += getErrStr(ret, "XI_PRM_GPI_MODE", QString::number(mode));
             }
             if (!retValue.containsError())
-                m_params["gpiMode"].setVal(mode);
+                m_params["gpi_mode"].setVal(mode);
         }
 
         else if (QString::compare(key, "hdr_enable", Qt::CaseInsensitive) == 0)
@@ -1457,7 +1457,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     int bandwidthLimit = paramsOpt->at(2).getVal<int>(); //0 auto bandwidth calculation
-	int iCamNumber = (*paramsOpt)[0].getVal<int>();
+	int icam_number = (*paramsOpt)[0].getVal<int>();
     XI_RETURN ret;
 
 #ifndef USE_OLD_API
@@ -1481,38 +1481,38 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     if (!retValue.containsError())
     {
 	
-	    m_params["camNumber"].getVal<int>(iCamNumber);
+	    m_params["cam_number"].getVal<int>(icam_number);
         Initnum++;  // so we have a new running instance of this grabber (or not)
 
-        if( ++InitList[iCamNumber] > 1)    // It does not matter if the rest works or not. The close command will fix this anyway
+        if( ++InitList[icam_number] > 1)    // It does not matter if the rest works or not. The close command will fix this anyway
         {
             retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized. Try with another camera number").toLatin1().data());
         }
         else
         {
-            ret = pxiOpenDevice(iCamNumber, &m_handle);
+            ret = pxiOpenDevice(icam_number, &m_handle);
             if (!m_handle || ret != XI_OK)
             {
                 m_handle = NULL;
-                retValue += getErrStr(ret, "pxiOpenDevice", QString::number(iCamNumber));
+                retValue += getErrStr(ret, "pxiOpenDevice", QString::number(icam_number));
                 retValue += ito::RetVal(ito::retError, 0, tr("Unable open camera").toLatin1().data());
             }
             else
             {
                 char strBuf[1024];
-                int serialNumber;
+                int serial_number;
                 DWORD strBufSize = 1024 * sizeof(char);
-			    m_params["camNumber"].setVal<int>(iCamNumber);
+			    m_params["cam_number"].setVal<int>(icam_number);
                 if (ret = pxiGetParam(m_handle, XI_PRM_DEVICE_NAME, &strBuf, &strBufSize, &strType))
                     retValue += getErrStr(ret, "XI_PRM_DEVICE_NAME", strBuf);
 			    m_params["sensor_type"].setVal<char*>(strBuf);
-                if (ret = pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serialNumber, &pSize, &pType))
-                    retValue += getErrStr(ret, "XI_PRM_DEVICE_SN", QString::number(serialNumber));
-			    m_params["serialNumber"].setVal<int>(serialNumber);
+                if (ret = pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &pType))
+                    retValue += getErrStr(ret, "XI_PRM_DEVICE_SN", QString::number(serial_number));
+			    m_params["serial_number"].setVal<int>(serial_number);
                 if (!retValue.containsError())
                 {
-                    QString serialNumberHex = QString::number(serialNumber, 16);
-                    m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serialNumberHex);
+                    QString serial_numberHex = QString::number(serial_number, 16);
+                    m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
                 }
             }
 
@@ -1545,7 +1545,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 // Read parameter list from file to paramListXML
                 if (!retValue.containsError())
                 {
-                    retValue += ito::loadXML2QLIST(&paramListXML, QString::number(iCamNumber), paramFile);
+                    retValue += ito::loadXML2QLIST(&paramListXML, QString::number(icam_number), paramFile);
                 }
 
                 // Merge parameter list from file to paramListXML with current mparams
@@ -1618,7 +1618,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			    int badpix;
 			    if (ret = pxiGetParam(m_handle, XI_PRM_BPC, &badpix, &intSize, &intType))
                     retValue += getErrStr(ret, "XI_PRM_BPC", QString::number(badpix));
-			    m_params["badPixel"].setVal(badpix);
+			    m_params["bad_pixel"].setVal(badpix);
             }
 
 
@@ -1977,7 +1977,7 @@ ito::RetVal Ximea::close(ItomSharedSemaphore *waitCond)
     }
 
 endclose:
-    int nr = m_params["camNumber"].getVal<int>();
+    int nr = m_params["cam_number"].getVal<int>();
     InitList[nr] = 0;
     Initnum--; // so we closed a further instance of this grabber
 
@@ -2400,7 +2400,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
     
     int illm = 0;
 
-    if (funcName == "updateShading")
+    if (funcName == "update_shading")
     {    
         param1 = ito::getParamByName(&(*paramsMand), "illumination", &retValue);
 
@@ -2410,10 +2410,10 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
             updateShadingCorrection(illm);
         }
     }
-    else if (funcName == "shadingCorrectionValues")
+    else if (funcName == "shading_correction_values")
     {    
         param1 = ito::getParamByName(&(*paramsMand), "integration_time", &retValue);
-        param2 = ito::getParamByName(&(*paramsMand), "shadingCorrectionFaktor", &retValue);
+        param2 = ito::getParamByName(&(*paramsMand), "shading_correction_factor", &retValue);
         int intTime = 0;
         if (!retValue.containsError())
         {
@@ -2441,11 +2441,11 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
 
         
     }
-    else if (funcName == "initializeShading")
+    else if (funcName == "initialize_shading")
     {
 
-        param1 = ito::getParamByName(&(*paramsMand), "darkImage", &retValue);
-        param2 = ito::getParamByName(&(*paramsMand), "whiteImage", &retValue);              
+        param1 = ito::getParamByName(&(*paramsMand), "dark_image", &retValue);
+        param2 = ito::getParamByName(&(*paramsMand), "white_image", &retValue);              
 
         param3 = ito::getParamByName(&(*paramsMand), "x0", &retValue);
         param4 = ito::getParamByName(&(*paramsMand), "y0", &retValue);
@@ -2514,10 +2514,10 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
         /*
         if (!retValue.containsError())
         {
-            int ret = pInitializeShading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), param1->getVal<int>(), param2->getVal<int>());
+            int ret = pinitialize_shading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), param1->getVal<int>(), param2->getVal<int>());
             if(ret != MM40_OK)
             {
-                retValue += ito::RetVal(ito::retError, ret, tr("mmInitializeShading failed").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, ret, tr("mminitialize_shading failed").toLatin1().data());
             }
             else
             {
@@ -2533,10 +2533,10 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
         */
     }
 /*
-    else if (funcName == "updateShading")
+    else if (funcName == "update_shading")
     {    
-        param1 = ito::getParamByName(&(*paramsOpt), "darkImage", &retValue);
-        param2 = ito::getParamByName(&(*paramsOpt), "whiteImage", &retValue);       
+        param1 = ito::getParamByName(&(*paramsOpt), "dark_image", &retValue);
+        param2 = ito::getParamByName(&(*paramsOpt), "white_image", &retValue);       
 
         if (!retValue.containsError())
         {
@@ -2550,8 +2550,8 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
     }
     else if (funcName == "calculateShading")
     {    
-        param1 = ito::getParamByName(&(*paramsOpt), "darkImage", &retValue);
-        param2 = ito::getParamByName(&(*paramsOpt), "whiteImage", &retValue);              
+        param1 = ito::getParamByName(&(*paramsOpt), "dark_image", &retValue);
+        param2 = ito::getParamByName(&(*paramsOpt), "white_image", &retValue);              
 
         cv::Mat_<WORD> darkMat = cv::Mat_<WORD>::zeros(cv::Size(this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>()));
         cv::Mat_<WORD> whiteMat = cv::Mat_<WORD>::ones(cv::Size(this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>()));
