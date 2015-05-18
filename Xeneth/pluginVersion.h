@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut für Technische Optik (ITO),
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -28,14 +28,20 @@
 #ifndef PLUGINVERSION_H
 #define PLUGINVERSION_H
 
+#define CREATE_VERSION(major,minor,patch) ((major<<16)|(major<<8)|(patch))
+#define CREATE_VERSION_STRING(major,minor,patch) #major"."#minor"."patch
+
 #define PLUGIN_VERSION_MAJOR 0
 #define PLUGIN_VERSION_MINOR 0
-#define PLUGIN_VERSION_PATCH 2
+#define PLUGIN_VERSION_PATCH 1
 #define PLUGIN_VERSION_REVISION 0
-#define PLUGIN_VERSION_STRING "0.0.2"
-#define PLUGIN_COMPANY        "Institut fuer Technische Optik, University Stuttgart"
-#define PLUGIN_COPYRIGHT      "(C) 2015, ITO, University Stuttgart"
-#define PLUGIN_NAME           "PGRFlyCapture"
+#define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
+#define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
+#define PLUGIN_COMPANY        "ITO Uni Stuttgart"
+#define PLUGIN_AUTHOR         "ITO Uni Stuttgart"
+#define PLUGIN_COPYRIGHT      "(C) 2014, ITO Uni Stuttgart"
+#define PLUGIN_NAME           "Xeneth"
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

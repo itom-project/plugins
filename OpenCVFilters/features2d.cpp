@@ -26,6 +26,7 @@
 #include "DataObject/dataobj.h"
 #include "DataObject/dataObjectFuncs.h"
 #include <qnumeric.h>
+#include <QList>
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
@@ -60,8 +61,8 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
 
     // Optional Parameters
     paramsOpt->append( ito::Param("max_distance", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 0.0, "Maximum distance between two pair of points to calculate the best matching.") );
-    paramsOpt->append( ito::Param("first_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Optional input parameter - corresponding key points of the first image (n x 7) float32 data object") );
-    paramsOpt->append( ito::Param("second_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Optional input parameter - corresponding key points of the second image (n x 7) float32 data object") );
+    paramsOpt->append( ito::Param("first_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Optional input parameter - corresponding key points of the first image (n x 7) float32 data object, must have the same number of rows than first_descriptors.") );
+    paramsOpt->append( ito::Param("second_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Optional input parameter - corresponding key points of the second image (n x 7) float32 data object, must have the same number of rows than second_descriptors.") );
     paramsOpt->append( ito::Param("first_best_matches_points", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional output parameter - (m x 2) float32 data object of best matching points from first image. each row includes (x and y coordinates), and m is the number of best matching points ") );
     paramsOpt->append( ito::Param("second_best_matches_points", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional output parameter - (m x 2) float32 data object of best matching points from second image. each row includes (x and y coordinates), and m is the number of best matching points") );
     paramsOpt->append( ito::Param("good_matches", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional output parameter - (m x 4) float32 data object of good matching descriptor vectors using FLANN matcher. Every row contains the values (queryIdx,trainIdx,imgIdx,distance)") );
@@ -121,8 +122,8 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
 
         if (max_distance > 0.0)
         {
-            const ito::DataObject first_keypoints_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(1).getVal<const ito::DataObject*>(),"first_keypoints", ito::Range(Dmatches.size(),INT_MAX), ito::Range(7,7), retval, ito::tFloat32, 0);
-            const ito::DataObject second_keypoints_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(2).getVal<const ito::DataObject*>(),"second_keypoints", ito::Range(Dmatches.size(),INT_MAX), ito::Range(7,7), retval, ito::tFloat32, 0);
+            const ito::DataObject first_keypoints_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(1).getVal<const ito::DataObject*>(),"first_keypoints", ito::Range(descriptor1.getSize(0),INT_MAX), ito::Range(7,7), retval, ito::tFloat32, 0);
+            const ito::DataObject second_keypoints_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(2).getVal<const ito::DataObject*>(),"second_keypoints", ito::Range(descriptor2.getSize(0),INT_MAX), ito::Range(7,7), retval, ito::tFloat32, 0);
             QVector<int> best_matches_idx;
 
             if (!retval.containsError())
@@ -155,12 +156,12 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
                     memcpy(rowPtrDest, rowPtrSrc, sizeof(ito::float32) * 4);
 
                     //copy first keypoints line
-                    rowPtrSrc = (ito::float32*)(first_keypoints_.rowPtr(Dmatches[idx].queryIdx, idx));
+                    rowPtrSrc = (ito::float32*)(first_keypoints_.rowPtr(0, Dmatches[idx].queryIdx));
                     rowPtrDest = (ito::float32*)(bestKeypoints1.rowPtr(0, count));
                     memcpy(rowPtrDest, rowPtrSrc, sizeof(ito::float32) * 7);
 
                     //copy second keypoints line
-                    rowPtrSrc = (ito::float32*)(second_keypoints_.rowPtr(Dmatches[idx].trainIdx, idx));
+                    rowPtrSrc = (ito::float32*)(second_keypoints_.rowPtr(0, Dmatches[idx].trainIdx));
                     rowPtrDest = (ito::float32*)(bestKeypoints2.rowPtr(0, count));
                     memcpy(rowPtrDest, rowPtrSrc, sizeof(ito::float32) * 7);
 

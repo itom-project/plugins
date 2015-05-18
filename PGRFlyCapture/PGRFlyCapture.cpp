@@ -1900,14 +1900,14 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
                 externalDataObject->setTag("timestamp", timestamp);
                 externalDataObject->setTag("frame_counter", metadata.embeddedFrameCounter);
                 externalDataObject->setTag("roi_x0", metadata.embeddedROIPosition >> 16);
-                externalDataObject->setTag("roi_y0", metadata.embeddedROIPosition & 0x00ff);
+                externalDataObject->setTag("roi_y0", metadata.embeddedROIPosition & 0x0000ffff);
             }
             if (!copyExternal || hasListeners)
             {
                 m_data.setTag("timestamp", timestamp);
                 m_data.setTag("frame_counter", metadata.embeddedFrameCounter);
                 m_data.setTag("roi_x0", metadata.embeddedROIPosition >> 16);
-                m_data.setTag("roi_y0", metadata.embeddedROIPosition & 0x00ff);
+                m_data.setTag("roi_y0", metadata.embeddedROIPosition & 0x0000ffff);
             }
         }
 
