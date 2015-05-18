@@ -40,8 +40,6 @@ DockWidgetXimea::DockWidgetXimea(int uniqueID, ito::AddInDataIO *grabber) :
 
 void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
 {
-    ui.sliderWidget_offset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
-    ui.sliderWidget_offset->setVisible( !(params["offset"].getFlags() & ito::ParamBase::Readonly) );
     ui.sliderWidget_gain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
     ui.sliderWidget_gain->setVisible( !(params["gain"].getFlags() & ito::ParamBase::Readonly ));
     ui.sliderWidget_integrationtime->setDisabled( params["integration_time"].getFlags() & ito::ParamBase::Readonly );
@@ -52,26 +50,6 @@ void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
         //use params (identical to m_params of the plugin)
         //and initialize all widgets (e.g. min, max values, labels, enable some,...)
 
-        if (!(params["offset"].getFlags() & ito::ParamBase::Readonly))
-        {
-            ito::DoubleMeta *offset = (ito::DoubleMeta*)(params["offset"].getMeta());
-            ui.sliderWidget_offset->setMinimum(offset->getMin());
-            ui.sliderWidget_offset->setMaximum(offset->getMax());
-            if (offset->getStepSize() != 0)
-            {
-                ui.sliderWidget_offset->setSingleStep(std::max(offset->getStepSize(), 0.00001)); //0.00001 is the minimal step of the spin box
-            }
-            else
-            {
-                ui.sliderWidget_offset->setSingleStep((offset->getMax() - offset->getMin()) / 100);
-            }
-            ui.sliderWidget_offset->setValue(params["offset"].getVal<double>());
-        }
-        else 
-        {
-            ui.sliderWidget_offset->setValue( 0 );
-
-        }
         
         if (!(params["gain"].getFlags() & ito::ParamBase::Readonly))
         {
@@ -96,17 +74,17 @@ void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
         if (!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
         {
             ito::DoubleMeta *integration_time = (ito::DoubleMeta*)(params["integration_time"].getMeta());
-            ui.sliderWidget_integrationtime->setMinimum(integration_time->getMin());
-            ui.sliderWidget_integrationtime->setMaximum(integration_time->getMax());
+            ui.sliderWidget_integrationtime->setMinimum(integration_time->getMin()*1000);
+            ui.sliderWidget_integrationtime->setMaximum(integration_time->getMax()*1000);
             if (integration_time->getStepSize() != 0)
             {
-                ui.sliderWidget_integrationtime->setSingleStep(std::max(integration_time->getStepSize(), 0.00001)); //0.00001 is the minimal step of the spin box
+                ui.sliderWidget_integrationtime->setSingleStep(std::max(integration_time->getStepSize()*1000, 0.00001)); //0.00001 is the minimal step of the spin box
             }
             else
             {
-                ui.sliderWidget_integrationtime->setSingleStep((integration_time->getMax() - integration_time->getMin()) / 100);
+                ui.sliderWidget_integrationtime->setSingleStep((integration_time->getMax() - integration_time->getMin()) / 100 *1000);
             }
-            ui.sliderWidget_integrationtime->setValue(params["integration_time"].getVal<double>());
+            ui.sliderWidget_integrationtime->setValue(params["integration_time"].getVal<double>()*1000);
         }
         else
         {
@@ -120,22 +98,6 @@ void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
     if (!m_inEditing)
     {
         m_inEditing = true;
-
-        if (params.contains("offset") & !(params["offset"].getFlags() & ito::ParamBase::Readonly))
-        {
-            ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["offset"].getMeta());
-            ui.sliderWidget_offset->setMinimum(dm->getMin());
-            ui.sliderWidget_offset->setMaximum(dm->getMax());
-            if (dm->getStepSize() != 0)
-            {
-                ui.sliderWidget_offset->setSingleStep(std::max(dm->getStepSize(), 0.00001)); //0.00001 is the minimal step of the spin box
-            }
-            else
-            {
-                ui.sliderWidget_offset->setSingleStep((dm->getMax() - dm->getMin()) / 100);
-            }
-            ui.sliderWidget_offset->setValue(params["offset"].getVal<double>());
-        }
 
         if (params.contains("gain") & !(params["gain"].getFlags() & ito::ParamBase::Readonly))
         {
@@ -156,17 +118,17 @@ void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
         if (params.contains("integration_time") & !(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
         {
             ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["integration_time"].getMeta());
-            ui.sliderWidget_integrationtime->setMinimum(dm->getMin());
-            ui.sliderWidget_integrationtime->setMaximum(dm->getMax());
+            ui.sliderWidget_integrationtime->setMinimum(dm->getMin()*1000);
+            ui.sliderWidget_integrationtime->setMaximum(dm->getMax()*1000);
             if (dm->getStepSize() != 0)
             {
-                ui.sliderWidget_integrationtime->setSingleStep(std::max(dm->getStepSize(), 0.00001)); //0.00001 is the minimal step of the spin box
+                ui.sliderWidget_integrationtime->setSingleStep(std::max(dm->getStepSize()*1000, 0.00001)); //0.00001 is the minimal step of the spin box
             }
             else
             {
-                ui.sliderWidget_integrationtime->setSingleStep((dm->getMax() - dm->getMin()) / 100);
+                ui.sliderWidget_integrationtime->setSingleStep((dm->getMax() - dm->getMin()) / 100 *1000);
             }
-            ui.sliderWidget_integrationtime->setValue(params["integration_time"].getVal<double>());
+            ui.sliderWidget_integrationtime->setValue(params["integration_time"].getVal<double>()*1000);
         }
     }    
     m_inEditing = false;
@@ -204,6 +166,7 @@ void DockWidgetXimea::on_sliderWidget_integrationtime_valueChanged(double value)
     if (!m_inEditing)
     {
         m_inEditing = true;
+		value = value/1000;
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
@@ -213,7 +176,6 @@ void DockWidgetXimea::on_sliderWidget_integrationtime_valueChanged(double value)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetXimea::enableWidget(bool enabled)
 {
-	ui.sliderWidget_offset->setEnabled(enabled);
 	ui.sliderWidget_gain->setEnabled(enabled);
 	ui.sliderWidget_integrationtime->setEnabled(enabled);
 }

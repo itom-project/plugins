@@ -39,13 +39,13 @@ namespace ito
     class AddInBase; //forward declaration
 }
 
-class dialogXimea : public ito::AbstractAddInConfigDialog 
+class DialogXimea : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
     public:
-        dialogXimea(ito::AddInBase *grabber);
-        ~dialogXimea() {};
+        DialogXimea(ito::AddInBase *grabber);
+        ~DialogXimea() {};
 		ito::RetVal applyParameters();
 
     private:
@@ -56,8 +56,8 @@ class dialogXimea : public ito::AbstractAddInConfigDialog
 		bool m_inEditing;
 		void enableDialog(bool enabled);
 
-        inline double musecToSec(int musec) { return (double)musec * 1.0e-6; }
-		inline int secToMusec(double sec) { return (int)(sec * 1.0e6); }
+        inline double msecToSec(int musec) { return (double)musec * 1.0e-3; }
+		inline int secToMsec(double sec) { return (int)(sec * 1.0e3); }
 
     public slots: 
 		void parametersChanged(QMap<QString, ito::Param> params);

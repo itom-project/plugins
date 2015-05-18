@@ -109,7 +109,7 @@ XimeaInterface::~XimeaInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal Ximea::showConfDialog(void)
 {
-   return apiShowConfigurationDialog(this, new dialogXimea(this));
+   return apiShowConfigurationDialog(this, new DialogXimea(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ Ximea::Ximea() :
     registerExecFunc("update_shading", pMand, pOpt, pOut, tr("Change value of the shading correction"));
 
     pMand = QVector<ito::Param>()
-            << ito::Param("integration_time", ito::ParamBase::Double, 0.0, 0.00, 0.000, tr("Integrationtime of CCD programmed in s").toLatin1().data())
+            << ito::Param("integration_time", ito::ParamBase::Double, 0.000000, 0.000000, 0.000000, tr("Integrationtime of CCD programmed in s").toLatin1().data())
             << ito::Param("shading_correction_factor", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("Corresponding values for shading correction").toLatin1().data());
     pOpt = QVector<ito::Param>();
     pOut = QVector<ito::Param>();
@@ -554,8 +554,8 @@ ito::RetVal Ximea::LoadLib(void)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());*/
         
 
-        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) dlsym(ximeaLib, "mminitialize_shading")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mminitialize_shading").toLatin1().data());
+        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) dlsym(ximeaLib, "mmInitializeShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 
         /*if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) dlsym(ximeaLib, "mmSetShadingRaw")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());*/
@@ -597,8 +597,8 @@ ito::RetVal Ximea::LoadLib(void)
         /*if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShadingRaw")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShadingRaw").toLatin1().data());*/
 
-        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) GetProcAddress(ximeaLib, "mminitialize_shading")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mminitialize_shading").toLatin1().data());
+        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) GetProcAddress(ximeaLib, "mmInitializeShading")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 
         /*if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) GetProcAddress(ximeaLib, "mmSetShadingRaw")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());*/
@@ -2517,7 +2517,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
             int ret = pinitialize_shading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), param1->getVal<int>(), param2->getVal<int>());
             if(ret != MM40_OK)
             {
-                retValue += ito::RetVal(ito::retError, ret, tr("mminitialize_shading failed").toLatin1().data());
+                retValue += ito::RetVal(ito::retError, ret, tr("mmInitializeShading failed").toLatin1().data());
             }
             else
             {

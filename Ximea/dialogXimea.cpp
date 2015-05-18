@@ -29,7 +29,7 @@
 #include "common/addInInterface.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
-dialogXimea::dialogXimea(ito::AddInBase *grabber) :
+DialogXimea::DialogXimea(ito::AddInBase *grabber) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true),
 	m_inEditing(false)
@@ -41,14 +41,14 @@ dialogXimea::dialogXimea(ito::AddInBase *grabber) :
 };
 
 //---------------------------------------------------------------------------------------------------------------------
-void dialogXimea::enableDialog(bool enabled)
+void DialogXimea::enableDialog(bool enabled)
 {
     ui.groupBoxBinning->setEnabled(enabled);
     ui.groupBoxIntegration->setEnabled(enabled);
     ui.groupBoxSize->setEnabled(enabled);
 }
 //---------------------------------------------------------------------------------------------------------------------
-void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
+void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 {
     if (m_firstRun)
     {
@@ -94,13 +94,6 @@ void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		}
 		ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
 
-		ito::IntMeta *offset = static_cast<ito::IntMeta*>(params["offset"].getMeta());
-		ui.sliderWidget_Offset->setMinimum(offset->getMin());
-		ui.sliderWidget_Offset->setMaximum(offset->getMax());
-		ui.sliderWidget_Offset->setSingleStep(offset->getStepSize());
-		ui.sliderWidget_Offset->setValue(params["offset"].getVal<int>());
-		ui.sliderWidget_Offset->setEnabled(!(params["offset"].getFlags() & ito::ParamBase::Readonly));
-
 		ito::DoubleMeta *gain = static_cast<ito::DoubleMeta*>(params["gain"].getMeta());
 		ui.sliderWidget_Gain->setMinimum(gain->getMin());
 		ui.sliderWidget_Gain->setMaximum(gain->getMax());
@@ -109,10 +102,10 @@ void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		ui.sliderWidget_Gain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
 
 		ito::DoubleMeta *integrationtime = static_cast<ito::DoubleMeta*>(params["integration_time"].getMeta());
-		ui.sliderWidget_integrationtime->setMinimum(integrationtime->getMin());
-		ui.sliderWidget_integrationtime->setMaximum(integrationtime->getMax());
-		ui.sliderWidget_integrationtime->setSingleStep(integrationtime->getStepSize());
-		ui.sliderWidget_integrationtime->setValue((params["integration_time"].getVal<double>()));
+		ui.sliderWidget_integrationtime->setMinimum(secToMsec(integrationtime->getMin()));
+		ui.sliderWidget_integrationtime->setMaximum(secToMsec(integrationtime->getMax()));
+		ui.sliderWidget_integrationtime->setSingleStep(secToMsec(integrationtime->getStepSize()));
+		ui.sliderWidget_integrationtime->setValue((secToMsec(params["integration_time"].getVal<double>())));
 		ui.sliderWidget_integrationtime->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
 
 		ito::DoubleMeta *framerate = static_cast<ito::DoubleMeta*>(params["framerate"].getMeta());
@@ -175,21 +168,40 @@ void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		ui.sliderWidget_Gain->setMinimum(gain->getMin());
 		ui.sliderWidget_Gain->setMaximum(gain->getMax());
 		ui.sliderWidget_Gain->setValue(params["gain"].getVal<double>());
+		if (gain->getStepSize() != 0)
+        {
+            ui.sliderWidget_Gain->setSingleStep(std::max(gain->getStepSize(), 0.00001)); //0.00001 is the minimal step of the spin box
+        }
+        else
+        {
+            ui.sliderWidget_Gain->setSingleStep((gain->getMax() - gain->getMin()) / 100);
+        }
 
 		ito::DoubleMeta *framerate = static_cast<ito::DoubleMeta*>(params["framerate"].getMeta());
 		ui.sliderWidget_framerate->setMinimum(framerate->getMin());
 		ui.sliderWidget_framerate->setMaximum(framerate->getMax());
 		ui.sliderWidget_framerate->setValue(params["framerate"].getVal<double>());
-
-		ito::IntMeta *offset = static_cast<ito::IntMeta*>(params["offset"].getMeta());
-		ui.sliderWidget_Offset->setMinimum(offset->getMin());
-		ui.sliderWidget_Offset->setMaximum(offset->getMax());
-		ui.sliderWidget_Offset->setValue(params["offset"].getVal<int>());
+		if (framerate->getStepSize() != 0)
+        {
+            ui.sliderWidget_framerate->setSingleStep(std::max(framerate->getStepSize(), 0.00001)); //0.00001 is the minimal step of the spin box
+        }
+        else
+        {
+            ui.sliderWidget_framerate->setSingleStep((framerate->getMax() - framerate->getMin()) / 100);
+        }
 
 		ito::DoubleMeta *integrationtime = static_cast<ito::DoubleMeta*>(params["integration_time"].getMeta());
-		ui.sliderWidget_integrationtime->setMinimum(integrationtime->getMin());
-		ui.sliderWidget_integrationtime->setMaximum(integrationtime->getMax());
-		ui.sliderWidget_integrationtime->setValue(params["integration_time"].getVal<double>());
+		ui.sliderWidget_integrationtime->setMinimum(secToMsec(integrationtime->getMin()));
+		ui.sliderWidget_integrationtime->setMaximum(secToMsec(integrationtime->getMax()));
+		ui.sliderWidget_integrationtime->setValue(secToMsec(params["integration_time"].getVal<double>()));
+		if (integrationtime->getStepSize() != 0)
+        {
+            ui.sliderWidget_integrationtime->setSingleStep(secToMsec(std::max(integrationtime->getStepSize(), 0.00001))); //0.00001 is the minimal step of the spin box
+        }
+        else
+        {
+            ui.sliderWidget_integrationtime->setSingleStep(secToMsec((integrationtime->getMax() - integrationtime->getMin())) / 100);
+        }
         
 		int bin = params["binning"].getVal<int>();
 		for(int i = 0; i < ui.combo_bin->count(); ++i)
@@ -218,7 +230,7 @@ void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal dialogXimea::applyParameters()
+ito::RetVal DialogXimea::applyParameters()
 {
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
@@ -303,15 +315,6 @@ ito::RetVal dialogXimea::applyParameters()
 			values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("framerate", ito::ParamBase::Double, framerate)));
 		}
 	}
-	
-	if(ui.sliderWidget_Offset->isEnabled())
-    {
-        int offset = ui.sliderWidget_Offset->value();
-        if(m_currentParameters["offset"].getVal<int>() != offset)
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Int, offset)));
-        }
-    }
 
 	if(ui.sliderWidget_Gain->isEnabled())
     {
@@ -324,7 +327,7 @@ ito::RetVal dialogXimea::applyParameters()
 
 	if(ui.sliderWidget_integrationtime->isEnabled())
 	{
-		double integrationtime = ui.sliderWidget_integrationtime->value();
+		double integrationtime = msecToSec(ui.sliderWidget_integrationtime->value());
 		if (m_currentParameters["integration_time"].getVal<double>() != integrationtime)
 		{
 			values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, integrationtime)));
@@ -340,7 +343,7 @@ ito::RetVal dialogXimea::applyParameters()
 
 
 //------------------------------------------------------------------------------
-void dialogXimea::on_btnFullROI_clicked()
+void DialogXimea::on_btnFullROI_clicked()
 {
     if (m_currentParameters.contains("sizex") && m_currentParameters.contains("sizey"))
     {
@@ -350,7 +353,7 @@ void dialogXimea::on_btnFullROI_clicked()
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void dialogXimea::on_buttonBox_clicked(QAbstractButton* btn)
+void DialogXimea::on_buttonBox_clicked(QAbstractButton* btn)
 {
     ito::RetVal retValue(ito::retOk);
 
@@ -372,7 +375,7 @@ void dialogXimea::on_buttonBox_clicked(QAbstractButton* btn)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void dialogXimea::on_rangeX_valuesChanged(int minValue, int maxValue)
+void DialogXimea::on_rangeX_valuesChanged(int minValue, int maxValue)
 {
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     ui.spinSizeX->setValue(maxValue - minValue + 1);
@@ -413,7 +416,7 @@ void dialogXimea::on_rangeX_valuesChanged(int minValue, int maxValue)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void dialogXimea::on_rangeY_valuesChanged(int minValue, int maxValue)
+void DialogXimea::on_rangeY_valuesChanged(int minValue, int maxValue)
 {
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     ui.spinSizeY->setValue(maxValue - minValue + 1);
