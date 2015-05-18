@@ -36,6 +36,9 @@
 
 #ifdef WIN32
 	#include <Windows.h>
+#else
+    #define LOBYTE(w) ((unsigned char)(((w)) & 0xff))
+    #define HIBYTE(w) ((unsigned char)((((w)) >> 8) & 0xff))
 #endif
 
 static unsigned long AvantesAvaSpec000Base = 0x10000L; // or 64k for Master Mode
