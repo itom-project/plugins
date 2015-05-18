@@ -56,7 +56,7 @@ void dialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
 		ui.label_sensor->setText(params["sensor_type"].getVal<char*>());
-		ui.label_serial->setText(QString::number(params["serialNumber"].getVal<int>()));
+		ui.label_serial->setText(QString::number(params["serial_number"].getVal<int>()));
 
 		int binning = params["binning"].getVal<int>();
 		ito::IntMeta *binningMeta = static_cast<ito::IntMeta*>(params["binning"].getMeta());
