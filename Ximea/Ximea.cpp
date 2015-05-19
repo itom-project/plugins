@@ -172,7 +172,7 @@ Ximea::Ximea() :
    paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("Sharpness strenght (-4 less sharp, +4 more sharp).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 1, tr("Enable HDR mode.").toLatin1().data());
+   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 1, tr("Enable HDR mode. (default: 0)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("hdr_knee1", ito::ParamBase::Int, 0, 100, 40, tr("First kneepoint (% of sensor saturation).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
@@ -977,6 +977,46 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			}
 #endif
         }
+		else if (QString::compare(key, "hdr_it1", Qt::CaseInsensitive) == 0)
+		{
+			int hdr1 = val->getVal<int>();
+			if (ret = pxiSetParam(m_handle, XI_PRM_HDR_T1 , &hdr1, sizeof(int), intType))
+                retValue += getErrStr(ret, "XI_PRM_HDR_T1", QString::number(hdr1));
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+		}
+		else if (QString::compare(key, "hdr_it2", Qt::CaseInsensitive) == 0)
+		{
+			int hdr2 = val->getVal<int>();
+			if (ret = pxiSetParam(m_handle, XI_PRM_HDR_T2, &hdr2, sizeof(int), intType))
+                retValue += getErrStr(ret, "XI_PRM_HDR_T2", QString::number(hdr2));
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+		}
+		else if (QString::compare(key, "hdr_knee1", Qt::CaseInsensitive) == 0)
+		{
+			int knee1 = val->getVal<int>();
+			if (ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), intType))
+                retValue += getErrStr(ret, "XI_PRM_KNEEPOINT1", QString::number(knee1));
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+		}
+		else if (QString::compare(key, "hdr_knee2", Qt::CaseInsensitive) == 0)
+		{
+			int knee2 = val->getVal<int>();
+			if (ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT2 , &knee2, sizeof(int), intType))
+                    retValue += getErrStr(ret, "XI_PRM_KNEEPOINT2", QString::number(knee2));
+			if (!retValue.containsError())
+			{
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+			}
+		}
         else if (QString::compare(key, "integration_time", Qt::CaseInsensitive) == 0)
         {
 
@@ -1558,6 +1598,67 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
             if (!retValue.containsError())
             {
+				it = m_params.find("hdr_enable");
+				int hdr_enable = 0; //default start with hdr mode disabled
+
+				if (ret = pxiSetParam(m_handle, XI_PRM_HDR, &hdr_enable, sizeof(int), intType))
+                    retValue += getErrStr(ret, "XI_PRM_HDR", QString::number(hdr_enable));
+				it->setVal<int>(hdr_enable);
+
+				it = m_params.find("hdr_it1");
+				int hdr_it1, hdr_it1_min, hdr_it1_max, hdr_it1_inc;
+				if (ret = pxiGetParam(m_handle, XI_PRM_HDR_T1 XI_PRM_INFO_MIN, &hdr_it1_min, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_HDR_T1 XI_PRM_INFO_MIN", QString::number(hdr_it1_min));
+				if (ret = pxiGetParam(m_handle, XI_PRM_HDR_T1 XI_PRM_INFO_MAX, &hdr_it1_max, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_HDR_T1 XI_PRM_INFO_MAX", QString::number(hdr_it1_max));
+				if (ret = pxiGetParam(m_handle, XI_PRM_HDR_T1 XI_PRM_INFO_INCREMENT, &hdr_it1_inc, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_HDR_T1 XI_PRM_INFO_INCREMENT", QString::number(hdr_it1_inc));
+				if (ret = pxiGetParam(m_handle, XI_PRM_TRG_SOURCE, &hdr_it1, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_TRG_SOURCE", QString::number(hdr_it1));
+				it->setVal<int>(hdr_it1);
+				it->setMeta(new ito::IntMeta(hdr_it1_min, hdr_it1_max, hdr_it1_inc), true);
+
+				it = m_params.find("hdr_it2");
+				int hdr_it2, hdr_it2_min, hdr_it2_max, hdr_it2_inc;
+				if (ret = pxiGetParam(m_handle, XI_PRM_HDR_T2 XI_PRM_INFO_MIN, &hdr_it2_min, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_HDR_T2 XI_PRM_INFO_MIN", QString::number(hdr_it2_min));
+				if (ret = pxiGetParam(m_handle, XI_PRM_HDR_T2 XI_PRM_INFO_MAX, &hdr_it2_max, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_HDR_T2 XI_PRM_INFO_MAX", QString::number(hdr_it2_max));
+				if (ret = pxiGetParam(m_handle, XI_PRM_HDR_T2 XI_PRM_INFO_INCREMENT, &hdr_it2_inc, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_HDR_T2 XI_PRM_INFO_INCREMENT", QString::number(hdr_it2_inc));
+				if (ret = pxiGetParam(m_handle, XI_PRM_HDR_T2, &hdr_it2, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_HDR_T2", QString::number(hdr_it2));
+				it->setVal<int>(hdr_it2);
+				it->setMeta(new ito::IntMeta(hdr_it2_min, hdr_it2_max, hdr_it2_inc), true);
+
+				it = m_params.find("hdr_knee1");
+				int hdr_knee1, hdr_knee1_min, hdr_knee1_max, hdr_knee1_inc;
+				if (ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT1 XI_PRM_INFO_MIN, &hdr_knee1_min, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_KNEEPOINT1 XI_PRM_INFO_MIN", QString::number(hdr_knee1_min));
+				if (ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT1 XI_PRM_INFO_MAX, &hdr_knee1_max, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_KNEEPOINT1 XI_PRM_INFO_MAX", QString::number(hdr_knee1_max));
+				if (ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT1 XI_PRM_INFO_INCREMENT, &hdr_knee1_inc, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_KNEEPOINT1 XI_PRM_INFO_INCREMENT", QString::number(hdr_knee1_inc));
+				if (ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT1, &hdr_knee1, &intSize, &intType))
+                    retValue += getErrStr(ret, "XI_PRM_KNEEPOINT1", QString::number(hdr_knee1));
+				it->setVal<int>(hdr_knee1);
+				it->setMeta(new ito::IntMeta(hdr_knee1_min, hdr_knee1_max, hdr_knee1_inc), true);
+
+				it = m_params.find("hdr_knee2");
+				int hdr_knee2, hdr_knee2_min, hdr_knee2_max, hdr_knee2_inc;
+				if (ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT2 XI_PRM_INFO_MIN, &hdr_knee2_min, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_KNEEPOINT2 XI_PRM_INFO_MIN", QString::number(hdr_knee2_min));
+				if (ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT2 XI_PRM_INFO_MAX, &hdr_knee2_max, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_KNEEPOINT2 XI_PRM_INFO_MAX", QString::number(hdr_knee2_max));
+				if (ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT2 XI_PRM_INFO_INCREMENT, &hdr_knee2_inc, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_KNEEPOINT2 XI_PRM_INFO_INCREMENT", QString::number(hdr_knee2_inc));
+				if (ret = pxiGetParam(m_handle, XI_PRM_KNEEPOINT2, &hdr_knee2, &intSize, &intType))
+                    retValue += getErrStr(ret, "XI_PRM_KNEEPOINT2", QString::number(hdr_knee2));
+				it->setVal<int>(hdr_knee2);
+				it->setMeta(new ito::IntMeta(hdr_knee2_min, hdr_knee2_max, hdr_knee2_inc), true);
+				
+
+
 				it = m_params.find("triggermode");
 				//Sets trigger mode
 				int trigger_mode = 3; //default trigger_mode is software trigger
