@@ -164,7 +164,7 @@ AvantesAvaSpec::AvantesAvaSpec() :
 
     int roi[] = {0, 0, 4096, 1};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height)").toLatin1().data());
-    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, roi[2]), ito::RangeMeta(0, roi[3],1,1,1,1));
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, roi[2]-1), ito::RangeMeta(0, roi[3]-1,1,1,1,1));
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -320,7 +320,7 @@ ito::RetVal AvantesAvaSpec::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 			m_params["sizex"].setMeta(new ito::IntMeta(1, nrPixels, 1), true);
 
             m_params["roi"].getVal<int*>()[2] = nrPixels;
-            m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, nrPixels, 1, 1, nrPixels, 1), ito::RangeMeta(0, 0)), true);
+            m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, nrPixels-1, 1, 1, nrPixels, 1), ito::RangeMeta(0, 0)), true);
 			
         }
     }

@@ -163,7 +163,7 @@ MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     int roi[] = {0, 0, 4048, 4048};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
-    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 4048), ito::RangeMeta(0, 4048));
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 4047), ito::RangeMeta(0, 4047));
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 #endif
@@ -300,7 +300,7 @@ ito::RetVal MSMediaFoundation::checkCameraAbilities()
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     int roi[] = {0, 0, m_imgCols, m_imgRows};
     m_params["roi"].setVal<int*>(roi, 4);
-    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, m_imgCols/*, 1, 1, m_imgCols*/), ito::RangeMeta(0, m_imgRows/*, 1, 1, m_imgRows*/));
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, m_imgCols - 1/*, 1, 1, m_imgCols*/), ito::RangeMeta(0, m_imgRows - 1/*, 1, 1, m_imgRows*/));
     m_params["roi"].setMeta(rm, true);
 #endif
 
