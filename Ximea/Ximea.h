@@ -146,8 +146,8 @@ class Ximea : public ito::AddInGrabber
 
 		ito::RetVal synchronizeCameraSettings(int what = sAll);
 
-		inline double musecToSec(int musec) { return (double)musec * 1.0e-6; }
-		inline int secToMusec(double sec) { return (int)(sec * 1.0e6); }
+		inline double musecToSec(double musec) { return (double)musec * 1.0e-6; }
+		inline double secToMusec(double sec) { return (double)(sec * 1.0e6); }
 
 		RoiMeta m_roiMeta;
 

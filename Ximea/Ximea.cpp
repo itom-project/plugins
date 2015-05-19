@@ -1771,9 +1771,10 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
 		if (ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, &intSize, &intType))
             retValue += getErrStr(ret, "XI_PRM_EXPOSURE", QString::number(integration_time));
 		if (integration_step == 0)
-		{
 			integration_step = integration_max - integration_min;
-		}	
+		if (integration_time == 0)
+			integration_time = integration_step;
+
 		it->setVal<double>(musecToSec(integration_time));
 		it->setMeta(new ito::DoubleMeta(musecToSec(integration_min + integration_step), musecToSec(integration_max - integration_step), musecToSec(integration_step)), true);
 	}

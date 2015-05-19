@@ -106,6 +106,7 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		ui.sliderWidget_integrationtime->setMaximum(secToMsec(integrationtime->getMax()));
 		ui.sliderWidget_integrationtime->setSingleStep(secToMsec(integrationtime->getStepSize()));
 		ui.sliderWidget_integrationtime->setValue((secToMsec(params["integration_time"].getVal<double>())));
+
 		ui.sliderWidget_integrationtime->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
 
 		ito::DoubleMeta *framerate = static_cast<ito::DoubleMeta*>(params["framerate"].getMeta());

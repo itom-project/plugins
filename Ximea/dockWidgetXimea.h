@@ -51,8 +51,8 @@ class DockWidgetXimea : public ito::AbstractAddInDockWidget
         bool m_firstRun;
         QMap<QString, ito::Param> m_currentParams;
 
-		inline double msecToSec(int musec) { return (double)musec * 1.0e-3; }
-		inline int secToMsec(double sec) { return (int)(sec * 1.0e3); }
+		inline double msecToSec(double musec) { return (double)musec * 1.0e-3; }
+		inline double secToMsec(double sec) { return (double)(sec * 1.0e3); }
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
