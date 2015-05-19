@@ -127,24 +127,24 @@ Ximea::Ximea() :
 
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>()
-                               << ito::Param("dark_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
-                               << ito::Param("white_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data())
-                               << ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1280, 0, tr("Position of ROI in x").toLatin1().data())
-                               << ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1024, 0, tr("Position of ROI in y").toLatin1().data());
+		<< ito::Param("dark_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
+		<< ito::Param("white_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data())
+		<< ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1280, 0, tr("Position of ROI in x").toLatin1().data())
+		<< ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1024, 0, tr("Position of ROI in y").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>();
 
     QVector<ito::Param> pOut = QVector<ito::Param>();
     registerExecFunc("initialize_shading", pMand, pOpt, pOut, tr("Initialize pixel shading correction. At the moment you can only use one set of data which will be rescaled each time"));
 
     pMand = QVector<ito::Param>()
-            << ito::Param("illumination", ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 0, tr("Current intensity value").toLatin1().data());
+        << ito::Param("illumination", ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 0, tr("Current intensity value").toLatin1().data());
     pOpt = QVector<ito::Param>();
     pOut = QVector<ito::Param>();
     registerExecFunc("update_shading", pMand, pOpt, pOut, tr("Change value of the shading correction"));
 
     pMand = QVector<ito::Param>()
-            << ito::Param("integration_time", ito::ParamBase::Double, 0.000000, 0.000000, 0.000000, tr("Integrationtime of CCD programmed in s").toLatin1().data())
-            << ito::Param("shading_correction_factor", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("Corresponding values for shading correction").toLatin1().data());
+        << ito::Param("integration_time", ito::ParamBase::Double, 0.000000, 0.000000, 0.000000, tr("Integrationtime of CCD programmed in s").toLatin1().data())
+        << ito::Param("shading_correction_factor", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("Corresponding values for shading correction").toLatin1().data());
     pOpt = QVector<ito::Param>();
     pOut = QVector<ito::Param>();
     registerExecFunc("shading_correction_values", pMand, pOpt, pOut, tr("Change value of the shading correction"));
@@ -172,7 +172,7 @@ Ximea::Ximea() :
    paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("Sharpness strenght (-4 less sharp, +4 more sharp).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 1, tr("Enable HDR mode. (default: 0)").toLatin1().data());
+   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 1, tr("Enable HDR mode. default is OFF").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("hdr_knee1", ito::ParamBase::Int, 0, 100, 40, tr("First kneepoint (% of sensor saturation).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
@@ -192,17 +192,17 @@ Ximea::Ximea() :
    m_params.insert(paramVal.getName(), paramVal);
 #endif
    
-	paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 2047, 0, tr("Startvalue for ROI.").toLatin1().data());
+	paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 0, 0, tr("Startvalue for ROI.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 2047, 0, tr("Startvalue for ROI.").toLatin1().data());
+	paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 0, 0, tr("Startvalue for ROI.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 2047, 2047, tr("Stopvalue for ROI.").toLatin1().data());
+	paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 0, 0, tr("Stopvalue for ROI.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 2047, 2047, tr("Stopvalue for ROI.").toLatin1().data());
+	paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 0, 0, tr("Stopvalue for ROI.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1280, tr("ROI-Size in x (cols).").toLatin1().data());
+	paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 0, 0, tr("ROI-Size in x (cols).").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1024, tr("ROI-Size in y (rows).").toLatin1().data());
+	paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 0, 0, tr("ROI-Size in y (rows).").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 
 	paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 14, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth).").toLatin1().data());
@@ -226,11 +226,8 @@ Ximea::Ximea() :
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("bad_pixel", ito::ParamBase::Int, 0, 1, 1, tr("Enable bad pixel correction.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-#if defined XI_GPO_BUSY_NEG
-    paramVal = ito::Param("gpo_mode", ito::ParamBase::Int, XI_GPO_OFF, XI_GPO_BUSY_NEG, XI_GPO_OFF, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
-#else
-   paramVal = ito::Param("gpo_mode", ito::ParamBase::Int, XI_GPO_OFF, XI_GPO_EXPOSURE_PULSE_NEG, XI_GPO_OFF, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
-#endif
+    paramVal = ito::Param("gpo_mode", ito::ParamBase::Int, 0, 1, 1, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("gpi_mode", ito::ParamBase::Int, XI_GPI_OFF, XI_GPI_EXT_EVENT, XI_GPI_OFF, tr("Set the input pin mode for the camera, default is off").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("gpi_level", ito::ParamBase::Int, 0, 1, 1, tr("GPI input level").toLatin1().data());
@@ -1505,8 +1502,6 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
             }
 
-        
-    
             if (!retValue.containsError())
             {
                 //get available bandwidth in Mb/sec
@@ -1548,10 +1543,23 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             if (!retValue.containsError())
             {
 				it = m_params.find("gpi_mode");
-				int gpi = 0; //default start with hdr mode disabled 
+				int gpi = 0; //default start with gpi mode disabled 
 				if (ret = pxiSetParam(m_handle, XI_PRM_GPI_MODE, &gpi, sizeof(int), intType))
                     retValue += getErrStr(ret, "XI_PRM_GPI_MODE", QString::number(gpi));
 				it->setVal<int>(gpi);
+
+				it = m_params.find("gpo_mode");
+				int gpo, gpo_min, gpo_max, gpo_inc;//default start with gpo mode disabled
+				if (ret = pxiGetParam(m_handle, XI_PRM_GPO_MODE XI_PRM_INFO_MIN, &gpo_min, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_GPO_MODE XI_PRM_INFO_MIN", QString::number(gpo_min));
+				if (ret = pxiGetParam(m_handle, XI_PRM_GPO_MODE XI_PRM_INFO_MAX, &gpo_max, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_GPO_MODE XI_PRM_INFO_MAX", QString::number(gpo_max));
+				if (ret = pxiGetParam(m_handle, XI_PRM_GPO_MODE XI_PRM_INFO_INCREMENT, &gpo_inc, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_GPO_MODE XI_PRM_INFO_INCREMENT", QString::number(gpo_inc));
+				if (ret = pxiGetParam(m_handle, XI_PRM_GPO_MODE, &gpo, &intSize, &intType))
+                    retValue += getErrStr(ret, "XI_PRM_GPO_MODE", QString::number(gpo));
+				it->setVal<int>(gpo);
+				it->setMeta(new ito::IntMeta(gpo_min, gpo_max, gpo_inc), true);
 
 				it = m_params.find("gpi_level");
 				int gpi_level, gpi_level_min, gpi_level_max, gpi_level_inc;
