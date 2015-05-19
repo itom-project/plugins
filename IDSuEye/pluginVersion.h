@@ -28,8 +28,7 @@
 #ifndef PLUGINVERSION_H
 #define PLUGINVERSION_H
 
-#define CREATE_VERSION(major,minor,patch) ((major<<16)|(major<<8)|(patch))
-#define CREATE_VERSION_STRING(major,minor,patch) #major"."#minor"."patch
+#include "itom_sdk.h"
 
 #define PLUGIN_VERSION_MAJOR 0
 #define PLUGIN_VERSION_MINOR 0
