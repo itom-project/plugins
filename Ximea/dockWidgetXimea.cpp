@@ -31,9 +31,7 @@ DockWidgetXimea::DockWidgetXimea(int uniqueID, ito::AddInDataIO *grabber) :
 	m_firstRun(true)
 {
      ui.setupUi(this); 
-
      identifierChanged(QString::number(uniqueID));
-
      enableWidget(true);
  }
 
@@ -44,12 +42,15 @@ void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
     ui.sliderWidget_gain->setVisible( !(params["gain"].getFlags() & ito::ParamBase::Readonly ));
     ui.sliderWidget_integrationtime->setDisabled( params["integration_time"].getFlags() & ito::ParamBase::Readonly );
     ui.sliderWidget_integrationtime->setVisible( !(params["integration_time"].getFlags() & ito::ParamBase::Readonly ));
-
     if (m_firstRun)
     {
+		ui.label_sensor->setText(params["sensor_type"].getVal<char*>());
+		ui.label_serial->setText(QString::number(params["serial_number"].getVal<int>()));
+		ui.label_width->setText(QString::number(params["sizex"].getVal<int>()));
+		ui.label_height->setText(QString::number(params["sizey"].getVal<int>()));
+		ui.label_bits->setText(QString::number(params["bpp"].getVal<int>()));
         //use params (identical to m_params of the plugin)
         //and initialize all widgets (e.g. min, max values, labels, enable some,...)
-
         
         if (!(params["gain"].getFlags() & ito::ParamBase::Readonly))
         {
@@ -183,5 +184,5 @@ void DockWidgetXimea::enableWidget(bool enabled)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetXimea::identifierChanged(const QString &identifier)
 {
-    ui.lblID->setText(identifier);
+    ui.label_ID->setText(identifier);
 }
