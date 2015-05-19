@@ -68,7 +68,8 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 
 		for(int i = 0; i < ui.combo_bin->count(); ++i)
 		{
-			if(ui.combo_bin->itemData(i, 32).toInt() == binning)
+            ui.combo_bin->setCurrentIndex(i);
+			if(ui.combo_bin->currentText().toInt() == binning)
 			{
 				ui.combo_bin->setCurrentIndex(i);
 				break;
@@ -84,14 +85,15 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 			ui.combo_bpp->addItem(QString("%1").arg(i), i);
 		}
 
-		for (int i = 0; i < ui.combo_bpp->count(); ++i)
-		{
-			if (ui.combo_bpp->itemData(i, 32).toInt() == bpp)
-			{
-				ui.combo_bpp->setCurrentIndex(i);
-				break;
-			}
-		}
+        for (int i = 0; i < ui.combo_bpp->count(); ++i)
+        {
+            ui.combo_bpp->setCurrentIndex(i);
+            if (ui.combo_bpp->currentText().toInt() == bpp)
+            {
+                ui.combo_bpp->setCurrentIndex(i);
+                break;
+            }
+        }
 		ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
 
 		ito::DoubleMeta *gain = static_cast<ito::DoubleMeta*>(params["gain"].getMeta());
@@ -290,7 +292,8 @@ ito::RetVal DialogXimea::applyParameters()
     }
 #endif
    
-	if (ui.combo_bin->isEnabled())
+	//if (ui.combo_bin->isEnabled())
+    if (0)
 	{
 		int bin = ui.combo_bin->itemData(ui.combo_bin->currentIndex()).toInt();//TODO check
 		if (m_currentParameters["binning"].getVal<int>() != bin)
