@@ -233,6 +233,8 @@ Ximea::Ximea() :
 #endif
 	paramVal = ito::Param("gpi_mode", ito::ParamBase::Int, XI_GPI_OFF, XI_GPI_EXT_EVENT, XI_GPI_OFF, tr("Set the input pin mode for the camera, default is off").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("gpi_level", ito::ParamBase::Int, 0, 1, 1, tr("GPI input level").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("serial_number", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, 1, 1, tr("Serial Number of device.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("sensor_type", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Sensor type of the attached camera").toLatin1().data());
@@ -880,46 +882,38 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			if (ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING_TYPE, &type, sizeof(int), intType))
                 retValue += getErrStr(ret, "XI_PRM_DOWNSAMPLING_TYPE", QString::number(type));
 		}
-        else if (QString::compare(key, "bad_pixel", Qt::CaseInsensitive) == 0 )
+        else if (QString::compare(key, "bad_pixel", Qt::CaseInsensitive) == 0)
         {
-            int enable = val->getVal<int>() > 0 ? 1 : 0;
-            int maxVal = 0;
-            int curVal = 0;
-
-            
+            int enable = val->getVal<int>();            
             if (ret = pxiSetParam(m_handle, XI_PRM_BPC, &enable, sizeof(int), intType))
                 retValue += getErrStr(ret, "XI_PRM_BPC", QString::number(enable));
-            if (ret = pxiGetParam(m_handle, XI_PRM_BPC, &curVal, &intSize, &intType))
-                retValue += getErrStr(ret, "XI_PRM_BPC", QString::number(curVal));
-            else
-                m_params["bad_pixel"].setVal(curVal);
+            if (!retValue.containsError())
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
         }
 		else if (QString::compare(key, "gpo_mode", Qt::CaseInsensitive) == 0)
         {
-			int mode = val->getVal<int>();       
-			DWORD pSize = sizeof(int);
-            XI_PRM_TYPE pType = xiTypeInteger;
-
+			int mode = val->getVal<int>();
             if ((ret = pxiSetParam(m_handle, XI_PRM_GPO_MODE, &mode, sizeof(int), xiTypeInteger)))
-            {
                 retValue += getErrStr(ret, "XI_PRM_GPO_MODE", QString::number(mode));
-            }
             if (!retValue.containsError())
-                m_params["gpo_mode"].setVal(mode);
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
         }
         else if (QString::compare(key, "gpi_mode", Qt::CaseInsensitive) == 0)
         {
             int mode =val->getVal<int>();      
-            DWORD pSize = sizeof(int);
-            XI_PRM_TYPE pType = xiTypeInteger;
-
             if ((ret = pxiSetParam(m_handle, XI_PRM_GPI_MODE, &mode, sizeof(int), xiTypeInteger)))
-            {
                 retValue += getErrStr(ret, "XI_PRM_GPI_MODE", QString::number(mode));
-            }
             if (!retValue.containsError())
-                m_params["gpi_mode"].setVal(mode);
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
         }
+		else if (QString::compare(key, "gpi_level", Qt::CaseInsensitive) == 0)
+		{
+			int gpi_level = val->getVal<int>();
+			if (ret = pxiSetParam(m_handle, XI_PRM_GPI_LEVEL , &gpi_level, sizeof(int), intType))
+                retValue += getErrStr(ret, "XI_PRM_GPI_LEVEL", QString::number(gpi_level));
+			if (!retValue.containsError())
+				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+		}
 
         else if (QString::compare(key, "hdr_enable", Qt::CaseInsensitive) == 0)
         {
@@ -951,30 +945,10 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             }
 
 #else  
-            if(enable)
-            {
-                
-                if (ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), intType))
-                    retValue += getErrStr(ret, "XI_PRM_KNEEPOINT1", QString::number(knee1));
-                
-                if (ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT2 , &knee2, sizeof(int), intType))
-                    retValue += getErrStr(ret, "XI_PRM_KNEEPOINT2", QString::number(knee2));
-                
-                if (ret = pxiSetParam(m_handle, XI_PRM_HDR_T1 , &intTime1, sizeof(int), intType))
-                    retValue += getErrStr(ret, "XI_PRM_HDR_T1", QString::number(intTime1));
-                
-                if (ret = pxiSetParam(m_handle, XI_PRM_HDR_T2, &intTime2, sizeof(int), intType))
-                    retValue += getErrStr(ret, "XI_PRM_HDR_T2", QString::number(intTime2));
-
-            }
-            
             if (ret = pxiSetParam(m_handle, XI_PRM_HDR, &enable, sizeof(int), intType))
                 retValue += getErrStr(ret, "XI_PRM_HDR", QString::number(enable));
-
 			if (!retValue.containsError())
-			{
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
-			}
 #endif
         }
 		else if (QString::compare(key, "hdr_it1", Qt::CaseInsensitive) == 0)
@@ -983,9 +957,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			if (ret = pxiSetParam(m_handle, XI_PRM_HDR_T1 , &hdr1, sizeof(int), intType))
                 retValue += getErrStr(ret, "XI_PRM_HDR_T1", QString::number(hdr1));
 			if (!retValue.containsError())
-			{
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
-			}
 		}
 		else if (QString::compare(key, "hdr_it2", Qt::CaseInsensitive) == 0)
 		{
@@ -993,9 +965,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			if (ret = pxiSetParam(m_handle, XI_PRM_HDR_T2, &hdr2, sizeof(int), intType))
                 retValue += getErrStr(ret, "XI_PRM_HDR_T2", QString::number(hdr2));
 			if (!retValue.containsError())
-			{
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
-			}
 		}
 		else if (QString::compare(key, "hdr_knee1", Qt::CaseInsensitive) == 0)
 		{
@@ -1003,9 +973,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			if (ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), intType))
                 retValue += getErrStr(ret, "XI_PRM_KNEEPOINT1", QString::number(knee1));
 			if (!retValue.containsError())
-			{
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
-			}
 		}
 		else if (QString::compare(key, "hdr_knee2", Qt::CaseInsensitive) == 0)
 		{
@@ -1013,25 +981,21 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 			if (ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT2 , &knee2, sizeof(int), intType))
                     retValue += getErrStr(ret, "XI_PRM_KNEEPOINT2", QString::number(knee2));
 			if (!retValue.containsError())
-			{
 				it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
-			}
 		}
         else if (QString::compare(key, "integration_time", Qt::CaseInsensitive) == 0)
         {
-
 			int integration_time = secToMusec(val->getVal<double>());            
             if (ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), intType))
-                retValue += getErrStr(ret, "XI_PRM_EXPOSURE", QString::number(integration_time));	
+                retValue += getErrStr(ret, "XI_PRM_EXPOSURE", QString::number(integration_time));
+
 			if (ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, &intSize, &intType))
 				retValue += getErrStr(ret, "XI_PRM_EXPOSURE", QString::number(integration_time));
 			else
 				m_params["integration_time"].setVal<double>(musecToSec(integration_time));
 
 			if (!retValue.containsError())
-			{
 				retValue += synchronizeCameraSettings(sExposure | sFrameRate | sGain);
-			}
 
         }
         else if (QString::compare(key, "sharpness", Qt::CaseInsensitive) == 0)
@@ -1045,20 +1009,6 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 				retValue += synchronizeCameraSettings(sSharpness);
 			}
         }
-        /*
-        else if (QString::compare(key, "offset", Qt::CaseInsensitive) ==0)
-        {
-            int offset = val->getVal<int>();
-			if (ret = pxiSetParam(m_handle, XI_PRM_IMAGE_BLACK_LEVEL, &offset, sizeof(int), intType))
-                retValue += getErrStr(ret, "XI_PRM_IMAGE_BLACK_LEVEL", QString::number(offset));			    
-			
-            if (!retValue.containsError())
-            {
-                it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
-				retValue += synchronizeCameraSettings(sOffset);
-            }
-        }
-        */
         else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
         {
 			float gamma = (float)val->getVal<double>();
@@ -1152,7 +1102,6 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         }
         else if (QString::compare(key, "gain", Qt::CaseInsensitive) == 0)
         {
-
 			float gain = val->getVal<double>();
             float gain_max;
             if (ret = pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_MAX, &gain_max, &floatSize, &floatType))
@@ -1598,6 +1547,25 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
             if (!retValue.containsError())
             {
+				it = m_params.find("gpi_mode");
+				int gpi = 0; //default start with hdr mode disabled 
+				if (ret = pxiSetParam(m_handle, XI_PRM_GPI_MODE, &gpi, sizeof(int), intType))
+                    retValue += getErrStr(ret, "XI_PRM_GPI_MODE", QString::number(gpi));
+				it->setVal<int>(gpi);
+
+				it = m_params.find("gpi_level");
+				int gpi_level, gpi_level_min, gpi_level_max, gpi_level_inc;
+				if (ret = pxiGetParam(m_handle, XI_PRM_GPI_LEVEL XI_PRM_INFO_MIN, &gpi_level_min, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_GPI_LEVEL XI_PRM_INFO_MIN", QString::number(gpi_level_min));
+				if (ret = pxiGetParam(m_handle, XI_PRM_GPI_LEVEL XI_PRM_INFO_MAX, &gpi_level_max, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_GPI_LEVEL XI_PRM_INFO_MAX", QString::number(gpi_level_max));
+				if (ret = pxiGetParam(m_handle, XI_PRM_GPI_LEVEL XI_PRM_INFO_INCREMENT, &gpi_level_inc, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_GPI_LEVEL XI_PRM_INFO_INCREMENT", QString::number(gpi_level_inc));
+				if (ret = pxiGetParam(m_handle, XI_PRM_GPI_LEVEL, &gpi_level, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_GPI_LEVEL", QString::number(gpi_level));
+				it->setVal<int>(gpi_level);
+				it->setMeta(new ito::IntMeta(gpi_level_min, gpi_level_max, gpi_level_inc), true);
+
 				it = m_params.find("hdr_enable");
 				int hdr_enable = 0; //default start with hdr mode disabled
 
@@ -1613,8 +1581,8 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 					retValue += getErrStr(ret, "XI_PRM_HDR_T1 XI_PRM_INFO_MAX", QString::number(hdr_it1_max));
 				if (ret = pxiGetParam(m_handle, XI_PRM_HDR_T1 XI_PRM_INFO_INCREMENT, &hdr_it1_inc, &intSize, &intType))
 					retValue += getErrStr(ret, "XI_PRM_HDR_T1 XI_PRM_INFO_INCREMENT", QString::number(hdr_it1_inc));
-				if (ret = pxiGetParam(m_handle, XI_PRM_TRG_SOURCE, &hdr_it1, &intSize, &intType))
-					retValue += getErrStr(ret, "XI_PRM_TRG_SOURCE", QString::number(hdr_it1));
+				if (ret = pxiGetParam(m_handle, XI_PRM_HDR_T1, &hdr_it1, &intSize, &intType))
+					retValue += getErrStr(ret, "XI_PRM_HDR_T1", QString::number(hdr_it1));
 				it->setVal<int>(hdr_it1);
 				it->setMeta(new ito::IntMeta(hdr_it1_min, hdr_it1_max, hdr_it1_inc), true);
 
@@ -1656,7 +1624,6 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     retValue += getErrStr(ret, "XI_PRM_KNEEPOINT2", QString::number(hdr_knee2));
 				it->setVal<int>(hdr_knee2);
 				it->setMeta(new ito::IntMeta(hdr_knee2_min, hdr_knee2_max, hdr_knee2_inc), true);
-				
 
 
 				it = m_params.find("triggermode");
@@ -1688,9 +1655,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 				it->setVal<int>(frames);
 				it->setMeta(new ito::IntMeta(frames_min, frames_max, frames_steps), true);
 				
-
 				retValue += synchronizeCameraSettings(sExposure | sBinning | sFrameRate | sOffset | sGamma | sSharpness | sGain | sRoi | sBpp);
-
 
     #ifndef USE_OLD_API
 			    int timing_mode = 0;			    
@@ -1712,16 +1677,15 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 			    if (ret = pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &pType))
                     retValue += getErrStr(ret, "XI_PRM_OUTPUT_DATA_BIT_DEPTH", QString::number(output_bit_depth));
 			    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(output_bit_depth);
-
 			    m_params["bpp"].setVal<int>(output_bit_depth);
 
-			    // bad pixel correction
-			    int badpix;
-			    if (ret = pxiGetParam(m_handle, XI_PRM_BPC, &badpix, &intSize, &intType))
+			    
+				it = m_params.find("bad_pixel");
+			    int badpix = 0;// bad pixel correction default = 0
+			    if (ret = pxiSetParam(m_handle, XI_PRM_BPC, &badpix, sizeof(int), xiTypeInteger))
                     retValue += getErrStr(ret, "XI_PRM_BPC", QString::number(badpix));
-			    m_params["bad_pixel"].setVal(badpix);
+			    it->setVal<int>(badpix);
             }
-
 
             if (!retValue.containsError())
             {
