@@ -1792,6 +1792,11 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             retValue += getErrStr(ret, "XI_PRM_DOWNSAMPLING XI_PRM_INFO_MAX", QString::number(binning_max));
 		it->setVal<int>(binning * 101);
 		it->setMeta(new ito::IntMeta(binning_min * 101, binning_max * 101), true);
+		if (binning_min == binning_max)
+		{
+			it->setFlags(0);
+			it->setFlags(ito::ParamBase::Readonly);
+		}
 	}
 	if (what & sFrameRate)
 	{
@@ -1809,6 +1814,11 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             retValue += getErrStr(ret, "XI_PRM_FRAMERATE XI_PRM_INFO_INCREMENT", QString::number(framerate_inc));
 		it->setVal<double>(framerate);
 		it->setMeta(new ito::DoubleMeta(framerate_min, framerate_max, framerate_inc), true);
+		if (framerate_min == framerate_max)
+		{
+			it->setFlags(0);
+			it->setFlags(ito::ParamBase::Readonly);
+		}
 	}
 	if (what & sRoi)
 	{
@@ -1926,6 +1936,11 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             retValue += getErrStr(ret, "XI_PRM_GAIN XI_PRM_INFO_INCREMENT", QString::number(gain_inc));
 		it->setVal<double>(gain/ gain_max);
 		it->setMeta(new ito::DoubleMeta(gain_min/ gain_max, gain_max/ gain_max, gain_inc/ gain_max), true);
+		if (gain_min == gain_max)
+		{
+			it->setFlags(0);
+			it->setFlags(ito::ParamBase::Readonly);
+		}
 	}
 	/*
     if (what & sOffset)
@@ -1961,6 +1976,11 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             retValue += getErrStr(ret, "XI_PRM_GAMMAY XI_PRM_INFO_INCREMENT", QString::number(gamma_inc));
 		it->setVal<double>(gamma);
 		it->setMeta(new ito::DoubleMeta(gamma_min, gamma_max, gamma_inc), true);
+		if(gamma_min == gamma_max)
+		{
+			it->setFlags(0);
+			it->setFlags(ito::ParamBase::Readonly);
+		}
 	}
 	if (what & sSharpness)
 	{
@@ -1978,6 +1998,11 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
             retValue += getErrStr(ret, "XI_PRM_SHARPNESS XI_PRM_INFO_INCREMENT", QString::number(sharpness_inc));
 		it->setVal<double>(sharpness);
 		it->setMeta(new ito::DoubleMeta(sharpness_min, sharpness_max, sharpness_inc), true);
+		if (sharpness_min == sharpness_max)
+		{
+			it->setFlags(0);
+			it->setFlags(ito::ParamBase::Readonly);
+		}
 	}
 	if (what & sTriggerMode)
 	{
