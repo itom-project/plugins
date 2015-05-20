@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "CommonVisionBlox" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -45,8 +45,8 @@ static const size_t DRIVERPATHSIZE = 256;
 CommonVisionBlox::CommonVisionBlox() :
     AddInGrabber(),
     m_isGrabbing(false),
-	m_hNodeMap(NULL),
-	m_hCamera(NULL)
+    m_hNodeMap(NULL),
+    m_hCamera(NULL)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "CommonVisionBlox", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
@@ -72,28 +72,28 @@ CommonVisionBlox::CommonVisionBlox() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 8, 16, 16, tr("bit depth").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 8, 16, 16, tr("bit depth").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
 #if 0
-	paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 608, 1, tr("left end of the ROI").toLatin1().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 608, 1, tr("left end of the ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("x1", ito::ParamBase::Int, 32, 640, 1, tr("right end of the ROI").toLatin1().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int, 32, 640, 1, tr("right end of the ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 508, 1, tr("upper end of the ROI").toLatin1().data());
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 508, 1, tr("upper end of the ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("y1", ito::ParamBase::Int, 4, 512, 1, tr("downer end of the ROI").toLatin1().data());
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 4, 512, 1, tr("downer end of the ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 #endif
 
-	paramVal = ito::Param("raw", ito::ParamBase::String ,"", tr("use raw:paramname to set internal paramname of camera to value").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("raw", ito::ParamBase::String ,"", tr("use raw:paramname to set internal paramname of camera to value").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("vendor_name", ito::ParamBase::String | ito::ParamBase::Readonly ,"unknown", tr("vendor name").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("model_name", ito::ParamBase::String | ito::ParamBase::Readonly ,"unknown", tr("model name").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
 
     int roi[] = {0, 0, 640, 512};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
@@ -127,53 +127,53 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retVal;
 
-	bool scan = paramsOpt->at(0).getVal<int>() > 0;
+    bool scan = paramsOpt->at(0).getVal<int>() > 0;
     int bpp = paramsOpt->at(1).getVal<int>();
 
-	if (scan)
-	{
-		retVal += scan_for_cameras();
-	}
+    if (scan)
+    {
+        retVal += scan_for_cameras();
+    }
 
-	if (!retVal.containsError())
-	{
+    if (!retVal.containsError())
+    {
 
-		// load the first camera
-		char driverPath[DRIVERPATHSIZE] = { 0 };
-		TranslateFileName("%CVB%\\Drivers\\GenICam.vin", driverPath, DRIVERPATHSIZE);
-		cvbbool_t success = LoadImageFile(driverPath, m_hCamera); 
+        // load the first camera
+        char driverPath[DRIVERPATHSIZE] = { 0 };
+        TranslateFileName("%CVB%\\Drivers\\GenICam.vin", driverPath, DRIVERPATHSIZE);
+        cvbbool_t success = LoadImageFile(driverPath, m_hCamera); 
 
-		if (!success)
-		{
-			if (scan)
-			{
-				retVal += ito::RetVal::format(ito::retError, 0, "Error loading %s driver! Probably no cameras were found during discovery", driverPath);
-			}
-			else
-			{
-				retVal += ito::RetVal::format(ito::retError, 0, "Error loading %s driver! Probably no cameras are configured / reachable!", driverPath);
-			}
-		}
-		else if (CanNodeMapHandle(m_hCamera))
-		{
-			retVal += checkError(NMHGetNodeMap(m_hCamera, m_hNodeMap));
-		}
-		else if (!CanGrab2(m_hCamera))
-		{
-			retVal += ito::RetVal(ito::retError, 0, "camera does not support the Grab2 interface from Common Vision Blox");
-		}
-		else if (!CanGrabber(m_hCamera))
-		{
-			retVal += ito::RetVal(ito::retError, 0, "camera does not support the Grabber interface from Common Vision Blox");
-		}
-		/*else if (!CanSoftwareTrigger (m_hCamera))
-		{
-			retVal += ito::RetVal(ito::retError, 0, "camera does not support the SoftwareTrigger interface from Common Vision Blox");
-		}*/
-	}
+        if (!success)
+        {
+            if (scan)
+            {
+                retVal += ito::RetVal::format(ito::retError, 0, "Error loading %s driver! Probably no cameras were found during discovery", driverPath);
+            }
+            else
+            {
+                retVal += ito::RetVal::format(ito::retError, 0, "Error loading %s driver! Probably no cameras are configured / reachable!", driverPath);
+            }
+        }
+        else if (CanNodeMapHandle(m_hCamera))
+        {
+            retVal += checkError(NMHGetNodeMap(m_hCamera, m_hNodeMap));
+        }
+        else if (!CanGrab2(m_hCamera))
+        {
+            retVal += ito::RetVal(ito::retError, 0, "camera does not support the Grab2 interface from Common Vision Blox");
+        }
+        else if (!CanGrabber(m_hCamera))
+        {
+            retVal += ito::RetVal(ito::retError, 0, "camera does not support the Grabber interface from Common Vision Blox");
+        }
+        /*else if (!CanSoftwareTrigger (m_hCamera))
+        {
+            retVal += ito::RetVal(ito::retError, 0, "camera does not support the SoftwareTrigger interface from Common Vision Blox");
+        }*/
+    }
 
-	if (!retVal.containsError())
-	{
+    if (!retVal.containsError())
+    {
         QString desiredPixelType;
         desiredPixelType = QString("Mono%1").arg(bpp);
         ito::RetVal r = setParamString("PixelFormat", desiredPixelType.toLatin1().data());
@@ -193,7 +193,7 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
         if (!retVal.containsError())
         {
             QByteArray pixelFormat;
-		    retVal += getParamString("PixelFormat", pixelFormat);
+            retVal += getParamString("PixelFormat", pixelFormat);
 
             //filter string meta for usable items
 
@@ -222,16 +222,16 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
                 m_params["bpp"].setVal<int>(16);
                 m_params["bpp"].setMeta(new ito::IntMeta(16,16), true);
             }
-		    else
-		    {
-			    retVal += ito::RetVal::format(ito::retError, 0, "unsupported pixel format %s (supported is Mono8 and Mono16", pixelFormat.data());
-		    }
+            else
+            {
+                retVal += ito::RetVal::format(ito::retError, 0, "unsupported pixel format %s (supported is Mono8 and Mono16", pixelFormat.data());
+            }
         }
 
         QByteArray serialNumber;
         retVal += getParamString("DeviceID" /*"_CAM_SER"*/, serialNumber);
 
-		if (!retVal.containsError())
+        if (!retVal.containsError())
         {
             setIdentifier(serialNumber);
         }
@@ -286,8 +286,8 @@ ito::RetVal CommonVisionBlox::init(QVector<ito::ParamBase> *paramsMand, QVector<
             m_params["trigger_mode"].setFlags(ito::ParamBase::Readonly);
         }
 
-		retVal += synchronize();
-	}
+        retVal += synchronize();
+    }
 
     if(!retVal.containsError())
     {
@@ -324,16 +324,16 @@ ito::RetVal CommonVisionBlox::close(ItomSharedSemaphore *waitCond)
         retValue += stopDevice(NULL);
     }
 
-	if (m_hNodeMap)
-	{
-		ReleaseObject(m_hNodeMap);
-		m_hNodeMap = NULL;
-	}
+    if (m_hNodeMap)
+    {
+        ReleaseObject(m_hNodeMap);
+        m_hNodeMap = NULL;
+    }
 
-	if (m_hCamera)
-	{
-		ReleaseObject(m_hCamera); 
-	}    
+    if (m_hCamera)
+    {
+        ReleaseObject(m_hCamera); 
+    }    
 
     if(waitCond)
     {
@@ -383,32 +383,32 @@ ito::RetVal CommonVisionBlox::getParam(QSharedPointer<ito::Param> val, ItomShare
         {
             if (suffix == "")
             {
-			    cvbdim_t nodeCount;
-			    retValue += checkError(NMNodeCount(m_hNodeMap, nodeCount));
-			    if (!retValue.containsError())
-			    {			
-				    char nodeName[128] = {0};
-				    char info[128] = {8};
-				    size_t nodeNameSize = 128;
-				    QByteArray value;
-				    NODE node = NULL;
-				    for (cvbdim_t i = 0; i < nodeCount; ++i)
-				    {
-					
-					    NMListNode(m_hNodeMap, i, nodeName, nodeNameSize);
+                cvbdim_t nodeCount;
+                retValue += checkError(NMNodeCount(m_hNodeMap, nodeCount));
+                if (!retValue.containsError())
+                {            
+                    char nodeName[128] = {0};
+                    char info[128] = {8};
+                    size_t nodeNameSize = 128;
+                    QByteArray value;
+                    NODE node = NULL;
+                    for (cvbdim_t i = 0; i < nodeCount; ++i)
+                    {
+                    
+                        NMListNode(m_hNodeMap, i, nodeName, nodeNameSize);
 
-					    NMGetNode(m_hNodeMap, nodeName, node);
-					    NInfoAsString(node, NI_AccessMode, info, nodeNameSize);
-					    ReleaseObject(node);
-					
-					    //if (strcmp(info, "Read Only") != 0)
-					    //{
-						    //NI_AccessMode
-						    this->getParamString(nodeName, value);
-						    std::cout << i << ": " << nodeName << ": " << value.data() << "(" << info << ")\n" << std::endl;
-					    //}
-				    }
-			    }
+                        NMGetNode(m_hNodeMap, nodeName, node);
+                        NInfoAsString(node, NI_AccessMode, info, nodeNameSize);
+                        ReleaseObject(node);
+                    
+                        //if (strcmp(info, "Read Only") != 0)
+                        //{
+                            //NI_AccessMode
+                            this->getParamString(nodeName, value);
+                            std::cout << i << ": " << nodeName << ": " << value.data() << "(" << info << ")\n" << std::endl;
+                        //}
+                    }
+                }
             }
             else
             {
@@ -574,97 +574,97 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
-	if (!retValue.containsError())
-	{
-		if (key == "integration_time")
-		{
-			retValue += setParamInt(m_nameConverter["integration_time"], (cvbint64_t)(val->getVal<double>() * 1e6));
-			retValue += synchronize(integration_time);
-		}
+    if (!retValue.containsError())
+    {
+        if (key == "integration_time")
+        {
+            retValue += setParamInt(m_nameConverter["integration_time"], (cvbint64_t)(val->getVal<double>() * 1e6));
+            retValue += synchronize(integration_time);
+        }
         else if (key == "heartbeat_timeout")
         {
             retValue += setParamInt("GevHeartbeatTimeout", (cvbint64_t)(val->getVal<int>()));
         }
-		else if (key == "raw")
-		{
-			if (suffix != "")
-			{
-				retValue += setParamString(suffix.toLatin1().data(), val->getVal<char*>());
-			}
+        else if (key == "raw")
+        {
+            if (suffix != "")
+            {
+                retValue += setParamString(suffix.toLatin1().data(), val->getVal<char*>());
+            }
             else
             {
-		        retValue += ito::RetVal(ito::retError, 0, "you need to indiciate a suffix for the node you want to set");	    
+                retValue += ito::RetVal(ito::retError, 0, "you need to indiciate a suffix for the node you want to set");        
             }
         }
-		else if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi" || key == "acquisition_mode" || key == "trigger_mode")
-		{
-			int started = this->grabberStartedCount();
-			if (started > 0)
-			{
-				setGrabberStarted(1);
-				stopDevice(NULL);
-			}
+        else if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi" || key == "acquisition_mode" || key == "trigger_mode")
+        {
+            int started = this->grabberStartedCount();
+            if (started > 0)
+            {
+                setGrabberStarted(1);
+                stopDevice(NULL);
+            }
 
-			if (key == "roi")
-			{
-				if (hasIndex)
-				{
-					switch (index)
-					{
-					case 0:
-						retValue += setParamInt("OffsetX", val->getVal<int>());
-						break;
-					case 1:
-						retValue += setParamInt("OffsetY", val->getVal<int>());
-						break;
-					case 2:
-						retValue += setParamInt("Width", val->getVal<int>());
-						break;
-					case 3:
-						retValue += setParamInt("Height", val->getVal<int>());
-						break;
-					default:
-						retValue += ito::RetVal(ito::retError, 0, "invalid index");
-					}
+            if (key == "roi")
+            {
+                if (hasIndex)
+                {
+                    switch (index)
+                    {
+                    case 0:
+                        retValue += setParamInt("OffsetX", val->getVal<int>());
+                        break;
+                    case 1:
+                        retValue += setParamInt("OffsetY", val->getVal<int>());
+                        break;
+                    case 2:
+                        retValue += setParamInt("Width", val->getVal<int>());
+                        break;
+                    case 3:
+                        retValue += setParamInt("Height", val->getVal<int>());
+                        break;
+                    default:
+                        retValue += ito::RetVal(ito::retError, 0, "invalid index");
+                    }
 
-					retValue += synchronize(roi);
-					checkData();
-				}
-				else
-				{
-					const int *roi_ = val->getVal<int*>();
-					const int *current_roi = it->getVal<int*>();
+                    retValue += synchronize(roi);
+                    checkData();
+                }
+                else
+                {
+                    const int *roi_ = val->getVal<int*>();
+                    const int *current_roi = it->getVal<int*>();
 
-					int max_width = m_params["sizex"].getMax();
-					int max_height = m_params["sizey"].getMax();
+                    int max_width = m_params["sizex"].getMax();
+                    int max_height = m_params["sizey"].getMax();
 
-					if (roi_[0] + current_roi[2] > max_width)
-					{
-						retValue += setParamInt("Width", roi_[2]);
-						retValue += setParamInt("OffsetX", roi_[0]);
-					
-					}
-					else
-					{
-						retValue += setParamInt("OffsetX", roi_[0]);
-						retValue += setParamInt("Width", roi_[2]);
-					}
+                    if (roi_[0] + current_roi[2] > max_width)
+                    {
+                        retValue += setParamInt("Width", roi_[2]);
+                        retValue += setParamInt("OffsetX", roi_[0]);
+                    
+                    }
+                    else
+                    {
+                        retValue += setParamInt("OffsetX", roi_[0]);
+                        retValue += setParamInt("Width", roi_[2]);
+                    }
 
-					if (roi_[1] + current_roi[3] > max_height)
-					{
-						retValue += setParamInt("Height", roi_[3]);
-						retValue += setParamInt("OffsetY", roi_[1]);
-					}
-					else
-					{
-						retValue += setParamInt("OffsetY", roi_[1]);
-						retValue += setParamInt("Height", roi_[3]);
-					}
-					retValue += synchronize(roi);
+                    if (roi_[1] + current_roi[3] > max_height)
+                    {
+                        retValue += setParamInt("Height", roi_[3]);
+                        retValue += setParamInt("OffsetY", roi_[1]);
+                    }
+                    else
+                    {
+                        retValue += setParamInt("OffsetY", roi_[1]);
+                        retValue += setParamInt("Height", roi_[3]);
+                    }
+                    retValue += synchronize(roi);
 
-					checkData();
-				}
-			}
+                    checkData();
+                }
+            }
             else if (key == "trigger_mode")
             {
                 if (val->getVal<char*>()[0] == 's')
@@ -700,45 +700,45 @@ ito::RetVal CommonVisionBlox::setParam(QSharedPointer<ito::ParamBase> val, ItomS
                 }
             }
 #if 0
-			else if (key == "x0")
-			{
-		
+            else if (key == "x0")
+            {
+        
 
-				//retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetX", val->getVal<int>(), NULL));
-				retValue += synchronize(roi);
-			}
+                //retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetX", val->getVal<int>(), NULL));
+                retValue += synchronize(roi);
+            }
 
-			else if (key == "x1")
-			{
-				long current_x0;
-				/*retValue += getParamInt("OffsetX", &current_x0));
-				retValue += checkError(XC_SetPropertyValueL(m_handle, "Width", val->getVal<int>()-current_x0, NULL));*/
-				retValue += synchronize(roi);
-			}
+            else if (key == "x1")
+            {
+                long current_x0;
+                /*retValue += getParamInt("OffsetX", &current_x0));
+                retValue += checkError(XC_SetPropertyValueL(m_handle, "Width", val->getVal<int>()-current_x0, NULL));*/
+                retValue += synchronize(roi);
+            }
 
-			/*else if (key == "y0")
-			{
-			
-				retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetY", val->getVal<int>(), NULL));
-				retValue += synchronize(roi);
-			}
+            /*else if (key == "y0")
+            {
+            
+                retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetY", val->getVal<int>(), NULL));
+                retValue += synchronize(roi);
+            }
 
-			else if (key == "y1")
-			{
-				long current_y0;
-				retValue += getParamInt("OffsetY", &current_y0));
-				retValue += checkError(XC_SetPropertyValueL(m_handle, "Hight", val->getVal<int>()-current_y0, NULL));
-				retValue += synchronize(roi);
-			}*/
+            else if (key == "y1")
+            {
+                long current_y0;
+                retValue += getParamInt("OffsetY", &current_y0));
+                retValue += checkError(XC_SetPropertyValueL(m_handle, "Hight", val->getVal<int>()-current_y0, NULL));
+                retValue += synchronize(roi);
+            }*/
 #endif
-			if (started > 0)
-			{
-				startDevice(NULL);
-				setGrabberStarted(started);
-			}
-		}
-	
-	}
+            if (started > 0)
+            {
+                startDevice(NULL);
+                setGrabberStarted(started);
+            }
+        }
+    
+    }
 
     
 
@@ -788,17 +788,17 @@ ito::RetVal CommonVisionBlox::startDevice(ItomSharedSemaphore *waitCond)
     }
     else
     {
-		incGrabberStarted();
+        incGrabberStarted();
 
-		checkData(); //this will be reallocated in this method.
+        checkData(); //this will be reallocated in this method.
 
-		if (grabberStartedCount() == 1)
-		{
+        if (grabberStartedCount() == 1)
+        {
             if (strcmp(m_params["acquisition_mode"].getVal<char*>(), "grab") == 0)
             {
-			    retValue += checkError(G2Grab(m_hCamera)); 
+                retValue += checkError(G2Grab(m_hCamera)); 
             }
-		}
+        }
     }
 
     if(waitCond)
@@ -828,15 +828,15 @@ ito::RetVal CommonVisionBlox::stopDevice(ItomSharedSemaphore *waitCond)
 
     decGrabberStarted();
 
-	if (grabberStartedCount() == 0)
-	{
+    if (grabberStartedCount() == 0)
+    {
         double active = 0;
         if (G2GetGrabStatus(m_hCamera, GRAB_INFO_GRAB_ACTIVE, active) == CVC_E_OK && active)
         {
             // stop the grab (kill = false: wait for ongoing frame acquisition to stop)
             retValue += checkError(G2Freeze(m_hCamera, true));
         }
-	}
+    }
 
     if(grabberStartedCount() < 0)
     {
@@ -904,92 +904,92 @@ ito::RetVal CommonVisionBlox::acquire(const int trigger, ItomSharedSemaphore *wa
         waitCond->release();
     }
 
-	if (!retValue.containsError())
-	{
-		int bpp = m_params["bpp"].getVal<int>();
-		int width = m_params["sizex"].getVal<int>();
-		int height = m_params["sizey"].getVal<int>();
-		const int* roi = m_params["roi"].getVal<int*>();
+    if (!retValue.containsError())
+    {
+        int bpp = m_params["bpp"].getVal<int>();
+        int width = m_params["sizex"].getVal<int>();
+        int height = m_params["sizey"].getVal<int>();
+        const int* roi = m_params["roi"].getVal<int*>();
 
         
         //checkStatus();
 
         if (strcmp(m_params["acquisition_mode"].getVal<char*>(), "grab") == 0)
         {
-		    retValue += checkError(G2Wait(m_hCamera));
+            retValue += checkError(G2Wait(m_hCamera));
         }
         else
         {
-		    retValue += checkError(Snap(m_hCamera));
+            retValue += checkError(Snap(m_hCamera));
         }
 
         //checkStatus();
 
-		if (!retValue.containsError())
-		{
-			// do image processing
-			void *pBase = NULL;
-			intptr_t xInc = 0;
-			intptr_t yInc = 0;
-			cvbdatatype_t type = ImageDatatype(m_hCamera, 0);
-			cvbdim_t h = ImageHeight(m_hCamera);
-			cvbdim_t w = ImageWidth(m_hCamera);
-			cvbval_t bppImg = BitsPerPixel(type);
-			bool test = GetLinearAccess(m_hCamera, 0, &pBase, &xInc, &yInc);
+        if (!retValue.containsError())
+        {
+            // do image processing
+            void *pBase = NULL;
+            intptr_t xInc = 0;
+            intptr_t yInc = 0;
+            cvbdatatype_t type = ImageDatatype(m_hCamera, 0);
+            cvbdim_t h = ImageHeight(m_hCamera);
+            cvbdim_t w = ImageWidth(m_hCamera);
+            cvbval_t bppImg = BitsPerPixel(type);
+            bool test = GetLinearAccess(m_hCamera, 0, &pBase, &xInc, &yInc);
 
-			if (bppImg != bpp)
-			{
+            if (bppImg != bpp)
+            {
                 char iniPath[DRIVERPATHSIZE] = { 0 };
-	            TranslateFileName("%CVBDATA%\\Drivers\\GenICam.ini", iniPath, DRIVERPATHSIZE);
-				retValue += ito::RetVal::format(ito::retError, 0, "Obtained image has %i bits per pixel instead of %i given by the camera. Both values must be equal. Change property PixelFormat in %s of Common Vision Blox or use the configuration tool to adjust the CVB Color Format", bppImg, bpp, iniPath);
-			}
-			else if (xInc != ((int)(std::ceil((float)bpp/8.0))))
-			{
-				retValue += ito::RetVal(ito::retError, 0, "currently unsupported image format");
-			}
-			else
-			{
-				if (bpp == 16 || bpp == 14 || bpp == 12 || bpp == 10)
-				{
-					ito::uint16 *rowPtr = NULL;
-					cv::Mat *plane = m_data.getCvPlaneMat(0);
-					const ito::uint8 *srcPtr = (ito::uint8*)pBase;
-					cvbval_t value;
+                TranslateFileName("%CVBDATA%\\Drivers\\GenICam.ini", iniPath, DRIVERPATHSIZE);
+                retValue += ito::RetVal::format(ito::retError, 0, "Obtained image has %i bits per pixel instead of %i given by the camera. Both values must be equal. Change property PixelFormat in %s of Common Vision Blox or use the configuration tool to adjust the CVB Color Format", bppImg, bpp, iniPath);
+            }
+            else if (xInc != ((int)(std::ceil((float)bpp/8.0))))
+            {
+                retValue += ito::RetVal(ito::retError, 0, "currently unsupported image format");
+            }
+            else
+            {
+                if (bpp == 16 || bpp == 14 || bpp == 12 || bpp == 10)
+                {
+                    ito::uint16 *rowPtr = NULL;
+                    cv::Mat *plane = m_data.getCvPlaneMat(0);
+                    const ito::uint8 *srcPtr = (ito::uint8*)pBase;
+                    cvbval_t value;
 
-					for (int y = 0; y < height; ++y)
-					{
-						rowPtr = plane->ptr<ito::uint16>(y);
-						memcpy(rowPtr, srcPtr, sizeof(ito::uint16) * width);
-						srcPtr += (xInc * width) /*yInc*/;
-					}
-				}
+                    for (int y = 0; y < height; ++y)
+                    {
+                        rowPtr = plane->ptr<ito::uint16>(y);
+                        memcpy(rowPtr, srcPtr, sizeof(ito::uint16) * width);
+                        srcPtr += (xInc * width) /*yInc*/;
+                    }
+                }
                 else if (bpp == 8)
                 {
                     ito::uint8 *rowPtr = NULL;
-					cv::Mat *plane = m_data.getCvPlaneMat(0);
-					const ito::uint8 *srcPtr = (ito::uint8*)pBase;
-					cvbval_t value;
+                    cv::Mat *plane = m_data.getCvPlaneMat(0);
+                    const ito::uint8 *srcPtr = (ito::uint8*)pBase;
+                    cvbval_t value;
 
-					for (int y = 0; y < height; ++y)
-					{
-						rowPtr = plane->ptr<ito::uint8>(y);
-						memcpy(rowPtr, srcPtr, sizeof(ito::uint8) * width);
-						srcPtr += (xInc * width) /*yInc*/;
-					}
+                    for (int y = 0; y < height; ++y)
+                    {
+                        rowPtr = plane->ptr<ito::uint8>(y);
+                        memcpy(rowPtr, srcPtr, sizeof(ito::uint8) * width);
+                        srcPtr += (xInc * width) /*yInc*/;
+                    }
                 }
-				else
-				{
-					retValue += ito::RetVal(ito::retError, 0, "currently unsupported bit depth of image");
-				}
-			}
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "currently unsupported bit depth of image");
+                }
+            }
 
-		}
-		m_acquisitionRetVal = retValue;
-	}
-	else
-	{
-		m_isGrabbing = false;
-	}
+        }
+        m_acquisitionRetVal = retValue;
+    }
+    else
+    {
+        m_isGrabbing = false;
+    }
 
     return retValue;
 }
@@ -1183,322 +1183,322 @@ const ito::RetVal CommonVisionBlox::showConfDialog(void)
 //----------------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::synchronize(const sections &what /*= all*/)
 {
-	ito::RetVal retval;
-	ito::RetVal retval_temp;
+    ito::RetVal retval;
+    ito::RetVal retval_temp;
 
-	if (what & integration_time)
-	{
-		cvbint64_t current;
-		//retval_temp = checkError(XC_GetPropertyRangeF(m_handle, "IntegrationTime", &low, &high));
-		retval_temp = getParamInt(m_nameConverter["integration_time"], current);
-		if (!retval_temp.containsError())
-		{
-			ito::DoubleMeta dm(0.0, 0.0);
+    if (what & integration_time)
+    {
+        cvbint64_t current;
+        //retval_temp = checkError(XC_GetPropertyRangeF(m_handle, "IntegrationTime", &low, &high));
+        retval_temp = getParamInt(m_nameConverter["integration_time"], current);
+        if (!retval_temp.containsError())
+        {
+            ito::DoubleMeta dm(0.0, 0.0);
 
             //with DALSA Genie there was an error obtaining the max value. Afterwards, no new image could be acquired.
             if (strcmp(m_params["vendor_name"].getVal<char*>(), "DALSA") != 0)
             {
-			    if (getParamFloatInfo(m_nameConverter["integration_time"], dm, 1e-6).containsError() == false)
-			    {
-				    m_params["integration_time"].setMeta(&dm);
-			    }
+                if (getParamFloatInfo(m_nameConverter["integration_time"], dm, 1e-6).containsError() == false)
+                {
+                    m_params["integration_time"].setMeta(&dm);
+                }
                 else
                 {
                     m_params["integration_time"].setFlags(ito::ParamBase::Readonly);
                 }
             }
 
-			m_params["integration_time"].setVal<double>(double(current) * 1.0e-6);
+            m_params["integration_time"].setVal<double>(double(current) * 1.0e-6);
 
-		}
+        }
 
-		retval += retval_temp;
-	}
+        retval += retval_temp;
+    }
 
-	if (what & roi)
-	{
-		cvbint64_t current_x0, xmax, current_width, current_y0, ymax, current_height;
+    if (what & roi)
+    {
+        cvbint64_t current_x0, xmax, current_width, current_y0, ymax, current_height;
 
-		retval_temp = getParamInt("WidthMax", xmax);
-		retval_temp += getParamInt("Width", current_width);
-		retval_temp += getParamInt("OffsetX", current_x0);
-		retval_temp += getParamInt("HeightMax", ymax);
-		retval_temp += getParamInt("OffsetY", current_y0);
-		retval_temp += getParamInt("Height", current_height);
+        retval_temp = getParamInt("WidthMax", xmax);
+        retval_temp += getParamInt("Width", current_width);
+        retval_temp += getParamInt("OffsetX", current_x0);
+        retval_temp += getParamInt("HeightMax", ymax);
+        retval_temp += getParamInt("OffsetY", current_y0);
+        retval_temp += getParamInt("Height", current_height);
 
-		if (!retval_temp.containsError())
-		{
-			m_params["sizex"].setMeta(new ito::IntMeta(0, xmax, 1), true); //replace 1 by step size of ROI
-			m_params["sizex"].setVal<int>(current_width);
+        if (!retval_temp.containsError())
+        {
+            m_params["sizex"].setMeta(new ito::IntMeta(0, xmax, 1), true); //replace 1 by step size of ROI
+            m_params["sizex"].setVal<int>(current_width);
 
-			m_params["sizey"].setMeta(new ito::IntMeta(0, ymax, 1), true); //replace 1 by step size of ROI
-			m_params["sizey"].setVal<int>(current_height);
+            m_params["sizey"].setMeta(new ito::IntMeta(0, ymax, 1), true); //replace 1 by step size of ROI
+            m_params["sizey"].setVal<int>(current_height);
 
-			ito::RangeMeta width_meta = ito::RangeMeta(0, xmax-1, 1, 32, xmax, 32);
-			ito::RangeMeta height_meta = ito::RangeMeta(0, ymax-1, 1, 4, ymax, 4);
-			ito::RectMeta *rect_meta = new ito::RectMeta(width_meta, height_meta);
-			m_params["roi"].setMeta(rect_meta, true);
-			int roi[] = {current_x0, current_y0, current_width, current_height};
-			m_params["roi"].setVal<int*>(roi, 4);
+            ito::RangeMeta width_meta = ito::RangeMeta(0, xmax-1, 1, 32, xmax, 32);
+            ito::RangeMeta height_meta = ito::RangeMeta(0, ymax-1, 1, 4, ymax, 4);
+            ito::RectMeta *rect_meta = new ito::RectMeta(width_meta, height_meta);
+            m_params["roi"].setMeta(rect_meta, true);
+            int roi[] = {current_x0, current_y0, current_width, current_height};
+            m_params["roi"].setVal<int*>(roi, 4);
 
 #if 0
-			m_params["x0"].setMeta(new ito::IntMeta(0, xmax - 33, 1), true);
-			m_params["x0"].setVal<int>(current_x0);
+            m_params["x0"].setMeta(new ito::IntMeta(0, xmax - 33, 1), true);
+            m_params["x0"].setVal<int>(current_x0);
 
-			m_params["x1"].setMeta(new ito::IntMeta(current_x0 + 31, xmax - 1, 1), true);
-			m_params["x1"].setVal<int>(current_x0 + current_width - 1);
+            m_params["x1"].setMeta(new ito::IntMeta(current_x0 + 31, xmax - 1, 1), true);
+            m_params["x1"].setVal<int>(current_x0 + current_width - 1);
 
-			m_params["y0"].setMeta(new ito::IntMeta(0, ymax - 5, 1), true);
-			m_params["y0"].setVal<int>(current_y0);
+            m_params["y0"].setMeta(new ito::IntMeta(0, ymax - 5, 1), true);
+            m_params["y0"].setVal<int>(current_y0);
 
-			m_params["y1"].setMeta(new ito::IntMeta(current_y0 + 3, ymax - 1, 1), true);
-			m_params["y1"].setVal<int>(current_y0 + current_height - 1);
+            m_params["y1"].setMeta(new ito::IntMeta(current_y0 + 3, ymax - 1, 1), true);
+            m_params["y1"].setVal<int>(current_y0 + current_height - 1);
 #endif
-		}
+        }
 
-		//x0,y0,width,height
-		retval += retval_temp;
-	}
+        //x0,y0,width,height
+        retval += retval_temp;
+    }
 
 
-	return retval;
+    return retval;
 }
 
 //-----------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::getParamInt(const char *name, cvbint64_t &value)
 {
-	ito::RetVal retVal;
+    ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
-			// value camera dependent
-			retVal += checkError(NGetAsInteger(node, value), name);
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
+            // value camera dependent
+            retVal += checkError(NGetAsInteger(node, value), name);
 
-			ReleaseObject(node);
-		}
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            ReleaseObject(node);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 //--------------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::getParamFloat(const char *name, double &value)
 {
-	ito::RetVal retVal;
+    ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
-			// value camera dependent
-			retVal += checkError(NGetAsFloat(node, value), name);
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
+            // value camera dependent
+            retVal += checkError(NGetAsFloat(node, value), name);
 
-			ReleaseObject(node);
-		}
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            ReleaseObject(node);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 //--------------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::getParamBool(const char *name, bool &value)
 {
-	ito::RetVal retVal;
+    ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
-			// value camera dependent
-			cvbbool_t val = 0;
-			retVal += checkError(NGetAsBoolean(node, val), name);
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
+            // value camera dependent
+            cvbbool_t val = 0;
+            retVal += checkError(NGetAsBoolean(node, val), name);
 
-			if (!retVal.containsError())
-			{
-				value = val;
-			}
+            if (!retVal.containsError())
+            {
+                value = val;
+            }
 
-			ReleaseObject(node);
-		}
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            ReleaseObject(node);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 //--------------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::getParamString(const char *name, QByteArray &value)
 {
-	ito::RetVal retVal;
+    ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
-			// value camera dependent
-			char val[256] = {0};
-			size_t size = 256;
-			retVal += checkError(NGetAsString(node, val, size), name);
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
+            // value camera dependent
+            char val[256] = {0};
+            size_t size = 256;
+            retVal += checkError(NGetAsString(node, val, size), name);
 
-			if (!retVal.containsError())
-			{
-				value = val;
-			}
+            if (!retVal.containsError())
+            {
+                value = val;
+            }
 
-			ReleaseObject(node);
-		}
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            ReleaseObject(node);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 //-----------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::setParamInt(const char *name, const cvbint64_t &value)
 {
-	ito::RetVal retVal;
+    ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
-			// value camera dependent
-			retVal += checkError(NSetAsInteger(node, value), name);
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
+            // value camera dependent
+            retVal += checkError(NSetAsInteger(node, value), name);
 
-			ReleaseObject(node);
-		}
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            ReleaseObject(node);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 
 //--------------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::setParamFloat(const char *name, const double &value)
 {
-	ito::RetVal retVal;
+    ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
-			// value camera dependent
-			retVal += checkError(NSetAsFloat(node, value), name);
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
+            // value camera dependent
+            retVal += checkError(NSetAsFloat(node, value), name);
 
-			ReleaseObject(node);
-		}
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            ReleaseObject(node);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 //--------------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::setParamBool(const char *name, const bool &value)
 {
-	ito::RetVal retVal;
+    ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
-			// value camera dependent
-			retVal += checkError(NSetAsBoolean(node, value), name);
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
+            // value camera dependent
+            retVal += checkError(NSetAsBoolean(node, value), name);
 
-			ReleaseObject(node);
-		}
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            ReleaseObject(node);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 //--------------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::setParamString(const char *name, const char *value)
 {
-	ito::RetVal retVal;
+    ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
-			// value camera dependent
-			size_t size = 256;
-			retVal += checkError(NSetAsString(node, value), name);
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
+            // value camera dependent
+            size_t size = 256;
+            retVal += checkError(NSetAsString(node, value), name);
 
-			ReleaseObject(node);
-		}
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            ReleaseObject(node);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 //--------------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::getParamFloatInfo(const char *name, ito::DoubleMeta &meta, const double &scale /*= 1.0*/)
 {
-	ito::RetVal retVal;
+    ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
             TNodeType type;
             NType(node, type);
             double mi, ma, inc;
@@ -1507,12 +1507,12 @@ ito::RetVal CommonVisionBlox::getParamFloatInfo(const char *name, ito::DoubleMet
             {
                 cvbint64_t mi_, ma_, inc_;
                 // value camera dependent
-			    retVal += checkError(NInfoAsInteger(node, NI_Min, mi_), name);
-			    retVal += checkError(NInfoAsInteger(node, NI_Max, ma_), name);
+                retVal += checkError(NInfoAsInteger(node, NI_Min, mi_), name);
+                retVal += checkError(NInfoAsInteger(node, NI_Max, ma_), name);
                 cvbres_t res = NInfoAsInteger(node, NI_Increment, inc_);
                 if (CVC_ERROR_FROM_HRES(res) != CVC_E_NOTSUPPORTED)
                 {
-			        retVal += checkError(res, name);
+                    retVal += checkError(res, name);
                 }
                 else
                 {
@@ -1525,14 +1525,14 @@ ito::RetVal CommonVisionBlox::getParamFloatInfo(const char *name, ito::DoubleMet
             }
             else
             {
-			    
-			    // value camera dependent
-			    retVal += checkError(NInfoAsFloat(node, NI_Min, mi), name);
-			    retVal += checkError(NInfoAsFloat(node, NI_Max, ma), name);
+                
+                // value camera dependent
+                retVal += checkError(NInfoAsFloat(node, NI_Min, mi), name);
+                retVal += checkError(NInfoAsFloat(node, NI_Max, ma), name);
                 cvbres_t res = NInfoAsFloat(node, NI_Increment, inc);
                 if (CVC_ERROR_FROM_HRES(res) != CVC_E_NOTSUPPORTED)
                 {
-			        retVal += checkError(res, name);
+                    retVal += checkError(res, name);
                 }
                 else
                 {
@@ -1540,19 +1540,19 @@ ito::RetVal CommonVisionBlox::getParamFloatInfo(const char *name, ito::DoubleMet
                 }
             }
 
-			meta.setMin(mi * scale);
-			meta.setMax(ma * scale);
-			meta.setStepSize(inc * scale);
+            meta.setMin(mi * scale);
+            meta.setMax(ma * scale);
+            meta.setStepSize(inc * scale);
 
-			ReleaseObject(node);
-		}
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            ReleaseObject(node);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -1560,40 +1560,40 @@ ito::RetVal CommonVisionBlox::getParamIntInfo(const char *name, ito::IntMeta &me
 {
     ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
-			cvbint64_t mi, ma, inc;
-			// value camera dependent
-			retVal += checkError(NInfoAsInteger(node, NI_Min, mi), name);
-			retVal += checkError(NInfoAsInteger(node, NI_Max, ma), name);
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
+            cvbint64_t mi, ma, inc;
+            // value camera dependent
+            retVal += checkError(NInfoAsInteger(node, NI_Min, mi), name);
+            retVal += checkError(NInfoAsInteger(node, NI_Max, ma), name);
             cvbres_t res = NInfoAsInteger(node, NI_Increment, inc);
             if (CVC_ERROR_FROM_HRES(res) != CVC_E_NOTSUPPORTED)
             {
-			    retVal += checkError(res, name);
+                retVal += checkError(res, name);
             }
             else
             {
                 inc = 0;
             }
 
-			meta.setMin(mi);
-			meta.setMax(ma);
-			meta.setStepSize(inc);
+            meta.setMin(mi);
+            meta.setMax(ma);
+            meta.setStepSize(inc);
 
-			ReleaseObject(node);
-		}
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            ReleaseObject(node);
+        }
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 //--------------------------------------------------------------------------------------
@@ -1601,13 +1601,13 @@ ito::RetVal CommonVisionBlox::getParamEnumerationInfo(const char *name, ito::Str
 {
     ito::RetVal retVal;
 
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
-		if(!retVal.containsError())
-		{
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        retVal += checkError(NMGetNode(m_hNodeMap, name, node), name);
+        if(!retVal.containsError())
+        {
             TNodeType nodeType;
             NType(node, nodeType);
             cvbdim_t nodeCount;
@@ -1630,25 +1630,25 @@ ito::RetVal CommonVisionBlox::getParamEnumerationInfo(const char *name, ito::Str
                 retVal += ito::RetVal::format(ito::retError, 0, "node %s is no enumeration", name);
             }
         }
-			
-		ReleaseObject(node);
-	}
-	else
-	{
-		retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
-	}
+            
+        ReleaseObject(node);
+    }
+    else
+    {
+        retVal += ito::RetVal(ito::retError, 0, "node map not avaible");
+    }
 
-	return retVal;
+    return retVal;
 }
 
 //--------------------------------------------------------------------------------------
 bool CommonVisionBlox::nodeExists(const char *name) const
 {
-	if (m_hNodeMap)
-	{
-		// get width feature node
-		NODE node = NULL;
-		if (checkError(NMGetNode(m_hNodeMap, name, node)).containsError())
+    if (m_hNodeMap)
+    {
+        // get width feature node
+        NODE node = NULL;
+        if (checkError(NMGetNode(m_hNodeMap, name, node)).containsError())
         {
             ReleaseObject(node);
             return false;
@@ -1658,8 +1658,8 @@ bool CommonVisionBlox::nodeExists(const char *name) const
             ReleaseObject(node);
             return true;
         }
-	}
-	
+    }
+    
     return false;
 }
 
@@ -1669,28 +1669,28 @@ bool CommonVisionBlox::nodeExists(const char *name) const
 // (the flag is auto-reset when the driver was loaded)
 ito::RetVal CommonVisionBlox::scan_for_cameras()
 {
-	char iniPath[DRIVERPATHSIZE] = { 0 };
-	TranslateFileName("%CVBDATA%\\Drivers\\GenICam.ini", iniPath, DRIVERPATHSIZE);
+    char iniPath[DRIVERPATHSIZE] = { 0 };
+    TranslateFileName("%CVBDATA%\\Drivers\\GenICam.ini", iniPath, DRIVERPATHSIZE);
   
-	BOOL result = WritePrivateProfileStringA("SYSTEM", "CreateAutoIni", "1", iniPath);
+    BOOL result = WritePrivateProfileStringA("SYSTEM", "CreateAutoIni", "1", iniPath);
 
-	if (!result)
-	{
-		return ito::RetVal(ito::retError, 0, "failure while scanning for cameras");
-	}
-	return ito::retOk;
+    if (!result)
+    {
+        return ito::RetVal(ito::retError, 0, "failure while scanning for cameras");
+    }
+    return ito::retOk;
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal CommonVisionBlox::checkError(const cvbres_t &code, const char *prefix) const
 {
-	if (code >= 0)
-	{
-		return ito::retOk;
-	}
-	else
-	{
+    if (code >= 0)
+    {
+        return ito::retOk;
+    }
+    else
+    {
         int code_ = CVC_ERROR_FROM_HRES(code);
         const char *prefix_ = prefix ? prefix : "";
         const char *prefix2_ = prefix ? ": " : "";
@@ -1796,7 +1796,7 @@ ito::RetVal CommonVisionBlox::checkError(const cvbres_t &code, const char *prefi
         case CVC_E_NOOVERLAY :
             return ito::RetVal::format(ito::retError, code_, "%s%sAn image object that is expected to have overlay bits does not have overlay bits (see #DT_Overlay). (%i)", prefix_, prefix2_, CVC_ERROR_FROM_HRES(code));
         default:
-	        return ito::RetVal::format(ito::retError, code_, "%s%sCommon Vision Blox Error %i", CVC_ERROR_FROM_HRES(code));
+            return ito::RetVal::format(ito::retError, code_, "%s%sCommon Vision Blox Error %i", CVC_ERROR_FROM_HRES(code));
         }
-	}
+    }
 }
