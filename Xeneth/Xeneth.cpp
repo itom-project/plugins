@@ -82,7 +82,7 @@ Xeneth::Xeneth() :
 
     int roi[] = {0, 0, 640, 512};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
-    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 640), ito::RangeMeta(0, 512));
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 639), ito::RangeMeta(0, 511));
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 

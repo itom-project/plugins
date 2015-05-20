@@ -97,7 +97,7 @@ CommonVisionBlox::CommonVisionBlox() :
 
     int roi[] = {0, 0, 640, 512};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
-    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 640), ito::RangeMeta(0, 512));
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[2]-1), ito::RangeMeta(roi[1], roi[3]-1));
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 }
@@ -1234,8 +1234,8 @@ ito::RetVal CommonVisionBlox::synchronize(const sections &what /*= all*/)
 			m_params["sizey"].setMeta(new ito::IntMeta(0, ymax, 1), true); //replace 1 by step size of ROI
 			m_params["sizey"].setVal<int>(current_height);
 
-			ito::RangeMeta width_meta = ito::RangeMeta(0, xmax, 1, 32, xmax, 32);
-			ito::RangeMeta height_meta = ito::RangeMeta(0, ymax, 1, 4, ymax, 4);
+			ito::RangeMeta width_meta = ito::RangeMeta(0, xmax-1, 1, 32, xmax, 32);
+			ito::RangeMeta height_meta = ito::RangeMeta(0, ymax-1, 1, 4, ymax, 4);
 			ito::RectMeta *rect_meta = new ito::RectMeta(width_meta, height_meta);
 			m_params["roi"].setMeta(rect_meta, true);
 			int roi[] = {current_x0, current_y0, current_width, current_height};

@@ -214,7 +214,7 @@ PCOCamera::PCOCamera() :
 
     int roi[] = {0, 0, 2048, 2048};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height)").toLatin1().data());
-    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2048), ito::RangeMeta(0, 2048));
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2047), ito::RangeMeta(0, 2047));
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -1281,12 +1281,12 @@ ito::RetVal PCOCamera::sychronizeParameters()
         //roi
 #ifdef PCO_SDK_OLD
         ito::RectMeta *rm = new ito::RectMeta( \
-            ito::RangeMeta(0, m_caminfo.wMaxHorzResStdDESC/binX, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1),  0, m_caminfo.wMaxHorzResStdDESC/binX, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1)), \
-            ito::RangeMeta(0, m_caminfo.wMaxVertResStdDESC/binY, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1), 0, m_caminfo.wMaxVertResStdDESC/binY, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1)));
+            ito::RangeMeta(0, m_caminfo.wMaxHorzResStdDESC/binX - 1, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1),  0, m_caminfo.wMaxHorzResStdDESC/binX, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1)), \
+            ito::RangeMeta(0, m_caminfo.wMaxVertResStdDESC/binY - 1, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1), 0, m_caminfo.wMaxVertResStdDESC/binY, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1)));
 #else
         ito::RectMeta *rm = new ito::RectMeta( \
-            ito::RangeMeta(0, m_caminfo.wMaxHorzResStdDESC/binX, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1),  m_caminfo.wMinSizeHorzDESC, m_caminfo.wMaxHorzResStdDESC/binX, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1)), \
-            ito::RangeMeta(0, m_caminfo.wMaxVertResStdDESC/binY, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1), m_caminfo.wMinSizeVertDESC, m_caminfo.wMaxVertResStdDESC/binY, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1)));
+            ito::RangeMeta(0, m_caminfo.wMaxHorzResStdDESC/binX - 1, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1),  m_caminfo.wMinSizeHorzDESC, m_caminfo.wMaxHorzResStdDESC/binX, std::max(m_caminfo.wRoiHorStepsDESC,(WORD)1)), \
+            ito::RangeMeta(0, m_caminfo.wMaxVertResStdDESC/binY - 1, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1), m_caminfo.wMinSizeVertDESC, m_caminfo.wMaxVertResStdDESC/binY, std::max(m_caminfo.wRoiVertStepsDESC,(WORD)1)));
 #endif
         m_params["roi"].setMeta(rm, true);
 

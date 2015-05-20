@@ -258,7 +258,7 @@ DummyGrabber::DummyGrabber() :
 
     int roi[] = {0, 0, 2048, 2048};
     paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
-    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2048), ito::RangeMeta(0, 2048));
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(roi[0], roi[0] + roi[2] - 1), ito::RangeMeta(roi[1], roi[1] + roi[3] - 1));
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -311,7 +311,7 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 
     int roi[] = {0, 0, sizeX, sizeY};
     m_params["roi"].setVal<int*>(roi, 4);
-    m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX, 4, 4, sizeX, 4), ito::RangeMeta(0, sizeY, 4,  4, sizeY, 4)), true);
+    m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, sizeY - 1, 4,  4, sizeY, 4)), true);
 
     if (!retVal.containsError())
     {
@@ -517,7 +517,7 @@ ito::RetVal DummyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
                     int offsetY = m_params["roi"].getVal<int*>()[1] * factorY;
                     int roi[] = {offsetX, offsetY, sizeX, sizeY};
                     m_params["roi"].setVal<int*>(roi, 4);
-                    m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, width,4/newX,4/newX,maxWidth * factorX,4/newX), ito::RangeMeta(0, height,4/newY,4/newY,maxHeight * factorY,4/newY)), true);
+                    m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, width - 1,4/newX,4/newX,maxWidth * factorX,4/newX), ito::RangeMeta(0, height - 1,4/newY,4/newY,maxHeight * factorY,4/newY)), true);
                 }
             }
         }

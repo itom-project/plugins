@@ -81,9 +81,9 @@ void DockWidgetUSBMotion3XIII::basicInformationChanged(const QString &axis, cons
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetUSBMotion3XIII::parametersChanged(QMap<QString, ito::Param> params)
 {
-    m_axisEnabled[0] = params["axisSteps1"].getVal<int>() > 0;
-    m_axisEnabled[1] = params["axisSteps2"].getVal<int>() > 0;
-    m_axisEnabled[2] = params["axisSteps3"].getVal<int>() > 0;
+    m_axisEnabled[0] = params["axisSteps1"].getVal<double>() > 0;
+    m_axisEnabled[1] = params["axisSteps2"].getVal<double>() > 0;
+    m_axisEnabled[2] = params["axisSteps3"].getVal<double>() > 0;
 
     enableWidget(ui.btnStartAbsolute->isVisible());
 }

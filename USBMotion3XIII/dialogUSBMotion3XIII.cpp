@@ -54,7 +54,7 @@ DialogUSBMotion3XIII::DialogUSBMotion3XIII(int uniqueID)
 */
 int DialogUSBMotion3XIII::setVals(QMap<QString, ito::Param> *paramVals)
 {
-    int steps;
+    double steps;
     int microSteps;
     char *temp = NULL;
 
@@ -95,7 +95,7 @@ int DialogUSBMotion3XIII::setVals(QMap<QString, ito::Param> *paramVals)
     ui.comboRunMode->setCurrentIndex( (*paramVals)["async"].getVal<int>() > 0 ? 1 : 0 );
 
     //Motor 1
-    steps = (*paramVals)["axisSteps1"].getVal<int>();
+    steps = (*paramVals)["axisSteps1"].getVal<double>();
 
     ui.lblM1AxisSteps->setText( QString::number(steps) );
     ui.lblM1Available->setText( steps <= 0 ? "No" : "Yes" );
@@ -133,7 +133,7 @@ int DialogUSBMotion3XIII::setVals(QMap<QString, ito::Param> *paramVals)
     ui.groupM1VelAcc->setEnabled( steps > 0);
 
     //Motor 2
-    steps = (*paramVals)["axisSteps2"].getVal<int>();
+    steps = (*paramVals)["axisSteps2"].getVal<double>();
 
     ui.lblM2AxisSteps->setText( QString::number(steps) );
     ui.lblM2Available->setText( steps <= 0 ? "No" : "Yes" );
@@ -171,7 +171,7 @@ int DialogUSBMotion3XIII::setVals(QMap<QString, ito::Param> *paramVals)
     ui.groupM2VelAcc->setEnabled( steps > 0);
 
     //Motor 3
-    steps = (*paramVals)["axisSteps3"].getVal<int>();
+    steps = (*paramVals)["axisSteps3"].getVal<double>();
 
     ui.lblM3AxisSteps->setText( QString::number(steps) );
     ui.lblM3Available->setText( steps <= 0 ? "No" : "Yes" );
