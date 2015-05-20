@@ -204,10 +204,10 @@ Ximea::Ximea() :
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 0, 0, tr("ROI-Size in y (rows).").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-
+	paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 60.0, 2.0, tr("Camera time out in s.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 14, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth).").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-
 	paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("1x1 (101), 2x2 (202) or 4x4 (404) binning if available. See param binning type for setting the way binning is executed.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("binning_type", ito::ParamBase::Int, 0, 1, 0, tr("type of binning if binning is enabled. 0: pixels are interpolated, 1: pixels are skipped (faster).").toLatin1().data());
@@ -2201,7 +2201,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             waitCond->release();
         }
 
-        int iPicTimeOut = 2000; //timeout in ms
+        int iPicTimeOut = (int)(m_params["timeout"].getVal<double>() * 1000 + 1.0); //timeout in ms
         XI_IMG img;
         img.size = sizeof(XI_IMG);
         img.bp = m_data.rowPtr(0, 0);
