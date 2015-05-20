@@ -122,9 +122,11 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
         ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
         ui.rangeX->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
         ui.rangeY->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
-        if (rm->getWidthRangeMeta().getMin() != rm->getWidthRangeMeta().getMax())
+
+        if (rm->getWidthRangeMeta().getSizeMin() != rm->getWidthRangeMeta().getSizeMax())
 		    ui.rangeX->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
-        if (rm->getHeightRangeMeta().getMin() != rm->getHeightRangeMeta().getMax())
+
+        if (rm->getHeightRangeMeta().getSizeMin() != rm->getHeightRangeMeta().getSizeMax())
 		    ui.rangeY->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
 #else
         ito::IntMeta *im;
