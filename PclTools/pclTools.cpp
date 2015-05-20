@@ -151,7 +151,7 @@ PclToolsInterface::~PclToolsInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION < 0x050000
-	Q_EXPORT_PLUGIN2(PclTools, PclToolsInterface)
+    Q_EXPORT_PLUGIN2(PclTools, PclToolsInterface)
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -855,9 +855,9 @@ This file format allows displaying volume data from the given 3D data object for
         writer->SetFileName(filename.data());
 
 #if (VTK_MAJOR_VERSION == 5)
-		writer->SetInput (structuredPoints);
+        writer->SetInput (structuredPoints);
 #else
-		writer->SetInputData (structuredPoints);
+        writer->SetInputData (structuredPoints);
 #endif
         writer->Write();
 
@@ -923,42 +923,42 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
         type = "obj";
     }
 
-	if (polygonMesh->valid() == false)
-	{
-		retval += ito::RetVal(ito::retError, 0, tr("invalid polygon mesh cannot be saved").toLatin1().data());
-	}
-	
-	if (!retval.containsError())
-	{
-	//check point cloud
-		if (type == "obj")
-		{
-			ret = pcl::io::saveOBJFile(filename_, *(polygonMesh->polygonMesh()));
-		}
-		else if (type == "stl")
-		{
-			ret = pcl::io::savePolygonFileSTL(filename_, *(polygonMesh->polygonMesh()));
-		}
-		else if (type == "ply")
-		{
-			ret = pcl::io::savePolygonFilePLY(filename_, *(polygonMesh->polygonMesh()));
-		}
-		else if (type == "vtk")
-		{
-			ret = pcl::io::savePolygonFileVTK(filename_, *(polygonMesh->polygonMesh()));
-		}
+    if (polygonMesh->valid() == false)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("invalid polygon mesh cannot be saved").toLatin1().data());
+    }
+    
+    if (!retval.containsError())
+    {
+    //check point cloud
+        if (type == "obj")
+        {
+            ret = pcl::io::saveOBJFile(filename_, *(polygonMesh->polygonMesh()));
+        }
+        else if (type == "stl")
+        {
+            ret = pcl::io::savePolygonFileSTL(filename_, *(polygonMesh->polygonMesh()));
+        }
+        else if (type == "ply")
+        {
+            ret = pcl::io::savePolygonFilePLY(filename_, *(polygonMesh->polygonMesh()));
+        }
+        else if (type == "vtk")
+        {
+            ret = pcl::io::savePolygonFileVTK(filename_, *(polygonMesh->polygonMesh()));
+        }
     
 #if PCL_VERSION_COMPARE(>=,1,7,0)
-		if (ret < 0)
-		{
-			retval += ito::RetVal(ito::retError, 0, tr("error while saving polygon mesh (internal error of method in point cloud library").toLatin1().data());
-		}
+        if (ret < 0)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("error while saving polygon mesh (internal error of method in point cloud library").toLatin1().data());
+        }
 #else
     //uncommented since huge polygon meshes result in a buffer overflow of int.
     // bug in PCL version 1.6 or below. see: http://dev.pointclouds.org/issues/974, fixed in current trunk leading to any version bigger than the binary of 1.6
     /**/
 #endif
-	}
+    }
 
     return retval;
 }
@@ -3774,10 +3774,10 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
     QString typeStr = paramsOpt->at(0).getVal<char*>();
 
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
-	if (psRows != 1 || psCols != 1)
-	{
-		return ito::RetVal(ito::retError, 0, "with a PCL < 1.7.0 trianglePixelSizeRows and trianglePixelSizeColumns must be 1");
-	}
+    if (psRows != 1 || psCols != 1)
+    {
+        return ito::RetVal(ito::retError, 0, "with a PCL < 1.7.0 trianglePixelSizeRows and trianglePixelSizeColumns must be 1");
+    }
 #endif
 
     pcl::OrganizedFastMesh<pcl::PointXYZ>::TriangulationType type;
@@ -3949,7 +3949,7 @@ ito::RetVal PclTools::pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVect
     ito::RetVal retval = ito::retOk;
 
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
-	retval += ito::RetVal(ito::retError, 0, "Only tested / implemented for version 1.7.0");
+    retval += ito::RetVal(ito::retError, 0, "Only tested / implemented for version 1.7.0");
 #else
     ito::PCLPolygonMesh *meshIn = (ito::PCLPolygonMesh*)(*paramsMand)[0].getVal<void*>();
     ito::PCLPolygonMesh *meshOut = (ito::PCLPolygonMesh*)(*paramsMand)[1].getVal<void*>();
@@ -4014,8 +4014,8 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
     ito::RetVal retval = ito::retOk;
 
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
-	retval += ito::RetVal(ito::retError, 0, "Only tested / implemented for version 1.7.0");
-	
+    retval += ito::RetVal(ito::retError, 0, "Only tested / implemented for version 1.7.0");
+    
 #else
     ito::PCLPointCloud *cloudIn = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
     ito::PCLPolygonMesh *meshOut = (ito::PCLPolygonMesh*)(*paramsMand)[1].getVal<void*>();

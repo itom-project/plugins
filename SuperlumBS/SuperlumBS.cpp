@@ -114,7 +114,7 @@ It is initialized by actuator(\"SuperlumBS\", SerialIO).";
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal SuperlumBS::showConfDialog(void)
 {
-	return apiShowConfigurationDialog(this, new DialogSuperlumBS(this));
+    return apiShowConfigurationDialog(this, new DialogSuperlumBS(this));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -126,43 +126,43 @@ SuperlumBS::SuperlumBS() : AddInActuator(), m_pSer(NULL), m_delayAfterSendComman
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Serial number of device.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("remote_interlock", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Remote Interlock is in open (0) or is closed (1).").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("master_key", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 1, tr("Master Key is in position O (0) or position I (1).").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("full_tuning_range_LOW_end", ito::ParamBase::Double | ito::ParamBase::Readonly, 820.00, 870.00, 870.00, tr("FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in LOW power mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("full_tuning_range_LOW_start", ito::ParamBase::Double | ito::ParamBase::Readonly, 820.00, 870.00, 870.00, tr("FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in HIGH power mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("full_tuning_range_HIGH_end", ito::ParamBase::Double | ito::ParamBase::Readonly, 820.00, 870.00, 870.00, tr("FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in LOW power mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("full_tuning_range_HIGH_start", ito::ParamBase::Double | ito::ParamBase::Readonly, 820.00, 870.00, 870.00, tr("FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in HIGH power mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("operation_mode", ito::ParamBase::Int, 1, 4, 1, tr("( 1 ) MANual, ( 2 ) AUTOmatic, ( 3 ) EXTernal, ( 4 ) MODulation.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("local", ito::ParamBase::Int, 0, 1, 1, tr("( 0 ) local or ( 1 ) remote mode.").toLatin1().data());
+    paramVal = ito::Param("remote_interlock", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Remote Interlock is in open (0) or is closed (1).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("operation_booster", ito::ParamBase::Int | ito::ParamBase::Readonly, -1, 1, 0, tr("( -1 ) booster module is not installed, ( 0 ) optical output of booster is disabled, ( 1 ) optical output of booster is enabled.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("master_key", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 1, tr("Master Key is in position O (0) or position I (1).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("full_tuning_range_LOW_end", ito::ParamBase::Double | ito::ParamBase::Readonly, 820.00, 870.00, 870.00, tr("FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in LOW power mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("full_tuning_range_LOW_start", ito::ParamBase::Double | ito::ParamBase::Readonly, 820.00, 870.00, 870.00, tr("FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in HIGH power mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("full_tuning_range_HIGH_end", ito::ParamBase::Double | ito::ParamBase::Readonly, 820.00, 870.00, 870.00, tr("FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in LOW power mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("full_tuning_range_HIGH_start", ito::ParamBase::Double | ito::ParamBase::Readonly, 820.00, 870.00, 870.00, tr("FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in HIGH power mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("operation_mode", ito::ParamBase::Int, 1, 4, 1, tr("( 1 ) MANual, ( 2 ) AUTOmatic, ( 3 ) EXTernal, ( 4 ) MODulation.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("local", ito::ParamBase::Int, 0, 1, 1, tr("( 0 ) local or ( 1 ) remote mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("operation_booster", ito::ParamBase::Int | ito::ParamBase::Readonly, -1, 1, 0, tr("( -1 ) booster module is not installed, ( 0 ) optical output of booster is disabled, ( 1 ) optical output of booster is enabled.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("power_mode", ito::ParamBase::Int, 0, 1, 0, tr("( 0 ) LOW Power mode, ( 1 ) HIGH Power mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("modulation_frequency", ito::ParamBase::Double, 0.1, 1000.0, (0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1000.0), tr("Modulation frequency in Two-Wavelength MODulation mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("wavelength_first", ito::ParamBase::Double, 820.00, 870.00, 870.00, tr("first wavelength in Two-Wavelength MODulation mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("wavelength_second", ito::ParamBase::Double, 820.00, 870.00, 820.00, tr("second wavelength in Two-Wavelength MODulation mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("modulation_frequency", ito::ParamBase::Double, 0.1, 1000.0, (0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1000.0), tr("Modulation frequency in Two-Wavelength MODulation mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("wavelength_first", ito::ParamBase::Double, 820.00, 870.00, 870.00, tr("first wavelength in Two-Wavelength MODulation mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("wavelength_second", ito::ParamBase::Double, 820.00, 870.00, 820.00, tr("second wavelength in Two-Wavelength MODulation mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sweep_speed", ito::ParamBase::Int, 2, 10000, 10, tr("sweep speed in AUTOmatic or EXTernal mode between 2nm/s - 10000nm/s. Increment: 1nm/s.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("modification_end_wavelength", ito::ParamBase::Double, 820.00, 870.00, 820.00, tr("end modification wavelength in AUTOmatic or EXTernal sweep mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("modification_start_wavelength", ito::ParamBase::Double, 820.00, 870.00, 870.00, tr("start modification wavelength in AUTOmatic or EXTernal sweep mode.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("wavelength", ito::ParamBase::Double, 820.00, 870.00, 845.00, tr("operation wavelength [nm] in MANual Mode. Increment: 0.05nm.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("( 0 ) optical output is disabeld, ( 1 ) optical output is enabled.").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
-	
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("modification_end_wavelength", ito::ParamBase::Double, 820.00, 870.00, 820.00, tr("end modification wavelength in AUTOmatic or EXTernal sweep mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("modification_start_wavelength", ito::ParamBase::Double, 820.00, 870.00, 870.00, tr("start modification wavelength in AUTOmatic or EXTernal sweep mode.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("wavelength", ito::ParamBase::Double, 820.00, 870.00, 845.00, tr("operation wavelength [nm] in MANual Mode. Increment: 0.05nm.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("( 0 ) optical output is disabeld, ( 1 ) optical output is enabled.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    
     //now create dock widget for this plugin
     DockWidgetSuperlumBS *m_dockWidget = new DockWidgetSuperlumBS(getID(), this);
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
@@ -214,17 +214,17 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
     QString paramName;
     bool hasIndex;
     bool outputOpt;
-	bool powermod;
+    bool powermod;
     int index;
     QString additionalTag;
     QVector<QPair<int, QByteArray> > lastError;
-	QByteArray answer;
+    QByteArray answer;
     QByteArray request;
-	QMap<QString, ito::Param>::iterator it;
+    QMap<QString, ito::Param>::iterator it;
 
     retValue += apiParseParamName(key, paramName, hasIndex, index, additionalTag);
 
-	if(!retValue.containsError())
+    if(!retValue.containsError())
     {
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
@@ -286,59 +286,59 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data()); 
                 }
 
-				//__________________________________________________________________________________________________________ Operation Mode
+                //__________________________________________________________________________________________________________ Operation Mode
                 else if (paramName == "operation_mode")
                 {
                     // Optical output needs to be disabled before changing operation mode
                     request = QByteArray("S20");
-					retValue += SendQuestionWithAnswerString(request, answer, 500);  //optical output check query
-					QRegExp regExp("^A2(\\d{3,3})(\\d{2,2})");
-					if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-					{		
-						request = QByteArray("S6") + QByteArray::number(val->getVal<int>());	
-						bool optical;
-						switch (regExp.cap(1).toInt())
-						{
-							case 97:
-							case 101:
-							case 113:
-							case 117:
-								optical = false; // optical output is disabled
-								break;
+                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //optical output check query
+                    QRegExp regExp("^A2(\\d{3,3})(\\d{2,2})");
+                    if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                    {        
+                        request = QByteArray("S6") + QByteArray::number(val->getVal<int>());    
+                        bool optical;
+                        switch (regExp.cap(1).toInt())
+                        {
+                            case 97:
+                            case 101:
+                            case 113:
+                            case 117:
+                                optical = false; // optical output is disabled
+                                break;
 
-							case 99: 
-							case 103:
-							case 115:
-							case 119:	
-								optical = true; // optical output is enabled
-								break;	
+                            case 99: 
+                            case 103:
+                            case 115:
+                            case 119:    
+                                optical = true; // optical output is enabled
+                                break;    
 
                             default:
                                 retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
                                 break;
-						}
+                        }
 
-						if(optical)
-						{
-							retValue += ito::RetVal(ito::retError, 0, tr("Optical output of device is enabled!").toLatin1().data()); 
-						}
-						else if (!optical)
-						{
-							retValue += SendQuestionWithAnswerString(request, answer, 500);  //set operation mode of device
-							QRegExp regExp2("^A6(1|2|3|4)$");
-							if (regExp2.indexIn(answer) >= 0 && !retValue.containsError())
-							{
-								m_params["operation_mode"].setVal<int>(regExp2.cap(1).toInt());
-							}
+                        if(optical)
+                        {
+                            retValue += ito::RetVal(ito::retError, 0, tr("Optical output of device is enabled!").toLatin1().data()); 
+                        }
+                        else if (!optical)
+                        {
+                            retValue += SendQuestionWithAnswerString(request, answer, 500);  //set operation mode of device
+                            QRegExp regExp2("^A6(1|2|3|4)$");
+                            if (regExp2.indexIn(answer) >= 0 && !retValue.containsError())
+                            {
+                                m_params["operation_mode"].setVal<int>(regExp2.cap(1).toInt());
+                            }
                             else 
                             {
                                 retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
                             }
-						}
-						else 
-						{
-							retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-						}
+                        }
+                        else 
+                        {
+                            retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                        }
                     }
                     else
                     {
@@ -346,70 +346,70 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     }
                 }
 
-				//__________________________________________________________________________________________________________ Local/ Remote Mode
+                //__________________________________________________________________________________________________________ Local/ Remote Mode
                 else if (paramName == "local")
                 {
-					//set remote operation of device 
-					if (val->getVal<int>() == 0)
-					{
+                    //set remote operation of device 
+                    if (val->getVal<int>() == 0)
+                    {
                         request = QByteArray("S11");
-						retValue += SendQuestionWithAnswerString(request, answer, 500);  
-						if (answer.contains("A11") && !retValue.containsError())
-						{
-							m_params["local"].setVal<int>( 0 ); // local mode
-						}
-						else
-						{
-							retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-						}
-					}
-					else if (val->getVal<int>() == 1)
-					{
+                        retValue += SendQuestionWithAnswerString(request, answer, 500);  
+                        if (answer.contains("A11") && !retValue.containsError())
+                        {
+                            m_params["local"].setVal<int>( 0 ); // local mode
+                        }
+                        else
+                        {
+                            retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                        }
+                    }
+                    else if (val->getVal<int>() == 1)
+                    {
                         request = QByteArray("S12");
-						retValue += SendQuestionWithAnswerString(request, answer, 500);
-						if(answer.contains("A12") && !retValue.containsError())
-						{
-							m_params["local"].setVal<int>( 1 ); // remote mode
-						}
-						else
-						{
-							retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-						}
-					}
-					else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-					}
+                        retValue += SendQuestionWithAnswerString(request, answer, 500);
+                        if(answer.contains("A12") && !retValue.containsError())
+                        {
+                            m_params["local"].setVal<int>( 1 ); // remote mode
+                        }
+                        else
+                        {
+                            retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                        }
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                    }
                 }
-				
-				//__________________________________________________________________________________________________________ Optical Output
-				else if (paramName == "optical_output")
+                
+                //__________________________________________________________________________________________________________ Optical Output
+                else if (paramName == "optical_output")
                 {
                     request = QByteArray("S20");
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //get optical output status
-			        QRegExp regExp("^A2(\\d{3,3})(\\d{2,2})");
-			        if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-			        {						
-				        switch (regExp.cap(1).toInt())
-				        {
-					        case 97: 
-					        case 101:
-					        case 113:
-					        case 117:
-								outputOpt = false;//optical output disabled
-						        break;
-					        case 99: 
-					        case 103:
-					        case 115:
-					        case 119:
-						            
-								outputOpt = true;//optical output enabled
-						        break;
+                    QRegExp regExp("^A2(\\d{3,3})(\\d{2,2})");
+                    if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                    {                        
+                        switch (regExp.cap(1).toInt())
+                        {
+                            case 97: 
+                            case 101:
+                            case 113:
+                            case 117:
+                                outputOpt = false;//optical output disabled
+                                break;
+                            case 99: 
+                            case 103:
+                            case 115:
+                            case 119:
+                                    
+                                outputOpt = true;//optical output enabled
+                                break;
 
-					        default:
-						        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-						        break;
-				        }
+                            default:
+                                retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                                break;
+                        }
 
                         if (!retValue.containsError() && outputOpt && (val->getVal<int>() == 0)) //disabled optical output
                         {
@@ -420,388 +420,388 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                                 m_params["optical_output"].setVal<int>( 0 );
                             }
                             else
-						    {
-							    retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-						    }				
+                            {
+                                retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                            }                
                         }
-					    else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 1)) //enable optical output
-					    {
+                        else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 1)) //enable optical output
+                        {
                             request = QByteArray("S21");
-						    retValue += SendQuestionWithAnswerString(request, answer, 500); 
+                            retValue += SendQuestionWithAnswerString(request, answer, 500); 
                             if (answer.contains("A2") && !retValue.containsError())
                             {
                                 m_params["optical_output"].setVal<int>( 1 );
                             }
                             else
-						    {
-							    retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-						    }	
-					    }
-						else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 0)) //already disabled
-						{
+                            {
+                                retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                            }    
+                        }
+                        else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 0)) //already disabled
+                        {
 
-						}
-						else if (!retValue.containsError() && outputOpt && (val->getVal<int>() == 1)) //already enabled
-						{
+                        }
+                        else if (!retValue.containsError() && outputOpt && (val->getVal<int>() == 1)) //already enabled
+                        {
 
-						}
+                        }
                         else
-					    {
-						    retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-					    }
-			        }
-                	else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-					}
+                        {
+                            retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                        }
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                    }
                 }
 
-				//__________________________________________________________________________________________________________ Power Mode
-				else if (paramName == "power_mode")
+                //__________________________________________________________________________________________________________ Power Mode
+                else if (paramName == "power_mode")
                 {
                     request = QByteArray("S20");
-					retValue += SendQuestionWithAnswerString(request, answer, 500);  //get optical output status
-			        QRegExp regExp("^A2(\\d{3,3})(\\d{2,2})");
-			        if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-			        {						
-				        switch (regExp.cap(1).toInt())
-				        {
-					        case 99: //optical output enabled
-					        case 103:
-					        case 115:
-					        case 119:
-						        retValue += ito::RetVal::format(ito::retError,0,tr("Optical Output is ENABLED!").toLatin1().data());
-						        break;
-											
-							case 97: //optical output disabled
-					        case 101:
-					        case 113:
-					        case 117:
-						        break;
+                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //get optical output status
+                    QRegExp regExp("^A2(\\d{3,3})(\\d{2,2})");
+                    if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                    {                        
+                        switch (regExp.cap(1).toInt())
+                        {
+                            case 99: //optical output enabled
+                            case 103:
+                            case 115:
+                            case 119:
+                                retValue += ito::RetVal::format(ito::retError,0,tr("Optical Output is ENABLED!").toLatin1().data());
+                                break;
+                                            
+                            case 97: //optical output disabled
+                            case 101:
+                            case 113:
+                            case 117:
+                                break;
 
-					        default:
-						        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-						        break;	
-				        }
-			        }
-                	else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-					}
+                            default:
+                                retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                                break;    
+                        }
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                    }
 
-			        QRegExp regExp2("^A2(\\d{3,3})(\\d{2,2})");
-			        if (regExp2.indexIn(answer) >= 0 && !retValue.containsError())
-			        {						
-				        switch (regExp2.cap(1).toInt())
-				        {
-					        case 97: //low power mode
-					        case 99:
-					        case 101:
-					        case 103:
-								powermod = false;
-						        break;
+                    QRegExp regExp2("^A2(\\d{3,3})(\\d{2,2})");
+                    if (regExp2.indexIn(answer) >= 0 && !retValue.containsError())
+                    {                        
+                        switch (regExp2.cap(1).toInt())
+                        {
+                            case 97: //low power mode
+                            case 99:
+                            case 101:
+                            case 103:
+                                powermod = false;
+                                break;
 
-					        case 113: //high power mode
-					        case 115:
-					        case 117:
-					        case 119:
-								powermod = true;
-						        break;
+                            case 113: //high power mode
+                            case 115:
+                            case 117:
+                            case 119:
+                                powermod = true;
+                                break;
 
-					        default:
-						        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-						        break;
-				        }
-			        }
-                   	else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-					}
-					
-					if (!retValue.containsError() && powermod && (val->getVal<int>() == 0)) //power mode to LOW
+                            default:
+                                retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                                break;
+                        }
+                    }
+                       else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                    }
+                    
+                    if (!retValue.containsError() && powermod && (val->getVal<int>() == 0)) //power mode to LOW
                     {
                         request = QByteArray("S41");
                         retValue += SendQuestionWithAnswerString(request, answer, 500);   
-						if (retValue.containsError())
-						{
-							retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-						}
-						else 
-						{
-						    m_params["power_mode"].setVal<int>( 0 );
-							static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
-						}
+                        if (retValue.containsError())
+                        {
+                            retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                        }
+                        else 
+                        {
+                            m_params["power_mode"].setVal<int>( 0 );
+                            static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
+                        }
                     }
-					else if (!retValue.containsError() && !powermod && (val->getVal<int>() == 1)) //power mode to HIGH
-					{
+                    else if (!retValue.containsError() && !powermod && (val->getVal<int>() == 1)) //power mode to HIGH
+                    {
                         request = QByteArray("S41");
-						retValue += SendQuestionWithAnswerString(request, answer, 500); 
-						if (retValue.containsError())
-						{
-							retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-						}
-						else
-						{
-						    m_params["power_mode"].setVal<int>( 1 ); 
-							static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
-							static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
-						}
-					}		
-					else if (!retValue.containsError() && !powermod && (val->getVal<int>() == 0)) // not changed
-					{
-					}
-					else if (!retValue.containsError() && powermod && (val->getVal<int>() == 1)) // not changed
-					{
-					}
-                   	else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-					}
-				}  
+                        retValue += SendQuestionWithAnswerString(request, answer, 500); 
+                        if (retValue.containsError())
+                        {
+                            retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                        }
+                        else
+                        {
+                            m_params["power_mode"].setVal<int>( 1 ); 
+                            static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
+                            static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
+                        }
+                    }        
+                    else if (!retValue.containsError() && !powermod && (val->getVal<int>() == 0)) // not changed
+                    {
+                    }
+                    else if (!retValue.containsError() && powermod && (val->getVal<int>() == 1)) // not changed
+                    {
+                    }
+                       else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                    }
+                }  
 
-				//__________________________________________________________________________________________________________ Wavelength
-				else if (paramName == "wavelength")
+                //__________________________________________________________________________________________________________ Wavelength
+                else if (paramName == "wavelength")
                 {
                     request = QByteArray("S81") + (QByteArray::number(20 * val->getVal<double>() - 14000));
-					retValue += SendQuestionWithAnswerString(request, answer, 500);  //set wavelength of optical output in Manual sweep mode
-					QRegExp regExp("^A81(\\d{4,4})");			
-					if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-					{
-						m_params["wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
-					}
-					else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-					}
+                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //set wavelength of optical output in Manual sweep mode
+                    QRegExp regExp("^A81(\\d{4,4})");            
+                    if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                    {
+                        m_params["wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                    }
                 }
 
                 //__________________________________________________________________________________________________________ Sweep Speed
-				else if (paramName == "sweep_speed")
+                else if (paramName == "sweep_speed")
                 {
-					if (val->getVal<double>() < 10)
-					{	
-						request = QByteArray("S88") + (QByteArray::number(val->getVal<double>())); //set sweep speed of device (1-byte code for 2 - 9 nm/s)
-						retValue += SendQuestionWithAnswerString(request, answer, 500); 
-						QRegExp regExp("^A88(\\d{1,1})");
-						
-						if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-						{
-							m_params["sweep_speed"].setVal<int>(regExp.cap(1).toInt());
-						}
-						else
-						{
-							retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-						}
-					}
-					else if (val->getVal<double>() >= 10 )
-					{
-						QByteArray speed("0000");
-						speed.replace(4-QByteArray::number(0.1 * val->getVal<double>()).length(), QByteArray::number(0.1 * val->getVal<double>()).length(), QByteArray::number(0.1 * val->getVal<double>()));
-						request = QByteArray("S84").append(speed.data()); //set sweep speed of device (4-byte code for 10 - 10000 nm/s)
-						retValue += SendQuestionWithAnswerString(request, answer, 500);
-						QRegExp regExp("^A84(\\d{4,4})");
+                    if (val->getVal<double>() < 10)
+                    {    
+                        request = QByteArray("S88") + (QByteArray::number(val->getVal<double>())); //set sweep speed of device (1-byte code for 2 - 9 nm/s)
+                        retValue += SendQuestionWithAnswerString(request, answer, 500); 
+                        QRegExp regExp("^A88(\\d{1,1})");
+                        
+                        if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                        {
+                            m_params["sweep_speed"].setVal<int>(regExp.cap(1).toInt());
+                        }
+                        else
+                        {
+                            retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                        }
+                    }
+                    else if (val->getVal<double>() >= 10 )
+                    {
+                        QByteArray speed("0000");
+                        speed.replace(4-QByteArray::number(0.1 * val->getVal<double>()).length(), QByteArray::number(0.1 * val->getVal<double>()).length(), QByteArray::number(0.1 * val->getVal<double>()));
+                        request = QByteArray("S84").append(speed.data()); //set sweep speed of device (4-byte code for 10 - 10000 nm/s)
+                        retValue += SendQuestionWithAnswerString(request, answer, 500);
+                        QRegExp regExp("^A84(\\d{4,4})");
 
-						if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-						{
-							m_params["sweep_speed"].setVal<int>(10 * regExp.cap(1).toInt());
-						}
-						else
-						{
-							retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-						}
-					}
-					else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid sweep speed value '%s'", request.data());
-					}
+                        if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                        {
+                            m_params["sweep_speed"].setVal<int>(10 * regExp.cap(1).toInt());
+                        }
+                        else
+                        {
+                            retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                        }
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid sweep speed value '%s'", request.data());
+                    }
                 }
 
-				//__________________________________________________________________________________________________________ Modification Wavelength
-				else if (paramName == "modification_end_wavelength")
+                //__________________________________________________________________________________________________________ Modification Wavelength
+                else if (paramName == "modification_end_wavelength")
                 {
-					request = QByteArray("S83") + (QByteArray::number(20 * val->getVal<double>() - 14000));
-					retValue += SendQuestionWithAnswerString(request, answer, 500);  //set end wavelength in Automatic or external sweep mode
-					QRegExp regExp("^A83(\\d{4,4})");			
-					if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-					{
-						m_params["modification_end_wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
-					}
-					else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-					}
+                    request = QByteArray("S83") + (QByteArray::number(20 * val->getVal<double>() - 14000));
+                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //set end wavelength in Automatic or external sweep mode
+                    QRegExp regExp("^A83(\\d{4,4})");            
+                    if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                    {
+                        m_params["modification_end_wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                    }
                 }
 
-				//__________________________________________________________________________________________________________ Modification Wavelength
-				else if (paramName == "modification_start_wavelength")
+                //__________________________________________________________________________________________________________ Modification Wavelength
+                else if (paramName == "modification_start_wavelength")
                 {
-					request = QByteArray("S82") + (QByteArray::number(20 * val->getVal<double>() - 14000));
-					retValue += SendQuestionWithAnswerString(request, answer, 500);  //set start wavelength in Automatic or external sweep mode
-					QRegExp regExp("^A82(\\d{4,4})");			
-					if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-					{
-						m_params["modification_start_wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
-					}
-					else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-					}
+                    request = QByteArray("S82") + (QByteArray::number(20 * val->getVal<double>() - 14000));
+                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //set start wavelength in Automatic or external sweep mode
+                    QRegExp regExp("^A82(\\d{4,4})");            
+                    if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                    {
+                        m_params["modification_start_wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                    }
                 }
 
-				//__________________________________________________________________________________________________________ First Wavelength
-				else if (paramName == "wavelength_first")
+                //__________________________________________________________________________________________________________ First Wavelength
+                else if (paramName == "wavelength_first")
                 {
-					request = QByteArray("S85") + (QByteArray::number(20 * val->getVal<double>() - 14000));
-					retValue += SendQuestionWithAnswerString(request, answer, 500);  //set first wavelength in TWO-WAVELENGTH MODULATION mode
-					QRegExp regExp("^A85(\\d{4,4})");			
-					if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-					{
-						m_params["wavelength_first"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
-					}
-					else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-					}
+                    request = QByteArray("S85") + (QByteArray::number(20 * val->getVal<double>() - 14000));
+                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //set first wavelength in TWO-WAVELENGTH MODULATION mode
+                    QRegExp regExp("^A85(\\d{4,4})");            
+                    if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                    {
+                        m_params["wavelength_first"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                    }
                 }
 
-				//__________________________________________________________________________________________________________ Second Wavelength
-				else if (paramName == "wavelength_second")
+                //__________________________________________________________________________________________________________ Second Wavelength
+                else if (paramName == "wavelength_second")
                 {
-					request = QByteArray("S86") + (QByteArray::number(20 * val->getVal<double>() - 14000));
-					retValue += SendQuestionWithAnswerString(request, answer, 500);  //set second wavelength in TWO-WAVELENGTH MODULATION mode 
-					QRegExp regExp("^A86(\\d{4,4})");			
-					if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-					{
-						m_params["wavelength_second"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
-					}
-					else
-					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-					}
+                    request = QByteArray("S86") + (QByteArray::number(20 * val->getVal<double>() - 14000));
+                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //set second wavelength in TWO-WAVELENGTH MODULATION mode 
+                    QRegExp regExp("^A86(\\d{4,4})");            
+                    if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                    {
+                        m_params["wavelength_second"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+                    }
+                    else
+                    {
+                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                    }
                 }
 
-				//__________________________________________________________________________________________________________ Modulation frequency
-				else if (paramName == "modulation_frequency")
+                //__________________________________________________________________________________________________________ Modulation frequency
+                else if (paramName == "modulation_frequency")
                 {
-					int mod_f = val->getVal<double>() * 10;
-					switch (mod_f) //set modulation frequency of TWO-WAVELENGTH MODULATION mode
-					{
-						case 1:
-							retValue += SendQuestionWithAnswerString("S8701", answer, 500);
-							break;
-						case 2:
-							retValue += SendQuestionWithAnswerString("S8702", answer, 500);
-							break;
-						case 5:
-							retValue += SendQuestionWithAnswerString("S8703", answer, 500);
-							break;
-						case 10:
-							retValue += SendQuestionWithAnswerString("S8704", answer, 500);
-							break;
-						case 20:
-							retValue += SendQuestionWithAnswerString("S8705", answer, 500);
-							break;
-						case 50:
-							retValue += SendQuestionWithAnswerString("S8706", answer, 500);
-							break;
-						case 100:
-							retValue += SendQuestionWithAnswerString("S8707", answer, 500);
-							break;
-						case 200:
-							retValue += SendQuestionWithAnswerString("S8708", answer, 500);
-							break;
-						case 500:
-							retValue += SendQuestionWithAnswerString("S8709", answer, 500);
-							break;
-						case 1000:
-							retValue += SendQuestionWithAnswerString("S8710", answer, 500);
-							break;
-						case 2000:
-							retValue += SendQuestionWithAnswerString("S8711", answer, 500);
-							break;
-						case 5000:
-							retValue += SendQuestionWithAnswerString("S8712", answer, 500);
-							break;
-						case 10000:
-							retValue += SendQuestionWithAnswerString("S8713", answer, 500);
-							break;
+                    int mod_f = val->getVal<double>() * 10;
+                    switch (mod_f) //set modulation frequency of TWO-WAVELENGTH MODULATION mode
+                    {
+                        case 1:
+                            retValue += SendQuestionWithAnswerString("S8701", answer, 500);
+                            break;
+                        case 2:
+                            retValue += SendQuestionWithAnswerString("S8702", answer, 500);
+                            break;
+                        case 5:
+                            retValue += SendQuestionWithAnswerString("S8703", answer, 500);
+                            break;
+                        case 10:
+                            retValue += SendQuestionWithAnswerString("S8704", answer, 500);
+                            break;
+                        case 20:
+                            retValue += SendQuestionWithAnswerString("S8705", answer, 500);
+                            break;
+                        case 50:
+                            retValue += SendQuestionWithAnswerString("S8706", answer, 500);
+                            break;
+                        case 100:
+                            retValue += SendQuestionWithAnswerString("S8707", answer, 500);
+                            break;
+                        case 200:
+                            retValue += SendQuestionWithAnswerString("S8708", answer, 500);
+                            break;
+                        case 500:
+                            retValue += SendQuestionWithAnswerString("S8709", answer, 500);
+                            break;
+                        case 1000:
+                            retValue += SendQuestionWithAnswerString("S8710", answer, 500);
+                            break;
+                        case 2000:
+                            retValue += SendQuestionWithAnswerString("S8711", answer, 500);
+                            break;
+                        case 5000:
+                            retValue += SendQuestionWithAnswerString("S8712", answer, 500);
+                            break;
+                        case 10000:
+                            retValue += SendQuestionWithAnswerString("S8713", answer, 500);
+                            break;
 
-						default:
-							retValue += ito::RetVal::format(ito::retError,0,"'%s' is not a possible modulation frequency.", answer.data());
-							break;
-					
-					}
+                        default:
+                            retValue += ito::RetVal::format(ito::retError,0,"'%s' is not a possible modulation frequency.", answer.data());
+                            break;
+                    
+                    }
 
                     request = QByteArray("S77");
-					retValue += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | modulation frequency in TWO-WAVELENGTH-MODULATION mode   
-					QRegExp regExp("^A77(\\d{2,2})");
-					if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-					{						
-						switch (regExp.cap(1).toInt())
-						{
-							case 1:
-								m_params["modulation_frequency"].setVal<double>( 0.1 );
-								break;
-							case 2:
-								m_params["modulation_frequency"].setVal<double>( 0.2 );
-								break;
-							case 3:
-								m_params["modulation_frequency"].setVal<double>( 0.5 );
-								break;
-							case 4:
-								m_params["modulation_frequency"].setVal<double>( 1.0 );
-								break;
-							case 5:
-								m_params["modulation_frequency"].setVal<double>( 2.0 );
-								break;
-							case 6:
-								m_params["modulation_frequency"].setVal<double>( 5.0 );
-								break;
-							case 7:
-								m_params["modulation_frequency"].setVal<double>( 10.0 );
-								break;
-							case 8:
-								m_params["modulation_frequency"].setVal<double>( 20.0 );
-								break;
-							case 9:
-								m_params["modulation_frequency"].setVal<double>( 50.0 );
-								break;
-							case 10:
-								m_params["modulation_frequency"].setVal<double>( 100.0 );
-								break;
-							case 11:
-								m_params["modulation_frequency"].setVal<double>( 200.0 );
-								break;
-							case 12:
-								m_params["modulation_frequency"].setVal<double>( 500.0 );
-								break;
-							case 13:
-								m_params["modulation_frequency"].setVal<double>( 1000.0 );
-								break;
+                    retValue += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | modulation frequency in TWO-WAVELENGTH-MODULATION mode   
+                    QRegExp regExp("^A77(\\d{2,2})");
+                    if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+                    {                        
+                        switch (regExp.cap(1).toInt())
+                        {
+                            case 1:
+                                m_params["modulation_frequency"].setVal<double>( 0.1 );
+                                break;
+                            case 2:
+                                m_params["modulation_frequency"].setVal<double>( 0.2 );
+                                break;
+                            case 3:
+                                m_params["modulation_frequency"].setVal<double>( 0.5 );
+                                break;
+                            case 4:
+                                m_params["modulation_frequency"].setVal<double>( 1.0 );
+                                break;
+                            case 5:
+                                m_params["modulation_frequency"].setVal<double>( 2.0 );
+                                break;
+                            case 6:
+                                m_params["modulation_frequency"].setVal<double>( 5.0 );
+                                break;
+                            case 7:
+                                m_params["modulation_frequency"].setVal<double>( 10.0 );
+                                break;
+                            case 8:
+                                m_params["modulation_frequency"].setVal<double>( 20.0 );
+                                break;
+                            case 9:
+                                m_params["modulation_frequency"].setVal<double>( 50.0 );
+                                break;
+                            case 10:
+                                m_params["modulation_frequency"].setVal<double>( 100.0 );
+                                break;
+                            case 11:
+                                m_params["modulation_frequency"].setVal<double>( 200.0 );
+                                break;
+                            case 12:
+                                m_params["modulation_frequency"].setVal<double>( 500.0 );
+                                break;
+                            case 13:
+                                m_params["modulation_frequency"].setVal<double>( 1000.0 );
+                                break;
 
-							default:
-								retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-								break;
-					
-						}
-					}
+                            default:
+                                retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                                break;
+                    
+                        }
+                    }
                     else
                     {
                         retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
@@ -809,7 +809,7 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 }
             }
 
-			//__________________________________________________________________________________________________________
+            //__________________________________________________________________________________________________________
             else if (paramIt->getType() == val->getType())
             {
                 retValue += paramIt.value().copyValueFrom(&(*val));
@@ -819,13 +819,13 @@ ito::RetVal SuperlumBS::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 retValue += ito::RetVal(ito::retError, 0, tr("Given parameter and m_param do not have the same type").toLatin1().data());
             }
         }
-	}
-	else
-	{
-		retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
-	}
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
+    }
 
-	emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+    emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     if (waitCond) 
     {
         waitCond->returnValue = retValue;
@@ -841,15 +841,15 @@ ito::RetVal SuperlumBS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 {   
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
-	QByteArray answer;
+    QByteArray answer;
 
     QString deviceName = paramsOpt->at(0).getVal<char*>();
 
     if (deviceName == "BS-840-1-HP")
     {
         m_deviceType = BS_840_1_HP;
-		m_identifier = QString("BS-840-HP-1 (%1)").arg(getID());
-	}
+        m_identifier = QString("BS-840-HP-1 (%1)").arg(getID());
+    }
     else
     {
         retval += ito::RetVal::format(ito::retError,0,"Device name '%s' not supported", deviceName.toLatin1().data());
@@ -857,14 +857,14 @@ ito::RetVal SuperlumBS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
     if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
     {    
-		m_pSer = (ito::AddInDataIO *)(*paramsMand)[0].getVal<void *>();
- 		retval += IdentifyAndInitializeSystem();    
+        m_pSer = (ito::AddInDataIO *)(*paramsMand)[0].getVal<void *>();
+         retval += IdentifyAndInitializeSystem();    
     }
-	else
+    else
     {
         retval += ito::RetVal(ito::retError, 1, tr("Doesn't fit to interface DataIO!").toLatin1().data());
     }
-	
+    
 
     if (waitCond)
     {
@@ -879,47 +879,47 @@ ito::RetVal SuperlumBS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBS::close(ItomSharedSemaphore *waitCond)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue(ito::retOk);
-	QByteArray answer;
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+    QByteArray answer;
     QByteArray request;
 
     request = QByteArray("S20");
     retValue += SendQuestionWithAnswerString(request, answer, 500);  //ask, if optical output is enabled
-	QRegExp regExp("^A2(\\d{3,3})(\\d{2,2})");
-	if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
-	{						
-		switch (regExp.cap(1).toInt())
-		{
-			case 99: 
-			case 103:
-			case 115:
-			case 119:
-				retValue += SendQuestionWithAnswerString("S21", answer, 500);  //disable optical output
-				break;
+    QRegExp regExp("^A2(\\d{3,3})(\\d{2,2})");
+    if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
+    {                        
+        switch (regExp.cap(1).toInt())
+        {
+            case 99: 
+            case 103:
+            case 115:
+            case 119:
+                retValue += SendQuestionWithAnswerString("S21", answer, 500);  //disable optical output
+                break;
 
-			case 97:															// optical output already disabled
-			case 101:
-			case 113:
-			case 117:
+            case 97:                                                            // optical output already disabled
+            case 101:
+            case 113:
+            case 117:
 
-				break;
-			default:
-				retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-				break;		
-		}
-	}
+                break;
+            default:
+                retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                break;        
+        }
+    }
     else
     {
         retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
     }
 
     request = QByteArray("S11");
-	retValue += SendQuestionWithAnswerString(request, answer, 500); //set local mode
-	if (retValue.containsError())
-	{
-		retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-	}
+    retValue += SendQuestionWithAnswerString(request, answer, 500); //set local mode
+    if (retValue.containsError())
+    {
+        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+    }
 
     if (waitCond)
     {
@@ -932,11 +932,11 @@ ito::RetVal SuperlumBS::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBS::calib(const int axis, ItomSharedSemaphore *waitCond)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue;
     retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -948,10 +948,10 @@ ito::RetVal SuperlumBS::calib(const int axis, ItomSharedSemaphore *waitCond)
 ito::RetVal SuperlumBS::calib(const QVector<int> /*axis*/, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
+    ito::RetVal retValue;
     retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -964,11 +964,11 @@ ito::RetVal SuperlumBS::calib(const QVector<int> /*axis*/, ItomSharedSemaphore *
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBS::setOrigin(const int axis, ItomSharedSemaphore * waitCond)
 {
-	ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue;
     retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -980,10 +980,10 @@ ito::RetVal SuperlumBS::setOrigin(const int axis, ItomSharedSemaphore * waitCond
 ito::RetVal SuperlumBS::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
+    ito::RetVal retValue;
     retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -996,10 +996,10 @@ ito::RetVal SuperlumBS::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCo
 ito::RetVal SuperlumBS::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
+    ito::RetVal retValue;
     retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1012,10 +1012,10 @@ ito::RetVal SuperlumBS::getStatus(QSharedPointer<QVector<int> > status, ItomShar
 ito::RetVal SuperlumBS::getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
+    ito::RetVal retValue;
     retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1028,10 +1028,10 @@ ito::RetVal SuperlumBS::getPos(const int axis, QSharedPointer<double> pos, ItomS
 ito::RetVal SuperlumBS::getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
+    ito::RetVal retValue;
     retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1045,10 +1045,10 @@ ito::RetVal SuperlumBS::getPos(const QVector<int> axis, QSharedPointer<QVector<d
 ito::RetVal SuperlumBS::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
+    ito::RetVal retValue;
     retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1061,10 +1061,10 @@ ito::RetVal SuperlumBS::setPosAbs(const int axis, const double pos, ItomSharedSe
 ito::RetVal SuperlumBS::setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
-	retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
+    ito::RetVal retValue;
+    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
 
-	if (waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1077,9 +1077,9 @@ ito::RetVal SuperlumBS::setPosAbs(const QVector<int> axis, QVector<double> pos, 
 ito::RetVal SuperlumBS::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
-	retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-	if (waitCond)
+    ito::RetVal retValue;
+    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1092,9 +1092,9 @@ ito::RetVal SuperlumBS::setPosRel(const int axis, const double pos, ItomSharedSe
 ito::RetVal SuperlumBS::setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
 {    
     ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue;
-	retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-	if (waitCond)
+    ito::RetVal retValue;
+    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -1107,13 +1107,13 @@ ito::RetVal SuperlumBS::setPosRel(const QVector<int> axis, QVector<double> pos, 
 ito::RetVal SuperlumBS::waitForDone(const int timeoutMS, const QVector<int> /*axis*/ /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
 {
 
-	ito::RetVal retVal(ito::retOk);
+    ito::RetVal retVal(ito::retOk);
     QMutex waitMutex;
     QWaitCondition waitCondition;
     bool atTarget = false;
     int timeoutMS_ = timeoutMS;
-	ito::RetVal ontRetVal;
-	int ontIterations = 10;
+    ito::RetVal ontRetVal;
+    int ontIterations = 10;
     QSharedPointer<double> actPos = QSharedPointer<double>(new double);
 
     while(timeoutMS_ > 0 && !atTarget)
@@ -1143,7 +1143,7 @@ ito::RetVal SuperlumBS::waitForDone(const int timeoutMS, const QVector<int> /*ax
 ito::RetVal SuperlumBS::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {
     ito::RetVal retValue;
-	retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
+    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
     return retValue;
 }
 
@@ -1201,7 +1201,7 @@ ito::RetVal SuperlumBS::readString(QByteArray &questionCommand, QByteArray &resu
     ito::RetVal retValue = ito::retOk;
     QTime timer;
     QByteArray endline;
-	QByteArray answer;
+    QByteArray answer;
     bool done = false;
     int buflen = 100;
     QSharedPointer<int> curBufLen(new int);
@@ -1259,47 +1259,47 @@ ito::RetVal SuperlumBS::readString(QByteArray &questionCommand, QByteArray &resu
             if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
             {
                 retValue += ito::RetVal(ito::retError, READTIMEOUT, tr("timeout").toLatin1().data());
-				return retValue;
+                return retValue;
             }
         }
 
         len = result.length();
     }
-	
+    
     if (!retValue.containsError())
     {
-		if (result.contains("AE"))// general error! 
-		{
-			retValue += ito::RetVal(ito::retError,0, tr(m_params["serial_number"].getVal<char*>(), "general error!").toLatin1().data());
-			return retValue;
-		}	
-		else if (result.contains("AL"))// device is in local mode and can not be controlled by remote
-		{
-			m_params["local"].setVal<int>( 0 );
-			retValue += ito::RetVal(ito::retError,0, tr(m_params["serial_number"].getVal<char*>(), ("Devices is in local mode! Remote needs to be activated!")).toLatin1().data());
-			return retValue;
-		}
-		else if (result.contains("A2033"))// Alarm Remote Interlock connection! 
-		{						
-				retValue += ito::RetVal(ito::retError, 0, tr("Alarm, Remote Interlock is opened!!! Close the Remote Interlock.").toLatin1().data());
-				m_params["remote_interlock"].setVal<int>( 0 );
-		}
-		else if (result.contains("A2065"))// Master Key is in position O! 
-		{
-				retValue += ito::RetVal(ito::retError, 0, tr("Master Key is in position O!!! Turn the Master Key to I.").toLatin1().data());
-				m_params["master_key"].setVal<int>( 0 );
-		}
-		else //If Remote Interlock ans Master Key OK
-		{
-			m_params["remote_interlock"].setVal<int>( 1 );
-			m_params["master_key"].setVal<int>( 1 );
-		}
+        if (result.contains("AE"))// general error! 
+        {
+            retValue += ito::RetVal(ito::retError,0, tr(m_params["serial_number"].getVal<char*>(), "general error!").toLatin1().data());
+            return retValue;
+        }    
+        else if (result.contains("AL"))// device is in local mode and can not be controlled by remote
+        {
+            m_params["local"].setVal<int>( 0 );
+            retValue += ito::RetVal(ito::retError,0, tr(m_params["serial_number"].getVal<char*>(), ("Devices is in local mode! Remote needs to be activated!")).toLatin1().data());
+            return retValue;
+        }
+        else if (result.contains("A2033"))// Alarm Remote Interlock connection! 
+        {                        
+                retValue += ito::RetVal(ito::retError, 0, tr("Alarm, Remote Interlock is opened!!! Close the Remote Interlock.").toLatin1().data());
+                m_params["remote_interlock"].setVal<int>( 0 );
+        }
+        else if (result.contains("A2065"))// Master Key is in position O! 
+        {
+                retValue += ito::RetVal(ito::retError, 0, tr("Master Key is in position O!!! Turn the Master Key to I.").toLatin1().data());
+                m_params["master_key"].setVal<int>( 0 );
+        }
+        else //If Remote Interlock ans Master Key OK
+        {
+            m_params["remote_interlock"].setVal<int>( 1 );
+            m_params["master_key"].setVal<int>( 1 );
+        }
     }
-	else
-	{
-		retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-	}
-	
+    else
+    {
+        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+    }
+    
     return retValue;
 }
 
@@ -1346,13 +1346,13 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\r\n")),NULL);
     }
 
-	if (!retval.containsError())
-	{
-		QSharedPointer<QVector<ito::ParamBase> > emptyParamVec(new QVector<ito::ParamBase>() );
-		m_pSer->execFunc("clearInputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
-		m_pSer->execFunc("clearOutputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
-		
-		QSharedPointer<ito::Param> param(new ito::Param("port"));
+    if (!retval.containsError())
+    {
+        QSharedPointer<QVector<ito::ParamBase> > emptyParamVec(new QVector<ito::ParamBase>() );
+        m_pSer->execFunc("clearInputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
+        m_pSer->execFunc("clearOutputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
+        
+        QSharedPointer<ito::Param> param(new ito::Param("port"));
         retval += m_pSer->getParam(param, NULL);
         if (retval.containsError() || param->getVal<int>() < 1)
         {
@@ -1362,458 +1362,458 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         {
             m_params["comPort"].setVal<int>(param->getVal<int>()); 
         }
-	}
+    }
     
-	//__________________________________________________________________________________________________________ Set serial number 
-	if(!retval.containsError())
-	{
-        request = QByteArray("S0");
-		retval += SendQuestionWithAnswerString(request, answer, 500);
-		if (!retval.containsError())
-		{
-			//ITO Superlum BroadSweeper indentification information 
-			//A0: reponse code
-			//6: this integer means that the type of the instrument is 6. 
-			//2: this integer means that it is a double-channel device. 
-			//8: this integer means that the firmware version is 4. 
-			//0579: serial number
-			m_params["serial_number"].setVal<char*>(answer.data());
-		}
-		else
-		{			
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
-
-	//__________________________________________________________________________________________________________ set device in remote control
-	if (!retval.containsError())
-	{
-        request = QByteArray("S12");
-		retval += SendQuestionWithAnswerString(request, answer, 500);    
-		if (!retval.containsError() && answer.contains("A11"))
-		{			
-			m_params["local"].setVal<int>( 0 ); // local mode
-		}
-		else if (!retval.containsError() && answer.contains("A12"))
-		{
-			m_params["local"].setVal<int>( 1 ); // remote mode
-		}	
-		else 
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
-
-	//__________________________________________________________________________________________________________ set FULL tuning range end wavelength LOW power
-	if (!retval.containsError())
-	{
-		//end wavelength of full tuning range in LOW power mode
-        request = QByteArray("S51");
-		retval += SendQuestionWithAnswerString(request, answer, 500);//end wavelength for LOW power mode
-		QRegExp regExp("^A51(\\d{4,4})");
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{			
-			double value = 0.05 * regExp.cap(1).toDouble() + 700;
-			m_params["full_tuning_range_LOW_end"].setVal<double>( value );			
-			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_end"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_end"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(value);
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
-
-	//__________________________________________________________________________________________________________ set FULL tuning range start wavelength LOW power
-	if (!retval.containsError())
-	{
-		//end wavelength of full tuning range in LOW power mode
-        request = QByteArray("S52");
-		retval += SendQuestionWithAnswerString(request, answer, 500);//end wavelength for LOW power mode
-		QRegExp regExp("^A52(\\d{4,4})");
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{			
-			double value = 0.05 * regExp.cap(1).toDouble() + 700;
-			m_params["full_tuning_range_LOW_start"].setVal<double>( value );
-			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_start"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_start"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(value);
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
-
-	//__________________________________________________________________________________________________________ set FULL tuning range end wavelength HIGH power
-	if (!retval.containsError())
-	{
-		//end wavelength of full tuning range in LOW power mode
-        request = QByteArray("S53");
-		retval += SendQuestionWithAnswerString(request, answer, 500);//end wavelength for LOW power mode
-		QRegExp regExp("^A53(\\d{4,4})");
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{			
-			double value = 0.05 * regExp.cap(1).toDouble() + 700;
-			m_params["full_tuning_range_HIGH_end"].setVal<double>( value );
-			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_end"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_end"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(value);
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
-
-	//__________________________________________________________________________________________________________ set FULL tuning range start wavelength LOW power
-	if (!retval.containsError())
-	{
-		//end wavelength of full tuning range in LOW power mode
-        request = QByteArray("S54");
-		retval += SendQuestionWithAnswerString("S54", answer, 500);//end wavelength for LOW power mode
-		QRegExp regExp("^A54(\\d{4,4})");
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{			
-			double value = 0.05 * regExp.cap(1).toDouble() + 700;
-			m_params["full_tuning_range_HIGH_start"].setVal<double>( value );
-			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_start"].getMeta() )->setMin(value);
-			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_start"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(value);
-			static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(value);
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
-		
-	//__________________________________________________________________________________________________________ check optical output and booster
-	if (!retval.containsError())
-	{
-        request = QByteArray("S20");
-		retval += SendQuestionWithAnswerString(request, answer, 500);
-		// check optical output
-		QRegExp regExp("^A2(\\d{3,3})(\\d{2,2})");
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{						
-			switch (regExp.cap(1).toInt())
-			{
-				case 97:
-				case 101:
-				case 113:
-				case 117:
-					m_params["optical_output"].setVal<int>( 0 );
-					break;
-
-				case 99: 
-				case 103:
-				case 115:
-				case 119:
-					m_params["optical_output"].setVal<int>( 1 );
-					break;
-
-				default:
-					retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-					break;
-			}
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-
-		// check booster
-		QRegExp regExp2("^A2(\\d{3,3})(\\d{2,2})");
-		if (regExp2.indexIn(answer) >= 0 && !retval.containsError())
-		{						
-			switch (regExp2.cap(2).toInt())
-			{
-				case 0:
-					m_params["operation_booster"].setVal<int>( -1 );
-					break;
-
-				case 2:
-				case 6:
-					m_params["operation_booster"].setVal<int>( 0 );
-					break;
-
-				case 3: 
-				case 7:
-					m_params["operation_booster"].setVal<int>( 1 );
-					break;
-
-				default:
-					retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-					break;
-			}
-		}	
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
-
-	//__________________________________________________________________________________________________________ optical power check query      
-	if (!retval.containsError())
-	{
-        request = QByteArray("S40");
-		retval += SendQuestionWithAnswerString(request, answer, 500);  
-		QRegExp regExp("^A4(\\d{3,3})(\\d{2,2})");
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{						
-			switch (regExp.cap(1).toInt())
-			{
-				case 97:
-				case 101:
-				case 99:
-				case 103:
-					m_params["power_mode"].setVal<int>( 0 );
-					static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
-					break;
-
-				case 113: 
-				case 117:
-				case 115:
-				case 119:
-					m_params["power_mode"].setVal<int>( 1 );
-					static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
-					static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
-					break;
-
-				default:
-					retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-					break;		
-			}
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}  
-
-	//__________________________________________________________________________________________________________ operation mode check query
-	if (!retval.containsError())
+    //__________________________________________________________________________________________________________ Set serial number 
+    if(!retval.containsError())
     {
-        request = QByteArray("S60");
-		retval += SendQuestionWithAnswerString(request, answer, 500);  
-		QRegExp regExp("^A6(1|2|3|4)$");
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{
-			m_params["operation_mode"].setVal<int>( regExp.cap(1).toInt() );
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
+        request = QByteArray("S0");
+        retval += SendQuestionWithAnswerString(request, answer, 500);
+        if (!retval.containsError())
+        {
+            //ITO Superlum BroadSweeper indentification information 
+            //A0: reponse code
+            //6: this integer means that the type of the instrument is 6. 
+            //2: this integer means that it is a double-channel device. 
+            //8: this integer means that the firmware version is 4. 
+            //0579: serial number
+            m_params["serial_number"].setVal<char*>(answer.data());
+        }
+        else
+        {            
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
     }
 
-	//__________________________________________________________________________________________________________ check wavelength
-	if (!retval.containsError())
-	{
+    //__________________________________________________________________________________________________________ set device in remote control
+    if (!retval.containsError())
+    {
+        request = QByteArray("S12");
+        retval += SendQuestionWithAnswerString(request, answer, 500);    
+        if (!retval.containsError() && answer.contains("A11"))
+        {            
+            m_params["local"].setVal<int>( 0 ); // local mode
+        }
+        else if (!retval.containsError() && answer.contains("A12"))
+        {
+            m_params["local"].setVal<int>( 1 ); // remote mode
+        }    
+        else 
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
+
+    //__________________________________________________________________________________________________________ set FULL tuning range end wavelength LOW power
+    if (!retval.containsError())
+    {
+        //end wavelength of full tuning range in LOW power mode
+        request = QByteArray("S51");
+        retval += SendQuestionWithAnswerString(request, answer, 500);//end wavelength for LOW power mode
+        QRegExp regExp("^A51(\\d{4,4})");
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {            
+            double value = 0.05 * regExp.cap(1).toDouble() + 700;
+            m_params["full_tuning_range_LOW_end"].setVal<double>( value );            
+            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_end"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_end"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(value);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
+
+    //__________________________________________________________________________________________________________ set FULL tuning range start wavelength LOW power
+    if (!retval.containsError())
+    {
+        //end wavelength of full tuning range in LOW power mode
+        request = QByteArray("S52");
+        retval += SendQuestionWithAnswerString(request, answer, 500);//end wavelength for LOW power mode
+        QRegExp regExp("^A52(\\d{4,4})");
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {            
+            double value = 0.05 * regExp.cap(1).toDouble() + 700;
+            m_params["full_tuning_range_LOW_start"].setVal<double>( value );
+            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_start"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_start"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(value);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
+
+    //__________________________________________________________________________________________________________ set FULL tuning range end wavelength HIGH power
+    if (!retval.containsError())
+    {
+        //end wavelength of full tuning range in LOW power mode
+        request = QByteArray("S53");
+        retval += SendQuestionWithAnswerString(request, answer, 500);//end wavelength for LOW power mode
+        QRegExp regExp("^A53(\\d{4,4})");
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {            
+            double value = 0.05 * regExp.cap(1).toDouble() + 700;
+            m_params["full_tuning_range_HIGH_end"].setVal<double>( value );
+            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_end"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_end"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(value);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
+
+    //__________________________________________________________________________________________________________ set FULL tuning range start wavelength LOW power
+    if (!retval.containsError())
+    {
+        //end wavelength of full tuning range in LOW power mode
+        request = QByteArray("S54");
+        retval += SendQuestionWithAnswerString("S54", answer, 500);//end wavelength for LOW power mode
+        QRegExp regExp("^A54(\\d{4,4})");
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {            
+            double value = 0.05 * regExp.cap(1).toDouble() + 700;
+            m_params["full_tuning_range_HIGH_start"].setVal<double>( value );
+            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_start"].getMeta() )->setMin(value);
+            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_start"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(value);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
+        
+    //__________________________________________________________________________________________________________ check optical output and booster
+    if (!retval.containsError())
+    {
+        request = QByteArray("S20");
+        retval += SendQuestionWithAnswerString(request, answer, 500);
+        // check optical output
+        QRegExp regExp("^A2(\\d{3,3})(\\d{2,2})");
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {                        
+            switch (regExp.cap(1).toInt())
+            {
+                case 97:
+                case 101:
+                case 113:
+                case 117:
+                    m_params["optical_output"].setVal<int>( 0 );
+                    break;
+
+                case 99: 
+                case 103:
+                case 115:
+                case 119:
+                    m_params["optical_output"].setVal<int>( 1 );
+                    break;
+
+                default:
+                    retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                    break;
+            }
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+
+        // check booster
+        QRegExp regExp2("^A2(\\d{3,3})(\\d{2,2})");
+        if (regExp2.indexIn(answer) >= 0 && !retval.containsError())
+        {                        
+            switch (regExp2.cap(2).toInt())
+            {
+                case 0:
+                    m_params["operation_booster"].setVal<int>( -1 );
+                    break;
+
+                case 2:
+                case 6:
+                    m_params["operation_booster"].setVal<int>( 0 );
+                    break;
+
+                case 3: 
+                case 7:
+                    m_params["operation_booster"].setVal<int>( 1 );
+                    break;
+
+                default:
+                    retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                    break;
+            }
+        }    
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
+
+    //__________________________________________________________________________________________________________ optical power check query      
+    if (!retval.containsError())
+    {
+        request = QByteArray("S40");
+        retval += SendQuestionWithAnswerString(request, answer, 500);  
+        QRegExp regExp("^A4(\\d{3,3})(\\d{2,2})");
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {                        
+            switch (regExp.cap(1).toInt())
+            {
+                case 97:
+                case 101:
+                case 99:
+                case 103:
+                    m_params["power_mode"].setVal<int>( 0 );
+                    static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(m_params["full_tuning_range_LOW_end"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(m_params["full_tuning_range_LOW_start"].getVal<double>());
+                    break;
+
+                case 113: 
+                case 117:
+                case 115:
+                case 119:
+                    m_params["power_mode"].setVal<int>( 1 );
+                    static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength_first"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMin(m_params["full_tuning_range_HIGH_end"].getVal<double>());
+                    static_cast<ito::DoubleMeta*>( m_params["wavelength_second"].getMeta() )->setMax(m_params["full_tuning_range_HIGH_start"].getVal<double>());
+                    break;
+
+                default:
+                    retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                    break;        
+            }
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }  
+
+    //__________________________________________________________________________________________________________ operation mode check query
+    if (!retval.containsError())
+    {
+        request = QByteArray("S60");
+        retval += SendQuestionWithAnswerString(request, answer, 500);  
+        QRegExp regExp("^A6(1|2|3|4)$");
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {
+            m_params["operation_mode"].setVal<int>( regExp.cap(1).toInt() );
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
+
+    //__________________________________________________________________________________________________________ check wavelength
+    if (!retval.containsError())
+    {
         request = QByteArray("S71");
-		retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query     
-		QRegExp regExp("^A71(\\d{4,4})");			
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{
-			m_params["wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}		
-	} 
+        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query     
+        QRegExp regExp("^A71(\\d{4,4})");            
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {
+            m_params["wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }        
+    } 
 
-	//__________________________________________________________________________________________________________ check start wavelength of Sweep
-	if (!retval.containsError())
-	{
+    //__________________________________________________________________________________________________________ check start wavelength of Sweep
+    if (!retval.containsError())
+    {
         request = QByteArray("S72");
-		retval += SendQuestionWithAnswerString(request, answer, 500);
-		QRegExp regExp("^A72(\\d{4,4})");			
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{
-			m_params["modification_start_wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
+        retval += SendQuestionWithAnswerString(request, answer, 500);
+        QRegExp regExp("^A72(\\d{4,4})");            
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {
+            m_params["modification_start_wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
 
-	//__________________________________________________________________________________________________________ check stop wavelength of Sweep
-	if (!retval.containsError())
-	{
+    //__________________________________________________________________________________________________________ check stop wavelength of Sweep
+    if (!retval.containsError())
+    {
         request = QByteArray("S73");
-		retval += SendQuestionWithAnswerString(request, answer, 500);
-		QRegExp regExp("^A73(\\d{4,4})");			
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{
-			m_params["modification_stop_wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
+        retval += SendQuestionWithAnswerString(request, answer, 500);
+        QRegExp regExp("^A73(\\d{4,4})");            
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {
+            m_params["modification_stop_wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
 
-	//__________________________________________________________________________________________________________ check sweep speed
-	if (!retval.containsError())
-	{
+    //__________________________________________________________________________________________________________ check sweep speed
+    if (!retval.containsError())
+    {
         request = QByteArray("S74");
-		retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | sweep speed from 10 - 10000 nm/s (4-byte code)  
-		QRegExp regExp("^A74(\\d{4,4})");			
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{
-			if (regExp.cap(1).toInt() == 0)
-			{
+        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | sweep speed from 10 - 10000 nm/s (4-byte code)  
+        QRegExp regExp("^A74(\\d{4,4})");            
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {
+            if (regExp.cap(1).toInt() == 0)
+            {
                 request = QByteArray("S78");
-				retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | sweep speed from 2 - 9 nm/s (1-byte code)
-				QRegExp regExp("^A78(\\d{1,1})");
-				if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-				{
-					m_params["sweep_speed"].setVal<int>(regExp.cap(1).toInt());
-				}
-				else
-				{
-					retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-				}
-			}
-			else
-			{
-				m_params["sweep_speed"].setVal<int>(10 * regExp.cap(1).toInt());
-			}
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}		
-	} 
+                retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | sweep speed from 2 - 9 nm/s (1-byte code)
+                QRegExp regExp("^A78(\\d{1,1})");
+                if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+                {
+                    m_params["sweep_speed"].setVal<int>(regExp.cap(1).toInt());
+                }
+                else
+                {
+                    retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                }
+            }
+            else
+            {
+                m_params["sweep_speed"].setVal<int>(10 * regExp.cap(1).toInt());
+            }
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }        
+    } 
 
-	//__________________________________________________________________________________________________________ check Modulation first wavelength
-	if (!retval.containsError())	
-	{		
+    //__________________________________________________________________________________________________________ check Modulation first wavelength
+    if (!retval.containsError())    
+    {        
         request = QByteArray("S75");
-		retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | first wavelength of TWO-WAVELENGTH-MODULATION
-		QRegExp regExp("^A75(\\d{4,4})");			
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{
-			m_params["wavelength_first"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}		
-	}
+        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | first wavelength of TWO-WAVELENGTH-MODULATION
+        QRegExp regExp("^A75(\\d{4,4})");            
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {
+            m_params["wavelength_first"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }        
+    }
 
-	//__________________________________________________________________________________________________________ check Modulation second wavelength
-	if (!retval.containsError())
-	{
+    //__________________________________________________________________________________________________________ check Modulation second wavelength
+    if (!retval.containsError())
+    {
         request = QByteArray("S76");
-		retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | second wavelength of TWO-WAVELENGTH-MODULATION mode
-		QRegExp regExp("^A76(\\d{4,4})");			
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{
-			m_params["wavelength_second"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
+        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | second wavelength of TWO-WAVELENGTH-MODULATION mode
+        QRegExp regExp("^A76(\\d{4,4})");            
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {
+            m_params["wavelength_second"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
 
-	//__________________________________________________________________________________________________________ check Modulation frequency
-	if (!retval.containsError())
-	{		
+    //__________________________________________________________________________________________________________ check Modulation frequency
+    if (!retval.containsError())
+    {        
         request = QByteArray("S77");
-		retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | modulation frequency in TWO-WAVELENGTH-MODULATION mode   
-		QRegExp regExp("^A77(\\d{2,2})");
-		if (regExp.indexIn(answer) >= 0 && !retval.containsError())
-		{						
-			switch (regExp.cap(1).toInt())
-			{
-				case 1:
-					m_params["modulation_frequency"].setVal<double>( 0.1 );
-					break;
-				case 2:
-					m_params["modulation_frequency"].setVal<double>( 0.2 );
-					break;
-				case 3:
-					m_params["modulation_frequency"].setVal<double>( 0.5 );
-					break;
-				case 4:
-					m_params["modulation_frequency"].setVal<double>( 1.0 );
-					break;
-				case 5:
-					m_params["modulation_frequency"].setVal<double>( 2.0 );
-					break;
-				case 6:
-					m_params["modulation_frequency"].setVal<double>( 5.0 );
-					break;
-				case 7:
-					m_params["modulation_frequency"].setVal<double>( 10.0 );
-					break;
-				case 8:
-					m_params["modulation_frequency"].setVal<double>( 20.0 );
-					break;
-				case 9:
-					m_params["modulation_frequency"].setVal<double>( 50.0 );
-					break;
-				case 10:
-					m_params["modulation_frequency"].setVal<double>( 100.0 );
-					break;
-				case 11:
-					m_params["modulation_frequency"].setVal<double>( 200.0 );
-					break;
-				case 12:
-					m_params["modulation_frequency"].setVal<double>( 500.0 );
-					break;
-				case 13:
-					m_params["modulation_frequency"].setVal<double>( 1000.0 );
-					break;
+        retval += SendQuestionWithAnswerString(request, answer, 500);  //operational parameters check query | modulation frequency in TWO-WAVELENGTH-MODULATION mode   
+        QRegExp regExp("^A77(\\d{2,2})");
+        if (regExp.indexIn(answer) >= 0 && !retval.containsError())
+        {                        
+            switch (regExp.cap(1).toInt())
+            {
+                case 1:
+                    m_params["modulation_frequency"].setVal<double>( 0.1 );
+                    break;
+                case 2:
+                    m_params["modulation_frequency"].setVal<double>( 0.2 );
+                    break;
+                case 3:
+                    m_params["modulation_frequency"].setVal<double>( 0.5 );
+                    break;
+                case 4:
+                    m_params["modulation_frequency"].setVal<double>( 1.0 );
+                    break;
+                case 5:
+                    m_params["modulation_frequency"].setVal<double>( 2.0 );
+                    break;
+                case 6:
+                    m_params["modulation_frequency"].setVal<double>( 5.0 );
+                    break;
+                case 7:
+                    m_params["modulation_frequency"].setVal<double>( 10.0 );
+                    break;
+                case 8:
+                    m_params["modulation_frequency"].setVal<double>( 20.0 );
+                    break;
+                case 9:
+                    m_params["modulation_frequency"].setVal<double>( 50.0 );
+                    break;
+                case 10:
+                    m_params["modulation_frequency"].setVal<double>( 100.0 );
+                    break;
+                case 11:
+                    m_params["modulation_frequency"].setVal<double>( 200.0 );
+                    break;
+                case 12:
+                    m_params["modulation_frequency"].setVal<double>( 500.0 );
+                    break;
+                case 13:
+                    m_params["modulation_frequency"].setVal<double>( 1000.0 );
+                    break;
 
-				default:
-					retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
-					break;		
-			}
-		}
-		else
-		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
-		}
-	}
+                default:
+                    retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+                    break;        
+            }
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        }
+    }
 
     return retval;
 }

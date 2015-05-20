@@ -81,9 +81,9 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
                                                                             8,
                                                                             tUInt8 , tInt8 , tUInt16 , tInt16 , tUInt32 , tInt32 , tFloat32 , tFloat64);
 
-    if(retval.containsError())
+    if (retval.containsError())
     {
-        if(retval != NULL && dObjImages->getDims() == 3)
+        if (retval != NULL && dObjImages->getDims() == 3)
         {
             retval = ito::dObjHelper::verify3DDataObject(dObjImages, "sourceImage", 1, 1,
                                                                                     gradY + 1, std::numeric_limits<short>::max(), 
@@ -91,13 +91,13 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
                                                                                     8,
                                                                                     tUInt8 , tInt8 , tUInt16 , tInt16 , tUInt32 , tInt32 , tFloat32 , tFloat64);
         }
-        if(retval.containsError())
+        if (retval.containsError())
         {
             return retval;
         }
     }
 
-    if(dObjDst == NULL)
+    if (dObjDst == NULL)
     {
         return ito::RetVal(retError, 0, tr("destination matrix is NULL").toLatin1().data());
     }
@@ -105,7 +105,7 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
     cv::Mat *plane = reinterpret_cast<cv::Mat*>(dObjImages->get_mdata()[ dObjImages->seekMat(0) ]);
     cv::Mat inputImage;
 
-    if(plane->type() != CV_64FC1)
+    if (plane->type() != CV_64FC1)
     {
         plane->convertTo(inputImage, CV_64FC1);
     }
@@ -147,7 +147,7 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
     delete[] x;
     delete[] y;
 
-    if(retval == retOk)
+    if (retval == retOk)
     {
         (*paramsOut)[0].setVal<double>(Sigma);
     }
@@ -219,7 +219,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 
 
     // Kontrolle der Polynomgrade -------------------------------------------
-    if(gradX == 0 && gradY == 0)
+    if (gradX == 0 && gradY == 0)
     {
         return retValue += ito::RetVal(retError, 2, tr("2:  gradX und gradY =0, Funktion abgebrochen").toLatin1().data());
     }
@@ -255,7 +255,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     koeff->gammaX= (double *)calloc(koeff->gradX+1, sizeof(double));
     koeff->gammaY= (double *)calloc(koeff->gradY+1, sizeof(double));
     
-    if(koeff->alphaY == NULL || koeff->alphaX == NULL || koeff->betaX == NULL || koeff->betaY == NULL || koeff->gammaX == NULL || koeff->gammaY == NULL)
+    if (koeff->alphaY == NULL || koeff->alphaX == NULL || koeff->betaX == NULL || koeff->betaY == NULL || koeff->gammaX == NULL || koeff->gammaY == NULL)
     {
         retValue += ito::RetVal(retError, 5, tr("5:  Fehler bei Speicherzuweisung fuer Rekursionskoeffizienten").toLatin1().data());
         goto Error;
@@ -263,13 +263,13 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 
     // Berechnung der Rekursionskoeffizienten -------------------------------- 
     retValue += calcKoeff(koeff->sizeX, koeff->gradX, koeff->alphaX, koeff->betaX, koeff->gammaX);
-    if(retValue.containsError())
+    if (retValue.containsError())
     {
         goto Error;
     }
   
     retValue += calcKoeff(koeff->sizeY, koeff->gradY, koeff->alphaY, koeff->betaY, koeff->gammaY);
-    if(retValue.containsError())
+    if (retValue.containsError())
     {
         goto Error;
     }
@@ -281,7 +281,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     NormX=(double *)calloc(koeff->gradX+1, sizeof(double));
     NormY=(double *)calloc(koeff->gradY+1, sizeof(double));
 
-    if(Sum == NULL || koeff->b == NULL || Werte == NULL || NormX == NULL || NormY == NULL)
+    if (Sum == NULL || koeff->b == NULL || Werte == NULL || NormX == NULL || NormY == NULL)
     {
         retValue += RetVal(retError, 6, tr("6:  Fehler bei Speicherzuweisung fuer Werte, NormX, NormY oder Sum").toLatin1().data());
         goto Error;
@@ -294,7 +294,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     // Berechnung der NormX mit der Funktion OrthPolAuswerten ---------------- 
     for(n=0 ; n < koeff->sizeX ; n++)
     {
-        if(n == 0) 
+        if (n == 0) 
         {
             tx=0;
         }
@@ -313,7 +313,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 
     // Berechnen von NormX und der Zeilensumme  ------------------------------ 
     ZeilenSumme=(double *)calloc(koeff->gradX+1, sizeof(double));
-    if(ZeilenSumme == NULL)
+    if (ZeilenSumme == NULL)
     {
         retValue += ito::RetVal(retError, 7, tr("7:  Fehler bei Speicherzuweisung fuer ZeilenSumme").toLatin1().data());
         goto Error;
@@ -330,7 +330,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
         // Berechnung der Zeilensumme  ---------------------------------------- 
         for(n= 0 ; n < koeff->sizeX ; n++)
         {
-            if(n == 0) 
+            if (n == 0) 
             {
                 tx=0;
             }
@@ -343,7 +343,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
             
             buf = lineBuf[n];
             //nicht so tolle version (verfälscht das ergebnis durch addition von 0.0 bei nan-werten - kommentar marc gronle, interpolation wäre besser, aber aufwand)
-            if(qIsFinite(buf))
+            if (qIsFinite(buf))
             {
                 for(i=0 ; i <= koeff->gradX ; i++)
                 {
@@ -360,7 +360,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
         }
 
         // Berechnung von NormY  ----------------------------------------------
-        if(m == 0) 
+        if (m == 0) 
         {
             ty=0;
         }
@@ -407,7 +407,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     // Berechnung der Summe der Fehlerqudrate -------------------------------- 
     *sigma=0.0;
 
-    if(fillNaNValues)
+    if (fillNaNValues)
     {
         for(m=0 ; m < koeff->sizeY ; m++)
         {
@@ -423,7 +423,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 
                 buf = lineBuf[n];
             
-                if( qIsFinite(buf))
+                if ( qIsFinite(buf))
                 {
                     lineBufOutput[n] = z;
                     *sigma+=(buf-z)*(buf-z);
@@ -452,7 +452,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 
                 buf = lineBuf[n];
             
-                if( qIsFinite(buf))
+                if ( qIsFinite(buf))
                 {
                     lineBufOutput[n] = z;
                     *sigma+=(buf-z)*(buf-z);
@@ -468,12 +468,12 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     //STATUSBAR(-1);
 
 Error:
-    if(koeff->alphaX) free(koeff->alphaX);
-    if(koeff->alphaY) free(koeff->alphaY);
-    if(koeff->betaX) free(koeff->betaX);
-    if(koeff->betaY) free(koeff->betaY);
-    if(koeff->gammaX) free(koeff->gammaX);
-    if(koeff->gammaY) free(koeff->gammaY);
+    if (koeff->alphaX) free(koeff->alphaX);
+    if (koeff->alphaY) free(koeff->alphaY);
+    if (koeff->betaX) free(koeff->betaX);
+    if (koeff->betaY) free(koeff->betaY);
+    if (koeff->gammaX) free(koeff->gammaX);
+    if (koeff->gammaY) free(koeff->gammaY);
     if (Sum!=NULL)        free(Sum);
     if (koeff->b!=NULL)        free(koeff->b);
     if (NULL!=Werte)        free(Werte);
@@ -496,11 +496,11 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
     S= (double *)calloc((PolyGrad+1)*(PolyGrad+1), sizeof(double));
     Q= (double *)calloc((PolyGrad+1)*(PolyGrad+1), sizeof(double));   // Initialisieren der Matrix Q
 
-    if(P == NULL || S == NULL || Q == NULL)
+    if (P == NULL || S == NULL || Q == NULL)
     {
-        if(P) free(P);
-        if(S) free(S);
-        if(Q) free(Q);
+        if (P) free(P);
+        if (S) free(S);
+        if (Q) free(Q);
         return ito::RetVal(retError, 1000, tr("error while allocating memory").toLatin1().data());
     }
 
@@ -571,13 +571,13 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
     ***************************************************/
     for (i=2; i<=PolyGrad; i++)
     {
-        if( ( *(Q + (i-1)*(PolyGrad+1) + i-1) != 0) && ( *(Q + (i-2)*(PolyGrad+1) + i-2) != 0))
+        if ( ( *(Q + (i-1)*(PolyGrad+1) + i-1) != 0) && ( *(Q + (i-2)*(PolyGrad+1) + i-2) != 0))
         {
             Alpha[i] = *(Q + i*(PolyGrad+1) + i) / *(Q + (i-1)*(PolyGrad+1) + i-1);
             Beta[i] = ( *(Q + i*(PolyGrad+1) + i-1) - Alpha[i] *
                *(Q + (i-1)*(PolyGrad+1) + i-2) ) / *(Q + (i-1)*(PolyGrad+1) + i-1);
 
-            if(i > 2)
+            if (i > 2)
                 Gamma[i] = ( *(Q + i*(PolyGrad+1) + i-2) - Alpha[i] * *(Q + (i-1)*(PolyGrad+1) + i-3)
                         - Beta[i]  * *(Q + (i-1)*(PolyGrad+1) + i-2) ) /
                         *(Q + (i-2)*(PolyGrad+1) + i-2);

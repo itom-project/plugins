@@ -36,15 +36,15 @@
 
 #include "errno.h"
 
-#include "dialogAerotechA3200.h"	//! This is the configuration dialog
-#include "dockWidgetAerotechA3200.h"	//! This is the controll dialog
+#include "dialogAerotechA3200.h"    //! This is the configuration dialog
+#include "dockWidgetAerotechA3200.h"    //! This is the controll dialog
 
 using namespace ito;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechA3200Interface::getAddInInst(ito::AddInBase **addInInst)
 {
-	NEW_PLUGININSTANCE(AerotechA3200)
+    NEW_PLUGININSTANCE(AerotechA3200)
     return ito::retOk;
 }
 
@@ -77,9 +77,9 @@ For details please check C:\\A3200\\MANUAL.";
     
     m_autoLoadPolicy = ito::autoLoadNever;
     m_autoSavePolicy = ito::autoSaveNever;
-	
+    
 
-	ito::Param param = ito::Param("axes", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("list of axes IDs that are enabled (0..2). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]").toLatin1().data());
+    ito::Param param = ito::Param("axes", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("list of axes IDs that are enabled (0..2). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]").toLatin1().data());
     m_initParamsOpt.append(param); 
 }
 
@@ -92,7 +92,7 @@ AerotechA3200Interface::~AerotechA3200Interface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION < 0x050000
-	Q_EXPORT_PLUGIN2(AerotechA3200Interface, AerotechA3200Interface)
+    Q_EXPORT_PLUGIN2(AerotechA3200Interface, AerotechA3200Interface)
 #endif
 
 
@@ -117,35 +117,35 @@ const ito::RetVal AerotechA3200::showConfDialog(void)
 AerotechA3200::AerotechA3200() : 
     AddInActuator(),
     m_pAerotechA3200Wid(NULL),
-	hAerCtrl(NULL)
+    hAerCtrl(NULL)
 {
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
     qRegisterMetaType<QVector<bool> >("QVector<bool>");
     qRegisterMetaType<QVector<double> >("QVector<double>");
-	//ito::tParam;    // Set up the parameter list
+    //ito::tParam;    // Set up the parameter list
     m_params.insert("name", Param("name", ParamBase::String | ParamBase::In | ParamBase::Readonly, "AerotechA3200", NULL));
 
-	m_params.insert("async", Param("async", ParamBase::Int, 0, 1, 0, tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
+    m_params.insert("async", Param("async", ParamBase::Int, 0, 1, 0, tr("asynchronous move (1), synchronous (0) [default]").toLatin1().data()));
     m_async = m_params["async"].getVal<int>();
-	m_params.insert("numAxis", Param("numAxis", ParamBase::Int | ParamBase::In | ParamBase::Readonly, 0, 3, 3, "number of connected axes"));
+    m_params.insert("numAxis", Param("numAxis", ParamBase::Int | ParamBase::In | ParamBase::Readonly, 0, 3, 3, "number of connected axes"));
 
-	m_params.insert("scaleFactor", Param("scaleFactor", ParamBase::Double | ParamBase::Readonly, 0.0, 1000000.0, 0.0, tr("scale factor of connected controller, counts per metric unit").toLatin1().data()));
-	
-	m_params.insert("clearoffset", Param("clearoffset", ParamBase::Int, 0, 0, 0, tr("reset the offsets to zero, back to absolute coordinate").toLatin1().data()));
-	m_params.insert("finished", Param("finished", ParamBase::Int | ParamBase::Readonly, 0, 1, 0, tr("check if the motion of every axis is finished").toLatin1().data()));
-	m_params.insert("stop", Param("stop", ParamBase::Int, 0, 0, 0, tr("executes an immediate stop").toLatin1().data()));
+    m_params.insert("scaleFactor", Param("scaleFactor", ParamBase::Double | ParamBase::Readonly, 0.0, 1000000.0, 0.0, tr("scale factor of connected controller, counts per metric unit").toLatin1().data()));
+    
+    m_params.insert("clearoffset", Param("clearoffset", ParamBase::Int, 0, 0, 0, tr("reset the offsets to zero, back to absolute coordinate").toLatin1().data()));
+    m_params.insert("finished", Param("finished", ParamBase::Int | ParamBase::Readonly, 0, 1, 0, tr("check if the motion of every axis is finished").toLatin1().data()));
+    m_params.insert("stop", Param("stop", ParamBase::Int, 0, 0, 0, tr("executes an immediate stop").toLatin1().data()));
     m_params.insert("acknowledge", Param("acknowledge", ParamBase::Int, 0, 0, 0, tr("acknowledge the errors of connected controller").toLatin1().data()));
 
-	m_params.insert("xenabled", Param("xenabled", ParamBase::Int, 0, 1, 0, tr("check if x-axis is enabled").toLatin1().data()));
+    m_params.insert("xenabled", Param("xenabled", ParamBase::Int, 0, 1, 0, tr("check if x-axis is enabled").toLatin1().data()));
     m_params.insert("yenabled", Param("yenabled", ParamBase::Int, 0, 1, 0, tr("check if y-axis is enabled").toLatin1().data()));
     m_params.insert("zenabled", Param("zenabled", ParamBase::Int, 0, 1, 0, tr("check if z-axis is enabled").toLatin1().data()));
-	
+    
 
-	double axisSpeeds[] = {20.0, 20.0, 20.0}; //mm/s, nämlich "rate" in altem Skript mcpp
+    double axisSpeeds[] = {20.0, 20.0, 20.0}; //mm/s, nämlich "rate" in altem Skript mcpp
     Param param = Param("speed", ParamBase::DoubleArray, NULL, tr("speed of every axis").toLatin1().data());
     param.setVal<double*>(axisSpeeds, 3);
     m_params.insert("speed", param);
-	
+    
     m_currentPos.fill(0.0, 3);
     m_currentStatus.fill(0, 3);
     m_targetPos.fill(0.0, 3);
@@ -185,22 +185,22 @@ AerotechA3200::~AerotechA3200()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AerotechA3200::checkError(int a3200ReturnValue)
 {
-	if( a3200ReturnValue == AERSVR_NO_FIRECARD )     
-	{
-		a3200ReturnValue = AERERR_NOERR;   // no firewire card in PC
-	}
-	if( a3200ReturnValue == AERSVR_SELF_ID_NONE )   
-	{
-		a3200ReturnValue = AERERR_NOERR;   // no drives connected to firewire card
-	}
-	if( a3200ReturnValue == AERSVR_LINK_LAYER_NONE )
-	{
-		a3200ReturnValue = AERERR_NOERR;   // all drives we are connected to are powered down
-	}
+    if (a3200ReturnValue == AERSVR_NO_FIRECARD)     
+    {
+        a3200ReturnValue = AERERR_NOERR;   // no firewire card in PC
+    }
+    if (a3200ReturnValue == AERSVR_SELF_ID_NONE)   
+    {
+        a3200ReturnValue = AERERR_NOERR;   // no drives connected to firewire card
+    }
+    if (a3200ReturnValue == AERSVR_LINK_LAYER_NONE)
+    {
+        a3200ReturnValue = AERERR_NOERR;   // all drives we are connected to are powered down
+    }
     if (a3200ReturnValue)
     {
-        if ( AerErrGetMessage(a3200ReturnValue, szMsg, MAX_TEXT_LEN, FALSE)!= NULL)  
-		{
+        if (AerErrGetMessage(a3200ReturnValue, szMsg, MAX_TEXT_LEN, FALSE)!= NULL)  
+        {
             return ito::RetVal::format(ito::retError, 0, tr("A3200 error: %s").toLatin1().data(), szMsg);
         }
         else
@@ -288,21 +288,21 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     int *axes = paramsOpt->at(0).getVal<int*>();
     int axesLength = paramsOpt->at(0).getLen();
     QVector<int> axesIDs;
-	
-	/*
-			               AXISMASK   axis(init bei itom)      AXISINDEX
-				Z             1             2                      1
-				X             2             0                      2
-				Y             3             1                      3
-	*/		
+    
+    /*
+                           AXISMASK   axis(init bei itom)      AXISINDEX
+                Z             1             2                      1
+                X             2             0                      2
+                Y             3             1                      3
+    */        
     for (int i = 0; i < axesLength; ++i)
     {
         axesIDs.append(axes[i]);
         m_allAxesVector << i;
     }
 
-	m_currentStatus.fill(0, axesLength);
-	
+    m_currentStatus.fill(0, axesLength);
+    
 
     AXISMASK axisMask;
 
@@ -310,14 +310,14 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     if (!retValue.containsError())
     {
-        retValue += checkError(AerSysInitialize( NULL, NULL, 1, &hAerCtrl, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL));
-	}
+        retValue += checkError(AerSysInitialize(NULL, NULL, 1, &hAerCtrl, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL));
+    }
     if (!retValue.containsError())
     {
         AXISMASK availableMask;
 
-		//es ist natürlich besser, eine Funktion bezüglich A3200 aufzurufen, aber da reichen 3 "available" Achsen aus.  
-		availableMask= AXISMASK_1 | AXISMASK_2 | AXISMASK_3;
+        //es ist natürlich besser, eine Funktion bezüglich A3200 aufzurufen, aber da reichen 3 "available" Achsen aus.  
+        availableMask= AXISMASK_1 | AXISMASK_2 | AXISMASK_3;
 
         if (!retValue.containsError())
         {
@@ -351,17 +351,17 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             foreach(const int &i, axesIDs)
             {
                 if (i== 0)
-				{
-					m_axisNames.append("X");
-				}
+                {
+                    m_axisNames.append("X");
+                }
                 if (i== 1)
-				{
-					m_axisNames.append("Y");	
-				}
-				if (i== 2)
-				{
-					m_axisNames.append("Z");	
-				}
+                {
+                    m_axisNames.append("Y");    
+                }
+                if (i== 2)
+                {
+                    m_axisNames.append("Z");    
+                }
             }
 
             if ((availableMask | axisMask) != availableMask)
@@ -375,23 +375,23 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
                 if (retValueTemp.containsError())
                 {
-                    retValue += checkError(AerSysFaultAck( hAerCtrl, axisMask, TASKMASK_ALL, 0));
+                    retValue += checkError(AerSysFaultAck(hAerCtrl, axisMask, TASKMASK_ALL, 0));
 
                     if (!retValue.containsError())
                     {
                         retValue += checkError(AerMoveMEnable(hAerCtrl, axisMask));
-						for(int i = 0; i < axesLength; ++i)
-						{
-							m_currentStatus[i] |= ito::actuatorEnabled;
-						}
+                        for(int i = 0; i < axesLength; ++i)
+                        {
+                            m_currentStatus[i] |= ito::actuatorEnabled;
+                        }
                     }
                 }
                 else
                 {
-					for(int i = 0; i < axesLength;++i)
-					{
-						m_currentStatus[i] |= ito::actuatorEnabled;
-					}
+                    for(int i = 0; i < axesLength;++i)
+                    {
+                        m_currentStatus[i] |= ito::actuatorEnabled;
+                    }
                     retValue += retValueTemp;
                 }
             }
@@ -406,9 +406,9 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
         QVector<int> _axes(axesLength);
 
-		m_offset.append(0.0);
-		m_offset.append(0.0);
-		m_offset.append(0.0);
+        m_offset.append(0.0);
+        m_offset.append(0.0);
+        m_offset.append(0.0);
 
         //remember enabled axes
         for (int i = 0; i < axesLength; ++i)
@@ -417,23 +417,23 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             _axes[i] = i;
         }
 
-		double faktor;
-		ito::RetVal retTemp =  checkError(AerParmGetValue( hAerCtrl, AER_PARMTYPE_AXIS, AXISINDEX_1, AXISPARM_CntsPerMetricUnit, 0, &faktor));
+        double faktor;
+        ito::RetVal retTemp =  checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, AXISINDEX_1, AXISPARM_CntsPerMetricUnit, 0, &faktor));
         if (retTemp.containsError())
         {
-            retValue += checkError(AerSysFaultAck( hAerCtrl, axisMask, TASKMASK_ALL, 0));
-            retValue +=  checkError(AerParmGetValue( hAerCtrl, AER_PARMTYPE_AXIS, AXISINDEX_1, AXISPARM_CntsPerMetricUnit, 0, &faktor));
+            retValue += checkError(AerSysFaultAck(hAerCtrl, axisMask, TASKMASK_ALL, 0));
+            retValue +=  checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, AXISINDEX_1, AXISPARM_CntsPerMetricUnit, 0, &faktor));
         }
         else
         {
             retValue += retTemp;
         }
-		m_params["scaleFactor"].setVal<double>(faktor);
+        m_params["scaleFactor"].setVal<double>(faktor);
 
         ito::RetVal retValTemp =  doUpdatePosAndState(_axes);
         if (retValTemp.containsError())
         {
-            retValue += checkError(AerSysFaultAck( hAerCtrl, axisMask, TASKMASK_ALL, 0));
+            retValue += checkError(AerSysFaultAck(hAerCtrl, axisMask, TASKMASK_ALL, 0));
             retValue +=  doUpdatePosAndState(_axes);
         }
         else
@@ -450,21 +450,21 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     }
 
-	for (int i = 0; i < axesLength; ++i)
-	{
-		switch( axesIDs[i])
-		{
-		case 0:
-			m_params ["xenabled"].setVal<int>(1);
-			break;
-		case 1:
-			m_params ["yenabled"].setVal<int>(1);
-			break;
-		case 2:
-			m_params ["zenabled"].setVal<int>(1);
-			break;
-		}
-	}
+    for (int i = 0; i < axesLength; ++i)
+    {
+        switch(axesIDs[i])
+        {
+        case 0:
+            m_params ["xenabled"].setVal<int>(1);
+            break;
+        case 1:
+            m_params ["yenabled"].setVal<int>(1);
+            break;
+        case 2:
+            m_params ["zenabled"].setVal<int>(1);
+            break;
+        }
+    }
 
     if (waitCond)
     {
@@ -490,7 +490,7 @@ ito::RetVal AerotechA3200::close(ItomSharedSemaphore *waitCond)
 
     if (hAerCtrl)
     {
-        retValue += checkError(AerSysStop( hAerCtrl ));
+        retValue += checkError(AerSysStop(hAerCtrl));
         m_enabledAxes.clear();
         hAerCtrl = NULL;
     }
@@ -523,45 +523,45 @@ ito::RetVal AerotechA3200::getParam(QSharedPointer<ito::Param> val, ItomSharedSe
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-	if (!retValue.containsError())
-	{
+    if (!retValue.containsError())
+    {
 
-		if( key == "finished")
-		{
-			//returns 0 if inpos bit is set
-			DWORD d = 0;
-			d = AerMoveMWaitDone( hAerCtrl, (AXISMASK_1 | AXISMASK_2 | AXISMASK_3), AERMOVEWAIT_CHECK_ONCE , 1 );
-			if (d == 0)
+        if (key == "finished")
+        {
+            //returns 0 if inpos bit is set
+            DWORD d = 0;
+            d = AerMoveMWaitDone(hAerCtrl, (AXISMASK_1 | AXISMASK_2 | AXISMASK_3), AERMOVEWAIT_CHECK_ONCE , 1);
+            if (d == 0)
             {
-				it->setVal<double>(1.0);
+                it->setVal<double>(1.0);
             }
-			else
+            else
             {
-				it->setVal<double>(0.0);
+                it->setVal<double>(0.0);
             }
-		}
-		else if (key == "stop")
-		{
-			retValue += checkError(AerMoveAbort( hAerCtrl, AXISINDEX_1 ));
-			retValue += checkError(AerMoveAbort( hAerCtrl, AXISINDEX_2 ));
-			retValue += checkError(AerMoveAbort( hAerCtrl, AXISINDEX_3 ));
-		}
-		else if (key == "acknowledge")
-		{
-			retValue += checkError(AerSysFaultAck( hAerCtrl, AXISMASK_ALL, TASKMASK_ALL, 0));
-		}
-		else if (key == "clearoffset")
-		{
-			m_offset[0] = 0.0;
-			m_offset[1] = 0.0;
-			m_offset[2] = 0.0;
-		}
+        }
+        else if (key == "stop")
+        {
+            retValue += checkError(AerMoveAbort(hAerCtrl, AXISINDEX_1));
+            retValue += checkError(AerMoveAbort(hAerCtrl, AXISINDEX_2));
+            retValue += checkError(AerMoveAbort(hAerCtrl, AXISINDEX_3));
+        }
+        else if (key == "acknowledge")
+        {
+            retValue += checkError(AerSysFaultAck(hAerCtrl, AXISMASK_ALL, TASKMASK_ALL, 0));
+        }
+        else if (key == "clearoffset")
+        {
+            m_offset[0] = 0.0;
+            m_offset[1] = 0.0;
+            m_offset[2] = 0.0;
+        }
 
-		if (!retValue.containsError())
-		{
-			*val = apiGetParam(*it, hasIndex, index, retValue);
-		}
-	}
+        if (!retValue.containsError())
+        {
+            *val = apiGetParam(*it, hasIndex, index, retValue);
+        }
+    }
 
     if (waitCond)
     {
@@ -583,7 +583,7 @@ ito::RetVal AerotechA3200::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
     QString suffix;
     QMap<QString, ito::Param>::iterator it;
 
-	int ziel;
+    int ziel;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
@@ -648,24 +648,24 @@ ito::RetVal AerotechA3200::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 }
             }
         }
-		else if (key == "xenabled")
-		{
-			ziel = val->getVal<int>();
-			enabledisable(0, ziel);
-			m_params["xenabled"].setVal<int>(ziel);
-		}
-		else if (key == "yenabled")
-		{
-			ziel = val->getVal<int>();
-			enabledisable(1, ziel);
-			m_params["yenabled"].setVal<int>(ziel);
-		}
-		else if (key == "zenabled")
-		{
-			ziel = val->getVal<int>();
-			enabledisable(2, ziel);
-			m_params["zenabled"].setVal<int>(ziel);
-		}
+        else if (key == "xenabled")
+        {
+            ziel = val->getVal<int>();
+            enabledisable(0, ziel);
+            m_params["xenabled"].setVal<int>(ziel);
+        }
+        else if (key == "yenabled")
+        {
+            ziel = val->getVal<int>();
+            enabledisable(1, ziel);
+            m_params["yenabled"].setVal<int>(ziel);
+        }
+        else if (key == "zenabled")
+        {
+            ziel = val->getVal<int>();
+            enabledisable(2, ziel);
+            m_params["zenabled"].setVal<int>(ziel);
+        }
         else
         {
             //all parameters that don't need further checks can simply be assigned
@@ -789,7 +789,7 @@ ito::RetVal AerotechA3200::setOrigin(QVector<int> axis, ItomSharedSemaphore *wai
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
-	
+    
     if (isMotorMoving())
     {
         retValue += ito::RetVal(ito::retError, 0, tr("motor is running. Further action is not possible").toLatin1().data());
@@ -806,13 +806,13 @@ ito::RetVal AerotechA3200::setOrigin(QVector<int> axis, ItomSharedSemaphore *wai
 
         if (!retValue.containsError())
         {
-			retValue += doUpdatePosAndState(axis);
-			foreach(const int axisId, axis)
-			{
-				m_offset[axisId] = m_offset[axisId] - m_currentPos[axisId];
-				m_currentPos[axisId] = 0.0;
-				m_targetPos[axisId] = 0.0;
-			}
+            retValue += doUpdatePosAndState(axis);
+            foreach(const int axisId, axis)
+            {
+                m_offset[axisId] = m_offset[axisId] - m_currentPos[axisId];
+                m_currentPos[axisId] = 0.0;
+                m_targetPos[axisId] = 0.0;
+            }
         }
     }
 
@@ -948,7 +948,7 @@ ito::RetVal AerotechA3200::setPosAbs(QVector<int> axis, QVector<double> pos, Ito
             double posArray[10];
             double speedArray[10];
             double *paramSpeed = m_params["speed"].getVal<double*>(); //mm/s
-			double faktor = m_params["scaleFactor"].getVal<double>();
+            double faktor = m_params["scaleFactor"].getVal<double>();
 
             for (int naxis = 0; naxis < axis.size(); naxis++)
             {
@@ -959,29 +959,29 @@ ito::RetVal AerotechA3200::setPosAbs(QVector<int> axis, QVector<double> pos, Ito
                     
             if (axis.size() > 0) 
             {
-				// ---AerMoveMAbsolute() nutzt PLONG(machine steps)----
-				LONG _posArray[1];
-				DWORD _speedArray[1];
-				for(int i = 0; i < axis.size(); ++i)
-				{
-					_posArray[0]=(LONG) ((posArray[i] - m_offset[axis[i]])  * faktor);
-					_speedArray[0]=(DWORD) (speedArray[i] * faktor);
-					//test = m_enabledAxes[axis[i]];
-					//retValue += getAxisMask2(axis[i], mask);
-					switch(m_enabledAxes[axis[i]])
-					{
-						case 0:
-							mask = AXISMASK_2;
-							break; 
-						case 1:
-							mask = AXISMASK_3;
-							break;
-						case 2:
-							mask = AXISMASK_1;
-							break;
-					}
-					retValue += checkError(AerMoveMAbsolute(hAerCtrl, mask, _posArray, _speedArray));
-				}
+                // ---AerMoveMAbsolute() nutzt PLONG(machine steps)----
+                LONG _posArray[1];
+                DWORD _speedArray[1];
+                for(int i = 0; i < axis.size(); ++i)
+                {
+                    _posArray[0]=(LONG) ((posArray[i] - m_offset[axis[i]])  * faktor);
+                    _speedArray[0]=(DWORD) (speedArray[i] * faktor);
+                    //test = m_enabledAxes[axis[i]];
+                    //retValue += getAxisMask2(axis[i], mask);
+                    switch(m_enabledAxes[axis[i]])
+                    {
+                        case 0:
+                            mask = AXISMASK_2;
+                            break; 
+                        case 1:
+                            mask = AXISMASK_3;
+                            break;
+                        case 2:
+                            mask = AXISMASK_1;
+                            break;
+                    }
+                    retValue += checkError(AerMoveMAbsolute(hAerCtrl, mask, _posArray, _speedArray));
+                }
             }
 
             sendTargetUpdate();
@@ -991,7 +991,7 @@ ito::RetVal AerotechA3200::setPosAbs(QVector<int> axis, QVector<double> pos, Ito
                 waitCond->returnValue = retValue;
                 waitCond->release();
             }
-			
+            
             ito::RetVal temp = waitForDone(-1, axis); //drops into timeout
             if (temp.containsError() && temp.errorCode() != 9999) //anything else besides timeout
             {
@@ -1059,7 +1059,7 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
             double posArray[10];
             double speedArray[10];
             double *paramSpeed = m_params["speed"].getVal<double*>(); //mm/s
-			double faktor = m_params["scaleFactor"].getVal<double>();
+            double faktor = m_params["scaleFactor"].getVal<double>();
 
             for (int naxis = 0; naxis < axis.size(); naxis++)
             {
@@ -1070,28 +1070,28 @@ ito::RetVal AerotechA3200::setPosRel(QVector<int> axis, QVector<double> pos, Ito
                     
             if (axis.size() > 0) 
             {
-				LONG _posArray[1];
-				DWORD _speedArray[1];
-				for(int i = 0; i < axis.size(); ++i)
-				{
-					_posArray[0]=(LONG) (posArray[i] * faktor);
-					_speedArray[0]=(DWORD) (speedArray[i] * faktor);
-					switch(m_enabledAxes[axis[i]])
-					{
-						case 0:
-							mask = AXISMASK_2;
-							break; 
-						case 1:
-							mask = AXISMASK_3;
-							break;
-						case 2:
-							mask = AXISMASK_1;
-							break;
-					}
-					retValue += checkError(AerMoveMIncremental(hAerCtrl, mask, _posArray, _speedArray));
-				}
-			}
-		
+                LONG _posArray[1];
+                DWORD _speedArray[1];
+                for(int i = 0; i < axis.size(); ++i)
+                {
+                    _posArray[0]=(LONG) (posArray[i] * faktor);
+                    _speedArray[0]=(DWORD) (speedArray[i] * faktor);
+                    switch(m_enabledAxes[axis[i]])
+                    {
+                        case 0:
+                            mask = AXISMASK_2;
+                            break; 
+                        case 1:
+                            mask = AXISMASK_3;
+                            break;
+                        case 2:
+                            mask = AXISMASK_1;
+                            break;
+                    }
+                    retValue += checkError(AerMoveMIncremental(hAerCtrl, mask, _posArray, _speedArray));
+                }
+            }
+        
             sendTargetUpdate();  
 
             if (m_async && waitCond)
@@ -1216,41 +1216,41 @@ ito::RetVal AerotechA3200::doUpdatePosAndState(const QVector<int> &axes)
     ito::RetVal retval;
     if (hAerCtrl != NULL) 
     {
-		//bool bRet = TRUE;
+        //bool bRet = TRUE;
         //bool bMove = FALSE;
         double pDouble[3];//0: pos, 1: status, 2: fault
-		//AXISMASK mAxis;
-		double faktor;
-		
-		faktor = m_params["scaleFactor"].getVal<double>();//counts per metric units
+        //AXISMASK mAxis;
+        double faktor;
+        
+        faktor = m_params["scaleFactor"].getVal<double>();//counts per metric units
         foreach(const int &axis, axes) 
         {
             AXISINDEX axisIndex = (AXISINDEX)(AXISINDEX_1 + m_enabledAxes[axis]);
-			/*
-			                 Maske         axis(init)      INDEX
-				Z             1             2                1
-				X             2             0                2
-				Y             3             1                3
-			*/		
-			switch(axisIndex)
-			{
-			case 0:
-				//mAxis = AXISMASK_2;
-				axisIndex = AXISINDEX_2;
-				break;
-			case 1:
-				//mAxis = AXISMASK_3;
-				axisIndex = AXISINDEX_3;
-				break;
-			case 2:
-				//mAxis = AXISMASK_1;
-				axisIndex = AXISINDEX_1;
-				break;
-			}
-			//retval += checkError(AerStatusGetAxisInfoPosition( hAerCtrl, mAxis, (DWORD)1, & pDouble[0], NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL));
-			retval += checkError(AerParmGetValue( hAerCtrl, AER_PARMTYPE_AXIS, axisIndex, AXISPARM_PositionCnts, 0, & pDouble[0]));
-			retval += checkError(AerParmGetValue( hAerCtrl, AER_PARMTYPE_AXIS, axisIndex, AXISPARM_AxisStatus, 0, & pDouble[1]));
-			retval += checkError(AerParmGetValue( hAerCtrl, AER_PARMTYPE_AXIS, axisIndex, AXISPARM_Fault, 0, & pDouble[2]));
+            /*
+                             Maske         axis(init)      INDEX
+                Z             1             2                1
+                X             2             0                2
+                Y             3             1                3
+            */        
+            switch(axisIndex)
+            {
+            case 0:
+                //mAxis = AXISMASK_2;
+                axisIndex = AXISINDEX_2;
+                break;
+            case 1:
+                //mAxis = AXISMASK_3;
+                axisIndex = AXISINDEX_3;
+                break;
+            case 2:
+                //mAxis = AXISMASK_1;
+                axisIndex = AXISINDEX_1;
+                break;
+            }
+            //retval += checkError(AerStatusGetAxisInfoPosition(hAerCtrl, mAxis, (DWORD)1, & pDouble[0], NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL));
+            retval += checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, axisIndex, AXISPARM_PositionCnts, 0, & pDouble[0]));
+            retval += checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, axisIndex, AXISPARM_AxisStatus, 0, & pDouble[1]));
+            retval += checkError(AerParmGetValue(hAerCtrl, AER_PARMTYPE_AXIS, axisIndex, AXISPARM_Fault, 0, & pDouble[2]));
 
             if (!retval.containsError()) 
             {
@@ -1265,11 +1265,11 @@ ito::RetVal AerotechA3200::doUpdatePosAndState(const QVector<int> &axes)
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
                 }
-				if (State & MAXS_STATUS_CLAMPED) 
+                if (State & MAXS_STATUS_CLAMPED) 
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorEndSwitch, ito::actMovingMask | ito::actStatusMask);
                 }
-				if (State & MAXS_STATUS_INTERRUPT ) 
+                if (State & MAXS_STATUS_INTERRUPT) 
                 {
                     setStatus(m_currentStatus[axis], ito::actuatorInterrupted, ito::actSwitchesMask | ito::actStatusMask);
                 }
@@ -1427,73 +1427,73 @@ void AerotechA3200::dockWidgetVisibilityChanged(bool visible)
 ito::RetVal AerotechA3200::enabledisable(int axis, int ziel)
 {
     ito::RetVal retValue;
-	
+    
     if (hAerCtrl == NULL)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Aerotech 3200 Handle is NULL").toLatin1().data());
     }
     else
     {
-		AXISMASK axisMask;
+        AXISMASK axisMask;
         retValue += getAxisMask(&axis, 1, axisMask);
 
-		if (!retValue.containsError())
+        if (!retValue.containsError())
         {
-			if (ziel)
-			{
-				ito::RetVal retValueTemp = checkError(AerMoveMEnable(hAerCtrl, axisMask));
+            if (ziel)
+            {
+                ito::RetVal retValueTemp = checkError(AerMoveMEnable(hAerCtrl, axisMask));
 
-				if (retValueTemp.containsError())
-				{
-					retValue += checkError(AerSysFaultAck( hAerCtrl, axisMask, TASKMASK_ALL, 0));
+                if (retValueTemp.containsError())
+                {
+                    retValue += checkError(AerSysFaultAck(hAerCtrl, axisMask, TASKMASK_ALL, 0));
 
-					if (!retValue.containsError())
-					{
-						retValue += checkError(AerMoveMEnable(hAerCtrl, axisMask));
-						
-					}
-				}
-				else
-				{
-					retValue += retValueTemp;
-				}
-				for(int i = 0; i < m_enabledAxes.size(); ++i)
-				{
-					if( m_enabledAxes[i] == axis )
-					{
-						m_currentStatus[i] |= ito::actuatorEnabled;
-						break;
-					}
-				}
-			}
-			else
-			{
-				ito::RetVal retValueTemp = checkError(AerMoveMDisable(hAerCtrl, axisMask));
+                    if (!retValue.containsError())
+                    {
+                        retValue += checkError(AerMoveMEnable(hAerCtrl, axisMask));
+                        
+                    }
+                }
+                else
+                {
+                    retValue += retValueTemp;
+                }
+                for(int i = 0; i < m_enabledAxes.size(); ++i)
+                {
+                    if (m_enabledAxes[i] == axis)
+                    {
+                        m_currentStatus[i] |= ito::actuatorEnabled;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                ito::RetVal retValueTemp = checkError(AerMoveMDisable(hAerCtrl, axisMask));
 
-				if (retValueTemp.containsError())
-				{
-					retValue += checkError(AerSysFaultAck( hAerCtrl, axisMask, TASKMASK_ALL, 0));
+                if (retValueTemp.containsError())
+                {
+                    retValue += checkError(AerSysFaultAck(hAerCtrl, axisMask, TASKMASK_ALL, 0));
 
-					if (!retValue.containsError())
-					{
-						retValue += checkError(AerMoveMDisable(hAerCtrl, axisMask));
-					}
-				}
-				else
-				{
-					retValue += retValueTemp;
-				}
-				for(int i = 0; i < m_enabledAxes.size(); ++i)
-				{
-					if( m_enabledAxes[i] == axis )
-					{
-						m_currentStatus[i] |= ito::actuatorEnabled;
-						break;
-					}
-				}
-			}
-		}  
-	}
+                    if (!retValue.containsError())
+                    {
+                        retValue += checkError(AerMoveMDisable(hAerCtrl, axisMask));
+                    }
+                }
+                else
+                {
+                    retValue += retValueTemp;
+                }
+                for(int i = 0; i < m_enabledAxes.size(); ++i)
+                {
+                    if (m_enabledAxes[i] == axis)
+                    {
+                        m_currentStatus[i] |= ito::actuatorEnabled;
+                        break;
+                    }
+                }
+            }
+        }  
+    }
 
     return retValue;
 }

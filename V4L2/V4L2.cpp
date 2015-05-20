@@ -117,11 +117,11 @@ V4L2Interface::~V4L2Interface()
 //----------------------------------------------------------------------------------------------------------------------------------
 //! shows the configuration dialog. This method must be executed in the main (GUI) thread and is usually called by the addIn-Manager.
 /*!
-	creates new instance of dialogDummyGrabber, calls the method setVals of DialogV4L2, starts the execution loop and if the dialog
-	is closed, reads the new parameter set and deletes the dialog.
+    creates new instance of dialogDummyGrabber, calls the method setVals of DialogV4L2, starts the execution loop and if the dialog
+    is closed, reads the new parameter set and deletes the dialog.
 
-	\return retOk
-	\sa DialogV4L2
+    \return retOk
+    \sa DialogV4L2
  */
 const ito::RetVal V4L2::showConfDialog(void)
 {
@@ -189,43 +189,43 @@ V4L2::~V4L2()
 // Method to set and update data informations
 ito::RetVal V4L2::checkCameraAbilities()
 {
-	bool camRetVal = false;
-	m_camStatusChecked = false;
-	ito::RetVal retValue;
+    bool camRetVal = false;
+    m_camStatusChecked = false;
+    ito::RetVal retValue;
 
-	m_imgCols =m_pDL.m_device.m_vfmt.fmt.pix.width;
-	m_imgRows = m_pDL.m_device.m_vfmt.fmt.pix.height;
+    m_imgCols =m_pDL.m_device.m_vfmt.fmt.pix.width;
+    m_imgRows = m_pDL.m_device.m_vfmt.fmt.pix.height;
 
-	//TODO: handle bitdepth
-	m_imgChannels = 3;
-	m_imgBpp = 8;
+    //TODO: handle bitdepth
+    m_imgChannels = 3;
+    m_imgBpp = 8;
 
-	static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax( m_imgCols );
-	static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax( m_imgRows );
-	m_params["sizex"].setVal<int>(m_imgCols);
-	m_params["sizey"].setVal<int>(m_imgRows);
+    static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax( m_imgCols );
+    static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax( m_imgRows );
+    m_params["sizex"].setVal<int>(m_imgCols);
+    m_params["sizey"].setVal<int>(m_imgRows);
 
-	static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax( m_imgCols-1 );
-	static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax( m_imgRows-1 );
-	m_params["x0"].setVal<int>(0);
-	m_params["y0"].setVal<int>(0);
+    static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax( m_imgCols-1 );
+    static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax( m_imgRows-1 );
+    m_params["x0"].setVal<int>(0);
+    m_params["y0"].setVal<int>(0);
 
-	static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMax( m_imgCols-1 );
-	static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMax( m_imgRows-1 );
-	m_params["x1"].setVal<int>(m_imgCols-1);
-	m_params["y1"].setVal<int>(m_imgRows-1);
+    static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMax( m_imgCols-1 );
+    static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMax( m_imgRows-1 );
+    m_params["x1"].setVal<int>(m_imgCols-1);
+    m_params["y1"].setVal<int>(m_imgRows-1);
 
-	m_params["bpp"].setMeta( new ito::IntMeta(8, m_imgBpp), true);
-	m_params["bpp"].setVal<int>(m_imgBpp);
+    m_params["bpp"].setMeta( new ito::IntMeta(8, m_imgBpp), true);
+    m_params["bpp"].setVal<int>(m_imgBpp);
 
-	if(m_imgBpp < 8 || m_imgBpp > 32)
-	{
-		retValue += ito::RetVal(ito::retError, 0, tr("unknown bpp").toLatin1().data());
-	}
+    if(m_imgBpp < 8 || m_imgBpp > 32)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("unknown bpp").toLatin1().data());
+    }
 
-	m_camStatusChecked = true;
+    m_camStatusChecked = true;
 
-	return retValue;
+    return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -304,11 +304,11 @@ ito::RetVal V4L2::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
 
     if (!retValue.containsError())
     {
-    	//get the ctrl qmap via pointer, and check if we are updating a parameter which corresponds to one of the device ctrls
-    	QMap<QString,QSharedPointer<V4L2Ctrl> >* ctrls = m_pDL.m_device.get_parameters();
-    	if (ctrls->contains(key)){
-    		retValue += updateCamParam(key, *val);
-    	}
+        //get the ctrl qmap via pointer, and check if we are updating a parameter which corresponds to one of the device ctrls
+        QMap<QString,QSharedPointer<V4L2Ctrl> >* ctrls = m_pDL.m_device.get_parameters();
+        if (ctrls->contains(key)){
+            retValue += updateCamParam(key, *val);
+        }
 
         if (key == "colorMode")
         {
@@ -386,140 +386,140 @@ ito::RetVal V4L2::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemapho
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal V4L2::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
-	//exceptionally, this init dialog is executed in the main thread of itom (m_callInitInNewThread == false in OpenCVGrabberInterface)
-	ItomSharedSemaphoreLocker locker(waitCond);
-	ito::RetVal retValue(ito::retOk);
+    //exceptionally, this init dialog is executed in the main thread of itom (m_callInitInNewThread == false in OpenCVGrabberInterface)
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
 
-	m_deviceID = paramsOpt->at(0).getVal<int>();
-	int mediaTypeID = paramsOpt->at(2).getVal<int>();
-	QSharedPointer<ito::ParamBase> colorMode(new ito::ParamBase(paramsOpt->at(1)));
+    m_deviceID = paramsOpt->at(0).getVal<int>();
+    int mediaTypeID = paramsOpt->at(2).getVal<int>();
+    QSharedPointer<ito::ParamBase> colorMode(new ito::ParamBase(paramsOpt->at(1)));
 
-	//refresh the list of devices
-	retValue +=m_pDL.refresh_dev_list();
+    //refresh the list of devices
+    retValue +=m_pDL.refresh_dev_list();
 
-	//get number of found devices
-	int numDevices = m_pDL.get_number_of_dev(retValue);
+    //get number of found devices
+    int numDevices = m_pDL.get_number_of_dev(retValue);
 
-	if ((m_pDL.check_if_dev_id_exists(m_deviceID)).containsError())
-	{
-		retValue += ito::RetVal::format(ito::retError,0,tr("Invalid cameraNumber: '%1'.\nSelect:\n%3").arg(m_deviceID).arg(m_pDL.list_to_str()).toLatin1().data());
-	}
-	else //valid m_deviceID
-	{
-		//set the active device -> this is then accesible via  m_pDL.m_device
-		retValue +=m_pDL.set_active_dev(m_deviceID);
-		QString deviceName = m_pDL.m_device.m_dev_name;
-		if (deviceName == "Empty")
-		{
-			retValue += ito::RetVal(ito::retError,0,tr("desired device does not exist").toLatin1().data());
-		}
-		else
-		{
-			m_params["deviceName"].setVal<char*>(deviceName.toLatin1().data());
-			setIdentifier(deviceName);
+    if ((m_pDL.check_if_dev_id_exists(m_deviceID)).containsError())
+    {
+        retValue += ito::RetVal::format(ito::retError,0,tr("Invalid cameraNumber: '%1'.\nSelect:\n%3").arg(m_deviceID).arg(m_pDL.list_to_str()).toLatin1().data());
+    }
+    else //valid m_deviceID
+    {
+        //set the active device -> this is then accesible via  m_pDL.m_device
+        retValue +=m_pDL.set_active_dev(m_deviceID);
+        QString deviceName = m_pDL.m_device.m_dev_name;
+        if (deviceName == "Empty")
+        {
+            retValue += ito::RetVal(ito::retError,0,tr("desired device does not exist").toLatin1().data());
+        }
+        else
+        {
+            m_params["deviceName"].setVal<char*>(deviceName.toLatin1().data());
+            setIdentifier(deviceName);
 
-			//open the device
-			retValue += m_pDL.m_device.open_dev();
+            //open the device
+            retValue += m_pDL.m_device.open_dev();
 
-			if (retValue.containsError())
-			{
-				retValue += ito::RetVal(ito::retError,0,tr("Error opening device: %1").arg(deviceName).toLatin1().data());
-			}
-			else //device opened
-			{
-				int nformats=m_pDL.m_device.get_count_fmts();
+            if (retValue.containsError())
+            {
+                retValue += ito::RetVal(ito::retError,0,tr("Error opening device: %1").arg(deviceName).toLatin1().data());
+            }
+            else //device opened
+            {
+                int nformats=m_pDL.m_device.get_count_fmts();
 
-				if (mediaTypeID == -1)
-				{
-					std::cout << "\n#Information for selected camera '" << deviceName.toLatin1().data() <<"'" << std::endl;
-					std::cout <<"---------------------------V4L2------------------------------------" <<std::endl;
-					retValue+=m_pDL.m_device.print_cap();
-					retValue +=m_pDL.m_device.print_videofmts();
-					retValue +=m_pDL.m_device.print_ctrls();
+                if (mediaTypeID == -1)
+                {
+                    std::cout << "\n#Information for selected camera '" << deviceName.toLatin1().data() <<"'" << std::endl;
+                    std::cout <<"---------------------------V4L2------------------------------------" <<std::endl;
+                    retValue+=m_pDL.m_device.print_cap();
+                    retValue +=m_pDL.m_device.print_videofmts();
+                    retValue +=m_pDL.m_device.print_ctrls();
 
-					std::cout <<"---------------------------V4L2------------------------------------\n"<< std::endl;
-					retValue += ito::RetVal(ito::retError,0,tr("Camera initialization aborted since only list of media types requested").toLatin1().data());
-				}
-				else if (mediaTypeID == 0 && nformats==0)
-				{
-					// if no fmt available try to set standard format selected by driver pass -1 to set_fmt
-					retValue+=m_pDL.m_device.set_fmt(-1); //set camera to format selected by user via mediaTypeID
-					retValue+=fill_m_params(); // fill m_params with all controls of camera: brightness, etc.
-				}
-				else if (mediaTypeID >= nformats)
-				{
-					retValue += ito::RetVal(ito::retError,0,tr("Number of available media types was smaller than the given mediaTypeID. Try mediaTypeID = -1 to print a list of available types.").toLatin1().data());
-				}
+                    std::cout <<"---------------------------V4L2------------------------------------\n"<< std::endl;
+                    retValue += ito::RetVal(ito::retError,0,tr("Camera initialization aborted since only list of media types requested").toLatin1().data());
+                }
+                else if (mediaTypeID == 0 && nformats==0)
+                {
+                    // if no fmt available try to set standard format selected by driver pass -1 to set_fmt
+                    retValue+=m_pDL.m_device.set_fmt(-1); //set camera to format selected by user via mediaTypeID
+                    retValue+=fill_m_params(); // fill m_params with all controls of camera: brightness, etc.
+                }
+                else if (mediaTypeID >= nformats)
+                {
+                    retValue += ito::RetVal(ito::retError,0,tr("Number of available media types was smaller than the given mediaTypeID. Try mediaTypeID = -1 to print a list of available types.").toLatin1().data());
+                }
 
-				else // try to set format to mediaTypeID
-				{
-					retValue+=m_pDL.m_device.set_fmt(mediaTypeID); //set camera to format selected by user via mediaTypeID
-					retValue+=fill_m_params(); // fill m_params with all controls of camera: brightness, etc.
-				}
-			} //opened device
-		}//device name not empty
-	} //valid device id
+                else // try to set format to mediaTypeID
+                {
+                    retValue+=m_pDL.m_device.set_fmt(mediaTypeID); //set camera to format selected by user via mediaTypeID
+                    retValue+=fill_m_params(); // fill m_params with all controls of camera: brightness, etc.
+                }
+            } //opened device
+        }//device name not empty
+    } //valid device id
 
 
-	if (!retValue.containsError())
-	{
-		m_params["sizex"].setVal<int>(m_pDL.m_device.m_vfmt.fmt.pix.width);
-	    m_params["sizey"].setVal<int>(m_pDL.m_device.m_vfmt.fmt.pix.height);
-	    synchronizeCameraParametersToParams(true);
-	}
+    if (!retValue.containsError())
+    {
+        m_params["sizex"].setVal<int>(m_pDL.m_device.m_vfmt.fmt.pix.width);
+        m_params["sizey"].setVal<int>(m_pDL.m_device.m_vfmt.fmt.pix.height);
+        synchronizeCameraParametersToParams(true);
+    }
 
-	if(!retValue.containsError())
-	{
-		retValue += checkCameraAbilities();
-		retValue += setParam(colorMode,NULL);
-	}
+    if(!retValue.containsError())
+    {
+        retValue += checkCameraAbilities();
+        retValue += setParam(colorMode,NULL);
+    }
 
-	if (waitCond)
-	{
-		waitCond->returnValue = retValue;
-		waitCond->release();
-	}
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
 
-	setInitialized(true); //init method has been finished (independent on retval)
-	return retValue;
+    setInitialized(true); //init method has been finished (independent on retval)
+    return retValue;
 }
 
 
 ito::RetVal V4L2::fill_m_params()
 {
-	ito::RetVal retValue(ito::retOk);
-	if (m_pDL.m_device.m_opened)
-	{
-		//qet pointer to the qmap which contains the ctrls
-		QMap<QString,QSharedPointer<V4L2Ctrl> >* ctrls = m_pDL.m_device.get_parameters();
-		QMap<QString, QSharedPointer<V4L2Ctrl> >::iterator i;
-		ito::Param paramVal;
-		//iterate through ctrls
-		for(i=ctrls->begin();i!=ctrls->end();++i)
-		{
-				QString name = i.key();
-				QSharedPointer<V4L2Ctrl> ctrl = m_pDL.m_device.get_ctrl_by_name(name);
-				if (ctrl->get_type() == "Int")
-				{
-					paramVal = ito::Param(name.toLatin1().data(), ito::ParamBase::Int | ito::ParamBase::In, ctrl->min(), ctrl->max(), ctrl->value(), tr("%1 [%2..%3], default: %4").arg(name).arg(ctrl->min()).arg(ctrl->max()).arg(ctrl->default_value()).toLatin1().data());
-					m_params.insert(paramVal.getName(), paramVal);
-				}
-				else if (ctrl->get_type() == "Bool")
-				{
-					paramVal = ito::Param(name.toLatin1().data(), ito::ParamBase::Int | ito::ParamBase::In, ctrl->min(), ctrl->max(), ctrl->value(), tr("%1 [on:%2, off:%3], default: %4").arg(name).arg(ctrl->max()).arg(ctrl->min()).arg(ctrl->default_value()).toLatin1().data());
-					m_params.insert(paramVal.getName(), paramVal);
-				}
-				else
-				{
-					//ignore as not supported at the moment
-				}
-		}
-	}
-	else
-	{
-		return ito::RetVal(ito::retError, 0, tr("Device not set").toLatin1().data());
-	}
-	return retValue;
+    ito::RetVal retValue(ito::retOk);
+    if (m_pDL.m_device.m_opened)
+    {
+        //qet pointer to the qmap which contains the ctrls
+        QMap<QString,QSharedPointer<V4L2Ctrl> >* ctrls = m_pDL.m_device.get_parameters();
+        QMap<QString, QSharedPointer<V4L2Ctrl> >::iterator i;
+        ito::Param paramVal;
+        //iterate through ctrls
+        for(i=ctrls->begin();i!=ctrls->end();++i)
+        {
+                QString name = i.key();
+                QSharedPointer<V4L2Ctrl> ctrl = m_pDL.m_device.get_ctrl_by_name(name);
+                if (ctrl->get_type() == "Int")
+                {
+                    paramVal = ito::Param(name.toLatin1().data(), ito::ParamBase::Int | ito::ParamBase::In, ctrl->min(), ctrl->max(), ctrl->value(), tr("%1 [%2..%3], default: %4").arg(name).arg(ctrl->min()).arg(ctrl->max()).arg(ctrl->default_value()).toLatin1().data());
+                    m_params.insert(paramVal.getName(), paramVal);
+                }
+                else if (ctrl->get_type() == "Bool")
+                {
+                    paramVal = ito::Param(name.toLatin1().data(), ito::ParamBase::Int | ito::ParamBase::In, ctrl->min(), ctrl->max(), ctrl->value(), tr("%1 [on:%2, off:%3], default: %4").arg(name).arg(ctrl->max()).arg(ctrl->min()).arg(ctrl->default_value()).toLatin1().data());
+                    m_params.insert(paramVal.getName(), paramVal);
+                }
+                else
+                {
+                    //ignore as not supported at the moment
+                }
+        }
+    }
+    else
+    {
+        return ito::RetVal(ito::retError, 0, tr("Device not set").toLatin1().data());
+    }
+    return retValue;
 }
 
 
@@ -530,9 +530,9 @@ ito::RetVal V4L2::fill_m_params()
 //update the parameter (ctrl) given by name with the data passed via paramInt
 ito::RetVal V4L2::updateCamParam(QString &name, const ito::ParamBase &paramInt)
 {
-	QSharedPointer<V4L2Ctrl> ctrl = m_pDL.m_device.get_ctrl_by_name(name);
-	ctrl->m_ctrl.value=paramInt.getVal<int>();
-	ctrl->set();
+    QSharedPointer<V4L2Ctrl> ctrl = m_pDL.m_device.get_ctrl_by_name(name);
+    ctrl->m_ctrl.value=paramInt.getVal<int>();
+    ctrl->set();
     return ito::retOk;
 }
 
@@ -541,26 +541,26 @@ ito::RetVal V4L2::updateCamParam(QString &name, const ito::ParamBase &paramInt)
 //synchronize the data from the camera to the m_param list
 ito::RetVal V4L2::synchronizeCameraParametersToParams(bool firstCall /*= false*/)
 {
-	ito::RetVal retValue(ito::retOk);
-	if (m_pDL.m_device.m_opened)
-	{
-		//qet pointer to the qmap which contains the ctrls
-		QMap<QString,QSharedPointer<V4L2Ctrl> >* ctrls = m_pDL.m_device.get_parameters();
-		QMap<QString, QSharedPointer<V4L2Ctrl> >::iterator i;
-		//iterate through ctrls
-		for(i=ctrls->begin();i!=ctrls->end();++i)
-		{
-			QString name = i.key();
-			QSharedPointer<V4L2Ctrl> ctrl = m_pDL.m_device.get_ctrl_by_name(name);
-			if (ctrl->get_type() == "Int" || ctrl->get_type() == "Bool" )
-			{
-				ito::IntMeta *im = (ito::IntMeta*)(m_params[name].getMeta());
-				im->setStepSize(ctrl->step());
-				m_params[name].setVal<int>(ctrl->value());
-			}
-		}
-	}
-	return retValue;
+    ito::RetVal retValue(ito::retOk);
+    if (m_pDL.m_device.m_opened)
+    {
+        //qet pointer to the qmap which contains the ctrls
+        QMap<QString,QSharedPointer<V4L2Ctrl> >* ctrls = m_pDL.m_device.get_parameters();
+        QMap<QString, QSharedPointer<V4L2Ctrl> >::iterator i;
+        //iterate through ctrls
+        for(i=ctrls->begin();i!=ctrls->end();++i)
+        {
+            QString name = i.key();
+            QSharedPointer<V4L2Ctrl> ctrl = m_pDL.m_device.get_ctrl_by_name(name);
+            if (ctrl->get_type() == "Int" || ctrl->get_type() == "Bool" )
+            {
+                ito::IntMeta *im = (ito::IntMeta*)(m_params[name].getMeta());
+                im->setStepSize(ctrl->step());
+                m_params[name].setVal<int>(ctrl->value());
+            }
+        }
+    }
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -583,7 +583,7 @@ ito::RetVal V4L2::close(ItomSharedSemaphore *waitCond)
 
     if (m_deviceStarted)
     {
-    	retValue+=m_pDL.m_device.stop_capture();
+        retValue+=m_pDL.m_device.stop_capture();
         if (retValue.containsError())
         {
             retValue += ito::RetVal(ito::retError,0,"camera could not stop the acquisition");
@@ -618,7 +618,7 @@ ito::RetVal V4L2::startDevice(ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() == 1 && !m_deviceStarted)
     {
-    	retValue+=m_pDL.m_device.start_capture();
+        retValue+=m_pDL.m_device.start_capture();
         if (retValue.containsError())
         {
             retValue += ito::RetVal(ito::retError,0,"camera could not start the acquisition");
@@ -653,9 +653,9 @@ ito::RetVal V4L2::stopDevice(ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() == 0 && m_deviceStarted)
     {
-    	retValue+=m_pDL.m_device.stop_capture();
+        retValue+=m_pDL.m_device.stop_capture();
         if (retValue.containsError())
-    	{
+        {
             retValue += ito::RetVal(ito::retError,0,"camera could not stop the acquisition");
         }
         else
@@ -1085,7 +1085,7 @@ void V4L2::dockWidgetVisibilityChanged(bool visible)
         DockWidgetV4L2 *dw = qobject_cast<DockWidgetV4L2*>(getDockWidget()->widget());
         if (visible)
         {
-        	dw->initialize(&(m_pDL.m_device));
+            dw->initialize(&(m_pDL.m_device));
             connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(parametersChanged(QMap<QString, ito::Param>)));
 
             emit parametersChanged(m_params);

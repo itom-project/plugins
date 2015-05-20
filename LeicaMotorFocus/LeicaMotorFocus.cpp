@@ -433,7 +433,7 @@ ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int>
             done = true;
         }
 
-        if( status == STATUS_OK)
+        if ( status == STATUS_OK)
         {
             done = true;
         }
@@ -444,7 +444,7 @@ ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int>
             Sleep(100);
             retVal += LMFStatus(status);
 
-            if(status & STATUS_UPPER_REF_SWITCH)
+            if (status & STATUS_UPPER_REF_SWITCH)
             {
                 qDebug() << "LeicaMotorFocus Status: " << status << " UPPER_REF:" << STATUS_UPPER_REF_SWITCH;
                 retVal += ito::RetVal(ito::retError, STATUS_UPPER_REF_SWITCH, tr("upper reference switch reached").toLatin1().data());
@@ -458,7 +458,7 @@ ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int>
             Sleep(100);
             retVal += LMFStatus(status);
 
-            if(status & STATUS_LOWER_REF_SWITCH)
+            if (status & STATUS_LOWER_REF_SWITCH)
             {
                 qDebug() << "LeicaMotorFocus Status: " << status << " LOWER_REF:" << STATUS_LOWER_REF_SWITCH;
                 retVal += ito::RetVal(ito::retError, STATUS_LOWER_REF_SWITCH, tr("lower reference switch reached").toLatin1().data());
@@ -693,7 +693,7 @@ ito::RetVal LeicaMotorFocus::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
                 retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
             }
 
-            if(!retValue.containsWarningOrError())
+            if (!retValue.containsWarningOrError())
             {
 
                 retValue += paramIt.value().copyValueFrom( &(*val) );
@@ -795,7 +795,7 @@ ito::RetVal LeicaMotorFocus::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         m_params["speed"].setVal<double>(speed / 1000 * FULLSPEED); // Fullspeed is 140mm / 6s and answer is in Promill of Fullspeed
     }
 
-    if(retval != ito::retError)
+    if (retval != ito::retError)
     {
         requestStatusAndPosition(true,true); //initial position check
     }
@@ -1073,7 +1073,7 @@ const ito::RetVal LeicaMotorFocus::LMFSetPos(QVector<int> axis, const double dpo
         setStatus(m_currentStatus[0], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
         sendStatusUpdate(false);    
 
-        if(absrelflag == MOVE_RELATIVE)
+        if (absrelflag == MOVE_RELATIVE)
         {
             m_targetPos[0] += dpos;
         }
@@ -1253,7 +1253,7 @@ ito::RetVal LeicaMotorFocus::requestStatusAndPosition(bool sendCurrentPos, bool 
         retval += getPos(0,sharedpos,0);
         m_currentPos[0] = *sharedpos;
 
-        if(status == 0 && std::abs(*sharedpos-m_targetPos[0]) > 0.01)
+        if (status == 0 && std::abs(*sharedpos-m_targetPos[0]) > 0.01)
         {
             m_targetPos[0] = *sharedpos;
         }

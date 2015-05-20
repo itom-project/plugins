@@ -220,14 +220,14 @@ ito::RetVal setOutputArrayToDataObject(ito::ParamBase &dataObjParam, const cv::M
 
             if (!retval.containsError())
             {
-				if (mat_.dims == 0)
-				{
-					*dObj = ito::DataObject();
-				}
-				else
-				{
-					*dObj = ito::DataObject(mat_.dims, mat_.size, cameraMatrixType, &mat_, 1);
-				}
+                if (mat_.dims == 0)
+                {
+                    *dObj = ito::DataObject();
+                }
+                else
+                {
+                    *dObj = ito::DataObject(mat_.dims, mat_.size, cameraMatrixType, &mat_, 1);
+                }
             }
         }
         else

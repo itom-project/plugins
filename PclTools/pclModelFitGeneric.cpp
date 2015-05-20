@@ -35,25 +35,25 @@
 #include <pcl/pcl_config.h>
 
 #if PCL_VERSION_COMPARE(>=, 1, 7, 0)
-	#include <pcl/sample_consensus/method_types.h>
-	#include <pcl/sample_consensus/model_types.h>
-	#include <pcl/segmentation/sac_segmentation.h>
-	#include <pcl/segmentation/impl/sac_segmentation.hpp>
-	/*#include <pcl/sample_consensus/impl/lmeds.hpp>
-	#include <pcl/sample_consensus/impl/ransac.hpp>
-	#include <pcl/sample_consensus/impl/rransac.hpp>
-	#include <pcl/sample_consensus/impl/msac.hpp>
-	#include <pcl/sample_consensus/impl/rmsac.hpp>
-	#include <pcl/sample_consensus/impl/mlesac.hpp>
-	#include <pcl/sample_consensus/impl/prosac.hpp>*/
-	#include <pcl/sample_consensus/impl/sac_model_stick.hpp>
-	#include <pcl/sample_consensus/impl/sac_model_circle3d.hpp>
-	#include <pcl/sample_consensus/impl/sac_model_cone.hpp>
-	#include <pcl/sample_consensus/impl/sac_model_sphere.hpp>
-	#include <pcl/sample_consensus/impl/sac_model_normal_plane.hpp>
-	#include <pcl/sample_consensus/impl/sac_model_cylinder.hpp>
-	#include <pcl/sample_consensus/impl/sac_model_normal_sphere.hpp>
-	#include <pcl/sample_consensus/impl/sac_model_normal_parallel_plane.hpp>
+    #include <pcl/sample_consensus/method_types.h>
+    #include <pcl/sample_consensus/model_types.h>
+    #include <pcl/segmentation/sac_segmentation.h>
+    #include <pcl/segmentation/impl/sac_segmentation.hpp>
+    /*#include <pcl/sample_consensus/impl/lmeds.hpp>
+    #include <pcl/sample_consensus/impl/ransac.hpp>
+    #include <pcl/sample_consensus/impl/rransac.hpp>
+    #include <pcl/sample_consensus/impl/msac.hpp>
+    #include <pcl/sample_consensus/impl/rmsac.hpp>
+    #include <pcl/sample_consensus/impl/mlesac.hpp>
+    #include <pcl/sample_consensus/impl/prosac.hpp>*/
+    #include <pcl/sample_consensus/impl/sac_model_stick.hpp>
+    #include <pcl/sample_consensus/impl/sac_model_circle3d.hpp>
+    #include <pcl/sample_consensus/impl/sac_model_cone.hpp>
+    #include <pcl/sample_consensus/impl/sac_model_sphere.hpp>
+    #include <pcl/sample_consensus/impl/sac_model_normal_plane.hpp>
+    #include <pcl/sample_consensus/impl/sac_model_cylinder.hpp>
+    #include <pcl/sample_consensus/impl/sac_model_normal_sphere.hpp>
+    #include <pcl/sample_consensus/impl/sac_model_normal_parallel_plane.hpp>
 #endif
 
 #include <qstring.h>

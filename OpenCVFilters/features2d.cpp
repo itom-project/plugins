@@ -46,7 +46,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError())
+    if (retval.containsError())
     {
         printf("error while executing some methods");
         return retval;
@@ -146,7 +146,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
                 ito::DataObject bestKeypoints2(best_matches_idx.size(), 7, ito::tFloat32);
                 ito::float32 *rowPtrDest;
                 ito::float32 *rowPtrSrc;
-				int count = 0;
+                int count = 0;
 
                 foreach( const int idx, best_matches_idx)
                 {
@@ -165,7 +165,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
                     rowPtrDest = (ito::float32*)(bestKeypoints2.rowPtr(0, count));
                     memcpy(rowPtrDest, rowPtrSrc, sizeof(ito::float32) * 7);
 
-					count++;
+                    count++;
                 }
 
                 *((*paramsOpt)[3].getVal<ito::DataObject*>()) = bestKeypoints1;
@@ -187,7 +187,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError())
+    if (retval.containsError())
     {
         printf("error while executing some methods");
         return retval;
@@ -295,7 +295,7 @@ This function draws matches of keypoints from two images in the output image. Ma
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
 
 

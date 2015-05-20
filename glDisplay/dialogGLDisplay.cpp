@@ -58,7 +58,7 @@ void DialogGLDisplay::on_horizontalSlider_valueChanged(int value)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogGLDisplay::parametersChanged(QMap<QString, ito::Param> params)
 {
-	//save the currently set parameters to m_currentParameters
+    //save the currently set parameters to m_currentParameters
     m_currentParameters = params;
 
     if (m_firstRun)

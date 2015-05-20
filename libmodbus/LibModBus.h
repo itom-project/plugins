@@ -71,7 +71,7 @@ class LibModBus : public ito::AddInDataIO
         ito::RetVal stopDevice(ItomSharedSemaphore *waitCond);
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getVal(QSharedPointer<char> data, QSharedPointer<int> length, ItomSharedSemaphore *waitCond = NULL);
-		ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
+        ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
         ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond);
 
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);

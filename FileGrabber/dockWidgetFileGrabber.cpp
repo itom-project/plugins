@@ -40,7 +40,7 @@
     ui.spinHeight->setValue(params["sizey"].getVal<int>());
 
 
-    if(!(params["gain"].getFlags() & ito::ParamBase::Readonly))
+    if (!(params["gain"].getFlags() & ito::ParamBase::Readonly))
     {
         ui.spinBox_gain->setEnabled(true);
     }
@@ -50,7 +50,7 @@
     }
     ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
 
-    if(!(params["offset"].getFlags() & ito::ParamBase::Readonly))
+    if (!(params["offset"].getFlags() & ito::ParamBase::Readonly))
     {
         ui.spinBox_offset->setEnabled(true);
     }
@@ -60,7 +60,7 @@
     }
     ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
 
-    if(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
+    if (!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
     {
         ui.doubleSpinBox_integration_time->setEnabled(true);
     }

@@ -2,7 +2,7 @@
     Plugin "PGRFlyCapture" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2014, twip optical solutions GmbH
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -157,7 +157,7 @@ PGRFlyCaptureInterface::~PGRFlyCaptureInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class PGRFlyCaptureInterface with the name PGRFlyCaptureinterface as plugin for the Qt-System (see Qt-DOC)
 #if QT_VERSION < 0x050000
-	Q_EXPORT_PLUGIN2(PGRFlyCaptureinterface, PGRFlyCaptureInterface)
+    Q_EXPORT_PLUGIN2(PGRFlyCaptureinterface, PGRFlyCaptureInterface)
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1596,11 +1596,11 @@ ito::RetVal PGRFlyCapture::acquire(const int trigger, ItomSharedSemaphore *waitC
         {
             m_acquisitionStatus = checkError(m_myCam.RetrieveBuffer(&m_imageBuffer));
 
-			if (m_acquisitionStatus.containsError() && m_acquisitionStatus.errorCode() == FlyCapture2::PGRERROR_IMAGE_CONSISTENCY_ERROR)
-			{
-				//try one more time
-				m_acquisitionStatus = checkError(m_myCam.RetrieveBuffer(&m_imageBuffer));
-			}
+            if (m_acquisitionStatus.containsError() && m_acquisitionStatus.errorCode() == FlyCapture2::PGRERROR_IMAGE_CONSISTENCY_ERROR)
+            {
+                //try one more time
+                m_acquisitionStatus = checkError(m_myCam.RetrieveBuffer(&m_imageBuffer));
+            }
         }
         else
         {

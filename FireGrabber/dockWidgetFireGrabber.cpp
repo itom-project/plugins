@@ -47,24 +47,24 @@
     if (!m_inEditing)
     {
         m_inEditing = true;
-        if(params.contains("bpp"))
+        if (params.contains("bpp"))
         {
             ui.spinBpp->setValue(params["bpp"].getVal<int>());
         }
 
-        if(params.contains("sizex"))
+        if (params.contains("sizex"))
         {
             ui.spinWidth->setValue(params["sizex"].getVal<int>());
         }
 
-        if(params.contains("sizey"))
+        if (params.contains("sizey"))
         {
             ui.spinHeight->setValue(params["sizey"].getVal<int>());
         }
 
-        if(params.contains("gain"))
+        if (params.contains("gain"))
         {
-            if(!(params["gain"].getFlags() & ito::ParamBase::Readonly))
+            if (!(params["gain"].getFlags() & ito::ParamBase::Readonly))
             {
                 ui.spinBox_gain->setEnabled(true);
                 ui.horizontalSlider_gain->setEnabled(true);
@@ -77,9 +77,9 @@
             ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
         }
 
-        if(params.contains("offset"))
+        if (params.contains("offset"))
         {
-            if(!(params["offset"].getFlags() & ito::ParamBase::Readonly))
+            if (!(params["offset"].getFlags() & ito::ParamBase::Readonly))
             {
                 ui.spinBox_offset->setEnabled(true);
                 ui.horizontalSlider_offset->setEnabled(true);
@@ -92,9 +92,9 @@
             ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
         }
 
-        if(params.contains("integration_time"))
+        if (params.contains("integration_time"))
         {
-            if(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
+            if (!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
             {
                 ui.doubleSpinBox_integration_time->setEnabled(true);
             }

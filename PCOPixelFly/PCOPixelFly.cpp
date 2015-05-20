@@ -1229,7 +1229,7 @@ ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
         if (!retValue.containsError())
         {
-			Initnum++;  // so we have a new running instance of this grabber (or not)
+            Initnum++;  // so we have a new running instance of this grabber (or not)
 
             iRetCode = initboard(iBoardNumber, &this->m_hdriver);  
             if (!this->m_hdriver)
@@ -1247,26 +1247,26 @@ ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             {
                 DWORD output;
                 iRetCode = getboardval(this->m_hdriver,  PCC_VAL_BOARD_INFO, &output);
-				if (iRetCode == 0)
-				{
-					serial = PCC_INFO_NR(output);
-					iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &output);
-					if (iRetCode == 0)
-					{
-						if (output & 0x08000000)
-						{
-							retValue += ito::RetVal(ito::retError, 0, "camera head is disconnected from board. Please check the connection");
-						}
-					}
-					else
-					{
-						retValue += PCOChkError(iRetCode);
-					}
-				}
-				else
-				{
-					retValue += PCOChkError(iRetCode);
-				}
+                if (iRetCode == 0)
+                {
+                    serial = PCC_INFO_NR(output);
+                    iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &output);
+                    if (iRetCode == 0)
+                    {
+                        if (output & 0x08000000)
+                        {
+                            retValue += ito::RetVal(ito::retError, 0, "camera head is disconnected from board. Please check the connection");
+                        }
+                    }
+                    else
+                    {
+                        retValue += PCOChkError(iRetCode);
+                    }
+                }
+                else
+                {
+                    retValue += PCOChkError(iRetCode);
+                }
             }
     #endif
             if(serial == 0)
@@ -1472,34 +1472,34 @@ ito::RetVal PCOPixelFly::startDevice(ItomSharedSemaphore *waitCond)
     
     int num = 0; // In case we want num back
     int iRetCode = -7;
-	int iter = 6;
+    int iter = 6;
     unsigned int a[5] = {0, 0, 0, 0, 0};
     DWORD status_v2;
     int result;
 
-	//check if camera is already started
+    //check if camera is already started
 #if PCO_DRIVER_V2 == 1
-	if(getboardval)
-	{
-		while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-		{
-			iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
-		}
-		result = PCC_STATUS_CAM_RUN( status_v2 );
-	}
-	else
-	{
-		while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-		{
-			iRetCode = getboardpar(m_hdriver, a, 20);
-		}
-		result = PCC_STATUS_CAM_RUN(  (*((dword *)a+1)) );
-	}
+    if(getboardval)
+    {
+        while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+        {
+            iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
+        }
+        result = PCC_STATUS_CAM_RUN( status_v2 );
+    }
+    else
+    {
+        while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+        {
+            iRetCode = getboardpar(m_hdriver, a, 20);
+        }
+        result = PCC_STATUS_CAM_RUN(  (*((dword *)a+1)) );
+    }
 #else
-	while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-	{
-		iRetCode = getboardpar(m_hdriver, a, 20);
-	}
+    while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+    {
+        iRetCode = getboardpar(m_hdriver, a, 20);
+    }
     result = PCC_CAM_RUN(a);
 #endif
     if (iRetCode != 0)
@@ -1511,12 +1511,12 @@ ito::RetVal PCOPixelFly::startDevice(ItomSharedSemaphore *waitCond)
         //this makro is out of pccamdef.h, where you can find other usefull makros
         if (!result)
         {
-			iter = 6;
-			iRetCode = -7;
-			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-			{
-				iRetCode = start_camera(m_hdriver);
-			}
+            iter = 6;
+            iRetCode = -7;
+            while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+            {
+                iRetCode = start_camera(m_hdriver);
+            }
             if (iRetCode != 0)
             {
                 retValue += PCOChkError(iRetCode);
@@ -1524,7 +1524,7 @@ ito::RetVal PCOPixelFly::startDevice(ItomSharedSemaphore *waitCond)
         }
     }
 
-	if (!retValue.containsError())
+    if (!retValue.containsError())
     {
         incGrabberStarted();
     }
@@ -1545,7 +1545,7 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
     int iRetCode = -7;
     unsigned int a[5] = {0, 0, 0, 0, 0};
     DWORD status_v2;
-	int iter = 6;
+    int iter = 6;
 
     int result;
 
@@ -1556,25 +1556,25 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
 #if PCO_DRIVER_V2 == 1
         if(getboardval)
         {
-			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-			{
-				iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
-			}
+            while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+            {
+                iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
+            }
             result = PCC_STATUS_CAM_RUN( status_v2 );
         }
         else
         {
-			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-			{
-				iRetCode = getboardpar(m_hdriver, a, 20);
-			}
+            while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+            {
+                iRetCode = getboardpar(m_hdriver, a, 20);
+            }
             result = PCC_STATUS_CAM_RUN(  (*((dword *)a+1)) );
         }
 #else
-		while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-		{
-			iRetCode = getboardpar(m_hdriver, a, 20);
-		}
+        while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+        {
+            iRetCode = getboardpar(m_hdriver, a, 20);
+        }
         result = PCC_CAM_RUN(a);
 #endif
         if (iRetCode != 0)
@@ -1586,12 +1586,12 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
             //this makro is out of pccamdef.h, where you can find other useful makros
             if(result) //camera is running, stop it
             {
-				iter = 6;
-				iRetCode = -7;
-				while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-				{
-					iRetCode = stop_camera(m_hdriver);
-				}
+                iter = 6;
+                iRetCode = -7;
+                while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+                {
+                    iRetCode = stop_camera(m_hdriver);
+                }
                 if (iRetCode != 0)
                 {
                     retValue = PCOChkError(iRetCode);
@@ -1640,11 +1640,11 @@ ito::RetVal PCOPixelFly::acquire(const int trigger, ItomSharedSemaphore *waitCon
         
         if (triggermode&0x01)
         {
-			int iter = 6;
-			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-			{
-				iRetCode = trigger_camera(m_hdriver);
-			}
+            int iter = 6;
+            while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+            {
+                iRetCode = trigger_camera(m_hdriver);
+            }
             if (iRetCode != 0)
             {
                 retValue += PCOChkError(iRetCode);

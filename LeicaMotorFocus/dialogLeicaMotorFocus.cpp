@@ -53,7 +53,7 @@ void DialogLeicaMotorFocus::parametersChanged(QMap<QString, ito::Param> params)
     setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
     // added by itobiege, Mar. 2013, but not tested!
 
-    if(params["inverseRefSwitch"].getVal<int>() == 0)
+    if (params["inverseRefSwitch"].getVal<int>() == 0)
     {
         ui.radioRefUpper->setChecked(true);
     }
@@ -64,7 +64,7 @@ void DialogLeicaMotorFocus::parametersChanged(QMap<QString, ito::Param> params)
 
     ui.checkInvertAxis->setChecked( params["inverseAxis"].getVal<int>() );
     info = params["inverseAxis"].getInfo();
-    if(info)
+    if (info)
     {
         ui.checkInvertAxis->setToolTip( QString(info) );
     }
@@ -76,7 +76,7 @@ void DialogLeicaMotorFocus::parametersChanged(QMap<QString, ito::Param> params)
     dtemp = (params["speed"]).getMin(); 
     ui.spinBoxSpeed->setMinimum(dtemp);
     info = params["speed"].getInfo();
-    if(info)
+    if (info)
     {
         ui.spinBoxSpeed->setToolTip( QString(info) );
     }
@@ -88,7 +88,7 @@ void DialogLeicaMotorFocus::parametersChanged(QMap<QString, ito::Param> params)
     itemp = (params["ratio"]).getMin(); 
     ui.spinBoxRatio->setMinimum(itemp);
     info = params["ratio"].getInfo();
-    if(info)
+    if (info)
     {
         ui.spinBoxRatio->setToolTip( QString(info) );
     }
@@ -101,31 +101,31 @@ void DialogLeicaMotorFocus::on_cmdHoming_clicked()
 {
     ito::RetVal retval = ito::retOk;
 
-    if(m_unappliedChanges)
+    if (m_unappliedChanges)
     {
         int button = QMessageBox::question ( this, tr("unapplied changes"), tr("There are unapplied changes. You need to apply them before homing. Do you want to apply them now?"), QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok );
-        if(button == QMessageBox::Cancel)
+        if (button == QMessageBox::Cancel)
         {
             return;
         }
 
         retval += applyParameters();
 
-        if(retval.containsError())
+        if (retval.containsError())
         {
             QMessageBox::critical( this, tr("error"), tr("error when applying parameters"));
             return;
         }
     }
 
-    if(m_pluginInstance && !retval.containsError())
+    if (m_pluginInstance && !retval.containsError())
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
         enableDialog(false);
         QMetaObject::invokeMethod(m_pluginInstance,"calib",Q_ARG(int,0),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
-        if(!locker.getSemaphore()->wait(30000))
+        if (!locker.getSemaphore()->wait(30000))
         {
             QMessageBox::critical( this, tr("error"), tr("timeout when homing"));
         }
@@ -134,9 +134,9 @@ void DialogLeicaMotorFocus::on_cmdHoming_clicked()
             QString msg, text;
             ito::RetVal retval = locker.getSemaphore()->returnValue;
 
-            if(retval.containsWarningOrError())
+            if (retval.containsWarningOrError())
             {
-                if(retval.errorMessage())
+                if (retval.errorMessage())
                 {
                     msg = retval.errorMessage();
                 }
@@ -146,12 +146,12 @@ void DialogLeicaMotorFocus::on_cmdHoming_clicked()
                 }
             }
 
-            if(retval.containsError())
+            if (retval.containsError())
             {
                 text = tr("While homing, an error occurred (%1)").arg(msg);
                 QMessageBox::critical(this,tr("error when homing"),text);
             }
-            else if(retval.containsWarning())
+            else if (retval.containsWarning())
             {
                 text = tr("While homing, a warning occurred (%1)").arg(msg);
                 QMessageBox::warning(this,tr("warning when homing"),text);
@@ -165,14 +165,14 @@ void DialogLeicaMotorFocus::on_cmdHoming_clicked()
 //---------------------------------------------------------------------------------------------------------------------
 void DialogLeicaMotorFocus::on_cmdOrigin_clicked()
 {
-    if(m_pluginInstance)
+    if (m_pluginInstance)
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
         enableDialog(false);
         QMetaObject::invokeMethod(m_pluginInstance,"setOrigin",Q_ARG(int,0),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
-        if(!locker.getSemaphore()->wait(5000))
+        if (!locker.getSemaphore()->wait(5000))
         {
             QMessageBox::critical( this, tr("error"), tr("timeout when setting origin"));
         }
@@ -181,9 +181,9 @@ void DialogLeicaMotorFocus::on_cmdOrigin_clicked()
             QString msg, text;
             ito::RetVal retval = locker.getSemaphore()->returnValue;
 
-            if(retval.containsWarningOrError())
+            if (retval.containsWarningOrError())
             {
-                if(retval.errorMessage())
+                if (retval.errorMessage())
                 {
                     msg = retval.errorMessage();
                 }
@@ -193,12 +193,12 @@ void DialogLeicaMotorFocus::on_cmdOrigin_clicked()
                 }
             }
 
-            if(retval.containsError())
+            if (retval.containsError())
             {
                 text = tr("While setting to origin, an error occurred (%1)").arg(msg);
                 QMessageBox::critical(this,tr("error when setting to origin"),text);
             }
-            else if(retval.containsWarning())
+            else if (retval.containsWarning())
             {
                 text = tr("While setting to origin, a warning occurred (%1)").arg(msg);
                 QMessageBox::warning(this,tr("warning when setting to origin"),text);
@@ -215,7 +215,7 @@ ito::RetVal DialogLeicaMotorFocus::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > outVector;
     ito::RetVal retVal = ito::retOk;
 
-    if(m_unappliedChanges == false)
+    if (m_unappliedChanges == false)
     {
         return ito::retOk;
     }
@@ -224,7 +224,7 @@ ito::RetVal DialogLeicaMotorFocus::applyParameters()
 
     outVector.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("ratio", ito::ParamBase::Int, ui.spinBoxRatio->value() ) ) );
 
-    if(ui.checkInvertAxis->isChecked())
+    if (ui.checkInvertAxis->isChecked())
     {
         outVector.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("inverseAxis", ito::ParamBase::Int, 1 ) ) );
     }
@@ -233,7 +233,7 @@ ito::RetVal DialogLeicaMotorFocus::applyParameters()
         outVector.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("inverseAxis", ito::ParamBase::Int, 0 ) ) );
     }
 
-    if(ui.radioRefUpper->isChecked())
+    if (ui.radioRefUpper->isChecked())
     {
         outVector.append( QSharedPointer<ito::ParamBase>( new ito::ParamBase("inverseRefSwitch", ito::ParamBase::Int, 0 ) ) );
     }
@@ -243,12 +243,12 @@ ito::RetVal DialogLeicaMotorFocus::applyParameters()
     }
 
 
-    if(m_pluginInstance)   // Grabber exists
+    if (m_pluginInstance)   // Grabber exists
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         enableDialog(false);
         QMetaObject::invokeMethod(m_pluginInstance, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, outVector), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-        if(!locker.getSemaphore()->wait(5000))
+        if (!locker.getSemaphore()->wait(5000))
         {
             retVal +=  ito::RetVal(ito::retError,0,tr("timeout while applying parameters").toLatin1().data());
         }
@@ -274,15 +274,15 @@ void DialogLeicaMotorFocus::on_cmdOk_clicked()
     ito::RetVal retval;
     
 
-    if(m_unappliedChanges)
+    if (m_unappliedChanges)
     {
         retval += applyParameters();
 
         QString msg, text;
 
-        if(retval.containsWarningOrError())
+        if (retval.containsWarningOrError())
         {
-            if(retval.errorMessage())
+            if (retval.errorMessage())
             {
                 msg = retval.errorMessage();
             }
@@ -292,13 +292,13 @@ void DialogLeicaMotorFocus::on_cmdOk_clicked()
             }
         }
 
-        if(retval.containsError())
+        if (retval.containsError())
         {
             text = tr("While applying the parameters, an error occurred (%1)").arg(msg);
             QMessageBox::critical(this,tr("error when applying parameters"),text);
             return;
         }
-        else if(retval.containsWarning())
+        else if (retval.containsWarning())
         {
             text = tr("While applying the parameters, a warning occurred (%1)").arg(msg);
             QMessageBox::warning(this,tr("warning when applying parameters"),text);

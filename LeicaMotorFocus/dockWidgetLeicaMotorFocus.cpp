@@ -129,7 +129,7 @@ void DockWidgetLeicaMotorFocus::actuatorStatusChanged(QVector<int> status, QVect
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetLeicaMotorFocus::targetChanged(QVector<double> targetPositions)
 {
-    if(targetPositions.size()>0)
+    if (targetPositions.size()>0)
     {
         ui.doubleSpinBox_tarpos->setValue(targetPositions[0]);
     }

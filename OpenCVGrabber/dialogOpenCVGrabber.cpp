@@ -84,18 +84,45 @@ void DialogOpenCVGrabber::valuesChanged(QMap<QString, ito::Param> params)
         int idx;
         if (m_colorCam)
         {
-            if (mode == "auto") idx = 0;
-            else if(mode == "color") idx = 1;
-            else if(mode == "red") idx = 2;
-            else if(mode == "green") idx = 3;
-            else if(mode == "blue") idx = 4;
-            else idx = 5;
+            if (mode == "auto")
+            {
+                idx = 0;
+            }
+            else if (mode == "color")
+            {
+                idx = 1;
+            }
+            else if (mode == "red")
+            {
+                idx = 2;
+            }
+            else if (mode == "green")
+            {
+                idx = 3;
+            }
+            else if (mode == "blue")
+            {
+                idx = 4;
+            }
+            else
+            {
+                idx = 5;
+            }
         }
         else
         {
-            if (mode == "auto") idx = 0;
-            else if(mode == "gray") idx = 1;
-            else idx = 0;
+            if (mode == "auto")
+            {
+                idx = 0;
+            }
+            else if (mode == "gray")
+            {
+                idx = 1;
+            }
+            else
+            {
+                idx = 0;
+            }
         }
 
         ui.comboColorMode->setCurrentIndex(idx);
@@ -111,13 +138,13 @@ int DialogOpenCVGrabber::sendVals()
 {
     QVector<QSharedPointer<ito::ParamBase> > outVector;
 
-    if(sizeXChanged)
+    if (sizeXChanged)
     {
         outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, ui.spinX0->value())));
         outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ui.spinX1->value())));
     }
     
-    if(sizeYChanged)
+    if (sizeYChanged)
     {
         outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, ui.spinY0->value())));
         outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ui.spinY1->value())));
@@ -129,7 +156,7 @@ int DialogOpenCVGrabber::sendVals()
     }
 
 
-    if(m_grabber)   // Grabber exists
+    if (m_grabber)   // Grabber exists
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(m_grabber, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, outVector), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));

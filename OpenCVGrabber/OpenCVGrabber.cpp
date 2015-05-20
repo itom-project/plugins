@@ -402,7 +402,7 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
         camRetVal = m_pCam->retrieve(m_pDataMatBuffer);
     }
     
-	if(camRetVal)
+    if(camRetVal)
     {
         m_imgChannels = m_pDataMatBuffer.channels();
         m_imgCols = m_pDataMatBuffer.cols;
@@ -693,9 +693,9 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     }
 
     if (checkCameraAbilities().containsError()) //don't check for error here, since some cameras are not able to retrieve a first image at this time. If it fails, we retry it in startDevice.
-	{
-		retValue += ito::RetVal(ito::retWarning, 0, "The configuration of the camera could not be entirely read yet. It is tried again during startDevice.");
-	}
+    {
+        retValue += ito::RetVal(ito::retWarning, 0, "The configuration of the camera could not be entirely read yet. It is tried again during startDevice.");
+    }
 
     if(!retValue.containsError())
     {
@@ -755,16 +755,16 @@ ito::RetVal OpenCVGrabber::startDevice(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-	if (m_camStatusChecked == false)
-	{
-		retValue += checkCameraAbilities();
-		retValue += checkData();
-	}
+    if (m_camStatusChecked == false)
+    {
+        retValue += checkCameraAbilities();
+        retValue += checkData();
+    }
 
-	if (!retValue.containsError())
-	{
-		incGrabberStarted();
-	}
+    if (!retValue.containsError())
+    {
+        incGrabberStarted();
+    }
     
     if (waitCond)
     {

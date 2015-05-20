@@ -123,20 +123,20 @@
                                         \
     void main()                            \
     {                                    \
-		if (gamma == 0) \
-		{               \
-			float c = texture(textureObject, TexCoord).r; \
-			FragColor = color * vec4(c,c,c,1.0); \
-		}               \
-		else            \
-		{               \
-		    int col = int(texture(textureObject, TexCoord).r * 255.0);  \
+        if (gamma == 0) \
+        {               \
+            float c = texture(textureObject, TexCoord).r; \
+            FragColor = color * vec4(c,c,c,1.0); \
+        }               \
+        else            \
+        {               \
+            int col = int(texture(textureObject, TexCoord).r * 255.0);  \
             FragColor = color * vec4(lutarr[col], 1.0);      \
-	    }           \
+        }           \
     }                                   \
     ";
 
-	//texture2d is deprecated since shader language 1.3 (version 130), use texture instead
+    //texture2d is deprecated since shader language 1.3 (version 130), use texture instead
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ int PrjWindow::initOGL2(const int width, const int height)
         std::cerr << "error enabeling texutres gl-window init\n";
     }
 #else
-	ret = -1;
+    ret = -1;
 #endif
     return ret;
 }
@@ -447,7 +447,7 @@ int PrjWindow::initOGL3(const int glVer, GLuint &ProgramName, GLint &UniformMVP,
 #endif
 
     GLint ElementSize = ElementCount * sizeof(GLint);
-	GLint ElementData[ElementCount] = {0, 1, 3, 1, 2, 3}; //was before: {0, 1, 2, 3};
+    GLint ElementData[ElementCount] = {0, 1, 3, 1, 2, 3}; //was before: {0, 1, 2, 3};
 
     GLsizei const VertexCount = 4;
     GLsizeiptr PositionSize = VertexCount * 4 * sizeof(GLfloat);
@@ -567,7 +567,7 @@ PrjWindow::PrjWindow(const QMap<QString, ito::Param> &params, const QGLFormat &f
     m_grayImgsVert(0),
     m_grayImgsHoriz(0),
     m_glf(NULL),
-	m_vao(NULL),
+    m_vao(NULL),
     ProgramName(0),
     ArrayBufferName(0),
     ElementBufferName(0),
@@ -651,7 +651,7 @@ void PrjWindow::initializeGL()
 #if QT_VERSION < 0x050000
         initOGL2(width(), height());
 #else
-		std::cerr << "OpenGL < 2.0 not supported with Qt5" << std::endl;
+        std::cerr << "OpenGL < 2.0 not supported with Qt5" << std::endl;
 #endif
     }
     else
@@ -662,11 +662,11 @@ void PrjWindow::initializeGL()
             m_isInit |= initFail;
         }
 #else
-		// Create VAO for first object to render
-		// see http://stackoverflow.com/questions/17578266/where-are-glgenvertexarrays-glbindvertexarrays-in-qt-5-1
-		m_vao = new QOpenGLVertexArrayObject( this );
-		m_vao->create();
-		m_vao->bind();
+        // Create VAO for first object to render
+        // see http://stackoverflow.com/questions/17578266/where-are-glgenvertexarrays-glbindvertexarrays-in-qt-5-1
+        m_vao = new QOpenGLVertexArrayObject( this );
+        m_vao->create();
+        m_vao->bind();
 
 
         m_glf = new QOpenGLFunctions(context()->contextHandle());
@@ -809,7 +809,7 @@ void PrjWindow::paintGL()
         //!> bind use list
 //        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ElementBufferName);
 #else
-		m_vao->bind();
+        m_vao->bind();
         //!> enable the previously set up attribute
         m_glf->glEnableVertexAttribArray(POSITION);
 

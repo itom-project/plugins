@@ -43,7 +43,7 @@ void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
     ui.spinWidth->setValue(params["sizex"].getVal<int>());
     ui.spinHeight->setValue(params["sizey"].getVal<int>());
 
-	bool state = m_inEditing;
+    bool state = m_inEditing;
     m_inEditing = true;
 
     if (m_firstRun)

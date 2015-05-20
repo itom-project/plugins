@@ -137,7 +137,7 @@ OpenCVFilters::~OpenCVFilters()
 ito::RetVal OpenCVFilters::stdParams2Objects(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("scrImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image").toLatin1().data());
         paramsMand->append(param);
@@ -223,7 +223,7 @@ ito::RetVal OpenCVFilters::makeInputOutputEqual(ito::DataObject * p_input, ito::
 ito::RetVal OpenCVFilters::cvDilateErodeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceObj", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input data object of type uint8, uint16, int16, float32, float64").toLatin1().data());
         paramsMand->append(param);
@@ -264,7 +264,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
 
     // Check if input type is allowed or not
     retval += ito::dObjHelper::verifyDataObjectType(dObjSrc, "source data object", 5, ito::tUInt8, ito::tUInt16, ito::tInt16, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
         return retval;
 
     //iterations
@@ -329,7 +329,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
             return retval;
         }
     }
-    else if(paramsOpt->at(1).getLen() <= 0)
+    else if (paramsOpt->at(1).getLen() <= 0)
     {
         anchor = cv::Point(-1,-1);
     }
@@ -473,7 +473,7 @@ ito::RetVal OpenCVFilters::cvErode(QVector<ito::ParamBase> *paramsMand, QVector<
 ito::RetVal OpenCVFilters::cvBlurParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("All types except complex64 and complex128 are accepted").toLatin1().data());
         paramsMand->append(param);
@@ -537,7 +537,7 @@ ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<i
 
     // Check if input type is allowed or not
     retval = ito::dObjHelper::verifyDataObjectType(dObjImages, "sourceImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
         return retval;
 
     kernelsizes.width = (*paramsOpt)[0].getVal<int>();
@@ -675,7 +675,7 @@ This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, true, tr
 ito::RetVal OpenCVFilters::cvFFTParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Input Object handle, must be a single plane").toLatin1().data());
         paramsMand->append(param);
@@ -791,7 +791,7 @@ Warning: NaN-handling for floats not verified.";
 ito::RetVal OpenCVFilters::cvMedianBlurParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Image of type Integer or float32").toLatin1().data());
         paramsMand->append(param);
@@ -829,7 +829,7 @@ ito::RetVal OpenCVFilters::cvMedianBlur(QVector<ito::ParamBase> *paramsMand, QVe
 
     // Check if input type is allowed or not
     retval = ito::dObjHelper::verifyDataObjectType(dObjImages, "sourceImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
         return retval;
 
     int kernelsize = (*paramsOpt)[0].getVal<int>();
@@ -894,7 +894,7 @@ end:
 //ito::RetVal OpenCVFilters::cvCalcHistParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 //{
 //    ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-//    if(!retval.containsError())
+//    if (!retval.containsError())
 //    {
 //        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Image of type Integer or float").toLatin1().data());
 //        paramsMand->append(param);
@@ -1078,7 +1078,7 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
 
-    if(dObjImages->getDims() > 3)
+    if (dObjImages->getDims() > 3)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
     }
@@ -1086,17 +1086,17 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
     int ysize = dObjImages->getSize(dObjImages->getDims() - 2);
     int xsize = dObjImages->getSize(dObjImages->getDims() - 1);
     int planes = 0;
-    if(dObjImages->getDims() > 1)
+    if (dObjImages->getDims() > 1)
     {
         planes = dObjImages->getSize(dObjImages->getDims() - 3);
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         retval += ito::dObjHelper::verifyDataObjectType(dObjImages, "srcImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
     }
 
-    //if(planes > 0)
+    //if (planes > 0)
     //{
     //    retval += ito::dObjHelper::verify3DDataObject(dObjImages, "srcImage", planes, planes, ysize, ysize, xsize, xsize,  1, dObjImages->getType());
     //}
@@ -1105,14 +1105,14 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
     //    retval += ito::dObjHelper::verify2DDataObject(dObjImages, "srcImage", ysize, ysize, xsize, xsize,  1, dObjImages->getType());
     //}
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-        if(dObjDst != dObjImages)
+        if (dObjDst != dObjImages)
         {
-            if(planes > 0)
+            if (planes > 0)
             {
                     ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjDst, "destImage", planes, planes, ysize, ysize, xsize, xsize,  1, dObjImages->getType());
-                    if(tRetval.containsError())
+                    if (tRetval.containsError())
                     {
                         int sizes[3] = {planes, ysize, xsize};
                         destTemp = ito::DataObject(3, sizes, dObjImages->getType());
@@ -1126,7 +1126,7 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
             else
             {
                     ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjDst, "destImage", ysize, ysize, xsize, xsize,  1, dObjImages->getType());
-                    if(tRetval.containsError())
+                    if (tRetval.containsError())
                     {
                         destTemp = ito::DataObject(ysize, xsize, dObjImages->getType());
                     }
@@ -1145,7 +1145,7 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
         }
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         int z_length = dObjImages->calcNumMats();
 
@@ -1168,9 +1168,9 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
         }
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-        if(overWrite)
+        if (overWrite)
         {
             *dObjDst = destTemp;
         }
@@ -1235,7 +1235,7 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
 
-    if(dObjImages->getDims() > 3)
+    if (dObjImages->getDims() > 3)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
     }
@@ -1243,24 +1243,24 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
     int ysize = dObjImages->getSize(dObjImages->getDims() - 2);
     int xsize = dObjImages->getSize(dObjImages->getDims() - 1);
     int planes = 0;
-    if(dObjImages->getDims() > 2)
+    if (dObjImages->getDims() > 2)
     {
         planes = dObjImages->getSize(dObjImages->getDims() - 3);
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         retval += ito::dObjHelper::verifyDataObjectType(dObjImages, "srcImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-        if(dObjDst != dObjImages)
+        if (dObjDst != dObjImages)
         {
-            if(planes > 0)
+            if (planes > 0)
             {
                 ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjDst, "destImage", planes, planes, xsize, xsize, ysize, ysize, 1, dObjImages->getType());
-                if(tRetval.containsError())
+                if (tRetval.containsError())
                 {
                     int sizes[3] = {planes, xsize, ysize};
                     destTemp = ito::DataObject(3, sizes, dObjImages->getType());
@@ -1274,7 +1274,7 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
             else
             {
                 ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjDst, "destImage", xsize, xsize, ysize, ysize, 1, dObjImages->getType());
-                if(tRetval.containsError())
+                if (tRetval.containsError())
                 {
                     destTemp = ito::DataObject(xsize, ysize, dObjImages->getType());
                 }
@@ -1287,7 +1287,7 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
         }
         else
         {
-            if(planes > 0)
+            if (planes > 0)
             {
                 int sizes[3] = {planes, xsize, ysize};
                 destTemp = ito::DataObject(3, sizes, dObjImages->getType());
@@ -1299,7 +1299,7 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
         }
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         int z_length = dObjImages->calcNumMats();
 
@@ -1323,7 +1323,7 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
         }
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         dObjImages->copyAxisTagsTo(destTemp);
         dObjImages->copyTagMapTo(destTemp);
@@ -1341,7 +1341,7 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
         destTemp.setAxisScale(destTemp.getDims() - 2, dObjImages->getAxisOffset(dObjImages->getDims() - 1)); 
         destTemp.setAxisScale(destTemp.getDims() - 1, dObjImages->getAxisOffset(dObjImages->getDims() - 2)); 
 
-        if(overWrite)
+        if (overWrite)
         {
             *dObjDst = destTemp;
         }
@@ -1382,7 +1382,7 @@ ito::RetVal OpenCVFilters::cvRot180(QVector<ito::ParamBase> *paramsMand, QVector
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
 
-    if(dObjImages->getDims() > 3)
+    if (dObjImages->getDims() > 3)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
     }
@@ -1390,24 +1390,24 @@ ito::RetVal OpenCVFilters::cvRot180(QVector<ito::ParamBase> *paramsMand, QVector
     int ysize = dObjImages->getSize(dObjImages->getDims() - 2);
     int xsize = dObjImages->getSize(dObjImages->getDims() - 1);
     int planes = 0;
-    if(dObjImages->getDims() > 1)
+    if (dObjImages->getDims() > 1)
     {
         planes = dObjImages->getSize(dObjImages->getDims() - 3);
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         retval += ito::dObjHelper::verifyDataObjectType(dObjImages, "srcImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-        if(dObjDst != dObjImages)
+        if (dObjDst != dObjImages)
         {
-            if(planes > 0)
+            if (planes > 0)
             {
                 ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjDst, "destImage", planes, planes, ysize, ysize, xsize, xsize,  1, dObjImages->getType());
-                if(tRetval.containsError())
+                if (tRetval.containsError())
                 {
                     int sizes[3] = {planes, ysize, xsize};
                     destTemp = ito::DataObject(3, sizes, dObjImages->getType());
@@ -1421,7 +1421,7 @@ ito::RetVal OpenCVFilters::cvRot180(QVector<ito::ParamBase> *paramsMand, QVector
             else
             {
                 ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjDst, "destImage", ysize, ysize, xsize, xsize,  1, dObjImages->getType());
-                if(tRetval.containsError())
+                if (tRetval.containsError())
                 {
                     destTemp = ito::DataObject(ysize, xsize, dObjImages->getType());
                 }
@@ -1440,7 +1440,7 @@ ito::RetVal OpenCVFilters::cvRot180(QVector<ito::ParamBase> *paramsMand, QVector
         }
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         int z_length = dObjImages->calcNumMats();
 
@@ -1464,9 +1464,9 @@ ito::RetVal OpenCVFilters::cvRot180(QVector<ito::ParamBase> *paramsMand, QVector
         }
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-        if(overWrite)
+        if (overWrite)
         {
             *dObjDst = destTemp;
         }
@@ -1499,7 +1499,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikesParams(QVector<ito::Param> *paramsMand,
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "32 or 64 bit floating point input image") );
     paramsMand->append( ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "32 or 64 bit floating point output image") );
@@ -1548,7 +1548,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
 
     // Check if input type is allowed or not
     retval += ito::dObjHelper::verify2DDataObject(dObjSrc, "sourceObject", kernel, std::numeric_limits<ito::uint32>::max(), kernel, std::numeric_limits<ito::uint32>::max(), 2, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
     {
         return retval;
     }
@@ -1601,7 +1601,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
     #endif
 
     ito::uint8 *tmpPtr = NULL;
-    if(dObjSrc->getType() == ito::tFloat64)
+    if (dObjSrc->getType() == ito::tFloat64)
     {
         ito::float64 *srcPtr = NULL;
 
@@ -1615,7 +1615,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
             tmpPtr = cvTemp.ptr<ito::uint8>(y);
             for(int x = 0; x < cvMatIn->cols; x++)
             {
-                if(ito::dObjHelper::isFinite(srcPtr[x]) && srcPtr[x] > minClipVal && srcPtr[x] < maxClipVal)
+                if (ito::dObjHelper::isFinite(srcPtr[x]) && srcPtr[x] > minClipVal && srcPtr[x] < maxClipVal)
                 {
                     tmpPtr[x] = 1;
                 }
@@ -1638,7 +1638,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
             tmpPtr = cvTemp.ptr<ito::uint8>(y);
             for(int x = 0; x < cvMatIn->cols; x++)
             {
-                if(ito::dObjHelper::isFinite(srcPtr[x]) && srcPtr[x] > minClipValf && srcPtr[x] < maxClipValf)
+                if (ito::dObjHelper::isFinite(srcPtr[x]) && srcPtr[x] > minClipValf && srcPtr[x] < maxClipValf)
                 {
                     tmpPtr[x] = 1;
                 }
@@ -1672,7 +1672,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
         #endif
 
         ito::uint8 *tmpPtr = NULL;
-        if(dObjSrc->getType() == ito::tFloat64)
+        if (dObjSrc->getType() == ito::tFloat64)
         {
             ito::float64 *dstPtr = NULL;
             #if (useomp)
@@ -1685,7 +1685,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
                 tmpPtr = cvTemp.ptr<ito::uint8>(y);
                 for(int x = 0; x < cvMatIn->cols; x++)
                 {
-                    if(tmpPtr[x] == 0)
+                    if (tmpPtr[x] == 0)
                     {
                         dstPtr[x] = newVal;
                     }
@@ -1707,7 +1707,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
                 tmpPtr = cvTemp.ptr<ito::uint8>(y);
                 for(int x = 0; x < cvMatIn->cols; x++)
                 {
-                    if(tmpPtr[x] == 0)
+                    if (tmpPtr[x] == 0)
                     {
                         dstPtr[x] = newValf;
                     }
@@ -1743,7 +1743,7 @@ ito::RetVal OpenCVFilters::cvSplitChannelsParams(QVector<ito::Param> *paramsMand
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("rgbaObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "rgba32 data object with any shape") );
     paramsMand->append( ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "uint8 data object with new shape [4,shape] where shape is the original shape. The inserted 4 dimensions represent the color components (b,g,r,alpha) of the source object.") );
@@ -1811,7 +1811,7 @@ ito::RetVal OpenCVFilters::cvMergeChannelsParams(QVector<ito::Param> *paramsMand
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "uint8 data object with any shape and at least three dimensions") );
     paramsMand->append( ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "rgba32 data object") );
@@ -1901,7 +1901,7 @@ ito::RetVal OpenCVFilters::cvResizeParams(QVector<ito::Param> *paramsMand, QVect
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input image (2D after an optional squeeze operation)") );
     paramsMand->append( ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output image, will have the same type than inputObject. Its size corresponds to the size of the input object multiplied with fx and fy respectively.") );

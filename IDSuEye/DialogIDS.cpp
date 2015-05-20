@@ -2,7 +2,7 @@
     Plugin "IDSuEye" for itom software
     URL: http://www.bitbucket.org/itom/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -231,7 +231,7 @@ ito::RetVal DialogIDS::applyParameters()
     bool success = false;
 
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
-    if(ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
+    if (ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {
         int x0, x1, y0, y1;
         ui.rangeX01->values(x0,x1);
@@ -249,33 +249,33 @@ ito::RetVal DialogIDS::applyParameters()
         }
     }
 #else
-    if(ui.rangeX01->isEnabled())
+    if (ui.rangeX01->isEnabled())
     {
         int x0;
         int x1;
         ui.rangeX01->values(x0,x1);
 
-        if((m_currentParameters["x0"].getVal<int>() !=  x0))
+        if ((m_currentParameters["x0"].getVal<int>() !=  x0))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, x0)));
         }
-        if((m_currentParameters["x1"].getVal<int>() !=  x1))
+        if ((m_currentParameters["x1"].getVal<int>() !=  x1))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, x1)));
         }
     }
 
-    if(ui.rangeY01->isEnabled())
+    if (ui.rangeY01->isEnabled())
     {
         int y0;
         int y1;
         ui.rangeY01->values(y0, y1);
 
-        if((m_currentParameters["y0"].getVal<int>() !=  y0))
+        if ((m_currentParameters["y0"].getVal<int>() !=  y0))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, y0)));
         }
-        if((m_currentParameters["y1"].getVal<int>() !=  y1))
+        if ((m_currentParameters["y1"].getVal<int>() !=  y1))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, y1)));
         }
@@ -291,47 +291,47 @@ ito::RetVal DialogIDS::applyParameters()
         }
     }
 
-    if(ui.sliderPixelClock->isEnabled())
+    if (ui.sliderPixelClock->isEnabled())
     {
         int clock = ui.sliderPixelClock->value();
-        if(m_currentParameters["pixel_clock"].getVal<int>() != clock)
+        if (m_currentParameters["pixel_clock"].getVal<int>() != clock)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("pixel_clock", ito::ParamBase::Int, clock)));
         }
     }
 
-    if(ui.checkGainBoost->isEnabled())
+    if (ui.checkGainBoost->isEnabled())
     {
         int ival = ui.checkGainBoost->isChecked() ? 1 : 0;
-        if(m_currentParameters["gain_boost_enabled"].getVal<int>() != ival)
+        if (m_currentParameters["gain_boost_enabled"].getVal<int>() != ival)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain_boost_enabled", ito::ParamBase::Int, ival)));
         }
     }
 
-    if(ui.checkAutoBlacklevel->isEnabled())
+    if (ui.checkAutoBlacklevel->isEnabled())
     {
         int ival = ui.checkAutoBlacklevel->isChecked() ? 1 : 0;
-        if(m_currentParameters["auto_blacklevel_enabled"].getVal<int>() != ival)
+        if (m_currentParameters["auto_blacklevel_enabled"].getVal<int>() != ival)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("auto_blacklevel_enabled", ito::ParamBase::Int, ival)));
         }
     }
 
-    if(ui.sliderGain->isEnabled())
+    if (ui.sliderGain->isEnabled())
     {
         double dval = ui.sliderGain->value()/100.0;
-        if(qAbs(m_currentParameters["gain"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
+        if (qAbs(m_currentParameters["gain"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.sliderGainRed->isEnabled())
+    if (ui.sliderGainRed->isEnabled())
     {
         double dval[] = {ui.sliderGainRed->value()/100.0, ui.sliderGainGreen->value()/100.0, ui.sliderGainBlue->value()/100.0};
         const double *curdval = m_currentParameters["gain_rgb"].getVal<double*>();
-        if(qAbs(dval[0] - curdval[0]) >= std::numeric_limits<double>::epsilon() || 
+        if (qAbs(dval[0] - curdval[0]) >= std::numeric_limits<double>::epsilon() || 
            qAbs(dval[1] - curdval[1]) >= std::numeric_limits<double>::epsilon() || 
            qAbs(dval[2] - curdval[2]) >= std::numeric_limits<double>::epsilon() )
         {
@@ -339,34 +339,34 @@ ito::RetVal DialogIDS::applyParameters()
         }
     }
 
-    if(ui.sliderOffset->isEnabled())
+    if (ui.sliderOffset->isEnabled())
     {
         double dval = ui.sliderOffset->value()/100.0;
-        if(qAbs(m_currentParameters["offset"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
+        if (qAbs(m_currentParameters["offset"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.checkLongIntegrationTime->isEnabled())
+    if (ui.checkLongIntegrationTime->isEnabled())
     {
         int ival = ui.checkLongIntegrationTime->isChecked() ? 1 : 0;
-        if(m_currentParameters["long_integration_time_enabled"].getVal<int>() != ival)
+        if (m_currentParameters["long_integration_time_enabled"].getVal<int>() != ival)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("long_integration_time_enabled", ito::ParamBase::Int, ival)));
         }
     }
 
-    if(ui.sliderIntegrationTime->isEnabled())
+    if (ui.sliderIntegrationTime->isEnabled())
     {
         double dval = ui.sliderIntegrationTime->value();
-        if(qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= 0.00001) //the smallest range is 1musec, given by the number of decimals of the spin box. //std::numeric_limits<double>::epsilon())
+        if (qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= 0.00001) //the smallest range is 1musec, given by the number of decimals of the spin box. //std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.comboBppMode->isEnabled())
+    if (ui.comboBppMode->isEnabled())
     {
         int i = ui.comboBppMode->itemData(ui.comboBppMode->currentIndex()).toInt();
         int bpp;
@@ -381,17 +381,17 @@ ito::RetVal DialogIDS::applyParameters()
             bpp = i;
         }
         
-        if(m_currentParameters["bpp"].getVal<int>() !=  bpp)
+        if (m_currentParameters["bpp"].getVal<int>() !=  bpp)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bpp)));
         }
 
-        if(color && strcmp(m_currentParameters["color_mode"].getVal<char*>(), "color") != 0)
+        if (color && strcmp(m_currentParameters["color_mode"].getVal<char*>(), "color") != 0)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("color_mode", ito::ParamBase::String, "color")));
         }
 
-        if(!color && strcmp(m_currentParameters["color_mode"].getVal<char*>(), "gray") != 0)
+        if (!color && strcmp(m_currentParameters["color_mode"].getVal<char*>(), "gray") != 0)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("color_mode", ito::ParamBase::String, "gray")));
         }

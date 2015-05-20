@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AndorSDK3" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -49,9 +49,9 @@ AndorSDK3::AndorSDK3() :
     m_handle(AT_HANDLE_UNINITIALISED),
     m_hBin(1),
     m_vBin(1),
-	m_camRestartNecessary(false),
-	m_timestampFrequency(0),
-	m_lastTimestamp(-1)
+    m_camRestartNecessary(false),
+    m_timestampFrequency(0),
+    m_lastTimestamp(-1)
 {
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AndorSDK3", "plugin name");
@@ -163,7 +163,7 @@ ito::RetVal AndorSDK3::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     ito::RetVal retVal;
 
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION <= 0x010300
-	retVal += ito::RetVal(ito::retError, 0, "this plugin requires an itom AddIn Interface >= 1.3.1");
+    retVal += ito::RetVal(ito::retError, 0, "this plugin requires an itom AddIn Interface >= 1.3.1");
 #endif
 
     int desiredIndex = paramsMand->at(0).getVal<int>();
@@ -203,10 +203,10 @@ ito::RetVal AndorSDK3::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     {
         //get sensor info
         retVal += loadSensorInfo();
-		if (!retVal.containsError())
-		{
-			setIdentifier(m_params["serial_number"].getVal<char*>());
-		}
+        if (!retVal.containsError())
+        {
+            setIdentifier(m_params["serial_number"].getVal<char*>());
+        }
         retVal += loadEnumIndices();
 
         //pre-set some settings (no error check, if the setting is not available, this doesn't matter)
@@ -245,32 +245,32 @@ ito::RetVal AndorSDK3::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         if (!retVal.containsError())
         {
             retVal += synchronizeCameraSettings();
-			//sometimes, the exposure time must be set again!
-			retVal += checkError(AT_SetFloat(m_handle, L"ExposureTime", m_params["integration_time"].getVal<double>()));
-			retVal += synchronizeCameraSettings(sExposure | sFrameRate);
+            //sometimes, the exposure time must be set again!
+            retVal += checkError(AT_SetFloat(m_handle, L"ExposureTime", m_params["integration_time"].getVal<double>()));
+            retVal += synchronizeCameraSettings(sExposure | sFrameRate);
 
-			//get initial values of some read-only, information parameters
-			QSharedPointer<ito::Param> p(new ito::Param("readout_time"));
-			retVal += getParam(p, NULL);
-			p = QSharedPointer<ito::Param>(new ito::Param("sensor_temperature"));
-			retVal += getParam(p, NULL);
+            //get initial values of some read-only, information parameters
+            QSharedPointer<ito::Param> p(new ito::Param("readout_time"));
+            retVal += getParam(p, NULL);
+            p = QSharedPointer<ito::Param>(new ito::Param("sensor_temperature"));
+            retVal += getParam(p, NULL);
 
-			AT_BOOL implemented;
-			retVal += AT_IsImplemented(m_handle, L"TimestampClockFrequency", &implemented);
-			if (implemented)
-			{
-				retVal += AT_GetInt(m_handle, L"TimestampClockFrequency", &m_timestampFrequency);
-			}
+            AT_BOOL implemented;
+            retVal += AT_IsImplemented(m_handle, L"TimestampClockFrequency", &implemented);
+            if (implemented)
+            {
+                retVal += AT_GetInt(m_handle, L"TimestampClockFrequency", &m_timestampFrequency);
+            }
         }
 
     }
 
-    if(!retVal.containsError())
+    if (!retVal.containsError())
     {
         checkData(); //check if image must be reallocated
     }
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retVal;
         waitCond->release();
@@ -294,11 +294,11 @@ ito::RetVal AndorSDK3::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
 
-	if (grabberStartedCount() > 0)
-	{
-		setGrabberStarted(1);
-		retValue += stopDevice(NULL);
-	}
+    if (grabberStartedCount() > 0)
+    {
+        setGrabberStarted(1);
+        retValue += stopDevice(NULL);
+    }
 
     if (m_handle != AT_HANDLE_UNINITIALISED)
     {
@@ -309,7 +309,7 @@ ito::RetVal AndorSDK3::close(ItomSharedSemaphore *waitCond)
 
     retValue += checkError(AT_FinaliseLibrary());
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -346,12 +346,12 @@ ito::RetVal AndorSDK3::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
 
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (key == "readout_time")
         {
@@ -423,12 +423,12 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION < 0x010300
         //old style api, round the incoming double value to the allowed step size.
@@ -458,35 +458,35 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 #endif
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
-		if (key == "roi")
-		{
-			if (!hasIndex)
+        if (key == "roi")
+        {
+            if (!hasIndex)
             {
                 int *roi = val->getVal<int*>();
-				const int *old_roi = it->getVal<const int*>();
-				if (old_roi[2] > roi[2]) //width is reduced, do it first
-				{
-					retValue += checkError(AT_SetInt(m_handle, L"AOIWidth", roi[2]));
-					retValue += checkError(AT_SetInt(m_handle, L"AOILeft", roi[0] + 1));
-				}
-				else
-				{
-					retValue += checkError(AT_SetInt(m_handle, L"AOILeft", roi[0] + 1));
-					retValue += checkError(AT_SetInt(m_handle, L"AOIWidth", roi[2]));
-				}
+                const int *old_roi = it->getVal<const int*>();
+                if (old_roi[2] > roi[2]) //width is reduced, do it first
+                {
+                    retValue += checkError(AT_SetInt(m_handle, L"AOIWidth", roi[2]));
+                    retValue += checkError(AT_SetInt(m_handle, L"AOILeft", roi[0] + 1));
+                }
+                else
+                {
+                    retValue += checkError(AT_SetInt(m_handle, L"AOILeft", roi[0] + 1));
+                    retValue += checkError(AT_SetInt(m_handle, L"AOIWidth", roi[2]));
+                }
 
-				if (old_roi[3] > roi[3]) //height is reduced, do it first
-				{
-					retValue += checkError(AT_SetInt(m_handle, L"AOIHeight", roi[3]));
-					retValue += checkError(AT_SetInt(m_handle, L"AOITop", roi[1] + 1));
-				}
-				else
-				{
-					retValue += checkError(AT_SetInt(m_handle, L"AOITop", roi[1] + 1));
-					retValue += checkError(AT_SetInt(m_handle, L"AOIHeight", roi[3]));
-				}
+                if (old_roi[3] > roi[3]) //height is reduced, do it first
+                {
+                    retValue += checkError(AT_SetInt(m_handle, L"AOIHeight", roi[3]));
+                    retValue += checkError(AT_SetInt(m_handle, L"AOITop", roi[1] + 1));
+                }
+                else
+                {
+                    retValue += checkError(AT_SetInt(m_handle, L"AOITop", roi[1] + 1));
+                    retValue += checkError(AT_SetInt(m_handle, L"AOIHeight", roi[3]));
+                }
             }
             else
             {
@@ -507,8 +507,8 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
                 }
             }
 
-			retValue += synchronizeCameraSettings(sRoi);
-		}
+            retValue += synchronizeCameraSettings(sRoi);
+        }
         else if (key == "integration_time")
         {
             double timeSec = val->getVal<double>();
@@ -521,12 +521,12 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
             retValue += checkError(AT_SetFloat(m_handle, L"FrameRate", timeSec));
             retValue += synchronizeCameraSettings(sFrameRate);
         }
-		else if (key == "sensor_cooling")
+        else if (key == "sensor_cooling")
         {
             AT_BOOL cooling = val->getVal<int>() > 0;
             retValue += checkError(AT_SetBool(m_handle, L"SensorCooling", cooling));
 
-			if (!retValue.containsError())
+            if (!retValue.containsError())
             {
                 retValue += synchronizeCameraSettings(sCooling);
             }
@@ -558,7 +558,7 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 
             if (!retValue.containsError())
             {
-				m_camRestartNecessary = true;
+                m_camRestartNecessary = true;
                 it->setVal<int>(val->getVal<int>());
             }
         }
@@ -569,25 +569,25 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
             int h = (b-v) / 100;
             INT mode = 0;
 
-			AT_BOOL available;
-			AT_IsImplemented(m_handle, L"AOIHBin", &available);
-			if (available)
-			{
-				retValue += checkError(AT_SetInt(m_handle, L"AOIHBin", h));
-				retValue += checkError(AT_SetInt(m_handle, L"AOIVBin", v));
-			}
-			else if (h != v)
-			{
-				retValue += ito::RetVal(ito::retError, 0, "camera only supports symmetric binning values (e.g. 2x2)");
-			}
-			else
-			{
-				QString s = QString("%1x%1").arg(h);
-				AT_WC ws[10];
-				memset(ws, 0, sizeof(AT_WC)*10);
-				s.toWCharArray(ws);
-				retValue += checkError(AT_SetEnumString(m_handle, L"AOIBinning", ws));
-			}
+            AT_BOOL available;
+            AT_IsImplemented(m_handle, L"AOIHBin", &available);
+            if (available)
+            {
+                retValue += checkError(AT_SetInt(m_handle, L"AOIHBin", h));
+                retValue += checkError(AT_SetInt(m_handle, L"AOIVBin", v));
+            }
+            else if (h != v)
+            {
+                retValue += ito::RetVal(ito::retError, 0, "camera only supports symmetric binning values (e.g. 2x2)");
+            }
+            else
+            {
+                QString s = QString("%1x%1").arg(h);
+                AT_WC ws[10];
+                memset(ws, 0, sizeof(AT_WC)*10);
+                s.toWCharArray(ws);
+                retValue += checkError(AT_SetEnumString(m_handle, L"AOIBinning", ws));
+            }
 
             if (!retValue.containsError())
             {
@@ -616,7 +616,7 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
                         {
                             char cstring[100];
                             wcstombs(cstring, wstring, 100);
-							m_camRestartNecessary = true;
+                            m_camRestartNecessary = true;
                             it->setVal<char*>(cstring);
                         }
                     }
@@ -708,7 +708,7 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += checkData();
     }
@@ -758,7 +758,7 @@ ito::RetVal AndorSDK3::startDevice(ItomSharedSemaphore *waitCond)
         retValue += checkError(AT_Command(m_handle, L"AcquisitionStart")); //no image is acquired yet since input buffer is empty (due to flushing before)
     }
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -784,19 +784,19 @@ ito::RetVal AndorSDK3::stopDevice(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue = ito::retOk;
 
     decGrabberStarted();
-    if(grabberStartedCount() == 0)
+    if (grabberStartedCount() == 0)
     {
         retValue += checkError(AT_Command(m_handle, L"AcquisitionStop"));
         retValue += checkError(AT_Flush(m_handle));
     }
-    else if(grabberStartedCount() < 0)
+    else if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retError, 1001, tr("StopDevice of AndorSDK3 can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -823,7 +823,7 @@ ito::RetVal AndorSDK3::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
 
-    if(grabberStartedCount() <= 0)
+    if (grabberStartedCount() <= 0)
     {
         retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of AndorSDK3 can not be executed, since camera has not been started.").toLatin1().data());
     }
@@ -844,7 +844,7 @@ ito::RetVal AndorSDK3::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
         m_acquisitionRetVal = ito::retOk;
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
@@ -864,13 +864,13 @@ ito::RetVal AndorSDK3::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             timeout_ = AT_INFINITE;
         }
 
-		if (m_timestampFrequency > 0)
-		{
-			if (AT_GetInt(m_handle, L"TimestampClock", &m_lastTimestamp) != AT_SUCCESS)
-			{
-				m_lastTimestamp = -1;
-			}
-		}
+        if (m_timestampFrequency > 0)
+        {
+            if (AT_GetInt(m_handle, L"TimestampClock", &m_lastTimestamp) != AT_SUCCESS)
+            {
+                m_lastTimestamp = -1;
+            }
+        }
 
         int result = AT_WaitBuffer(m_handle, &ptr, &ptrSize, timeout_);
         if (result == AT_ERR_TIMEDOUT)
@@ -889,7 +889,7 @@ ito::RetVal AndorSDK3::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     }
 
     //only release it if not yet done
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -919,9 +919,9 @@ ito::RetVal AndorSDK3::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     retValue += retrieveData();
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
-        if(dObj == NULL)
+        if (dObj == NULL)
         {
             retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toLatin1().data());
         }
@@ -961,7 +961,7 @@ ito::RetVal AndorSDK3::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
-    if(!dObj)
+    if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
@@ -970,12 +970,12 @@ ito::RetVal AndorSDK3::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         retValue += checkData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += retrieveData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         sendDataToListeners(0); //don't wait for live image, since user should get the image as fast as possible.
     }
@@ -1003,20 +1003,20 @@ ito::RetVal AndorSDK3::retrieveData(ito::DataObject *externalDataObject)
     {
         bool hasListeners = false;
         bool copyExternal = false;
-        if(m_autoGrabbingListeners.size() > 0)
+        if (m_autoGrabbingListeners.size() > 0)
         {
             hasListeners = true;
         }
-        if(externalDataObject != NULL)
+        if (externalDataObject != NULL)
         {
             copyExternal = true;
         }
 
-		double timestampClock_ = -1.0;
-		if (m_lastTimestamp > -1.0 && m_timestampFrequency > 0)
-		{
-			timestampClock_ = (double)m_lastTimestamp / ((double)m_timestampFrequency);
-		}
+        double timestampClock_ = -1.0;
+        if (m_lastTimestamp > -1.0 && m_timestampFrequency > 0)
+        {
+            timestampClock_ = (double)m_lastTimestamp / ((double)m_timestampFrequency);
+        }
 
         int bytesPerLine = m_buffer.aoiWidth * m_buffer.aoiBitsPerPixel / 8;
         AT_U8 *startPtr = m_buffer.alignedBuffer;
@@ -1025,39 +1025,39 @@ ito::RetVal AndorSDK3::retrieveData(ito::DataObject *externalDataObject)
         if (copyExternal)
         {
             cv::Mat *cvMat = ((cv::Mat *)externalDataObject->get_mdata()[externalDataObject->seekMat(0)]);
-			externalDataObject->setTag("timestamp", ito::DataObjectTagType(timestampClock_));
+            externalDataObject->setTag("timestamp", ito::DataObjectTagType(timestampClock_));
 
-			if (m_buffer.aoiStride == bytesPerLine && cvMat->isContinuous())
-			{
-				memcpy(cvMat->ptr(0), startPtr, bytesPerLine * m_buffer.aoiHeight);
-			}
-			else
-			{
-				for (int y = 0; y < m_buffer.aoiHeight; y++)
-				{
-					memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
-					startPtr += m_buffer.aoiStride;
-				}
-			}
+            if (m_buffer.aoiStride == bytesPerLine && cvMat->isContinuous())
+            {
+                memcpy(cvMat->ptr(0), startPtr, bytesPerLine * m_buffer.aoiHeight);
+            }
+            else
+            {
+                for (int y = 0; y < m_buffer.aoiHeight; y++)
+                {
+                    memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
+                    startPtr += m_buffer.aoiStride;
+                }
+            }
         }
 
         if (!copyExternal || hasListeners)
         {
             cv::Mat *cvMat = ((cv::Mat *)m_data.get_mdata()[m_data.seekMat(0)]);
-			m_data.setTag("timestamp", ito::DataObjectTagType(timestampClock_));
+            m_data.setTag("timestamp", ito::DataObjectTagType(timestampClock_));
 
-			if (m_buffer.aoiStride == bytesPerLine && cvMat->isContinuous())
-			{
-				memcpy(cvMat->ptr(0), startPtr, bytesPerLine * m_buffer.aoiHeight);
-			}
-			else
-			{
-				for (int y = 0; y < m_buffer.aoiHeight; y++)
-				{
-					memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
-					startPtr += m_buffer.aoiStride;
-				}
-			}
+            if (m_buffer.aoiStride == bytesPerLine && cvMat->isContinuous())
+            {
+                memcpy(cvMat->ptr(0), startPtr, bytesPerLine * m_buffer.aoiHeight);
+            }
+            else
+            {
+                for (int y = 0; y < m_buffer.aoiHeight; y++)
+                {
+                    memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
+                    startPtr += m_buffer.aoiStride;
+                }
+            }
         }
 
         m_buffer.imageAvailable = false;
@@ -1195,7 +1195,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
             rettemp += checkError(AT_GetFloatMax(m_handle, L"ExposureTime", &dmax));
             rettemp += checkError(AT_GetFloat(m_handle, L"ExposureTime", &dval));
 
-			it->setMeta(new ito::DoubleMeta(dmin,dmax),true);
+            it->setMeta(new ito::DoubleMeta(dmin,dmax),true);
             it->setVal<double>(dval);
         }
         else
@@ -1234,8 +1234,8 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         if (!rettemp.containsError() && implemented)
         {
             it->setFlags(0);
-			rettemp += checkError(AT_GetBool(m_handle, L"SensorCooling", &val));
-			it->setVal<int>(val ? 1 : 0);
+            rettemp += checkError(AT_GetBool(m_handle, L"SensorCooling", &val));
+            it->setVal<int>(val ? 1 : 0);
         }
         else
         {
@@ -1252,85 +1252,85 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
         AT_64 binVMin, binVMax, binV;
         AT_BOOL available;
         AT_IsImplemented(m_handle, L"AOIHBin", &available);
-		if (available)
-		{
-			rettemp = checkError(AT_GetInt(m_handle, L"AOIHBin", &binH));
-			rettemp += checkError(AT_GetIntMin(m_handle, L"AOIHBin", &binHMin));
-			rettemp += checkError(AT_GetIntMax(m_handle, L"AOIHBin", &binHMax));
-			rettemp += checkError(AT_GetIntMin(m_handle, L"AOIVBin", &binVMin));
-			rettemp += checkError(AT_GetIntMax(m_handle, L"AOIVBin", &binVMax));
-			rettemp += checkError(AT_GetInt(m_handle, L"AOIVBin", &binV));
-		}
-		AT_IsImplemented(m_handle, L"AOIBinning", &available);
-		if (available)
-		{
-			int count;
-			AT_WC wstring[100];
-			QString value;
-			int iVal;
+        if (available)
+        {
+            rettemp = checkError(AT_GetInt(m_handle, L"AOIHBin", &binH));
+            rettemp += checkError(AT_GetIntMin(m_handle, L"AOIHBin", &binHMin));
+            rettemp += checkError(AT_GetIntMax(m_handle, L"AOIHBin", &binHMax));
+            rettemp += checkError(AT_GetIntMin(m_handle, L"AOIVBin", &binVMin));
+            rettemp += checkError(AT_GetIntMax(m_handle, L"AOIVBin", &binVMax));
+            rettemp += checkError(AT_GetInt(m_handle, L"AOIVBin", &binV));
+        }
+        AT_IsImplemented(m_handle, L"AOIBinning", &available);
+        if (available)
+        {
+            int count;
+            AT_WC wstring[100];
+            QString value;
+            int iVal;
 
-			AT_GetEnumIndex(m_handle, L"AOIBinning", &iVal);
-			if (AT_GetEnumCount(m_handle, L"AOIBinning", &count) == AT_SUCCESS)
-			{
-				binHMin = 8;
-				binVMin = 8;
-				binHMax = 1;
-				binVMax = 1;
-				for (int c = 0; c < count; ++c)
-				{
-					AT_GetEnumStringByIndex(m_handle, L"AOIBinning", c, wstring, 100);
-					if (wcscmp(wstring, L"1x1") == 0)
-					{
-						binHMin = binVMin = std::min((AT_64)1, binHMin);
-						binHMax = binVMax = std::max((AT_64)1, binHMax);
-						if (c == iVal)
-						{
-							binH = binV = 1;
-						}
-					}
-					else if (wcscmp(wstring, L"2x2") == 0)
-					{
-						binHMin = binVMin = std::min((AT_64)2, binHMin);
-						binHMax = binVMax = std::max((AT_64)2, binHMax);
-						if (c == iVal)
-						{
-							binH = binV = 2;
-						}
-					}
-					else if (wcscmp(wstring, L"3x3") == 0)
-					{
-						binHMin = binVMin = std::min((AT_64)3, binHMin);
-						binHMax = binVMax = std::max((AT_64)3, binHMax);
-						if (c == iVal)
-						{
-							binH = binV = 3;
-						}
-					}
-					else if (wcscmp(wstring, L"4x4") == 0)
-					{
-						binHMin = binVMin = std::min((AT_64)4, binHMin);
-						binHMax = binVMax = std::max((AT_64)4, binHMax);
-						if (c == iVal)
-						{
-							binH = binV = 4;
-						}
-					}
-					else if (wcscmp(wstring, L"8x8") == 0)
-					{
-						binHMin = binVMin = std::min((AT_64)8, binHMin);
-						binHMax = binVMax = std::max((AT_64)8, binHMax);
-						if (c == iVal)
-						{
-							binH = binV = 8;
-						}
-					}
-				}
-			}
-			else
-			{
-				rettemp += ito::RetVal(ito::retError, 0, "cannot read AOIBinning enumeration");
-			}
-		}
+            AT_GetEnumIndex(m_handle, L"AOIBinning", &iVal);
+            if (AT_GetEnumCount(m_handle, L"AOIBinning", &count) == AT_SUCCESS)
+            {
+                binHMin = 8;
+                binVMin = 8;
+                binHMax = 1;
+                binVMax = 1;
+                for (int c = 0; c < count; ++c)
+                {
+                    AT_GetEnumStringByIndex(m_handle, L"AOIBinning", c, wstring, 100);
+                    if (wcscmp(wstring, L"1x1") == 0)
+                    {
+                        binHMin = binVMin = std::min((AT_64)1, binHMin);
+                        binHMax = binVMax = std::max((AT_64)1, binHMax);
+                        if (c == iVal)
+                        {
+                            binH = binV = 1;
+                        }
+                    }
+                    else if (wcscmp(wstring, L"2x2") == 0)
+                    {
+                        binHMin = binVMin = std::min((AT_64)2, binHMin);
+                        binHMax = binVMax = std::max((AT_64)2, binHMax);
+                        if (c == iVal)
+                        {
+                            binH = binV = 2;
+                        }
+                    }
+                    else if (wcscmp(wstring, L"3x3") == 0)
+                    {
+                        binHMin = binVMin = std::min((AT_64)3, binHMin);
+                        binHMax = binVMax = std::max((AT_64)3, binHMax);
+                        if (c == iVal)
+                        {
+                            binH = binV = 3;
+                        }
+                    }
+                    else if (wcscmp(wstring, L"4x4") == 0)
+                    {
+                        binHMin = binVMin = std::min((AT_64)4, binHMin);
+                        binHMax = binVMax = std::max((AT_64)4, binHMax);
+                        if (c == iVal)
+                        {
+                            binH = binV = 4;
+                        }
+                    }
+                    else if (wcscmp(wstring, L"8x8") == 0)
+                    {
+                        binHMin = binVMin = std::min((AT_64)8, binHMin);
+                        binHMax = binVMax = std::max((AT_64)8, binHMax);
+                        if (c == iVal)
+                        {
+                            binH = binV = 8;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                rettemp += ito::RetVal(ito::retError, 0, "cannot read AOIBinning enumeration");
+            }
+        }
 
         if (available == false || rettemp.containsError()) //no binning abilities
         {
@@ -1374,7 +1374,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
             it->setMeta(new ito::IntMeta(sizeMin.y, sizeMax.y), true);
         }
 
-		//offset values seem to be 1-indexed
+        //offset values seem to be 1-indexed
         rettemp += checkError(AT_GetIntMin(m_handle, L"AOILeft", &(offsetMin.x)));
         rettemp += checkError(AT_GetIntMax(m_handle, L"AOILeft", &(offsetMax.x)));
         rettemp += checkError(AT_GetInt(m_handle, L"AOILeft", &(offset.x)));
@@ -1404,7 +1404,7 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
             ito::RangeMeta widthMeta(offsetMin.x - 1, sizeMax.x - 1, 1, sizeMin.x, sizeMax.x, 1);
             ito::RangeMeta heightMeta(offsetMin.y - 1, sizeMax.y - 1, 1, sizeMin.y, sizeMax.y, 1);
             it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
-			it->setVal<int*>(roi,4);
+            it->setVal<int*>(roi,4);
         }
         else
         {
@@ -1681,18 +1681,18 @@ ito::RetVal AndorSDK3::checkData(ito::DataObject *externalDataObject)
 
     if (m_buffer.bufferSize != bufferSize || m_buffer.aoiHeight != futureHeight || m_camRestartNecessary)
     {
-		m_camRestartNecessary = false;
-		if (this->grabberStartedCount() > 0)
-		{
-			ito::RetVal retValue;
-			retValue += checkError(AT_Command(m_handle, L"AcquisitionStop"));
-			retValue += checkError(AT_Flush(m_handle));
-			retValue += checkError(AT_Command(m_handle, L"AcquisitionStart")); //no image is acquired yet since input buffer is empty (due to flushing before)
-		}
-		else
-		{
-			AT_Flush(m_handle);
-		}
+        m_camRestartNecessary = false;
+        if (this->grabberStartedCount() > 0)
+        {
+            ito::RetVal retValue;
+            retValue += checkError(AT_Command(m_handle, L"AcquisitionStop"));
+            retValue += checkError(AT_Flush(m_handle));
+            retValue += checkError(AT_Command(m_handle, L"AcquisitionStart")); //no image is acquired yet since input buffer is empty (due to flushing before)
+        }
+        else
+        {
+            AT_Flush(m_handle);
+        }
 
         //delete old buffer
         if (m_buffer.buffer)
@@ -1726,33 +1726,33 @@ ito::RetVal AndorSDK3::loadEnumIndices()
     int count;
     AT_WC wstring[100];
 
-	//BitDepth
+    //BitDepth
     if (AT_GetEnumCount(m_handle, L"BitDepth", &count) == AT_SUCCESS)
     {
-		int curVal;
-		m_bitDepth = 0;
-		AT_GetEnumIndex(m_handle, L"BitDepth", &curVal);
+        int curVal;
+        m_bitDepth = 0;
+        AT_GetEnumIndex(m_handle, L"BitDepth", &curVal);
         for (int c = 0; c < count; ++c)
         {
             AT_GetEnumStringByIndex(m_handle, L"BitDepth", c, wstring, 100);
-			if (wcscmp(wstring, L"11 Bit") == 0)
-			{
-				m_bitDepthIdx.t11Bit = c;
-				if (curVal == c) m_bitDepth = 11;
-			}
-			else if (wcscmp(wstring, L"12 Bit") == 0)
-			{
-				m_bitDepthIdx.t12Bit = c;
-				if (curVal == c) m_bitDepth = 12;
-			}
-			else if (wcscmp(wstring, L"16 Bit") == 0)
-			{
-				m_bitDepthIdx.t16Bit = c;
-				if (curVal == c) m_bitDepth = 16;
-			}
-		}
-	}
-	retval = ito::retOk;
+            if (wcscmp(wstring, L"11 Bit") == 0)
+            {
+                m_bitDepthIdx.t11Bit = c;
+                if (curVal == c) m_bitDepth = 11;
+            }
+            else if (wcscmp(wstring, L"12 Bit") == 0)
+            {
+                m_bitDepthIdx.t12Bit = c;
+                if (curVal == c) m_bitDepth = 12;
+            }
+            else if (wcscmp(wstring, L"16 Bit") == 0)
+            {
+                m_bitDepthIdx.t16Bit = c;
+                if (curVal == c) m_bitDepth = 16;
+            }
+        }
+    }
+    retval = ito::retOk;
 
     //PixelEncoding
     if (AT_GetEnumCount(m_handle, L"PixelEncoding", &count) == AT_SUCCESS)

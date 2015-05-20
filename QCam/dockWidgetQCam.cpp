@@ -24,31 +24,31 @@
 
  DockWidgetQCam::DockWidgetQCam()
  {
-	ui.setupUi(this); 
+    ui.setupUi(this); 
  }
 
  void DockWidgetQCam::valuesChanged(QMap<QString, ito::Param> params)
  {
     if (params.contains("offset"))
-	{
-		ui.doubleSpinBoxOffset->setValue( params["offset"].getVal<double>() );
+    {
+        ui.doubleSpinBoxOffset->setValue( params["offset"].getVal<double>() );
 
-		//set the value of the slider, too
-	}
+        //set the value of the slider, too
+    }
 
-	if (params.contains("gain"))
-	{
-		ui.doubleSpinBoxGain->setValue( params["gain"].getVal<double>() );
+    if (params.contains("gain"))
+    {
+        ui.doubleSpinBoxGain->setValue( params["gain"].getVal<double>() );
 
-		//set the value of the slider, too
-	}
+        //set the value of the slider, too
+    }
  }
 
 void DockWidgetQCam::on_doubleSpinBoxGain_editingFinished()
 {
     double gain = ui.doubleSpinBoxGain->value();
 
-	ui.horizontalSliderGain->setValue((int)(ui.doubleSpinBoxGain->value()*100+0.5));
+    ui.horizontalSliderGain->setValue((int)(ui.doubleSpinBoxGain->value()*100+0.5));
     
     QMap<QString, ito::ParamBase> paramsVals;
     ito::ParamBase param("gain", ito::ParamBase::Double, gain);
@@ -87,7 +87,7 @@ void DockWidgetQCam::on_horizontalSliderGain_valueChanged(int Value)
     //{
     //    updating = 1;
     //    ui.doubleSpinBoxGain->setValue(gain);
-	   // emit changeParameters(paramsVals);
+       // emit changeParameters(paramsVals);
     //    updating = 0;
     //}*/
 }

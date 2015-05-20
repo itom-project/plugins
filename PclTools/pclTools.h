@@ -226,7 +226,7 @@ class PclTools : public ito::AddInAlgo
 
     protected:
         //static int savePolygonFileSTLB(const std::string &file_name, const pcl::PolygonMesh& mesh);
-		static int nthreads;
+        static int nthreads;
 
     private:
         Q_DISABLE_COPY( PclTools )
@@ -249,10 +249,10 @@ class PclTools : public ito::AddInAlgo
         static double pointToLineDist(const float pt[3], const float modelCoefficients[7]);
         static bool checkFitWithOutNormals(const int &fitObj);
         static bool checkFitNormals(const int &fitObj);
-		static const char* string_to_char(const char *string) { return string; };
-		static const char* string_to_char(const std::string &string) { return string.c_str(); };
+        static const char* string_to_char(const char *string) { return string; };
+        static const char* string_to_char(const std::string &string) { return string.c_str(); };
 
-	public slots:
+    public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal close(ItomSharedSemaphore *waitCond);
 };

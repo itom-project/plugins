@@ -30,7 +30,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
 
     foreach(const ito::Param &param, *paramVals)
     {
-        if((m_paramsVals).contains(param.getName()))
+        if ((m_paramsVals).contains(param.getName()))
         {
             m_paramsVals[param.getName()] = param;
         }
@@ -39,14 +39,14 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             m_paramsVals.insert(param.getName(), param);
         }
 
-        if(!strcmp(param.getName(), "x0"))
+        if (!strcmp(param.getName(), "x0"))
         {
             int ival = param.getVal<int>();
 
             ui.spinBox_x0->setValue(ival);
             ui.spinBox_x1->setMinimum(ival);
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
+            if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
                 ui.spinBox_x0->setEnabled(true);
             }
@@ -56,7 +56,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             }
         }
 
-        if(!strcmp(param.getName(), "x1"))
+        if (!strcmp(param.getName(), "x1"))
         {
             int ival = (int)param.getMax();
             ui.spinBox_x1->setMaximum(ival);
@@ -65,7 +65,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             ui.spinBox_x1->setValue(ival);
             ui.spinBox_x0->setMaximum(ival);
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
+            if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
                 ui.pushButton_setSizeXMax->setEnabled(true);
                 ui.spinBox_x1->setEnabled(true);
@@ -76,14 +76,14 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             }
         }
 
-        if(!strcmp(param.getName(), "y0"))
+        if (!strcmp(param.getName(), "y0"))
         {
             int ival = param.getVal<int>();
 
             ui.spinBox_y0->setValue(ival);
             ui.spinBox_y1->setMinimum(ival);
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
+            if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
                 ui.spinBox_y0->setEnabled(true);
             }
@@ -93,7 +93,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             }
         }
 
-        if(!strcmp(param.getName(), "y1"))
+        if (!strcmp(param.getName(), "y1"))
         {
             int ival = (int)param.getMax();
             ui.spinBox_y1->setMaximum(ival);
@@ -102,7 +102,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             ui.spinBox_y1->setValue(ival);
             ui.spinBox_y0->setMaximum(ival);
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
+            if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
                 ui.pushButton_setSizeYMax->setEnabled(true);
                 ui.spinBox_y1->setEnabled(true);
@@ -113,25 +113,25 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             }
         }
 
-        if(!strcmp(param.getName(), "sizex"))
+        if (!strcmp(param.getName(), "sizex"))
         {
             int ival = param.getVal<int>();
             ui.spinBox_xsize->setValue(ival);
         }
 
-        if(!strcmp(param.getName(), "sizey"))
+        if (!strcmp(param.getName(), "sizey"))
         {
             int ival = param.getVal<int>();
             ui.spinBox_ysize->setValue(ival);
         }
 
-        if(!strcmp(param.getName(),"gain"))
+        if (!strcmp(param.getName(),"gain"))
         {
             double dval = param.getVal<double>();
             ui.spinBox_gain->setValue((int)(dval*100.0+0.5));
             ui.horizontalSlider_gain->setValue((dval*100 + 0.5));
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
+            if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
                 ui.spinBox_gain->setEnabled(true);
                 ui.horizontalSlider_gain->setEnabled(true);
@@ -143,13 +143,13 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             }
         }
 
-        if(!strcmp(param.getName(),"offset"))
+        if (!strcmp(param.getName(),"offset"))
         {
             double dval = param.getVal<double>();
             ui.spinBox_offset->setValue((int)(dval*100.0+0.5));
             ui.horizontalSlider_offset->setValue((dval*100 + 0.5));
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
+            if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
                 ui.spinBox_offset->setEnabled(true);
                 ui.horizontalSlider_offset->setEnabled(true);
@@ -161,7 +161,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             }
         }
 
-        if(!strcmp(param.getName(),"frame_time"))
+        if (!strcmp(param.getName(),"frame_time"))
         {
             double dval = param.getMin()*1000;
             ui.doubleSpinBox_frame_time->setMinimum(dval);
@@ -172,7 +172,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             dval = param.getVal<double>()*1000;
             ui.doubleSpinBox_frame_time->setValue(dval);
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
+            if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
                 ui.doubleSpinBox_frame_time->setEnabled(true);
             }
@@ -182,7 +182,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             }
         }
 
-        if(!strcmp(param.getName(),"integration_time"))
+        if (!strcmp(param.getName(),"integration_time"))
         {
             double dval = param.getMin()*1000;
             ui.doubleSpinBox_integration_time->setMinimum(dval);
@@ -193,7 +193,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             dval = param.getVal<double>()*1000;
             ui.doubleSpinBox_integration_time->setValue(dval);
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
+            if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
                 ui.doubleSpinBox_integration_time->setEnabled(true);
             }
@@ -203,7 +203,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             }
         }
 
-        if(!strcmp(param.getName(), "binning"))
+        if (!strcmp(param.getName(), "binning"))
         {
             int ival = param.getMin();
             int ivalX = (int)(ival/100);
@@ -226,7 +226,7 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
             ui.spinBox_binX->setValue(ivalX);
             ui.spinBox_binY->setValue(ivalY);
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
+            if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
                 ui.spinBox_binX->setEnabled(true);
                 ui.spinBox_binY->setEnabled(true);
@@ -239,12 +239,12 @@ int dialogFileGrabber::getVals(QMap<QString, ito::Param> *paramVals)
         }
 
 
-        if(!strcmp(param.getName(), "bpp"))
+        if (!strcmp(param.getName(), "bpp"))
         {
             int ival = param.getVal<int>();
             ui.spinBox_bpp->setValue(ival);
 
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
+            if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
                 ui.combo_bpp->setEnabled(true);
             }
@@ -299,7 +299,7 @@ int dialogFileGrabber::sendVals()
 {
     bool binning_changed = false;
 
-    if(m_paramsVals.size() < 1)
+    if (m_paramsVals.size() < 1)
     {
         return 0;
     }
@@ -307,17 +307,17 @@ int dialogFileGrabber::sendVals()
     QVector<QSharedPointer<ito::ParamBase> > outVector;
 
 
-    if((ui.spinBox_binX->isEnabled() || ui.spinBox_binY->isEnabled()))
+    if ((ui.spinBox_binX->isEnabled() || ui.spinBox_binY->isEnabled()))
     {
         int ival = ui.spinBox_binX->value() *100 + ui.spinBox_binY->value();
-        if((m_paramsVals["binning"].getVal<int>() !=  ival))
+        if ((m_paramsVals["binning"].getVal<int>() !=  ival))
         {
             outVector.append(QSharedPointer<ito::ParamBase>( new ito::ParamBase("binning", ito::ParamBase::Int, ival) ));
             binning_changed = true;
         }
     }
 
-    if(!binning_changed)
+    if (!binning_changed)
     {
         int ivalFirst, ivalLast;
         bool changeX0 = false;
@@ -325,27 +325,27 @@ int dialogFileGrabber::sendVals()
         bool changeY0 = false;
         bool changeY1 = false;
 
-        if(ui.spinBox_x0->isEnabled())
+        if (ui.spinBox_x0->isEnabled())
         {
             ivalFirst = ui.spinBox_x0->value();
-            if(m_paramsVals["x0"].getVal<int>() !=  ivalFirst)
+            if (m_paramsVals["x0"].getVal<int>() !=  ivalFirst)
             {
                 changeX0 = true;
             }
         }
 
-        if(ui.spinBox_x1->isEnabled())
+        if (ui.spinBox_x1->isEnabled())
         {
             ivalLast = ui.spinBox_x1->value();
-            if(m_paramsVals["x1"].getVal<int>() !=  ivalLast)
+            if (m_paramsVals["x1"].getVal<int>() !=  ivalLast)
             {
                 changeX1 = true;
             }
         }
 
-        if(changeX0 && changeX1)
+        if (changeX0 && changeX1)
         {
-            if(ivalFirst > m_paramsVals["x1"].getVal<int>())
+            if (ivalFirst > m_paramsVals["x1"].getVal<int>())
             {
                 outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ivalLast)));
                 outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, ivalFirst)));
@@ -356,36 +356,36 @@ int dialogFileGrabber::sendVals()
                 outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ivalLast)));
             }
         }
-        else if(changeX0)
+        else if (changeX0)
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, ivalFirst)));
         }
-        else if(changeX1)
+        else if (changeX1)
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ivalLast)));
         }
 
-        if(ui.spinBox_y0->isEnabled())
+        if (ui.spinBox_y0->isEnabled())
         {
             ivalFirst = ui.spinBox_y0->value();
-            if(m_paramsVals["y0"].getVal<int>() !=  ivalFirst)
+            if (m_paramsVals["y0"].getVal<int>() !=  ivalFirst)
             {
                 changeY0 = true;
             }
         }
 
-        if(ui.spinBox_y1->isEnabled())
+        if (ui.spinBox_y1->isEnabled())
         {
             ivalLast = ui.spinBox_y1->value();
-            if(m_paramsVals["y1"].getVal<int>() !=  ivalLast)
+            if (m_paramsVals["y1"].getVal<int>() !=  ivalLast)
             {
                 changeY1 = true;
             }
         }
 
-        if(changeY0 && changeY1)
+        if (changeY0 && changeY1)
         {
-            if(ivalFirst > m_paramsVals["y1"].getVal<int>())
+            if (ivalFirst > m_paramsVals["y1"].getVal<int>())
             {
                 outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ivalLast)));
                 outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, ivalFirst)));
@@ -396,54 +396,54 @@ int dialogFileGrabber::sendVals()
                 outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ivalLast)));
             }
         }
-        else if(changeY0)
+        else if (changeY0)
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, ivalFirst)));
         }
-        else if(changeY1)
+        else if (changeY1)
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ivalLast)));
         }
 
     }
 
-    if(ui.spinBox_gain->isEnabled())
+    if (ui.spinBox_gain->isEnabled())
     {
         double dval = ui.spinBox_gain->value()/100.0;
-        if(m_paramsVals["gain"].getVal<double>() !=  dval)
+        if (m_paramsVals["gain"].getVal<double>() !=  dval)
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.spinBox_offset->isEnabled())
+    if (ui.spinBox_offset->isEnabled())
     {
         double dval = ui.spinBox_offset->value()/100.0;
-        if(m_paramsVals["offset"].getVal<double>() !=  dval)
+        if (m_paramsVals["offset"].getVal<double>() !=  dval)
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.doubleSpinBox_integration_time->isEnabled())
+    if (ui.doubleSpinBox_integration_time->isEnabled())
     {
         double dval = ui.doubleSpinBox_integration_time->value()/1000.0;
-        if(m_paramsVals["integration_time"].getVal<double>() !=  dval)
+        if (m_paramsVals["integration_time"].getVal<double>() !=  dval)
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.doubleSpinBox_frame_time->isEnabled())
+    if (ui.doubleSpinBox_frame_time->isEnabled())
     {
         double dval = ui.doubleSpinBox_frame_time->value()/1000.0;
-        if(m_paramsVals["frame_time"].getVal<double>() !=  dval)
+        if (m_paramsVals["frame_time"].getVal<double>() !=  dval)
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("frame_time", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.combo_bpp->isEnabled())
+    if (ui.combo_bpp->isEnabled())
     {
         QVariant qvar = ui.combo_bpp->currentIndex();
         int bppNew = -1;
@@ -474,13 +474,13 @@ int dialogFileGrabber::sendVals()
                 bppNew = 32;
             break;
         }
-        if((bppNew > 0) && (m_paramsVals["bpp"].getVal<int>() !=  bppNew))
+        if ((bppNew > 0) && (m_paramsVals["bpp"].getVal<int>() !=  bppNew))
         {
             outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bppNew)));
         }
     }
 
-    if(m_Grabber)   // Grabber exists
+    if (m_Grabber)   // Grabber exists
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(m_Grabber, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, outVector), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
@@ -571,7 +571,7 @@ void dialogFileGrabber::on_applyButton_clicked()
 */
 void dialogFileGrabber::on_spinBox_x0_valueChanged(int value)
 {
-    if(ui.spinBox_x1->value() < value)
+    if (ui.spinBox_x1->value() < value)
     {
         ui.spinBox_x1->setValue(value);
     }
@@ -589,7 +589,7 @@ void dialogFileGrabber::on_spinBox_x0_valueChanged(int value)
 */
 void dialogFileGrabber::on_spinBox_x1_valueChanged(int value)
 {
-    if(ui.spinBox_x0->value() > value)
+    if (ui.spinBox_x0->value() > value)
     {
         ui.spinBox_x0->setValue(value);
     }
@@ -607,7 +607,7 @@ void dialogFileGrabber::on_spinBox_x1_valueChanged(int value)
 */
 void dialogFileGrabber::on_spinBox_y0_valueChanged(int value)
 {
-    if(ui.spinBox_y1->value() < value)
+    if (ui.spinBox_y1->value() < value)
     {
         ui.spinBox_y1->setValue(value);
     }
@@ -625,7 +625,7 @@ void dialogFileGrabber::on_spinBox_y0_valueChanged(int value)
 */
 void dialogFileGrabber::on_spinBox_y1_valueChanged(int value)
 {
-    if(ui.spinBox_y0->value() > value)
+    if (ui.spinBox_y0->value() > value)
     {
         ui.spinBox_y0->setValue(value);
     }

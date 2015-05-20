@@ -131,7 +131,7 @@ FFTWFilters::~FFTWFilters()
 ito::RetVal FFTWFilters::ParamsFFTW(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input Object").toLatin1().data());
         paramsMand->append(param);
@@ -273,7 +273,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                                                                          ito::tInt32, 
                                                                          ito::tFloat32, ito::tFloat64, 
                                                                          ito::tComplex64, ito::tComplex128);
-    if(retval.containsError())
+    if (retval.containsError())
     {
         return retval;
     }
@@ -286,7 +286,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
     bool outputHasROI = false;
 
     dimensions = (*dObjIn).getDims();
-    if(dimensions < 2)
+    if (dimensions < 2)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: source image not initilized").toLatin1().data());
     }
@@ -297,7 +297,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
     ito::int32 xSize = static_cast<ito::int32>(dObjIn->getSize(dimensions - 1));
     ito::int32 ySize = static_cast<ito::int32>(dObjIn->getSize(dimensions - 2));
 
-    if(!lineWise && (xSize == 1 || ySize == 1))
+    if (!lineWise && (xSize == 1 || ySize == 1))
     {
         return ito::RetVal(ito::retError, 0, tr("Error: source image dimensions must not be 1xN or Nx1 for fft2D.").toLatin1().data());
     }
@@ -306,7 +306,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
     int *offsets = new int[dimensions];
 
     dObjIn->locateROI(sizes, offsets);
-    if(sizes[dimensions - 2] != ySize || sizes[dimensions - 1] != xSize)
+    if (sizes[dimensions - 2] != ySize || sizes[dimensions - 1] != xSize)
     {
         inputHasROI = true;
     }
@@ -314,7 +314,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
     delete[] sizes;
     delete[] offsets;
     
-    if(dObjIn->getType() == ito::tComplex128 && !inputHasROI)
+    if (dObjIn->getType() == ito::tComplex128 && !inputHasROI)
     {
         neededNewInput = false;
         inputObject = *dObjIn;
@@ -442,11 +442,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         }
     }
     
-    if(dObjIn == dObjOut)
+    if (dObjIn == dObjOut)
     {
         outputObject = inputObject;
 
-        if(neededNewInput)
+        if (neededNewInput)
         {
             
             dObjIn->copyAxisTagsTo(outputObject);
@@ -473,7 +473,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         int ySizeDest = dObjOut->getSize(dObjOut->getDims() - 2);
 
         dObjOut->locateROI(sizes, offsets);
-        if(sizes[dObjOut->getDims() - 2] != ySizeDest || sizes[dObjOut->getDims() - 1] != xSizeDest)
+        if (sizes[dObjOut->getDims() - 2] != ySizeDest || sizes[dObjOut->getDims() - 1] != xSizeDest)
         {
             outputHasROI = true;
         }
@@ -481,7 +481,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         delete[] sizes;
         delete[] offsets;
 
-        if(dObjIn->calcNumMats() != dObjOut->calcNumMats() ||
+        if (dObjIn->calcNumMats() != dObjOut->calcNumMats() ||
            dObjOut->getType() != ito::tComplex128 ||
            xSize !=  xSizeDest ||
            ySize !=  ySizeDest ||
@@ -489,7 +489,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         {
             neededNewOutput = true;
             doItInplace = false;
-            if(neededNewInput) outputObject = inputObject;
+            if (neededNewInput) outputObject = inputObject;
             else outputObject = ito::DataObject(dimensions, dObjIn->getSize(), ito::tComplex128);
         }
         else
@@ -511,7 +511,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         plan_sel = (1U << 6);                        // estimate as standard, quicker planning, probably slower fft-computing
     }
 
-    if(lineWise)
+    if (lineWise)
     {
         msg = forward ? tr("Applied 1D-fft via FFTW (unscaled!)") : tr("Applied inverse 1D-fft via FFTW (unscaled!)");
         fftw_complex *in  = (fftw_complex*)(((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(0)])->ptr<ito::complex128>());
@@ -567,14 +567,14 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         fftw_destroy_plan(plan);
     }
     
-    if(neededNewOutput && !retval.containsError())
+    if (neededNewOutput && !retval.containsError())
     {
         *dObjOut = outputObject;
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-        if(dObjIn != dObjOut) dObjIn->copyTagMapTo(*dObjOut);
+        if (dObjIn != dObjOut) dObjIn->copyTagMapTo(*dObjOut);
         dObjOut->addToProtocol(std::string(msg.toLatin1().data()));
 
         int curDim = dObjOut->getDims()-1;
@@ -582,7 +582,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         bool test;
         
         ito::float64 newScale = dObjOut->getAxisScale(curDim);
-        if(ito::dObjHelper::isFinite<ito::float64>(newScale) && ito::dObjHelper::isNotZero<ito::float64>(newScale))
+        if (ito::dObjHelper::isFinite<ito::float64>(newScale) && ito::dObjHelper::isNotZero<ito::float64>(newScale))
         {
             newScale = 1/newScale / dObjOut->getSize(curDim);
             axisUnit = ito::dObjHelper::invertUnit(dObjOut->getAxisUnit(curDim, test));
@@ -596,13 +596,13 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         dObjOut->setAxisScale(curDim, newScale );
         dObjOut->setAxisOffset(curDim, 0.0);
 
-        if(!lineWise)
+        if (!lineWise)
         { 
             curDim --;
 
             newScale = dObjOut->getAxisScale(curDim);
             
-            if(ito::dObjHelper::isFinite<ito::float64>(newScale) && ito::dObjHelper::isNotZero<ito::float64>(newScale))
+            if (ito::dObjHelper::isFinite<ito::float64>(newScale) && ito::dObjHelper::isNotZero<ito::float64>(newScale))
             {
                 newScale = 1/newScale / dObjOut->getSize(curDim);
                 axisUnit = ito::dObjHelper::invertUnit(dObjOut->getAxisUnit(curDim, test));
@@ -904,7 +904,7 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
             retval = ito::RetVal(ito::retError, 0, tr("Error: more than 2 dimensions are not supported").toLatin1().data());
         }
     
-        if(!retval.containsError())
+        if (!retval.containsError())
         {
             // Add Protokoll
 //            char prot[81] = {0};
@@ -1028,7 +1028,7 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
             retval = ito::RetVal(ito::retError, 0, tr("Error: more than 2 dimensions are not supported").toLatin1().data());
         }
     
-        if(!retval.containsError())
+        if (!retval.containsError())
         {
             // Add Protokoll
 //            char prot[81] = {0};
@@ -1242,7 +1242,7 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
             retval = ito::RetVal(ito::retError, 0, tr("Error: this filter is designed for 2D data. As the name says.....").toLatin1().data());
         }
     
-        if(!retval.containsError())
+        if (!retval.containsError())
         {
             // Add Protokoll
 //            char prot[81] = {0};
@@ -1315,7 +1315,7 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
             retval = ito::RetVal(ito::retError, 0, tr("Error: this filter is designed for 2D data. As the name says.....").toLatin1().data());
         }
     
-        if(!retval.containsError())
+        if (!retval.containsError())
         {
             // Add Protokoll
 //            char prot[81] = {0};
@@ -1396,11 +1396,11 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     {
         calcWaveObj = false;
     }
-    else if(dObj_wavOut == dObj_out)
+    else if (dObj_wavOut == dObj_out)
     {
         return ito::RetVal(ito::retError, 0, tr("Waviness-result must not be equal to roughness output").toLatin1().data());
     }
-    else if(dObj_wavOut == dObj_in)
+    else if (dObj_wavOut == dObj_in)
     {
         return ito::RetVal(ito::retError, 0, tr("Waviness-result must not be equal to surface input").toLatin1().data());
     }
@@ -1411,16 +1411,16 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
 
     // Check if input and output type are allowed or not
     retval = ito::dObjHelper::verifyDataObjectType(dObj_in, "dObjIn", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
     {
         return retval;
     }
     ito::DataObject rough_out;
     ito::DataObject wavin_out;
 
-    if(dObj_out == dObj_in)
+    if (dObj_out == dObj_in)
     {
-        if(dObj_out->getType() == ito::tFloat64)
+        if (dObj_out->getType() == ito::tFloat64)
         {
             // inplace is possilbe
             rough_out = *dObj_out;
@@ -1435,7 +1435,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     else
     {
         ito::RetVal temp = ito::dObjHelper::verify2DDataObject(dObj_out, "dObjectOut", sizeY, sizeY, sizeX, sizeX, 1, ito::tFloat64);
-        if(!temp.containsWarningOrError())
+        if (!temp.containsWarningOrError())
         {
             rough_out = *dObj_out;
         }
@@ -1447,10 +1447,10 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
         }
     }
 
-    if(calcWaveObj)
+    if (calcWaveObj)
     {
         ito::RetVal temp = ito::dObjHelper::verify2DDataObject(dObj_wavOut, "dObjectWave", sizeY, sizeY, sizeX, sizeX, 1, ito::tFloat64);
-        if(!temp.containsWarningOrError())
+        if (!temp.containsWarningOrError())
         {
             wavin_out = *dObj_wavOut;
         }
@@ -1510,7 +1510,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     ito::float64 *dstPtr = ((cv::Mat *)rough_out.get_mdata()[rough_out.seekMat(0)])->ptr<ito::float64>();
     ito::float64 *wavPtr = NULL;
     
-    if(calcWaveObj)
+    if (calcWaveObj)
     {
         wavPtr = ((cv::Mat *)wavin_out.get_mdata()[wavin_out.seekMat(0)])->ptr<ito::float64>();
     }
@@ -1527,7 +1527,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     fftw_plan planBackRough = fftw_plan_dft_c2r_1d(sizeX, filtRough, srcInput, FFTW_ESTIMATE);
     fftw_plan planBackWavi  = NULL;
     
-    if(calcWaveObj)
+    if (calcWaveObj)
     {
         filtWavi     = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * sizeXFD);
         planBackWavi = fftw_plan_dft_c2r_1d(sizeX, filtWavi,  srcInput, FFTW_ESTIMATE);
@@ -1588,7 +1588,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
         filterFunc.setAxisScale(1, freqInc);
     }
 
-    if(ito::dObjHelper::isNotZero(lambda_s))
+    if (ito::dObjHelper::isNotZero(lambda_s))
     {
         ito::float64 cuExp1 = -1.0 * pow(freqInc, 2) / (2*pow(sigmaFS, 2));
         ito::float64 cuExp2 = -1.0 * pow(freqInc, 2) / (2*pow(sigmaFC, 2));
@@ -1616,11 +1616,11 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
 
 
     //Waviness Filterung
-    if(calcWaveObj)
+    if (calcWaveObj)
     {
         //filtWavi[0][0] = fourDomain[0][0];    //real fourier component (amplitude)
 
-        if(ito::dObjHelper::isNotZero(lambda_f))
+        if (ito::dObjHelper::isNotZero(lambda_f))
         {
             ito::float64 cuExp1 = -1.0 * pow(freqInc, 2) / (2*pow(sigmaFC, 2));
             ito::float64 cuExp2 = -1.0 * pow(freqInc, 2) / (2*pow(sigmaFF, 2));
@@ -1674,52 +1674,52 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     fftw_destroy_plan(plan2FD);
     fftw_destroy_plan(planBackRough);
 
-    if(planBackWavi)
+    if (planBackWavi)
     {
         fftw_destroy_plan(planBackWavi);
     }
 
-    if(srcInput)
+    if (srcInput)
     {
         fftw_free(srcInput);
     }
 
-    if(filtRough)
+    if (filtRough)
     {
         fftw_free(filtRough);
     }
 
-    if(filtWavi)
+    if (filtWavi)
     {
         fftw_free(filtWavi);
     }
 
-    if(fourDomain)
+    if (fourDomain)
     {
         fftw_free(fourDomain);
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         dObj_in->copyTagMapTo(rough_out);
         ito::dObjHelper::dObjCopyLastNAxisTags(*dObj_in, rough_out, 2, true, true);
 
         QString msg = tr("Roughness after gaussian filter with lambdaS %1 mm and lambdaC %2").arg(QString::number(lambda_s), QString::number(lambda_c));
         rough_out.addToProtocol(std::string(msg.toLatin1().data()));
-        if(useDstObj == false)
+        if (useDstObj == false)
         {
             *dObj_out = rough_out;
         }
     }
 
-    if(!retval.containsError() && calcWaveObj)
+    if (!retval.containsError() && calcWaveObj)
     {
         dObj_in->copyTagMapTo(wavin_out);
         ito::dObjHelper::dObjCopyLastNAxisTags(*dObj_in, wavin_out, 2, true, true);
 
         QString msg = tr("Waviness after gaussian filter with lambdaC %1 mm and lambdaF %2").arg(QString::number(lambda_c), QString::number(lambda_f));
         wavin_out.addToProtocol(std::string(msg.toLatin1().data()));
-        if(useWaveObj == false)
+        if (useWaveObj == false)
         {
             *dObj_wavOut = wavin_out;
         }
@@ -1783,7 +1783,7 @@ ito::RetVal FFTWFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
 
-    if(sizeof(fftw_complex) == sizeof(ito::complex128))
+    if (sizeof(fftw_complex) == sizeof(ito::complex128))
     {
         filter = new FilterDef(FFTWFilters::fftw1d, FFTWFilters::ParamsFFTW, tr(fftw1dDOC));
         m_filterList.insert("fftw", filter);

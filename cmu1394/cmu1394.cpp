@@ -725,16 +725,16 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         {
 /*
             format : 0, modes 0 - 7:
-	        {
-		        {160 ,120 ,COLOR_CODE_YUV444},
-		        {320 ,240 ,COLOR_CODE_YUV422},
-		        {640 ,480 ,COLOR_CODE_YUV411},
-		        {640 ,480 ,COLOR_CODE_YUV422},
-		        {640 ,480 ,COLOR_CODE_RGB8},
-		        {640 ,480 ,COLOR_CODE_Y8},
-		        {640 ,480 ,COLOR_CODE_Y16},
-		        {0   ,0   ,COLOR_CODE_MAX}
-	        }
+            {
+                {160 ,120 ,COLOR_CODE_YUV444},
+                {320 ,240 ,COLOR_CODE_YUV422},
+                {640 ,480 ,COLOR_CODE_YUV411},
+                {640 ,480 ,COLOR_CODE_YUV422},
+                {640 ,480 ,COLOR_CODE_RGB8},
+                {640 ,480 ,COLOR_CODE_Y8},
+                {640 ,480 ,COLOR_CODE_Y16},
+                {0   ,0   ,COLOR_CODE_MAX}
+            }
 */
             case 0:
             {
@@ -754,15 +754,15 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 /*
                 videoFormat 1: , mode 0 - 7:
                 {
-		            {800 ,600 ,COLOR_CODE_YUV422},
-		            {800 ,600 ,COLOR_CODE_RGB8},
-		            {800 ,600 ,COLOR_CODE_Y8},
-		            {1024,768 ,COLOR_CODE_YUV422},
-		            {1024,768 ,COLOR_CODE_RGB8},
-		            {1024,768 ,COLOR_CODE_Y8},
-		            {800 ,600 ,COLOR_CODE_Y16},
-		            {1024,768 ,COLOR_CODE_Y16}
-	            }
+                    {800 ,600 ,COLOR_CODE_YUV422},
+                    {800 ,600 ,COLOR_CODE_RGB8},
+                    {800 ,600 ,COLOR_CODE_Y8},
+                    {1024,768 ,COLOR_CODE_YUV422},
+                    {1024,768 ,COLOR_CODE_RGB8},
+                    {1024,768 ,COLOR_CODE_Y8},
+                    {800 ,600 ,COLOR_CODE_Y16},
+                    {1024,768 ,COLOR_CODE_Y16}
+                }
 */
                 switch(m_iFireWire_VideoMode)
                 {
@@ -787,15 +787,15 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 /*
                 VideoFromat 2: , mode 0 - 7:
                 {
-		            {1280,960 ,COLOR_CODE_YUV422},
-		            {1280,960 ,COLOR_CODE_RGB8},
-		            {1280,960 ,COLOR_CODE_Y8},
-		            {1600,1200,COLOR_CODE_YUV422},
-		            {1600,1200,COLOR_CODE_RGB8},
-		            {1600,1200,COLOR_CODE_Y8},
-		            {1280,960 ,COLOR_CODE_Y16},
-		            {1600,1200,COLOR_CODE_Y16}
-	            }
+                    {1280,960 ,COLOR_CODE_YUV422},
+                    {1280,960 ,COLOR_CODE_RGB8},
+                    {1280,960 ,COLOR_CODE_Y8},
+                    {1600,1200,COLOR_CODE_YUV422},
+                    {1600,1200,COLOR_CODE_RGB8},
+                    {1600,1200,COLOR_CODE_Y8},
+                    {1280,960 ,COLOR_CODE_Y16},
+                    {1600,1200,COLOR_CODE_Y16}
+                }
 */
                 switch(m_iFireWire_VideoMode)
                 {

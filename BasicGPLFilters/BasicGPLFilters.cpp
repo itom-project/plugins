@@ -198,7 +198,7 @@ ito::RetVal BasicGPLFilters::close(ItomSharedSemaphore * /*waitCond*/)
 ito::RetVal BasicGPLFilters::despeckleAdaptedParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("scrImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input image").toLatin1().data());
         paramsMand->append(param);
@@ -327,7 +327,7 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     // Check wether source object is of right type and size abd a 2D plane object and return error if not
     retval += ito::dObjHelper::verify2DDataObject(dObjIn, "dObjIn", 1, std::numeric_limits<ito::uint16>::max(), 1, std::numeric_limits<ito::uint16>::max(), 
                                                                     3, ito::tUInt8, ito::tUInt16, ito::tRGBA32);
-    if(retval.containsError())
+    if (retval.containsError())
     {
         return retval;
     }
@@ -342,7 +342,7 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     {
         // In this case, the output dataObject is not of correct size or type or it is identical (the same) object than the input object.
         // or both are null pointer, so we first check for NULL and in case of a null-pointer we will exit with an error
-        if(dObjDst == NULL) return rettemp;
+        if (dObjDst == NULL) return rettemp;
 
         // The filter does not work in-place, hence we need a temporary dataObject for the output-data
         createdNewObject = true;
@@ -364,7 +364,7 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     }
 
 
-    if( (*paramsOpt)[0].getVal<double>() > (*paramsOpt)[1].getVal<double>())
+    if ( (*paramsOpt)[0].getVal<double>() > (*paramsOpt)[1].getVal<double>())
     {
         return ito::RetVal(ito::retError, 0, tr("Error: minValue must be smaller than maxValue").toLatin1().data());
     }
@@ -404,13 +404,13 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
 
     // The filter does not work in-place but objects were identically or we needed a need output array. Hence we have
     // to reverse the shallow copy
-    if(createdNewObject)
+    if (createdNewObject)
     {
         *dObjDst = dObjOut;
     }
 
     // if no errors reported -> create new dataobject with values stored in cvMatOut
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         // Add Protokoll to output object
         QString msg = tr("despeckle median with ]%1, %2[, r = %3, adaption %4").arg(QString::number(filterSettings.blackLevel), QString::number(filterSettings.whiteLevel), filterSettings.adaptRadius ? tr("yes") : tr("no"));

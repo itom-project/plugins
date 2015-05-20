@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "CommonVisionBlox" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -53,40 +53,40 @@ class CommonVisionBlox : public ito::AddInGrabber
         int hasConfDialog(void) { return 0; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
-		enum sections { integration_time = 0x0001,
-			        roi                  = 0x0002,
-					gain			    = 0x0032,
-					offset				= 0x0064,
-					all				    = integration_time | roi | gain | offset};
+        enum sections { integration_time = 0x0001,
+                    roi                  = 0x0002,
+                    gain                = 0x0032,
+                    offset                = 0x0064,
+                    all                    = integration_time | roi | gain | offset};
 
         ito::RetVal checkError(const cvbres_t &code, const char *prefix = NULL) const;
 
-		IMG m_hCamera;
-		NODEMAP m_hNodeMap;
+        IMG m_hCamera;
+        NODEMAP m_hNodeMap;
         ito::RetVal m_acquisitionRetVal;
         bool m_isGrabbing;
 
-		ito::RetVal synchronize(const sections &what = all);
+        ito::RetVal synchronize(const sections &what = all);
 
-		ito::RetVal getParamInt(const char *name, cvbint64_t &value);
-		ito::RetVal getParamFloat(const char *name, double &value);
-		ito::RetVal getParamBool(const char *name, bool &value);
-		ito::RetVal getParamString(const char *name, QByteArray &value);
+        ito::RetVal getParamInt(const char *name, cvbint64_t &value);
+        ito::RetVal getParamFloat(const char *name, double &value);
+        ito::RetVal getParamBool(const char *name, bool &value);
+        ito::RetVal getParamString(const char *name, QByteArray &value);
 
-		ito::RetVal getParamFloatInfo(const char *name, ito::DoubleMeta &meta, const double &scale = 1.0);
+        ito::RetVal getParamFloatInfo(const char *name, ito::DoubleMeta &meta, const double &scale = 1.0);
         ito::RetVal getParamIntInfo(const char *name, ito::IntMeta &meta);
 
-		ito::RetVal setParamInt(const char *name, const cvbint64_t &value);
-		ito::RetVal setParamFloat(const char *name, const double &value);
-		ito::RetVal setParamBool(const char *name, const bool &value);
-		ito::RetVal setParamString(const char *name, const char* value);
+        ito::RetVal setParamInt(const char *name, const cvbint64_t &value);
+        ito::RetVal setParamFloat(const char *name, const double &value);
+        ito::RetVal setParamBool(const char *name, const bool &value);
+        ito::RetVal setParamString(const char *name, const char* value);
 
         ito::RetVal getParamEnumerationInfo(const char *name, ito::StringMeta &meta);
 
         bool nodeExists(const char *name) const;
         void checkStatus();
 
-		ito::RetVal scan_for_cameras();
+        ito::RetVal scan_for_cameras();
 
         QMap<QByteArray, QByteArray> m_nameConverter;
 

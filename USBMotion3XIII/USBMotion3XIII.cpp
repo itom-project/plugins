@@ -123,14 +123,14 @@ might slightly differ from the desired values due to rounding uncertainties.";
     m_autoLoadPolicy = ito::autoLoadAlways;
     m_autoSavePolicy = ito::autoSaveAlways;
 
-	m_initParamsMand.append(ito::Param("serialNumber", ito::ParamBase::String, "auto", tr("serial number or string of the device to open, or 'auto' if next unused device should be opened or '0','1'... to indicate the index of the device to open.").toLatin1().data()));
+    m_initParamsMand.append(ito::Param("serialNumber", ito::ParamBase::String, "auto", tr("serial number or string of the device to open, or 'auto' if next unused device should be opened or '0','1'... to indicate the index of the device to open.").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("axisSteps1", ito::ParamBase::Double, 0.0, new ito::DoubleMeta(0.0,100000.0), tr("number of full steps per unit (deg or mm) of axis 1, 0: axis not connected [default]").toLatin1().data()));
-	m_initParamsOpt.append(ito::Param("axisSteps2", ito::ParamBase::Double, 0.0, new ito::DoubleMeta(0.0,100000.0), tr("number of full steps per unit (deg or mm) of axis 2, 0: axis not connected [default]").toLatin1().data()));
-	m_initParamsOpt.append(ito::Param("axisSteps3", ito::ParamBase::Double, 0.0, new ito::DoubleMeta(0.0,100000.0), tr("number of full steps per unit (deg or mm) of axis 3, 0: axis not connected [default]").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("axisSteps2", ito::ParamBase::Double, 0.0, new ito::DoubleMeta(0.0,100000.0), tr("number of full steps per unit (deg or mm) of axis 2, 0: axis not connected [default]").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("axisSteps3", ito::ParamBase::Double, 0.0, new ito::DoubleMeta(0.0,100000.0), tr("number of full steps per unit (deg or mm) of axis 3, 0: axis not connected [default]").toLatin1().data()));
     m_initParamsOpt.append(ito::Param("unit1", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("unit of axis 1, 0: degree (default), 1: mm").toLatin1().data()));
-	m_initParamsOpt.append(ito::Param("unit2", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("unit of axis 2, 0: degree (default), 1: mm").toLatin1().data()));
-	m_initParamsOpt.append(ito::Param("unit3", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("unit of axis 3, 0: degree (default), 1: mm").toLatin1().data()));
-	m_initParamsOpt.append(ito::Param("switchSettings", ito::ParamBase::Int, 0, new ito::IntMeta(0,63), tr("SwitchSettings").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("unit2", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("unit of axis 2, 0: degree (default), 1: mm").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("unit3", ito::ParamBase::Int, 0, new ito::IntMeta(0,1), tr("unit of axis 3, 0: degree (default), 1: mm").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("switchSettings", ito::ParamBase::Int, 0, new ito::IntMeta(0,63), tr("SwitchSettings").toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -378,7 +378,7 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
     m_params.insert( "coilCurrentRest1", Param("coilCurrentRest1", ParamBase::Double, 12.5, 100.0, 12.5, tr("coil current if motor 1 is in rest [12.5%, 25%, ... 87.5%, 100%]").toLatin1().data()));
     m_params.insert( "coilCurrentThreshold1", Param("coilCurrentThreshold1", ParamBase::Double, 0.0, 10000.0, 5.0, tr("threshold acceleration for distinction between coilCurrentHigh and coilCurrentLow").toLatin1().data()));
     m_params.insert( "axisEnabled1", Param("axisEnabled1", ParamBase::Int, 0, 1, 1, tr("determine if motor 1 is enabled (1) or disabled (0). If disabled, this motor is manually moveable").toLatin1().data()));
-	m_params.insert( "microSteps1", Param("microSteps1", ParamBase::Int, 1, 64, 1, tr("micro steps for motor 1 [1,2,4,8,16,32,64]").toLatin1().data()));
+    m_params.insert( "microSteps1", Param("microSteps1", ParamBase::Int, 1, 64, 1, tr("micro steps for motor 1 [1,2,4,8,16,32,64]").toLatin1().data()));
     m_params.insert( "switchSettings1", Param("switchSettings1", ParamBase::Int, 0, 15, 0, tr("bitmask of switch settings (bit 1: DISABLE_STOP_L, bit 2: DISABLE_STOP_R, bit 3: SOFT_STOP, bit 4: REF_RnL").toLatin1().data()));
 
     m_params.insert( "axisSteps2", Param("axisSteps2", ParamBase::Double | ParamBase::Readonly, 0.0, 100000.0, 200.0, tr("number of full steps per turn of motor 2, 0: motor not connected").toLatin1().data())); //read-only
@@ -403,7 +403,7 @@ USBMotion3XIII::USBMotion3XIII() : AddInActuator(), m_curDeviceIndex(-1), m_time
     m_params.insert( "coilCurrentRest3", Param("coilCurrentRest3", ParamBase::Double, 12.5, 100.0, 12.5, tr("coil current if motor 3 is in rest [12.5%, 25%, ... 87.5%, 100%]").toLatin1().data()));
     m_params.insert( "coilCurrentThreshold3", Param("coilCurrentThreshold3", ParamBase::Double, 0.0, 10000.0, 5.0, tr("threshold acceleration for distinction between coilCurrentHigh and coilCurrentLow").toLatin1().data()));
     m_params.insert( "axisEnabled3", Param("axisEnabled3", ParamBase::Int, 0, 1, 1, tr("determine if motor 3 is enabled (1) or disabled (0). If disabled, this motor is manually moveable").toLatin1().data()));
-	m_params.insert( "microSteps3", Param("microSteps3", ParamBase::Int, 1, 64, 1, tr("micro steps for motor 3 [1,2,4,8,16,32,64]").toLatin1().data()));
+    m_params.insert( "microSteps3", Param("microSteps3", ParamBase::Int, 1, 64, 1, tr("micro steps for motor 3 [1,2,4,8,16,32,64]").toLatin1().data()));
     m_params.insert( "switchSettings3", Param("switchSettings3", ParamBase::Int, 0, 15, 0, tr("bitmask of switch settings (bit 1: DISABLE_STOP_L, bit 2: DISABLE_STOP_R, bit 3: SOFT_STOP, bit 4: REF_RnL").toLatin1().data()));
 
 
@@ -501,7 +501,7 @@ ito::RetVal USBMotion3XIII::updateStatus()
             getxactual(i, mcStatus, actualPos[i], DWTIMEOUT);
 
 
-			stepsPerUnit = getTotalStepsPerUnit(i);
+            stepsPerUnit = getTotalStepsPerUnit(i);
             m_currentPos[i] = /*actPosDbl[i] =*/ static_cast<double>(actualPos[i]) / stepsPerUnit;
             m_targetPos[i] = /*targetPosDbl[i] =*/ static_cast<double>(targetPos[i]) / stepsPerUnit;
 
@@ -588,7 +588,7 @@ ito::RetVal USBMotion3XIII::loadDriverSettingsToParams()
         retValue += errorCheck(getswitchsettings(axis, valueC1, mcStatus, DWTIMEOUT));
         m_params["switchSettings" + QString::number(axis+1)].setVal<int>(valueC1);
 
-		//vmin
+        //vmin
         retValue += errorCheck(getvmin(axis, mcStatus, valueS1, DWTIMEOUT ));
         m_params["vMin" + QString::number(axis+1)].setVal<double>( 360.0 * (double)valueS1 / ( steps * microSteps ) );
 
@@ -731,13 +731,13 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 m_params["axisSteps1"].setVal<double>( paramsOpt->value(0).getVal<double>() );
                 m_params["axisSteps2"].setVal<double>( paramsOpt->value(1).getVal<double>() );
                 m_params["axisSteps3"].setVal<double>( paramsOpt->value(2).getVal<double>() );
-				
+                
                 if (m_params["axisSteps1"].getVal<double>() > 0) m_availableAxis.append(0);
                 if (m_params["axisSteps2"].getVal<double>() > 0) m_availableAxis.append(1);
                 if (m_params["axisSteps3"].getVal<double>() > 0) m_availableAxis.append(2);
 
                 
-				
+                
                 //if (initparamfromeep( DWTIMEOUT) ) // load values from EEPROM or default values
                 //{
                     retValue += errorCheck(initparamtodefault( DWTIMEOUT ));
@@ -752,17 +752,17 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 //iprom: ich habe jetzt switchSettings1..switchSettings3 als Parameter angelegt.
                 //Damit lässt sich jederzeit die Settings-Einstellungen ändern. Brauchen wir
                 //dann die init-Parameter hier überhaupt noch?
-				// %% setswitchsettings for all axis
-				// calculate Settings
-				int Switches = paramsOpt->value(6).getVal<int>();
-				int ERG1 = (Switches & 48) >> 4; 
-				int ERG2 = (Switches & 12) >> 2;
-				int ERG3 = (Switches &  3) >> 0;
-				// set setswitchsettings
-				retValue += errorCheck(setswitchsettings(0, ERG1, mcStatus, DWTIMEOUT));
-				retValue += errorCheck(setswitchsettings(1, ERG2, mcStatus, DWTIMEOUT));
-				retValue += errorCheck(setswitchsettings(2, ERG3, mcStatus, DWTIMEOUT));
-				
+                // %% setswitchsettings for all axis
+                // calculate Settings
+                int Switches = paramsOpt->value(6).getVal<int>();
+                int ERG1 = (Switches & 48) >> 4; 
+                int ERG2 = (Switches & 12) >> 2;
+                int ERG3 = (Switches &  3) >> 0;
+                // set setswitchsettings
+                retValue += errorCheck(setswitchsettings(0, ERG1, mcStatus, DWTIMEOUT));
+                retValue += errorCheck(setswitchsettings(1, ERG2, mcStatus, DWTIMEOUT));
+                retValue += errorCheck(setswitchsettings(2, ERG3, mcStatus, DWTIMEOUT));
+                
                 retValue += loadDriverSettingsToParams(); //iprom: warum ist diese Zeile rausgeflogen? Hier wird der aktuelle Zustand des Controllers gelesen und die m_params-Parameter mit diesem synchronisiert
 
             }

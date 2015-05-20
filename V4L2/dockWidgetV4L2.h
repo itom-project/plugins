@@ -59,8 +59,8 @@ class DockWidgetV4L2 : public ito::AbstractAddInDockWidget
         void initialize(Device* device);
 
     private slots:
-    	void on_slider_valueChanged(double d);
-    	void on_cB_toggled(bool checked);
+        void on_slider_valueChanged(double d);
+        void on_cB_toggled(bool checked);
 
 };
 

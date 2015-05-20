@@ -48,7 +48,7 @@ class PCOSensicamInterface : public ito::AddInInterfaceBase
 #if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
-	Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this PCOSensicamInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
+    Q_INTERFACES(ito::AddInInterfaceBase)  /*!< this PCOSensicamInterface implements the ito::AddInInterfaceBase-interface, which makes it available as plugin in itom */
     PLUGIN_ITOM_API
 
     public:
@@ -113,7 +113,7 @@ class PCOSensicam : public ito::AddInGrabber
         PCOBuffer m_buffers[PCO_NUMBER_BUFFERS];
 
         bool m_isgrabbing;
-		bool m_isstarted;
+        bool m_isstarted;
         HANDLE m_hCamera;
         COCValues m_cocValues;
 

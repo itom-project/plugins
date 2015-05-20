@@ -51,7 +51,7 @@ class AerotechA3200Interface : public ito::AddInInterfaceBase
     public:
         AerotechA3200Interface(QObject *parent = 0);
         ~AerotechA3200Interface();
-        ito::RetVal getAddInInst(ito::AddInBase **addInInst);	//!< Creates a new DummyMotor and gives him a unique identification
+        ito::RetVal getAddInInst(ito::AddInBase **addInInst);    //!< Creates a new DummyMotor and gives him a unique identification
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
@@ -65,40 +65,40 @@ class AerotechA3200 : public ito::AddInActuator
     Q_OBJECT
 
     protected:
-        AerotechA3200();	//!< Constructur
-        ~AerotechA3200();	//! Destructor
+        AerotechA3200();    //!< Constructur
+        ~AerotechA3200();    //! Destructor
 
         //void timerEvent( QTimerEvent *event );
 
-		ito::RetVal checkError(int a3200ReturnValue);
+        ito::RetVal checkError(int a3200ReturnValue);
         ito::RetVal axisFaultToRetVal(int axisFault, int axisID);
-		ito::RetVal getAxisMask(const int *axes, const int numAxes, AXISMASK &mask);
+        ito::RetVal getAxisMask(const int *axes, const int numAxes, AXISMASK &mask);
         ito::RetVal getAxisMask2(const QVector<int> &axesIndices, AXISMASK &mask);
 
     public:
         friend class AerotechA3200Interface;
-        const ito::RetVal showConfDialog(void);	//!< This calls the modal Configuration Dialog
+        const ito::RetVal showConfDialog(void);    //!< This calls the modal Configuration Dialog
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
-		int m_async;	//!< variable to set up async and sync positioning --> Synchrone means program do not return until positioning was done.
+        int m_async;    //!< variable to set up async and sync positioning --> Synchrone means program do not return until positioning was done.
 
-		QVector<double> m_offset;
+        QVector<double> m_offset;
 
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
 
         ito::RetVal doUpdatePosAndState(const QVector<int> &axes);
 
-		ito::RetVal enabledisable(int axis, int ziel);
+        ito::RetVal enabledisable(int axis, int ziel);
 
-		DockWidgetAerotechA3200 *m_pAerotechA3200Wid;
+        DockWidgetAerotechA3200 *m_pAerotechA3200Wid;
 
-		HAERCTRL hAerCtrl;
-		QVector<int> m_enabledAxes;
+        HAERCTRL hAerCtrl;
+        QVector<int> m_enabledAxes;
         QVector<int> m_allAxesVector;
-		QStringList m_axisNames;
+        QStringList m_axisNames;
 
-		TCHAR szMsg[MAX_TEXT_LEN]; // Buffer for the return error message from A3200
+        TCHAR szMsg[MAX_TEXT_LEN]; // Buffer for the return error message from A3200
 
 
     signals:

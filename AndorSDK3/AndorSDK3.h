@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AndorSDK3" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -108,13 +108,13 @@ class AndorSDK3 : public ito::AddInGrabber
             int tShutterGlobal;
         };
 
-		struct BitDepthIdx
-		{
-			BitDepthIdx() : t11Bit(-1), t12Bit(-1), t16Bit(-1) {}
-			int t11Bit;
-			int t12Bit;
-			int t16Bit;
-		};
+        struct BitDepthIdx
+        {
+            BitDepthIdx() : t11Bit(-1), t12Bit(-1), t16Bit(-1) {}
+            int t11Bit;
+            int t12Bit;
+            int t16Bit;
+        };
 
         struct FanSpeedIdx
         {
@@ -143,13 +143,13 @@ class AndorSDK3 : public ito::AddInGrabber
         PixelEncodingIdx m_pixelEncodingIdx;
         TriggerModeIdx m_triggerModeIdx;
         ElectronicShutteringMode m_electronicShutteringMode;
-		BitDepthIdx m_bitDepthIdx;
+        BitDepthIdx m_bitDepthIdx;
         FanSpeedIdx m_fanSpeedIdx;
         PixelReadoutRateIdx m_pixelReadoutRate;
-		int m_bitDepth; //read-only, this indicates how many bits per pixel are transferred.
+        int m_bitDepth; //read-only, this indicates how many bits per pixel are transferred.
 
         BufferStruct m_buffer;
-		bool m_camRestartNecessary;
+        bool m_camRestartNecessary;
 
         static int andorOpenedIndices[32];
 
@@ -159,8 +159,8 @@ class AndorSDK3 : public ito::AddInGrabber
 
         int m_hBin, m_vBin;
         bool m_softwareTriggerEnabled;
-		AT_64 m_timestampFrequency; // in Hz
-		AT_64 m_lastTimestamp;
+        AT_64 m_timestampFrequency; // in Hz
+        AT_64 m_lastTimestamp;
 
     signals:
 

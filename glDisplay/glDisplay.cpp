@@ -125,7 +125,7 @@ GLDisplayInterface::~GLDisplayInterface()
 *    the openGL window is opened here, based on a qgl widget.
 */
 GLDisplay::GLDisplay() :
-	m_pWindow(NULL)
+    m_pWindow(NULL)
 {
     QDesktopWidget *qdesk = QApplication::desktop();
     int scount = qdesk->screenCount();
@@ -230,7 +230,7 @@ GLDisplay::GLDisplay() :
     for (int i = 0; i < 256; ++i) lut[i] = i;
     m_params["lut"].setVal<char*>(lut, 256);
 
-	constructionResult = ito::retOk;
+    constructionResult = ito::retOk;
 
     //set QGLFormat
     QGLFormat::OpenGLVersionFlags glVer = QGLFormat::openGLVersionFlags();
@@ -264,36 +264,36 @@ GLDisplay::GLDisplay() :
     {
         fmt.setVersion(2, 0);
     }
-	else
-	{
-		constructionResult += ito::RetVal(ito::retError, 0, tr("Supported OpenGL Version is lower than 2.0 and therefore not supported").toLatin1().data());
-	}
+    else
+    {
+        constructionResult += ito::RetVal(ito::retError, 0, tr("Supported OpenGL Version is lower than 2.0 and therefore not supported").toLatin1().data());
+    }
 
-	qDebug() << fmt.majorVersion();
-	qDebug() << fmt.minorVersion();
+    qDebug() << fmt.majorVersion();
+    qDebug() << fmt.minorVersion();
 
-	if (!constructionResult.containsError())
-	{
-		fmt.setDepth(0);
+    if (!constructionResult.containsError())
+    {
+        fmt.setDepth(0);
 
-		m_pWindow = new GLWindow(fmt, NULL, NULL, Qt::Window|Qt::MSWindowsOwnDC|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint); //0, 0, Qt::Window|Qt::MSWindowsOwnDC); //Qt::Window|Qt::MSWindowsOwnDC|Qt::ScrollBarAlwaysOff
-		//if (m_pWindow == NULL)
-		//{
-		//	return;
-		//}
+        m_pWindow = new GLWindow(fmt, NULL, NULL, Qt::Window|Qt::MSWindowsOwnDC|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint); //0, 0, Qt::Window|Qt::MSWindowsOwnDC); //Qt::Window|Qt::MSWindowsOwnDC|Qt::ScrollBarAlwaysOff
+        //if (m_pWindow == NULL)
+        //{
+        //    return;
+        //}
         
-		m_pWindow->setCursor(Qt::BlankCursor);
-		m_pWindow->setWindowTitle("GLDisplay");
-		m_pWindow->move(defx0, defy0);
-	    m_pWindow->resize(defwidth, defheight);
-		m_pWindow->show();
+        m_pWindow->setCursor(Qt::BlankCursor);
+        m_pWindow->setWindowTitle("GLDisplay");
+        m_pWindow->move(defx0, defy0);
+        m_pWindow->resize(defwidth, defheight);
+        m_pWindow->show();
 
-		//now create dock widget for this plugin
-		DockWidgetGLDisplay *DispWinWid = new DockWidgetGLDisplay(this);
-		Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-		QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-		createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
-	}
+        //now create dock widget for this plugin
+        DockWidgetGLDisplay *DispWinWid = new DockWidgetGLDisplay(this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
+    }
 
 }
 
@@ -302,8 +302,8 @@ GLDisplay::~GLDisplay()
 {
     if (m_pWindow)
     {
-		m_pWindow->shutdown();
-		m_pWindow->deleteLater();
+        m_pWindow->shutdown();
+        m_pWindow->deleteLater();
         //delete(m_pWindow);
     }
 }
@@ -446,7 +446,7 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
         {
             QMetaObject::invokeMethod(m_pWindow, "enableGammaCorrection", Qt::BlockingQueuedConnection, Q_ARG(bool, val->getVal<int>() > 0));
-			it->copyValueFrom(&(*val));
+            it->copyValueFrom(&(*val));
         }
         else if (QString::compare(key, "color", Qt::CaseInsensitive) == 0)
         {
@@ -466,7 +466,7 @@ ito::RetVal GLDisplay::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
                 color = Qt::white;
                 break;
             }
-			QMetaObject::invokeMethod(m_pWindow, "setColor", Qt::BlockingQueuedConnection, Q_ARG(QColor, color));
+            QMetaObject::invokeMethod(m_pWindow, "setColor", Qt::BlockingQueuedConnection, Q_ARG(QColor, color));
             it->copyValueFrom(&(*val));
         }
         else if (QString::compare(key, "currentIdx", Qt::CaseInsensitive) == 0)
@@ -591,7 +591,7 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         }
     }
 
-	setIdentifier(QString::number(getID()));
+    setIdentifier(QString::number(getID()));
 
     if (waitCond)
     {
@@ -608,9 +608,9 @@ ito::RetVal GLDisplay::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
 
-	/*ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
+    /*ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
     QMetaObject::invokeMethod(m_pWindow, "shutdown", Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
-	qDebug() << locker2->waitAndProcessEvents(10000);*/
+    qDebug() << locker2->waitAndProcessEvents(10000);*/
 
     if (waitCond)
     {

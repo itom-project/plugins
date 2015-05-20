@@ -47,7 +47,7 @@ class dialogLibModBus : public QDialog
         char m_endline[3];
         QStringList m_historyList;
         int m_historyListPointer;
-		*/
+        */
     protected:
         bool eventFilter(QObject *obj, QEvent *event);
 

@@ -399,7 +399,7 @@ ito::RetVal GWInstekPSP::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                     retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
-                else if(curval < paramIt->getMin())
+                else if (curval < paramIt->getMin())
                 {
                     retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
@@ -618,7 +618,7 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
 
         if (async)
         {
-            if(waitCond)
+            if (waitCond)
             {
                 waitCond->returnValue = retValue;
                 waitCond->release();
@@ -631,18 +631,18 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
         char text[50];
         double yourVoltage;
         int timeStep = totalTime*1000/steps; //ms
-		int i = 0;
+        int i = 0;
         bool firstRun = true;
 
         while(1)
         {
-			if (timer.elapsed() >= timeStep || firstRun)
+            if (timer.elapsed() >= timeStep || firstRun)
             {
                 firstRun = false;
                 //qDebug() << "bin drin";
-				setAlive(); //marks that this plugin is still executing something "good"
+                setAlive(); //marks that this plugin is still executing something "good"
                 yourVoltage = startVoltage + i*(endVoltage - startVoltage)/steps;
-				i++;
+                i++;
                 sprintf(text, "SV %05.2f", yourVoltage);
                 timer.restart();
                 retValue += WriteToSerial(text, false, false);
@@ -675,7 +675,7 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
 
         if (!async)
         {
-            if(waitCond)
+            if (waitCond)
             {
                 waitCond->returnValue = retValue;
                 waitCond->release();
@@ -685,7 +685,7 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
     }
     else
     {
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();

@@ -107,7 +107,7 @@ class PIPiezoCtrl : public ito::AddInActuator
         ito::RetVal PISendCommand(const QByteArray &command );
         ito::RetVal PIReadString(QByteArray &result, int &len, int timeoutMS);
         ito::RetVal PISendQuestionWithAnswerDouble( const QByteArray &questionCommand, double &answer, int timeoutMS );
-		ito::RetVal PISendQuestionWithAnswerDouble2( const QByteArray &questionCommand, int axisId, double &answer, int timeoutMS );
+        ito::RetVal PISendQuestionWithAnswerDouble2( const QByteArray &questionCommand, int axisId, double &answer, int timeoutMS );
         ito::RetVal PISendQuestionWithAnswerString( const QByteArray &questionCommand, QByteArray &answer, int timeoutMS );
         ito::RetVal PIIdentifyAndInitializeSystem(int keepSerialConfig);
         ito::RetVal convertPIErrorsToRetVal( QVector<QPair<int,QByteArray> > &lastErrors );

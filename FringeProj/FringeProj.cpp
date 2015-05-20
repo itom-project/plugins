@@ -456,7 +456,7 @@ int UnwrapPhaseGray(float contThreas, unsigned short maxpha, struct tShortArray2
         {
             CFPTYPE rawPhase = ((CFPTYPE*)(*RawPhase)->vals)[y * width + x];
 
-            if(rawPhase < (INVPHA + 0.1) || ciMap[y * width + x] < (INVPHA + 0.1) || (modMap[y * width + x] == 0)) //rawPhase is invalid, set phaseMap to NaN
+            if (rawPhase < (INVPHA + 0.1) || ciMap[y * width + x] < (INVPHA + 0.1) || (modMap[y * width + x] == 0)) //rawPhase is invalid, set phaseMap to NaN
             {
                 phaseMap[y * width + x] = std::numeric_limits<ito::float32>::signaling_NaN();
             }
@@ -464,7 +464,7 @@ int UnwrapPhaseGray(float contThreas, unsigned short maxpha, struct tShortArray2
             {
                 //Phase Unwrapping mit Codeindizes
                 //-Pi/2                    //pi/2
-                if((rawPhase >= -CUDAPI2) && (rawPhase <= CUDAPI2))
+                if ((rawPhase >= -CUDAPI2) && (rawPhase <= CUDAPI2))
                 {
                     if (modMap[y * width + x] > contThreas)
                     {
@@ -475,7 +475,7 @@ int UnwrapPhaseGray(float contThreas, unsigned short maxpha, struct tShortArray2
                          phaseMap[y * width + x] = INVPHA;
                     }
                 }
-                else if(rawPhase > CUDAPI2)
+                else if (rawPhase > CUDAPI2)
                 {
                     if (modMap[y * width + x] > contThreas)
                     {
@@ -499,7 +499,7 @@ int UnwrapPhaseGray(float contThreas, unsigned short maxpha, struct tShortArray2
                 }
 
                 //check boundaries -> 0<=phaseMap <=maxpha
-                if( (phaseMap[y * width + x] < 0) || (phaseMap[y * width + x] > maxpha) )
+                if ( (phaseMap[y * width + x] < 0) || (phaseMap[y * width + x] > maxpha) )
                 {
                     phaseMap[y * width + x] = std::numeric_limits<ito::float32>::signaling_NaN();
                 }
@@ -675,7 +675,7 @@ ito::RetVal FringeProj::calcCiMapParams(QVector<ito::Param> *paramsMand, QVector
     ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
     ito::Param param;
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Continous 3D-image stack (uint8 or uint16)").toLatin1().data());
         paramsMand->append(param);
@@ -787,7 +787,7 @@ ito::RetVal FringeProj::calcPhaseMap4Params(QVector<ito::Param> *paramsMand, QVe
     ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
     ito::Param param;
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("4 x Y x X continuous image stack (uint8 or uint16)").toLatin1().data());
         paramsMand->append(param);
@@ -828,16 +828,16 @@ ito::RetVal FringeProj::calcPhaseMap4(QVector<ito::ParamBase> *paramsMand, QVect
     ito::DataObject *dObjModMap = (ito::DataObject*)(*paramsMand)[4].getVal<void*>();
     struct tvArray3D *images = new tvArray3D;
     struct tFloatArray2D *phaseMap = new tFloatArray2D;
-	struct tFloatArray2D *modulationMap = new tFloatArray2D;
+    struct tFloatArray2D *modulationMap = new tFloatArray2D;
     images->vals = (void*)(((cv::Mat *)dObjImages->get_mdata()[dObjImages->seekMat(0)])->data);
     images->sizes[2] = dObjImages->getSize(2);
     images->sizes[1] = dObjImages->getSize(1);
     images->sizes[0] = dObjImages->getSize(0);
     if (images->sizes[0] != 4)
     {
-		delete images;
-		delete phaseMap;
-		delete modulationMap;
+        delete images;
+        delete phaseMap;
+        delete modulationMap;
         return ito::RetVal(ito::retError, 0, tr("wrong number of images! calcPhaseMap4 needs four 90deg phase shifted images!").toLatin1().data());
     }
 
@@ -912,7 +912,7 @@ ito::RetVal FringeProj::calcPhaseMapNParams(QVector<ito::Param> *paramsMand, QVe
     ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
     ito::Param param;
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         param = ito::Param("images", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("N x Y x X continous image stack").toLatin1().data());
         paramsMand->append(param);
@@ -1025,7 +1025,7 @@ ito::RetVal FringeProj::unwrapPhaseGrayParams(QVector<ito::Param> *paramsMand, Q
     ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
     ito::Param param;
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         param = ito::Param("contThreas", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 65535.0, 10.0, tr("Contrast threashold (val < threas = invalid)").toLatin1().data());
         paramsMand->append(param);
@@ -1071,15 +1071,15 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
         return ito::RetVal(ito::retError, 0, tr("image memory used by unwrapPhaseGray must be continuous and all objects have 2 dimensions only!").toLatin1().data());
     }
 
-    if(dObjCiMap->getType() != ito::tInt16)
+    if (dObjCiMap->getType() != ito::tInt16)
     {
         return ito::RetVal(ito::retError, 0, tr("ciMap must have format int16 (short)").toLatin1().data());
     }
-    if(dObjRawPhase->getType() != ito::tFloat32)
+    if (dObjRawPhase->getType() != ito::tFloat32)
     {
         return ito::RetVal(ito::retError, 0, tr("rawPhase must have format float32").toLatin1().data());
     }
-    if(dObjModMap->getType() != ito::tFloat32)
+    if (dObjModMap->getType() != ito::tFloat32)
     {
         return ito::RetVal(ito::retError, 0, tr("modulationMap must have format float32").toLatin1().data());
     }
@@ -1099,10 +1099,10 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
     if ((ciMap->sizes[0] != rawPhase->sizes[0]) || (ciMap->sizes[1] != rawPhase->sizes[1])
         || (ciMap->sizes[0] != modMap->sizes[0]) || (ciMap->sizes[1] != modMap->sizes[1]))
     {
-		delete ciMap;
-		delete rawPhase;
-		delete modMap;
-		delete phaseMap;
+        delete ciMap;
+        delete rawPhase;
+        delete modMap;
+        delete phaseMap;
         return ito::RetVal(ito::retError, 0, tr("input dataObject differ in size!").toLatin1().data());
     }
 
@@ -1116,10 +1116,10 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
 
     if ((ret = UnwrapPhaseGray((float)contThreas, (short)maxPha, &ciMap, &rawPhase, &modMap, &phaseMap)))
     {
-		delete ciMap;
-		delete rawPhase;
-		delete modMap;
-		delete phaseMap;	
+        delete ciMap;
+        delete rawPhase;
+        delete modMap;
+        delete phaseMap;    
         return ito::RetVal(ito::retError, 0, tr("error calling calcPhaseMap4").toLatin1().data());
     }
 
@@ -1150,7 +1150,7 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
     ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
     ito::Param param;
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         param = ito::Param("dispMap", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("2D disparity map (float32)").toLatin1().data());
         paramsMand->append(param);
@@ -1181,7 +1181,7 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
     ito::float32 dLateral = cv::saturate_cast<ito::float32>( (*paramsMand)[4].getVal<double>() );
     int shiftInXNotY = (*paramsMand)[5].getVal<int>();
 
-    if(dispMap == NULL)
+    if (dispMap == NULL)
     {
         retval += ito::RetVal(ito::retError,0,tr("disparity map must not be NULL").toLatin1().data());
     }
@@ -1189,7 +1189,7 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
     {
         retval += ito::dObjHelper::verify2DDataObject( dispMap, "disparity Map", 0, 1000000, 0, 1000000, 1, ito::tFloat32 );
 
-        if(!retval.containsError())
+        if (!retval.containsError())
         {
             int height = dispMap->getSize(0);
             int width = dispMap->getSize(1);
@@ -1206,7 +1206,7 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
             const ito::float32* cvDispMapRow = NULL;
             ito::float32 t;
 
-            if(shiftInXNotY)
+            if (shiftInXNotY)
             {
                 for(int m = 0 ; m < height ; m++)
                 {
@@ -1264,7 +1264,7 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("graycodeBitWidth", ito::ParamBase::Int | ito::ParamBase::In, 1, 32, 3, "number of bits in the gray code (number of used gray-code sequences)") );
     paramsMand->append( ito::Param("gcToDecLUT", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "lookup table, 1xN, uint8, uint16 or uint32 depending on graycodeBitWidth") );
@@ -1373,7 +1373,7 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("dataObj", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "2d data object whose data is filled with the pattern along the given axis (0, 1). Type must be uint8, uint16 or uint32") );
     paramsMand->append( ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Out, 0, 1, 0, "axis along the pattern is generated (0: along columns, 1: along rows)") );

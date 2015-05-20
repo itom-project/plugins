@@ -62,7 +62,7 @@ class GLDisplay : public ito::AddInDataIO //, public DummyGrabberInterface
     private:
         GLWindow *m_pWindow;
 
-		ito::RetVal constructionResult;
+        ito::RetVal constructionResult;
         int m_nrOfTextures;
 
     protected:

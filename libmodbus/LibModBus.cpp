@@ -81,19 +81,19 @@ If no MetaTag is set, values of m_params['registers'] is tried to be used for ad
     m_aboutThis = QObject::tr("N.A.");  
 
     ito::Param paramVal("target", ito::ParamBase::String, "127.0.0.1", tr("Adress of the target device. IP-Adress for ModbusTCP (i.e. 127.0.0.1) or COM-Port for ModbusRTU (i.e. COM1)").toLatin1().data());
-	paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}||COM[1-9]||/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}"), true);
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}||COM[1-9]||/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}"), true);
     m_initParamsMand.append(paramVal);
 
-	paramVal = ito::Param("port", ito::ParamBase::Int, 0, 1024, 502, tr("The number of the TCP port for ModBusTCP (default 502) or slave ID for ModbusRTU").toLatin1().data());
+    paramVal = ito::Param("port", ito::ParamBase::Int, 0, 1024, 502, tr("The number of the TCP port for ModBusTCP (default 502) or slave ID for ModbusRTU").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-	paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port for RTU communication").toLatin1().data());
+    paramVal = ito::Param("baud", ito::ParamBase::Int, 50, 4000000, 9600, tr("The baudrate of the port for RTU communication").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-	paramVal = ito::Param("parity", ito::ParamBase::String, "N", tr("Parity for RTU communication (N,E,O)").toLatin1().data());
-	paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[N,P,O]{1}"), true);
+    paramVal = ito::Param("parity", ito::ParamBase::String, "N", tr("Parity for RTU communication (N,E,O)").toLatin1().data());
+    paramVal.setMeta(new ito::StringMeta(ito::StringMeta::RegExp, "[N,P,O]{1}"), true);
     m_initParamsOpt.append(paramVal);
-	paramVal = ito::Param("databit", ito::ParamBase::Int, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
+    paramVal = ito::Param("databit", ito::ParamBase::Int, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-	paramVal = ito::Param("stopbit", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
+    paramVal = ito::Param("stopbit", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("output_mode", ito::ParamBase::Int, 0, 1, 0, tr("Enables command-line output of different readouts (e.g. register values of getVal)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -133,22 +133,22 @@ LibModBus::LibModBus() : AddInDataIO(), m_pCTX(NULL), m_connected(false)
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "LibModBus", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("target", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "127.0.0.1", tr("IP Adress or COM-Port of the target device").toLatin1().data());
+    paramVal = ito::Param("target", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "127.0.0.1", tr("IP Adress or COM-Port of the target device").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 0, 1024, 502, tr("TCP Port for ModbusTCP or slave ID for ModbusRTU").toLatin1().data());
+    paramVal = ito::Param("port", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 0, 1024, 502, tr("TCP Port for ModbusTCP or slave ID for ModbusRTU").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 50, 4000000, 9600, tr("The baudrate of the port for RTU communication").toLatin1().data());
+    paramVal = ito::Param("baud", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 50, 4000000, 9600, tr("The baudrate of the port for RTU communication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("parity", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "N", tr("Parity for RTU communication (N,E,O)").toLatin1().data());
+    paramVal = ito::Param("parity", ito::ParamBase::String | ito::ParamBase::In | ito::ParamBase::Readonly, "N", tr("Parity for RTU communication (N,E,O)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("databit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
+    paramVal = ito::Param("databit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 5, 8, 8, tr("Number of bits to be written in line for RTU communication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("stopbit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
+    paramVal = ito::Param("stopbit", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Readonly, 1, 2, 1, tr("Stop bits after every n bits for RTU communication").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("output_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Enables command-line output of different readouts (e.g. register values of getVal)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("registers",ito::ParamBase::String | ito::ParamBase::In,"0,10",tr("Default string for register addressing. Coding is 'Reg1Address,Reg1Size;Reg2Address,Reg2Size...'").toLatin1().data());
-	m_params.insert(paramVal.getName(),paramVal);
+    paramVal = ito::Param("registers",ito::ParamBase::String | ito::ParamBase::In,"0,10",tr("Default string for register addressing. Coding is 'Reg1Address,Reg1Size;Reg2Address,Reg2Size...'").toLatin1().data());
+    m_params.insert(paramVal.getName(),paramVal);
 
     //now create dock widget for this plugin
     /*DockWidgetLibModBus *dw = new DockWidgetLibModBus(m_params, getID() );
@@ -188,13 +188,13 @@ ito::RetVal LibModBus::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //put your switch-case.. for getting the right value here
 
@@ -234,13 +234,13 @@ ito::RetVal LibModBus::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
@@ -255,14 +255,14 @@ ito::RetVal LibModBus::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //all parameters that don't need further checks can simply be assigned
         //to the value in m_params (the rest is already checked above)
         retValue += it->copyValueFrom( &(*val) );
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
@@ -283,68 +283,68 @@ ito::RetVal LibModBus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
     ito::RetVal retval;
     int port = 0;
-	int baud = 9600;
-	int databit = 8;
-	int stopbit = 1;
-	char parity;
+    int baud = 9600;
+    int databit = 8;
+    int stopbit = 1;
+    char parity;
     char *target;
-	bool IP = false;
+    bool IP = false;
     bool output_mode=false;
 
     retval += m_params["target"].copyValueFrom(&((*paramsMand)[0]));
     target = m_params["target"].getVal<char *>(); //borrowed reference
-	retval += m_params["port"].copyValueFrom(&((*paramsOpt)[0]));
+    retval += m_params["port"].copyValueFrom(&((*paramsOpt)[0]));
     port = m_params["port"].getVal<int>();
-	retval += m_params["baud"].copyValueFrom(&((*paramsOpt)[1]));
+    retval += m_params["baud"].copyValueFrom(&((*paramsOpt)[1]));
     baud = m_params["baud"].getVal<int>();
-	retval += m_params["parity"].copyValueFrom(&((*paramsOpt)[2]));
+    retval += m_params["parity"].copyValueFrom(&((*paramsOpt)[2]));
     parity = *m_params["parity"].getVal<char *>();
-	retval += m_params["databit"].copyValueFrom(&((*paramsOpt)[3]));
+    retval += m_params["databit"].copyValueFrom(&((*paramsOpt)[3]));
     databit = m_params["databit"].getVal<int>();
-	retval += m_params["stopbit"].copyValueFrom(&((*paramsOpt)[4]));
+    retval += m_params["stopbit"].copyValueFrom(&((*paramsOpt)[4]));
     stopbit = m_params["stopbit"].getVal<int>();
     retval += m_params["output_mode"].copyValueFrom(&((*paramsOpt)[5]));
     output_mode = m_params["output_mode"].getVal<int>();
-	
-	QString target_ = target;
-	QRegExp rx_ip("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
-	QRegExp rx_com("COM[1-9]");
-	QRegExp rx_tty("/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}");
+    
+    QString target_ = target;
+    QRegExp rx_ip("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+    QRegExp rx_com("COM[1-9]");
+    QRegExp rx_tty("/dev/ttyS[0-9]{1,3}||/dev/ttyUSB[0-9]{1,3}");
 
     if (!retval.containsError())
     {
 
-		if (rx_ip.exactMatch(target_))
-		{
-			//std::cout << "IP found \n" << std::endl;
-			m_pCTX = modbus_new_tcp(target,port);
-			IP = true;
-		}
-		else if (rx_com.exactMatch(target_) || rx_tty.exactMatch(target_))
-		{
-			//std::cout << "Serial found \n" << std::endl;
-			m_pCTX = modbus_new_rtu(target,baud,parity,databit,stopbit);
-			modbus_set_slave(m_pCTX,port);
-			IP = false;
-			//retval += ito::RetVal(ito::retError, 0, tr("COM found").toLatin1().data());
-		}
-		else
-		{
-			retval += ito::RetVal(ito::retError, 0, tr("invalid target device").toLatin1().data());
-		}
+        if (rx_ip.exactMatch(target_))
+        {
+            //std::cout << "IP found \n" << std::endl;
+            m_pCTX = modbus_new_tcp(target,port);
+            IP = true;
+        }
+        else if (rx_com.exactMatch(target_) || rx_tty.exactMatch(target_))
+        {
+            //std::cout << "Serial found \n" << std::endl;
+            m_pCTX = modbus_new_rtu(target,baud,parity,databit,stopbit);
+            modbus_set_slave(m_pCTX,port);
+            IP = false;
+            //retval += ito::RetVal(ito::retError, 0, tr("COM found").toLatin1().data());
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("invalid target device").toLatin1().data());
+        }
         if (m_pCTX == NULL)
         {
             retval += ito::RetVal(ito::retError, 0, tr("Unable to allocate libmodbus context").toLatin1().data());
         }
         else if ( modbus_connect(m_pCTX) == -1)
-	    {
-		    retval += ito::RetVal(ito::retError,0,QObject::tr("Modbus-connect failed!").toLatin1().data());
-	    }
+        {
+            retval += ito::RetVal(ito::retError,0,QObject::tr("Modbus-connect failed!").toLatin1().data());
+        }
         else
         {
             m_connected = true;
         }
-	
+    
         if (!retval.containsError())
         {
            std::cout << "Connect to Device at: " << target << "; Port/ID: " << port << " success" << std::endl;
@@ -375,15 +375,15 @@ ito::RetVal LibModBus::close(ItomSharedSemaphore *waitCond)
 
     if (m_pCTX && m_connected)
     {
-	    modbus_close(m_pCTX);
+        modbus_close(m_pCTX);
         m_connected = false;
     }
 
-	if (m_pCTX)
-	{
-		modbus_free(m_pCTX);
+    if (m_pCTX)
+    {
+        modbus_free(m_pCTX);
         m_pCTX = NULL;
-	}
+    }
 
     if (waitCond)
     {
@@ -438,105 +438,105 @@ ito::RetVal LibModBus::acquire(const int /*trigger*/, ItomSharedSemaphore *waitC
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
-	bool validOp=true;
+    bool validOp=true;
     bool output_mode=false;
-	uint16_t tab_reg[64];
-	uint8_t coil_reg[64];
-	ito::DataObjectTagType registers;
-	int listcounter,registercounter,i,j,tmpInt;
-	int regNumbers = 0;
-	int dObjPos=0;
-	std::vector<int> regAddr,regNb;
-	QString regContent;
-	QStringList regList,addrList;
+    uint16_t tab_reg[64];
+    uint8_t coil_reg[64];
+    ito::DataObjectTagType registers;
+    int listcounter,registercounter,i,j,tmpInt;
+    int regNumbers = 0;
+    int dObjPos=0;
+    std::vector<int> regAddr,regNb;
+    QString regContent;
+    QStringList regList,addrList;
     output_mode = m_params["output_mode"].getVal<int>();
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
-	ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
-	int inputDataType= dObj->getType();
-	if (inputDataType!=3 && inputDataType!=1)
-	{
-			retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16 for registers or uint8 for coils").toLatin1().data());
-	}
-	if (!retval.containsError())
+    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
+    int inputDataType= dObj->getType();
+    if (inputDataType!=3 && inputDataType!=1)
     {
-		if (dObj->getSize(0)>0)
-		{
-			registers = dObj->getTag("registers",validOp);
-			if (validOp)											// Register Address transmitted in dObj-Meta-Data
-			{
-				regContent = registers.getVal_ToString().data();
-			}
-			else													// Register Adress taken from m_params as default fallback
-			{
-				char* regchar = m_params["registers"].getVal<char*>();
-				regContent = QString(QLatin1String(regchar));
-			}
-			regList = regContent.split(";");
-			listcounter=regList.size();
+            retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16 for registers or uint8 for coils").toLatin1().data());
+    }
+    if (!retval.containsError())
+    {
+        if (dObj->getSize(0)>0)
+        {
+            registers = dObj->getTag("registers",validOp);
+            if (validOp)                                            // Register Address transmitted in dObj-Meta-Data
+            {
+                regContent = registers.getVal_ToString().data();
+            }
+            else                                                    // Register Adress taken from m_params as default fallback
+            {
+                char* regchar = m_params["registers"].getVal<char*>();
+                regContent = QString(QLatin1String(regchar));
+            }
+            regList = regContent.split(";");
+            listcounter=regList.size();
 
-			for ( i=0; i<listcounter; i++)
-			{
-				addrList = regList.at(i).split(",");
-				regAddr.push_back(addrList.at(0).toInt(&validOp));
-				tmpInt=addrList.size();
-				if (tmpInt>1)
-				{
-					tmpInt = addrList.at(1).toInt(&validOp);
-				}
-				else
-				{
-					tmpInt=1;
-				}
-				regNb.push_back(tmpInt);
-				regNumbers += tmpInt;
-			}
-			if (regNumbers == dObj->getSize(1))
-			{
-				for (i=0;i<regAddr.size();i++)
-				{
-					if (inputDataType==1)
-					{
-						registercounter = modbus_read_bits(m_pCTX, regAddr.at(i), regNb.at(i), coil_reg);
-					}
-					else
-					{
-						registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
-					}
-					for (j=0; j < registercounter; j++) 
-					{
+            for ( i=0; i<listcounter; i++)
+            {
+                addrList = regList.at(i).split(",");
+                regAddr.push_back(addrList.at(0).toInt(&validOp));
+                tmpInt=addrList.size();
+                if (tmpInt>1)
+                {
+                    tmpInt = addrList.at(1).toInt(&validOp);
+                }
+                else
+                {
+                    tmpInt=1;
+                }
+                regNb.push_back(tmpInt);
+                regNumbers += tmpInt;
+            }
+            if (regNumbers == dObj->getSize(1))
+            {
+                for (i=0;i<regAddr.size();i++)
+                {
+                    if (inputDataType==1)
+                    {
+                        registercounter = modbus_read_bits(m_pCTX, regAddr.at(i), regNb.at(i), coil_reg);
+                    }
+                    else
+                    {
+                        registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
+                    }
+                    for (j=0; j < registercounter; j++) 
+                    {
                         if (output_mode)
                         {
-							if (inputDataType==1)
-							{
-								std::cout << "coil[" << regAddr.at(i)+j << "]=" << coil_reg[j] << "\n" << std::endl;
-							}
-							else
-							{
-								std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
-							}
+                            if (inputDataType==1)
+                            {
+                                std::cout << "coil[" << regAddr.at(i)+j << "]=" << coil_reg[j] << "\n" << std::endl;
+                            }
+                            else
+                            {
+                                std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
+                            }
                         }
-						if (inputDataType==1)
-						{
-							dObj->at<ito::uint8>(0,dObjPos)=coil_reg[j];						
-						}
-						else
-						{
-							dObj->at<ito::uint16>(0,dObjPos)=tab_reg[j];
-						}
-						dObjPos++;
-					}
-				}
-			
-			}
-			else
-			{
-				retval += ito::RetVal(ito::retError,0,QObject::tr("Size of given data object does not match number of requested registers").toLatin1().data());
-			}
-		}
-	}
-	//std::cout << val << std::endl;
-	if (waitCond) 
+                        if (inputDataType==1)
+                        {
+                            dObj->at<ito::uint8>(0,dObjPos)=coil_reg[j];                        
+                        }
+                        else
+                        {
+                            dObj->at<ito::uint16>(0,dObjPos)=tab_reg[j];
+                        }
+                        dObjPos++;
+                    }
+                }
+            
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError,0,QObject::tr("Size of given data object does not match number of requested registers").toLatin1().data());
+            }
+        }
+    }
+    //std::cout << val << std::endl;
+    if (waitCond) 
     {
         waitCond->returnValue = retval;
         waitCond->release();
@@ -566,114 +566,114 @@ ito::RetVal LibModBus::getVal(QSharedPointer<char> data, QSharedPointer<int> len
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomSharedSemaphore *waitCond)
 {
-	bool validOp=true;
+    bool validOp=true;
     bool output_mode=false;
-	uint16_t tab_reg[64];
-	uint8_t coil_reg[64];
-	ito::DataObjectTagType registers;
-	int listcounter,registercounter,i,tmpInt;
-	int regNumbers = 0;
-	int dObjPos=0;
-	std::vector<int> regAddr,regNb;
-	QString regContent;
-	QStringList regList,addrList;
+    uint16_t tab_reg[64];
+    uint8_t coil_reg[64];
+    ito::DataObjectTagType registers;
+    int listcounter,registercounter,i,tmpInt;
+    int regNumbers = 0;
+    int dObjPos=0;
+    std::vector<int> regAddr,regNb;
+    QString regContent;
+    QStringList regList,addrList;
     output_mode = m_params["output_mode"].getVal<int>();
     ItomSharedSemaphoreLocker locker(waitCond);
-	const ito::DataObject *dObj = reinterpret_cast<const ito::DataObject*>(data);
+    const ito::DataObject *dObj = reinterpret_cast<const ito::DataObject*>(data);
     //const char *buf = data;
     char endline[3] = {0, 0, 0};
     ito::RetVal retval(ito::retOk);
-	int inputDataType=dObj->getType(); 
-	if (inputDataType!=3 && inputDataType!=1)
-	{
-			retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16 for registers or uint8 for coils").toLatin1().data());
-	}
-	if (!retval.containsError())
+    int inputDataType=dObj->getType(); 
+    if (inputDataType!=3 && inputDataType!=1)
     {
-		if (dObj->getSize(0)>0)
-		{
-			registers = dObj->getTag("registers",validOp);
-			if (validOp)											// Register Address transmitted in dObj-Meta-Data
-			{
-				regContent = registers.getVal_ToString().data();
-			}
-			else													// Register Adress taken from m_params as default fallback
-			{
-				char* regchar = m_params["registers"].getVal<char*>();
-				regContent = QString(QLatin1String(regchar));
-			}
-			regList = regContent.split(";");
-			listcounter=regList.size();
+            retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16 for registers or uint8 for coils").toLatin1().data());
+    }
+    if (!retval.containsError())
+    {
+        if (dObj->getSize(0)>0)
+        {
+            registers = dObj->getTag("registers",validOp);
+            if (validOp)                                            // Register Address transmitted in dObj-Meta-Data
+            {
+                regContent = registers.getVal_ToString().data();
+            }
+            else                                                    // Register Adress taken from m_params as default fallback
+            {
+                char* regchar = m_params["registers"].getVal<char*>();
+                regContent = QString(QLatin1String(regchar));
+            }
+            regList = regContent.split(";");
+            listcounter=regList.size();
 
-			for ( i=0; i<listcounter; i++)
-			{
-				addrList = regList.at(i).split(",");
-				regAddr.push_back(addrList.at(0).toInt(&validOp));
-				tmpInt=addrList.size();
-				if (tmpInt>1)
-				{
-					tmpInt = addrList.at(1).toInt(&validOp);
-				}
-				else
-				{
-					tmpInt=1;
-				}
-				regNb.push_back(tmpInt);
-				regNumbers += tmpInt;
-			}
-			if (regNumbers == dObj->getSize(1))
-			{
-				for (i=0;i<regNumbers;i++)
-				{
-					if (inputDataType==1)
-					{
-						coil_reg[i]=dObj->at<ito::uint8>(0,i);
-					}
-					else
-					{
-						tab_reg[i]=dObj->at<ito::uint16>(0,i);
-					}
-				}
-				for (i=0;i<regAddr.size();i++)
-				{
-					if (inputDataType==1)
-					{
-						uint8_t *coil_reg_nb = coil_reg + dObjPos;
-						registercounter = modbus_write_bits(m_pCTX, regAddr.at(i), regNb.at(i), coil_reg_nb);
-					}
-					else
-					{
-						uint16_t *tab_reg_nb = tab_reg + dObjPos;
-						registercounter = modbus_write_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg_nb);
-					}
-					if (registercounter == regNb.at(i))
-					{
+            for ( i=0; i<listcounter; i++)
+            {
+                addrList = regList.at(i).split(",");
+                regAddr.push_back(addrList.at(0).toInt(&validOp));
+                tmpInt=addrList.size();
+                if (tmpInt>1)
+                {
+                    tmpInt = addrList.at(1).toInt(&validOp);
+                }
+                else
+                {
+                    tmpInt=1;
+                }
+                regNb.push_back(tmpInt);
+                regNumbers += tmpInt;
+            }
+            if (regNumbers == dObj->getSize(1))
+            {
+                for (i=0;i<regNumbers;i++)
+                {
+                    if (inputDataType==1)
+                    {
+                        coil_reg[i]=dObj->at<ito::uint8>(0,i);
+                    }
+                    else
+                    {
+                        tab_reg[i]=dObj->at<ito::uint16>(0,i);
+                    }
+                }
+                for (i=0;i<regAddr.size();i++)
+                {
+                    if (inputDataType==1)
+                    {
+                        uint8_t *coil_reg_nb = coil_reg + dObjPos;
+                        registercounter = modbus_write_bits(m_pCTX, regAddr.at(i), regNb.at(i), coil_reg_nb);
+                    }
+                    else
+                    {
+                        uint16_t *tab_reg_nb = tab_reg + dObjPos;
+                        registercounter = modbus_write_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg_nb);
+                    }
+                    if (registercounter == regNb.at(i))
+                    {
                         if (output_mode)
                         {
-						    std::cout << "Write at Reg. " << regAddr.at(i) << " success! \n " << std::endl; 
+                            std::cout << "Write at Reg. " << regAddr.at(i) << " success! \n " << std::endl; 
                         }
-					}
-					else
-					{
-						std::cout << "Write at Reg. " << regAddr.at(i) << " failed! \n " << std::endl; 
-					}
-					dObjPos=dObjPos+regNb.at(i);
-					/*registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
-					for (j=0; j < registercounter; j++) 
-					{
-						std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
-						incomingObject->at<ito::uint16>(0,dObjPos)=tab_reg[j];
-						dObjPos++;
-					}*/
-				}
-			
-			}
-			else
-			{
-				retval += ito::RetVal(ito::retError,0,QObject::tr("Size of given data object does not match number of transmitted registers").toLatin1().data());
-			}
-		}
-	}
+                    }
+                    else
+                    {
+                        std::cout << "Write at Reg. " << regAddr.at(i) << " failed! \n " << std::endl; 
+                    }
+                    dObjPos=dObjPos+regNb.at(i);
+                    /*registercounter = modbus_read_registers(m_pCTX, regAddr.at(i), regNb.at(i), tab_reg);
+                    for (j=0; j < registercounter; j++) 
+                    {
+                        std::cout << "reg[" << regAddr.at(i)+j << "]=" << tab_reg[j] << "\n" << std::endl;
+                        incomingObject->at<ito::uint16>(0,dObjPos)=tab_reg[j];
+                        dObjPos++;
+                    }*/
+                }
+            
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError,0,QObject::tr("Size of given data object does not match number of transmitted registers").toLatin1().data());
+            }
+        }
+    }
     if (waitCond)
     {
         waitCond->returnValue = retval;

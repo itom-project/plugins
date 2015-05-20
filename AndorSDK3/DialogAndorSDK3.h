@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AndorSDK3" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -52,8 +52,8 @@ class DialogSDK3 : public ito::AbstractAddInConfigDialog
     private:
         void enableDialog(bool enabled);
         bool m_firstRun;
-		int m_currentSizeMaxX;
-		int m_currentSizeMaxY;
+        int m_currentSizeMaxX;
+        int m_currentSizeMaxY;
 
         Ui::DialogAndorSDK3 ui;
 
