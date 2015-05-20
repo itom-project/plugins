@@ -66,33 +66,33 @@ class niDAQmx : public ito::AddInDataIO
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
-		ito::RetVal checkData(ito::DataObject *externalDataObject, int channels, int samples);
+        ito::RetVal checkData(ito::DataObject *externalDataObject, int channels, int samples);
 
         bool m_isgrabbing; /*!< Check if acquire was executed */
 
-		// These three bools are set true by the acquire method to indicate what kind of data is
-		// received in the getVal method. The getVal method also resets the three bools to false
-		bool m_aInIsAcquired;
-		bool m_dInIsAcquired;
-		bool m_cInIsAcquired;
+        // These three bools are set true by the acquire method to indicate what kind of data is
+        // received in the getVal method. The getVal method also resets the three bools to false
+        bool m_aInIsAcquired;
+        bool m_dInIsAcquired;
+        bool m_cInIsAcquired;
 
-		bool m_aOutIsAcquired;
-		bool m_dOutIsAcquired;
-		bool m_cOutIsAcquired;
-		
-		QMap<QString, niTask*> m_taskMap;
-		niChannelList m_channels;
-		ito::DataObject m_data;
-		
-		// Read-functions
-		ito::RetVal readAnalog(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
+        bool m_aOutIsAcquired;
+        bool m_dOutIsAcquired;
+        bool m_cOutIsAcquired;
+        
+        QMap<QString, niTask*> m_taskMap;
+        niChannelList m_channels;
+        ito::DataObject m_data;
+        
+        // Read-functions
+        ito::RetVal readAnalog(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
         ito::RetVal readDigital(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
         ito::RetVal readCounter(ito::DataObject *externalDataObject = NULL); /*!< Wait for acquired picture */
         
-		// Write-functions
-		ito::RetVal writeAnalog(const ito::DataObject *externalDataObject = NULL);
-		ito::RetVal writeDigital(ito::DataObject *externalDataObject = NULL);
-		ito::RetVal writeCounter(ito::DataObject *externalDataObject = NULL);
+        // Write-functions
+        ito::RetVal writeAnalog(const ito::DataObject *externalDataObject = NULL);
+        ito::RetVal writeDigital(ito::DataObject *externalDataObject = NULL);
+        ito::RetVal writeCounter(ito::DataObject *externalDataObject = NULL);
         
     public slots:
         //!< Get ADC-Parameter
@@ -112,9 +112,9 @@ class niDAQmx : public ito::AddInDataIO
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         //!< Wait for acquired picture, copy the Values to dObj of right type and size
         ito::RetVal getVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-		//!< 
-		ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL);
-		//!< 
+        //!< 
+        ito::RetVal setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL);
+        //!< 
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
         
         //checkData usually need not to be overwritten (see comments in source code)

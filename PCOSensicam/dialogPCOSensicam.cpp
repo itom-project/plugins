@@ -349,10 +349,10 @@ void DialogPCOSensicam::on_btnFullROI_clicked()
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogPCOSensicam::on_checkFastMode_clicked(bool checked)
 {
-	double current_delay_sec = ui.slider_delay->value() * exposureToSecFactor;
-	double current_exposure_sec = ui.slider_exposure->value() * exposureToSecFactor;
+    double current_delay_sec = ui.slider_delay->value() * exposureToSecFactor;
+    double current_exposure_sec = ui.slider_exposure->value() * exposureToSecFactor;
 
-	switch (m_currentParameters["cam_type"].getVal<int>())
+    switch (m_currentParameters["cam_type"].getVal<int>())
     {
         case FASTEXP: //"Fast Exposure"
         case FASTEXPQE: //"Fast Exposure QE"

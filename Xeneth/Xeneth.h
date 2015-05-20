@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "Xeneth" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -49,19 +49,19 @@ class Xeneth : public ito::AddInGrabber
         int hasConfDialog(void) { return 0; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
-		enum sections { integration_time = 0x0001,
-			        roi                  = 0x0002,
-					gain			    = 0x0032,
-					offset				= 0x0064,
-					all				    = integration_time | roi | gain | offset};
+        enum sections { integration_time = 0x0001,
+                    roi                  = 0x0002,
+                    gain                = 0x0032,
+                    offset                = 0x0064,
+                    all                    = integration_time | roi | gain | offset};
 
         ito::RetVal checkError(const ErrCode &code);
 
-		XCHANDLE m_handle;
+        XCHANDLE m_handle;
         ito::RetVal m_acquisitionRetVal;
         bool m_isGrabbing;
 
-		ito::RetVal synchronize(const sections &what = all);
+        ito::RetVal synchronize(const sections &what = all);
 
     signals:
 

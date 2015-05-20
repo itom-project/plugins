@@ -51,9 +51,9 @@ class DialogSuperlumBS : public ito::AbstractAddInConfigDialog
         ito::RetVal applyParameters();
 
     private:
-		void enableDialog(bool enabled);
+        void enableDialog(bool enabled);
         bool m_firstRun;
-		bool m_inEditing;
+        bool m_inEditing;
         Ui::DialogSuperlumBS ui; 
 
     public slots:

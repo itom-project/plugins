@@ -195,13 +195,13 @@ ito::RetVal ItomUSBDevice::getParam(QSharedPointer<ito::Param> val, ItomSharedSe
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //put your switch-case.. for getting the right value here
 
@@ -241,13 +241,13 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
@@ -262,9 +262,9 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
-        if(key == "timeout")
+        if (key == "timeout")
         {
             //check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom( &(*val) );
@@ -274,7 +274,7 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 m_timeoutMS = (int)(it->getVal<double>() * 1000 + 0.5);
             }
         }
-        else if(key == "debug")
+        else if (key == "debug")
         {
             //check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom( &(*val) );
@@ -313,7 +313,7 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
@@ -336,15 +336,15 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     ito::RetVal retval(ito::retOk);
  
-	const char *device_id = NULL;
-	const char *device_path = getenv("DEVICE");
-	const char *type = NULL;
+    const char *device_id = NULL;
+    const char *device_path = getenv("DEVICE");
+    const char *type = NULL;
 
-	int status = 0;
+    int status = 0;
 
     libusb_device *currentDevice = NULL;
     libusb_device **deviceList = NULL;
-	
+    
     retval += m_params["endpoint_read"].copyValueFrom(&((*paramsMand)[2]));
     retval += m_params["endpoint_write"].copyValueFrom(&((*paramsMand)[2]));
 
@@ -357,32 +357,32 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     m_debugMode = m_params["debug"].getVal<int>() > 0;
     bool printInfo = paramsOpt->at(2).getVal<int>() > 0;
 
-	uint16_t vid = paramsMand->at(0).getVal<int>() & 0x0000FFFF;
+    uint16_t vid = paramsMand->at(0).getVal<int>() & 0x0000FFFF;
     uint16_t pid = paramsMand->at(1).getVal<int>() & 0x0000FFFF;
 
-	unsigned int busnum = 0, devaddr = 0, tmpBusnum, tmpDevaddr;
+    unsigned int busnum = 0, devaddr = 0, tmpBusnum, tmpDevaddr;
 
     /* open the device using libusb */
     if (!retval.containsError())
     {
         status = libusb_init(NULL);
-	    if (status < 0) 
+        if (status < 0) 
         {
             retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
-	    }
+        }
         else
         {
-	        libusb_set_debug(NULL, m_params["debug"].getVal<int>());
+            libusb_set_debug(NULL, m_params["debug"].getVal<int>());
         } 
     }
 
     if (!retval.containsError())
     {
         status = libusb_get_device_list(NULL, &deviceList); //deviceList must be freed with libusb_free_device_list (if != NULL)
-		if (status < 0) 
+        if (status < 0) 
         {
-			retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
-		}
+            retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
+        }
         else
         {
             int listIdx = 0;
@@ -394,7 +394,7 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             {
                 currentDevice = deviceList[listIdx];
 
-				status = libusb_get_device_descriptor(currentDevice, &desc);
+                status = libusb_get_device_descriptor(currentDevice, &desc);
                 if (status < 0)
                 {
                     retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
@@ -402,21 +402,21 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 else
                 {
                     tmpBusnum = libusb_get_bus_number(currentDevice);
-			        tmpDevaddr = libusb_get_device_address(currentDevice);
+                    tmpDevaddr = libusb_get_device_address(currentDevice);
 
-			        if ((type != NULL) && (device_path != NULL)) 
+                    if ((type != NULL) && (device_path != NULL)) 
                     {
                         tmpBusnum = libusb_get_bus_number(currentDevice);
-			            tmpDevaddr = libusb_get_device_address(currentDevice);
+                        tmpDevaddr = libusb_get_device_address(currentDevice);
 
-				        // if both a type and bus,addr were specified, we just need to find our match
-				        if ((tmpBusnum == busnum) && (tmpDevaddr == devaddr))
-			            {
+                        // if both a type and bus,addr were specified, we just need to find our match
+                        if ((tmpBusnum == busnum) && (tmpDevaddr == devaddr))
+                        {
                             device = USBDevice(desc.idVendor, desc.idProduct, tmpBusnum, tmpDevaddr);
                             possibleIndices[listIdx] = device;
                             break;
                         }
-			        }
+                    }
                     else if (vid > 0 && pid > 0 && desc.idVendor == vid && desc.idProduct == pid)
                     {
                         device = USBDevice(desc.idVendor, desc.idProduct, tmpBusnum, tmpDevaddr);
@@ -450,7 +450,7 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 }
 
                 listIdx++;
-		    }
+            }
 
             int indexToOpen = -1;
 
@@ -491,13 +491,13 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             {
                 retval += ito::RetVal(ito::retError, 0, tr("no device found to open").toLatin1().data());
             }
-            else if(!retval.containsError())
+            else if (!retval.containsError())
             {
                 status = libusb_open(deviceList[indexToOpen], &m_pDevice);
-		        if (status < 0) 
+                if (status < 0) 
                 {
-			        retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
-		        }
+                    retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
+                }
                 else
                 {
                     if (libusb_get_device_descriptor(deviceList[indexToOpen], &desc) >= 0)
@@ -524,13 +524,13 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             }
         }
 
-        if(deviceList != NULL)
+        if (deviceList != NULL)
         {
-    	    libusb_free_device_list(deviceList, 1);
+            libusb_free_device_list(deviceList, 1);
         }
     }
 
-    if(!retval.containsError()) /* We need to claim the first interface */
+    if (!retval.containsError()) /* We need to claim the first interface */
     {
         int test = 0;
         
@@ -538,15 +538,15 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         if (!m_autoDetach) 
         {
             libusb_detach_kernel_driver(m_pDevice, 0);
-		}
+        }
         struct libusb_config_descriptor *conf_desc = NULL;
         status = libusb_get_active_config_descriptor(libusb_get_device(m_pDevice), &conf_desc);
         
-        if(conf_desc == NULL)
+        if (conf_desc == NULL)
         {
             status = libusb_get_config_descriptor(libusb_get_device(m_pDevice), 1, &conf_desc);   
 
-            if(conf_desc)
+            if (conf_desc)
             {
                 test = conf_desc->bConfigurationValue;
             }
@@ -556,23 +556,23 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         {
             std::cout << "Interfaces: " << (int)conf_desc->bNumInterfaces <<"\n-----------------------------\n" << std::endl;
             const libusb_interface *inter;
-	        const libusb_interface_descriptor *interdesc;
-	        const libusb_endpoint_descriptor *epdesc;
-	        for(int i = 0; i<(int)conf_desc->bNumInterfaces; i++) 
+            const libusb_interface_descriptor *interdesc;
+            const libusb_endpoint_descriptor *epdesc;
+            for(int i = 0; i<(int)conf_desc->bNumInterfaces; i++) 
             {
-		        inter = &conf_desc->interface[i];
-		        std::cout<<"Number of alternate settings: "<<inter->num_altsetting<<"\n" << std::endl;
-		        for(int j=0; j<inter->num_altsetting; j++) 
+                inter = &conf_desc->interface[i];
+                std::cout<<"Number of alternate settings: "<<inter->num_altsetting<<"\n" << std::endl;
+                for(int j=0; j<inter->num_altsetting; j++) 
                 {
-			        interdesc = &inter->altsetting[j];
-			        std::cout<<"    Interface Number: "<<(int)interdesc->bInterfaceNumber<<"\n";
-			        std::cout<<"    Number of endpoints: "<<(int)interdesc->bNumEndpoints<<"\n" << std::endl;
-			        
+                    interdesc = &inter->altsetting[j];
+                    std::cout<<"    Interface Number: "<<(int)interdesc->bInterfaceNumber<<"\n";
+                    std::cout<<"    Number of endpoints: "<<(int)interdesc->bNumEndpoints<<"\n" << std::endl;
+                    
                     for(int k=0; k<(int)interdesc->bNumEndpoints; k++) 
                     {
-				        epdesc = &interdesc->endpoint[k];
-				        std::cout << "        Descriptor Type: "<<(int)epdesc->bDescriptorType<<"\n";
-				        std::cout << "        EP Address: "<<(int)epdesc->bEndpointAddress<<"\n";
+                        epdesc = &interdesc->endpoint[k];
+                        std::cout << "        Descriptor Type: "<<(int)epdesc->bDescriptorType<<"\n";
+                        std::cout << "        EP Address: "<<(int)epdesc->bEndpointAddress<<"\n";
                         if (epdesc->bEndpointAddress > LIBUSB_ENDPOINT_IN)
                         {
                             std::cout << "        EP Address (IN): " << LIBUSB_ENDPOINT_IN << "+" << ((int)epdesc->bEndpointAddress - LIBUSB_ENDPOINT_IN) << "\n";
@@ -582,35 +582,35 @@ ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
                             std::cout << "        EP Address (OUT): " << LIBUSB_ENDPOINT_OUT << "+" << ((int)epdesc->bEndpointAddress - LIBUSB_ENDPOINT_OUT) << "\n";
                         }
                         std::cout<<"        Attributes: "<<(int)epdesc->bmAttributes<<"\n" << std::endl;
-			        }
-		        }
-	        }
+                    }
+                }
+            }
         }
 
         status = libusb_set_configuration(m_pDevice, test);
-		if (status < 0) 
+        if (status < 0) 
         {
             status = libusb_set_configuration(m_pDevice, 1);
-		    if (status < 0) 
+            if (status < 0) 
             {
                 status = libusb_set_configuration(m_pDevice, 0);
-		        if (status < 0) 
+                if (status < 0) 
                 {
-			        retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
-		        }
-		    }
-		}
+                    retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
+                }
+            }
+        }
 
         test = 0;
-	    status = libusb_claim_interface(m_pDevice, test);
-		if (status < 0) 
+        status = libusb_claim_interface(m_pDevice, test);
+        if (status < 0) 
         {
-			retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
-		}
+            retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
+        }
         libusb_free_config_descriptor(conf_desc);     
-	}
+    }
 
-    if(!retval.containsError()) /* We need to claim the first interface */
+    if (!retval.containsError()) /* We need to claim the first interface */
     {
         emit parametersChanged(m_params);
     }
@@ -631,7 +631,7 @@ ito::RetVal ItomUSBDevice::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
 
-    if(m_pDevice)
+    if (m_pDevice)
     {
         openedDevicesReadWriteMutex.lock();
         
@@ -647,14 +647,14 @@ ito::RetVal ItomUSBDevice::close(ItomSharedSemaphore *waitCond)
         }
         openedDevicesReadWriteMutex.unlock();
 
-	    libusb_release_interface(m_pDevice, 0);
+        libusb_release_interface(m_pDevice, 0);
         if (!m_autoDetach) 
         {
             libusb_attach_kernel_driver(m_pDevice, 0);
-		}
-	    libusb_close(m_pDevice);
+        }
+        libusb_close(m_pDevice);
     }
-	libusb_exit(NULL);
+    libusb_exit(NULL);
 
     if (waitCond)
     {
@@ -753,7 +753,7 @@ ito::RetVal ItomUSBDevice::setVal(const char *data, const int datalength, ItomSh
     {
         retval += ito::RetVal(ito::retError, status, libusb_error_name(status));
     }
-    else if(actual_length != datalength)
+    else if (actual_length != datalength)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Number of written characters differ from designated size").toLatin1().data());
     }

@@ -92,7 +92,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_MonoLSB(QImage *image, i
         }
     }
     bool result = image->save(imgFilename);
-    if(result == false)
+    if (result == false)
     {
         ret += ito::RetVal(ito::retError, 0, QObject::tr("image could not be saved to hard drive").toLatin1().data());
     }
@@ -114,7 +114,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_Indexed8(QImage *image, 
 
     image->setColorTable( colorMap );
     uchar *destPtr = NULL;
-    if(doScaling)
+    if (doScaling)
     {
         for (int row=0; row < MAT0->rows; row++)
         {
@@ -161,7 +161,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_RGB32(QImage *image, ito
 
     *image = QImage(MAT0->cols, MAT0->rows, QImage::Format_RGB32);
 
-    if(multPlanes)
+    if (multPlanes)
     {
         ito::uint32 value;
         
@@ -190,7 +190,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_RGB32(QImage *image, ito
     }
     else
     {
-        if(doScaling)
+        if (doScaling)
         {
             for (int row=0; row < MAT0->rows; row++)
             {
@@ -238,7 +238,7 @@ template<> ito::RetVal transformDatatoImage_RGB32<ito::int32>(QImage *image, ito
     ito::uint32 *destPtr = NULL;
     *image = QImage(MAT0->cols, MAT0->rows, QImage::Format_RGB32);
 
-    if(multPlanes)
+    if (multPlanes)
     {
         ito::uint32 value;
         ito::int32 *linePtr1 = NULL;
@@ -266,7 +266,7 @@ template<> ito::RetVal transformDatatoImage_RGB32<ito::int32>(QImage *image, ito
     else
     {
         ito::int32 *destPtr = NULL;
-        if(doScaling)
+        if (doScaling)
         {
 
             for (int row=0; row < MAT0->rows; row++)
@@ -316,7 +316,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_ARGB32(QImage *image, it
     ito::uint32 *destPtr = NULL;
     *image = QImage(MAT0->cols, MAT0->rows, QImage::Format_ARGB32);
 
-    if(multPlanes)
+    if (multPlanes)
     {
         ito::uint32 value;
         
@@ -350,7 +350,7 @@ template<typename _Tp> ito::RetVal transformDatatoImage_ARGB32(QImage *image, it
     else
     {
 
-        if(doScaling)
+        if (doScaling)
         {
             for (int row=0; row < MAT0->rows; row++)
             {
@@ -398,7 +398,7 @@ template<> ito::RetVal transformDatatoImage_ARGB32<ito::int32>(QImage *image, it
     ito::int32 *destPtr = NULL;
     *image = QImage(MAT0->cols, MAT0->rows, QImage::Format_ARGB32);
 
-    if(multPlanes)
+    if (multPlanes)
     {
         ito::uint32 value = 0;
         
@@ -431,7 +431,7 @@ template<> ito::RetVal transformDatatoImage_ARGB32<ito::int32>(QImage *image, it
     }
     else
     {
-        if(doScaling)
+        if (doScaling)
         {
             for (int row=0; row < MAT0->rows; row++)
             {
@@ -622,7 +622,7 @@ template<typename _Tp> ito::RetVal transformImagetoData_ARGB32(QImage *image, it
 {
     ito::RetVal ret = ito::retOk;
     std::string colorElem;
-    if(colorElement!=NULL)    colorElem= colorElement;
+    if (colorElement!=NULL)    colorElem= colorElement;
     ito::uint8 *linePtr2 = NULL;
     ito::uint8 *linePtr_red = NULL;
     ito::uint8 *linePtr_green = NULL;
@@ -692,7 +692,7 @@ template<typename _TpSrc, typename _TpDest> ito::RetVal transformScaled(cv::Mat 
     const _TpSrc *linePtr = NULL;  
     _TpDest *destPtr = NULL;  
 
-    if(std::numeric_limits<_TpSrc>::is_exact)
+    if (std::numeric_limits<_TpSrc>::is_exact)
     {
         //TODO: bitshift might get negativ - at least in compilers point of view
         //int bitShift = (sizeof(_TpSrc) - sizeof(_TpDest)) * 8;
@@ -738,7 +738,7 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat *image,
 
     unsigned char index;
 
-    if(std::numeric_limits<_TpSrc>::is_exact)
+    if (std::numeric_limits<_TpSrc>::is_exact)
     {
         //int bitShift = (sizeof(_TpSrc) - 1) * 8;
         _TpSrc bitShift = 1 << ((sizeof(_TpSrc) - 1) * 8);
@@ -791,7 +791,7 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat *image
     cv::Vec4b* destPtr = NULL;
     unsigned char index;
 
-    if(std::numeric_limits<_TpSrc>::is_exact)
+    if (std::numeric_limits<_TpSrc>::is_exact)
     {
         //int bitShift = (sizeof(_TpSrc) - 1) * 8;
         _TpSrc bitShift = 1 << ((sizeof(_TpSrc) - 1) * 8);
@@ -828,7 +828,7 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat *image
                 destPtr[col][0] = colorMap[index] & 0xFF;
                 
 
-                if(ito::dObjHelper::isFinite<_TpSrc>(linePtr[col]))
+                if (ito::dObjHelper::isFinite<_TpSrc>(linePtr[col]))
                 {
                     destPtr[col][3] = UCHAR_MAX;
                 }

@@ -454,7 +454,7 @@ ito::RetVal SMC100::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
 
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, additionalTag);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
@@ -464,7 +464,7 @@ ito::RetVal SMC100::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore
     {
         retValue += ito::RetVal(ito::retError, 0, tr("this motor only has one axis, therefore it is not allowed to get a parameter with index unequal to 0").toLatin1().data());
     }
-    else if(!retValue.containsError())
+    else if (!retValue.containsError())
     {
         if (key == "async")
         {
@@ -598,12 +598,12 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
@@ -611,7 +611,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //---------------------------
         if (key == "calib_mode")
@@ -785,7 +785,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }

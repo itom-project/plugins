@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -35,14 +35,14 @@ DockWidgetAvantesAvaSpec::DockWidgetAvantesAvaSpec(ito::AddInDataIO *grabber) :
  {
     if (m_firstRun)
     {
-		ui.rangeWidget_ROI->setMaximum(params["sizex"].getVal<int>());
+        ui.rangeWidget_ROI->setMaximum(params["sizex"].getVal<int>());
 
-		ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
+        ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
         ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
         ui.doubleSpinBox_integration_time->setSingleStep(1);
-		ui.spinBox_average->setMaximum(params["average"].getMax());
-		ui.spinBox_average->setMinimum(params["average"].getMin()); 
-		ui.spinBox_average->setSingleStep(1);
+        ui.spinBox_average->setMaximum(params["average"].getMax());
+        ui.spinBox_average->setMinimum(params["average"].getMin()); 
+        ui.spinBox_average->setSingleStep(1);
 
         m_firstRun = false;
     }
@@ -53,14 +53,14 @@ DockWidgetAvantesAvaSpec::DockWidgetAvantesAvaSpec(ito::AddInDataIO *grabber) :
         
         ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>() *1000.0);
 
-		int *roi = params["roi"].getVal<int*>();
-		ui.rangeWidget_ROI->setMaximumValue(roi[2]);
+        int *roi = params["roi"].getVal<int*>();
+        ui.rangeWidget_ROI->setMaximumValue(roi[2]);
 
-		ui.spinBox_average->setValue(params["average"].getVal<int>());
+        ui.spinBox_average->setValue(params["average"].getVal<int>());
 
         m_inEditing = false;
     }
-	m_currentParams = params; // move into ifs?
+    m_currentParams = params; // move into ifs?
  }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -94,13 +94,13 @@ void DockWidgetAvantesAvaSpec::on_rangeWidget_ROI_maximumValueChanged(int value)
     {
         m_inEditing = true;
 
-		int roi[] = {0,0,0,0};					// search for nicer way?
-		memcpy(roi, m_currentParams["roi"].getVal<int*>(), 4*sizeof(int));
-		roi[2] = value-roi[0];			//+1??
+        int roi[] = {0,0,0,0};                    // search for nicer way?
+        memcpy(roi, m_currentParams["roi"].getVal<int*>(), 4*sizeof(int));
+        roi[2] = value-roi[0];            //+1??
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("roi",ito::ParamBase::IntArray,4,roi));
         setPluginParameter(p, msgLevelWarningAndError);
         
-		m_inEditing = false;
+        m_inEditing = false;
     }
 }
 
@@ -114,15 +114,15 @@ void DockWidgetAvantesAvaSpec::on_rangeWidget_ROI_minimumValueChanged(int value)
     {
         m_inEditing = true;
 
-		int roi[] = {0,0,0,0};					// search for nicer way?
-		memcpy(roi, m_currentParams["roi"].getVal<int*>(), 4*sizeof(int));
-		roi[0] = value;
-		int curMaxVal = ui.rangeWidget_ROI->maximumValue();
-		roi[2] = curMaxVal-roi[0];			//+1??
+        int roi[] = {0,0,0,0};                    // search for nicer way?
+        memcpy(roi, m_currentParams["roi"].getVal<int*>(), 4*sizeof(int));
+        roi[0] = value;
+        int curMaxVal = ui.rangeWidget_ROI->maximumValue();
+        roi[2] = curMaxVal-roi[0];            //+1??
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("roi",ito::ParamBase::IntArray,4,roi));
         setPluginParameter(p, msgLevelWarningAndError);
         
-		m_inEditing = false;
+        m_inEditing = false;
     }
 }
 
@@ -139,6 +139,6 @@ void DockWidgetAvantesAvaSpec::on_spinBox_average_valueChanged(int value)
         QSharedPointer<ito::ParamBase> p(new ito::ParamBase("average",ito::ParamBase::Int,value));
         setPluginParameter(p, msgLevelWarningAndError);
         
-		m_inEditing = false;
+        m_inEditing = false;
     }
 }

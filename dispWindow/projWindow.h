@@ -26,8 +26,8 @@
 #define NOMINMAX        // we need this define to remove min max macros from M$ includes, otherwise we get problems within params.h
 #include <QtOpenGL/qgl.h>
 #if QT_VERSION >= 0x050000
-	#include <qopenglfunctions.h>
-	#include <qopenglvertexarrayobject.h>
+    #include <qopenglfunctions.h>
+    #include <qopenglvertexarrayobject.h>
 #endif
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
@@ -63,7 +63,7 @@ class PrjWindow : public QGLWidget
             idleState = paramsValid | cosIsInit | grayIsInit,
             initFail = 128
         };
-	
+    
     protected:
 
     private:
@@ -88,11 +88,11 @@ class PrjWindow : public QGLWidget
         QVector<unsigned char> m_lut;
 #if QT_VERSION >= 0x050000
         QOpenGLFunctions *m_glf;
-		QOpenGLVertexArrayObject *m_vao;
+        QOpenGLVertexArrayObject *m_vao;
 #else
         // just a dummy pointer so we don't need to adapt the rest of the code
         char *m_glf;
-		char *m_vao;
+        char *m_vao;
         GLuint m_VAO;
 #endif
         void paintGL();
@@ -126,7 +126,7 @@ class PrjWindow : public QGLWidget
     public slots:
         ito::RetVal setSize(int sizex, int sizey, bool reCalcGL = true);
         void setPos(int xpos, int ypos);
-		ito::RetVal setColor(const int col);
+        ito::RetVal setColor(const int col);
 
         ito::RetVal shutDown(ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal configProjection(int period, int phaseShift, int orient, ItomSharedSemaphore *waitCond = NULL);

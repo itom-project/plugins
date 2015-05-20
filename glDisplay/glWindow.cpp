@@ -79,17 +79,17 @@ out vec4 fragColor; \
 void main(void) \
 { \
     if (gamma == 0) \
-	{               \
-		fragColor = color * texture(textureObject, TexCoord); \
-	}               \
-	else            \
-	{               \
-		int col = int(texture(textureObject, TexCoord).r * 255.0);  \
+    {               \
+        fragColor = color * texture(textureObject, TexCoord); \
+    }               \
+    else            \
+    {               \
+        int col = int(texture(textureObject, TexCoord).r * 255.0);  \
         fragColor = color * vec4(lutarr[col], 1.0);      \
-	}           \
+    }           \
 }";
 
-	//texture2d is deprecated since shader language 1.3 (version 130), use texture instead
+    //texture2d is deprecated since shader language 1.3 (version 130), use texture instead
 
 
 
@@ -114,11 +114,11 @@ GLWindow::~GLWindow()
 {
 #if QT_VERSION >= 0x050000
 #if _DEBUG
-	if (m_pLogger)
-	{
-		delete m_pLogger;
-		m_pLogger = NULL;
-	}
+    if (m_pLogger)
+    {
+        delete m_pLogger;
+        m_pLogger = NULL;
+    }
 #endif
     if (m_glf)
     {
@@ -140,22 +140,22 @@ void GLWindow::initializeGL()
         m_glf->initializeOpenGLFunctions();
     }
 #else
-	//initializeGLFunctions(); 
+    //initializeGLFunctions(); 
 #endif
 
 //OpenGL debugging in Qt5 requires a debug-context (see Qt5 help). However, this context needs to be manually created and passed
 //to the constructor of GLWindow. This is not done yet.
 //#if QT_VERSION > 0x050000 && _DEBUG
 //    
-//	m_pLogger = new QOpenGLDebugLogger( this );
+//    m_pLogger = new QOpenGLDebugLogger( this );
 //
 //    connect( m_pLogger, SIGNAL( messageLogged( QOpenGLDebugMessage ) ),
 //             this, SLOT( onMessageLogged( QOpenGLDebugMessage ) ),
 //             Qt::DirectConnection );
 //
-//	//initialization will fail if GL_KHR_debug extension of OpenGL is not available
+//    //initialization will fail if GL_KHR_debug extension of OpenGL is not available
 //    if ( m_pLogger->initialize() ) 
-//	{
+//    {
 //        m_pLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
 //        m_pLogger->enableMessages();
 //    }
@@ -300,10 +300,10 @@ ito::RetVal GLWindow::shutdown(ItomSharedSemaphore *waitCond /*= NULL*/)
 
     m_init = false;
 
-	if (waitCond)
-	{
-		waitCond->release();
-	}
+    if (waitCond)
+    {
+        waitCond->release();
+    }
 
     return ito::retOk;
 }

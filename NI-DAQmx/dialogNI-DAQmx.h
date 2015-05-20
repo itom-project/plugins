@@ -2,7 +2,7 @@
     Plugin "IDSuEye" for itom software
     URL: http://www.bitbucket.org/itom/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -49,7 +49,7 @@ class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
     Q_OBJECT
 
     public:
-		DialogNiDAQmx(ito::AddInBase *grabber, void *plugin);
+        DialogNiDAQmx(ito::AddInBase *grabber, void *plugin);
         ~DialogNiDAQmx() {};
 
         ito::RetVal applyParameters();
@@ -57,37 +57,37 @@ class DialogNiDAQmx : public ito::AbstractAddInConfigDialog
     private:
         void enableDialog(bool enabled);
         
-		void *m_pPlugin;
+        void *m_pPlugin;
 
-		bool m_firstRun;
-		QMap<QString, ito::Param> m_params;
-		
+        bool m_firstRun;
+        QMap<QString, ito::Param> m_params;
+        
 
-		Ui::niDAQmx ui;
+        Ui::niDAQmx ui;
 
     public slots:
         void parametersChanged(QMap<QString, ito::Param> params);
 
     private slots:
-		void on_taskApplyButton_clicked(bool checked = false);
-		void on_taskCombo_currentIndexChanged(int index);
+        void on_taskApplyButton_clicked(bool checked = false);
+        void on_taskCombo_currentIndexChanged(int index);
 
-		void on_aiApplyButton_clicked(bool checked = false);
-		void on_aiChannelCombo_currentIndexChanged(int index);
-		
-		void on_aoApplyButton_clicked(bool checked = false);
-		void on_aoChannelCombo_currentIndexChanged(int index);
+        void on_aiApplyButton_clicked(bool checked = false);
+        void on_aiChannelCombo_currentIndexChanged(int index);
+        
+        void on_aoApplyButton_clicked(bool checked = false);
+        void on_aoChannelCombo_currentIndexChanged(int index);
 
-		void on_dioApplyButton_clicked(bool checked = false);
-		void on_dioChannelCombo_currentIndexChanged(int index);
+        void on_dioApplyButton_clicked(bool checked = false);
+        void on_dioChannelCombo_currentIndexChanged(int index);
 
-		void on_cioApplyButton_clicked(bool checked = false);
-		void on_cioChannelCombo_currentIndexChanged(int index);
+        void on_cioApplyButton_clicked(bool checked = false);
+        void on_cioChannelCombo_currentIndexChanged(int index);
 
-		void on_aiBitCombo_currentIndexChanged(int index);
-		void on_aiRangeCombo_currentIndexChanged(int index);
+        void on_aiBitCombo_currentIndexChanged(int index);
+        void on_aiRangeCombo_currentIndexChanged(int index);
 
-		void calculateResolution();
+        void calculateResolution();
 
 };
 

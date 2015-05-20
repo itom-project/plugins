@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -41,10 +41,10 @@ uint8 const     AVS_SERIAL_LEN          = 9; //was 10, but AvaSpec-3648 and AvaS
 uint16 const    MAX_PIXEL_VALUE         = 0xFFFC;
 uint8 const     MAX_VIDEO_CHANNELS      = 2;
 uint16 const    MAX_LASER_WIDTH         = 0xFFFF;
-uint8 const     HW_TRIGGER_MODE		    = 1;
-uint8 const 	SW_TRIGGER_MODE	    	= 0;
-uint8 const 	EDGE_TRIGGER_SOURCE  	= 0;
-uint8 const 	LEVEL_TRIGGER_SOURCE	= 1;
+uint8 const     HW_TRIGGER_MODE            = 1;
+uint8 const     SW_TRIGGER_MODE            = 0;
+uint8 const     EDGE_TRIGGER_SOURCE      = 0;
+uint8 const     LEVEL_TRIGGER_SOURCE    = 1;
 uint8 const     MAX_TRIGGER_MODE        = 1;
 uint8 const     MAX_TRIGGER_SOURCE      = 1;
 uint8 const     MAX_TRIGGER_SOURCE_TYPE = 1;
@@ -203,7 +203,7 @@ uint16 const    SETTINGS_RESERVED_LEN   = ((62*1024) -  sizeof(uint32) -
 typedef struct
 {
     uint8                   prefix[6];
-	uint16                  m_Len;
+    uint16                  m_Len;
     uint16                  m_ConfigVersion;
     char                    m_aUserFriendlyId[USER_ID_LEN];
     DetectorType            m_Detector;
@@ -220,29 +220,29 @@ typedef struct
 typedef struct
 {
     uint8           prefix[6];
-	uint32          version1;
-	uint32          version2;
-	uint32          version3;
-	char            SerialNumber[AVS_SERIAL_LEN];
+    uint32          version1;
+    uint32          version2;
+    uint32          version3;
+    char            SerialNumber[AVS_SERIAL_LEN];
     char            UserFriendlyName[USER_ID_LEN];
     unsigned char   Status;
 } AvsIdentityType;
 
 typedef struct
 {
-	uint8	prefix[6];
-	uint32	timestamp;
-	uint16	deadpix[13];
-	uint16	pixels[3648];
+    uint8    prefix[6];
+    uint32    timestamp;
+    uint16    deadpix[13];
+    uint16    pixels[3648];
 } sony_single_measdatatype;
 
 typedef struct
 {
-	uint8	prefix[6];
-	uint32	timestamp;
-	uint16	averages;
-	uint32	deadpix[13];
-	uint32	pixels[3648];
+    uint8    prefix[6];
+    uint32    timestamp;
+    uint16    averages;
+    uint32    deadpix[13];
+    uint32    pixels[3648];
 } sony_multi_measdatatype;
 
 //----------------------------------------------------------------------------------------------------------------------------------

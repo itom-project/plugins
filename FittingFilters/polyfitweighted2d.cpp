@@ -571,7 +571,10 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
     }
 
     delete dataZFloat;
-    if(weightsFloat) delete weightsFloat;
+    if (weightsFloat)
+    {
+        delete weightsFloat;
+    }
     
     return retval;
 }

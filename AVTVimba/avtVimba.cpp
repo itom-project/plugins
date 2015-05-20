@@ -101,9 +101,9 @@ ito::RetVal AvtVimbaInterface::closeThisInst(ito::AddInBase **addInInst)
     in this constructor or later in the init method
 */
 AvtVimba::AvtVimba() : 
-	AddInGrabber(), 
-	m_isgrabbing(false),  
-	m_camera(CameraPtr()),
+    AddInGrabber(), 
+    m_isgrabbing(false),  
+    m_camera(CameraPtr()),
     m_aliveTimer(NULL),
     m_aliveTimerThread(NULL)
 {
@@ -143,7 +143,7 @@ AvtVimba::AvtVimba() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("camera_number", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Camera Number").toLatin1().data());
+    paramVal = ito::Param("camera_number", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Camera Number").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 14, 8, tr("Bit depth of sensor").toLatin1().data());
@@ -154,21 +154,21 @@ AvtVimba::AvtVimba() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 33.0, 0.0, tr("Gain of AD in dB, set it to 0.0 for best image quality.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("gain_auto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled gain (0: off, 1: continuously varies the gain; gain will be read-only then)").toLatin1().data());
+    paramVal = ito::Param("gain_auto", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("auto-controlled gain (0: off, 1: continuously varies the gain; gain will be read-only then)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gamma", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("Gamma value").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("stream_bps", ito::ParamBase::Int | ito::ParamBase::In, 1000000, 124000000, 124000000, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
+    paramVal = ito::Param("stream_bps", ito::ParamBase::Int | ito::ParamBase::In, 1000000, 124000000, 124000000, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("packet_size", ito::ParamBase::Int | ito::ParamBase::In, 500, 16384, 8228, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
+    paramVal = ito::Param("packet_size", ito::ParamBase::Int | ito::ParamBase::In, 500, 16384, 8228, tr("Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("device_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly | ito::ParamBase::In, 1.0, 100.0, 25.0, tr("device temperature of sensor in °C").toLatin1().data());
+    paramVal = ito::Param("device_temperature", ito::ParamBase::Double | ito::ParamBase::Readonly | ito::ParamBase::In, 1.0, 100.0, 25.0, tr("device temperature of sensor in °C").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("trigger_mode", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("trigger mode (0: Off, 1: On)").toLatin1().data());
     m_params.insert(paramVal.getName(),paramVal);
 
-	paramVal = ito::Param("trigger_source", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("trigger source (Freerun, Line1, Line2, Line3, Line4, FixedRate, Software, InputLines). Not all values are supported for all cameras.").toLatin1().data());
+    paramVal = ito::Param("trigger_source", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("trigger source (Freerun, Line1, Line2, Line3, Line4, FixedRate, Software, InputLines). Not all values are supported for all cameras.").toLatin1().data());
     m_params.insert(paramVal.getName(),paramVal);
 
     paramVal = ito::Param("trigger_activation", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("trigger activation (RisingEdge, FallingEdge, AnyEdge, LevelHigh, LevelLow). Not all values are supported for all cameras.").toLatin1().data());
@@ -190,24 +190,24 @@ AvtVimba::~AvtVimba()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::checkError(VmbErrorType errCode, const char* prefix /*= NULL*/)
 {
-	if (errCode == VmbErrorSuccess)
-	{
-		return ito::retOk;
-	}
+    if (errCode == VmbErrorSuccess)
+    {
+        return ito::retOk;
+    }
     else
     {
         const char *p = (prefix ? prefix : "Vimba API error");
-	    switch (errCode)
-	    {
-	    case VmbErrorApiNotStarted:
-		    return ito::RetVal::format(ito::retError,errCode, "%s: Vimba API not started.", p);
-	    case VmbErrorTimeout:
-		    return ito::RetVal::format(ito::retError,errCode, "%s: Timeout while acquiring image", p);
-	    case VmbErrorDeviceNotOpen:
-		    return ito::RetVal::format(ito::retError,errCode, "%s: Device was not opened for usage", p);
-	    default:
-		    return ito::RetVal::format(ito::retError,errCode, "%s: Undefined error %i.", p, errCode);
-	    }
+        switch (errCode)
+        {
+        case VmbErrorApiNotStarted:
+            return ito::RetVal::format(ito::retError,errCode, "%s: Vimba API not started.", p);
+        case VmbErrorTimeout:
+            return ito::RetVal::format(ito::retError,errCode, "%s: Timeout while acquiring image", p);
+        case VmbErrorDeviceNotOpen:
+            return ito::RetVal::format(ito::retError,errCode, "%s: Device was not opened for usage", p);
+        default:
+            return ito::RetVal::format(ito::retError,errCode, "%s: Undefined error %i.", p, errCode);
+        }
     }
 }
 
@@ -220,55 +220,55 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-	std::string name, serialNumber, DeviceID;
-	FeaturePtr pFeature;
+    std::string name, serialNumber, DeviceID;
+    FeaturePtr pFeature;
     VmbInt64_t enum_idx;
     std::string enum_name;
 
     int packetSize = paramsOpt->at(1).getVal<int>();
 
-	unsigned int cameraNumber = static_cast<unsigned int>(paramsOpt->at(0).getVal<int>());
+    unsigned int cameraNumber = static_cast<unsigned int>(paramsOpt->at(0).getVal<int>());
 
-	m_params["camera_number"].setVal<int>(cameraNumber);
+    m_params["camera_number"].setVal<int>(cameraNumber);
 
     timeoutMS = sToMs(m_params["timeout"].getVal<double>());
 
-	VimbaSystem& sys = VimbaSystem::GetInstance();
-	CameraPtrVector cameras;
+    VimbaSystem& sys = VimbaSystem::GetInstance();
+    CameraPtrVector cameras;
 
-	//startup API
-	if (Initnum==0)
-	{
-		retValue += checkError(sys.Startup());
-	}
-	if (InitList[cameraNumber]<1)
-	{
+    //startup API
+    if (Initnum==0)
+    {
+        retValue += checkError(sys.Startup());
+    }
+    if (InitList[cameraNumber]<1)
+    {
 
-		//obtain all cameras
-		if (!retValue.containsError())
-		{
-			retValue += checkError(sys.GetCameras(cameras));
-		}
+        //obtain all cameras
+        if (!retValue.containsError())
+        {
+            retValue += checkError(sys.GetCameras(cameras));
+        }
 
-		if (!retValue.containsError())
-		{
-			if (cameraNumber >= 0 && cameraNumber < cameras.size())
-			{
-				retValue += checkError(cameras[cameraNumber]->Open(VmbAccessModeFull));
+        if (!retValue.containsError())
+        {
+            if (cameraNumber >= 0 && cameraNumber < cameras.size())
+            {
+                retValue += checkError(cameras[cameraNumber]->Open(VmbAccessModeFull));
 
-				if (!retValue.containsError())
-				{
-					++Initnum;
-					++InitList[cameraNumber];
-					m_camera = cameras[cameraNumber];
-					m_camera->GetName(name);
-					m_camera->GetSerialNumber(serialNumber);
-					m_camera->GetInterfaceID(DeviceID);
+                if (!retValue.containsError())
+                {
+                    ++Initnum;
+                    ++InitList[cameraNumber];
+                    m_camera = cameras[cameraNumber];
+                    m_camera->GetName(name);
+                    m_camera->GetSerialNumber(serialNumber);
+                    m_camera->GetInterfaceID(DeviceID);
                     
                     m_camera->GetInterfaceType(m_interfaceType);
 
                     QString identifier = QString::fromStdString(name) + " (" + QString::fromStdString(serialNumber) + ") @ " + QString::fromStdString(DeviceID);
-					setIdentifier(identifier);
+                    setIdentifier(identifier);
 
                     m_params["serial_no"].setVal<char*>( (char*)(serialNumber.data()) );
 
@@ -343,7 +343,7 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
 
                         retValue += getEnumFeatureByName("TriggerSelector", enum_name, enum_idx);
                     }
-				}
+                }
 
                 if (!retValue.containsError())
                 {
@@ -530,20 +530,20 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
                 {
                     retValue += synchronizeParameters(fAll);
                 }
-			}
-			else
-			{
-				retValue += ito::RetVal::format(ito::retError,0,"cameraNumber %i is out of range [0,%i]", cameraNumber, cameras.size()-1);
-			}
-		}
-	}
-	else
-	{
-		retValue += ito::RetVal::format(ito::retError,0,"cameraNumber %i already opened", cameraNumber);
-	}
-	if (!retValue.containsError())
-	{
-		//// Set the GeV packet size to the highest possible value
+            }
+            else
+            {
+                retValue += ito::RetVal::format(ito::retError,0,"cameraNumber %i is out of range [0,%i]", cameraNumber, cameras.size()-1);
+            }
+        }
+    }
+    else
+    {
+        retValue += ito::RetVal::format(ito::retError,0,"cameraNumber %i already opened", cameraNumber);
+    }
+    if (!retValue.containsError())
+    {
+        //// Set the GeV packet size to the highest possible value
   //      // (In this example we do not test whether this cam actually is a GigE cam)
   //      FeaturePtr pCommandFeature;
   //      if ( VmbErrorSuccess == m_camera->GetFeatureByName( "GVSPAdjustPacketSize", pCommandFeature ))
@@ -561,7 +561,7 @@ ito::RetVal AvtVimba::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
   //          }
   //      }
     }
-		
+        
     
     if (!retValue.containsError())
     {        
@@ -606,24 +606,24 @@ ito::RetVal AvtVimba::close(ItomSharedSemaphore *waitCond)
     // - disconnect the device if not yet done
     // - this funtion is considered to be the "inverse" of init.
 
-	int nr = m_params["camera_number"].getVal<int>();
-	
+    int nr = m_params["camera_number"].getVal<int>();
+    
 
-	if (m_camera.get())
-	{
-		retValue += checkError(m_camera->Close());
-		m_camera = CameraPtr();
-		InitList[nr] = 0;
-		--Initnum;
-	}
-	if (Initnum<1)
-	{
-		VimbaSystem& sys = VimbaSystem::GetInstance();
-	
+    if (m_camera.get())
+    {
+        retValue += checkError(m_camera->Close());
+        m_camera = CameraPtr();
+        InitList[nr] = 0;
+        --Initnum;
+    }
+    if (Initnum<1)
+    {
+        VimbaSystem& sys = VimbaSystem::GetInstance();
+    
 
-		//shutdown API
-		retValue += checkError(sys.Shutdown());
-	}
+        //shutdown API
+        retValue += checkError(sys.Shutdown());
+    }
 
     if (m_aliveTimer)
     {
@@ -650,188 +650,188 @@ ito::RetVal AvtVimba::close(ItomSharedSemaphore *waitCond)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::getIntFeatureByName(const char *name, VmbInt64_t &value)
 {
-	ito::RetVal retValue;
-	FeaturePtr pFeature;
+    ito::RetVal retValue;
+    FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-	{
-		retValue += checkError(pFeature->GetValue(value), name);
-	}
+    if (!retValue.containsError())
+    {
+        retValue += checkError(pFeature->GetValue(value), name);
+    }
 
-	return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal  AvtVimba::getIntFeatureByName(const char *name, VmbInt64_t &value, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc)
 {
     ito::RetVal retValue;
-	FeaturePtr pFeature;
+    FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-	{
-		retValue += checkError(pFeature->GetValue(value), name);
+    if (!retValue.containsError())
+    {
+        retValue += checkError(pFeature->GetValue(value), name);
         retValue += checkError(pFeature->GetRange(min, max), name);
         retValue += checkError(pFeature->GetIncrement(inc), name);
-	}
+    }
 
-	return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::getDblFeatureByName(const char *name, double &value)
 {
-	ito::RetVal retValue;
-	FeaturePtr pFeature;
+    ito::RetVal retValue;
+    FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-	{
-		retValue += checkError(pFeature->GetValue(value), name);
-	}
+    if (!retValue.containsError())
+    {
+        retValue += checkError(pFeature->GetValue(value), name);
+    }
 
-	return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::getDblFeatureByName(const char *name, double &value, double &min, double &max)
 {
-	ito::RetVal retValue;
-	FeaturePtr pFeature;
+    ito::RetVal retValue;
+    FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-	{
-		retValue += checkError(pFeature->GetValue(value), name);
+    if (!retValue.containsError())
+    {
+        retValue += checkError(pFeature->GetValue(value), name);
         retValue += checkError(pFeature->GetRange(min, max), name);
-	}
+    }
 
-	return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::getEnumFeatureByName(const char *name, std::string &value, VmbInt64_t &idx)
 {
-	ito::RetVal retValue;
-	FeaturePtr pFeature;
+    ito::RetVal retValue;
+    FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-	{
-		retValue += checkError(pFeature->GetValue(value), name);
+    if (!retValue.containsError())
+    {
+        retValue += checkError(pFeature->GetValue(value), name);
         retValue += checkError(pFeature->GetValue(idx), name);
-	}
+    }
 
-	return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::setDblFeature(const char *name, const double &fValue)
 {
-	FeaturePtr pFeature;
-	ito::RetVal retValue;
+    FeaturePtr pFeature;
+    ito::RetVal retValue;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-		{
-			retValue += checkError(pFeature->SetValue(fValue), name);
-			if (!retValue.containsError())
-			{
-				//std::cout << "Feature " << name << " set to " << fValue << std::endl;
-			}	
-		}
-	return retValue;
+    if (!retValue.containsError())
+        {
+            retValue += checkError(pFeature->SetValue(fValue), name);
+            if (!retValue.containsError())
+            {
+                //std::cout << "Feature " << name << " set to " << fValue << std::endl;
+            }    
+        }
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::setIntFeature(const char *name, const int &iValue)
 {
-	FeaturePtr pFeature;
-	ito::RetVal retValue;
+    FeaturePtr pFeature;
+    ito::RetVal retValue;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-		{
-			retValue += checkError(pFeature->SetValue(iValue), name);
-			if (!retValue.containsError())
-			{
-				//std::cout << "Feature " << name << " set to " << iValue << std::endl;
-			}	
-		}
-	return retValue;
+    if (!retValue.containsError())
+        {
+            retValue += checkError(pFeature->SetValue(iValue), name);
+            if (!retValue.containsError())
+            {
+                //std::cout << "Feature " << name << " set to " << iValue << std::endl;
+            }    
+        }
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::setEnumFeature(const char *name, const char *eValue)
 {
-	FeaturePtr pFeature;
-	ito::RetVal retValue;
+    FeaturePtr pFeature;
+    ito::RetVal retValue;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-		{
-			retValue += checkError(pFeature->SetValue(eValue), name);
-		}
-	
-	return retValue;
+    if (!retValue.containsError())
+        {
+            retValue += checkError(pFeature->SetValue(eValue), name);
+        }
+    
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::setEnumFeature(const char *name, VmbInt64_t value)
 {
     FeaturePtr pFeature;
-	ito::RetVal retValue;
+    ito::RetVal retValue;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-		{
-			retValue += checkError(pFeature->SetValue(value), name);
-		}
-	
-	return retValue;
+    if (!retValue.containsError())
+        {
+            retValue += checkError(pFeature->SetValue(value), name);
+        }
+    
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::getRange(const char *name, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc)
 {
-	ito::RetVal retValue;
-	FeaturePtr pFeature;
+    ito::RetVal retValue;
+    FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-	{
-		retValue += checkError(pFeature->GetRange(min,max), name);
+    if (!retValue.containsError())
+    {
+        retValue += checkError(pFeature->GetRange(min,max), name);
         retValue += checkError(pFeature->GetIncrement(inc), name);
-	}
+    }
 
-	return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvtVimba::getRange(const char *name, double &max, double &min)
 {
-	ito::RetVal retValue;
-	FeaturePtr pFeature;
+    ito::RetVal retValue;
+    FeaturePtr pFeature;
 
-	retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
+    retValue += checkError(m_camera->GetFeatureByName(name, pFeature), name);
 
-	if (!retValue.containsError())
-	{
-		retValue += checkError(pFeature->GetRange(min,max), name);
-	}
+    if (!retValue.containsError())
+    {
+        retValue += checkError(pFeature->GetRange(min,max), name);
+    }
 
-	return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -856,16 +856,16 @@ ito::RetVal AvtVimba::getParam(QSharedPointer<ito::Param> val, ItomSharedSemapho
 
     if (!retValue.containsError())
     {
-		if (key == "device_temperature")
+        if (key == "device_temperature")
         {
-			double tmpDouble;
-			retValue += getDblFeatureByName("DeviceTemperature",tmpDouble);
+            double tmpDouble;
+            retValue += getDblFeatureByName("DeviceTemperature",tmpDouble);
             if (!retValue.containsError())
             {
-			    retValue+= it->setVal<double>(tmpDouble);
+                retValue+= it->setVal<double>(tmpDouble);
             }
         }
-		 
+         
         //finally, save the desired value in the argument val (this is a shared pointer!)
         *val = it.value();
     }
@@ -888,7 +888,7 @@ ito::RetVal AvtVimba::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
     bool hasIndex;
     int index;
     QString suffix;
-	FeaturePtr pFeature;
+    FeaturePtr pFeature;
     ParamMapIterator it;
     VmbInt64_t enum_idx;
 
@@ -913,7 +913,7 @@ ito::RetVal AvtVimba::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
     {
         if (key == "integration_time")
         {
-			retValue += setDblFeature(nameExposureTime,sToMus(val->getVal<double>()));
+            retValue += setDblFeature(nameExposureTime,sToMus(val->getVal<double>()));
             if (!retValue.containsError())
             {
                 retValue += synchronizeParameters(fExposure);
@@ -1189,63 +1189,63 @@ ito::RetVal AvtVimba::retrieveData(ito::DataObject *externalDataObject)
     bool hasListeners = (m_autoGrabbingListeners.size() > 0);
     bool copyExternal = (externalDataObject != NULL);
 
-	retValue += m_acquisitionStatus; //e.g. timeout in acquisition (from acquire)
+    retValue += m_acquisitionStatus; //e.g. timeout in acquisition (from acquire)
 
-	if (!retValue.containsError())
-	{
+    if (!retValue.containsError())
+    {
 
-		if (m_isgrabbing == false)
-		{
-			retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
-		}
-		else
-		{
-			//step 1: update size of externalDataObject. The internal one m_data is already checked after any parameter change (in synchronizeParameters method)
-			if (externalDataObject)
-			{
-				retValue += checkData(externalDataObject);
-			}
+        if (m_isgrabbing == false)
+        {
+            retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
+        }
+        else
+        {
+            //step 1: update size of externalDataObject. The internal one m_data is already checked after any parameter change (in synchronizeParameters method)
+            if (externalDataObject)
+            {
+                retValue += checkData(externalDataObject);
+            }
         
-			if (!retValue.containsError())
-			{
-				VmbUint32_t frameImgSize, bufferHeight, bufferWidth;
-				VmbUchar_t *bufferPtr;
-				m_frame->GetImageSize(frameImgSize);
-				m_frame->GetImage(bufferPtr);
-				m_frame->GetHeight(bufferHeight);
-				m_frame->GetWidth(bufferWidth);
+            if (!retValue.containsError())
+            {
+                VmbUint32_t frameImgSize, bufferHeight, bufferWidth;
+                VmbUchar_t *bufferPtr;
+                m_frame->GetImageSize(frameImgSize);
+                m_frame->GetImage(bufferPtr);
+                m_frame->GetHeight(bufferHeight);
+                m_frame->GetWidth(bufferWidth);
 
-				if (m_data.getType() == ito::tUInt8)
-				{
-					if (copyExternal)
-					{
-						retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-					}
-					if (!copyExternal || hasListeners)
-					{
-						retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-					}
-				}
-				else if (m_data.getType() == ito::tUInt16)
-				{
-					if (copyExternal)
-					{
-						retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
-					}
-					if (!copyExternal || hasListeners)
-					{
-						retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
-					}
-				}
-				else
-				{
-					retValue += ito::RetVal(ito::retError, 1002, tr("copying image buffer not possible since unsupported type.").toLatin1().data());
-				}
-			}
-		}
-	}
+                if (m_data.getType() == ito::tUInt8)
+                {
+                    if (copyExternal)
+                    {
+                        retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
+                    }
+                    if (!copyExternal || hasListeners)
+                    {
+                        retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
+                    }
+                }
+                else if (m_data.getType() == ito::tUInt16)
+                {
+                    if (copyExternal)
+                    {
+                        retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
+                    }
+                    if (!copyExternal || hasListeners)
+                    {
+                        retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
+                    }
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 1002, tr("copying image buffer not possible since unsupported type.").toLatin1().data());
+                }
+            }
+        }
+    }
 
-	m_isgrabbing = false;
+    m_isgrabbing = false;
 
     return retValue;
 }
@@ -1454,10 +1454,10 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
 
         ret_ = getIntFeatureByName("OffsetX", x0, x0_max, x0_min, x0_inc);
         ret_ += getIntFeatureByName("OffsetY", y0, y0_max, y0_min, y0_inc);
-		ret_ += getIntFeatureByName("Width", w, w_max, w_min, w_inc);
-		ret_ += getIntFeatureByName("Height", h, h_max, h_min, h_inc);
-		ret_ += getIntFeatureByName("WidthMax", width_max);
-		ret_ += getIntFeatureByName("HeightMax", height_max);
+        ret_ += getIntFeatureByName("Width", w, w_max, w_min, w_inc);
+        ret_ += getIntFeatureByName("Height", h, h_max, h_min, h_inc);
+        ret_ += getIntFeatureByName("WidthMax", width_max);
+        ret_ += getIntFeatureByName("HeightMax", height_max);
 
         if (!ret_.containsError())
         {
@@ -1474,23 +1474,23 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
             else
             {
                 m_params["x0"].setMeta(new ito::IntMeta(x0_min, x0 + w - 2, x0_inc), true);
-	            m_params["x0"].setVal<int>(x0);
+                m_params["x0"].setVal<int>(x0);
 
                 m_params["y0"].setMeta(new ito::IntMeta(y0_min, y0 + h - 2, y0_inc), true);
-	            m_params["y0"].setVal<int>(y0);
+                m_params["y0"].setVal<int>(y0);
 
-			    m_params["x1"].setMeta(new ito::IntMeta(x0 + w_min - 1, width_max - 1, w_inc), true);
-			    m_params["x1"].setVal<int>(x0 + w - 1);
+                m_params["x1"].setMeta(new ito::IntMeta(x0 + w_min - 1, width_max - 1, w_inc), true);
+                m_params["x1"].setVal<int>(x0 + w - 1);
 
-			    m_params["y1"].setMeta(new ito::IntMeta(y0 + h_min - 1, height_max - 1, h_inc), true);
-			    m_params["y1"].setVal<int>(y0 + h- 1);
+                m_params["y1"].setMeta(new ito::IntMeta(y0 + h_min - 1, height_max - 1, h_inc), true);
+                m_params["y1"].setVal<int>(y0 + h- 1);
             }
 
-			m_params["sizex"].setMeta(new ito::IntMeta(w_min, width_max, w_inc), true);
-			m_params["sizex"].setVal<int>(w);
+            m_params["sizex"].setMeta(new ito::IntMeta(w_min, width_max, w_inc), true);
+            m_params["sizex"].setVal<int>(w);
 
-			m_params["sizey"].setMeta(new ito::IntMeta(h_min, height_max, h_inc), true);
-			m_params["sizey"].setVal<int>(h);
+            m_params["sizey"].setMeta(new ito::IntMeta(h_min, height_max, h_inc), true);
+            m_params["sizey"].setVal<int>(h);
         }
 
         retval += ret_;
@@ -1537,8 +1537,8 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
 
     if ((features & fGigETransport) && m_interfaceType == VmbInterfaceEthernet)
     {
-	    VmbInt64_t intVal, intMin, intMax, intInc;
-	    ret_ = getIntFeatureByName("StreamBytesPerSecond",intVal, intMax, intMin, intInc);
+        VmbInt64_t intVal, intMin, intMax, intInc;
+        ret_ = getIntFeatureByName("StreamBytesPerSecond",intVal, intMax, intMin, intInc);
         ParamMapIterator it = m_params.find("stream_bps");
         if (!ret_.containsError())
         {

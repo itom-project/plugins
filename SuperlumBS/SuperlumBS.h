@@ -1,3 +1,25 @@
+/* ********************************************************************
+    Plugin "SuperlumBS" for itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
+
+    This file is part of a plugin for the measurement software itom.
+  
+    This itom-plugin is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+
+    itom and its plugins are distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************** */
+
 #ifndef SUPERLUMBS_H
 #define SUPERLUMBS_h    
 
@@ -44,14 +66,14 @@ class SuperlumBS : public ito::AddInActuator
     public:
         friend class SuperlumBSInterface;
         const ito::RetVal showConfDialog(void);
-        int hasConfDialog(void) { return 1; }		//!< indicates that this plugin has got a configuration dialog
+        int hasConfDialog(void) { return 1; }        //!< indicates that this plugin has got a configuration dialog
         
     private:
 
         ito::AddInDataIO *m_pSer;
         int m_delayAfterSendCommandMS;
 
-		enum DeviceType { BS_840_1_HP, Unknown};
+        enum DeviceType { BS_840_1_HP, Unknown};
 
         DeviceType m_deviceType;
 
@@ -63,7 +85,7 @@ class SuperlumBS : public ito::AddInActuator
         //ito::RetVal SetPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
         //ito::RetVal CheckStatus(void);
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);      
-		ito::RetVal IdentifyAndInitializeSystem();
+        ito::RetVal IdentifyAndInitializeSystem();
 
     public slots:
         
@@ -134,8 +156,8 @@ class SuperlumBSInterface : public ito::AddInInterfaceBase
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
 
-	signals:
-		
+    signals:
+        
 
     public slots:
 };

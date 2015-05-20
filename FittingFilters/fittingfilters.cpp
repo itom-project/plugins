@@ -123,7 +123,7 @@ RetVal FittingFilters::fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<i
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object").toLatin1().data()) );
 
@@ -155,7 +155,7 @@ RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito
     {
         const cv::Mat *plane = dObjImages.getCvPlaneMat(0);
 
-        if(QString::compare(method, "leastSquareFit", Qt::CaseInsensitive) == 0)
+        if (QString::compare(method, "leastSquareFit", Qt::CaseInsensitive) == 0)
         {
             double A,B,C;
             switch (dObjImages.getType())
@@ -192,7 +192,7 @@ RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito
             (*paramsOut)[1].setVal<double>(B);
             (*paramsOut)[2].setVal<double>(C);
         }
-        else if(QString::compare(method, "leastSquareFitSVD", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(method, "leastSquareFitSVD", Qt::CaseInsensitive) == 0)
         {
             double A,B,C;
             retval += fitLeastSquarePlaneSVD(plane,A,B,C);
@@ -200,7 +200,7 @@ RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito
             (*paramsOut)[1].setVal<double>(B);
             (*paramsOut)[2].setVal<double>(C);
         }
-        else if(QString::compare(method, "leastMedianFit", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(method, "leastMedianFit", Qt::CaseInsensitive) == 0)
         {
             double alarm_rate = paramsOpt->at(2).getVal<double>();
             double valid_probability = paramsOpt->at(1).getVal<double>();
@@ -258,7 +258,7 @@ RetVal FittingFilters::subtractPlaneParams(QVector<ito::Param> *paramsMand, QVec
 {
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     *paramsMand << Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object").toLatin1().data());
     *paramsMand << Param("destinationImage", ParamBase::DObjPtr | ParamBase::In | ParamBase::Out, NULL, tr("destination image data object").toLatin1().data());
@@ -284,12 +284,12 @@ RetVal FittingFilters::subtractPlane(QVector<ito::ParamBase> *paramsMand, QVecto
         return ito::RetVal(ito::retError, 0, tr("Error: source image must be two-dimensional.").toLatin1().data());
     }
 
-    if(dObjInput->getType() == tComplex64 || dObjInput->getType() == tComplex128)
+    if (dObjInput->getType() == tComplex64 || dObjInput->getType() == tComplex128)
     {
         return ito::RetVal(retError, 0, tr("source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64").toLatin1().data());
     }
 
-    if(dObjOutput == NULL)
+    if (dObjOutput == NULL)
     {
         return ito::RetVal(retError, 0, tr("destination matrix is NULL").toLatin1().data());
     }
@@ -367,7 +367,7 @@ RetVal FittingFilters::subtractRegressionPlaneParams(QVector<ito::Param> *params
 {
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     *paramsMand << Param("sourceImage", ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("source image data object").toLatin1().data());
     *paramsMand << Param("destinationImage", ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination image data object").toLatin1().data());
@@ -393,7 +393,7 @@ RetVal FittingFilters::subtractRegressionPlane(QVector<ito::ParamBase> *paramsMa
 
     retval += FittingFilters::fitPlane( &paramsMandTemp, &paramsOptTemp, &paramsOutTemp );
 
-    if(retval == retOk)
+    if (retval == retOk)
     {
         paramsMandTemp.clear();
         paramsOptTemp.clear();
@@ -436,7 +436,7 @@ no value is taken from this rectangle. The algorithm returns an error if less va
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("inputData", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object") );
     paramsMand->append( ito::Param("orderX", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in x-direction"));
@@ -490,7 +490,7 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
 {
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("dataZ", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "data object with given size and data type including scale and offset value. Depending on these values, this data object is finally filled with the evaluated polynomial function") );
 
@@ -551,7 +551,7 @@ to parallely compute the approximations for each pixel.";
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("data", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object (3 dimensions).") );
     paramsMand->append( ito::Param("polynoms", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "") );
@@ -580,7 +580,7 @@ to parallely compute the approximations for each pixel.";
     {
         retval += ito::RetVal(ito::retError,0,"parameters 'data' or 'polynoms' are NULL");
     }
-    else if(input == output)
+    else if (input == output)
     {
         retval += ito::RetVal(ito::retError,0,"inplace determination not possible. Different 'data' and 'polynoms' parameters necessary.");
     }
@@ -736,7 +736,7 @@ to parallely compute the approximations for each pixel.";
         delete data;
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         QString msg;
         msg = tr("Caluclated polynomical coeffs along z-direction with order Z = %1").arg(order);
@@ -763,7 +763,7 @@ the rectangle. If this is not possible, NaN is returned as value.";
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->append( ito::Param("dataObj", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input real-valued data object (2D or ROI containing only one plane).") );
     paramsMand->append( ito::Param("coordsSubPix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input Nx2 data object containing the sub-pixel (column,row) coordinates of each point (given in scale value of dataObj).") );
@@ -1033,7 +1033,7 @@ RetVal FittingFilters::fitLeastSquarePlaneSVD(const cv::Mat *inputMatrix, double
     cv::Mat result = cv::Mat(3, 1, CV_32FC1 );
     cv::Mat input;
 
-    if(inputMatrix->type() != CV_64FC1)
+    if (inputMatrix->type() != CV_64FC1)
     {
         inputMatrix->convertTo(input, CV_64FC1);
     }
@@ -1159,7 +1159,7 @@ template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *ma
             for (j = 0; j < mat->cols; j++)
             {
                 temp = (double)(row[j]);
-                if(!cvIsNaN(temp))
+                if (!cvIsNaN(temp))
                 {
                    sxz += j*temp;
                    syz += i*temp;
@@ -1177,7 +1177,7 @@ template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *ma
 
     double denom = 0.0;
 
-    if(mat->cols != 1 && mat->rows != 1)
+    if (mat->cols != 1 && mat->rows != 1)
     {
         denom = syy*sx*sx - 2*sx*sxy*sy + n*sxy*sxy + sxx*sy*sy - n*sxx*syy;
         
@@ -1457,7 +1457,7 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
 
         for (j=0; j<inputMatrix->cols; j++)
         {
-            if(!cvIsNaN(row[j]))
+            if (!cvIsNaN(row[j]))
             {
                 rowDest[j] = row[j] - Anew - Bx[j] - Cy[i];
             }

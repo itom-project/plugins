@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AndorSDK3" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -33,7 +33,7 @@ class AndorSDK3Interface : public ito::AddInInterfaceBase
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
     Q_INTERFACES(ito::AddInInterfaceBase)
-	PLUGIN_ITOM_API
+    PLUGIN_ITOM_API
 
     public:
 

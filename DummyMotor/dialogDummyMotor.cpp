@@ -119,12 +119,12 @@ ito::RetVal DialogDummyMotor::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, ui.checkAsync->isChecked() ? 1 : 0)));
     }
 
-    if(qAbs(ui.doubleSpinBox_Speed->value() - m_currentParameters["speed"].getVal<double>()) > std::numeric_limits<double>::epsilon())    //If true than the getVal found the parameters during construction
+    if (qAbs(ui.doubleSpinBox_Speed->value() - m_currentParameters["speed"].getVal<double>()) > std::numeric_limits<double>::epsilon())    //If true than the getVal found the parameters during construction
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed", ito::ParamBase::Double, ui.doubleSpinBox_Speed->value())));
     }
 
-    if(qAbs(ui.doubleSpinBox_Accel->value() - m_currentParameters["accel"].getVal<double>()) > std::numeric_limits<double>::epsilon())    //If true than the getVal found the parameters during construction
+    if (qAbs(ui.doubleSpinBox_Accel->value() - m_currentParameters["accel"].getVal<double>()) > std::numeric_limits<double>::epsilon())    //If true than the getVal found the parameters during construction
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel", ito::ParamBase::Double, ui.doubleSpinBox_Accel->value())));
     }
@@ -142,7 +142,7 @@ void DialogDummyMotor::on_pushButtonCalib_clicked()
     
     for(i=0;i<m_numaxis;i++)
     {
-        if(m_enable[i])
+        if (m_enable[i])
             axis << i;
     }
 

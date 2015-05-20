@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AndorSDK3" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -29,8 +29,8 @@
 DialogSDK3::DialogSDK3(ito::AddInBase *grabber) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true),
-	m_currentSizeMaxX(-1),
-	m_currentSizeMaxY(-1)
+    m_currentSizeMaxX(-1),
+    m_currentSizeMaxY(-1)
 {
     ui.setupUi(this);
 
@@ -137,22 +137,22 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
         m_firstRun = false;
     }
 
-	bool updateROIMeta = true;
-	ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+    bool updateROIMeta = true;
+    ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
 
-	if (m_currentSizeMaxY == rm->getHeightRangeMeta().getMax() &&
-		m_currentSizeMaxX == rm->getWidthRangeMeta().getMax())
-	{
-		updateROIMeta = false;
-	}
+    if (m_currentSizeMaxY == rm->getHeightRangeMeta().getMax() &&
+        m_currentSizeMaxX == rm->getWidthRangeMeta().getMax())
+    {
+        updateROIMeta = false;
+    }
 
-	if (updateROIMeta)
-	{
+    if (updateROIMeta)
+    {
         ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
         ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
-		m_currentSizeMaxX = rm->getWidthRangeMeta().getMax();
-		m_currentSizeMaxY = rm->getHeightRangeMeta().getMax();
-	}
+        m_currentSizeMaxX = rm->getWidthRangeMeta().getMax();
+        m_currentSizeMaxY = rm->getHeightRangeMeta().getMax();
+    }
 
     bool updateSizeX = false;
     bool updateSizeY = false;
@@ -232,7 +232,7 @@ void DialogSDK3::parametersChanged(QMap<QString, ito::Param> params)
         }
     }
 
-	ui.checkSensorCooling->setDisabled(params["sensor_cooling"].getFlags() & ito::ParamBase::Readonly);
+    ui.checkSensorCooling->setDisabled(params["sensor_cooling"].getFlags() & ito::ParamBase::Readonly);
     ui.checkSensorCooling->setChecked( params["sensor_cooling"].getVal<int>() > 0);
 
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
@@ -246,7 +246,7 @@ ito::RetVal DialogSDK3::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
     bool success = false;
 
-    if(ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
+    if (ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {
         int x0, x1, y0, y1;
         ui.rangeX01->values(x0,x1);
@@ -273,38 +273,38 @@ ito::RetVal DialogSDK3::applyParameters()
         }
     }
 
-    if(ui.sliderGain->isEnabled())
+    if (ui.sliderGain->isEnabled())
     {
         double dval = ui.sliderGain->value();
-        if(qAbs(m_currentParameters["gain"].getVal<double>() - dval) > std::numeric_limits<double>::epsilon())
+        if (qAbs(m_currentParameters["gain"].getVal<double>() - dval) > std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.spinTimeout->isEnabled())
+    if (ui.spinTimeout->isEnabled())
     {
         double dval = ui.spinTimeout->value();
-        if(qAbs(m_currentParameters["timeout"].getVal<double>() - dval) > std::numeric_limits<double>::epsilon())
+        if (qAbs(m_currentParameters["timeout"].getVal<double>() - dval) > std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timeout", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.sliderIntegrationTime->isEnabled())
+    if (ui.sliderIntegrationTime->isEnabled())
     {
         double dval = ui.sliderIntegrationTime->value();
-        if(qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= 0.00001) //the smallest range is 1musec, given by the number of decimals of the spin box. //std::numeric_limits<double>::epsilon())
+        if (qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= 0.00001) //the smallest range is 1musec, given by the number of decimals of the spin box. //std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.comboBpp->isEnabled())
+    if (ui.comboBpp->isEnabled())
     {
         int bpp = ui.comboBpp->itemData(ui.comboBpp->currentIndex()).toInt();
         
-        if(m_currentParameters["bpp"].getVal<int>() !=  bpp)
+        if (m_currentParameters["bpp"].getVal<int>() !=  bpp)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bpp)));
         }

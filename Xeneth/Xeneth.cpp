@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "Xeneth" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -46,7 +46,7 @@
 */
 Xeneth::Xeneth() :
     AddInGrabber(),
-	m_handle(0),
+    m_handle(0),
     m_isGrabbing(false)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "Xeneth", "GrabberName");
@@ -66,18 +66,18 @@ Xeneth::Xeneth() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in y (rows)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 8, 16, 16, tr("bit depth").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::Readonly, 8, 16, 16, tr("bit depth").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 1000.0, 2.0, tr("timeout in seconds for image acquisition").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 608, 1, tr("left end of the ROI").toLatin1().data());
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 608, 1, tr("left end of the ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("x1", ito::ParamBase::Int, 32, 640, 1, tr("right end of the ROI").toLatin1().data());
+    paramVal = ito::Param("x1", ito::ParamBase::Int, 32, 640, 1, tr("right end of the ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 508, 1, tr("upper end of the ROI").toLatin1().data());
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 508, 1, tr("upper end of the ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("y1", ito::ParamBase::Int, 4, 512, 1, tr("downer end of the ROI").toLatin1().data());
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 4, 512, 1, tr("downer end of the ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     int roi[] = {0, 0, 640, 512};
@@ -121,19 +121,19 @@ ito::RetVal Xeneth::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retVal;
 
-	const char *deviceName = paramsOpt->at(0).getVal<char*>();
+    const char *deviceName = paramsOpt->at(0).getVal<char*>();
 
-	m_handle = XC_OpenCamera(deviceName);
+    m_handle = XC_OpenCamera(deviceName);
 
-	if (m_handle == 0)
-	{
-		retVal += ito::RetVal(ito::retError, 0, "no camera found");
-	}
+    if (m_handle == 0)
+    {
+        retVal += ito::RetVal(ito::retError, 0, "no camera found");
+    }
 
-	if (!retVal.containsError())
-	{
-		int width = XC_GetWidth(m_handle);
-		int height = XC_GetHeight(m_handle);
+    if (!retVal.containsError())
+    {
+        int width = XC_GetWidth(m_handle);
+        int height = XC_GetHeight(m_handle);
         FrameType frameType = XC_GetFrameType(m_handle);
 
         if (frameType != FT_8_BPP_GRAY && frameType != FT_16_BPP_GRAY)
@@ -151,42 +151,42 @@ ito::RetVal Xeneth::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
                 m_params["bpp"].setVal<int>(16);
             }
 
-		    m_params["sizex"].setVal<int>(width);
+            m_params["sizex"].setVal<int>(width);
             m_params["sizex"].setMeta(new ito::IntMeta(1, XC_GetMaxWidth(m_handle)), true);
-		    m_params["sizey"].setVal<int>(height);
+            m_params["sizey"].setVal<int>(height);
             m_params["sizey"].setMeta(new ito::IntMeta(1, XC_GetMaxHeight(m_handle)), true);
 
             char serialNumber[128];
             retVal += checkError(XC_GetPropertyValue(m_handle, "_CAM_SER", serialNumber, 128));
             serialNumber[127] = '\0';
 
-			if (!retVal.containsError())
+            if (!retVal.containsError())
             {
                 setIdentifier(serialNumber);
             }
 
-			for (int i = 0; i < XC_GetPropertyCount (m_handle); ++i)
-			{
-				char buf[256];
-				XC_GetPropertyName(m_handle, i, buf, 256);
-				std::cout << i << ": " << buf << "\n" << std::endl;
-			}
+            for (int i = 0; i < XC_GetPropertyCount (m_handle); ++i)
+            {
+                char buf[256];
+                XC_GetPropertyName(m_handle, i, buf, 256);
+                std::cout << i << ": " << buf << "\n" << std::endl;
+            }
 
             if (!retVal.containsError())
             {
-				XPropType type;
-				retVal += checkError(XC_GetPropertyType(m_handle, "GainControl", &type));
+                XPropType type;
+                retVal += checkError(XC_GetPropertyType(m_handle, "GainControl", &type));
                 retVal += checkError(XC_SetPropertyValueF(m_handle, "GainControl", 1, ""));;
 
             }
-			if (!retVal.containsError())
+            if (!retVal.containsError())
             {
                 retVal += checkError(XC_SetPropertyValueF(m_handle, "OffsetControl", 1, ""));;
             }
 
-			retVal += synchronize();
+            retVal += synchronize();
         }
-	}
+    }
 
     if(!retVal.containsError())
     {
@@ -217,17 +217,17 @@ ito::RetVal Xeneth::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
 
-	// When the handle to the camera is still initialised ...
-	if (m_handle != 0 && XC_IsInitialised(m_handle))
-	{
+    // When the handle to the camera is still initialised ...
+    if (m_handle != 0 && XC_IsInitialised(m_handle))
+    {
         if (XC_IsCapturing(m_handle))
         {
             retValue += checkError(XC_StopCapture(m_handle));
         }
 
-		XC_CloseCamera(m_handle);
-		m_handle = 0;
-	}
+        XC_CloseCamera(m_handle);
+        m_handle = 0;
+    }
     
 
     if(waitCond)
@@ -324,109 +324,109 @@ ito::RetVal Xeneth::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
-	if (!retValue.containsError())
-	{
-		if (key == "integration_time")
-		{
-			retValue += checkError(XC_SetPropertyValueL(m_handle, "IntegrationTime", val->getVal<double>() * 1e6, NULL));
-			retValue += synchronize(integration_time);
-		}
-		if (key == "gain")
-		{
-			
-			retValue += checkError(XC_SetPropertyValueL(m_handle, "ManualModeGain", qBound<long>(1, val->getVal<double>()*255+1, 255.99), NULL));
-			retValue += synchronize(gain);
-		}
-		if (key == "offset")
-		{
-			
-			retValue += checkError(XC_SetPropertyValueL(m_handle, "ManualModeOffset", val->getVal<double>() *200-100, NULL));
-			retValue += synchronize(offset);
-		}
+    if (!retValue.containsError())
+    {
+        if (key == "integration_time")
+        {
+            retValue += checkError(XC_SetPropertyValueL(m_handle, "IntegrationTime", val->getVal<double>() * 1e6, NULL));
+            retValue += synchronize(integration_time);
+        }
+        if (key == "gain")
+        {
+            
+            retValue += checkError(XC_SetPropertyValueL(m_handle, "ManualModeGain", qBound<long>(1, val->getVal<double>()*255+1, 255.99), NULL));
+            retValue += synchronize(gain);
+        }
+        if (key == "offset")
+        {
+            
+            retValue += checkError(XC_SetPropertyValueL(m_handle, "ManualModeOffset", val->getVal<double>() *200-100, NULL));
+            retValue += synchronize(offset);
+        }
 
-		if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi")
-		{
-			int started = this->grabberStartedCount();
-			if (started > 0)
-			{
-				setGrabberStarted(1);
-				stopDevice(NULL);
-			}
+        if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi")
+        {
+            int started = this->grabberStartedCount();
+            if (started > 0)
+            {
+                setGrabberStarted(1);
+                stopDevice(NULL);
+            }
 
-			if (key == "roi")
-			{
-				if (hasIndex)
-				{
-					switch (index)
-					{
-					case 0:
-						retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetX", val->getVal<int>(), ""));
-						break;
-					case 1:
-						retValue += checkError(XC_SetPropertyValueL(m_handle, "Width", val->getVal<int>(), ""));
-						break;
-					case 2:
-						retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetY", val->getVal<int>(), ""));
-						break;
-					case 3:
-						retValue += checkError(XC_SetPropertyValueL(m_handle, "Height", val->getVal<int>(), ""));
-						break;
-					default:
-						retValue += ito::RetVal(ito::retError, 0, "invalid index");
-					}
+            if (key == "roi")
+            {
+                if (hasIndex)
+                {
+                    switch (index)
+                    {
+                    case 0:
+                        retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetX", val->getVal<int>(), ""));
+                        break;
+                    case 1:
+                        retValue += checkError(XC_SetPropertyValueL(m_handle, "Width", val->getVal<int>(), ""));
+                        break;
+                    case 2:
+                        retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetY", val->getVal<int>(), ""));
+                        break;
+                    case 3:
+                        retValue += checkError(XC_SetPropertyValueL(m_handle, "Height", val->getVal<int>(), ""));
+                        break;
+                    default:
+                        retValue += ito::RetVal(ito::retError, 0, "invalid index");
+                    }
 
-					retValue += synchronize(roi);
-				}
-				else
-				{
-					const int *roi_ = val->getVal<int*>();
-					retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetX", roi_[0], ""));
-					retValue += checkError(XC_SetPropertyValueL(m_handle, "Width", roi_[2], ""));
-					retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetY", roi_[1], ""));
-					retValue += checkError(XC_SetPropertyValueL(m_handle, "Height", roi_[3], ""));
-					retValue += synchronize(roi);
-				}
-			}
+                    retValue += synchronize(roi);
+                }
+                else
+                {
+                    const int *roi_ = val->getVal<int*>();
+                    retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetX", roi_[0], ""));
+                    retValue += checkError(XC_SetPropertyValueL(m_handle, "Width", roi_[2], ""));
+                    retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetY", roi_[1], ""));
+                    retValue += checkError(XC_SetPropertyValueL(m_handle, "Height", roi_[3], ""));
+                    retValue += synchronize(roi);
+                }
+            }
 
-			else if (key == "x0")
-			{
-		
+            else if (key == "x0")
+            {
+        
 
-				retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetX", val->getVal<int>(), NULL));
-				retValue += synchronize(roi);
-			}
+                retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetX", val->getVal<int>(), NULL));
+                retValue += synchronize(roi);
+            }
 
-			else if (key == "x1")
-			{
-				long current_x0;
-				retValue += checkError(XC_GetPropertyValueL(m_handle, "OffsetX", &current_x0));
-				retValue += checkError(XC_SetPropertyValueL(m_handle, "Width", val->getVal<int>()-current_x0, NULL));
-				retValue += synchronize(roi);
-			}
+            else if (key == "x1")
+            {
+                long current_x0;
+                retValue += checkError(XC_GetPropertyValueL(m_handle, "OffsetX", &current_x0));
+                retValue += checkError(XC_SetPropertyValueL(m_handle, "Width", val->getVal<int>()-current_x0, NULL));
+                retValue += synchronize(roi);
+            }
 
-			else if (key == "y0")
-			{
-			
-				retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetY", val->getVal<int>(), NULL));
-				retValue += synchronize(roi);
-			}
+            else if (key == "y0")
+            {
+            
+                retValue += checkError(XC_SetPropertyValueL(m_handle, "OffsetY", val->getVal<int>(), NULL));
+                retValue += synchronize(roi);
+            }
 
-			else if (key == "y1")
-			{
-				long current_y0;
-				retValue += checkError(XC_GetPropertyValueL(m_handle, "OffsetY", &current_y0));
-				retValue += checkError(XC_SetPropertyValueL(m_handle, "Hight", val->getVal<int>()-current_y0, NULL));
-				retValue += synchronize(roi);
-			}
+            else if (key == "y1")
+            {
+                long current_y0;
+                retValue += checkError(XC_GetPropertyValueL(m_handle, "OffsetY", &current_y0));
+                retValue += checkError(XC_SetPropertyValueL(m_handle, "Hight", val->getVal<int>()-current_y0, NULL));
+                retValue += synchronize(roi);
+            }
 
-			if (started > 0)
-			{
-				startDevice(NULL);
-				setGrabberStarted(started);
-			}
-		}
-	
-	}
+            if (started > 0)
+            {
+                startDevice(NULL);
+                setGrabberStarted(started);
+            }
+        }
+    
+    }
 
     
 
@@ -567,9 +567,9 @@ ito::RetVal Xeneth::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     bool done = false;
     FrameType frameType = (bpp == 8) ? FT_8_BPP_GRAY : FT_16_BPP_GRAY;
 
-	int size = (bpp == 8) ? 1 : 2 * (width * height * sizeof(char));
-	int size2 = XC_GetFrameSize(m_handle);
-	timer.start();
+    int size = (bpp == 8) ? 1 : 2 * (width * height * sizeof(char));
+    int size2 = XC_GetFrameSize(m_handle);
+    timer.start();
 
     while (getFrameCode == E_NO_FRAME && timer.elapsed() < timeoutMS)
     {
@@ -728,59 +728,59 @@ void Xeneth::dockWidgetVisibilityChanged(bool visible)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Xeneth::checkError(const ErrCode &code)
 {
-	switch (code)
-	{
-	case I_OK:
-		return ito::retOk;
-	case I_DIRTY:
-		return ito::RetVal(ito::retError, code, "Internal error");
-	case E_BUG:
-		return ito::RetVal(ito::retError, code, "Generic error");
-	case E_NOINIT:
-		return ito::RetVal(ito::retError, code, "Camera was not successfully initialised");
-	case E_LOGICLOADFAILED:
-		return ito::RetVal(ito::retError, code, "Invalid logic file");
-	case E_INTERFACE_ERROR:
-		return ito::RetVal(ito::retError, code, "Command interface failure");
-	case E_OUT_OF_RANGE:
-		return ito::RetVal(ito::retError, code, "Provided value is incapable of being produced by the hardware");
-	case E_NOT_SUPPORTED:
-		return ito::RetVal(ito::retError, code, "Functionality not supported by this camera");
-	case E_NOT_FOUND:
-		return ito::RetVal(ito::retError, code, "File/Data not found");
-	case E_FILTER_DONE:
-		return ito::RetVal(ito::retError, code, "Filter has finished processing, and will be removed  ");
-	case E_NO_FRAME:
-		return ito::RetVal(ito::retError, code, "A frame was requested by calling GetFrame, but none was available");
-	case E_SAVE_ERROR:
-		return ito::RetVal(ito::retError, code, "Couldn't save to file");
-	case E_MISMATCHED:
-		return ito::RetVal(ito::retError, code, "Buffer size mismatch");
-	case E_BUSY:
-		return ito::RetVal(ito::retError, code, "The API can not read a temperature because the camera is busy");
-	case E_INVALID_HANDLE:
-		return ito::RetVal(ito::retError, code, "An unknown handle was passed to the C API");
-	case E_TIMEOUT:
-		return ito::RetVal(ito::retError, code, "Operation timed out");
-	case E_FRAMEGRABBER:
-		return ito::RetVal(ito::retError, code, "Frame grabber error");
-	case E_NO_CONVERSION:
-		return ito::RetVal(ito::retError, code, "GetFrame could not convert the image data to the requested format");
-	case E_FILTER_SKIP_FRAME:
-		return ito::RetVal(ito::retError, code, "Filter indicates the frame should be skipped");
-	case E_WRONG_VERSION:
-		return ito::RetVal(ito::retError, code, "Version mismatch");
-	case E_PACKET_ERROR:
-		return ito::RetVal(ito::retError, code, "The requested frame cannot be provided because at least one packet has been lost");
-	case E_WRONG_FORMAT:
-		return ito::RetVal(ito::retError, code, "The emissivity map you tried to set should be a 16 bit grayscale png");
-	case E_WRONG_SIZE:
-		return ito::RetVal(ito::retError, code, "The emissivity map you tried to set has the wrong dimensions (w,h)");
-	case E_CAPSTOP:
-		return ito::RetVal(ito::retError, code, "Internal error");
-	default:
-		return ito::RetVal(ito::retError, code, "unknown");
-	}
+    switch (code)
+    {
+    case I_OK:
+        return ito::retOk;
+    case I_DIRTY:
+        return ito::RetVal(ito::retError, code, "Internal error");
+    case E_BUG:
+        return ito::RetVal(ito::retError, code, "Generic error");
+    case E_NOINIT:
+        return ito::RetVal(ito::retError, code, "Camera was not successfully initialised");
+    case E_LOGICLOADFAILED:
+        return ito::RetVal(ito::retError, code, "Invalid logic file");
+    case E_INTERFACE_ERROR:
+        return ito::RetVal(ito::retError, code, "Command interface failure");
+    case E_OUT_OF_RANGE:
+        return ito::RetVal(ito::retError, code, "Provided value is incapable of being produced by the hardware");
+    case E_NOT_SUPPORTED:
+        return ito::RetVal(ito::retError, code, "Functionality not supported by this camera");
+    case E_NOT_FOUND:
+        return ito::RetVal(ito::retError, code, "File/Data not found");
+    case E_FILTER_DONE:
+        return ito::RetVal(ito::retError, code, "Filter has finished processing, and will be removed  ");
+    case E_NO_FRAME:
+        return ito::RetVal(ito::retError, code, "A frame was requested by calling GetFrame, but none was available");
+    case E_SAVE_ERROR:
+        return ito::RetVal(ito::retError, code, "Couldn't save to file");
+    case E_MISMATCHED:
+        return ito::RetVal(ito::retError, code, "Buffer size mismatch");
+    case E_BUSY:
+        return ito::RetVal(ito::retError, code, "The API can not read a temperature because the camera is busy");
+    case E_INVALID_HANDLE:
+        return ito::RetVal(ito::retError, code, "An unknown handle was passed to the C API");
+    case E_TIMEOUT:
+        return ito::RetVal(ito::retError, code, "Operation timed out");
+    case E_FRAMEGRABBER:
+        return ito::RetVal(ito::retError, code, "Frame grabber error");
+    case E_NO_CONVERSION:
+        return ito::RetVal(ito::retError, code, "GetFrame could not convert the image data to the requested format");
+    case E_FILTER_SKIP_FRAME:
+        return ito::RetVal(ito::retError, code, "Filter indicates the frame should be skipped");
+    case E_WRONG_VERSION:
+        return ito::RetVal(ito::retError, code, "Version mismatch");
+    case E_PACKET_ERROR:
+        return ito::RetVal(ito::retError, code, "The requested frame cannot be provided because at least one packet has been lost");
+    case E_WRONG_FORMAT:
+        return ito::RetVal(ito::retError, code, "The emissivity map you tried to set should be a 16 bit grayscale png");
+    case E_WRONG_SIZE:
+        return ito::RetVal(ito::retError, code, "The emissivity map you tried to set has the wrong dimensions (w,h)");
+    case E_CAPSTOP:
+        return ito::RetVal(ito::retError, code, "Internal error");
+    default:
+        return ito::RetVal(ito::retError, code, "unknown");
+    }
 }
 
 //----------------------------------------------------------------------------------------
@@ -792,91 +792,91 @@ const ito::RetVal Xeneth::showConfDialog(void)
 //----------------------------------------------------------------------------------------
 ito::RetVal Xeneth::synchronize(const sections &what /*= all*/)
 {
-	ito::RetVal retval;
-	ito::RetVal retval_temp;
+    ito::RetVal retval;
+    ito::RetVal retval_temp;
 
-	if (what & integration_time)
-	{
-		long low, high, current;
-		retval_temp = checkError(XC_GetPropertyRangeL(m_handle, "IntegrationTime", &low, &high));
-		retval_temp += checkError(XC_GetPropertyValueL(m_handle, "IntegrationTime", &current));
-		if (!retval_temp.containsError())
-		{
-			m_params["integration_time"].setMeta(new ito::DoubleMeta((double)low * 1.0e-6, (double)high * 1.0e-6), true);
-			m_params["integration_time"].setVal<double>((current) * 1.0e-6);
-		}
+    if (what & integration_time)
+    {
+        long low, high, current;
+        retval_temp = checkError(XC_GetPropertyRangeL(m_handle, "IntegrationTime", &low, &high));
+        retval_temp += checkError(XC_GetPropertyValueL(m_handle, "IntegrationTime", &current));
+        if (!retval_temp.containsError())
+        {
+            m_params["integration_time"].setMeta(new ito::DoubleMeta((double)low * 1.0e-6, (double)high * 1.0e-6), true);
+            m_params["integration_time"].setVal<double>((current) * 1.0e-6);
+        }
 
-		retval += retval_temp;
-	}
+        retval += retval_temp;
+    }
 
-	if (what & gain)
-	{
-		long low, high, current;
+    if (what & gain)
+    {
+        long low, high, current;
 
-		retval_temp += checkError(XC_GetPropertyRangeL(m_handle, "ManualModeGain", &low, &high));
-		retval_temp += checkError(XC_GetPropertyValueL(m_handle, "ManualModeGain", &current));
-		if (!retval_temp.containsError())
-		{
-			m_params["gain"].setMeta(new ito::DoubleMeta(((double)low -1)/255, ((double)high-1)/255), true);
-			m_params["gain"].setVal<double>(((current) -1)/255);
-		}
+        retval_temp += checkError(XC_GetPropertyRangeL(m_handle, "ManualModeGain", &low, &high));
+        retval_temp += checkError(XC_GetPropertyValueL(m_handle, "ManualModeGain", &current));
+        if (!retval_temp.containsError())
+        {
+            m_params["gain"].setMeta(new ito::DoubleMeta(((double)low -1)/255, ((double)high-1)/255), true);
+            m_params["gain"].setVal<double>(((current) -1)/255);
+        }
 
-		retval += retval_temp;
-	}
+        retval += retval_temp;
+    }
 
-		if (what & offset)
-	{
-		long low, high, current;
+        if (what & offset)
+    {
+        long low, high, current;
 
-		retval_temp += checkError(XC_GetPropertyRangeL(m_handle, "ManualModeOffset", &low, &high));
-		retval_temp += checkError(XC_GetPropertyValueL(m_handle, "ManualModeOffset", &current));
-		if (!retval_temp.containsError())
-		{
-			m_params["offset"].setMeta(new ito::DoubleMeta(((double)low +100)/200, ((double)high+100)/200), true);
-			m_params["offset"].setVal<double>(((current) +100)/200);
-		}
+        retval_temp += checkError(XC_GetPropertyRangeL(m_handle, "ManualModeOffset", &low, &high));
+        retval_temp += checkError(XC_GetPropertyValueL(m_handle, "ManualModeOffset", &current));
+        if (!retval_temp.containsError())
+        {
+            m_params["offset"].setMeta(new ito::DoubleMeta(((double)low +100)/200, ((double)high+100)/200), true);
+            m_params["offset"].setVal<double>(((current) +100)/200);
+        }
 
-		retval += retval_temp;
-	}
+        retval += retval_temp;
+    }
 
-	if (what & roi)
-	{
-		long current_x0, xmax, current_x1, current_y0, ymax, current_y1;
-
-
+    if (what & roi)
+    {
+        long current_x0, xmax, current_x1, current_y0, ymax, current_y1;
 
 
-		retval_temp += checkError(XC_GetPropertyValueL(m_handle, "WidthMax", &xmax));
-		retval_temp += checkError(XC_GetPropertyValueL(m_handle, "Width", &current_x1));
-		retval_temp += checkError(XC_GetPropertyValueL(m_handle, "OffsetX", &current_x0));
-		retval_temp += checkError(XC_GetPropertyValueL(m_handle, "HightMax", &ymax));
-		retval_temp += checkError(XC_GetPropertyValueL(m_handle, "OffsetY", &current_y0));
-		retval_temp += checkError(XC_GetPropertyValueL(m_handle, "Hight", &current_y1));
-
-		if (!retval_temp.containsError())
-		{
-			m_params["x0"].setMeta(new ito::IntMeta(0, xmax, 1), true);
-			m_params["x0"].setVal<int>(current_x0);
-			m_params["roi"].getVal<int*>()[0] = current_x0;
-			m_params["x1"].setMeta(new ito::IntMeta(0, xmax, 1), true);
-			m_params["x1"].setVal<int>(current_x1+current_x0);
-			m_params["roi"].getVal<int*>()[2] = current_x1;
-			m_params["y0"].setMeta(new ito::IntMeta(0, ymax, 1), true);
-			m_params["y0"].setVal<int>(current_y0);
-			m_params["roi"].getVal<int*>()[1] = current_y0;
-			m_params["y1"].setMeta(new ito::IntMeta(0, ymax, 1), true);
-			m_params["y1"].setVal<int>(current_y1+current_y0);
-			m_params["roi"].getVal<int*>()[3] = current_y1;
-
-			m_params["sizey"].setVal<int>(234);
-			m_params["sizex"].setVal<int>(234);
-
-		}
 
 
-		retval += retval_temp;
-	}
+        retval_temp += checkError(XC_GetPropertyValueL(m_handle, "WidthMax", &xmax));
+        retval_temp += checkError(XC_GetPropertyValueL(m_handle, "Width", &current_x1));
+        retval_temp += checkError(XC_GetPropertyValueL(m_handle, "OffsetX", &current_x0));
+        retval_temp += checkError(XC_GetPropertyValueL(m_handle, "HightMax", &ymax));
+        retval_temp += checkError(XC_GetPropertyValueL(m_handle, "OffsetY", &current_y0));
+        retval_temp += checkError(XC_GetPropertyValueL(m_handle, "Hight", &current_y1));
+
+        if (!retval_temp.containsError())
+        {
+            m_params["x0"].setMeta(new ito::IntMeta(0, xmax, 1), true);
+            m_params["x0"].setVal<int>(current_x0);
+            m_params["roi"].getVal<int*>()[0] = current_x0;
+            m_params["x1"].setMeta(new ito::IntMeta(0, xmax, 1), true);
+            m_params["x1"].setVal<int>(current_x1+current_x0);
+            m_params["roi"].getVal<int*>()[2] = current_x1;
+            m_params["y0"].setMeta(new ito::IntMeta(0, ymax, 1), true);
+            m_params["y0"].setVal<int>(current_y0);
+            m_params["roi"].getVal<int*>()[1] = current_y0;
+            m_params["y1"].setMeta(new ito::IntMeta(0, ymax, 1), true);
+            m_params["y1"].setVal<int>(current_y1+current_y0);
+            m_params["roi"].getVal<int*>()[3] = current_y1;
+
+            m_params["sizey"].setVal<int>(234);
+            m_params["sizex"].setVal<int>(234);
+
+        }
 
 
-	return retval;
+        retval += retval_temp;
+    }
+
+
+    return retval;
 }

@@ -53,30 +53,30 @@ class DockWidgetSuperlumBS : public ito::AbstractAddInDockWidget
         void enableWidget(bool enabled);
         void visibleWidget();
 
-		Ui::DockWidgetSuperlumBS ui;
+        Ui::DockWidgetSuperlumBS ui;
 
-	    bool m_inEditing;
+        bool m_inEditing;
         bool m_firstRun;
 
     public slots:
-		void parametersChanged(QMap<QString, ito::Param> params);
+        void parametersChanged(QMap<QString, ito::Param> params);
         void identifierChanged(const QString &identifier);
 
     private slots:
-		void on_btn_Optical_Output_clicked(bool checked);
-		void on_comboBox_Remote_activated(int);
-		void on_comboBox_Power_Mode_activated(int combo);
-		void on_tabWidget_Operation_Mode_currentChanged(int combo);
-		void on_doubleSpinBox_MAN_Wavelength_valueChanged(double value);
-		void on_doubleSpinBox_AUTO_Speed_valueChanged(double value);
-		void on_doubleSpinBox_AUTO_Stop_Wavelength_valueChanged(double value);
-		void on_doubleSpinBox_AUTO_Start_Wavelength_valueChanged(double value);
-		void on_doubleSpinBox_EXT_Speed_valueChanged(double value);
-		void on_doubleSpinBox_EXT_Stop_Wavelength_valueChanged(double value);
-		void on_doubleSpinBox_EXT_Start_Wavelength_valueChanged(double value);
-		void on_doubleSpinBox_MOD_Wavelength1_valueChanged(double value);
-		void on_doubleSpinBox_MOD_Wavelength2_valueChanged(double value);
-		void on_comboBox_MOD_frequency_activated(int combo);
+        void on_btn_Optical_Output_clicked(bool checked);
+        void on_comboBox_Remote_activated(int);
+        void on_comboBox_Power_Mode_activated(int combo);
+        void on_tabWidget_Operation_Mode_currentChanged(int combo);
+        void on_doubleSpinBox_MAN_Wavelength_valueChanged(double value);
+        void on_doubleSpinBox_AUTO_Speed_valueChanged(double value);
+        void on_doubleSpinBox_AUTO_Stop_Wavelength_valueChanged(double value);
+        void on_doubleSpinBox_AUTO_Start_Wavelength_valueChanged(double value);
+        void on_doubleSpinBox_EXT_Speed_valueChanged(double value);
+        void on_doubleSpinBox_EXT_Stop_Wavelength_valueChanged(double value);
+        void on_doubleSpinBox_EXT_Start_Wavelength_valueChanged(double value);
+        void on_doubleSpinBox_MOD_Wavelength1_valueChanged(double value);
+        void on_doubleSpinBox_MOD_Wavelength2_valueChanged(double value);
+        void on_comboBox_MOD_frequency_activated(int combo);
 };
 
 #endif

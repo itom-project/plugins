@@ -69,19 +69,19 @@ class AvtVimba : public ito::AddInGrabber
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
-		ito::RetVal checkError(VmbErrorType errCode, const char* prefix = NULL);
+        ito::RetVal checkError(VmbErrorType errCode, const char* prefix = NULL);
 
-		ito::RetVal getIntFeatureByName(const char *name, VmbInt64_t &value);
+        ito::RetVal getIntFeatureByName(const char *name, VmbInt64_t &value);
         ito::RetVal getIntFeatureByName(const char *name, VmbInt64_t &value, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc);
-		ito::RetVal getEnumFeatureByName(const char *name, std::string &value, VmbInt64_t &idx);
-		ito::RetVal getDblFeatureByName(const char *name, double &value);
+        ito::RetVal getEnumFeatureByName(const char *name, std::string &value, VmbInt64_t &idx);
+        ito::RetVal getDblFeatureByName(const char *name, double &value);
         ito::RetVal getDblFeatureByName(const char *name, double &value, double &min, double &max);
-		ito::RetVal setDblFeature(const char *name, const double &value);
-		ito::RetVal setIntFeature(const char *name, const int &value);
-		ito::RetVal setEnumFeature(const char *name, const char *eValue);
+        ito::RetVal setDblFeature(const char *name, const double &value);
+        ito::RetVal setIntFeature(const char *name, const int &value);
+        ito::RetVal setEnumFeature(const char *name, const char *eValue);
         ito::RetVal setEnumFeature(const char *name, VmbInt64_t value);
-		ito::RetVal getRange(const char *name, double &max, double &min);
-		ito::RetVal getRange(const char *name, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc);
+        ito::RetVal getRange(const char *name, double &max, double &min);
+        ito::RetVal getRange(const char *name, VmbInt64_t &max, VmbInt64_t &min, VmbInt64_t &inc);
 
         inline double musToS(const double &mus) { return mus * 1.0e-6; }
         inline double sToMus(const double &s) { return s * 1.0e6; }
@@ -106,9 +106,9 @@ class AvtVimba : public ito::AddInGrabber
 
 
         bool m_isgrabbing; /*!< Check if acquire was executed */
-		ito::RetVal m_acquisitionStatus;
-		CameraPtr m_camera;
-		FramePtr m_frame;
+        ito::RetVal m_acquisitionStatus;
+        CameraPtr m_camera;
+        FramePtr m_frame;
         QTimer *m_aliveTimer;
         QThread *m_aliveTimerThread;
 

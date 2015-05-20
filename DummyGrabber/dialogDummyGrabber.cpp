@@ -147,7 +147,7 @@ ito::RetVal DialogDummyGrabber::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
     bool success = false;
 
-    if(ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
+    if (ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {
         int x0, x1, y0, y1;
         ui.rangeX01->values(x0,x1);
@@ -174,47 +174,47 @@ ito::RetVal DialogDummyGrabber::applyParameters()
         }
     }
 
-    if(ui.sliderGain->isEnabled())
+    if (ui.sliderGain->isEnabled())
     {
         double dval = ui.sliderGain->value()/100.0;
-        if(qAbs(m_currentParameters["gain"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
+        if (qAbs(m_currentParameters["gain"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.sliderOffset->isEnabled())
+    if (ui.sliderOffset->isEnabled())
     {
         double dval = ui.sliderOffset->value()/100.0;
-        if(qAbs(m_currentParameters["offset"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
+        if (qAbs(m_currentParameters["offset"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.doubleSpinBox_integration_time->isEnabled())
+    if (ui.doubleSpinBox_integration_time->isEnabled())
     {
         double dval = ui.doubleSpinBox_integration_time->value();
-        if(qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= 0.00001) //the smallest range is 1musec, given by the number of decimals of the spin box. //std::numeric_limits<double>::epsilon())
+        if (qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= 0.00001) //the smallest range is 1musec, given by the number of decimals of the spin box. //std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.doubleSpinBox_frame_time->isEnabled())
+    if (ui.doubleSpinBox_frame_time->isEnabled())
     {
         double dval = ui.doubleSpinBox_frame_time->value();
-        if(qAbs(m_currentParameters["frame_time"].getVal<double>() - dval) >= 0.00001) //the smallest range is 1musec, given by the number of decimals of the spin box. //std::numeric_limits<double>::epsilon())
+        if (qAbs(m_currentParameters["frame_time"].getVal<double>() - dval) >= 0.00001) //the smallest range is 1musec, given by the number of decimals of the spin box. //std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("frame_time", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.combo_bpp->isEnabled())
+    if (ui.combo_bpp->isEnabled())
     {
         int bpp = ui.combo_bpp->itemData(ui.combo_bpp->currentIndex()).toInt();
         
-        if(m_currentParameters["bpp"].getVal<int>() !=  bpp)
+        if (m_currentParameters["bpp"].getVal<int>() !=  bpp)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bpp)));
         }

@@ -2,7 +2,7 @@
     Plugin "IDSuEye" for itom software
     URL: http://www.bitbucket.org/itom/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -302,12 +302,12 @@ ito::RetVal IDSuEye::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 
     }
 
-    if(!retVal.containsError())
+    if (!retVal.containsError())
     {
         checkData(); //check if image must be reallocated
     }
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retVal;
         waitCond->release();
@@ -345,7 +345,7 @@ ito::RetVal IDSuEye::close(ItomSharedSemaphore *waitCond)
         m_camera = IS_INVALID_HIDS;
     }    
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -382,12 +382,12 @@ ito::RetVal IDSuEye::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
 
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (hasIndex)
         {
@@ -433,12 +433,12 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION < 0x010300
         //old style api, round the incoming double value to the allowed step size.
@@ -468,7 +468,7 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 #endif
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (key == "x0" || key == "x1" || key == "y0" || key == "y1" || key == "roi")
         {
@@ -819,7 +819,7 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += checkData();
     }
@@ -863,7 +863,7 @@ ito::RetVal IDSuEye::startDevice(ItomSharedSemaphore *waitCond)
 
     incGrabberStarted();
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -889,18 +889,18 @@ ito::RetVal IDSuEye::stopDevice(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue = ito::retOk;
 
     decGrabberStarted();
-    if(grabberStartedCount() == 0)
+    if (grabberStartedCount() == 0)
     {
         
     }
-    else if(grabberStartedCount() < 0)
+    else if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retError, 1001, tr("StopDevice of IDSuEye can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
 
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -927,7 +927,7 @@ ito::RetVal IDSuEye::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
 
-    if(grabberStartedCount() <= 0)
+    if (grabberStartedCount() <= 0)
     {
         retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of IDSuEye can not be executed, since camera has not been started.").toLatin1().data());
     }
@@ -942,7 +942,7 @@ ito::RetVal IDSuEye::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         m_acquisitionRetVal = ito::retOk;
         m_pMemory->imageAvailable = false;
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
@@ -965,7 +965,7 @@ ito::RetVal IDSuEye::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     }
 
     //only release it if not yet done
-    if(waitCond)
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
@@ -995,9 +995,9 @@ ito::RetVal IDSuEye::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     retValue += retrieveData();
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
-        if(dObj == NULL)
+        if (dObj == NULL)
         {
             retValue += ito::RetVal(ito::retError, 1004, tr("data object of getVal is NULL or cast failed").toLatin1().data());
         }
@@ -1037,7 +1037,7 @@ ito::RetVal IDSuEye::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
-    if(!dObj)
+    if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
@@ -1046,12 +1046,12 @@ ito::RetVal IDSuEye::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         retValue += checkData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += retrieveData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         sendDataToListeners(0); //don't wait for live image, since user should get the image as fast as possible.
     }
@@ -1079,11 +1079,11 @@ ito::RetVal IDSuEye::retrieveData(ito::DataObject *externalDataObject)
     {
         bool hasListeners = false;
         bool copyExternal = false;
-        if(m_autoGrabbingListeners.size() > 0)
+        if (m_autoGrabbingListeners.size() > 0)
         {
             hasListeners = true;
         }
-        if(externalDataObject != NULL)
+        if (externalDataObject != NULL)
         {
             copyExternal = true;
         }
@@ -1134,18 +1134,18 @@ ito::RetVal IDSuEye::retrieveData(ito::DataObject *externalDataObject)
 
         /*if (pnBits <= 8 && !m_colouredOutput)
         {
-            if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
-            if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
+            if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
+            if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
         }
         else if (pnBits <= 16 && !m_colouredOutput)
         {
-            if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
-            if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
+            if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
+            if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
         }
         else if (m_colouredOutput)
         {
-            if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::Rgba32>((ito::Rgba32*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
-            if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::Rgba32>((ito::Rgba32*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
+            if (copyExternal) retValue += externalDataObject->copyFromData2D<ito::Rgba32>((ito::Rgba32*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
+            if (!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::Rgba32>((ito::Rgba32*)(m_pMemory->ppcImgMem), pnX + (pnPitch - pnX), pnY, 0, 0, pnX, pnY);
         }
         else
         {

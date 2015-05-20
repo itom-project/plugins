@@ -105,7 +105,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
 /*
     memset(inv, 1, dx);   // must be one to not use invalid stuff
     //memset(inv, 0, dx);   // must be zero to not use invalid stuff
-    if(check)
+    if (check)
     {
         for (i = 0; i < dx; ++i)
         {
@@ -143,7 +143,7 @@ template<typename _Tp> void Get(cv::Mat *plane, const ito::int32 x0, const ito::
                     if ((y - k >= 0) && (y - k < plane->rows))
                     {
                         w = plane->at<_Tp>(y - k, i + x);
-                        if(w != invalidInt)
+                        if (w != invalidInt)
                         {
                             v = w;
                             break;
@@ -444,7 +444,7 @@ template<> void Get<ito::float64>(cv::Mat *plane, const ito::int32 x0, const ito
 ito::RetVal BasicFilters::genericStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toLatin1().data());
         paramsMand->append(param);
@@ -468,10 +468,10 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
     _Tp invalid = 0;
     
-    if(std::numeric_limits<_Tp>::is_exact) replaceNaN = true;
+    if (std::numeric_limits<_Tp>::is_exact) replaceNaN = true;
     else invalid = std::numeric_limits<_Tp>::quiet_NaN();
 
-    if(!m_initilized)
+    if (!m_initilized)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Tried to run generic filter engine without correct initilization of all buffers").toLatin1().data());
     }
@@ -483,7 +483,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
 
     m_pInLines = (_Tp **)calloc(m_kernelSizeY, sizeof(_Tp*));
 
-    if(m_pInLines == NULL)
+    if (m_pInLines == NULL)
     {
         err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate linebuffer").toLatin1().data());
         qDebug() << "Not enough memory to allocate linebuffer";
@@ -491,7 +491,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
     }
 
     m_pInvalidMap = (ito::int8 **)calloc(m_kernelSizeY, sizeof(ito::int8 *));
-    if(m_pInvalidMap == NULL)
+    if (m_pInvalidMap == NULL)
     {
         err += ito::RetVal(ito::retError, 0, QObject::tr("Not enough memory to allocate invalidbuffer").toLatin1().data());
         qDebug() << "Not enough memory to allocate invalidbuffer";
@@ -563,7 +563,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
                 filterFunc();
 
                 // Okay Invalid correction
-                if(replaceNaN == false)
+                if (replaceNaN == false)
                 {
                     for (ito::int32 x = 0; x < m_dx; ++x)
                     {
@@ -577,7 +577,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
         }
     }
 
-    if(m_pOutLine)
+    if (m_pOutLine)
     {
         free(m_pOutLine);
     }
@@ -591,7 +591,7 @@ template<typename _Tp> ito::RetVal GenericFilterEngine<_Tp>::runFilter(bool repl
         free(m_pInLines);
     }
 
-    if(m_pInvalidMap)
+    if (m_pInvalidMap)
     {
         for (ito::int16 kernRow = 0; kernRow < m_kernelSizeY; ++kernRow)
         {
@@ -646,21 +646,21 @@ template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in,
 
 #if (USEOMP)
     kbuf = new _Tp*[NTHREADS];
-    if(kbuf != NULL)
+    if (kbuf != NULL)
     {
         this->m_initilized = true;
     }
     for(int i = 0; i < NTHREADS; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
-        if(kbuf[i] == NULL)
+        if (kbuf[i] == NULL)
         {
             this->m_initilized = false;
         }
     }
 #else
     kbuf = new _Tp[this->m_bufsize];
-    if(kbuf != NULL)
+    if (kbuf != NULL)
     {
         this->m_initilized = true;
     }
@@ -670,7 +670,7 @@ template<typename _Tp> LowValueFilter<_Tp>::LowValueFilter(ito::DataObject *in,
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> LowValueFilter<_Tp>::~LowValueFilter()
 {
-    if(kbuf != NULL)
+    if (kbuf != NULL)
     {
 #if (USEOMP)
         for(int i = 0; i < NTHREADS; ++i)
@@ -792,21 +792,21 @@ template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(ito::DataObject *in
     
     #if (USEOMP)
     kbuf = new _Tp*[NTHREADS];
-    if(kbuf != NULL)
+    if (kbuf != NULL)
     {
         this->m_initilized = true;
     }
     for(int i = 0; i < NTHREADS; ++i)
     {
         kbuf[i] = new _Tp[this->m_bufsize];
-        if(kbuf[i] == NULL)
+        if (kbuf[i] == NULL)
         {
             this->m_initilized = false;
         }
     }
     #else
     kbuf = new _Tp[this->m_bufsize];
-    if(kbuf != NULL)
+    if (kbuf != NULL)
     {
         this->m_initilized = true;
     }
@@ -816,7 +816,7 @@ template<typename _Tp> HighValueFilter<_Tp>::HighValueFilter(ito::DataObject *in
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> HighValueFilter<_Tp>::~HighValueFilter()
 {
-    if(kbuf != NULL)
+    if (kbuf != NULL)
     {
         #if (USEOMP)
         for(int i = 0; i < NTHREADS; ++i)
@@ -910,24 +910,24 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
     ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
 
-    if(!dObjSrc)    // Report error if input object is not defined
+    if (!dObjSrc)    // Report error if input object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
     }
-    else if(dObjSrc->getDims() < 1) // Report error of input object is empty
+    else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
         return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
     }
-    if(!dObjDst)    // Report error of output object is not defined
+    if (!dObjDst)    // Report error of output object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
     }
 
-    if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
+    if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
     {
         // Nothing
     }
-    else if(ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
+    else if (ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
     {
         dObjDst->deleteAllTags();
         dObjSrc->copyAxisTagsTo(*dObjDst);
@@ -942,7 +942,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
 
     // Check if input type is allowed or not
     retval = ito::dObjHelper::verifyDataObjectType(dObjSrc, "dObjSrc", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
         return retval;
 
     // get the kernelsize
@@ -951,19 +951,19 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
 
     bool replaceNaN = (*paramsOpt)[0].getVal<int>() != 0 ? true : false; //false (default): NaN values in input image will become NaN in output, else: output will be interpolated (somehow)
 
-    if(kernelsizex % 2 == 0) //even
+    if (kernelsizex % 2 == 0) //even
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toLatin1().data());
     }
 
-    if(kernelsizey % 2 == 0) //even
+    if (kernelsizey % 2 == 0) //even
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toLatin1().data());
     }
 
     //ito::int32 z_length = dObjSrc->calcNumMats();  // get the number of Mats (planes) in the input object
 
-    if(lowHigh)
+    if (lowHigh)
     {
         switch(dObjSrc->getType())
         {
@@ -1187,13 +1187,13 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
     }
 
     // if no errors reported -> create new dataobject with values stored in cvMatOut
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         // Add Protokoll
 
         //        char prot[81] = {0};
         QString msg;
-        if(lowHigh)
+        if (lowHigh)
         {
             //            _snprintf(prot, 80, "high value filter with kernel %i : %i", kernelsizex, kernelsizey);
             msg = tr("high value filter with kernel %1 x %2").arg(kernelsizex).arg(kernelsizey);
@@ -1205,7 +1205,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
         }
         //        dObjDst -> addToProtocol(std::string(prot));
 
-        if(replaceNaN)
+        if (replaceNaN)
         {
             msg.append( tr(" and removed NaN-values"));
         }
@@ -1213,7 +1213,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
         dObjDst -> addToProtocol(std::string(msg.toLatin1().data()));
     }
 
-//    if(f.buffer)      // delete the f.buffer defined in medianFilter-struct
+//    if (f.buffer)      // delete the f.buffer defined in medianFilter-struct
 //    {
 //        free(f.buffer);
 //    }
@@ -1292,7 +1292,7 @@ template<typename _Tp> MedianFilter<_Tp>::MedianFilter(ito::DataObject *in,
     #else
     kbuf = new _Tp[this->m_bufsize];
     kbufPtr = new _Tp*[this->m_bufsize];
-    if(kbuf != NULL && kbufPtr != NULL)
+    if (kbuf != NULL && kbufPtr != NULL)
     {
         this->m_initilized = true;
     }
@@ -1309,7 +1309,7 @@ template<typename _Tp> void MedianFilter<_Tp>::clearFunc()
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> MedianFilter<_Tp>::~MedianFilter()
 {
-    if(kbuf != NULL)
+    if (kbuf != NULL)
     {
         #if (USEOMP)
         for(int i = 0; i < NTHREADS; ++i)
@@ -1438,7 +1438,7 @@ template<typename _Tp> /*ito::RetVal*/ void MedianFilter<_Tp>::filterFunc()
                 {
                     rightPos--;
                 }
-                if(leftPos <= rightPos)
+                if (leftPos <= rightPos)
                 {
                     tempValuePtr = pptr[leftPos];
                     pptr[leftPos] = pptr[rightPos];
@@ -1452,7 +1452,7 @@ template<typename _Tp> /*ito::RetVal*/ void MedianFilter<_Tp>::filterFunc()
             {
                 leftElement = leftPos;
             }
-            if(halfKernSize < leftPos)
+            if (halfKernSize < leftPos)
             {
                 rightElement = rightPos;
             }
@@ -1482,24 +1482,24 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
     ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
 
-    if(!dObjSrc)    // Report error if input object is not defined
+    if (!dObjSrc)    // Report error if input object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
     }
-    else if(dObjSrc->getDims() < 1) // Report error of input object is empty
+    else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
         return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
     }
-    if(!dObjDst)    // Report error of output object is not defined
+    if (!dObjDst)    // Report error of output object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
     }
 
-    if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
+    if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
     {
         // Nothing
     }
-    else if(ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
+    else if (ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
     {
         dObjDst->deleteAllTags();
         dObjSrc->copyAxisTagsTo(*dObjDst);
@@ -1514,7 +1514,7 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
 
     // Check if input type is allowed or not
     retval = ito::dObjHelper::verifyDataObjectType(dObjSrc, "dObjSrc", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
         return retval;
 
     // get the kernelsize
@@ -1523,12 +1523,12 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
 
     bool replaceNaN = (*paramsOpt)[0].getVal<int>() != 0 ? true : false; //false (default): NaN values in input image will become NaN in output, else: output will be interpolated (somehow)
 
-    if(kernelsizex % 2 == 0) //even
+    if (kernelsizex % 2 == 0) //even
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toLatin1().data());
     }
 
-    if(kernelsizey % 2 == 0) //even
+    if (kernelsizey % 2 == 0) //even
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toLatin1().data());
     }
@@ -1645,14 +1645,14 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
     }
 
     // if no errors reported -> create new dataobject with values stored in cvMatOut
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         // Add Protokoll
         QString msg;
         msg = tr("median filter with kernel %1 x %2").arg(kernelsizex).arg(kernelsizey);
         //        dObjDst -> addToProtocol(std::string(prot));
 
-        if(replaceNaN)
+        if (replaceNaN)
         {
             msg.append( tr(" and removed NaN-values"));
         }
@@ -1701,7 +1701,7 @@ template<typename _Tp> LowPassFilter<_Tp>::LowPassFilter(  ito::DataObject *in,
 
     this->m_divisor = this->m_bufsize;
 
-    if(m_colwiseSumBuffer != NULL)
+    if (m_colwiseSumBuffer != NULL)
     {
         this->m_initilized = true;
     }
@@ -1712,7 +1712,7 @@ template<typename _Tp> LowPassFilter<_Tp>::LowPassFilter(  ito::DataObject *in,
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> LowPassFilter<_Tp>::~LowPassFilter()
 {
-    if(m_colwiseSumBuffer != NULL)
+    if (m_colwiseSumBuffer != NULL)
     {
         delete m_colwiseSumBuffer;
     }
@@ -1737,7 +1737,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
     ito::int16 kernelLastX = this->m_kernelSizeX - 1;
 
     
-    if(!this->m_isFilled)
+    if (!this->m_isFilled)
     {
         this->m_isFilled = true;
 
@@ -1767,7 +1767,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
         }
     }
 
-//    if(true)
+//    if (true)
 //    {
 //        #pragma omp barrier
 //    }
@@ -1796,7 +1796,7 @@ template<typename _Tp> /*ito::RetVal*/ void LowPassFilter<_Tp>::filterFunc()
  //   }
  //   #endif
 
-//    if(true)
+//    if (true)
 //    {
 //        #pragma omp barrier
 //    }
@@ -1832,24 +1832,24 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
     ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
 
-    if(!dObjSrc)    // Report error if input object is not defined
+    if (!dObjSrc)    // Report error if input object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
     }
-    else if(dObjSrc->getDims() < 1) // Report error of input object is empty
+    else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
         return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
     }
-    if(!dObjDst)    // Report error of output object is not defined
+    if (!dObjDst)    // Report error of output object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
     }
 
-    if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
+    if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
     {
         // Nothing
     }
-    else if(ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
+    else if (ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
     {
         dObjDst->deleteAllTags();
         dObjSrc->copyAxisTagsTo(*dObjDst);
@@ -1864,7 +1864,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
 
     // Check if input type is allowed or not
     retval = ito::dObjHelper::verifyDataObjectType(dObjSrc, "dObjSrc", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
         return retval;
 
     // get the kernelsize
@@ -1873,12 +1873,12 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
 
     bool replaceNaN = (*paramsOpt)[0].getVal<int>() != 0 ? true : false; //false (default): NaN values in input image will become NaN in output, else: output will be interpolated (somehow)
 
-    if(kernelsizex % 2 == 0) //even
+    if (kernelsizex % 2 == 0) //even
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toLatin1().data());
     }
 
-    if(kernelsizey % 2 == 0) //even
+    if (kernelsizey % 2 == 0) //even
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toLatin1().data());
     }
@@ -1995,14 +1995,14 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
     }
 
     // if no errors reported -> create new dataobject with values stored in cvMatOut
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         // Add Protokoll
         QString msg;
         msg = tr("lowpass-filter (mean) with kernel %1 x %2").arg(kernelsizex).arg(kernelsizey);
         //        dObjDst -> addToProtocol(std::string(prot));
 
-        if(replaceNaN)
+        if (replaceNaN)
         {
             msg.append( tr(" and removed NaN-values"));
         }
@@ -2038,8 +2038,8 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
     this->m_dx = roiXSize;
     this->m_dy = roiYSize;
     
-	ito::float64 a = - 2.0 * sigmaSizeY * sigmaSizeY * log( sigmaSizeY * epsilonSizeY * sqrt(2.0 * M_PI) );
-	if(a < 0.5)
+    ito::float64 a = - 2.0 * sigmaSizeY * sigmaSizeY * log( sigmaSizeY * epsilonSizeY * sqrt(2.0 * M_PI) );
+    if (a < 0.5)
     {
         this->m_kernelSizeY = 1;
         
@@ -2050,7 +2050,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
     }
 
     a = - 2.0 * sigmaSizeX * sigmaSizeX * log( sigmaSizeX * epsilonSizeX * sqrt(2.0 * M_PI) );
-	if(a < 0.5)
+    if (a < 0.5)
     {
         this->m_kernelSizeX = 1;
     }
@@ -2068,7 +2068,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
     this->m_pRowKernel = new ito::float64[this->m_kernelSizeX];
     this->m_pColKernel = new ito::float64[this->m_kernelSizeY];
 
-    if(this->m_kernelSizeY == 1)
+    if (this->m_kernelSizeY == 1)
     {
         m_pColKernel[0] = 1.0;
     }
@@ -2093,7 +2093,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
         }
     }
 
-    if(this->m_kernelSizeX == 1)
+    if (this->m_kernelSizeX == 1)
     {
         m_pRowKernel[0] = 1.0;
     }
@@ -2118,7 +2118,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
         }  
     }
 
-    if(this->m_pColKernel != NULL && this->m_pRowKernel != NULL)
+    if (this->m_pColKernel != NULL && this->m_pRowKernel != NULL)
     {
         this->m_initilized = true;
     }
@@ -2126,7 +2126,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
     this->m_pInLinesFiltered = new ito::float64*[this->m_kernelSizeY];
     
 
-    if(this->m_pInLinesFiltered == NULL)
+    if (this->m_pInLinesFiltered == NULL)
     {
         this->m_initilized = false;
     }
@@ -2136,7 +2136,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
             this->m_pInLinesFiltered[y] = new ito::float64[roiXSize + this->m_kernelSizeX];
-            if(this->m_pInLinesFiltered[y] == NULL)
+            if (this->m_pInLinesFiltered[y] == NULL)
             {
                 this->m_initilized = false;
                 break;
@@ -2180,7 +2180,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
     this->m_pRowKernel = new ito::float64[this->m_kernelSizeX];
     this->m_pColKernel = new ito::float64[this->m_kernelSizeY];
 
-    if(this->m_kernelSizeY == 1)
+    if (this->m_kernelSizeY == 1)
     {
         m_pColKernel[0] = 1.0;
     }
@@ -2205,7 +2205,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
         }
     }
 
-    if(this->m_kernelSizeX == 1)
+    if (this->m_kernelSizeX == 1)
     {
         m_pRowKernel[0] = 1.0;
     }
@@ -2230,7 +2230,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
         }  
     }
 
-    if(this->m_pColKernel != NULL && this->m_pRowKernel != NULL)
+    if (this->m_pColKernel != NULL && this->m_pRowKernel != NULL)
     {
         this->m_initilized = true;
     }
@@ -2238,7 +2238,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
     this->m_pInLinesFiltered = new ito::float64*[this->m_kernelSizeY];
     
 
-    if(this->m_pInLinesFiltered == NULL)
+    if (this->m_pInLinesFiltered == NULL)
     {
         this->m_initilized = false;
     }
@@ -2248,7 +2248,7 @@ template<typename _Tp> GaussianFilter<_Tp>::GaussianFilter(  ito::DataObject *in
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
             this->m_pInLinesFiltered[y] = new ito::float64[roiXSize + this->m_kernelSizeX];
-            if(this->m_pInLinesFiltered[y] == NULL)
+            if (this->m_pInLinesFiltered[y] == NULL)
             {
                 this->m_initilized = false;
                 break;
@@ -2269,20 +2269,20 @@ template<typename _Tp> void GaussianFilter<_Tp>::clearFunc()
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> GaussianFilter<_Tp>::~GaussianFilter()
 {
-    if(m_pRowKernel != NULL)
+    if (m_pRowKernel != NULL)
     {
         delete m_pRowKernel;
     }
-    if(m_pColKernel != NULL)
+    if (m_pColKernel != NULL)
     {
         delete m_pColKernel;
     }
 
-    if(this->m_pInLinesFiltered != NULL)
+    if (this->m_pInLinesFiltered != NULL)
     {
         for(int y = 0; y < this->m_kernelSizeY; y++)
         {
-            if(this->m_pInLinesFiltered[y] == NULL)
+            if (this->m_pInLinesFiltered[y] == NULL)
             {
                 delete this->m_pInLinesFiltered[y];
             }
@@ -2297,7 +2297,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
     ito::int16 kernelLastY = this->m_kernelSizeY - 1;
     ito::int16 kernelLastX = this->m_kernelSizeX - 1;
    
-    if(!this->m_isFilled)
+    if (!this->m_isFilled)
     {
         this->m_isFilled = true;
 
@@ -2321,7 +2321,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
     else
     { 
         
-        //if(true)
+        //if (true)
         //{
         //    #pragma omp barrier
         //}
@@ -2357,7 +2357,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 
     }
 
-    //if(true)
+    //if (true)
     //{
     //    #pragma omp barrier
     //}
@@ -2397,7 +2397,7 @@ template<typename _Tp> /*ito::RetVal*/ void GaussianFilter<_Tp>::filterFunc()
 ito::RetVal BasicFilters::genericGaussianParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toLatin1().data());
         paramsMand->append(param);
@@ -2435,24 +2435,24 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
     ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
 
-    if(!dObjSrc)    // Report error if input object is not defined
+    if (!dObjSrc)    // Report error if input object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
     }
-    else if(dObjSrc->getDims() < 1) // Report error of input object is empty
+    else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
         return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
     }
-    if(!dObjDst)    // Report error of output object is not defined
+    if (!dObjDst)    // Report error of output object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
     }
 
-    if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
+    if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
     {
         // Nothing
     }
-    else if(ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
+    else if (ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
     {
         dObjDst->deleteAllTags();
         dObjSrc->copyAxisTagsTo(*dObjDst);
@@ -2467,7 +2467,7 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
 
     // Check if input type is allowed or not
     retval = ito::dObjHelper::verifyDataObjectType(dObjSrc, "dObjSrc", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
         return retval;
 
     // get the kernelsize
@@ -2475,12 +2475,12 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
     ito::int32 kernelX = (*paramsMand)[2].getVal<double>();
     ito::int32 kernelY = (*paramsMand)[3].getVal<double>();
 
-    if(kernelX % 2 == 0) //even
+    if (kernelX % 2 == 0) //even
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toLatin1().data());
     }
 
-    if(kernelY % 2 == 0) //even
+    if (kernelY % 2 == 0) //even
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toLatin1().data());
     }
@@ -2603,14 +2603,14 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
     }
 
     // if no errors reported -> create new dataobject with values stored in cvMatOut
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         // Add Protokoll
         QString msg;
         msg = tr("gaussian-filter with sigma %1 x %2").arg(sigmaX).arg(sigmaY);
         //        dObjDst -> addToProtocol(std::string(prot));
 
-        if(replaceNaN)
+        if (replaceNaN)
         {
             msg.append( tr(" and removed NaN-values"));
         }
@@ -2635,7 +2635,7 @@ ito::RetVal BasicFilters::genericGaussianFilter(QVector<ito::ParamBase> *paramsM
 ito::RetVal BasicFilters::genericGaussianEpsilonParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toLatin1().data());
         paramsMand->append(param);
@@ -2673,24 +2673,24 @@ ito::RetVal BasicFilters::genericGaussianEpsilonFilter(QVector<ito::ParamBase> *
     ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
 
-    if(!dObjSrc)    // Report error if input object is not defined
+    if (!dObjSrc)    // Report error if input object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
     }
-    else if(dObjSrc->getDims() < 1) // Report error of input object is empty
+    else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
         return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
     }
-    if(!dObjDst)    // Report error of output object is not defined
+    if (!dObjDst)    // Report error of output object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
     }
 
-    if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
+    if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
     {
         // Nothing
     }
-    else if(ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
+    else if (ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
     {
         dObjDst->deleteAllTags();
         dObjSrc->copyAxisTagsTo(*dObjDst);
@@ -2705,7 +2705,7 @@ ito::RetVal BasicFilters::genericGaussianEpsilonFilter(QVector<ito::ParamBase> *
 
     // Check if input type is allowed or not
     retval = ito::dObjHelper::verifyDataObjectType(dObjSrc, "dObjSrc", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
         return retval;
 
     // get the kernelsize
@@ -2828,14 +2828,14 @@ ito::RetVal BasicFilters::genericGaussianEpsilonFilter(QVector<ito::ParamBase> *
     }
 
     // if no errors reported -> create new dataobject with values stored in cvMatOut
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         // Add Protokoll
         QString msg;
         msg = tr("gaussian-filter with sigma %1 x %2").arg(sigmaX).arg(sigmaY);
         //        dObjDst -> addToProtocol(std::string(prot));
 
-        if(replaceNaN)
+        if (replaceNaN)
         {
             msg.append( tr(" and removed NaN-values"));
         }
@@ -2860,7 +2860,7 @@ ito::RetVal BasicFilters::genericGaussianEpsilonFilter(QVector<ito::ParamBase> *
 ito::RetVal BasicFilters::spikeCompFilterStdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toLatin1().data());
         paramsMand->append(param);
@@ -2892,7 +2892,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
 
     ito::int32 z_length = outObj->calcNumMats();  // get the number of Mats (planes) in the input object
 
-    if(std::numeric_limits<_Type>::is_integer && std::numeric_limits<_cType>::is_integer)
+    if (std::numeric_limits<_Type>::is_integer && std::numeric_limits<_cType>::is_integer)
     {
         for(int plane = 0; plane < z_length; plane++)
         {
@@ -2900,7 +2900,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
             compMat = (cv::Mat*)(compObj.get_mdata()[compObj.seekMat(plane)]);
             dstMat = (cv::Mat*)(outObj->get_mdata()[outObj->seekMat(plane)]);
             
-            if(noCopyNeeded)
+            if (noCopyNeeded)
             {
                 for(int y = 0; y < compMat->rows; y++)
                 {
@@ -2909,7 +2909,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                     dstRowPtr = dstMat->ptr<_Type>(y);
                     for(int x = 0; x < compMat->cols; x++)
                     {
-                        if(myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
+                        if (myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
                         {
                             dstRowPtr[x] = newValue;
                         }
@@ -2925,7 +2925,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                     dstRowPtr = dstMat->ptr<_Type>(y);
                     for(int x = 0; x < compMat->cols; x++)
                     {
-                        if(myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
+                        if (myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
                         {
                             dstRowPtr[x] = newValue;
                         }
@@ -2946,7 +2946,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
             compMat = (cv::Mat*)(compObj.get_mdata()[compObj.seekMat(plane)]);
             dstMat = (cv::Mat*)(outObj->get_mdata()[outObj->seekMat(plane)]);
 
-            if(noCopyNeeded)
+            if (noCopyNeeded)
             {
                 for(int y = 0; y < compMat->rows; y++)
                 {
@@ -2955,7 +2955,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                     dstRowPtr = dstMat->ptr<_Type>(y);
                     for(int x = 0; x < compMat->cols; x++)
                     {
-                        if(ito::dObjHelper::isFinite(scrRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
+                        if (ito::dObjHelper::isFinite(scrRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
                         {
                             dstRowPtr[x] = newValue;
                         }
@@ -2971,7 +2971,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                     dstRowPtr = dstMat->ptr<_Type>(y);
                     for(int x = 0; x < compMat->cols; x++)
                     {
-                        if(ito::dObjHelper::isFinite(scrRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
+                        if (ito::dObjHelper::isFinite(scrRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
                         {
                             dstRowPtr[x] = newValue;
                         }
@@ -3027,24 +3027,24 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
 
     bool noCopyNeeded = false;
 
-    if(!dObjSrc)    // Report error if input object is not defined
+    if (!dObjSrc)    // Report error if input object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Source object not defined").toLatin1().data());
     }
-    else if(dObjSrc->getDims() < 1) // Report error of input object is empty
+    else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
         return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
     }
-    if(!dObjDst)    // Report error of output object is not defined
+    if (!dObjDst)    // Report error of output object is not defined
     {
         return ito::RetVal(ito::retError, 0, tr("Destination object not defined").toLatin1().data());
     }
 
-    if(dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
+    if (dObjSrc == dObjDst) // If both pointer are equal or the object are equal take it else make a new destObject
     {
         noCopyNeeded = true;
     }
-    else if(ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
+    else if (ito::dObjHelper::dObjareEqualShort(dObjSrc, dObjDst))
     {
         dObjDst->deleteAllTags();
         dObjSrc->copyAxisTagsTo(*dObjDst);
@@ -3059,19 +3059,19 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
 
     // Check if input type is allowed or not
     retval = ito::dObjHelper::verifyDataObjectType(dObjSrc, "dObjSrc", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(retval.containsError())
+    if (retval.containsError())
         return retval;
 
     // get the kernelsize
     ito::int32 kernelsizex = (*paramsMand)[2].getVal<int>();
     ito::int32 kernelsizey = (*paramsMand)[3].getVal<int>();
 
-    if(kernelsizex % 2 == 0) //even
+    if (kernelsizex % 2 == 0) //even
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in x must be odd").toLatin1().data());
     }
 
-    if(kernelsizey % 2 == 0) //even
+    if (kernelsizey % 2 == 0) //even
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toLatin1().data());
     }
@@ -3087,7 +3087,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     QVector<ito::Param> paramsOutMedian;
 
     retval += BasicFilters::genericStdParams(&paramsMandMedian, &paramsOptMedian, &paramsOutMedian);
-    if(retval.containsError())
+    if (retval.containsError())
     {
         retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
         return retval;
@@ -3095,7 +3095,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
 
     ito::Param* param = NULL;
     param = ito::getParamByName(&paramsMandMedian, "sourceImage", &retval);
-    if(param == NULL || retval.containsError())
+    if (param == NULL || retval.containsError())
     {
         retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
         return retval;        
@@ -3106,7 +3106,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     }
 
     param = ito::getParamByName(&paramsMandMedian, "destImage", &retval);
-    if(param == NULL || retval.containsError())
+    if (param == NULL || retval.containsError())
     {
         retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
         return retval;        
@@ -3117,7 +3117,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     }
 
     param = ito::getParamByName(&paramsMandMedian, "kernelx", &retval);
-    if(param == NULL || retval.containsError())
+    if (param == NULL || retval.containsError())
     {
         retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
         return retval;        
@@ -3128,7 +3128,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     }
 
     param = ito::getParamByName(&paramsMandMedian, "kernely", &retval);
-    if(param == NULL || retval.containsError())
+    if (param == NULL || retval.containsError())
     {
         retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
         return retval;        
@@ -3159,7 +3159,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     {
         case tGenericLowPass:  
             retval += genericLowPassFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
-            if(retval.containsError())
+            if (retval.containsError())
             {
                 retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
                 return retval;        
@@ -3167,7 +3167,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
         break;
         case tGenericMedian:  
             retval += genericMedianFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
-            if(retval.containsError())
+            if (retval.containsError())
             {
                 retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
                 return retval;        
@@ -3240,7 +3240,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
         case ito::tFloat32:
         {
             ito::float32 newVal = std::numeric_limits<ito::float32>::quiet_NaN();
-            if(ito::dObjHelper::isFinite(newValue))
+            if (ito::dObjHelper::isFinite(newValue))
             {
                 ito::float32 newVal = cv::saturate_cast<ito::float32>(newValue);
                 newValueCasted = (ito::float64)(newVal);
@@ -3265,7 +3265,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     }
 
     // if no errors reported -> create new dataobject with values stored in cvMatOut
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         // Add Protokoll
         QString msg;

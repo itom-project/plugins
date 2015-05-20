@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "AvantesAvaSpec" for itom software
     URL: http://www.bitbucket.org/itom/plugins
-	Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2014, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -40,7 +40,7 @@ class DockWidgetAvantesAvaSpec : public ito::AbstractAddInDockWidget
 
     private:
         Ui::DockWidgetAvantesAvaSpec ui;
-		QMap<QString, ito::Param> m_currentParams;
+        QMap<QString, ito::Param> m_currentParams;
         bool m_inEditing;
         bool m_firstRun;
 
@@ -51,7 +51,7 @@ class DockWidgetAvantesAvaSpec : public ito::AbstractAddInDockWidget
 
     private slots:
         void on_spinBox_average_valueChanged(int d);
-		void on_rangeWidget_ROI_minimumValueChanged(int d);
+        void on_rangeWidget_ROI_minimumValueChanged(int d);
         void on_rangeWidget_ROI_maximumValueChanged(int d);
         void on_doubleSpinBox_integration_time_valueChanged(double d);
 };

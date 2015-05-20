@@ -35,7 +35,7 @@
     #include <qopenglshaderprogram.h>
     #include <qopenglbuffer.h>
 #if  _DEBUG
-	#include <qopengldebug.h>
+    #include <qopengldebug.h>
 #endif
 #else
     //#include <qglfunctions.h>  //be careful: see https://bugreports.qt-project.org/browse/QTBUG-27408 or http://stackoverflow.com/questions/11845230/glgenbuffers-crashes-in-release-build
@@ -116,7 +116,7 @@ public slots:
     void setLUT(QVector<unsigned char> &lut); //transfers the lut values for possible gamma correction to the opengl buffer
 
 #if QT_VERSION >= 0x050100 //do not anything to this #if line, since the moc'er cannot read this. Do not make a _DEBUG define, since this is not accepted by the moc'er either
-	void onMessageLogged( QOpenGLDebugMessage message );
+    void onMessageLogged( QOpenGLDebugMessage message );
 #endif
 };
 

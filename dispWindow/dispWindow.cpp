@@ -133,7 +133,7 @@ DispWindowInterface::~DispWindowInterface()
 *    the openGL window is opened here, based on a qgl widget.
 */
 DispWindow::DispWindow() :
-	m_pWindow(NULL)
+    m_pWindow(NULL)
 {
     QDesktopWidget *qdesk = QApplication::desktop();
     int scount = qdesk->screenCount();
@@ -246,7 +246,7 @@ DispWindow::DispWindow() :
     for (int i = 0; i < 256; ++i) lut[i] = i;
     m_params["lut"].setVal<char*>(lut, 256);
 
-	constructionResult = ito::retOk;
+    constructionResult = ito::retOk;
 
     //set QGLFormat
     QGLFormat::OpenGLVersionFlags glVer = QGLFormat::openGLVersionFlags();
@@ -293,41 +293,41 @@ DispWindow::DispWindow() :
     {
         fmt.setVersion(2, 0);
     }
-	else
-	{
-		constructionResult += ito::RetVal(ito::retError,0,"Supported OpenGL Version is lower than 2.0 and therefore not supported");
-	}
+    else
+    {
+        constructionResult += ito::RetVal(ito::retError,0,"Supported OpenGL Version is lower than 2.0 and therefore not supported");
+    }
 
-	qDebug() << fmt.majorVersion();
-	qDebug() << fmt.minorVersion();
+    qDebug() << fmt.majorVersion();
+    qDebug() << fmt.minorVersion();
 
-	if (!constructionResult.containsError())
-	{
+    if (!constructionResult.containsError())
+    {
 
 
-		fmt.setDepth(0);
+        fmt.setDepth(0);
 
-		m_pWindow = new PrjWindow(m_params, fmt, NULL, NULL, Qt::Window|Qt::MSWindowsOwnDC|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);//0, 0, Qt::Window|Qt::MSWindowsOwnDC); //Qt::Window|Qt::MSWindowsOwnDC|Qt::ScrollBarAlwaysOff
-		if (m_pWindow == NULL)
-		{
-			return;
-		}
+        m_pWindow = new PrjWindow(m_params, fmt, NULL, NULL, Qt::Window|Qt::MSWindowsOwnDC|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);//0, 0, Qt::Window|Qt::MSWindowsOwnDC); //Qt::Window|Qt::MSWindowsOwnDC|Qt::ScrollBarAlwaysOff
+        if (m_pWindow == NULL)
+        {
+            return;
+        }
 
-		m_pWindow->setCursor(Qt::BlankCursor);
-		m_pWindow->setWindowTitle("DispWindow");
-		m_pWindow->setPos(defx0, defy0);
-	//    m_pWindow->resize(defwidth, defheight);
-		m_pWindow->resize(12, 12);
-		m_pWindow->show();
+        m_pWindow->setCursor(Qt::BlankCursor);
+        m_pWindow->setWindowTitle("DispWindow");
+        m_pWindow->setPos(defx0, defy0);
+    //    m_pWindow->resize(defwidth, defheight);
+        m_pWindow->resize(12, 12);
+        m_pWindow->show();
 
-		connect(m_pWindow, SIGNAL(numberOfImagesChanged(int, int, int)), this, SLOT(numberOfImagesChanged(int, int, int)));
+        connect(m_pWindow, SIGNAL(numberOfImagesChanged(int, int, int)), this, SLOT(numberOfImagesChanged(int, int, int)));
 
-		//now create dock widget for this plugin
-		DockWidgetDispWindow *DispWinWid = new DockWidgetDispWindow(this);
-		Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
-		QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-		createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
-	}
+        //now create dock widget for this plugin
+        DockWidgetDispWindow *DispWinWid = new DockWidgetDispWindow(this);
+        Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
+        QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
+        createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
+    }
 
 }
 
@@ -491,11 +491,11 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
         {
             QMetaObject::invokeMethod(m_pWindow, "enableGammaCorrection", Qt::BlockingQueuedConnection, Q_ARG(bool, val->getVal<int>() > 0));
-			it->copyValueFrom( &(*val) );
+            it->copyValueFrom( &(*val) );
         }
         else if (QString::compare(key, "color", Qt::CaseInsensitive) == 0)
         {
-			QMetaObject::invokeMethod(m_pWindow, "setColor", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()));
+            QMetaObject::invokeMethod(m_pWindow, "setColor", Qt::BlockingQueuedConnection, Q_ARG(int, val->getVal<int>()));
             it->copyValueFrom(&(*val));
         }
         else if (QString::compare(key, "numimg", Qt::CaseInsensitive) == 0)
@@ -697,7 +697,7 @@ ito::RetVal DispWindow::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         }
     }
 
-	setIdentifier(QString::number(getID()));
+    setIdentifier(QString::number(getID()));
 
     if (waitCond)
     {

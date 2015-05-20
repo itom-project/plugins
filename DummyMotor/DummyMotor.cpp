@@ -189,13 +189,13 @@ ito::RetVal DummyMotor::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
         
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //finally, save the desired value in the argument val (this is a shared pointer!)
         *val = it.value();
@@ -224,18 +224,18 @@ ito::RetVal DummyMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
         
-    if(isMotorMoving()) //this if-case is for actuators only.
+    if (isMotorMoving()) //this if-case is for actuators only.
     {
         retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toLatin1().data());
     }
         
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
@@ -243,9 +243,9 @@ ito::RetVal DummyMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         retValue += apiValidateParam(*it, *val, false, true);
     }
         
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     { 
-        if(key == "async")
+        if (key == "async")
         {
             //check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom( &(*val) );
@@ -259,7 +259,7 @@ ito::RetVal DummyMotor::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         }
     }
         
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
@@ -863,14 +863,14 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMotor::startJoyStickMovement(QVector<int> axis, QVector<double> vel)
 {
-    if(axis.size() != vel.size())
+    if (axis.size() != vel.size())
     {
         //qDebug()<< "Theoretically error with the \"Spass-Stecken\"\n";
         return ito::RetVal(ito::retError, 0, tr("Axis and velocity vector differ in size.").toLatin1().data());
     }
-    if(axis.size() == 1)
+    if (axis.size() == 1)
     {
-        if(abs(vel[0]) > 0.0001)
+        if (abs(vel[0]) > 0.0001)
         {
             //qDebug() << "Theoretically started jogging due to the \"Spass-Stecken\"\n";
         }
