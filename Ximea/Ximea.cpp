@@ -1457,6 +1457,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     DWORD pSize = sizeof(int);
 	DWORD intSize = sizeof(int);
 	DWORD floatSize = sizeof(float);
+	DWORD charSize = sizeof(char);
     XI_PRM_TYPE pType = xiTypeInteger;
 	XI_PRM_TYPE intType = xiTypeInteger;
     XI_PRM_TYPE strType = xiTypeString;
@@ -1485,16 +1486,19 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             }
             else
             {
-                char strBuf[1024];
-                int serial_number;
-                DWORD strBufSize = 1024 * sizeof(char);
-			    m_params["cam_number"].setVal<int>(icam_number);
+				m_params["cam_number"].setVal<int>(icam_number);
+
+                char strBuf[1024];               
+                DWORD strBufSize = 1024 * sizeof(char);			    
                 if (ret = pxiGetParam(m_handle, XI_PRM_DEVICE_NAME, &strBuf, &strBufSize, &strType))
                     retValue += getErrStr(ret, "XI_PRM_DEVICE_NAME", strBuf);
-			    m_params["sensor_type"].setVal<char*>(strBuf);
+			    m_params["sensor_type"].setVal<char*>(strBuf); 
+
+				int serial_number;
                 if (ret = pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &pType))
                     retValue += getErrStr(ret, "XI_PRM_DEVICE_SN", QString::number(serial_number));
 			    m_params["serial_number"].setVal<int>(serial_number);
+
                 if (!retValue.containsError())
                 {
                     QString serial_numberHex = QString::number(serial_number, 16);
@@ -1700,6 +1704,11 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                     retValue += getErrStr(ret, "XI_PRM_BUFFER_POLICY", QString::number(val));
 				retValue += synchronizeCameraSettings();
             }
+			int device_exist;
+			if (ret = pxiGetParam(m_handle, XI_PRM_IS_DEVICE_EXIST, &device_exist, &pSize, &pType))
+                    retValue += getErrStr(ret, "XI_PRM_IS_DEVICE_EXIST", QString::number(device_exist));
+			if (device_exist != 1)
+				retValue += ito::RetVal(ito::retError, 0, tr("Camera is not connected or do not work properly!").toLatin1().data());
 
             if (!retValue.containsError())
             {
