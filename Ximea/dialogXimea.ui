@@ -352,7 +352,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>BitPerPix</string>
+         <string>bpp</string>
         </property>
        </widget>
       </item>
@@ -362,48 +362,8 @@
          <bool>false</bool>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>-1</number>
         </property>
-        <item>
-         <property name="text">
-          <string>8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>10</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>12</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>14</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>16</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>24</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>30</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>32</string>
-         </property>
-        </item>
        </widget>
       </item>
      </layout>
@@ -424,7 +384,7 @@
          </size>
         </property>
         <property name="text">
-         <string>sensor type:</string>
+         <string>Sensor type:</string>
         </property>
        </widget>
       </item>
@@ -444,7 +404,7 @@
          </size>
         </property>
         <property name="text">
-         <string>serial Nr.: </string>
+         <string>Serial Nr.: </string>
         </property>
        </widget>
       </item>

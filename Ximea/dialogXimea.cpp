@@ -296,8 +296,7 @@ ito::RetVal DialogXimea::applyParameters()
     }
 #endif
    
-	//if (ui.combo_bin->isEnabled())
-    if (0)
+	if (ui.combo_bin->isEnabled())
 	{
 		int bin = ui.combo_bin->itemData(ui.combo_bin->currentIndex()).toInt();//TODO check
 		if (m_currentParameters["binning"].getVal<int>() != bin)
