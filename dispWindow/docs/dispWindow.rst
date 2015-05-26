@@ -40,10 +40,10 @@ be enabled. Then, the displayed gray value is::
     screen_pixel = lut[round(255 * [2*cos(alpha) + 1])]
     
 The lookup table (lut) consists of 256 values. In order to register the lookup table, you can project a uniform background with uniformly distributed
-gray-values (at least 64 different values) between 0 and full resolution (e.g. 255). The values should be sorted beginning with the darkest one until 'white':
-
-for i in range(0,256,4):
-    projector.exec("projectGrayValue", i)
+gray-values (at least 64 different values) between 0 and full resolution (e.g. 255). The values should be sorted beginning with the darkest one until 'white'::
+    
+    for i in range(0,256,4):
+        projector.exec("projectGrayValue", i)
     
 .. note::
     
