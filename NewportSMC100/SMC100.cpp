@@ -189,7 +189,7 @@ ito::RetVal SMC100::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Param
 
         if (m_numAxis != numAxes)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "could not connect to %i axes", numAxes);
+            retval += ito::RetVal::format(ito::retError, 0, tr("could not connect to %i axes").toLatin1().data(), numAxes);
         }
         else
         {
@@ -364,7 +364,7 @@ ito::RetVal SMC100::SMCEnterConfigMode(const QVector<int> axis, ItomSharedSemaph
                 }
                 else if (timer.elapsed() > 5000)
                 {
-                    retval += ito::RetVal::format(ito::retError,0,"timeout while entering config mode (axis %i)", m_addresses[a]);
+                    retval += ito::RetVal::format(ito::retError, 0, tr("timeout while entering config mode (axis %i)").toLatin1().data(), m_addresses[a]);
                     break;
                 }
             }
@@ -632,7 +632,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             {
                 if (val->getLen() != m_numAxis)
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, "the given array must have %i entries", m_numAxis);
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("The given array must have %i entries").toLatin1().data(), m_numAxis);
                 }
                 else
                 {
@@ -690,7 +690,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             {
                 if (val->getLen() != m_numAxis)
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, "the given array must have %i entries", m_numAxis);
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("The given array must have %i entries").toLatin1().data(), m_numAxis);
                 }
                 else
                 {
@@ -738,7 +738,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             {
                 if (val->getLen() != m_numAxis)
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, "the given array must have %i entries", m_numAxis);
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("The given array must have %i entries").toLatin1().data(), m_numAxis);
                 }
                 else
                 {
@@ -768,7 +768,7 @@ ito::RetVal SMC100::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
             {
                 if (val->getLen() != m_numAxis)
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, "the given array must have %i entries", m_numAxis);
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("The given array must have %i entries").toLatin1().data(), m_numAxis);
                 }
                 else
                 {
@@ -830,7 +830,7 @@ ito::RetVal SMC100::SMCSetCalibMode(const QVector<int> axisAndMode)
                 }
                 else
                 {             
-                    retval += ito::RetVal(ito::retWarning, 0, "The requested axis is not in config mode");
+                    retval += ito::RetVal(ito::retWarning, 0, tr("The requested axis is not in config mode").toLatin1().data());
                     break;
                 }
             }
@@ -838,7 +838,7 @@ ito::RetVal SMC100::SMCSetCalibMode(const QVector<int> axisAndMode)
         }
         else 
         {
-            retval += ito::RetVal(ito::retError, 0, "The requested axis for setting homing mode could not be found");
+            retval += ito::RetVal(ito::retError, 0, tr("The requested axis for setting homing mode could not be found").toLatin1().data());
             break;
         }
     }
@@ -878,7 +878,7 @@ ito::RetVal SMC100::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond
     {
         if (a < 0 || a >= m_numAxis)
         {
-            retval += ito::RetVal(ito::retError, 0, "invalid axis number");
+            retval += ito::RetVal(ito::retError, 0, tr("invalid axis number").toLatin1().data());
         }
         else
         {
@@ -888,7 +888,7 @@ ito::RetVal SMC100::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, "The requested axis is not in notReferenced mode");
+                retval += ito::RetVal(ito::retError, 0, tr("The requested axis is not in notReferenced mode").toLatin1().data());
             }
         }
     }
@@ -912,7 +912,7 @@ ito::RetVal SMC100::calib(const QVector<int> axis, ItomSharedSemaphore *waitCond
 
         if (timer.elapsed() > m_params["calib_timeout"].getVal<double>() * 1000.0)
         {
-            retval += ito::RetVal(ito::retError, 0, "timeout when calibrating axes");
+            retval += ito::RetVal(ito::retError, 0, tr("timeout when calibrating axes").toLatin1().data());
             break;
         }
 
@@ -997,7 +997,7 @@ ito::RetVal SMC100::getPos(const QVector<int> axis, QSharedPointer<QVector<doubl
     {
         if (axis[idx] < 0 || axis[idx] >= m_numAxis)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "invalid axis number (%i)", axis[idx]);
+            retval += ito::RetVal::format(ito::retError, 0, tr("invalid axis number (%i)").toLatin1().data(), axis[idx]);
         }
         else
         {
@@ -1183,7 +1183,7 @@ ito::RetVal SMC100::SMCCheckStatus(const QVector<int> axis)
     {
         if (a < 0 || a >= m_numAxis)
         {
-            retVal += ito::RetVal(ito::retError,0,"invalid axis");
+            retVal += ito::RetVal(ito::retError, 0, tr("invalid axis").toLatin1().data());
         }
         else
         {
@@ -1319,7 +1319,7 @@ ito::RetVal SMC100::SMCCheckError(int axis /*= -1*/)
     {
         if (err.mid(1,2) != "TE" || err.size() < 4)
         {
-            r += ito::RetVal(ito::retError, 0, "error while checking error.");
+            r += ito::RetVal(ito::retError, 0, tr("error while checking error.").toLatin1().data());
         }
         else
         {
@@ -1330,7 +1330,7 @@ ito::RetVal SMC100::SMCCheckError(int axis /*= -1*/)
             case '@':
                 break;
             case 'A':
-                r += ito::RetVal(ito::retError, 0, "Unknown message code or floating point controller address.");
+                r += ito::RetVal(ito::retError, 0, tr("Unknown message code or floating point controller address.").toLatin1().data());
                 break;
             case 'B':
             {
@@ -1343,95 +1343,95 @@ ito::RetVal SMC100::SMCCheckError(int axis /*= -1*/)
                     errChar = err.right(1).data()[0];
                     if (errChar == 'B')
                     {
-                        r += ito::RetVal(ito::retError, 0, "Controller address not correct.");
+                        r += ito::RetVal(ito::retError, 0, tr("Controller address not correct.").toLatin1().data());
                     }
                 }
                 break;
             }
             case 'C':
             {
-                r += ito::RetVal(ito::retError, 0, "Parameter missing or out of range.");
+                r += ito::RetVal(ito::retError, 0, tr("Parameter missing or out of range.").toLatin1().data());
                 break;
             }
             case 'D':
             {
-                r += ito::RetVal(ito::retError, 0, "Command not allowed.");
+                r += ito::RetVal(ito::retError, 0, tr("Command not allowed.").toLatin1().data());
                 break;
             }
             case 'E':
             {
-                r += ito::RetVal(ito::retError, 0, "Home sequence already started.");
+                r += ito::RetVal(ito::retError, 0, tr("Home sequence already started.").toLatin1().data());
                 break;
                 break;
             }
             case 'F':
             {
-                r += ito::RetVal(ito::retError, 0, "ESP stage name unknown.");
+                r += ito::RetVal(ito::retError, 0, tr("ESP stage name unknown.").toLatin1().data());
                 break;
             }
             case 'G':
             {
-                r += ito::RetVal(ito::retError, 0, "Displacement out of limits.");
+                r += ito::RetVal(ito::retError, 0, tr("Displacement out of limits.").toLatin1().data());
                 break;
             }
             case 'H':
             {
-                r += ito::RetVal(ito::retError, 0, "Command not allowed in NOT REFERENCED state.");
+                r += ito::RetVal(ito::retError, 0, tr("Command not allowed in NOT REFERENCED state.").toLatin1().data());
                 break;
             }
             case 'I':
             {
-                r += ito::RetVal(ito::retError, 0, "Command not allowed in CONFIGURATION state.");
+                r += ito::RetVal(ito::retError, 0, tr("Command not allowed in CONFIGURATION state.").toLatin1().data());
                 break;
             }
             case 'J':
             {
-                r += ito::RetVal(ito::retError, 0, "Command not allowed in DISABLE state.");
+                r += ito::RetVal(ito::retError, 0, tr("Command not allowed in DISABLE state.").toLatin1().data());
                 break;
             }
             case 'K':
             {
-                r += ito::RetVal(ito::retError, 0, "Command not allowed in READY state.");
+                r += ito::RetVal(ito::retError, 0, tr("Command not allowed in READY state.").toLatin1().data());
                 break;
             }
             case 'L':
             {
-                r += ito::RetVal(ito::retError, 0, "Command not allowed in HOMING state.");
+                r += ito::RetVal(ito::retError, 0, tr("Command not allowed in HOMING state.").toLatin1().data());
                 break;
             }
             case 'M':
             {
-                r += ito::RetVal(ito::retError, 0, "Command not allowed in MOVING state.");
+                r += ito::RetVal(ito::retError, 0, tr("Command not allowed in MOVING state.").toLatin1().data());
                 break;
             }
             case 'N':
             {
-                r += ito::RetVal(ito::retError, 0, "Current position out of software limit.");
+                r += ito::RetVal(ito::retError, 0, tr("Current position out of software limit.").toLatin1().data());
                 break;
             }
             case 'S':
             {
-                r += ito::RetVal(ito::retError, 0, "Communication Time Out.");
+                r += ito::RetVal(ito::retError, 0, tr("Communication Time Out.").toLatin1().data());
                 break;
             }
             case 'U':
             {
-                r += ito::RetVal(ito::retError, 0, "Error during EEPROM access.");
+                r += ito::RetVal(ito::retError, 0, tr("Error during EEPROM access.").toLatin1().data());
                 break;
             }
             case 'V':
             {
-                r += ito::RetVal(ito::retError, 0, "Error during command execution.");
+                r += ito::RetVal(ito::retError, 0, tr("Error during command execution.").toLatin1().data());
                 break;
             }
             case 'W':
             {
-                r += ito::RetVal(ito::retError, 0, "Command not allowed for PP version.");
+                r += ito::RetVal(ito::retError, 0, tr("Command not allowed for PP version.").toLatin1().data());
                 break;
             }
             case 'X':
             {
-                r += ito::RetVal(ito::retError, 0, "Command not allowed for CC version.");
+                r += ito::RetVal(ito::retError, 0, tr("Command not allowed for CC version.").toLatin1().data());
                 break;
             }
             }
