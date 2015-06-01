@@ -175,7 +175,7 @@ ito::RetVal DataObjectArithmetic::minValue(QVector<ito::ParamBase> *paramsMand, 
 
     if(dObj == NULL)
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image is NUL").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toLatin1().data());
     }
 
     if(dObj->getDims() < 2)
