@@ -877,7 +877,7 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
     QImage image;
-    QFileInfo fileinfo(filename);
+    QFileInfo fileinfo(QString::fromLatin1(filename));
 
     if (!fileinfo.exists())
     {
@@ -989,7 +989,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 {
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
-    QFileInfo fileinfo(filename);
+    QFileInfo fileinfo(QString::fromLatin1(filename));
     QFile dataOut(filename);
 
     ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
@@ -1454,7 +1454,7 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 {
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
-    QFileInfo fileinfo(filename);
+    QFileInfo fileinfo(QString::fromLatin1(filename));
     QFile dataIn(fileinfo.canonicalFilePath());
 
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
@@ -2129,7 +2129,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
     const cv::Mat *srcData = NULL;
 
     QString imgPalette(palette);
-    QFileInfo fileName(filename);
+    QFileInfo fileName(QString::fromLatin1(filename));
 
     if (fileName.fileName().isEmpty())
     {
@@ -2632,7 +2632,7 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
     }
 
     cv::Mat image;
-    QFileInfo fileinfo(filename);
+    QFileInfo fileinfo(QString::fromLatin1(filename));
 
     if (!fileinfo.exists())
     {
@@ -3073,7 +3073,7 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
 {
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
-    QFileInfo fileinfo(filename);
+    QFileInfo fileinfo(QString::fromLatin1(filename));
     QFile dataIn(fileinfo.canonicalFilePath());
 
     ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
