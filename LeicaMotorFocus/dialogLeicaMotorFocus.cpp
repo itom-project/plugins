@@ -136,9 +136,9 @@ void DialogLeicaMotorFocus::on_cmdHoming_clicked()
 
             if (retval.containsWarningOrError())
             {
-                if (retval.errorMessage())
+                if (retval.hasErrorMessage())
                 {
-                    msg = retval.errorMessage();
+                    msg = QLatin1String(retval.errorMessage());
                 }
                 else
                 {
@@ -183,9 +183,9 @@ void DialogLeicaMotorFocus::on_cmdOrigin_clicked()
 
             if (retval.containsWarningOrError())
             {
-                if (retval.errorMessage())
+                if (retval.hasErrorMessage())
                 {
-                    msg = retval.errorMessage();
+                    msg = QLatin1String(retval.errorMessage());
                 }
                 else
                 {
@@ -282,9 +282,9 @@ void DialogLeicaMotorFocus::on_cmdOk_clicked()
 
         if (retval.containsWarningOrError())
         {
-            if (retval.errorMessage())
+            if (retval.hasErrorMessage())
             {
-                msg = retval.errorMessage();
+                msg = QLatin1String(retval.errorMessage());
             }
             else
             {

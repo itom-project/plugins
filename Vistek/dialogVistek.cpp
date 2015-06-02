@@ -223,13 +223,13 @@ int DialogVistek::sendParameters(void)
             if(retval.containsError())
             {
                 QString msg = "<unknown error>";
-                if (retval.errorMessage()) msg = retval.errorMessage();
+                if (retval.hasErrorMessage()) msg = QLatin1String(retval.errorMessage());
                 QMessageBox::critical(this,tr("error"),tr("Error while setting parameters (%1)").arg(msg));
             }
             else if(retval.containsWarning())
             {
                 QString msg = "<unknown warning>";
-                if (retval.errorMessage()) msg = retval.errorMessage();
+                if (retval.hasErrorMessage()) msg = QLatin1String(retval.errorMessage());
                 QMessageBox::warning(this,tr("warning"),tr("Warning while setting parameters (%1)").arg(msg));
             }
         }

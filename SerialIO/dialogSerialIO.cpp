@@ -647,7 +647,7 @@ void dialogSerialIO::on_lineEditSend_returnPressed()
     else
     {
         QMessageBox msgBox;
-        msgBox.setText(ret.errorMessage());
+        msgBox.setText(QLatin1String(ret.errorMessage()));
         msgBox.setInformativeText("");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setDefaultButton(QMessageBox::Ok);
@@ -763,7 +763,7 @@ void dialogSerialIO::on_pushReadButton_clicked()
     else
     {
         QMessageBox msgBox;
-        msgBox.setText(ret.errorMessage());
+        msgBox.setText(QLatin1String(ret.errorMessage()));
         msgBox.setInformativeText("");
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.setDefaultButton(QMessageBox::Ok);

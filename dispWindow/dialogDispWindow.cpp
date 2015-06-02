@@ -207,9 +207,9 @@ ito::RetVal DialogDispWindow::applyParameters()
         {
             QMessageBox msgBox;
             msgBox.setText(tr("Error while configuring projection").toLatin1().data());
-            if (retval.errorMessage())
+            if (retval.hasErrorMessage())
             {
-                msgBox.setInformativeText(retval.errorMessage());
+                msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
             }
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.exec();
@@ -219,9 +219,9 @@ ito::RetVal DialogDispWindow::applyParameters()
         {
             QMessageBox msgBox;
             msgBox.setText(tr("Warning while configuring projection").toLatin1().data());
-            if (retval.errorMessage())
+            if (retval.hasErrorMessage())
             {
-                msgBox.setInformativeText(retval.errorMessage());
+                msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
             }
             msgBox.setIcon(QMessageBox::Warning);
             msgBox.exec();
