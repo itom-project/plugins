@@ -334,73 +334,13 @@ void DialogPCOCamera::enableDialog(bool enabled)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogPCOCamera::on_rangeX01_valuesChanged(int minValue, int maxValue)
 {
-    int min_ = minValue;
-    int max_ = maxValue;
-    int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["x0"].getMeta() )->getStepSize();
-    int imageOffset = static_cast<ito::IntMeta*>( m_currentParameters["sizex"].getMeta() )->getStepSize();
-    int maxWidth = static_cast<ito::IntMeta*>( m_currentParameters["x1"].getMeta() )->getMax() + 1;
-
-    if ((min_ % stepOffset) != 0)
-    {
-        min_ = stepOffset * qRound((float)min_ / (float)stepOffset);
-        if (min_ >= max_)
-        {
-            min_ = stepOffset * floor((float)min_ / (float)stepOffset);
-        }
-    }
-    min_ = qBound<int>(0, min_, max_);
-
-    if (((max_ - min_ + 1) % imageOffset) != 0)
-    {
-        max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
-    }
-    
-    max_ = qBound<int>(0, max_, maxWidth-1);
-
-    if (min_ != minValue || max_ != maxValue)
-    {
-        ui.rangeX01->setValues(min_,max_);
-    }
-    else
-    {
-        ui.spinSizeX->setValue(maxValue - minValue + 1);
-    }
+    ui.spinSizeX->setValue(maxValue - minValue + 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogPCOCamera::on_rangeY01_valuesChanged(int minValue, int maxValue)
 {
-    int min_ = minValue;
-    int max_ = maxValue;
-    int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["y0"].getMeta() )->getStepSize();
-    int imageOffset = static_cast<ito::IntMeta*>( m_currentParameters["sizey"].getMeta() )->getStepSize();
-    int maxHeight = static_cast<ito::IntMeta*>( m_currentParameters["y1"].getMeta() )->getMax() + 1;
-
-    if ((min_ % stepOffset) != 0)
-    {
-        min_ = stepOffset * qRound((float)min_ / (float)stepOffset);
-        if (min_ >= max_)
-        {
-            min_ = stepOffset * floor((float)min_ / (float)stepOffset);
-        }
-    }
-    min_ = qBound<int>(0, min_, max_);
-
-    if (((max_ - min_ + 1) % imageOffset) != 0)
-    {
-        max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
-    }
-    
-    max_ = qBound<int>(0, max_, maxHeight - 1);
-
-    if (min_ != minValue || max_ != maxValue)
-    {
-        ui.rangeY01->setValues(min_,max_);
-    }
-    else
-    {
-        ui.spinSizeY->setValue(maxValue - minValue + 1);
-    }
+    ui.spinSizeY->setValue(maxValue - minValue + 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
