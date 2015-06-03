@@ -1052,7 +1052,7 @@ ito::RetVal PCOPixelFly::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
                 retValue += PCOFreeAllocatedBuffer();
 
-                retValue += this->PCOChkError(setmode(this->m_hdriver, trigger_mode, 0, integration_time, m_verticalBinning, m_horizontalBinning, gain, 0, bitppix, shift));
+                retValue += this->PCOChkError(setmode(this->m_hdriver, trigger_mode, 0, integration_time, m_horizontalBinning, m_verticalBinning, gain, 0, bitppix, shift));
                 retValue += this->PCOChkError(getsizes(this->m_hdriver, &maxxsize, &maxysize, &curxsize, &curysize, &bitppix));
                 
                 m_params["bpp"].setVal<int>(bitppix);
@@ -1122,7 +1122,7 @@ ito::RetVal PCOPixelFly::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         }
         else
         {
-            retValue = this->PCOChkError(setmode(this->m_hdriver, trigger_mode, 0, integration_time, m_verticalBinning, m_horizontalBinning, gain, 0, bitppix, shift));
+            retValue = this->PCOChkError(setmode(this->m_hdriver, trigger_mode, 0, integration_time, m_horizontalBinning, m_verticalBinning, gain, 0, bitppix, shift));
         }
 
     }
@@ -1712,6 +1712,7 @@ ito::RetVal PCOPixelFly::retrieveData(ito::DataObject *externalDataObject)
                 case 12:
                     if (curxsize == maxxsize)
                     {
+						lsrcstrpos = y0 * maxxsize;
                         if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) (this->m_pAdr[this->m_nextbuf])+lsrcstrpos, maxxsize, curysize);
                         if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) (this->m_pAdr[this->m_nextbuf])+lsrcstrpos, maxxsize, curysize);
                     }

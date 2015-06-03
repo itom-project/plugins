@@ -20,7 +20,16 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
     <number>3</number>
    </property>
    <item row="0" column="0">
@@ -226,6 +235,9 @@
       </item>
       <item row="2" column="1" colspan="2">
        <widget class="QDoubleSpinBox" name="doubleSpinBox_integration_time">
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
         <property name="prefix">
          <string/>
         </property>

@@ -47,13 +47,12 @@ void DialogPCOPixelFly::parametersChanged(QMap<QString, ito::Param> params)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-        ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
-        ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
-        ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
-
         m_firstRun = false;
     }
 
+	ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+    ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+    ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
 
     int *roi = params["roi"].getVal<int*>();
     qDebug() << roi[0] << roi[1] << roi[2] << roi[3];
@@ -167,7 +166,7 @@ ito::RetVal DialogPCOPixelFly::applyParameters()
 
     if (ui.comboBinningX->isEnabled())
     {
-        int binning = ui.comboBinningX->itemData(ui.comboBinningX->currentIndex(), Qt::UserRole).toInt() * 100 + ui.comboBinningY->itemData(ui.comboBinningY->currentIndex(), Qt::UserRole).toInt();
+        int binning = (ui.comboBinningX->currentIndex()+1) * 100 + (ui.comboBinningY->currentIndex()+1);
         if((m_currentParameters["binning"].getVal<int>() !=  binning))
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, binning)));
