@@ -121,31 +121,7 @@ PCOPixelFlyInterface::~PCOPixelFlyInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal PCOPixelFly::showConfDialog(void)
 {
-    ito::RetVal retValue(ito::retOk);
-    int bitppix_old = 12;
-    int binning_old = 0;
-    int bitppix_new = 12;
-    int binning_new = 0;
-    double offset_new = 0.0;
-
-    //dialogPCOPixelFly *confDialog = new dialogPCOPixelFly();
-    dialogPCOPixelFly *confDialog = new dialogPCOPixelFly(this);
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    QMetaObject::invokeMethod(this, "sendParameterRequest");
-
-    if (confDialog->exec())
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-        confDialog->sendVals();
-    }
-    else
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    }
-    delete confDialog;
-
-    return retValue;
+    return apiShowConfigurationDialog(this, new DialogPCOPixelFly(this));
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 PCOPixelFly::PCOPixelFly() : 
@@ -160,44 +136,48 @@ PCOPixelFly::PCOPixelFly() :
     m_horizontalBinning(0),
     m_libraryMajor(0)
 {
-   ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "PCOPixelFly", NULL);
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 0.065, 0.01, tr("Integrationtime of CCD programmed in s").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("frame_time", ito::ParamBase::Double | ito::ParamBase::Readonly, 1/13.0, 1/13.0, 1/13.0, tr("Shortest time between two frames").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "PCOPixelFly", NULL);
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 0.065535, 0.01, tr("Integrationtime of CCD programmed in s").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Standard light mode (0, default), low light mode (1)").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.0, tr("Not implemented for PixelFly QE").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Standard light mode (0, default), low light mode (1)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1391, 0, tr("Startvalue for ROI").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Stoppvalue for ROI").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1391, 1391, tr("Stopvalue for ROI").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1023, 1023, tr("Stopvalue for ROI").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1392, 1392, tr("ROI-Size in x").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1024, 1024, tr("ROI-Size in y").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1391, 0, tr("Startvalue for ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Stoppvalue for ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1391, 1391, tr("Stopvalue for ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1023, 1023, tr("Stopvalue for ROI").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("bit depth in bits per pixel").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    int roi[] = {0, 0, 1392, 1024};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height)").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 1392-1), ito::RangeMeta(0, 1024-1));
+    paramVal.setMeta(rm, true);
+    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 202, 101, tr("Activate 2x2 binning").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, 0x10, 0x41, 0x11, tr("Set Triggermode, currently not implemented").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("shift_bits", ito::ParamBase::Int, 0, 4, 0, tr("Shiftbits in 8-bitmode only").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("board_number", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Number of this board").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("driver_version", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, NULL, tr("driver version").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1392, 1392, tr("ROI-Size in x").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1024, 1024, tr("ROI-Size in y").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("bit depth in bits per pixel").toLatin1().data());
+    paramVal.setMeta(new ito::IntMeta(8,12,4), true);
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 202, 101, tr("Activate 2x2 binning").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("trigger_mode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0x10, 0x41, 0x11, tr("Set Triggermode, currently not implemented").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("shift_bits", ito::ParamBase::Int, 0, 5, 0, tr("In 8 bit, select a number of bits (0..5) that the 12bit acquired values should be shifted before transport with 8 bit precision. (only in 8bit bpp mode)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("board_number", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Number of this board").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("driver_version", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, NULL, tr("driver version").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     memset((void*) &(this->m_bufnumber[0]), 0, BUFFERNUMBER*sizeof(int));
     memset((void*) &(this->m_event[0]), 0, BUFFERNUMBER*sizeof(HANDLE));
@@ -934,152 +914,136 @@ ito::RetVal PCOPixelFly::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-
-    int iRetCode = 0;
-    int i = 0;
-    int maxxsize = 0;
-    int maxysize = 0;
-    int curxsize = 0;
-    int curysize = 0;
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
 
     int running = 0;
 
-    int gain = 0;
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    int bitppix = 12;
-    int bitppix_old = m_params["bpp"].getVal<int>();
-    int shift = 0;
-    
-    int trigger_mode = 0x11;
-    int integration_time = 10000;    
-    
-    QString key = val->getName();
-
-    if(key == "")    // Check if the key is valied
+    if(!retValue.containsError())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
-    else    // key valid so go on
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);    // try to find the parameter in the parameter list
+        //if you program for itom 1.4.0 or higher (Interface version >= 1.3.1) you should use this
+        //API method instead of the one above: The difference is, that incoming parameters that are
+        //compatible but do not have the same type than the corresponding m_params value are cast
+        //to the type of the internal parameter and incoming double values are rounded to the
+        //next value (depending on a possible step size, if different than 0.0)
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
+    }
 
-        if (paramIt != m_params.end()) // Okay the camera has this parameter so go on
+    if(!retValue.containsError())
+    {
+        if (key == "roi")
         {
-    
-            if (grabberStartedCount())
+            if (hasIndex && (index < 0 || index >= 4))
             {
-                running = grabberStartedCount();
-                setGrabberStarted(1);
-                retValue += this->stopDevice(0);
+                retValue += ito::RetVal(ito::retError, 0, "roi[x] only allowed for index in [0,3]");
             }
-            else
+            else if (val->getLen() != 4)
             {
-                setGrabberStarted(1);
-                this->stopDevice(0);
+                retValue += ito::RetVal(ito::retError, 0, "roi must have four values");
             }
+        }
+    }
 
-            if(paramIt->getFlags() & ito::ParamBase::Readonly)
-            {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
-                goto end;
-            }
-            else if(val->isNumeric() && paramIt->isNumeric())
-            {
-                double curval = val->getVal<double>();
-                if( curval > paramIt->getMax())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else if(curval < paramIt->getMin())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else 
-                {
-                    paramIt.value().setVal<double>(curval);
-                }
-            }
-            else if (paramIt->getType() == val->getType())
-            {
-                retValue += paramIt.value().copyValueFrom( &(*val) );
-            }
-            else
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
-                goto end;
-            }
+    if (!retValue.containsError())
+    {
+        if (grabberStartedCount())
+        {
+            running = grabberStartedCount();
+            setGrabberStarted(1);
+            retValue += this->stopDevice(0);
+        }
+        else
+        {
+            setGrabberStarted(1);
+            this->stopDevice(0);
+        }
+
+        int bitppix_old = m_params["bpp"].getVal<int>();
+        int maxxsize = 0;
+        int maxysize = 0;
+        int curxsize = 0;
+        int curysize = 0;
+
+        retValue += it->copyValueFrom( &(*val) );
+
+        Sleep(5);
+
+        int integration_time = (int)(m_params["integration_time"].getVal<double>()*1000000);
+        int trigger_mode = m_params["trigger_mode"].getVal<int>();
         
-            Sleep(5);
-
-            integration_time = (int)(m_params["integration_time"].getVal<double>()*1000000);
-            trigger_mode = m_params["trigger_mode"].getVal<int>();
+        int gain = (int)(m_params["gain"].getVal<double>()+0.5); // Toggle Gain On / Off
+        m_params["gain"].setVal<int>(gain);
         
-            gain = (int)(m_params["gain"].getVal<double>()+0.5); // Toggle Gain On / Off
-            m_params["gain"].setVal<int>(gain);
-        
-            bitppix = (int) m_params["bpp"].getVal<int>();
-            shift = (int) m_params["shift_bits"].getVal<int>();
+        int bitppix = (int) m_params["bpp"].getVal<int>();
+        int shift = (int) m_params["shift_bits"].getVal<int>();
 
-            if ((strcmp(paramIt.value().getName(),"bpp") == 0) || (strcmp(paramIt.value().getName(),"binning") == 0))
+        if (key == "binning" || key == "bpp")
+        {
+            if(key == "binning")
             {
+                int newbinX = val->getVal<int>()/100;
+                int newbinY = val->getVal<int>()-newbinX *100;
 
-                if((strcmp(paramIt.value().getName(),"binning") == 0))
+                int maxbinX = (int)it->getMax()/100;
+                int maxbinY = (int)it->getMax()- maxbinX * 100;
+
+                int minbinX = (int)it->getMin()/100;
+                int minbinY = (int)it->getMin()- minbinX * 100;
+
+                if( newbinX > maxbinX)
                 {
-                    int newbinX = val->getVal<int>()/100;
-                    int newbinY = val->getVal<int>()-newbinX *100;
-
-                    int maxbinX = (int)paramIt->getMax()/100;
-                    int maxbinY = (int)paramIt->getMax()- maxbinX * 100;
-
-                    int minbinX = (int)paramIt->getMin()/100;
-                    int minbinY = (int)paramIt->getMin()- minbinX * 100;
-
-                    if( newbinX > maxbinX)
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, tr("New value in X is larger than maximal value, input ignored").toLatin1().data());
-                        goto end;
-                    }
-                    else if( newbinY > maxbinY)
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is larger than maximal value, input ignored").toLatin1().data());
-                        goto end;
-                    }
-                    else if(newbinX < minbinX)
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, tr("New value in X is smaller than parameter range, input ignored").toLatin1().data());
-                        goto end;
-                    }
-                    else if(newbinY < minbinY)
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is smaller than parameter range, input ignored").toLatin1().data());
-                        goto end;
-                    }
-                    else
-                    {
-                        m_horizontalBinning =  newbinX - 1;
-                        m_verticalBinning =  newbinY - 1;
-                        paramIt.value().setVal<int>(newbinX * 100 + newbinY);
-                    }
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value in X is larger than maximal value, input ignored").toLatin1().data());
                 }
-
-                if ((bitppix != 8) && (bitppix != 12) && (bitppix != 16))
+                else if( newbinY > maxbinY)
                 {
-                    iRetCode = getsizes(this->m_hdriver, &maxxsize, &maxysize, &curxsize, &curysize, &bitppix);
-                    if (iRetCode != 0)
-                    {
-                        retValue = this->PCOChkError(iRetCode);
-                        m_params["bpp"].setVal<int>(bitppix_old);
-                    }
-                    else
-                    {
-                        m_params["bpp"].setVal<int>(bitppix);
-                    }
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is larger than maximal value, input ignored").toLatin1().data());
+                }
+                else if(newbinX < minbinX)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value in X is smaller than parameter range, input ignored").toLatin1().data());
+                }
+                else if(newbinY < minbinY)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("New value in Y is smaller than parameter range, input ignored").toLatin1().data());
+                }
+                else
+                {
+                    m_horizontalBinning =  newbinX - 1;
+                    m_verticalBinning =  newbinY - 1;
+                    it.value().setVal<int>(newbinX * 100 + newbinY);
+                }
+            }
+
+            if ((bitppix != 8) && (bitppix != 12) && (bitppix != 16))
+            {
+                int iRetCode = getsizes(this->m_hdriver, &maxxsize, &maxysize, &curxsize, &curysize, &bitppix);
+                if (iRetCode != 0)
+                {
+                    retValue = this->PCOChkError(iRetCode);
+                    m_params["bpp"].setVal<int>(bitppix_old);
+                }
+                else
+                {
+                    m_params["bpp"].setVal<int>(bitppix);
+                }
                 
-                    retValue += ito::RetVal(ito::retError, 0, tr("Tried to set invalid Bits per Pixe").toLatin1().data());
-                    return retValue;
-                }
+                retValue += ito::RetVal(ito::retError, 0, tr("Tried to set invalid bits per pixel").toLatin1().data());
+            }
+
+            if (!retValue.containsError())
+            {
                 if (bitppix > 8)
                 {
                     shift = 0;
@@ -1088,18 +1052,9 @@ ito::RetVal PCOPixelFly::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
                 retValue += PCOFreeAllocatedBuffer();
 
-                iRetCode = setmode(this->m_hdriver, trigger_mode, 0, integration_time, m_verticalBinning, m_horizontalBinning, gain, 0, bitppix, shift);
-                if (iRetCode != 0)
-                {
-                    retValue = this->PCOChkError(iRetCode);
-                }
-
-                iRetCode = getsizes(this->m_hdriver, &maxxsize, &maxysize, &curxsize, &curysize, &bitppix);
-                if (iRetCode != 0)
-                {
-                    retValue = this->PCOChkError(iRetCode);
-                }
-
+                retValue += this->PCOChkError(setmode(this->m_hdriver, trigger_mode, 0, integration_time, m_verticalBinning, m_horizontalBinning, gain, 0, bitppix, shift));
+                retValue += this->PCOChkError(getsizes(this->m_hdriver, &maxxsize, &maxysize, &curxsize, &curysize, &bitppix));
+                
                 m_params["bpp"].setVal<int>(bitppix);
 
                 maxxsize = (int)(maxxsize /(m_horizontalBinning+1));
@@ -1123,42 +1078,54 @@ ito::RetVal PCOPixelFly::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMin(maxxsize);
                 static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMin(maxysize);
 
+                int roi[] = {0, 0, curxsize, curysize};
+                m_params["roi"].setVal<int*>(roi, 4);
+                m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, maxxsize-1, 1), ito::RangeMeta(0, maxysize-1, 1)), true);
+
                 retValue += PCOAllocateBuffer();
-                if (iRetCode != 0)
-                {
-                    retValue = this->PCOChkError(iRetCode);
-                }
             }
-            else if(!paramIt.key().compare("x0") ||
-                   !paramIt.key().compare("x1") ||
-                   !paramIt.key().compare("y0") ||
-                   !paramIt.key().compare("y1"))
-            {
-                static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax( m_params["x1"].getVal<int>() );
-                static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax( m_params["y1"].getVal<int>() );
+        }
+        else if (key == "x0" || key == "x1" || key == "y0" || key == "y1")
+        {
+            static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax( m_params["x1"].getVal<int>() );
+            static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax( m_params["y1"].getVal<int>() );
 
-                static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMin(m_params["x0"].getVal<int>());
-                static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMin(m_params["x0"].getVal<int>());
+            static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMin(m_params["x0"].getVal<int>());
+            static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMin(m_params["x0"].getVal<int>());
 
-                m_params["sizex"].setVal<int>(m_params["x1"].getVal<int>()-m_params["x0"].getVal<int>()+1);
-                m_params["sizey"].setVal<int>(m_params["y1"].getVal<int>()-m_params["y0"].getVal<int>()+1);
-            }
-            else
-            {
-                iRetCode = setmode(this->m_hdriver, trigger_mode, 0, integration_time, m_verticalBinning, m_horizontalBinning, gain, 0, bitppix, shift);
-                if (iRetCode != 0)
-                {
-                    retValue = this->PCOChkError(iRetCode);
-                }
-            }
+            m_params["sizex"].setVal<int>(m_params["x1"].getVal<int>()-m_params["x0"].getVal<int>()+1);
+            m_params["sizey"].setVal<int>(m_params["y1"].getVal<int>()-m_params["y0"].getVal<int>()+1);
+
+            int *roi = m_params["roi"].getVal<int*>();
+            roi[0] = m_params["x0"].getVal<int>();
+            roi[1] = m_params["y0"].getVal<int>();
+            roi[2] = m_params["sizex"].getVal<int>();
+            roi[3] = m_params["sizey"].getVal<int>();
+        }
+        else if (key == "roi")
+        {
+            const int *roi = m_params["roi"].getVal<int*>();
+
+            m_params["x0"].setVal<int>(roi[0]);
+            m_params["y0"].setVal<int>(roi[1]);
+            m_params["x1"].setVal<int>(roi[0] + roi[2] - 1);
+            m_params["y1"].setVal<int>(roi[1] + roi[3] - 1);
+
+            static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax( m_params["x1"].getVal<int>() );
+            static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax( m_params["y1"].getVal<int>() );
+
+            static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMin(m_params["x0"].getVal<int>());
+            static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMin(m_params["x0"].getVal<int>());
+
+            m_params["sizex"].setVal<int>(roi[2]);
+            m_params["sizey"].setVal<int>(roi[3]);
         }
         else
         {
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Parameter not found").toLatin1().data());
+            retValue = this->PCOChkError(setmode(this->m_hdriver, trigger_mode, 0, integration_time, m_verticalBinning, m_horizontalBinning, gain, 0, bitppix, shift));
         }
-    }
 
-end:
+    }
 
     retValue += checkData();
 
@@ -1173,13 +1140,13 @@ end:
         emit parametersChanged(m_params);
     }
 
-    if (waitCond) 
+    if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1342,6 +1309,10 @@ ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax(maxysize-1);
                 m_params["x0"].setVal<int>(0);
                 m_params["y0"].setVal<int>(0);
+
+                int roi[] = {0, 0, maxxsize, maxysize};
+                m_params["roi"].setVal<int*>(roi, 4);
+                m_params["roi"].setMeta(new ito::RectMeta( ito::RangeMeta(0, maxxsize-1, 1), ito::RangeMeta(0, maxysize-1, 1) ), true);
             }
         }
 

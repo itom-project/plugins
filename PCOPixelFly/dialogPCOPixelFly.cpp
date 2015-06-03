@@ -22,647 +22,211 @@
 
 #include "dialogPCOPixelFly.h"
 
+#include <qdialogbuttonbox.h>
+
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
-int dialogPCOPixelFly::getVals(QMap<QString, ito::Param> *paramVals)
+DialogPCOPixelFly::DialogPCOPixelFly(ito::AddInBase *grabber) :
+    AbstractAddInConfigDialog(grabber),
+    m_firstRun(true)
 {
-    bool updateSizeX = false;
-    bool updateSizeY = false;
+    ui.setupUi(this);
 
-    setWindowTitle(QString((*paramVals)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
-    // added by itobiege, Mar. 2013, but not tested!
+    //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
+    enableDialog(false);
+};
 
-    foreach(const ito::Param &param, *paramVals)
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogPCOPixelFly::parametersChanged(QMap<QString, ito::Param> params)
+{
+    m_currentParameters = params;
+
+    if (m_firstRun)
     {
-        if((m_paramsVals).contains(param.getName()))
-        {
-            m_paramsVals[param.getName()] = param;
-        }
-        else // Or create a new parameter
-        {
-            m_paramsVals.insert(param.getName(), param);
-        }
+        setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-        if(!strcmp(param.getName(), "x0"))
-        {
-            int ival = param.getVal<int>();
+        ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+        ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+        ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
 
-            ui.spinBox_x0->setValue(ival);
-            ui.spinBox_x1->setMinimum(ival);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_x0->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_x0->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(), "x1"))
-        {
-            int ival = (int)param.getMax();
-            ui.spinBox_x1->setMaximum(ival);
-
-            ival = param.getVal<int>();
-            ui.spinBox_x1->setValue(ival);
-            ui.spinBox_x0->setMaximum(ival);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.pushButton_setSizeXMax->setEnabled(true);
-                ui.spinBox_x1->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_x1->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(), "y0"))
-        {
-            int ival = param.getVal<int>();
-
-            ui.spinBox_y0->setValue(ival);
-            ui.spinBox_y1->setMinimum(ival);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_y0->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_y0->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(), "y1"))
-        {
-            int ival = (int)param.getMax();
-            ui.spinBox_y1->setMaximum(ival);
-
-            ival = param.getVal<int>();
-            ui.spinBox_y1->setValue(ival);
-            ui.spinBox_y0->setMaximum(ival);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.pushButton_setSizeYMax->setEnabled(true);
-                ui.spinBox_y1->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_y1->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(), "sizex"))
-        {
-            int ival = param.getVal<int>();
-            ui.spinBox_xsize->setValue(ival);
-        }
-
-        if(!strcmp(param.getName(), "sizey"))
-        {
-            int ival = param.getVal<int>();
-            ui.spinBox_ysize->setValue(ival);
-        }
-
-        if(!strcmp(param.getName(),"gain"))
-        {
-            double dval = param.getVal<double>();
-            ui.spinBox_gain->setValue((int)(dval*100.0+0.5));
-            ui.horizontalSlider_gain->setValue((dval*100 + 0.5));
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_gain->setEnabled(true);
-                ui.horizontalSlider_gain->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_gain->setEnabled(false);
-                ui.horizontalSlider_gain->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(),"offset"))
-        {
-            double dval = param.getVal<double>();
-            ui.spinBox_offset->setValue((int)(dval*100.0+0.5));
-            ui.horizontalSlider_offset->setValue((dval*100 + 0.5));
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_offset->setEnabled(true);
-                ui.horizontalSlider_offset->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_offset->setEnabled(false);
-                ui.horizontalSlider_offset->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(),"frame_time"))
-        {
-            double dval = param.getMin()*1000;
-            ui.doubleSpinBox_frame_time->setMinimum(dval);
-
-            dval = param.getMax()*1000;
-            ui.doubleSpinBox_frame_time->setMaximum(dval);
-
-            dval = param.getVal<double>()*1000;
-            ui.doubleSpinBox_frame_time->setValue(dval);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.doubleSpinBox_frame_time->setEnabled(true);
-            }
-            else
-            {
-                ui.doubleSpinBox_frame_time->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(),"integration_time"))
-        {
-            double dval = param.getMin()*1000;
-            ui.doubleSpinBox_integration_time->setMinimum(dval);
-
-            dval = param.getMax()*1000;
-            ui.doubleSpinBox_integration_time->setMaximum(dval);
-
-            dval = param.getVal<double>()*1000;
-            ui.doubleSpinBox_integration_time->setValue(dval);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.doubleSpinBox_integration_time->setEnabled(true);
-            }
-            else
-            {
-                ui.doubleSpinBox_integration_time->setEnabled(false);
-            }
-        }
-
-        if(!strcmp(param.getName(), "binning"))
-        {
-            int ival = param.getMin();
-            int ivalX = (int)(ival/100);
-            int ivalY = ival - ivalX * 100;
-
-            ui.spinBox_binX->setMinimum(ivalX);
-            ui.spinBox_binY->setMinimum(ivalY);
-
-            ival = param.getMax();
-            ivalX = (int)(ival/100);
-            ivalY = ival - ivalX * 100;
-
-            ui.spinBox_binX->setMaximum(ivalX);
-            ui.spinBox_binY->setMaximum(ivalY);
-
-            ival = param.getVal<int>();
-            ivalX = (int)(ival/100);
-            ivalY = ival - ivalX * 100;
-
-            ui.spinBox_binX->setValue(ivalX);
-            ui.spinBox_binY->setValue(ivalY);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_binX->setEnabled(true);
-                ui.spinBox_binY->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_binX->setEnabled(false);
-                ui.spinBox_binY->setEnabled(false);
-            }
-        }
-
-
-        if(!strcmp(param.getName(), "bpp"))
-        {
-            int ival = param.getVal<int>();
-            ui.spinBox_bpp->setValue(ival);
-
-            if(!(param.getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.combo_bpp->setEnabled(true);
-            }
-            else
-            {
-                ui.combo_bpp->setEnabled(false);
-            }
-
-
-            switch (ival)
-            {
-                case 8:
-                    ui.combo_bpp->setCurrentIndex(0);
-                break;
-                case 10:
-                    ui.combo_bpp->setCurrentIndex(1);
-                break;
-                case 12:
-                    ui.combo_bpp->setCurrentIndex(2);
-                break;
-                case 14:
-                    ui.combo_bpp->setCurrentIndex(3);
-                break;
-                case 16:
-                    ui.combo_bpp->setCurrentIndex(4);
-                break;
-                case 24:
-                    ui.combo_bpp->setCurrentIndex(5);
-                break;
-                case 30:
-                    ui.combo_bpp->setCurrentIndex(6);
-                break;
-                case 32:
-                    ui.combo_bpp->setCurrentIndex(7);
-                break;
-                default:
-                    ui.combo_bpp->setEnabled(false);
-                    m_paramsVals["bpp"].setFlags(ito::ParamBase::Readonly);
-                break;
-            }
-        }
+        m_firstRun = false;
     }
-//    ui.groupBoxIntegration->setEnabled(true);
-//    ui.groupBoxBinning->setEnabled(true);
-//    ui.groupBoxSize->setEnabled(true);
 
-    return 0;
+
+    int *roi = params["roi"].getVal<int*>();
+    qDebug() << roi[0] << roi[1] << roi[2] << roi[3];
+    ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
+    ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
+    ui.rangeX01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
+    ui.rangeY01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
+
+    ui.spinSizeX->setValue(params["sizex"].getVal<int>());
+    ui.spinSizeY->setValue(params["sizey"].getVal<int>());
+
+    ui.sliderIntegrationTime->setMinimum(params["integration_time"].getMin()*1000);
+    ui.sliderIntegrationTime->setMaximum(params["integration_time"].getMax()*1000);
+    ui.sliderIntegrationTime->setValue(params["integration_time"].getVal<double>()*1000);
+    ui.sliderIntegrationTime->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
+
+    ui.checkGain->setChecked(params["gain"].getVal<double>() > 0.5);
+    ui.checkGain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));           
+
+    ui.comboBpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
+
+    if (params["bpp"].getVal<int>() == 8)
+    {
+        ui.comboBpp->setCurrentIndex(0);
+
+        ui.comboBppShift->setEnabled(!(params["shift_bits"].getFlags() & ito::ParamBase::Readonly));
+        ui.comboBppShift->setCurrentIndex(params["shift_bits"].getVal<int>());
+    }
+    else
+    {
+        ui.comboBpp->setCurrentIndex(1);
+        ui.comboBppShift->setCurrentIndex(0);
+        ui.comboBppShift->setEnabled(false);
+    }
+
+    int ival = params["binning"].getVal<int>();
+    int ivalY = ival % 100;
+    int ivalX = (ival - ivalY) / 100;
+    ui.comboBinningX->setEnabled(!(params["binning"].getFlags() & ito::ParamBase::Readonly));
+    ui.comboBinningY->setEnabled(!(params["binning"].getFlags() & ito::ParamBase::Readonly));
+
+    ui.comboBinningX->setCurrentIndex(ivalX == 1 ? 0 : 1);
+    ui.comboBinningY->setCurrentIndex(ivalY == 1 ? 0 : 1);
+
+    //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
+    enableDialog(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int dialogPCOPixelFly::sendVals()
+ito::RetVal DialogPCOPixelFly::applyParameters()
 {
-    bool binning_changed = false;
+    ito::RetVal retValue(ito::retOk);
+    QVector<QSharedPointer<ito::ParamBase> > values;
+    bool success = false;
 
-    if(m_paramsVals.size() < 1)
+    if(ui.rangeX01->isEnabled() || ui.rangeY01->isEnabled())
     {
-        return 0;
-    }
+        int x0, x1, y0, y1;
+        ui.rangeX01->values(x0,x1);
+        ui.rangeY01->values(y0,y1);
+        int roi[] = {0,0,0,0};
+        memcpy(roi, m_currentParameters["roi"].getVal<int*>(), 4*sizeof(int));
 
-    QVector<QSharedPointer<ito::ParamBase> > outVector;
-
-
-    if((ui.spinBox_binX->isEnabled() || ui.spinBox_binY->isEnabled()))
-    {
-        int ival = ui.spinBox_binX->value() *100 + ui.spinBox_binY->value();
-        if((m_paramsVals["binning"].getVal<int>() !=  ival))
+        if (roi[0] != x0 || roi[1] != y0 || roi[2] != (x1-x0+1) || roi[3] != (y1-y0+1))
         {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, ival)));
-            binning_changed = true;
-        }
-    }
-
-    if(!binning_changed)
-    {
-        int ivalFirst, ivalLast;
-        bool changeX0 = false;
-        bool changeX1 = false;
-        bool changeY0 = false;
-        bool changeY1 = false;
-
-        if(ui.spinBox_x0->isEnabled())
-        {
-            ivalFirst = ui.spinBox_x0->value();
-            if(m_paramsVals["x0"].getVal<int>() !=  ivalFirst)
-            {
-                changeX0 = true;
-            }
-        }
-
-        if(ui.spinBox_x1->isEnabled())
-        {
-            ivalLast = ui.spinBox_x1->value();
-            if(m_paramsVals["x1"].getVal<int>() !=  ivalLast)
-            {
-                changeX1 = true;
-            }
-        }
-
-        if(changeX0 && changeX1)
-        {
-            if(ivalFirst > m_paramsVals["x1"].getVal<int>())
-            {
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ivalLast)));
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, ivalFirst)));
-            }
-            else
-            {
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, ivalFirst)));
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ivalLast)));
-            }
-        }
-        else if(changeX0)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, ivalFirst)));
-        }
-        else if(changeX1)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, ivalLast)));
-        }
-
-        if(ui.spinBox_y0->isEnabled())
-        {
-            ivalFirst = ui.spinBox_y0->value();
-            if(m_paramsVals["y0"].getVal<int>() !=  ivalFirst)
-            {
-                changeY0 = true;
-            }
-        }
-
-        if(ui.spinBox_y1->isEnabled())
-        {
-            ivalLast = ui.spinBox_y1->value();
-            if(m_paramsVals["y1"].getVal<int>() !=  ivalLast)
-            {
-                changeY1 = true;
-            }
-        }
-
-        if(changeY0 && changeY1)
-        {
-            if(ivalFirst > m_paramsVals["y1"].getVal<int>())
-            {
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ivalLast)));
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, ivalFirst)));
-            }
-            else
-            {
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, ivalFirst)));
-                outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ivalLast)));
-            }
-        }
-        else if(changeY0)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, ivalFirst)));
-        }
-        else if(changeY1)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, ivalLast)));
-        }
-
-    }
-
-    if(ui.spinBox_gain->isEnabled())
-    {
-        double dval = ui.spinBox_gain->value()/100.0;
-        if(m_paramsVals["gain"].getVal<double>() !=  dval)
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
+            roi[0] = x0;
+            roi[1] = y0;
+            roi[2] = x1-x0+1;
+            roi[3] = y1-y0+1;
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("roi", ito::ParamBase::IntArray, 4, roi)));
         }
     }
 
-    if(ui.spinBox_offset->isEnabled())
+    if(ui.checkGain->isEnabled())
     {
-        double dval = ui.spinBox_offset->value()/100.0;
-        if(m_paramsVals["offset"].getVal<double>() !=  dval)
+        double dval = ui.checkGain->isChecked() ? 1.0 : 0.0;
+        if(qAbs(m_currentParameters["gain"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
         {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, dval)));
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.doubleSpinBox_integration_time->isEnabled())
+    if(ui.sliderIntegrationTime->isEnabled())
     {
-        double dval = ui.doubleSpinBox_integration_time->value()/1000.0;
-        if(m_paramsVals["integration_time"].getVal<double>() !=  dval)
+        double dval = ui.sliderIntegrationTime->value()/1000.0;
+        if(qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
         {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
         }
     }
 
-    if(ui.doubleSpinBox_frame_time->isEnabled())
+    if(ui.comboBpp->isEnabled())
     {
-        double dval = ui.doubleSpinBox_frame_time->value()/1000.0;
-        if(m_paramsVals["frame_time"].getVal<double>() !=  dval)
+        int bppNew = (ui.comboBpp->currentIndex() == 1) ? 12 : 8;
+        
+        if(m_currentParameters["bpp"].getVal<int>() !=  bppNew)
         {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("frame_time", ito::ParamBase::Double, dval)));
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bppNew)));
         }
-    }
 
-    if(ui.combo_bpp->isEnabled())
-    {
-        QVariant qvar = ui.combo_bpp->currentIndex();
-        int bppNew = -1;
-        switch (qvar.toInt())
+        if (ui.comboBppShift->isEnabled() || bppNew == 8)
         {
-            case 0:
-                bppNew = 8;
-            break;
-            case 1:
-                bppNew = 10;
-            break;
-            case 2:
-                bppNew = 12;
-            break;
-            case 3:
-                bppNew = 14;
-            break;
-            case 4:
-                bppNew = 16;
-            break;
-            case 5:
-                bppNew = 24;
-            break;
-            case 6:
-                bppNew = 30;
-            break;
-            case 7:
-                bppNew = 32;
-            break;
-        }
-        if((bppNew > 0) && (m_paramsVals["bpp"].getVal<int>() !=  bppNew))
-        {
-            outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bpp", ito::ParamBase::Int, bppNew)));
-        }
-    }
+            int bppShiftNew = (bppNew == 8) ? ui.comboBppShift->currentIndex() : 0; //0:1x, 1:2x, 2:4x, ... 5:32x (only 8 bit mode, else 1x)
 
-    if(m_Grabber)   // Grabber exists
-    {
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(m_Grabber, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, outVector), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-        while (!locker.getSemaphore()->wait(5000))
-        {
-            if (!m_Grabber->isAlive())
+            if(m_currentParameters["shift_bits"].getVal<int>() !=  bppShiftNew)
             {
-                break;
+                values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("shift_bits", ito::ParamBase::Int, bppShiftNew)));
             }
         }
     }
-    return 0;
-}
 
-//----------------------------------------------------------------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void dialogPCOPixelFly::valuesChanged(QMap<QString, ito::Param> params)
-{
-    getVals(&params);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail This function resets the x-size of the ROI to the maximum value!
- *
- * \date    Oct.2011
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogPCOPixelFly::on_pushButton_setSizeXMax_clicked()
-{
-    int inttemp = 0;
-
-    inttemp = ui.spinBox_x0->minimum();
-    ui.spinBox_x0->setValue(inttemp);
-
-    inttemp = ui.spinBox_x1->maximum();
-    ui.spinBox_x1->setValue(inttemp);
-
-    ui.spinBox_xsize->update();
-
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail This function resets the y-size of the ROI to the maximum value!
- *
- * \date    Oct.2011
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogPCOPixelFly::on_pushButton_setSizeYMax_clicked()
-{
-    int inttemp = 0;
-
-    inttemp = ui.spinBox_y1->maximum();
-    ui.spinBox_y1->setValue(inttemp);
-
-    inttemp = ui.spinBox_y0->minimum();
-    ui.spinBox_y0->setValue(inttemp);
-
-    ui.spinBox_ysize->update();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the applyButton is clicked, the bpp and the binning of the attached camera is changed!
- *  Changes of parameters lead to a reload of all camera parameters. Other unapplied values are lost!
- *
- * \date    Oct.2011
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogPCOPixelFly::on_applyButton_clicked()
-{
-    ui.groupBoxSize->setTitle("Size");
-    ui.groupBoxSize->setEnabled(true);
-    this->sendVals();
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the spinBox for x0 changes its value, the size in X and the minimal x1 changes also
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogPCOPixelFly::on_spinBox_x0_valueChanged(int value)
-{
-    if(ui.spinBox_x1->value() < value)
+    if (ui.comboBinningX->isEnabled())
     {
-        ui.spinBox_x1->setValue(value);
+        int binning = ui.comboBinningX->itemData(ui.comboBinningX->currentIndex(), Qt::UserRole).toInt() * 100 + ui.comboBinningY->itemData(ui.comboBinningY->currentIndex(), Qt::UserRole).toInt();
+        if((m_currentParameters["binning"].getVal<int>() !=  binning))
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, binning)));
+        }
     }
-    ui.spinBox_x1->setMinimum(value);
-    ui.spinBox_xsize->setValue(ui.spinBox_x1->value() - value + 1);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the spinBox for x1 changes its value, the size in X and the maximal x0 changes also
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogPCOPixelFly::on_spinBox_x1_valueChanged(int value)
-{
-    if(ui.spinBox_x0->value() > value)
-    {
-        ui.spinBox_x0->setValue(value);
-    }
-    ui.spinBox_x0->setMaximum(value);
-    ui.spinBox_xsize->setValue(value - ui.spinBox_x0->value() + 1);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the spinBox for y0 changes its value, the size in Y and the minimal y1 changes also
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogPCOPixelFly::on_spinBox_y0_valueChanged(int value)
-{
-    if(ui.spinBox_y1->value() < value)
-    {
-        ui.spinBox_y1->setValue(value);
-    }
-    ui.spinBox_y1->setMinimum(value);
-    ui.spinBox_ysize->setValue(ui.spinBox_y1->value() - value + 1);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the spinBox for y0 changes its value, the size in Y and the maximal y0 changes also
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogPCOPixelFly::on_spinBox_y1_valueChanged(int value)
-{
-    if(ui.spinBox_y0->value() > value)
-    {
-        ui.spinBox_y0->setValue(value);
-    }
-    ui.spinBox_y0->setMaximum(value);
-    ui.spinBox_ysize->setValue(value - ui.spinBox_y0->value() + 1);
-    return;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the binning is activated, further settings of size will be disabled until apply is pressed
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogPCOPixelFly::on_spinBox_binX_valueChanged(int value)
-{
-    ui.groupBoxSize->setTitle("Size (Binning changed, press apply or save)");
-    ui.groupBoxSize->setEnabled(false);
 
-    return;
+    retValue += setPluginParameters(values, msgLevelWarningAndError);
+
+    return retValue;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-/**
- * \detail If the binning is activated, further settings of size will be disabled until apply is pressed
- *
- * \date    Jun.2012
- * \author    Wolfram Lyda
- * \warning    NA
-*/
-void dialogPCOPixelFly::on_spinBox_binY_valueChanged(int value)
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogPCOPixelFly::on_buttonBox_clicked(QAbstractButton* btn)
 {
-    ui.groupBoxSize->setTitle("Size (Binning changed, press apply or save)");
-    ui.groupBoxSize->setEnabled(false);
-    return;
+    ito::RetVal retValue(ito::retOk);
+
+    QDialogButtonBox::ButtonRole role = ui.buttonBox->buttonRole(btn);
+
+    if (role == QDialogButtonBox::RejectRole)
+    {
+        reject(); //close dialog with reject
+    }
+    else if (role == QDialogButtonBox::AcceptRole)
+    {
+        accept(); //AcceptRole
+    }
+    else
+    {
+        applyParameters(); //ApplyRole
+    }
 }
+
+//---------------------------------------------------------------------------------------------------------------------
+void DialogPCOPixelFly::enableDialog(bool enabled)
+{
+    ui.groupBoxBinning->setEnabled(enabled);
+    ui.groupBoxIntegration->setEnabled(enabled);
+    ui.groupBoxSize->setEnabled(enabled);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
+void DialogPCOPixelFly::on_rangeX01_valuesChanged(int minValue, int maxValue)
+{
+    ui.spinSizeX->setValue(maxValue - minValue + 1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogPCOPixelFly::on_rangeY01_valuesChanged(int minValue, int maxValue)
+{
+    ui.spinSizeY->setValue(maxValue - minValue + 1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogPCOPixelFly::on_btnFullROI_clicked()
+{
+    if (m_currentParameters.contains("sizex") && m_currentParameters.contains("sizey"))
+    {
+        ui.rangeX01->setValues(0, m_currentParameters["sizex"].getMax());
+        ui.rangeY01->setValues(0, m_currentParameters["sizey"].getMax());
+    }
+}
+

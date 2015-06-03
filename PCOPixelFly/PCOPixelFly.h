@@ -64,7 +64,7 @@ class PCOPixelFly : public ito::AddInGrabber
 
     protected:
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);    /*! <Wait for acquired picture */
-//        ito::RetVal checkData(void);    /*!< Check if objekt has to be reallocated */
+//        ito::RetVal checkData(void);    /*!< Check if object has to be reallocated */
 
         ito::RetVal libraryVersionNumber(const QByteArray &fileName, QString &version);
 
@@ -100,10 +100,6 @@ class PCOPixelFly : public ito::AddInGrabber
         ito::RetVal PCOAllocateBuffer(void); /*!< Creates the buffers and get a handle to thier first pixel (m_pAdr[i]) */
         ito::RetVal PCOFreeAllocatedBuffer(void); /*!< Frees all buffers */
 
-
-
-    signals:
-        //void parametersChanged(QMap<QString, ito::Param> params);    /*! Signal send changed or all parameters to listeners */
 
     public slots:
         //! returns parameter of m_params with key name.

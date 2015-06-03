@@ -23,48 +23,41 @@
 #ifndef DIALOGPCOPixelFly_H
 #define DIALOGPCOPixelFly_H
 
-#include "common/addInGrabber.h"
-//#include "common/sharedStructures.h"
-
-#include <QtGui>
-#include <qdialog.h>
+#include "common/param.h"
+#include "common/retVal.h"
+#include "common/sharedStructuresQt.h"
+#include "common/abstractAddInConfigDialog.h"
 
 #include "ui_dialogPCOPixelFly.h"
 
-class dialogPCOPixelFly : public QDialog
+namespace ito
+{
+    class AddInBase; //forward declaration
+}
+
+class DialogPCOPixelFly : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
     public:
-        dialogPCOPixelFly(ito::AddInGrabber *grabber):m_Grabber(grabber){m_paramsVals.clear(); ui.setupUi(this);};
-        ~dialogPCOPixelFly() {m_paramsVals.clear();};
-        int getVals(QMap<QString, ito::Param> *paramVals);
-        int sendVals(void);
+        DialogPCOPixelFly(ito::AddInBase *grabber);
+        ~DialogPCOPixelFly() {};
+
+        ito::RetVal applyParameters();
 
     private:
-        ito::AddInGrabber *m_Grabber;
+        void enableDialog(bool enabled);
+        bool m_firstRun;
 
-        Ui::dialogPCOPixelFly ui;
-        QMap<QString, ito::Param> m_paramsVals;
-
-    signals:
+        Ui::DialogPCOPixelFly ui;
 
     public slots:
-
-        void valuesChanged(QMap<QString, ito::Param> params);
+        void parametersChanged(QMap<QString, ito::Param> params);
 
     private slots:
-        void on_pushButton_setSizeXMax_clicked();    //!< Set x-size to maximum valid value
-        void on_pushButton_setSizeYMax_clicked();    //!< Set y-sizes to maximum valid value
-        void on_applyButton_clicked();    //!< Write the current settings to the internal paramsVals and sent them to the grabber
-
-        void on_spinBox_x0_valueChanged(int value);
-        void on_spinBox_x1_valueChanged(int value);
-        void on_spinBox_y0_valueChanged(int value);
-        void on_spinBox_y1_valueChanged(int value);
-        void on_spinBox_binX_valueChanged(int value);
-        void on_spinBox_binY_valueChanged(int value);
-
+        void on_buttonBox_clicked(QAbstractButton* btn);
+        void on_rangeX01_valuesChanged(int minValue, int maxValue);
+        void on_rangeY01_valuesChanged(int minValue, int maxValue);
+        void on_btnFullROI_clicked();
 };
-
 #endif
