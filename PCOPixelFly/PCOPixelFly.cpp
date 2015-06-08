@@ -735,63 +735,71 @@ ito::RetVal PCOPixelFly::PCOAllocateBuffer(void)
     int maxxsize = 0;
     int maxysize = 0;
     int bitppix = 0;
+	int curxsize = 0;
+	int curysize = 0;
     int lsize = 0;
     int i = 0;
     DWORD linadr = 0;
     DWORD handleflag[100] = {0};
     bool valid = false;
 
-    maxxsize = m_params["sizex"].getVal<int>();
-    maxysize = m_params["sizey"].getVal<int>();
-    bitppix = m_params["bpp"].getVal<int>();
+	retValue += PCOChkError(getsizes(m_hdriver, &maxxsize, &maxysize, &curxsize, &curysize, &bitppix));
 
-    for (i = 0; i < BUFFERNUMBER; i++)
-    {
-        this->m_bufnumber[i] = -1;
-        lsize = (int)(maxxsize * maxysize * ceil(bitppix / 8.0));
-        iRetCode = allocate_buffer(this->m_hdriver, &this->m_bufnumber[i], (int *) &lsize);
-        if (iRetCode != 0)
-        {
-            retValue = this->PCOChkError(iRetCode);
-        }
-        Sleep(5);
-    }
+	if (!retValue.containsError())
+	{
 
-    for (i = 0; i < BUFFERNUMBER; i++)
-    {
-        if (retValue != ito::retError)
-        {    
+		/*maxxsize = m_params["sizex"].getVal<int>();
+		maxysize = m_params["sizey"].getVal<int>();
+		bitppix = m_params["bpp"].getVal<int>();*/
+
+		for (i = 0; i < BUFFERNUMBER; i++)
+		{
+			this->m_bufnumber[i] = -1;
+			lsize = (int)(curxsize * curysize * ceil(bitppix / 8.0));
+			iRetCode = allocate_buffer(this->m_hdriver, &this->m_bufnumber[i], (int *) &lsize);
+			if (iRetCode != 0)
+			{
+				retValue = this->PCOChkError(iRetCode);
+			}
+			Sleep(5);
+		}
+
+		for (i = 0; i < BUFFERNUMBER; i++)
+		{
+			if (retValue != ito::retError)
+			{    
 #if _WIN64
-            map_buffer_ex(this->m_hdriver, this->m_bufnumber[i], lsize, 0, &(m_pAdr[i]) );
+				map_buffer_ex(this->m_hdriver, this->m_bufnumber[i], lsize, 0, &(m_pAdr[i]) );
 #else
-            iRetCode = map_buffer(this->m_hdriver, this->m_bufnumber[i], lsize, 0, &linadr);
-            this->m_pAdr[i] = (void *) linadr;
+				iRetCode = map_buffer(this->m_hdriver, this->m_bufnumber[i], lsize, 0, &linadr);
+				this->m_pAdr[i] = (void *) linadr;
 #endif
-            if (iRetCode != 0)
-            {
-                m_pAdr[i] = NULL;
-                retValue = this->PCOChkError(iRetCode);
-            }
+				if (iRetCode != 0)
+				{
+					m_pAdr[i] = NULL;
+					retValue = this->PCOChkError(iRetCode);
+				}
             
-        }
-        Sleep(5);
-    }
+			}
+			Sleep(5);
+		}
     
-    for (i = 0; i < BUFFERNUMBER; i++)
-    {
-        if (retValue != ito::retError)
-        {    
-            iRetCode = setbuffer_event(this->m_hdriver, this->m_bufnumber[i], &this->m_event[i]);
-            if (iRetCode != 0)
-            {
-                retValue = this->PCOChkError(iRetCode);
-            }
-            valid = GetHandleInformation(this->m_event[i], &handleflag[0]);
-        }
-        Sleep(5);
-    }
+		for (i = 0; i < BUFFERNUMBER; i++)
+		{
+			if (retValue != ito::retError)
+			{    
+				iRetCode = setbuffer_event(this->m_hdriver, this->m_bufnumber[i], &this->m_event[i]);
+				if (iRetCode != 0)
+				{
+					retValue = this->PCOChkError(iRetCode);
+				}
+				valid = GetHandleInformation(this->m_event[i], &handleflag[0]);
+			}
+			Sleep(5);
+		}
 
-    this->m_nextbuf = 0;
+		this->m_nextbuf = 0;
+	}
 
     return retValue;
 
