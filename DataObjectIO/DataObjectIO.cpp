@@ -1520,28 +1520,28 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
             switch(dObjDst->getType())
             {
             case ito::tInt8:
-                ret += readDataBlock<ito::int8>(dataIn, *dObjDst, zscale, 0, ' ', nanValue);
+                ret += readDataBlock<ito::int8>(dataIn, *dObjDst, zscale, 0, nanValue);
                 break;
             case ito::tUInt8:
-                ret += readDataBlock<ito::uint8>(dataIn, *dObjDst, zscale, 0, ' ', nanValue);
+                ret += readDataBlock<ito::uint8>(dataIn, *dObjDst, zscale, 0, nanValue);
                 break;
             case ito::tInt16:
-                ret += readDataBlock<ito::int16>(dataIn, *dObjDst, zscale, 0, ' ', nanValue);
+                ret += readDataBlock<ito::int16>(dataIn, *dObjDst, zscale, 0, nanValue);
                 break;
             case ito::tUInt16:
-                ret += readDataBlock<ito::uint16>(dataIn, *dObjDst, zscale, 0, ' ', nanValue);
+                ret += readDataBlock<ito::uint16>(dataIn, *dObjDst, zscale, 0, nanValue);
                 break;
             case ito::tInt32:
-                ret += readDataBlock<ito::int32>(dataIn, *dObjDst, zscale, 0, ' ', nanValue);
+                ret += readDataBlock<ito::int32>(dataIn, *dObjDst, zscale, 0, nanValue);
                 break;
             case ito::tUInt32:
-                ret += readDataBlock<ito::uint32>(dataIn, *dObjDst, zscale, 0, ' ', nanValue);
+                ret += readDataBlock<ito::uint32>(dataIn, *dObjDst, zscale, 0, nanValue);
                 break;
             case ito::tFloat32:
-                ret += readDataBlock<ito::float32>(dataIn, *dObjDst, zscale, 0, ' ', nanValue);
+                ret += readDataBlock<ito::float32>(dataIn, *dObjDst, zscale, 0, nanValue);
                 break;
             case ito::tFloat64:
-                ret += readDataBlock<ito::float64>(dataIn, *dObjDst, zscale, 0, ' ', nanValue);
+                ret += readDataBlock<ito::float64>(dataIn, *dObjDst, zscale, 0, nanValue);
                 break;
             default:
                 return ito::RetVal(ito::retError, 0, "DataType not supported");
@@ -1902,7 +1902,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
 *    @param [in]     zscale      The zscale, will be multiplied with the extracted data
 *   @param [int]    flags       For later improvements, not used yet
 */
-template<typename _Tp> ito::RetVal DataObjectIO::readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int /*flags*/, const char seperator, const QByteArray &nanString)
+template<typename _Tp> ito::RetVal DataObjectIO::readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int /*flags*/, const QByteArray &nanString)
 {
     ito::RetVal ret(ito::retOk);
 
@@ -1912,25 +1912,43 @@ template<typename _Tp> ito::RetVal DataObjectIO::readDataBlock(QFile &inFile, it
     size_t ysize = (size_t)newObject.getSize(0);
     size_t total = xsize * ysize;
     size_t c = 0; //total counter
-    size_t l = 0; //line counter
 
     cv::Mat* dstMat = newObject.getCvPlaneMat(0);
     _Tp *p_Dst = NULL;
 
-    QByteArray curLine = inFile.readLine().simplified();
-    QList<QByteArray> lineItems;
-    
+    int start = 0; //first index of number
+    int end = 0; //last index of number
+    int len = 0;
+    QByteArray ba;
+    QByteArray curLine = inFile.readLine();
+    const char *curLineData;
+
     //data block must not be organized such that every row in matrix corresponds to one row in data block (see aBCR-1.0 standard)
     while (!curLine.contains("*") && !inFile.atEnd() && c < total)
     {
-        lineItems = curLine.split(seperator);
+        //this loop gets every line in the file and extracts ranges of characters separated by one or multiple space characters (' ', tab, \r, \n...)
+        //every range item is then converted to a number and set into the array.
 
-        foreach (const QByteArray &ba, lineItems)
+        len = curLine.length();
+        curLineData = curLine.data();
+
+        while (end < len) //there are still characters left
         {
-            if (ba.length() < 2) continue;
-
-            if (c < total)
+            while (start < len && isspace(curLineData[start]))
             {
+                start++;
+            }
+
+            end = start + 1;
+            while (end < len && !isspace(curLineData[end]))
+            {
+                end++;
+            }
+
+            if (end <= len && c < total)
+            {
+                ba = curLine.mid(start, end - start);
+
                 if (c % xsize == 0)
                 {
                     //next row
@@ -1955,11 +1973,14 @@ template<typename _Tp> ito::RetVal DataObjectIO::readDataBlock(QFile &inFile, it
                     }
                     p_Dst++;
                 }
+                c++;
             }
-            c++;
+
+            start = end + 1;
         }
 
-        curLine = inFile.readLine().simplified();
+        curLine = inFile.readLine();
+        end = start = 0;
     }
 
     if (c != total)
