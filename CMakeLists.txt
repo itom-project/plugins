@@ -282,6 +282,14 @@ if (PLUGIN_SerialIO)
     ADD_SUBDIRECTORY(SerialIO)
 endif (PLUGIN_SerialIO)
 
+# ST8SMC4USB
+IF (WIN32)
+    OPTION(PLUGIN_ST8SMC4USB "Build with this plugin." ON)
+    if (PLUGIN_ST8SMC4USB)
+            ADD_SUBDIRECTORY(ST8SMC4USB)
+    endif (PLUGIN_ST8SMC4USB)
+ENDIF (WIN32)
+
 # SuperlumBS
 OPTION(PLUGIN_SuperlumBS "Build with this plugin." ON)
 if (PLUGIN_SuperlumBS)
