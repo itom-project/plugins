@@ -111,7 +111,7 @@ ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} $
 TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${LIBDIR}/libximc.lib ${VISUALLEAKDETECTOR_LIBRARIES})
 
 if (QT5_FOUND)
-    qt5_use_modules(${target_name} Widgets UiTools Xml)
+    qt5_use_modules(${target_name} ${QT_COMPONENTS})
 endif (QT5_FOUND)
 
 #translation
