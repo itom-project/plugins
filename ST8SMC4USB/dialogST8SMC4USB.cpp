@@ -71,10 +71,10 @@ void DialogST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
     }
 
     QString tmp;
-    tmp.setNum(params["unitsPerStep"].getVal<double>());
+    tmp.setNum(params["units_per_step"].getVal<double>());
     ui.lb_unitPerSteps->setText(tmp);
 
-    if (params["unitsPerStep"].getVal<int>() == 0)
+    if (params["units_per_step"].getVal<int>() == 0)
     {
         tmp = tr("degree");
     }
@@ -104,10 +104,10 @@ void DialogST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
     ui.sb_speed->setSingleStep(1);
     ui.sb_speed->setValue(params["speed"].getVal<int>());
 
-    ui.sb_targetSpeed->setMaximum(params["microStepSpeed"].getMax());
-    ui.sb_targetSpeed->setMinimum(params["microStepSpeed"].getMin());
+    ui.sb_targetSpeed->setMaximum(params["micro_step_speed"].getMax());
+    ui.sb_targetSpeed->setMinimum(params["micro_step_speed"].getMin());
     ui.sb_targetSpeed->setSingleStep(1);
-    ui.sb_targetSpeed->setValue(params["microStepSpeed"].getVal<int>());
+    ui.sb_targetSpeed->setValue(params["micro_step_speed"].getVal<int>());
 
     ui.checkAsync->setChecked(params["async"].getVal<int>());
 
@@ -122,10 +122,10 @@ ito::RetVal DialogST8SMC4USB::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
     
     QString tmp = ui.cb_microSteps->currentText();
-    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("microSteps", ito::ParamBase::Int, tmp.toInt())));
+    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("micro_steps", ito::ParamBase::Int, tmp.toInt())));
     values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel", ito::ParamBase::Int, ui.sb_accel->value())));
     values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed", ito::ParamBase::Int, ui.sb_speed->value())));
-    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("microStepSpeed", ito::ParamBase::Int, ui.sb_targetSpeed->value())));
+    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("micro_step_speed", ito::ParamBase::Int, ui.sb_targetSpeed->value())));
     values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, ui.checkAsync->isChecked())));
     
     retValue += setPluginParameters(values, msgLevelWarningAndError);

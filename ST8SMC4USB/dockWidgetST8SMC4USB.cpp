@@ -39,7 +39,7 @@ void DockWidgetST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
     QString tmp;
     tmp.setNum(params["deviceNum"].getVal<int>());
     ui.lblDeviceNo->setText(tmp);
-    ui.lblPort->setText(params["devicePort"].getVal<char*>());
+    ui.lblPort->setText(params["device_port"].getVal<char*>());
 
     QString suffix;
     if (params["unit"].getVal<int>() == 0)

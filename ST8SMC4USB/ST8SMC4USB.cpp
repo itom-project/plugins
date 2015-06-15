@@ -236,18 +236,18 @@ ST8SMC4USB::ST8SMC4USB() :
 
     // Read only - Parameters
     m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ST8SMC4USB", NULL));
-    m_params.insert("deviceID", ito::Param("deviceID", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("Name of controller").toLatin1().data()));
-    m_params.insert("unitsPerStep", ito::Param("unitsPerStep", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 100000.0, 200.0, tr("units (deg or mm) per step of axis, e.g. full step resolution of data sheet of actuator").toLatin1().data()));
+    m_params.insert("device_id", ito::Param("device_id", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Name of controller").toLatin1().data()));
+    m_params.insert("units_per_step", ito::Param("units_per_step", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 100000.0, 200.0, tr("units (deg or mm) per step of axis, e.g. full step resolution of data sheet of actuator").toLatin1().data()));
     m_params.insert("deviceNum", ito::Param("deviceNum", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 10, 0, tr("The current number of this specific device, if there are more than one devices connected. (0 = first device)").toLatin1().data()));
-    m_params.insert("devicePort", ito::Param("devicePort", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("Serial port of device").toLatin1().data()));
+    m_params.insert("device_port", ito::Param("device_port", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("Serial port of device").toLatin1().data()));
     m_params.insert("unit", ito::Param("unit", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("unit of axis, 0: degree (default), 1: mm").toLatin1().data()));
 
     // Read/Write - Parameters
-    m_params.insert("microSteps", ito::Param("microSteps", ito::ParamBase::Int, 1, 256, 1, tr("micro steps for motor [1,2,4,8,16,32,64,128,256]").toLatin1().data()));
+    m_params.insert("micro_steps", ito::Param("micro_steps", ito::ParamBase::Int, 1, 256, 1, tr("micro steps for motor [1,2,4,8,16,32,64,128,256]").toLatin1().data()));
     m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
     m_params.insert("accel", ito::Param("accel", ito::ParamBase::Int, 0, 65535, 0, tr("Motor shaft acceleration, steps/s^2(stepper motor) or RPM/s(DC); range: 0..65535").toLatin1().data()));
     m_params.insert("speed", ito::Param("speed", ito::ParamBase::Int, 0, 1000000, 0, tr("Target speed(for stepper motor: steps / c, for DC: rpm); range: 0..1000000").toLatin1().data()));
-    m_params.insert("microStepSpeed", ito::Param("microStepSpeed", ito::ParamBase::Int, 0, 255, 0, tr("Target speed in 1/256 microsteps/s; range: 0..255").toLatin1().data()));
+    m_params.insert("micro_step_speed", ito::Param("micro_step_speed", ito::ParamBase::Int, 0, 255, 0, tr("Target speed in 1/256 microsteps/s; range: 0..255").toLatin1().data()));
     m_params.insert(paramVal.getName(), paramVal);
 
     m_currentStatus = QVector<int>(1, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
@@ -292,23 +292,23 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     int microSteps = paramsOpt->value(1).getVal<int>(); //1: parameter "microSteps"
     if ((microSteps != 0) && !(microSteps & (microSteps - 1)) && microSteps <= 256) // check if an integer is a power of two
     {
-        retval += m_params["microSteps"].setVal<int>(microSteps);
+        retval += m_params["micro_steps"].setVal<int>(microSteps);
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("microSteps value must be a power of two <= 256").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("micro_steps value must be a power of two <= 256").toLatin1().data());
     }
 
     retval += m_params["unit"].setVal<int>(paramsMand->value(1).getVal<int>()); //1: parameter "unit"
 
-    double unitsPerStep = paramsMand->value(0).getVal<double>(); //0: parameter "unitsPerStep"
+    double unitsPerStep = paramsMand->value(0).getVal<double>(); //0: parameter "units_per_step"
     if (unitsPerStep <= 0)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Error enumerating devices").toLatin1().data());
     }
     else
     {
-        retval += m_params["unitsPerStep"].setVal<double>(unitsPerStep);
+        retval += m_params["units_per_step"].setVal<double>(unitsPerStep);
     }
                     
     device_enumeration_t devenum;
@@ -378,7 +378,7 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
             deviceName.replace('\\', ' ');
             deviceName.replace('.', ' ');
             deviceName.simplified();
-            retval += m_params["devicePort"].setVal<char*>(deviceName.toLatin1().data());
+            retval += m_params["device_port"].setVal<char*>(deviceName.toLatin1().data());
 
             retval += SMCCheckError(retval);
         }
@@ -461,10 +461,10 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         }
         else
         {
-            retval += m_params["deviceID"].setVal<char*>(m_identifier.toLatin1().data());
+            retval += m_params["device_id"].setVal<char*>(m_identifier.toLatin1().data());
             retval += m_params["accel"].setVal<int>(move_settings.Accel);
             retval += m_params["speed"].setVal<int>(move_settings.Speed);
-            retval += m_params["microStepSpeed"].setVal<int>(move_settings.uSpeed);
+            retval += m_params["micro_step_speed"].setVal<int>(move_settings.uSpeed);
         }
 
         retval += SMCCheckError(retval);
@@ -600,7 +600,7 @@ ito::RetVal ST8SMC4USB::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
     if (!retValue.containsError())
     {
         //---------------------------
-        if (key == "microSteps")
+        if (key == "micro_steps")
         {
             int microSteps = val->getVal<int>();
             if ((microSteps != 0) && !(microSteps & (microSteps - 1)) && microSteps <= 256) // check if an integer is a power of two
@@ -646,7 +646,7 @@ ito::RetVal ST8SMC4USB::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         }
 
         //---------------------------
-        else if (key == "microStepSpeed")
+        else if (key == "micro_step_speed")
         {
             retValue += setMoveSettings(-1, -1, val->getVal<int>());
             retValue += it->copyValueFrom(&(*val));
@@ -773,8 +773,8 @@ ito::RetVal ST8SMC4USB::getPos(const QVector<int> axis, QSharedPointer<QVector<d
     else
     {
         get_position_t gPos;
-        double unitsPerStep = m_params["unitsPerStep"].getVal<double>();
-        int microSteps = m_params["microSteps"].getVal<int>();
+        double unitsPerStep = m_params["units_per_step"].getVal<double>();
+        int microSteps = m_params["units_per_step"].getVal<int>();
 
         if ((result = get_position(m_device, &gPos)) != result_ok)
         {
@@ -963,8 +963,8 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
     }
     else
     {
-        double unitsPerStep = m_params["unitsPerStep"].getVal<double>();
-        int microSteps = m_params["microSteps"].getVal<int>();
+        double unitsPerStep = m_params["units_per_step"].getVal<double>();
+        int microSteps = m_params["micro_steps"].getVal<int>();
 
         double distanceSteps = qRound(posUnit[0] / unitsPerStep * (double)microSteps) / microSteps;
         fullSteps = (int)(distanceSteps);

@@ -36,19 +36,19 @@ parameters can be changed using *setParam*.
 
 **name**: {str}, read-only
     name of the plugin
-**deviceID**: {str}, read-only
+**device_id**: {str}, read-only
     name of controller
-**unitsPerStep**: {double}, read-only
+**units_per_step**: {double}, read-only
     units (deg or mm) per step of axis, e.g. full step resolution of data sheet of actuator
-**deviceNum**: {int}, read-only
+**device_num**: {int}, read-only
     The current number of this specific device, if there are more than one devices connected. (0 = first device)
-**devicePort**: {int}, read-only
+**device_port**: {int}, read-only
     Serial port of device
 **unit**: {int} [0,1], read-only
     unit of axis
     0: degree (default)
     1: mm
-**microSteps**: {int}
+**micro_steps**: {int}
     micro steps for motor [1,2,4,8,16,32,64,128,256]
 **async**: {int} [0,1]
     Defines if the code continues while a controller is processing a task.
@@ -58,11 +58,15 @@ parameters can be changed using *setParam*.
 **speed**: {int}
     Target speed(for stepper motor: steps / c, for DC: rpm)
     Range: 0..1000000
-**microStepSpeed**: {int}
+**micro_step_speed**: {int}
     Target speed in 1/256 microsteps/s
     Range: 0..255
 
 Installation
 ============
 
-For installation you need Microsoft Visual C++ 2008 Redistributable pack.
+Before using the motor you need to install the communcation driver that is requested once you plug the motor controller to the USB host.
+You get this driver either by installing the software XILab from Standa or by directly downloading the driver's inf file (Windows only). For more information see
+https://en.xisupport.com/projects/enxisupport/wiki/Software. The driver might require the Microsoft Visual C++ 2008 Redistributable package.
+
+* 2015-06-15: The XiLab SDK currently delivered with the source files of the itom plugin has the version 2.3.2.
