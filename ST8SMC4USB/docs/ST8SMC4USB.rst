@@ -6,7 +6,7 @@
 **Summary**:    :pluginsummary:`Standa8SMC4USB`
 **Type**:       :plugintype:`Standa8SMC4USB`
 **License**:    :pluginlicense:`Standa8SMC4USB`
-**Platforms**:  Windows, Linux
+**Platforms**:  Windows
 **Devices**:    Motor-Controller STANDA 8SMC4-USB-B8-1
 **Author**:     :pluginauthor:`Standa8SMC4USB`
 =============== ========================================================================================================
@@ -52,15 +52,15 @@ parameters can be changed using *setParam*.
     micro steps for motor [1,2,4,8,16,32,64,128,256]
 **async**: {int} [0,1]
     Defines if the code continues while a controller is processing a task.
-**accel**: {int}
-    Motor shaft acceleration, steps/s^2 (stepper motor) or RPM/s(DC)
-    Range: 0..65535
-**speed**: {int}
-    Target speed(for stepper motor: steps / c, for DC: rpm)
-    Range: 0..1000000
-**micro_step_speed**: {int}
-    Target speed in 1/256 microsteps/s
-    Range: 0..255
+**accel**: {double}
+    Motor shaft acceleration, mm or degree/s^2 (stepper motor) or RPM/s(DC)
+    Range: 0..65535 (in steps/s^2)
+**decel**: {double}
+    Motor shaft deceleration, mm or degree/s^2 (stepper motor) or RPM/s(DC)
+    Range: 0..65535 (in steps/s^2)
+**speed**: {double}
+    Target speed(for stepper motor: mm or degree/s, for DC: rpm)
+    Range: 0..1000000 (in steps/s)
 
 Installation
 ============
