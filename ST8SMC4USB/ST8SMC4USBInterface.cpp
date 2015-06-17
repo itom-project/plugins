@@ -58,15 +58,15 @@ ST8SMC4USBInterface::ST8SMC4USBInterface()
 {
     m_type = ito::typeActuator;
 
-    setObjectName("STANDA 8SMC4-USB");
+    setObjectName("Standa8SMC4USB");
 
-    m_description = QObject::tr("STANDA 8SMC4-USB-B8-1");
+    m_description = QObject::tr("Standa8SMC4USB");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
     char docstring[] = \
-"STANDA_8SMC4-USB is an itom-plugin, which can be used to communicate with the STANDA controllers 8SMC4-USB-B8-1.\
+"Standa8SMC4USB is an itom-plugin, which can be used to communicate with the STANDA controllers 8SMC4-USB.\
 \n\
-It has been tested with one connected controllers 8SMC4-USB-B8-1.";
+It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";

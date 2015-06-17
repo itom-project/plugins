@@ -3,12 +3,12 @@
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`ST8SMC4USB`
-**Type**:       :plugintype:`ST8SMC4USB`
-**License**:    :pluginlicense:`ST8SMC4USB`
+**Summary**:    :pluginsummary:`Standa8SMC4USB`
+**Type**:       :plugintype:`Standa8SMC4USB`
+**License**:    :pluginlicense:`Standa8SMC4USB`
 **Platforms**:  Windows, Linux
 **Devices**:    Motor-Controller STANDA 8SMC4-USB-B8-1
-**Author**:     :pluginauthor:`ST8SMC4USB`
+**Author**:     :pluginauthor:`Standa8SMC4USB`
 =============== ========================================================================================================
  
 Overview
@@ -17,7 +17,7 @@ Overview
 The plugin implements the controller 8SMC4-USB from STANDA.
 
 .. pluginsummaryextended::
-    :plugin: ST8SMC4USB
+    :plugin: Standa8SMC4USB
 
 Initialization
 ==============
@@ -25,7 +25,7 @@ Initialization
 The following parameters are mandatory or optional for initializing an instance of this plugin:
     
     .. plugininitparams::
-        :plugin: ST8SMC4USB
+        :plugin: Standa8SMC4USB
 
 Parameters
 ==========

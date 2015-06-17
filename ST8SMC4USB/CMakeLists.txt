@@ -1,4 +1,4 @@
-SET (target_name ST8SMC4USB)
+SET (target_name Standa8SMC4USB)
 
 project(${target_name})
 
