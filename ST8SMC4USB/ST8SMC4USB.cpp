@@ -65,6 +65,10 @@ QString ST8SMC4USB::getErrorString(const result_t result)
 {
     switch (result)
     {
+        case result_ok:
+        {
+            return tr("Success");
+        }
         case result_error:
         {
             return tr("Error");
@@ -73,13 +77,17 @@ QString ST8SMC4USB::getErrorString(const result_t result)
         {
             return tr("Not implemented");
         }
+        case result_value_error:
+        {
+            return tr("value error (e.g. out of range)");
+        }
         case result_nodevice:
         {
             return tr("no device");
         }
         default:
         {
-            return tr("Success");
+            return tr("Unknown error %1").arg(result);
         }
     }
 }
@@ -110,6 +118,26 @@ QString ST8SMC4USB::getLogLevelString(int loglevel)
             return "UNKNOWN";
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+double ST8SMC4USB::stepsToUnit(const get_position_t &steps, int microSteps)
+{
+    return (((double)steps.Position + (steps.uPosition * (1.0 / (double)microSteps))) * m_unitPerSteps);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+double ST8SMC4USB::stepsToUnit(int fullSteps, int uSteps, int microSteps)
+{
+    return (((double)fullSteps + (uSteps * (1.0 / (double)microSteps))) * m_unitPerSteps);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ST8SMC4USB::unitToSteps(double unitStep, int microSteps, int &fullSteps, int &uSteps)
+{
+    double steps = unitStep / m_unitPerSteps;
+    fullSteps = std::floor(steps);
+    uSteps = qRound((steps - fullSteps) * microSteps);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -157,11 +185,12 @@ int ST8SMC4USB::microStepsToMicrostepMode(const int microSteps)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ST8SMC4USB::setMoveSettings(int accel /*= -1*/, int speed /*= -1*/, int microStepSpeed /*= -1*/)
+ito::RetVal ST8SMC4USB::synchronizeMotorSettings(double newAccel /*= -1.0*/, double newSpeed /*= -1.0*/, double newDecel /*= -1.0*/)
 {
-    ito::RetVal retValue(ito::retOk);
+    ito::RetVal retValue;
     result_t result;
     move_settings_t move_settings;
+    int microsteps = m_params["micro_steps"].getVal<int>();
 
     if ((result = get_move_settings(m_device, &move_settings)) != result_ok)
     {
@@ -169,19 +198,22 @@ ito::RetVal ST8SMC4USB::setMoveSettings(int accel /*= -1*/, int speed /*= -1*/, 
     }
     else
     {
-        if (accel > -1)
+        if (newAccel > -1.0)
         {
-            move_settings.Accel = accel;
+            move_settings.Accel = qRound(newAccel / m_unitPerSteps);
         }
 
-        if (speed > -1)
+        if (newDecel > -1.0)
         {
-            move_settings.Speed = speed;
+            move_settings.Decel = qRound(newDecel / m_unitPerSteps);
         }
 
-        if (microStepSpeed > -1)
+        if (newSpeed > -1.0)
         {
-            move_settings.uSpeed = microStepSpeed;
+            int full, sub;
+            unitToSteps(newSpeed, microsteps, full, sub);
+            move_settings.Speed = full;
+            move_settings.uSpeed = sub;
         }
     }
 
@@ -196,6 +228,33 @@ ito::RetVal ST8SMC4USB::setMoveSettings(int accel /*= -1*/, int speed /*= -1*/, 
     }
 
     retValue += SMCCheckError(retValue);
+
+    if ((result = get_move_settings(m_device, &move_settings)) != result_ok)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("Error reading move settings: %1").arg(getErrorString(result)).toLatin1().data());
+    }
+    else
+    {
+        
+
+        ito::DoubleMeta *dm = (ito::DoubleMeta*)m_params["speed"].getMeta();
+        dm->setMin(0.0);
+        dm->setMax(stepsToUnit(1000000, 0, microsteps));
+        dm->setStepSize(stepsToUnit(microsteps == 1 ? 1 : 0, microsteps == 1 ? 0 : 1, microsteps));
+        m_params["speed"].setVal<double>(stepsToUnit(move_settings.Speed, move_settings.uSpeed, microsteps));
+
+        dm = (ito::DoubleMeta*)m_params["accel"].getMeta();
+        dm->setMin(0.0);
+        dm->setMax(stepsToUnit(65535, 0, microsteps));
+        dm->setStepSize(stepsToUnit(1, 0, microsteps));
+        m_params["accel"].setVal<double>(stepsToUnit(move_settings.Accel, 0, microsteps));
+
+        dm = (ito::DoubleMeta*)m_params["decel"].getMeta();
+        dm->setMin(0.0);
+        dm->setMax(stepsToUnit(65535, 0, microsteps));
+        dm->setStepSize(stepsToUnit(1, 0, microsteps));
+        m_params["decel"].setVal<double>(stepsToUnit(move_settings.Decel, 0, microsteps));
+    }
 
     return retValue;
 }
@@ -228,27 +287,23 @@ ST8SMC4USB::ST8SMC4USB() :
     AddInActuator(),
     m_device(-1),
     m_engine_settings(),
-    m_pSer(NULL)
+    m_pSer(NULL),
+    m_async(0)
 {
-    m_async = 0;
-
-    ito::Param paramVal;
-
     // Read only - Parameters
     m_params.insert("name", ito::Param("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ST8SMC4USB", NULL));
     m_params.insert("device_id", ito::Param("device_id", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Name of controller").toLatin1().data()));
     m_params.insert("units_per_step", ito::Param("units_per_step", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 100000.0, 200.0, tr("units (deg or mm) per step of axis, e.g. full step resolution of data sheet of actuator").toLatin1().data()));
-    m_params.insert("deviceNum", ito::Param("deviceNum", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 10, 0, tr("The current number of this specific device, if there are more than one devices connected. (0 = first device)").toLatin1().data()));
+    m_params.insert("device_num", ito::Param("device_num", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 10, 0, tr("The current number of this specific device, if there are more than one devices connected. (0 = first device)").toLatin1().data()));
     m_params.insert("device_port", ito::Param("device_port", ito::ParamBase::String | ito::ParamBase::Readonly, "unknwon", tr("Serial port of device").toLatin1().data()));
     m_params.insert("unit", ito::Param("unit", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("unit of axis, 0: degree (default), 1: mm").toLatin1().data()));
 
     // Read/Write - Parameters
     m_params.insert("micro_steps", ito::Param("micro_steps", ito::ParamBase::Int, 1, 256, 1, tr("micro steps for motor [1,2,4,8,16,32,64,128,256]").toLatin1().data()));
     m_params.insert("async", ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or sychronous (0) mode").toLatin1().data()));
-    m_params.insert("accel", ito::Param("accel", ito::ParamBase::Int, 0, 65535, 0, tr("Motor shaft acceleration, steps/s^2(stepper motor) or RPM/s(DC); range: 0..65535").toLatin1().data()));
-    m_params.insert("speed", ito::Param("speed", ito::ParamBase::Int, 0, 1000000, 0, tr("Target speed(for stepper motor: steps / c, for DC: rpm); range: 0..1000000").toLatin1().data()));
-    m_params.insert("micro_step_speed", ito::Param("micro_step_speed", ito::ParamBase::Int, 0, 255, 0, tr("Target speed in 1/256 microsteps/s; range: 0..255").toLatin1().data()));
-    m_params.insert(paramVal.getName(), paramVal);
+    m_params.insert("accel", ito::Param("accel", ito::ParamBase::Double, 0.0, 65535.0, 0.0, tr("Motor shaft acceleration, steps/s^2(stepper motor) or RPM/s(DC); range: 0.0..65535.0").toLatin1().data()));
+    m_params.insert("decel", ito::Param("decel", ito::ParamBase::Double, 0.0, 65535.0, 0.0, tr("Motor shaft deceleration, steps/s^2(stepper motor) or RPM/s(DC); range: 0.0..65535.0").toLatin1().data()));
+    m_params.insert("speed", ito::Param("speed", ito::ParamBase::Double, 0.0, 1000000.0, 0.0, tr("Target speed (for stepper motor: steps/s, for DC: rpm); range: 0.0..1000000.0").toLatin1().data()));
 
     m_currentStatus = QVector<int>(1, ito::actuatorAtTarget | ito::actuatorAvailable | ito::actuatorEnabled);
 
@@ -280,14 +335,13 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     ito::RetVal retval = ito::retOk;
     result_t result;
     QString serialStr;
-    move_settings_t move_settings;
     const int probe_devices = 0;
     int names_count = 0;
-    char device_name[256];
+    pchar device_name = NULL;
     bool deviceOpen = false;
 
     int deviceNum = paramsOpt->value(0).getVal<int>(); //0: parameter "deviceNum"
-    retval += m_params["deviceNum"].setVal<int>(deviceNum);
+    retval += m_params["device_num"].setVal<int>(deviceNum);
 
     int microSteps = paramsOpt->value(1).getVal<int>(); //1: parameter "microSteps"
     if ((microSteps != 0) && !(microSteps & (microSteps - 1)) && microSteps <= 256) // check if an integer is a power of two
@@ -301,14 +355,14 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
     retval += m_params["unit"].setVal<int>(paramsMand->value(1).getVal<int>()); //1: parameter "unit"
 
-    double unitsPerStep = paramsMand->value(0).getVal<double>(); //0: parameter "units_per_step"
-    if (unitsPerStep <= 0)
+    m_unitPerSteps = paramsMand->value(0).getVal<double>(); //0: parameter "units_per_step"
+    if (m_unitPerSteps <= 0)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Error enumerating devices").toLatin1().data());
     }
     else
     {
-        retval += m_params["units_per_step"].setVal<double>(unitsPerStep);
+        retval += m_params["units_per_step"].setVal<double>(m_unitPerSteps);
     }
                     
     device_enumeration_t devenum;
@@ -343,13 +397,8 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         }
         else
         {
-            strcpy(device_name, get_device_name(devenum, deviceNum));
+            device_name = get_device_name(devenum, deviceNum);
         }
-    }
-
-    if (deviceOpen)
-    {
-        free_enumerate_devices(devenum);
     }
 
     //Opening device
@@ -358,18 +407,16 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
         m_device = open_device(device_name);
         if (m_device == device_undefined)
         {
-            if (m_device && (result = close_device(&m_device)) != result_ok)
-            {
-                retval += ito::RetVal(ito::retError, 0, tr("Error opening device: %1").arg(getErrorString(result)).toLatin1().data());
-            }
-            else
-            {
-                m_device = open_device(device_name);
-                if (m_device == device_undefined)
-                {
-                    retval += ito::RetVal(ito::retError, 0, tr("Error opening device").toLatin1().data());
-                }
-            }
+#if WIN32
+            //try to fix possibly hanged USB port and try to reopen it
+            result = ximc_fix_usbser_sys(device_name);
+            m_device = open_device(device_name);
+#endif
+        }
+
+        if (m_device == device_undefined)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("Device %1 could not be opened").arg(device_name).toLatin1().data());
         }
 
         if (!retval.containsError())
@@ -377,11 +424,16 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
             QString deviceName(device_name);
             deviceName.replace('\\', ' ');
             deviceName.replace('.', ' ');
-            deviceName.simplified();
+            deviceName = deviceName.simplified();
             retval += m_params["device_port"].setVal<char*>(deviceName.toLatin1().data());
 
             retval += SMCCheckError(retval);
         }
+    }
+
+    if (deviceOpen)
+    {
+        free_enumerate_devices(devenum);
     }
 
     if (!retval.containsError())
@@ -429,6 +481,7 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
             m_identifier.append('-');
             m_identifier.append(serialStr);
             setIdentifier(m_identifier);
+            retval += m_params["device_id"].setVal<char*>(m_identifier.toLatin1().data());
         }
         retval += SMCCheckError(retval);
     }
@@ -455,18 +508,7 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 
     if (!retval.containsError())
     {
-        if ((result = get_move_settings(m_device, &move_settings)) != result_ok)
-        {
-            retval += ito::RetVal(ito::retError, 0, tr("Error reading move settings: %1").arg(getErrorString(result)).toLatin1().data());
-        }
-        else
-        {
-            retval += m_params["device_id"].setVal<char*>(m_identifier.toLatin1().data());
-            retval += m_params["accel"].setVal<int>(move_settings.Accel);
-            retval += m_params["speed"].setVal<int>(move_settings.Speed);
-            retval += m_params["micro_step_speed"].setVal<int>(move_settings.uSpeed);
-        }
-
+        retval += synchronizeMotorSettings();
         retval += SMCCheckError(retval);
     }
 
@@ -480,7 +522,7 @@ ito::RetVal ST8SMC4USB::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
     return retval;
 }
 
-
+//---------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal ST8SMC4USB::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogST8SMC4USB(this));
@@ -594,7 +636,7 @@ ito::RetVal ST8SMC4USB::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
         // meta structure.
-        retValue += apiValidateParam(*it, *val, false, true);
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
     if (!retValue.containsError())
@@ -607,7 +649,7 @@ ito::RetVal ST8SMC4USB::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             {
                 m_engine_settings.MicrostepMode = microStepsToMicrostepMode(microSteps);
 
-                if ((retValue = set_engine_settings(m_device, &m_engine_settings)) != result_ok)
+                if ((result = set_engine_settings(m_device, &m_engine_settings)) != result_ok)
                 {
                     retValue += ito::RetVal(ito::retError, 0, tr("Error setting engine settings: %1").arg(getErrorString(result)).toLatin1().data());
                 }
@@ -634,22 +676,19 @@ ito::RetVal ST8SMC4USB::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         //---------------------------
         else if (key == "accel")
         {
-            retValue += setMoveSettings(val->getVal<int>());
-            retValue += it->copyValueFrom(&(*val));
+            retValue += synchronizeMotorSettings(val->getVal<double>(), -1.0);
+        }
+
+        //---------------------------
+        else if (key == "decel")
+        {
+            retValue += synchronizeMotorSettings(-1.0, -1.0, val->getVal<double>());
         }
 
         //---------------------------
         else if (key == "speed")
         {
-            retValue += setMoveSettings(-1, val->getVal<int>());
-            retValue += it->copyValueFrom(&(*val));
-        }
-
-        //---------------------------
-        else if (key == "micro_step_speed")
-        {
-            retValue += setMoveSettings(-1, -1, val->getVal<int>());
-            retValue += it->copyValueFrom(&(*val));
+            retValue += synchronizeMotorSettings(-1.0, val->getVal<double>());
         }
 
         //---------------------------
@@ -773,8 +812,7 @@ ito::RetVal ST8SMC4USB::getPos(const QVector<int> axis, QSharedPointer<QVector<d
     else
     {
         get_position_t gPos;
-        double unitsPerStep = m_params["units_per_step"].getVal<double>();
-        int microSteps = m_params["units_per_step"].getVal<int>();
+        int microSteps = m_params["micro_steps"].getVal<int>();
 
         if ((result = get_position(m_device, &gPos)) != result_ok)
         {
@@ -782,7 +820,7 @@ ito::RetVal ST8SMC4USB::getPos(const QVector<int> axis, QSharedPointer<QVector<d
         }
         else
         {
-            m_currentPos[0] = ((gPos.Position + (gPos.uPosition * (1.0 / (double)microSteps))) * unitsPerStep);
+            m_currentPos[0] = stepsToUnit(gPos, microSteps);
             (*pos)[0] = m_currentPos[0];
         }
     }
@@ -963,10 +1001,9 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
     }
     else
     {
-        double unitsPerStep = m_params["units_per_step"].getVal<double>();
         int microSteps = m_params["micro_steps"].getVal<int>();
 
-        double distanceSteps = qRound(posUnit[0] / unitsPerStep * (double)microSteps) / microSteps;
+        double distanceSteps = qRound(posUnit[0] / m_unitPerSteps * (double)microSteps) / microSteps;
         fullSteps = (int)(distanceSteps);
         partSteps = (int)((distanceSteps - fullSteps) * microSteps);
 
@@ -975,6 +1012,9 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
 
         if (relNotAbs)
         {   // Relative movement
+            m_targetPos[0] = m_currentPos[0] + posUnit[0];
+            sendTargetUpdate();
+
             if ((result = command_movr(m_device, fullSteps, partSteps)) != result_ok)
             {
                 retval += ito::RetVal(ito::retError, 0, tr("Error while moving: %1").arg(getErrorString(result)).toLatin1().data());
@@ -982,6 +1022,9 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
         }
         else
         {   // Absolute movement
+            m_targetPos[0] = posUnit[0];
+            sendTargetUpdate();
+
             if ((result = command_move(m_device, fullSteps, partSteps)) != result_ok)
             {
                 retval += ito::RetVal(ito::retError, 0, tr("Error while moving: %1").arg(getErrorString(result)).toLatin1().data());
@@ -998,7 +1041,7 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
             waitCond->release();
             released = true;
         }
-        retval += waitForDone(100, axis); 
+        retval += waitForDone(-1, axis); 
         // Wait till movement is done and the release the semaphore
         if (!m_async && waitCond && !released)
         {
@@ -1021,8 +1064,6 @@ ito::RetVal ST8SMC4USB::SMCSetPos(const QVector<int> axis, const QVector<double>
         QSharedPointer<double> pos(new double);
         retval += getPos(0, pos, NULL);
         m_targetPos[0] = m_currentPos[0];
-
-        qDebug() << m_targetPos << m_currentPos << m_currentStatus;
         sendTargetUpdate();
     }
 
@@ -1041,7 +1082,6 @@ ito::RetVal ST8SMC4USB::waitForDone(const int timeoutMS, const QVector<int> axis
 {
     ito::RetVal retval(ito::retOk);
     bool done = false;
-    bool stillMoving;
     result_t result;
     status_t state;
 
@@ -1055,15 +1095,13 @@ ito::RetVal ST8SMC4USB::waitForDone(const int timeoutMS, const QVector<int> axis
             retval += ito::RetVal(ito::retError, 0, tr("Error getting status: %1").arg(getErrorString(result)).toLatin1().data());
         }
 
-//        qDebug() << state.MoveSts << state.MvCmdSts << m_currentStatus;
-
         retval += SMCCheckStatus();
 
         if (isInterrupted())
         {
             if ((result = command_stop(m_device)) != result_ok)
             {
-                retval += ito::RetVal(ito::retError, 0, tr("Error while moving: %1").arg(getErrorString(result)).toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("Error while stopping: %1").arg(getErrorString(result)).toLatin1().data());
             }
             
             replaceStatus(axis, ito::actuatorMoving, ito::actuatorInterrupted);
@@ -1076,8 +1114,6 @@ ito::RetVal ST8SMC4USB::waitForDone(const int timeoutMS, const QVector<int> axis
         else
         {
             done = ((state.MoveSts & MOVE_STATE_MOVING) == 0) && (state.MvCmdSts & MVCMD_RUNNING) == 0;
-
-//            qDebug() << "state.MoveSts " << state.MoveSts;
          
             if (done)
             {   // Position reached and movement done

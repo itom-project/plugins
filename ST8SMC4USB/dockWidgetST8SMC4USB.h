@@ -56,6 +56,7 @@ class DockWidgetST8SMC4USB : public ito::AbstractAddInDockWidget
         void on_btnDown_clicked();
         void on_btnStart_clicked();
         void on_btnRefresh_clicked();
+        void on_btnCancel_clicked();
 };
 
 #endif

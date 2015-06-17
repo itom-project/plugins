@@ -32,12 +32,14 @@ DockWidgetST8SMC4USB::DockWidgetST8SMC4USB(ito::AddInActuator *actuator) : ito::
 {
     ui.setupUi(this); 
     enableWidget(true);
+    ui.btnStart->setEnabled(true);
+    ui.btnCancel->setVisible(false);
 }
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
 {
     QString tmp;
-    tmp.setNum(params["deviceNum"].getVal<int>());
+    tmp.setNum(params["device_num"].getVal<int>());
     ui.lblDeviceNo->setText(tmp);
     ui.lblPort->setText(params["device_port"].getVal<char*>());
 
@@ -89,6 +91,8 @@ void DockWidgetST8SMC4USB::actuatorStatusChanged(QVector<int> status, QVector<do
     ui.spinBoxActPos->setStyleSheet(style);
 
     enableWidget(!running);
+    ui.btnStart->setEnabled(!running);
+    ui.btnCancel->setVisible(running);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -106,7 +110,7 @@ void DockWidgetST8SMC4USB::enableWidget(bool enabled)
     ui.spinBoxTargetPos->setEnabled(enabled);
     ui.btnUp->setEnabled(enabled);
     ui.btnDown->setEnabled(enabled);
-//    ui.groupBoxMode->setEnabled(enabled);
+    ui.btnRefresh->setEnabled(enabled);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -125,6 +129,12 @@ void DockWidgetST8SMC4USB::on_btnDown_clicked()
 void DockWidgetST8SMC4USB::on_btnStart_clicked()
 {
     setActuatorPosition(0, ui.spinBoxTargetPos->value(), false);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetST8SMC4USB::on_btnCancel_clicked()
+{
+    setActuatorInterrupt();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

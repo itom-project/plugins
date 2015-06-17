@@ -64,6 +64,7 @@ class ST8SMC4USB : public ito::AddInActuator
         int m_async;
         device_t m_device;
  	    engine_settings_t m_engine_settings;
+        double m_unitPerSteps; //number of mm or degree per stepper motor full step
 
         QSharedPointer<ito::Param> endlineParam;
 
@@ -73,7 +74,11 @@ class ST8SMC4USB : public ito::AddInActuator
         ito::RetVal SMCSetPos(const QVector<int> axis, const QVector<double> posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
         ito::RetVal SMCCheckStatus();
         ito::RetVal SMCCheckError(ito::RetVal retval);
-        ito::RetVal setMoveSettings(int accel = -1, int speed = -1, int microStepSpeed = -1);
+        ito::RetVal synchronizeMotorSettings(double newAccel = -1.0, double newSpeed = -1.0, double newDecel = -1.0);
+
+        double stepsToUnit(const get_position_t &steps, int microSteps);
+        double stepsToUnit(int fullSteps, int uSteps, int microSteps);
+        void unitToSteps(double unitStep, int microSteps, int &fullSteps, int &uSteps);
         
         int microStepsToMicrostepMode(const int microSteps);
 

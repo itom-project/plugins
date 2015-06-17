@@ -31,8 +31,7 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogST8SMC4USB::DialogST8SMC4USB(ito::AddInBase *actuator) :
     AbstractAddInConfigDialog(actuator),
-    m_firstRun(true),
-    m_pPlugin(actuator)
+    m_firstRun(true)
 {
     ui.setupUi(this);
 
@@ -54,8 +53,8 @@ void DialogST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-        ui.idLabel->setText(params["deviceID"].getVal<char*>());
-        ui.numAxisLabel->setText(params["devicePort"].getVal<char*>());
+        ui.idLabel->setText(params["device_id"].getVal<char*>());
+        ui.numAxisLabel->setText(params["device_port"].getVal<char*>());
 
         m_firstRun = false;
 
@@ -68,13 +67,26 @@ void DialogST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
             ui.cb_microSteps->addItem(QString::number(pow));
             ui.cb_microSteps->setItemData(count++, pow, Qt::UserRole);
         }
+
+        if (params["unit"].getVal<int>() > 0)
+        {
+            ui.sb_speed->setSuffix(" mm/s");
+            ui.sb_accel->setSuffix(" mm/s²");
+            ui.sb_decel->setSuffix(" mm/s²");
+        }
+        else
+        {
+            ui.sb_speed->setSuffix(" °/s");
+            ui.sb_accel->setSuffix(" °/s²");
+            ui.sb_decel->setSuffix(" °/s²");
+        }
     }
 
     QString tmp;
     tmp.setNum(params["units_per_step"].getVal<double>());
     ui.lb_unitPerSteps->setText(tmp);
 
-    if (params["units_per_step"].getVal<int>() == 0)
+    if (params["unit"].getVal<double>() == 0)
     {
         tmp = tr("degree");
     }
@@ -84,7 +96,7 @@ void DialogST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
     }
     ui.lb_unitOfAxis->setText(tmp);
 
-    int microSteps = params["microSteps"].getVal<int>();
+    int microSteps = params["micro_steps"].getVal<int>();
     for (int i = 0; i < ui.cb_microSteps->count(); ++i)
     {
         if (ui.cb_microSteps->itemData(i, Qt::UserRole).toInt() == microSteps)
@@ -94,20 +106,25 @@ void DialogST8SMC4USB::parametersChanged(QMap<QString, ito::Param> params)
         }
     }
 
-    ui.sb_accel->setMaximum(params["accel"].getMax());
-    ui.sb_accel->setMinimum(params["accel"].getMin());
-    ui.sb_accel->setSingleStep(1);
-    ui.sb_accel->setValue(params["accel"].getVal<int>());
+    ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["accel"].getMeta());
+    ui.sb_accel->setMaximum(dm->getMax());
+    ui.sb_accel->setMinimum(dm->getMin());
+    ui.sb_accel->setSingleStep(dm->getStepSize());
+    ui.sb_accel->setValue(params["accel"].getVal<double>());
 
-    ui.sb_speed->setMaximum(params["speed"].getMax());
-    ui.sb_speed->setMinimum(params["speed"].getMin());
-    ui.sb_speed->setSingleStep(1);
-    ui.sb_speed->setValue(params["speed"].getVal<int>());
+    
+    dm = (ito::DoubleMeta*)(params["decel"].getMeta());
+    ui.sb_decel->setMaximum(dm->getMax());
+    ui.sb_decel->setMinimum(dm->getMin());
+    ui.sb_decel->setSingleStep(dm->getStepSize());
+    ui.sb_decel->setValue(params["decel"].getVal<double>());
 
-    ui.sb_targetSpeed->setMaximum(params["micro_step_speed"].getMax());
-    ui.sb_targetSpeed->setMinimum(params["micro_step_speed"].getMin());
-    ui.sb_targetSpeed->setSingleStep(1);
-    ui.sb_targetSpeed->setValue(params["micro_step_speed"].getVal<int>());
+    
+    dm = (ito::DoubleMeta*)(params["speed"].getMeta());
+    ui.sb_speed->setMaximum(dm->getMax());
+    ui.sb_speed->setMinimum(dm->getMin());
+    ui.sb_speed->setSingleStep(dm->getStepSize());
+    ui.sb_speed->setValue(params["speed"].getVal<double>());
 
     ui.checkAsync->setChecked(params["async"].getVal<int>());
 
@@ -121,12 +138,34 @@ ito::RetVal DialogST8SMC4USB::applyParameters()
     ito::RetVal retValue(ito::retOk);
     QVector<QSharedPointer<ito::ParamBase> > values;
     
-    QString tmp = ui.cb_microSteps->currentText();
-    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("micro_steps", ito::ParamBase::Int, tmp.toInt())));
-    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel", ito::ParamBase::Int, ui.sb_accel->value())));
-    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed", ito::ParamBase::Int, ui.sb_speed->value())));
-    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("micro_step_speed", ito::ParamBase::Int, ui.sb_targetSpeed->value())));
-    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, ui.checkAsync->isChecked())));
+    int microsteps = ui.cb_microSteps->currentText().toInt();
+    bool microsteps_changed = false;
+    if (microsteps != m_currentParameters["micro_steps"].getVal<int>())
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("micro_steps", ito::ParamBase::Int, microsteps)));
+        microsteps_changed = true;
+    }
+
+    if (microsteps_changed || qAbs(ui.sb_accel->value() - m_currentParameters["accel"].getVal<double>()) > std::numeric_limits<double>::epsilon())
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("accel", ito::ParamBase::Double, ui.sb_accel->value())));
+    }
+
+    if (microsteps_changed || qAbs(ui.sb_decel->value() - m_currentParameters["decel"].getVal<double>()) > std::numeric_limits<double>::epsilon())
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("decel", ito::ParamBase::Double, ui.sb_decel->value())));
+    }
+
+    if (microsteps_changed || qAbs(ui.sb_speed->value() - m_currentParameters["speed"].getVal<double>()) > std::numeric_limits<double>::epsilon())
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("speed", ito::ParamBase::Double, ui.sb_speed->value())));
+    }
+
+    int async = ui.checkAsync->isChecked() ? 1 : 0;
+    if (m_currentParameters["async"].getVal<int>() != async)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, async)));
+    }
     
     retValue += setPluginParameters(values, msgLevelWarningAndError);
     return retValue;
@@ -156,5 +195,6 @@ void DialogST8SMC4USB::on_buttonBox_clicked(QAbstractButton* btn)
 //---------------------------------------------------------------------------------------------------------------------
 void DialogST8SMC4USB::enableDialog(bool enabled)
 {
-
+    ui.groupSettings->setEnabled(enabled);
+    ui.groupMode->setEnabled(enabled);
 }
