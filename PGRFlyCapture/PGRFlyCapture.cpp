@@ -260,11 +260,11 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, -1, 2, 0, tr("-1: Complete free run, 0: Disable trigger, 1: enable trigger mode, 2: enable software-trigger").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("trigger_polarity", ito::ParamBase::Int, 0, 1, 0, tr("For hardware trigger only: Set the polarity of the trigger (0: trigger active low, 1: trigger active high)").toLatin1().data());
+    paramVal = ito::Param("trigger_polarity", ito::ParamBase::Int, 0, 1, 0, tr("For hardware trigger only: Set the polarity of the trigger (0: trigger active low, 1: trigger active high)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("packetsize", ito::ParamBase::Int, 0, 48048, 41184, tr("Packet size of current image settings").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("packetsize", ito::ParamBase::Int, 0, 48048, 41184, tr("Packet size of current image settings").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("videoMode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, FlyCapture2::NUM_VIDEOMODES - 1, FlyCapture2::VIDEOMODE_FORMAT7, tr("Current video mode, default is Mode7").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -296,8 +296,8 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("cam_interface", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Interface of camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("cam_register", ito::ParamBase::Int, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("Direct read/write of registers").toLatin1().data());
-	m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("cam_register", ito::ParamBase::Int, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("Direct read/write of registers").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
     DockWidgetPGRFlyCapture *dw = new DockWidgetPGRFlyCapture(this);
@@ -349,28 +349,28 @@ ito::RetVal PGRFlyCapture::getParam(QSharedPointer<ito::Param> val, ItomSharedSe
 
     if(!retValue.containsError())
     {
-		if (key == "cam_register")
-		{
-			if (suffix != "")
-			{
-				bool ok;
-				unsigned int address = suffix.toInt(&ok, 16);
-				unsigned int pValue;
-				if (ok)
-				{
-					retValue += checkError(m_myCam.ReadRegister(address, &pValue));
-					it->setVal<int>(pValue);
-				}
-				else
-				{
-					retValue += ito::RetVal::format(ito::retError, 0, "suffix '%s' could not be interpreted as hex number", suffix.toLatin1().data());
-				}
-			}
-			else
-			{
-				retValue += ito::RetVal(ito::retError, 0, "cam_register requires a suffix (hex-address in string representation, e.g. '0xA01F')");
-			}
-		}
+        if (key == "cam_register")
+        {
+            if (suffix != "")
+            {
+                bool ok;
+                unsigned int address = suffix.toInt(&ok, 16);
+                unsigned int pValue;
+                if (ok)
+                {
+                    retValue += checkError(m_myCam.ReadRegister(address, &pValue));
+                    it->setVal<int>(pValue);
+                }
+                else
+                {
+                    retValue += ito::RetVal::format(ito::retError, 0, "suffix '%s' could not be interpreted as hex number", suffix.toLatin1().data());
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, "cam_register requires a suffix (hex-address in string representation, e.g. '0xA01F')");
+            }
+        }
 
         *val = it.value();
     }
@@ -403,7 +403,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
     bool hasIndex;
     int index;
     QString suffix;
-	ParamMapIterator it;
+    ParamMapIterator it;
     int running = 0;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
@@ -446,128 +446,128 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
     if(!retValue.containsError())
     {
-		if (key == "roi")
-		{
-			if (hasIndex)
-			{
-				
-				const unsigned int k_imagePosition = 0xA08;
-				const unsigned int k_imageSize = 0xA0C;
+        if (key == "roi")
+        {
+            if (hasIndex)
+            {
+                
+                const unsigned int k_imagePosition = 0xA08;
+                const unsigned int k_imageSize = 0xA0C;
 
-				unsigned int read_value = 0;
-				unsigned int write_value = val->getVal<int>();
+                unsigned int read_value = 0;
+                unsigned int write_value = val->getVal<int>();
 
-				int *old_roi = it->getVal<int*>(); 
-				const int new_roi_value = val->getVal<int>();
+                int *old_roi = it->getVal<int*>(); 
+                const int new_roi_value = val->getVal<int>();
 
-				int64 t = 0.0;
+                int64 t = 0.0;
 
-				switch (index)
-				{
-				case 0:
+                switch (index)
+                {
+                case 0:
 
-					// Linksshift um 16 Stellen, da zur Anpassung des Offsets in x-Richtung die ersten 16 Bits des Registers,
-					// welches zusammen mit dem y-Offset 32 Bit umfasst, gesetzt werden muessen.
-					write_value = (write_value << 16) + old_roi[1];
+                    // Linksshift um 16 Stellen, da zur Anpassung des Offsets in x-Richtung die ersten 16 Bits des Registers,
+                    // welches zusammen mit dem y-Offset 32 Bit umfasst, gesetzt werden muessen.
+                    write_value = (write_value << 16) + old_roi[1];
 
-					// Direkter Schreibzugriff auf das entsprechende Kameraregister zum einstellen des x-Offsets
-					m_myCam.WriteRegister(k_imagePosition, write_value);
+                    // Direkter Schreibzugriff auf das entsprechende Kameraregister zum einstellen des x-Offsets
+                    m_myCam.WriteRegister(k_imagePosition, write_value);
 
-					// Uebergabe des aktualisierten x-Offsets an itom
-					old_roi[0] = new_roi_value;
-					m_params["roi"].setVal<int*>(old_roi,4);
-					
-					break;
+                    // Uebergabe des aktualisierten x-Offsets an itom
+                    old_roi[0] = new_roi_value;
+                    m_params["roi"].setVal<int*>(old_roi,4);
+                    
+                    break;
 
-				case 1:
+                case 1:
 
-					// Aufzeichnung der benoetigten Zeit zum Setzen des entsprechenden Registers
-					t = cv::getTickCount();
+                    // Aufzeichnung der benoetigten Zeit zum Setzen des entsprechenden Registers
+                    t = cv::getTickCount();
 
-					write_value = (old_roi[0] << 16) + write_value;
+                    write_value = (old_roi[0] << 16) + write_value;
 
-					// Direkter Schreibzugriff auf das entsprechende Kameraregister zum einstellen des y-Offsets
-					m_myCam.WriteRegister( k_imagePosition, write_value );
+                    // Direkter Schreibzugriff auf das entsprechende Kameraregister zum einstellen des y-Offsets
+                    m_myCam.WriteRegister( k_imagePosition, write_value );
 
-					qDebug() << (double)(cv::getTickCount() - t)/cv::getTickFrequency();
+                    qDebug() << (double)(cv::getTickCount() - t)/cv::getTickFrequency();
 
-					// Uebergabe des aktualisierten y-Offsets an itom
-					old_roi[1] = new_roi_value;
-					m_params["roi"].setVal<int*>(old_roi,4);
+                    // Uebergabe des aktualisierten y-Offsets an itom
+                    old_roi[1] = new_roi_value;
+                    m_params["roi"].setVal<int*>(old_roi,4);
 
-					// Auslesen des vorher gesetzten Registers zur Visualisierung und Ueberpruefung
-					m_myCam.ReadRegister( k_imageSize, &read_value );
-					read_value &= ~(0x1 << 0);
+                    // Auslesen des vorher gesetzten Registers zur Visualisierung und Ueberpruefung
+                    m_myCam.ReadRegister( k_imageSize, &read_value );
+                    read_value &= ~(0x1 << 0);
 
-					break;
+                    break;
 
-				case 2:
+                case 2:
 
-					// Linksshift um 16 Stellen, da zur Anpassung der Groesse in x-Richtung die ersten 16 Bits des Registers,
-					// welches zusammen mit der Groesse in y-Richtung 32 Bit umfasst, gesetzt werden muessen.
-					write_value = (write_value << 16) + old_roi[3];
+                    // Linksshift um 16 Stellen, da zur Anpassung der Groesse in x-Richtung die ersten 16 Bits des Registers,
+                    // welches zusammen mit der Groesse in y-Richtung 32 Bit umfasst, gesetzt werden muessen.
+                    write_value = (write_value << 16) + old_roi[3];
 
-					// Direkter Schreibzugriff auf das entsprechende Kameraregister für die Groesse in x-Richtung
-					m_myCam.WriteRegister( k_imageSize, write_value );
+                    // Direkter Schreibzugriff auf das entsprechende Kameraregister für die Groesse in x-Richtung
+                    m_myCam.WriteRegister( k_imageSize, write_value );
 
-					// Uebergabe des aktualisierten Groesse in x-Richtung an itom
-					m_params["sizex"].setVal<int>(new_roi_value);
+                    // Uebergabe des aktualisierten Groesse in x-Richtung an itom
+                    m_params["sizex"].setVal<int>(new_roi_value);
 
-					break;
+                    break;
 
-				case 3:
+                case 3:
 
-					//time recording for setting the sizey register
-					t = cv::getTickCount();
+                    //time recording for setting the sizey register
+                    t = cv::getTickCount();
 
-					write_value = (old_roi[2] << 16) + write_value;
+                    write_value = (old_roi[2] << 16) + write_value;
 
-					//access sizey camera register
-					m_myCam.WriteRegister( k_imageSize, write_value );
+                    //access sizey camera register
+                    m_myCam.WriteRegister( k_imageSize, write_value );
 
-					qDebug() << (double)(cv::getTickCount() - t)/cv::getTickFrequency();
+                    qDebug() << (double)(cv::getTickCount() - t)/cv::getTickFrequency();
 
-					//set new sizey in m_params for itom
-					m_params["sizey"].setVal<int>(new_roi_value);
+                    //set new sizey in m_params for itom
+                    m_params["sizey"].setVal<int>(new_roi_value);
 
-					//checking the sizey register
-					m_myCam.ReadRegister( k_imageSize, &read_value );
-					read_value &= ~(0x1 << 0);
+                    //checking the sizey register
+                    m_myCam.ReadRegister( k_imageSize, &read_value );
+                    read_value &= ~(0x1 << 0);
 
-					break;
+                    break;
 
-				default:
-					retValue += ito::RetVal(ito::retError, 0, "only indices in the range [0,3] are allowed");
-					break;
-				}
-			}
-			else
-			{
-				const unsigned int k_imagePosition = 0xA08;
+                default:
+                    retValue += ito::RetVal(ito::retError, 0, "only indices in the range [0,3] are allowed");
+                    break;
+                }
+            }
+            else
+            {
+                const unsigned int k_imagePosition = 0xA08;
 
-				unsigned int write_value = 0;
+                unsigned int write_value = 0;
 
-				int *old_roi = it->getVal<int*>();
-				const int *new_roi = val->getVal<int*>();
+                int *old_roi = it->getVal<int*>();
+                const int *new_roi = val->getVal<int*>();
 
-				if (old_roi[2] != new_roi[2] || old_roi[3] != new_roi[3])
-				{
-					//height or width changed -> full reconfiguration:
-					retValue += flyCapChangeFormat7_(false, true, -1, new_roi[0], new_roi[1], new_roi[2], new_roi[3]);
-				}
-				else
-				{
+                if (old_roi[2] != new_roi[2] || old_roi[3] != new_roi[3])
+                {
+                    //height or width changed -> full reconfiguration:
+                    retValue += flyCapChangeFormat7_(false, true, -1, new_roi[0], new_roi[1], new_roi[2], new_roi[3]);
+                }
+                else
+                {
 
-					write_value = (new_roi[0] << 16) + new_roi[1];
+                    write_value = (new_roi[0] << 16) + new_roi[1];
 
-					m_myCam.WriteRegister( k_imagePosition, write_value );
+                    m_myCam.WriteRegister( k_imagePosition, write_value );
 
-					//overwrite old roi
-					memcpy(old_roi, new_roi, 4 * sizeof(int)); 
+                    //overwrite old roi
+                    memcpy(old_roi, new_roi, 4 * sizeof(int)); 
 
-				}
-			}
-		}
+                }
+            }
+        }
         else if (key == "extended_shutter")
         {
             retValue += flyCapSetExtendedShutter(val->getVal<int>() > 0);
@@ -710,39 +710,39 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                 m_params["trigger_mode"].setVal<int>(triggerMode);
             }
         }
-		else if (key == "packetsize")
-		{
+        else if (key == "packetsize")
+        {
 
-			bool valid;
-			float percentSpeed;
-			unsigned int packetSize;
+            bool valid;
+            float percentSpeed;
+            unsigned int packetSize;
 
-			if (grabberStartedCount() > 0)
-			{
-				running = grabberStartedCount();
-				setGrabberStarted(1);
-				retValue += stopDevice(NULL);
-			}
+            if (grabberStartedCount() > 0)
+            {
+                running = grabberStartedCount();
+                setGrabberStarted(1);
+                retValue += stopDevice(NULL);
+            }
 
-			FlyCapture2::Format7Info packetInfos;
-			FlyCapture2::Format7ImageSettings imageSettings;
-			FlyCapture2::Format7PacketInfo packetAdvice;
-			
-			m_myCam.GetFormat7Configuration(&imageSettings, &packetInfos.packetSize, &packetInfos.percentage);
-			m_myCam.GetFormat7Info(&packetInfos, &valid);
+            FlyCapture2::Format7Info packetInfos;
+            FlyCapture2::Format7ImageSettings imageSettings;
+            FlyCapture2::Format7PacketInfo packetAdvice;
+            
+            m_myCam.GetFormat7Configuration(&imageSettings, &packetInfos.packetSize, &packetInfos.percentage);
+            m_myCam.GetFormat7Info(&packetInfos, &valid);
 
-			packetSize = val->getVal<int>();
-			percentSpeed = ((float)packetSize/(float)packetInfos.maxPacketSize)*100;
+            packetSize = val->getVal<int>();
+            percentSpeed = ((float)packetSize/(float)packetInfos.maxPacketSize)*100;
 
-			if (percentSpeed > 100.0)
-			{
-				percentSpeed = 100.0;
-			}
+            if (percentSpeed > 100.0)
+            {
+                percentSpeed = 100.0;
+            }
 
             FlyCapture2::Error retError = m_myCam.SetFormat7Configuration(&imageSettings, percentSpeed);
-			m_myCam.GetFormat7Info(&packetInfos, &valid);
+            m_myCam.GetFormat7Info(&packetInfos, &valid);
 
-			if (retError != FlyCapture2::PGRERROR_OK)
+            if (retError != FlyCapture2::PGRERROR_OK)
             {
                 retValue += ito::RetVal::format(ito::retError, (int)retError.GetType(), "Error setting packetsize: %s", retError.GetDescription());
             }
@@ -750,8 +750,8 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             {
                 m_params["packetsize"].setVal<int>(packetInfos.packetSize);
             }
-		}
-		else if (key == "trigger_polarity")
+        }
+        else if (key == "trigger_polarity")
         {
 
             if (grabberStartedCount() > 0)
@@ -765,7 +765,7 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             FlyCapture2::TriggerMode triggerModeSetup;
             m_myCam.GetTriggerMode(&triggerModeSetup);
 
-			triggerModeSetup.polarity = val->getVal<int>();
+            triggerModeSetup.polarity = val->getVal<int>();
 
             FlyCapture2::Error retError = m_myCam.SetTriggerMode(&triggerModeSetup);
             if (retError != FlyCapture2::PGRERROR_OK)
@@ -1093,40 +1093,40 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
             if(!retVal.containsError())
             {
-				FlyCapture2::Format7Info packetInfos;
-				
-				bool valid;
-				float percentspeed;
+                FlyCapture2::Format7Info packetInfos;
+                
+                bool valid;
+                float percentspeed;
 
                 //get defaults from info struct
                 ito::IntMeta *im;
                 im = static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() );
                 im->setMax(m_format7Info.maxWidth);
                 im->setStepSize(m_format7Info.imageHStepSize);
-			
+            
                 im = static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() );
                 im->setMax(m_format7Info.maxHeight);
                 im->setStepSize(m_format7Info.imageVStepSize);
 
-				m_myCam.GetFormat7Info(&packetInfos, &valid);
+                m_myCam.GetFormat7Info(&packetInfos, &valid);
 
-				percentspeed = packetInfos.percentage;
-				m_params["packetsize"].setVal<int>(packetInfos.packetSize);
-				
-				retVal += checkError(m_myCam.GetFormat7Configuration(&m_currentFormat7Settings, &packetInfos.packetSize, &packetInfos.percentage));
-				ito::IntMeta* im = (ito::IntMeta*)m_params["packetsize"].getMeta();
-				im->setMin(packetInfos.minPacketSize);
-				im->setMax(packetInfos.maxPacketSize);
+                percentspeed = packetInfos.percentage;
+                m_params["packetsize"].setVal<int>(packetInfos.packetSize);
+                
+                retVal += checkError(m_myCam.GetFormat7Configuration(&m_currentFormat7Settings, &packetInfos.packetSize, &packetInfos.percentage));
+                im = (ito::IntMeta*)m_params["packetsize"].getMeta();
+                im->setMin(packetInfos.minPacketSize);
+                im->setMax(packetInfos.maxPacketSize);
 
                 //set bpp
                 int desiredBpp;
                 m_params["videoMode"].setVal<int>(FlyCapture2::VIDEOMODE_FORMAT7);
 
-				if (!retVal.containsError() && m_currentFormat7Settings.mode != FlyCapture2::MODE_0)
-				{
-					m_currentFormat7Settings.mode = FlyCapture2::MODE_0;
-					retVal += checkError(m_myCam.SetFormat7Configuration(&m_currentFormat7Settings, percentspeed));
-				}
+                if (!retVal.containsError() && m_currentFormat7Settings.mode != FlyCapture2::MODE_0)
+                {
+                    m_currentFormat7Settings.mode = FlyCapture2::MODE_0;
+                    retVal += checkError(m_myCam.SetFormat7Configuration(&m_currentFormat7Settings, percentspeed));
+                }
 
                 if (m_colouredOutput)
                 {
@@ -1488,14 +1488,14 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         m_RunSync = true;
         m_RunSoftwareSync = false;
 
-		if (pTriggerInfo.present)
-		{
-			m_params["trigger_polarity"].setVal<int>(triggerModeSetup.polarity);
-		}
-		else
-		{
-			m_params["trigger_polarity"].setFlags(ito::ParamBase::Readonly);
-		}
+        if (pTriggerInfo.present)
+        {
+            m_params["trigger_polarity"].setVal<int>(triggerModeSetup.polarity);
+        }
+        else
+        {
+            m_params["trigger_polarity"].setFlags(ito::ParamBase::Readonly);
+        }
 
         if(pTriggerInfo.present && pTriggerInfo.softwareTriggerSupported)
         {
@@ -2395,7 +2395,7 @@ ito::RetVal PGRFlyCapture::flyCapChangeFormat7_(bool changeBpp, bool changeROI, 
         if (changeROI)
         {
 
-			if (x0 == -1) x0 = f7ImageSettings.offsetX;
+            if (x0 == -1) x0 = f7ImageSettings.offsetX;
             if (y0 == -1) y0 = f7ImageSettings.offsetY;
             if (width == -1) width = f7ImageSettings.width;
             if (height == -1) height = f7ImageSettings.height;
