@@ -480,21 +480,16 @@ template<> ito::RetVal transformDatatoImage_ARGB32<ito::int32>(QImage *image, it
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//transformImagetoData_Mono
+//QImage_Mono_to_dataObject
 /*!
     This Function transforms the pixel value of Format_Mono type Image into respective DataObject.
 */
-template<typename _Tp> ito::RetVal transformImagetoData_Mono(QImage *image, ito::DataObject *dObj, ito::DataObject *dObj_red=NULL, ito::DataObject *dObj_green=NULL, ito::DataObject *dObj_blue=NULL)
+template<typename _Tp> ito::RetVal QImage_Mono_to_dataObject(const QImage *image, ito::DataObject *dObj)
 {
-    ito::RetVal ret = ito::retOk;
-    QImage::Format imgFormat;
-    imgFormat = image->format();
-    ito::uint8 *linePtr2 = NULL;
-//    ito::uint8 *linePtr_red = NULL;
-//    ito::uint8 *linePtr_green = NULL;
-//    ito::uint8 *linePtr_blue = NULL;
-    cv::Mat *MAT1 = (cv::Mat*)(dObj->get_mdata()[0]);
-    uchar *orgPtr;    
+    bool lsb = image->format() == QImage::Format_MonoLSB ? true : false;
+    _Tp *linePtr2 = NULL;
+    cv::Mat *MAT1 = dObj->getCvPlaneMat(0);
+    const uchar *orgPtr;    
     int byteIndex;
     int bitIndexInByte;
     
@@ -502,54 +497,108 @@ template<typename _Tp> ito::RetVal transformImagetoData_Mono(QImage *image, ito:
     {
         linePtr2 =(_Tp*)MAT1->ptr(row);
         orgPtr = image->scanLine(row);
+
         for (int col=0; col<image->width(); col++)
+        {
+            if (!lsb)
             {
-                if (1)
-                {
-                    bitIndexInByte = col % 8;                        /*!Each pixel represents one bit data in Format_Mono type Image. So this code snippet converts 1 bit data into equivalent 1 byte value to be filled as each element of DataObject matrix.*/
-                    byteIndex = (col - bitIndexInByte) / 8;
-                    bitIndexInByte = 7 - bitIndexInByte;
-                }
-                else
-                {
-                    bitIndexInByte = col % 8;
-                    byteIndex = (col - bitIndexInByte) / 8;
-                }
-                linePtr2[col] = (orgPtr[byteIndex] & (1 << bitIndexInByte)) ? 255 : 0;  /*! Transfering the value of the pixel to respective element of DataObject matrix. */
-                qDebug() << linePtr2[col];
-            }    
+                bitIndexInByte = col % 8;                        /*!Each pixel represents one bit data in Format_Mono type Image. So this code snippet converts 1 bit data into equivalent 1 byte value to be filled as each element of DataObject matrix.*/
+                byteIndex = (col - bitIndexInByte) / 8;
+                bitIndexInByte = 7 - bitIndexInByte;
+            }
+            else
+            {
+                bitIndexInByte = col % 8;
+                byteIndex = (col - bitIndexInByte) / 8;
+            }
+            linePtr2[col] = (orgPtr[byteIndex] & (1 << bitIndexInByte)) ? std::numeric_limits<_Tp>::max() : 0;  /*! Transferring the value of the pixel to respective element of DataObject matrix. */
+        }    
     }    
-    return ret;
+    return ito::retOk;
+}
+
+template<> ito::RetVal QImage_Mono_to_dataObject<ito::Rgba32>(const QImage *image, ito::DataObject *dObj)
+{
+    bool lsb = image->format() == QImage::Format_MonoLSB ? true : false;
+    ito::Rgba32 *linePtr2 = NULL;
+    cv::Mat *MAT1 = dObj->getCvPlaneMat(0);
+    const uchar *orgPtr;    
+    int byteIndex;
+    int bitIndexInByte;
+    
+    for (int row=0; row<image->height(); row++)
+    {
+        linePtr2 =(ito::Rgba32*)MAT1->ptr(row);
+        orgPtr = image->scanLine(row);
+
+        for (int col=0; col<image->width(); col++)
+        {
+            if (!lsb)
+            {
+                bitIndexInByte = col % 8;                        /*!Each pixel represents one bit data in Format_Mono type Image. So this code snippet converts 1 bit data into equivalent 1 byte value to be filled as each element of DataObject matrix.*/
+                byteIndex = (col - bitIndexInByte) / 8;
+                bitIndexInByte = 7 - bitIndexInByte;
+            }
+            else
+            {
+                bitIndexInByte = col % 8;
+                byteIndex = (col - bitIndexInByte) / 8;
+            }
+            linePtr2[col] = (orgPtr[byteIndex] & (1 << bitIndexInByte)) ? ito::Rgba32(255) : ito::Rgba32(0);  /*! Transferring the value of the pixel to respective element of DataObject matrix. */
+        }    
+    }    
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//transformImagetoData_Indexed8
+//QImage_Indexed8_to_dataObject
 /*!
     This Function transforms the pixel value of Format_Indexed8 type Image into respective DataObject.
 */
-template<typename _Tp> ito::RetVal transformImagetoData_Indexed8(QImage *image, ito::DataObject *dObj, ito::DataObject *dObj_red=NULL, ito::DataObject *dObj_green=NULL, ito::DataObject *dObj_blue=NULL)
+template<typename _Tp> ito::RetVal QImage_Indexed8_to_dataObject(const QImage *image, ito::DataObject *dObj)
 {
-    ito::RetVal ret = ito::retOk;
     ito::uint8 *linePtr2 = NULL;
-//    ito::uint8 *linePtr_red = NULL;
-//    ito::uint8 *linePtr_green = NULL;
-//    ito::uint8 *linePtr_blue = NULL;
-    cv::Mat *MAT1 = (cv::Mat*)(dObj->get_mdata()[0]);
-//    cv::Mat *MAT1R;
-//    cv::Mat *MAT1G;
-//    cv::Mat *MAT1B;
-    QRgb rgb1;
+    cv::Mat *MAT1 = dObj->getCvPlaneMat(0);
+    const uchar* srcLine = NULL;
+    _Tp* dstLine = NULL;
+    QVector<QRgb> colorTable = image->colorTable();
 
-    for (int row=0; row<image->height(); row++)
+    for (int row = 0; row < image->height(); row++)
     {
-        linePtr2 =(_Tp*)MAT1->ptr(row);
-        for (int col=0; col<image->width(); col++)
+        srcLine = image->scanLine(row);
+        dstLine = (_Tp*)MAT1->ptr(row);
+
+        for (int col = 0; col < image->width(); col++)
         {
-            rgb1 = image->pixel(col, row);
-            linePtr2[col] = qGray(rgb1);        /*! Transfering Gray value of the pixel to respective element of DataObject matrix. */
-        }            
+            dstLine[col] = cv::saturate_cast<_Tp>(qGray(colorTable[srcLine[col]]));
+        }     
     }
-    return ret;
+
+    return ito::retOk;
+}
+
+template<> ito::RetVal QImage_Indexed8_to_dataObject<ito::Rgba32>(const QImage *image, ito::DataObject *dObj)
+{
+    ito::uint8 *linePtr2 = NULL;
+    cv::Mat *MAT1 = dObj->getCvPlaneMat(0);
+    const uchar* srcLine = NULL;
+    ito::Rgba32* dstLine = NULL;
+    QVector<QRgb> colorTable = image->colorTable();
+    QRgb c;
+
+    for (int row = 0; row < image->height(); row++)
+    {
+        srcLine = image->scanLine(row);
+        dstLine = (ito::Rgba32*)MAT1->ptr(row);
+
+        for (int col = 0; col < image->width(); col++)
+        {
+            c = colorTable[srcLine[col]];
+            dstLine[col] = ito::Rgba32(qAlpha(c), qRed(c), qGreen(c), qBlue(c));
+        }     
+    }
+
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -557,129 +606,112 @@ template<typename _Tp> ito::RetVal transformImagetoData_Indexed8(QImage *image, 
 /*!
     This Function transforms the pixel value of Format_RGB32 type Image into respective DataObject.
 */
-template<typename _Tp> ito::RetVal transformImagetoData_RGB32(QImage *image, ito::DataObject *dObj, char *colorElement=NULL)   
+template<typename _Tp> ito::RetVal QImage_ARGB32_to_dataObject(QImage *image, ito::DataObject *dObj, const char *colorElement)   
 {
-    ito::RetVal ret = ito::retOk;
-
-    std::string colorElem;
-    if (colorElement != NULL)
-    {
-        colorElem = colorElement;
-    }
     ito::uint8 *linePtr2 = NULL;
-    ito::uint8 *linePtr_red = NULL;
-    ito::uint8 *linePtr_green = NULL;
-    ito::uint8 *linePtr_blue = NULL;
-    cv::Mat *MAT1 = (cv::Mat*)(dObj->get_mdata()[0]);
-    cv::Mat *MAT1R;
-    cv::Mat *MAT1G;
-    cv::Mat *MAT1B;
-    uchar *orgPtr;
+    cv::Mat *MAT1 = dObj->getCvPlaneMat(0);
+    const QRgb* srcLine = NULL;
+    _Tp* dstLine = NULL;
 
-    if (colorElem.compare("RGB") == 0)        //Case when ColorElement parameter is passed as "RGB"
+    if (strcmp(colorElement, "R") == 0)
     {
-        MAT1R = (cv::Mat*)(dObj->get_mdata()[dObj->seekMat(0)]);    //Reference to 1st layer of dObj using seekMat() method. 
-        MAT1G = (cv::Mat*)(dObj->get_mdata()[dObj->seekMat(1)]);    //Reference to 2nd layer of dObj using seekMat() method. 
-        MAT1B = (cv::Mat*)(dObj->get_mdata()[dObj->seekMat(2)]);    //Reference to 3rd layer of dObj using seekMat() method. 
-        for (int row=0; row<image->height(); row++)
-        {    
-            linePtr_red =MAT1R->ptr(row);
-            linePtr_green =MAT1G->ptr(row);
-            linePtr_blue =MAT1B->ptr(row);
-            orgPtr = image->scanLine(row);    
-            for (int col=3; col<((image->width())*4); col+=4)
-            {
-                linePtr_red[col/4] = orgPtr[col-1];
-                linePtr_green[col/4] = orgPtr[col-2];        
-                linePtr_blue[col/4] = orgPtr[col-3];
-            }
-        }
-    }
-    else            //Case when ColorElement parameter is passed as either "R" , "G" or "B".
-    {
-        for (int row=0; row<image->height(); row++)
+        for (int row = 0; row < image->height(); row++)
         {
-            linePtr2 =(_Tp*)MAT1->ptr(row);
-            orgPtr = image->scanLine(row);                            
-            for (int col=3; col<((image->width())*4); col+=4)
+            srcLine = (const QRgb*)image->scanLine(row);
+            dstLine = (_Tp*)MAT1->ptr(row);
+
+            for (int col = 0; col < image->width(); col++)
             {
-                if (colorElem.compare("R") == 0) linePtr2[col/4] = orgPtr[col-1];        /*! Extracting only Red Color Element. */
-                else if (colorElem.compare("G") == 0) linePtr2[col/4] = orgPtr[col-2];    /*! Extracting only Red Color Element. */
-                else if (colorElem.compare("B") == 0) linePtr2[col/4] = orgPtr[col-3];    /*! Extracting only Red Color Element. */
-                else linePtr2[col/4] = 0.299 * orgPtr[col - 1] + 0.587 * orgPtr[col - 2] + 0.114 * orgPtr[col - 3];        /*! Converting the RGB values into equivalent Gray value using formula " GrayElement = 0.299*RedElemet + 0.587*GreenElement + 0.114*BlueElement */
-            }
+                dstLine[col] = cv::saturate_cast<_Tp>(qRed(srcLine[col]));
+            }     
         }
     }
-    return ret;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//transformImagetoData_ARGB32
-/*!
-    This Function transforms the pixel value of Format_ARGB32 type Image into respective DataObject.
-*/
-template<typename _Tp> ito::RetVal transformImagetoData_ARGB32(QImage *image, ito::DataObject *dObj, char *colorElement=NULL)  
-{
-    ito::RetVal ret = ito::retOk;
-    std::string colorElem;
-    if (colorElement!=NULL)    colorElem= colorElement;
-    ito::uint8 *linePtr2 = NULL;
-    ito::uint8 *linePtr_red = NULL;
-    ito::uint8 *linePtr_green = NULL;
-    ito::uint8 *linePtr_blue = NULL;
-    cv::Mat *MAT1 = (cv::Mat*)(dObj->get_mdata()[0]);
-    cv::Mat *MAT1R;
-    cv::Mat *MAT1G;
-    cv::Mat *MAT1B;
-    uchar *orgPtr;
-
-    if (colorElem.compare("RGB") == 0)
+    else if (strcmp(colorElement, "G") == 0)
     {
-        MAT1R = (cv::Mat*)(dObj->get_mdata()[dObj->seekMat(0)]);
-        MAT1G = (cv::Mat*)(dObj->get_mdata()[dObj->seekMat(1)]);
-        MAT1B = (cv::Mat*)(dObj->get_mdata()[dObj->seekMat(2)]);
-        for (int row=0; row<image->height(); row++)
-        {    
-            linePtr_red = MAT1R->ptr(row);
-            linePtr_green = MAT1G->ptr(row);
-            linePtr_blue = MAT1B->ptr(row);
-            orgPtr = image->scanLine(row);    
-            for (int col=3; col<((image->width())*4); col+=4)
+        for (int row = 0; row < image->height(); row++)
+        {
+            srcLine = (const QRgb*)image->scanLine(row);
+            dstLine = (_Tp*)MAT1->ptr(row);
+
+            for (int col = 0; col < image->width(); col++)
             {
-                if (orgPtr[col] != 0)        /*! Check if alfa value (transparency) of ARGB32 Image is not 0, otherwise the respective pixel value is discarded. */
-                {
-                    linePtr_red[col/4] = orgPtr[col-1];
-                    linePtr_green[col/4] = orgPtr[col-2];        
-                    linePtr_blue[col/4] = orgPtr[col-3];
-                }
-            }
+                dstLine[col] = cv::saturate_cast<_Tp>(qGreen(srcLine[col]));
+            }     
+        }
+    }
+    else if (strcmp(colorElement, "B") == 0)
+    {
+        for (int row = 0; row < image->height(); row++)
+        {
+            srcLine = (const QRgb*)image->scanLine(row);
+            dstLine = (_Tp*)MAT1->ptr(row);
+
+            for (int col = 0; col < image->width(); col++)
+            {
+                dstLine[col] = cv::saturate_cast<_Tp>(qBlue(srcLine[col]));
+            }     
+        }
+    }
+    else if (strcmp(colorElement, "GRAY") == 0)
+    {
+        for (int row = 0; row < image->height(); row++)
+        {
+            srcLine = (const QRgb*)image->scanLine(row);
+            dstLine = (_Tp*)MAT1->ptr(row);
+
+            for (int col = 0; col < image->width(); col++)
+            {
+                dstLine[col] = cv::saturate_cast<_Tp>(qGray(srcLine[col]));
+            }     
         }
     }
     else
     {
-        for (int row=0; row<image->height(); row++)
+        return ito::RetVal(ito::retError, 0, "invalid color channel");
+    }
+
+    return ito::retOk;
+}
+
+template<> ito::RetVal QImage_ARGB32_to_dataObject<ito::Rgba32>(QImage *image, ito::DataObject *dObj, const char *colorElement)   
+{
+    ito::uint8 *linePtr2 = NULL;
+    cv::Mat *MAT1 = dObj->getCvPlaneMat(0);
+    const QRgb* srcLine = NULL;
+    ito::Rgba32* dstLine = NULL;
+
+    if (strcmp(colorElement, "RGB") == 0)
+    {
+        for (int row = 0; row < image->height(); row++)
         {
-            linePtr2 = (_Tp*)MAT1->ptr(row);
-            orgPtr = image->scanLine(row);                            
-            for (int col=3; col<((image->width())*4); col+=4)
+            srcLine = (const QRgb*)image->scanLine(row);
+            dstLine = (ito::Rgba32*)MAT1->ptr(row);
+
+            for (int col = 0; col < image->width(); col++)
             {
-                if (orgPtr[col] != 0)    /*! Check if alfa value (transparency) of ARGB32 Image is not 0, otherwise the respective pixel value is discarded. */
-                {
-                    if (colorElem.compare("R") == 0) linePtr2[col/4] = orgPtr[col-1];    
-                    else if (colorElem.compare("G") == 0) linePtr2[col/4] = orgPtr[col-2];
-                    else if (colorElem.compare("B") == 0) linePtr2[col/4] = orgPtr[col-3];
-                    else linePtr2[col/4] = 0.299 * orgPtr[col - 1] + 0.587 * orgPtr[col - 2] + 0.114 * orgPtr[col - 3];    /*! Converting the RGB values into equivalent Gray value using formula " GrayElement = 0.299*RedElemet + 0.587*GreenElement + 0.114*BlueElement */
-                }
-                else
-                {
-                    if (colorElem.compare("R") == 0) linePtr2[col/4] = orgPtr[col-1];    
-                    else if (colorElem.compare("G") == 0) linePtr2[col/4] = orgPtr[col-2];
-                    else if (colorElem.compare("B") == 0) linePtr2[col/4] = orgPtr[col-3];
-                }
-            }
-        }        
-    }                                
-    return ret;
+                dstLine[col] = ito::Rgba32(255, qRed(srcLine[col]), qGreen(srcLine[col]), qBlue(srcLine[col]));
+            }     
+        }
+    }
+    else if (strcmp(colorElement, "RGBA") == 0)
+    {
+        for (int row = 0; row < image->height(); row++)
+        {
+            srcLine = (const QRgb*)image->scanLine(row);
+            dstLine = (ito::Rgba32*)MAT1->ptr(row);
+
+            for (int col = 0; col < image->width(); col++)
+            {
+                dstLine[col] = ito::Rgba32(qAlpha(srcLine[col]), qRed(srcLine[col]), qGreen(srcLine[col]), qBlue(srcLine[col]));
+            }     
+        }
+    }
+    else
+    {
+        return ito::RetVal(ito::retError, 0, "invalid color channel");
+    }
+
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -687,38 +719,137 @@ template<typename _Tp> ito::RetVal transformImagetoData_ARGB32(QImage *image, it
 /*!
     
 */
-template<typename _TpSrc, typename _TpDest> ito::RetVal transformScaled(cv::Mat *image, const cv::Mat *scrMat)  
+template<typename _TpSrc> ito::RetVal transformScaledToUInt8(cv::Mat &dstMat, const cv::Mat *scrMat)  
 {
+    dstMat = cv::Mat(scrMat->rows, scrMat->cols, CV_8U);
     const _TpSrc *linePtr = NULL;  
-    _TpDest *destPtr = NULL;  
+    ito::uint8 *destPtr = NULL;  
 
     if (std::numeric_limits<_TpSrc>::is_exact)
     {
-        //TODO: bitshift might get negativ - at least in compilers point of view
-        //int bitShift = (sizeof(_TpSrc) - sizeof(_TpDest)) * 8;
-        _TpSrc bitShift = 1 << ((sizeof(_TpSrc) - sizeof(_TpDest)) * 8);
+        _TpSrc bitShift = 1 << qBound<ito::uint8>(0, ((sizeof(_TpSrc) - 1 /*sizeof(ito::uint8)*/) * 8), 32); //qBound in order to avoid compiler warning for negative or too big shift values
         unsigned char signCorrection = std::numeric_limits<_TpSrc>::is_signed ? 128 : 0;
         for (int row = 0; row < scrMat->rows; row++)
         {
-            destPtr = (_TpDest*)image->ptr<_TpDest>(row);
+            destPtr = (ito::uint8*)dstMat.ptr<ito::uint8>(row);
             linePtr = scrMat->ptr<const _TpSrc>(row);
             for (int col = 0; col < scrMat->cols; col++)
-            {
-                //destPtr[col] = (_TpDest)(linePtr[col] >> bitShift) +  signCorrection;    
-                destPtr[col] = (_TpDest)(linePtr[col] / bitShift) +  signCorrection;
+            {   
+                destPtr[col] = (ito::uint8)(linePtr[col] / bitShift) +  signCorrection;
             }
         }
     }
     else
     {
-        _TpSrc scaling = (double) (1 << (sizeof(_TpDest) * 8));
+        _TpSrc scaling = 255.0;
         for (int row = 0; row < scrMat->rows; row++)
         {
-            destPtr = image->ptr<_TpDest>(row);
+            destPtr = dstMat.ptr<ito::uint8>(row);
             linePtr = scrMat->ptr<const _TpSrc>(row);
             for (int col = 0; col < scrMat->cols; col++)
             {
-                destPtr[col] = cv::saturate_cast<_TpDest>(linePtr[col] * scaling);        
+                destPtr[col] = cv::saturate_cast<ito::uint8>(linePtr[col] * scaling);        
+            }
+        }
+    }
+    return ito::retOk;
+}
+
+template<typename _TpSrc> ito::RetVal transformScaledToUInt8(QImage &dstImg, const cv::Mat *srcMat)  
+{
+    dstImg = QImage(srcMat->rows, srcMat->cols, QImage::Format_Indexed8);
+    QVector<QRgb> colors(256);
+    for (int i = 0; i < 256; ++i)
+    {
+        colors[i] = qRgb(i,i,i);
+    }
+
+    dstImg.setColorTable(colors);
+
+    const _TpSrc *linePtr = NULL;  
+    ito::uint8 *destPtr = NULL;  
+
+    if (std::numeric_limits<_TpSrc>::is_exact)
+    {
+        _TpSrc bitShift = 1 << qBound<ito::uint8>(0, ((sizeof(_TpSrc) - 1 /*sizeof(ito::uint8)*/) * 8), 32); //qBound in order to avoid compiler warning for negative or too big shift values
+        unsigned char signCorrection = std::numeric_limits<_TpSrc>::is_signed ? 128 : 0;
+        for (int row = 0; row < srcMat->rows; row++)
+        {
+            destPtr = (ito::uint8*)dstImg.scanLine(row);
+            linePtr = srcMat->ptr<const _TpSrc>(row);
+            for (int col = 0; col < srcMat->cols; col++)
+            {   
+                destPtr[col] = (ito::uint8)(linePtr[col] / bitShift) +  signCorrection;
+            }
+        }
+    }
+    else
+    {
+        _TpSrc scaling = 255.0;
+        for (int row = 0; row < srcMat->rows; row++)
+        {
+            destPtr = (ito::uint8*)dstImg.scanLine(row);
+            linePtr = srcMat->ptr<const _TpSrc>(row);
+            for (int col = 0; col < srcMat->cols; col++)
+            {
+                destPtr[col] = cv::saturate_cast<ito::uint8>(linePtr[col] * scaling);        
+            }
+        }
+    }
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//transformScaled
+/*!
+    
+*/
+template<typename _TpSrc> ito::RetVal transformScaledToUInt16(cv::Mat &dstMat, const cv::Mat *scrMat)  
+{
+    dstMat = cv::Mat(scrMat->rows, scrMat->cols, CV_16U);
+    const _TpSrc *linePtr = NULL;  
+    ito::uint16 *destPtr = NULL;  
+
+    if (std::numeric_limits<_TpSrc>::is_exact)
+    {
+        if (sizeof(_TpSrc) >= sizeof(ito::uint16))
+        {
+            _TpSrc bitShift = 1 << qBound<ito::uint8>(0, ((sizeof(_TpSrc) - 2 /*sizeof(ito::uint16)*/) * 8), 32); //qBound in order to avoid compiler warning for negative or too big shift values
+            unsigned char signCorrection = std::numeric_limits<_TpSrc>::is_signed ? 128 : 0;
+            for (int row = 0; row < scrMat->rows; row++)
+            {
+                destPtr = (ito::uint16*)dstMat.ptr<ito::uint16>(row);
+                linePtr = scrMat->ptr<const _TpSrc>(row);
+                for (int col = 0; col < scrMat->cols; col++)
+                {   
+                    destPtr[col] = (ito::uint16)(linePtr[col] / bitShift) +  signCorrection;
+                }
+            }
+        }
+        else //convert from 8bit to 16bit
+        {
+            unsigned char signCorrection = std::numeric_limits<_TpSrc>::is_signed ? 128 : 0;
+            for (int row = 0; row < scrMat->rows; row++)
+            {
+                destPtr = (ito::uint16*)dstMat.ptr<ito::uint16>(row);
+                linePtr = scrMat->ptr<const _TpSrc>(row);
+                for (int col = 0; col < scrMat->cols; col++)
+                {   
+                    destPtr[col] = (ito::uint16)(linePtr[col]) + signCorrection;
+                }
+            }
+        }
+    }
+    else
+    {
+        _TpSrc scaling = 65535.0;
+        for (int row = 0; row < scrMat->rows; row++)
+        {
+            destPtr = dstMat.ptr<ito::uint16>(row);
+            linePtr = scrMat->ptr<const _TpSrc>(row);
+            for (int col = 0; col < scrMat->cols; col++)
+            {
+                destPtr[col] = cv::saturate_cast<ito::uint16>(linePtr[col] * scaling);        
             }
         }
     }
@@ -730,9 +861,10 @@ template<typename _TpSrc, typename _TpDest> ito::RetVal transformScaled(cv::Mat 
 /*!
     This Function transforms the pixel value of Format_ARGB32 type Image into respective DataObject.
 */
-template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat *image, const cv::Mat *scrMat, const QVector<QRgb> &colorMap)  
+template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat &dstMat, const cv::Mat *srcMat, const QVector<QRgb> &colorMap)  
 {
-    
+    dstMat = cv::Mat(srcMat->rows, srcMat->cols, CV_8UC3);
+
     const _TpSrc *linePtr = NULL;
     cv::Vec3b* destPtr = NULL;
 
@@ -740,38 +872,83 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat *image,
 
     if (std::numeric_limits<_TpSrc>::is_exact)
     {
-        //int bitShift = (sizeof(_TpSrc) - 1) * 8;
-        _TpSrc bitShift = 1 << ((sizeof(_TpSrc) - 1) * 8);
+        _TpSrc bitShift = 1 << qBound<ito::uint8>(0, ((sizeof(_TpSrc) - 1) * 8), 32); //qBound in order to avoid compiler warning for negative or too big shift values
         unsigned char signCorrection = std::numeric_limits<_TpSrc>::is_signed ? 128 : 0;
         unsigned char index = 0;
 
-        for (int row = 0; row < scrMat->rows; row++)
+        for (int row = 0; row < srcMat->rows; row++)
         {
-            linePtr = scrMat->ptr<const _TpSrc>(row);
-            destPtr = image->ptr<cv::Vec3b>(row);
-            for (int col = 0; col < scrMat->cols; col++)
+            linePtr = srcMat->ptr<const _TpSrc>(row);
+            destPtr = dstMat.ptr<cv::Vec3b>(row);
+            for (int col = 0; col < srcMat->cols; col++)
             {
-                //index = (ito::uint8)(linePtr[col] >> bitShift) +  signCorrection;
                 index = (ito::uint8)(linePtr[col] / bitShift) +  signCorrection;
-                destPtr[col][2] = (colorMap[index] >> 16) & 0xFF;
-                destPtr[col][1] = (colorMap[index] >> 8) & 0xFF;
-                destPtr[col][0] = colorMap[index] & 0xFF;
+                destPtr[col][2] = qRed(colorMap[index]);
+                destPtr[col][1] = qGreen(colorMap[index]);
+                destPtr[col][0] = qBlue(colorMap[index]);
             }
         }
     }
     else
     {
         _TpSrc scaling = 255.0;
-        for (int row = 0; row < scrMat->rows; row++)
+        for (int row = 0; row < srcMat->rows; row++)
         {
-            linePtr = scrMat->ptr<const _TpSrc>(row);
-            destPtr = image->ptr<cv::Vec3b>(row);
-            for (int col = 0; col < scrMat->cols; col++)
+            linePtr = srcMat->ptr<const _TpSrc>(row);
+            destPtr = dstMat.ptr<cv::Vec3b>(row);
+            for (int col = 0; col < srcMat->cols; col++)
             {
                 index = cv::saturate_cast<ito::uint8>(linePtr[col] * scaling);    
-                destPtr[col][2] = (colorMap[index] >> 16) & 0xFF;
-                destPtr[col][1] = (colorMap[index] >> 8) & 0xFF;
-                destPtr[col][0] = colorMap[index] & 0xFF;
+                destPtr[col][2] = qRed(colorMap[index]);
+                destPtr[col][1] = qGreen(colorMap[index]);
+                destPtr[col][0] = qBlue(colorMap[index]);
+            }
+        }
+    }
+    
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//transformScaledIndex8ToRGB
+template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(QImage &dstImg, const cv::Mat *srcMat, const QVector<QRgb> &colorMap)  
+{
+    dstImg = QImage(srcMat->rows, srcMat->cols, QImage::Format_RGB32);
+
+    const _TpSrc *linePtr = NULL;
+    QRgb *destPtr = NULL;
+    unsigned char index;
+
+    if (std::numeric_limits<_TpSrc>::is_exact)
+    {
+        _TpSrc bitShift = 1 << qBound<ito::uint8>(0, ((sizeof(_TpSrc) - 1) * 8), 32); //qBound in order to avoid compiler warning for negative or too big shift values
+        unsigned char signCorrection = std::numeric_limits<_TpSrc>::is_signed ? 128 : 0;
+        unsigned char index = 0;
+
+        for (int row = 0; row < srcMat->rows; row++)
+        {
+            destPtr = (QRgb*)dstImg.scanLine(row);
+            linePtr = srcMat->ptr<const _TpSrc>(row);
+            for (int col = 0; col < srcMat->cols; col++)
+            {
+                index = (ito::uint8)(linePtr[col] / bitShift) +  signCorrection;
+                destPtr[col] = colorMap[index];
+                destPtr[col] |= 0xff000000; //set alpha to 0xff
+            }
+        }
+    }
+    else
+    {
+        _TpSrc scaling = 255.0;
+        for (int row = 0; row < srcMat->rows; row++)
+        {
+            destPtr = (QRgb*)dstImg.scanLine(row);
+            linePtr = srcMat->ptr<const _TpSrc>(row);
+            for (int col = 0; col < srcMat->cols; col++)
+            {
+                index = cv::saturate_cast<ito::uint8>(linePtr[col] * scaling);    
+                destPtr[col] = colorMap[index];
+                destPtr[col] |= 0xff000000; //set alpha to 0xff
             }
         }
     }
@@ -784,31 +961,30 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat *image,
 /*!
     This Function transforms the pixel value of Format_ARGB32 type Image into respective DataObject.
 */
-template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat *image, const cv::Mat *scrMat, const QVector<QRgb> &colorMap)  
+template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat &dstMat, const cv::Mat *srcMat, const QVector<QRgb> &colorMap)  
 {
-    
+    dstMat = cv::Mat(srcMat->rows, srcMat->cols, CV_8UC4);
+
     const _TpSrc *linePtr = NULL;
     cv::Vec4b* destPtr = NULL;
     unsigned char index;
 
     if (std::numeric_limits<_TpSrc>::is_exact)
     {
-        //int bitShift = (sizeof(_TpSrc) - 1) * 8;
-        _TpSrc bitShift = 1 << ((sizeof(_TpSrc) - 1) * 8);
+        _TpSrc bitShift = 1 << qBound<ito::uint8>(0, ((sizeof(_TpSrc) - 1) * 8), 32);  //qBound in order to avoid compiler warning for negative or too big shift values
         unsigned char signCorrection = std::numeric_limits<_TpSrc>::is_signed ? 128 : 0;
         unsigned char index = 0;
 
-        for (int row = 0; row < scrMat->rows; row++)
+        for (int row = 0; row < srcMat->rows; row++)
         {
-            destPtr = image->ptr<cv::Vec4b>(row);
-            linePtr = scrMat->ptr<const _TpSrc>(row);
-            for (int col = 0; col < scrMat->cols; col++)
+            destPtr = dstMat.ptr<cv::Vec4b>(row);
+            linePtr = srcMat->ptr<const _TpSrc>(row);
+            for (int col = 0; col < srcMat->cols; col++)
             {
-                //index = (ito::uint8)(linePtr[col] >> bitShift) +  signCorrection;
                 index = (ito::uint8)(linePtr[col] / bitShift) +  signCorrection;
-                destPtr[col][2] = (colorMap[index] >> 16) & 0xFF;
-                destPtr[col][1] = (colorMap[index] >> 8) & 0xFF;
-                destPtr[col][0] = colorMap[index] & 0xFF;
+                destPtr[col][2] = qRed(colorMap[index]);
+                destPtr[col][1] = qGreen(colorMap[index]);
+                destPtr[col][0] = qBlue(colorMap[index]);
                 destPtr[col][3] = UCHAR_MAX;
             }
         }
@@ -816,16 +992,16 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat *image
     else
     {
         _TpSrc scaling = 255.0;
-        for (int row = 0; row < scrMat->rows; row++)
+        for (int row = 0; row < srcMat->rows; row++)
         {
-            destPtr = image->ptr<cv::Vec4b>(row);
-            linePtr = scrMat->ptr<const _TpSrc>(row);
-            for (int col = 0; col < scrMat->cols; col++)
+            destPtr = dstMat.ptr<cv::Vec4b>(row);
+            linePtr = srcMat->ptr<const _TpSrc>(row);
+            for (int col = 0; col < srcMat->cols; col++)
             {
                 index = cv::saturate_cast<ito::uint8>(linePtr[col] * scaling);    
-                destPtr[col][2] = (colorMap[index] >> 16) & 0xFF;
-                destPtr[col][1] = (colorMap[index] >> 8) & 0xFF;
-                destPtr[col][0] = colorMap[index] & 0xFF;
+                destPtr[col][2] = qRed(colorMap[index]);
+                destPtr[col][1] = qGreen(colorMap[index]);
+                destPtr[col][0] = qBlue(colorMap[index]);
                 
 
                 if (ito::dObjHelper::isFinite<_TpSrc>(linePtr[col]))
@@ -835,6 +1011,60 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat *image
                 else
                 {
                     destPtr[col][3] = 0;
+                }
+            }
+        }
+    }
+    
+    return ito::retOk;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------
+template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(QImage &dstImg, const cv::Mat *srcMat, const QVector<QRgb> &colorMap)  
+{
+    dstImg = QImage(srcMat->rows, srcMat->cols, QImage::Format_ARGB32);
+
+    const _TpSrc *linePtr = NULL;
+    QRgb *destPtr = NULL;
+    unsigned char index;
+
+    if (std::numeric_limits<_TpSrc>::is_exact)
+    {
+        _TpSrc bitShift = 1 << qBound<ito::uint8>(0, ((sizeof(_TpSrc) - 1) * 8), 32);  //qBound in order to avoid compiler warning for negative or too big shift values
+        unsigned char signCorrection = std::numeric_limits<_TpSrc>::is_signed ? 128 : 0;
+        unsigned char index = 0;
+
+        for (int row = 0; row < srcMat->rows; row++)
+        {
+            destPtr = (QRgb*)dstImg.scanLine(row);
+            linePtr = srcMat->ptr<const _TpSrc>(row);
+            for (int col = 0; col < srcMat->cols; col++)
+            {
+                index = (ito::uint8)(linePtr[col] / bitShift) +  signCorrection;
+                destPtr[col] = colorMap[index];
+                destPtr[col] |= 0xff000000; //set alpha to 0xff
+            }
+        }
+    }
+    else
+    {
+        _TpSrc scaling = 255.0;
+        for (int row = 0; row < srcMat->rows; row++)
+        {
+            destPtr = (QRgb*)dstImg.scanLine(row);
+            linePtr = srcMat->ptr<const _TpSrc>(row);
+            for (int col = 0; col < srcMat->cols; col++)
+            {
+                index = cv::saturate_cast<ito::uint8>(linePtr[col] * scaling);    
+                destPtr[col] = colorMap[index];
+
+                if (ito::dObjHelper::isFinite<_TpSrc>(linePtr[col]))
+                {
+                    destPtr[col] |= 0xff000000; //set alpha to 0xff
+                }
+                else
+                {
+                    destPtr[col] &= 0x00ffffff; //set alpha to 0x00
                 }
             }
         }
