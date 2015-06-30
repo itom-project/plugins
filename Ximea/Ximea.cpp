@@ -2191,10 +2191,10 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         XI_RETURN ret;
         if(m_isgrabbing & Ximea::grabberGrabbed)
         {
-            //retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal. This acquire was ignored.").toLatin1().data());
+            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal. This acquire was ignored.").toLatin1().data());
         }
 
-        if (triggermode == XI_TRG_SOFTWARE)
+		else
         {
 			int val = 1;
             if (ret = pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, &val, sizeof(int), xiTypeInteger)) //, sizeof(int), xiTypeInteger)) //TODO: isn't it necessary to set the value to XI_TRG_SOFTWARE here?
