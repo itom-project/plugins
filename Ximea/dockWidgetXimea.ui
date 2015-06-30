@@ -163,6 +163,9 @@
         <property name="suffix">
          <string> ms</string>
         </property>
+        <property name="tracking">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="0">
@@ -179,6 +182,9 @@
         </property>
         <property name="suffix">
          <string> %</string>
+        </property>
+        <property name="tracking">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
