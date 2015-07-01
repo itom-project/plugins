@@ -492,8 +492,22 @@ template<typename _Tp> ito::RetVal QImage_Mono_to_dataObject(const QImage *image
     const uchar *orgPtr;    
     int byteIndex;
     int bitIndexInByte;
+
+    QVector<QRgb> colorTable = image->colorTable();
+    QVector<ito::uint8> grayTable;
+    grayTable.reserve(colorTable.size());
+    foreach(const QRgb &c, colorTable)
+    {
+        grayTable.append(qGray(c));
+    }
+
+    if (grayTable.size() < 2)
+    {
+        grayTable.clear();
+        grayTable << 0 << 255;
+    }
     
-    for (int row=0; row<image->height(); row++)
+    for (int row = 0; row < image->height(); row++)
     {
         linePtr2 =(_Tp*)MAT1->ptr(row);
         orgPtr = image->scanLine(row);
@@ -511,7 +525,7 @@ template<typename _Tp> ito::RetVal QImage_Mono_to_dataObject(const QImage *image
                 bitIndexInByte = col % 8;
                 byteIndex = (col - bitIndexInByte) / 8;
             }
-            linePtr2[col] = (orgPtr[byteIndex] & (1 << bitIndexInByte)) ? std::numeric_limits<_Tp>::max() : 0;  /*! Transferring the value of the pixel to respective element of DataObject matrix. */
+            linePtr2[col] = (grayTable[(orgPtr[byteIndex] & (1 << bitIndexInByte)) ? 1 : 0] > 0) ? std::numeric_limits<_Tp>::max() : 0;  /*! Transferring the value of the pixel to respective element of DataObject matrix. */
         }    
     }    
     return ito::retOk;
@@ -525,13 +539,27 @@ template<> ito::RetVal QImage_Mono_to_dataObject<ito::Rgba32>(const QImage *imag
     const uchar *orgPtr;    
     int byteIndex;
     int bitIndexInByte;
+
+    QVector<QRgb> colorTable = image->colorTable();
+    QVector<ito::uint8> grayTable;
+    grayTable.reserve(colorTable.size());
+    foreach(const QRgb &c, colorTable)
+    {
+        grayTable.append(qGray(c));
+    }
+
+    if (grayTable.size() < 2)
+    {
+        grayTable.clear();
+        grayTable << 0 << 255;
+    }
     
-    for (int row=0; row<image->height(); row++)
+    for (int row = 0; row < image->height(); row++)
     {
         linePtr2 =(ito::Rgba32*)MAT1->ptr(row);
         orgPtr = image->scanLine(row);
 
-        for (int col=0; col<image->width(); col++)
+        for (int col = 0; col < image->width(); col++)
         {
             if (!lsb)
             {
@@ -544,7 +572,7 @@ template<> ito::RetVal QImage_Mono_to_dataObject<ito::Rgba32>(const QImage *imag
                 bitIndexInByte = col % 8;
                 byteIndex = (col - bitIndexInByte) / 8;
             }
-            linePtr2[col] = (orgPtr[byteIndex] & (1 << bitIndexInByte)) ? ito::Rgba32(255) : ito::Rgba32(0);  /*! Transferring the value of the pixel to respective element of DataObject matrix. */
+            linePtr2[col] = (grayTable[((orgPtr[byteIndex] & (1 << bitIndexInByte)) > 0) ? 1 : 0] > 0) ? ito::Rgba32(255) : ito::Rgba32(0);  /*! Transferring the value of the pixel to respective element of DataObject matrix. */
         }    
     }    
     return ito::retOk;
@@ -757,7 +785,7 @@ template<typename _TpSrc> ito::RetVal transformScaledToUInt8(cv::Mat &dstMat, co
 
 template<typename _TpSrc> ito::RetVal transformScaledToUInt8(QImage &dstImg, const cv::Mat *srcMat)  
 {
-    dstImg = QImage(srcMat->rows, srcMat->cols, QImage::Format_Indexed8);
+    dstImg = QImage(srcMat->cols, srcMat->rows, QImage::Format_Indexed8);
     QVector<QRgb> colors(256);
     for (int i = 0; i < 256; ++i)
     {
@@ -913,7 +941,7 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(cv::Mat &dstMat
 //transformScaledIndex8ToRGB
 template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGB(QImage &dstImg, const cv::Mat *srcMat, const QVector<QRgb> &colorMap)  
 {
-    dstImg = QImage(srcMat->rows, srcMat->cols, QImage::Format_RGB32);
+    dstImg = QImage(srcMat->cols, srcMat->rows, QImage::Format_RGB32);
 
     const _TpSrc *linePtr = NULL;
     QRgb *destPtr = NULL;
@@ -1022,7 +1050,7 @@ template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(cv::Mat &dstMa
 //-----------------------------------------------------------------------------------------------------------------------------
 template<typename _TpSrc> ito::RetVal transformScaledIndex8ToRGBA(QImage &dstImg, const cv::Mat *srcMat, const QVector<QRgb> &colorMap)  
 {
-    dstImg = QImage(srcMat->rows, srcMat->cols, QImage::Format_ARGB32);
+    dstImg = QImage(srcMat->cols, srcMat->rows, QImage::Format_ARGB32);
 
     const _TpSrc *linePtr = NULL;
     QRgb *destPtr = NULL;

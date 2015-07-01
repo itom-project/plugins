@@ -2279,7 +2279,7 @@ ito::RetVal DataObjectIO::savePNG(QVector<ito::ParamBase> *paramsMand, QVector<i
 //! saveXPMParams
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ const char* DataObjectIO::saveXPMDoc = \
-"Saves a real, 2D dataObject as xpm-file (X PixMap) or xbm (X BitMap). \n\
+"Saves a real, 2D dataObject as xpm-file (X PixMap) or xbm (X BitMap, black-white only). \n\
 \n\
 The following conventions hold for saving the image: \n\
 \n\
@@ -2305,7 +2305,7 @@ The following base color palettes exist (further, user-defined palettes can be u
 * green: [0,255], from black to green, 8bit \n\
 * blue: [0,255], from black to blue, 8bit \n\
 \n\
-This filters uses Qt to save the image.";
+This filters uses Qt to save the image. In the format xbm, a threshold at 128 is applied to separate black and white.";
 /** savePNGParams method, specifies the parameter list for saveDataObjectOpenCV as .png images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
