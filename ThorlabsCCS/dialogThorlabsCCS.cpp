@@ -12,6 +12,7 @@
 #include <qdialogbuttonbox.h>
 #include <qvector.h>
 #include <qsharedpointer.h>
+#include "DataObject/dataobj.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogThorlabsCCS::DialogThorlabsCCS(ito::AddInBase *grabber) :
@@ -43,7 +44,10 @@ void DialogThorlabsCCS::parametersChanged(QMap<QString, ito::Param> params)
         enableDialog(true);
     }
 
-    //set the status of all widgets depending on the values of params
+    ui.sliderIntegrationTime->setMinimum(params["integration_time"].getMin()*1000);
+    ui.sliderIntegrationTime->setMaximum(params["integration_time"].getMax()*1000);
+    ui.sliderIntegrationTime->setValue(params["integration_time"].getVal<double>()*1000);
+    ui.sliderIntegrationTime->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
 
 }
 
@@ -54,11 +58,14 @@ ito::RetVal DialogThorlabsCCS::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
     bool success = false;
 
-    //foreach widget, do:
-    //   check if the current value of the widget is different than the corresponding
-    //   parameter in m_currentParameters.
-    //   If so, write something like:
-    //   values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("name",ito::ParamBase::Int, newValue)))
+    if(ui.sliderIntegrationTime->isEnabled())
+    {
+        double dval = ui.sliderIntegrationTime->value()/1000.0;
+        if(qAbs(m_currentParameters["integration_time"].getVal<double>() - dval) >= std::numeric_limits<double>::epsilon())
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, dval)));
+        }
+    }
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
 
@@ -90,6 +97,5 @@ void DialogThorlabsCCS::on_buttonBox_clicked(QAbstractButton* btn)
 void DialogThorlabsCCS::enableDialog(bool enabled)
 {
     //e.g.
-    ui.group1->setEnabled(enabled);
-    ui.group2->setEnabled(enabled);
+    ui.groupBoxIntegration->setEnabled(enabled);
 }

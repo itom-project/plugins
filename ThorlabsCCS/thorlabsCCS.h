@@ -72,7 +72,7 @@ class ThorlabsCCS : public ito::AddInGrabber
     public:
         friend class ThorlabsCCSInterface;
         const ito::RetVal showConfDialog(void);
-        int hasConfDialog(void) { return 0; }; //!< indicates that this plugin has got a configuration dialog
+        int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
     private:
         bool m_isgrabbing; /*!< Check if acquire was executed */

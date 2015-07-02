@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>275</width>
-    <height>215</height>
+    <width>395</width>
+    <height>112</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,19 +17,38 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QGroupBox" name="group1">
-       <property name="title">
-        <string>Group 1</string>
+      <widget class="QGroupBox" name="groupBoxIntegration">
+       <property name="enabled">
+        <bool>true</bool>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout"/>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="group2">
        <property name="title">
-        <string>Group 2</string>
+        <string>Data Acquisition</string>
        </property>
-       <layout class="QGridLayout" name="gridLayout"/>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="1">
+         <widget class="SliderWidget" name="sliderIntegrationTime">
+          <property name="decimals">
+           <number>3</number>
+          </property>
+          <property name="minimum">
+           <double>0.005000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>65.000000000000000</double>
+          </property>
+          <property name="suffix">
+           <string> ms</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_integration_time">
+          <property name="text">
+           <string>integration time: </string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
@@ -62,6 +81,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SliderWidget</class>
+   <extends>QWidget</extends>
+   <header>sliderWidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
