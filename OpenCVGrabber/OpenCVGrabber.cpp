@@ -684,18 +684,33 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
                     retValue += ito::RetVal(ito::retError, 0, "error setting property CV_CAP_PROP_GAMMA");
                 }
             }
+            else if (key == "roi")
+            {
+                if (!hasIndex)
+                {
+                    retValue += it->copyValueFrom( &(*val) );
+                }
+                else
+                {
+                    if (index < 0 || index >= 3)
+                    {
+                        retValue += ito::RetVal(ito::retError, 0, "index of roi parameter must be in range [0,3]");
+                    }
+                    else
+                    {
+                        int *roi = it->getVal<int*>();
+                        roi[index] = val->getVal<int>();
+                    }
+                }
+                const int *roi = it->getVal<int*>();
+                m_params["sizex"].setVal<int>(roi[2]);
+                m_params["sizey"].setVal<int>(roi[3]);
+            }
             else
             {
                 //here you can add specific sub-checks for every keyword and finally put the value into (*it).
                 retValue += it->copyValueFrom( &(*val) );
             }
-        }
-
-        if (key == "roi")
-        {
-            const int* roi = m_params["roi"].getVal<int*>();
-            m_params["sizex"].setVal<int>(roi[2]);
-            m_params["sizey"].setVal<int>(roi[3]);
         }
     }
 
