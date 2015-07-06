@@ -1296,6 +1296,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             {
                 FlyCapture2::Property prop;
                 prop.type = FlyCapture2::SHUTTER;
+				m_myCam.GetProperty(&prop);
                 prop.absControl = true;
                 prop.autoManualMode = false;
                 prop.onOff = true;
