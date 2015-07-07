@@ -266,7 +266,7 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("packetsize", ito::ParamBase::Int, 0, 48048, 41184, tr("Packet size of current image settings").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("videoMode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, FlyCapture2::NUM_VIDEOMODES - 1, FlyCapture2::VIDEOMODE_FORMAT7, tr("Current video mode, default is Mode7").toLatin1().data());
+    paramVal = ito::Param("video_mode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, FlyCapture2::NUM_VIDEOMODES - 1, FlyCapture2::VIDEOMODE_FORMAT7, tr("Current video mode, default is Mode7").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //paramVal = ito::Param("supported_frame_time", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Possible valued for the frame_time in frames per second").toLatin1().data());
@@ -1120,7 +1120,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
                 //set bpp
                 int desiredBpp;
-                m_params["videoMode"].setVal<int>(FlyCapture2::VIDEOMODE_FORMAT7);
+                m_params["video_mode"].setVal<int>(FlyCapture2::VIDEOMODE_FORMAT7);
 
                 if (!retVal.containsError() && m_currentFormat7Settings.mode != FlyCapture2::MODE_0)
                 {
@@ -1204,7 +1204,7 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             }
             else
             {
-                m_params["videoMode"].setVal<int>(videoMode);
+                m_params["video_mode"].setVal<int>(videoMode);
 
                 m_params["sizex"].setVal<int>(width);
                 static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax(width);
