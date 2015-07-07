@@ -44,6 +44,8 @@ class DialogThorlabsCCS : public ito::AbstractAddInConfigDialog
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);
+        void on_rangeX01_valuesChanged(int minValue, int maxValue);
+        void on_btnFullROI_clicked();
 };
 
 #endif

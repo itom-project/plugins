@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "OpenCV-Grabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -27,6 +27,8 @@
 #include "pluginVersion.h"
 #include "opencv2/core/types_c.h"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/highgui/highgui_c.h"
+#include "opencv2/core/core.hpp"
 
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
@@ -257,7 +259,14 @@ Usually all ordinary USB cameras are supported. If you compiled OpenCV with the 
 problem in the Windows version for USB cameras exists. Therefore the plugin requests multiple images per frame in order to finally get the newest one. \
 Therefore this implementation is not the fastest connection to any USB cameras. \n\
 \n\
-Some supported cameras are only available if OpenCV is compiled with their support, e.g. CMU1394 (not included per default in pre-compiled binaries of OpenCV.";
+Some supported cameras are only available if OpenCV is compiled with their support, e.g. CMU1394 (not included per default in pre-compiled binaries of OpenCV. \n\
+\n\
+The parameters of this plugin are double values that are directly redirected to the OpenCV drivers and might have different units / interpretations \
+for various device types. Especially for DirectShow cameras, also use the native settings dialog (accessible via the configuration dialog) to further parameterize \
+the plugin, especially set the manual / auto flag of parameters (not directly available via source code of OpenCV). \n\
+\n\
+For some devices, an acquisition might deliver an older image. In order to get an actual image, use the parameter 'dump_grabs' to set a number of images \
+that is obtained before the real image is delivered to the getVal / copyVal command (default: 0, DirectShow: recommended: 5).";
     m_detaildescription = QObject::tr(docstring);
 
     m_author = "M. Gronle, ITO, University Stuttgart";
@@ -305,25 +314,13 @@ OpenCVGrabberInterface::~OpenCVGrabberInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal OpenCVGrabber::showConfDialog(void)
 {
-    ito::RetVal retValue(ito::retOk);
-
-    DialogOpenCVGrabber *confDialog = new DialogOpenCVGrabber(this, (m_imgChannels == 3), m_imgCols, m_imgRows);
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    QMetaObject::invokeMethod(this, "sendParameterRequest");
-
-    if (confDialog->exec())
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-        confDialog->sendVals();
-    }
-    else
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    }
-    delete confDialog;
-
-    return retValue;
+#if (CV_VERSION_MAJOR > 2 || (CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR >= 4))
+    return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), cvGetCaptureDomain(m_pCam->getDevice()) == CV_CAP_DSHOW));
+#else
+    return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), false));
+#endif
+    
+    
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 OpenCVGrabber::OpenCVGrabber() : AddInGrabber(), m_isgrabbing(false), m_pCam(NULL), m_CCD_ID(0), m_camStatusChecked(false)
@@ -331,14 +328,12 @@ OpenCVGrabber::OpenCVGrabber() : AddInGrabber(), m_isgrabbing(false), m_pCam(NUL
     ito::Param paramVal("name", ito::ParamBase::String, "OpenCVGrabber", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
+    int roi[] = {0, 0, 4048, 4048};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray | ito::ParamBase::In, 4, roi, tr("ROI (x,y,width,height)").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 4048), ito::RangeMeta(0, 4048));
+    paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1023, 1023, tr("last pixel index in ROI (y-direction)").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("height of ROI (y-direction)").toLatin1().data());
@@ -346,27 +341,25 @@ OpenCVGrabber::OpenCVGrabber() : AddInGrabber(), m_isgrabbing(false), m_pCam(NUL
 
     paramVal = ito::Param("bpp", ito::ParamBase::Int | ito::ParamBase::In, 8, 24, 8, tr("bpp").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, 0.000010, 10.0, 0.01, tr("Integrationtime of CCD [s], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("exposure", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("Exposure time, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("brightness", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("brightness [0..1], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("brightness", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("Brightness, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("contrast", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("contrast [0..1], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("contrast", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("Contrast, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("saturation", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 1.0, tr("saturation [0..1], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("saturation", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("Saturation, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("hue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("hue [0..1], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("hue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("Hue, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("Gain [0..1], does not exist for all cameras").toLatin1().data());
+    paramVal = ito::Param("gain", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("Gain, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-   
-    /*paramVal = ito::Param("channel", ito::ParamBase::Int, 0, 3, 0, tr("selected color channel (all available (0, default), R (1), G (2), B (3)").toLatin1().data());
+    paramVal = ito::Param("sharpness", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("Sharpness, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gamma", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("Gamma, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("colorConversion", ito::ParamBase::Int, 0, 1, 1, tr("no conversion (0), RGB->Grayscale (1, default). If the camera image only has one channel or channel>0, this parameter is ignored").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);*/
-
-    paramVal = ito::Param("colorMode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toLatin1().data());
+    paramVal = ito::Param("color_mode", ito::ParamBase::String, "auto", tr("color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)").toLatin1().data());
     ito::StringMeta meta(ito::StringMeta::String);
     meta.addItem("auto");
     meta.addItem("color");
@@ -377,6 +370,11 @@ OpenCVGrabber::OpenCVGrabber() : AddInGrabber(), m_isgrabbing(false), m_pCam(NUL
     paramVal.setMeta(&meta, false);
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("native_parameter", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, NULL, tr("use 'native_parameter:idx' to request the value of a native OpenCV parameter. idx is the enumeration value for enum items starting with CV_CAP_PROP...").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
+    paramVal = ito::Param("dump_grabs", ito::ParamBase::Int, 0, 10, 0, tr("number of useless images acquired before each real acquisition. This might be necessary since some devices have an internal buffer and deliver older images than the time of acquisition").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -394,15 +392,35 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
     ito::RetVal retValue;
 
     //acquire test image in order to get knownledge about camera's abilities
-    //camRetVal = m_pCam->grab();
-    camRetVal = m_pCam->retrieve(m_pDataMatBuffer);
-    if(!camRetVal)
+    if (m_pCam->grab() == false)
     {
-        Sleep(100);
-        camRetVal = m_pCam->retrieve(m_pDataMatBuffer);
+        retValue += ito::RetVal(ito::retError, 0, "could not acquire one test image");
     }
     
-    if(camRetVal)
+    if(!retValue.containsError())
+    {
+        if (!m_pCam->retrieve(m_pDataMatBuffer))
+        {
+            if (cvGetCaptureDomain(m_pCam->getDevice()) == CV_CAP_DSHOW)
+            {
+                if (!m_pCam->retrieve(m_pDataMatBuffer))
+                {
+                    Sleep(100);
+                    camRetVal = m_pCam->retrieve(m_pDataMatBuffer);
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "could not retrieve one test image");
+                }
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, "could not retrieve one test image");
+            }
+        }
+    }
+    
+    if(!retValue.containsError())
     {
         m_imgChannels = m_pDataMatBuffer.channels();
         m_imgCols = m_pDataMatBuffer.cols;
@@ -414,14 +432,14 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
         m_params["sizex"].setVal<int>(m_imgCols);
         m_params["sizey"].setVal<int>(m_imgRows);
 
-        static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax( m_imgCols-1 );
-        static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax( m_imgRows-1 );
-        m_params["x0"].setVal<int>(0);
-        m_params["y0"].setVal<int>(0);
+        ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, m_imgCols, 1, 1, m_imgCols, 1), ito::RangeMeta(0, m_imgRows, 1, 1, m_imgRows, 1));
+        m_params["roi"].setMeta(rm, true);
+        int* roi = m_params["roi"].getVal<int*>();
+        roi[0] = 0;
+        roi[1] = 0;
+        roi[2] = m_imgCols;
+        roi[3] = m_imgRows;
 
-
-        //m_params["bpp"].setMin(8);
-        //m_params["bpp"].setMax(elemSize1*8);
         m_params["bpp"].setMeta( new ito::IntMeta(8, m_imgBpp), true);
         m_params["bpp"].setVal<int>(m_imgBpp);
 
@@ -468,7 +486,25 @@ ito::RetVal OpenCVGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSe
 
     if(!retValue.containsError())
     {
-        *val = it.value();
+        if (key == "native_parameter")
+        {
+            int idx;
+            bool ok;
+            idx = suffix.toInt(&ok);
+            if (ok)
+            {
+                it->setVal<double>(m_pCam->get(idx));
+                *val = it.value();
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, "native_parameter requires a suffix that is an integer value");
+            }
+        }
+        else
+        {
+            *val = it.value();
+        }
     }
 
     if (waitCond)
@@ -511,12 +547,12 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
     {
         //here the parameter val is checked if it can be casted to *it and if the
         //possible meta information requirements of *it are met.
-        retValue += apiValidateParam(*it, *val, false, true);
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
     if (!retValue.containsError())
     {
-        if (key == "colorMode")
+        if (key == "color_mode")
         {
             const char *mode = val->getVal<char*>();
 
@@ -560,17 +596,121 @@ ito::RetVal OpenCVGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
         if (!retValue.containsError())
         {
-            //here you can add specific sub-checks for every keyword and finally put the value into (*it).
-            retValue += it->copyValueFrom( &(*val) );
-        }
-
-        if (key == "x0" || key == "x1")
-        {
-            m_params["sizex"].setVal<int>(1+ m_params["x1"].getVal<int>() - m_params["x0"].getVal<int>());
-        }
-        else if (key == "y0" || key == "y1")
-        {
-            m_params["sizey"].setVal<int>(1+ m_params["y1"].getVal<int>() - m_params["y0"].getVal<int>());
+            if (key == "exposure")
+            {
+                if (m_pCam->set(CV_CAP_PROP_EXPOSURE, val->getVal<double>()))
+                {
+                    it->setVal<double>(m_pCam->get(CV_CAP_PROP_EXPOSURE));
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "error setting property CV_CAP_PROP_EXPOSURE");
+                }
+            }
+            else if (key == "brightness")
+            {
+                if (m_pCam->set(CV_CAP_PROP_BRIGHTNESS, val->getVal<double>()))
+                {
+                    it->setVal<double>(m_pCam->get(CV_CAP_PROP_BRIGHTNESS));
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "error setting property CV_CAP_PROP_BRIGHTNESS");
+                }
+            }
+            else if (key == "contrast")
+            {
+                if (m_pCam->set(CV_CAP_PROP_CONTRAST, val->getVal<double>()))
+                {
+                    it->setVal<double>(m_pCam->get(CV_CAP_PROP_CONTRAST));
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "error setting property CV_CAP_PROP_CONTRAST");
+                }
+            }
+            else if (key == "saturation")
+            {
+                if (m_pCam->set(CV_CAP_PROP_SATURATION, val->getVal<double>()))
+                {
+                    it->setVal<double>(m_pCam->get(CV_CAP_PROP_SATURATION));
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "error setting property CV_CAP_PROP_SATURATION");
+                }
+            }
+            else if (key == "hue")
+            {
+                if (m_pCam->set(CV_CAP_PROP_HUE, val->getVal<double>()))
+                {
+                    it->setVal<double>(m_pCam->get(CV_CAP_PROP_HUE));
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "error setting property CV_CAP_PROP_HUE");
+                }
+            }
+            else if (key == "gain")
+            {
+                if (m_pCam->set(CV_CAP_PROP_GAIN, val->getVal<double>()))
+                {
+                    it->setVal<double>(m_pCam->get(CV_CAP_PROP_GAIN));
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "error setting property CV_CAP_PROP_GAIN");
+                }
+            }
+            else if (key == "sharpness")
+            {
+                if (m_pCam->set(CV_CAP_PROP_SHARPNESS, val->getVal<double>()))
+                {
+                    it->setVal<double>(m_pCam->get(CV_CAP_PROP_SHARPNESS));
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "error setting property CV_CAP_PROP_SHARPNESS");
+                }
+            }
+            else if (key == "gamma")
+            {
+                if (m_pCam->set(CV_CAP_PROP_GAMMA, val->getVal<double>()))
+                {
+                    it->setVal<double>(m_pCam->get(CV_CAP_PROP_GAMMA));
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "error setting property CV_CAP_PROP_GAMMA");
+                }
+            }
+            else if (key == "roi")
+            {
+                if (!hasIndex)
+                {
+                    retValue += it->copyValueFrom( &(*val) );
+                }
+                else
+                {
+                    if (index < 0 || index >= 3)
+                    {
+                        retValue += ito::RetVal(ito::retError, 0, "index of roi parameter must be in range [0,3]");
+                    }
+                    else
+                    {
+                        int *roi = it->getVal<int*>();
+                        roi[index] = val->getVal<int>();
+                    }
+                }
+                const int *roi = it->getVal<int*>();
+                m_params["sizex"].setVal<int>(roi[2]);
+                m_params["sizey"].setVal<int>(roi[3]);
+            }
+            else
+            {
+                //here you can add specific sub-checks for every keyword and finally put the value into (*it).
+                retValue += it->copyValueFrom( &(*val) );
+            }
         }
     }
 
@@ -599,20 +739,17 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     m_CCD_ID = paramsOpt->at(0).getVal<int>();
 
-    /*if((*paramsOpt)[1].getVal<int>() == 1)
+    m_pCam = new VideoCaptureItom();
+    ret = m_pCam->open(m_CCD_ID);
+
+    if(!m_pCam->isOpened())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Dialog for manually selecting any camera not yet implemented.").toLatin1().data());
+        retValue += ito::RetVal::format(ito::retError,0,tr("Camera (%i) could not be opened").toLatin1().data(), m_CCD_ID);
     }
     else
-    {*/
-        m_pCam = new cv::VideoCapture();
-        ret = m_pCam->open(m_CCD_ID);
-
-        if(!m_pCam->isOpened())
-        {
-            retValue += ito::RetVal::format(ito::retError,0,tr("Camera (%i) could not be opened").toLatin1().data(), m_CCD_ID);
-        }
-    //}
+    {
+        cvGetCaptureDomain(m_pCam->getDevice());
+    }
 
     if(!retValue.containsError())
     {
@@ -628,29 +765,69 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         m_params["sizex"].setVal<int>( m_pCam->get(CV_CAP_PROP_FRAME_WIDTH) );
         m_params["sizey"].setVal<int>( m_pCam->get(CV_CAP_PROP_FRAME_HEIGHT) );
 
-        if(m_pCam->get(CV_CAP_PROP_BRIGHTNESS) == 0.0)    //Brightness of the data (only for cameras).
+        if(!propertyExists(CV_CAP_PROP_BRIGHTNESS))    //Brightness of the data (only for cameras).
         {
-            m_params.remove("brightness");
+            m_params["brightness"].setFlags(ito::ParamBase::Readonly);
         }
-        if(m_pCam->get(CV_CAP_PROP_CONTRAST) == 0.0) //Contrast of the data (only for cameras).
+        else
         {
-            m_params.remove("contrast");
-        } 
-        if(m_pCam->get(CV_CAP_PROP_HUE) == 0.0) //Hue of the data (only for cameras).
-        {
-            m_params.remove("hue");
+            m_params["brightness"].setVal<double>(m_pCam->get(CV_CAP_PROP_BRIGHTNESS));
         }
-        if(m_pCam->get(CV_CAP_PROP_SATURATION) == 0.0) //Saturation of the data (only for cameras).
+        if(!propertyExists(CV_CAP_PROP_CONTRAST)) //Contrast of the data (only for cameras).
         {
-            m_params.remove("saturation");
+            m_params["contrast"].setFlags(ito::ParamBase::Readonly);
         }
-        if(m_pCam->get(CV_CAP_PROP_GAIN) == 0.0) //Gain of the data (only for cameras).
+        else
         {
-            m_params.remove("gain");
+            m_params["contrast"].setVal<double>(m_pCam->get(CV_CAP_PROP_CONTRAST));
         }
-        if(m_pCam->get(CV_CAP_PROP_EXPOSURE) == 0.0) //Exposure of the data (only for cameras).
+        if(!propertyExists(CV_CAP_PROP_HUE)) //Hue of the data (only for cameras).
         {
-            m_params.remove("integration_time");
+            m_params["hue"].setFlags(ito::ParamBase::Readonly);
+        }
+        else
+        {
+            m_params["hue"].setVal<double>(m_pCam->get(CV_CAP_PROP_HUE));
+        }
+        if(!propertyExists(CV_CAP_PROP_SATURATION)) //Saturation of the data (only for cameras).
+        {
+            m_params["saturation"].setFlags(ito::ParamBase::Readonly);
+        }
+        else
+        {
+            m_params["saturation"].setVal<double>(m_pCam->get(CV_CAP_PROP_SATURATION));
+        }
+        if(!propertyExists(CV_CAP_PROP_GAIN)) //Gain of the data (only for cameras).
+        {
+            m_params["gain"].setFlags(ito::ParamBase::Readonly);
+        }
+        else
+        {
+            m_params["gain"].setVal<double>(m_pCam->get(CV_CAP_PROP_GAIN));
+        }
+        if(!propertyExists(CV_CAP_PROP_EXPOSURE)) //Exposure of the data (only for cameras).
+        {
+            m_params["exposure"].setFlags(ito::ParamBase::Readonly);
+        }
+        else
+        {
+            m_params["exposure"].setVal<double>(m_pCam->get(CV_CAP_PROP_EXPOSURE));
+        }
+        if(!propertyExists(CV_CAP_PROP_SHARPNESS)) //SHARPNESS of the data (only for cameras).
+        {
+            m_params["sharpness"].setFlags(ito::ParamBase::Readonly);
+        }
+        else
+        {
+            m_params["sharpness"].setVal<double>(m_pCam->get(CV_CAP_PROP_SHARPNESS));
+        }
+        if(!propertyExists(CV_CAP_PROP_GAMMA)) //gamma of the data (only for cameras).
+        {
+            m_params["gamma"].setFlags(ito::ParamBase::Readonly);
+        }
+        else
+        {
+            m_params["gamma"].setVal<double>(m_pCam->get(CV_CAP_PROP_GAMMA));
         }
 
 #ifdef _DEBUG
@@ -689,6 +866,7 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         qDebug() << "CV_CAP_PROP_FOURCC" << m_pCam->get(CV_CAP_PROP_FOURCC);
         qDebug() << "CV_CAP_PROP_FRAME_HEIGHT" << m_pCam->get(CV_CAP_PROP_FRAME_HEIGHT);
         qDebug() << "CV_CAP_PROP_FRAME_WIDTH" << m_pCam->get(CV_CAP_PROP_FRAME_WIDTH);
+        qDebug() << "CV_CAP_PROP_AUTO_EXPOSURE" << m_pCam->get(CV_CAP_PROP_AUTO_EXPOSURE);
 #endif
     }
 
@@ -699,7 +877,7 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     if(!retValue.containsError())
     {
-        QSharedPointer<ito::ParamBase> colorMode( new ito::ParamBase("colorMode", ito::ParamBase::String, paramsOpt->at(1).getVal<char*>()) );
+        QSharedPointer<ito::ParamBase> colorMode( new ito::ParamBase("color_mode", ito::ParamBase::String, paramsOpt->at(1).getVal<char*>()) );
         retValue += setParam( colorMode, NULL );
         
         retValue += checkData();
@@ -801,7 +979,7 @@ ito::RetVal OpenCVGrabber::acquire(const int trigger, ItomSharedSemaphore *waitC
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    bool RetCode = false;
+    m_isgrabbing = false;
 
     if (grabberStartedCount() <= 0)
     {
@@ -817,20 +995,37 @@ ito::RetVal OpenCVGrabber::acquire(const int trigger, ItomSharedSemaphore *waitC
         cv::Mat temp;
 
         //workaround, get old images in order to clean buffer queue, which leads to delivery of old images
-        m_pCam->retrieve(temp);
-        m_pCam->retrieve(temp);
-        m_pCam->retrieve(temp);
-        m_pCam->retrieve(temp);
-        m_pCam->retrieve(temp);
+        for (int i = 0; i < m_params["dump_grabs"].getVal<int>(); ++i)
+        {
+            m_pCam->retrieve(temp);
+        }
 
-        RetCode = m_pCam->grab();
+        if (m_pCam->grab())
+        {
+            m_acquisitionRetVal = ito::retOk;
+        }
+        else
+        {
+            m_acquisitionRetVal = ito::RetVal(ito::retError, 0, "could not acquire a new image");
+        }
     }
+
+    retValue += m_acquisitionRetVal;
 
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();  
     }
+
+    if (!retValue.containsError())
+    {
+        if (!m_pCam->retrieve(m_pDataMatBuffer))
+        {
+            m_acquisitionRetVal = ito::RetVal(ito::retError, 0, "could not retrieve acquired image");
+        }
+    }
+
     return retValue;
 }
 
@@ -844,8 +1039,9 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
 
     int curxsize = m_params["sizex"].getVal<int>();
     int curysize = m_params["sizey"].getVal<int>();
-    int x0 = m_params["x0"].getVal<int>();
-    int y0 = m_params["y0"].getVal<int>();
+    const int *roi = m_params["roi"].getVal<int*>();
+    int x0 = roi[0];
+    int y0 = roi[1];
     bool resizeRequired = (x0 > 0 || y0 > 0);
 
     ito::DataObject *dataObj = &m_data;
@@ -866,19 +1062,17 @@ ito::RetVal OpenCVGrabber::retrieveData(ito::DataObject *externalDataObject)
     }
     else
     {
-        //the following lines are commented, since m_pDataMatBuffer already is filled in acquire (command read instead of grab and retrieve, which leads to buffering delays)
-        RetCode = m_pCam->retrieve(m_pDataMatBuffer); //get image from cam, m_pDataMatBuffer is reference to internal memory
-        
-        if(!RetCode)
-        {
-            retValue+=ito::RetVal(ito::retError, 0, tr("Error: no data grabbed").toLatin1().data());
-        }
+        retValue += m_acquisitionRetVal;
+        m_acquisitionRetVal = ito::retOk;
+    }
+
+    if (!retValue.containsError())
+    {
         if(m_pDataMatBuffer.cols == 0 || m_pDataMatBuffer.rows == 0)
         {
             retValue+=ito::RetVal(ito::retError,0,tr("Error: grabbed image is empty").toLatin1().data());
         }
-
-        if(!retValue.containsError())
+        else
         {
             int desiredBpp = m_params["bpp"].getVal<int>();
             cv::Mat tempImage;
@@ -1018,7 +1212,7 @@ ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
     int futureChannels;
     int futureType;
 
-    const char *colorMode = m_params["colorMode"].getVal<char*>();
+    const char *colorMode = m_params["color_mode"].getVal<char*>();
     if (m_imgChannels == 1 && (m_colorMode == modeGray || m_colorMode == modeAuto))
     {
         futureChannels = 1;
@@ -1177,48 +1371,18 @@ ito::RetVal OpenCVGrabber::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void OpenCVGrabber::updateParameters(QMap<QString, ito::ParamBase> params)
+bool OpenCVGrabber::propertyExists(int propId)
 {
-    int colorSelect_old = 0;
-    int color_old = 0;
-    int colorSelect_new = 0;
-    int color_new = 0;
-    double offset_new = 0.0;
-    double value = 0.0;
+    double get = m_pCam->get(propId);
+    return m_pCam->set(propId, get);
+}
 
-    char name[40]={0};
-    
-    colorSelect_old = m_params["colorSelect"].getVal<int>();
-    color_old = m_params["color"].getVal<int>();
-
-    foreach(const ito::ParamBase &param1, params)
-    {    
-        memset(name,0,sizeof(name));
-        sprintf(name,"%s", param1.getName());
-        if(!strlen(name))
-            continue;
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(name);
-        if (paramIt != m_params.end())
-        {
-            value = param1.getVal<double>();
-            paramIt.value().setVal<double>(value);
-        }
-    }
-
-    colorSelect_new = m_params["colorSelect"].getVal<int>();
-    color_new = m_params["color"].getVal<int>();
-    offset_new = m_params["offset"].getVal<double>();
-    
-    if (color_new != color_old)
-    {
-        setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("color", ito::ParamBase::Int, color_new)), NULL);
-    }
-    else if (colorSelect_new != colorSelect_old)
-    {
-        setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("colorSelect", ito::ParamBase::Int, colorSelect_new)), NULL);
-    } 
-    else        
-    {
-        setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Int, offset_new)), NULL);
-    }
+//----------------------------------------------------------------------------------------------------------------------------------
+bool OpenCVGrabber::showNativeSettingsDialog()
+{
+#if (CV_VERSION_MAJOR > 2 || (CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR >= 4))
+    return m_pCam->set(CV_CAP_PROP_SETTINGS, 0.0);
+#else
+    return false;
+#endif
 }

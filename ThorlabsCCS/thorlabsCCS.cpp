@@ -101,14 +101,12 @@ ThorlabsCCS::ThorlabsCCS() : AddInGrabber(), m_isgrabbing(false),
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "ThorlabsCCS", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 2048, 0, tr("first pixel index in ROI (x-direction)").toLatin1().data());
+    int roi[] = {0, 0, TLCCS_NUM_PIXELS, 1};
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height)").toLatin1().data());
+    ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, TLCCS_NUM_PIXELS - 1), ito::RangeMeta(0, 0, 1, 1, 1, 1));
+    paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 0, 0, tr("first pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("x1", ito::ParamBase::Int | ito::ParamBase::In, 0, 1279, 1279, tr("last pixel index in ROI (x-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("y1", ito::ParamBase::Int | ito::ParamBase::In, 0, 0, 0, tr("last pixel index in ROI (y-direction)").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
+
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 2048, 2048, tr("width of ROI (x-direction)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::In, 1, 1, 1, tr("height of ROI (y-direction)").toLatin1().data());
@@ -120,18 +118,18 @@ ThorlabsCCS::ThorlabsCCS() : AddInGrabber(), m_isgrabbing(false),
     paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, TLCCS_MIN_INT_TIME, TLCCS_MAX_INT_TIME, TLCCS_DEF_INT_TIME, tr("integration time of ccd in sec").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("manufacturerName", ito::ParamBase::String | ito::ParamBase::Readonly, "", "manufacturer name");
+    paramVal = ito::Param("manufacturer_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", "manufacturer name");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", "device name");
+    paramVal = ito::Param("device_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", "device name");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("serialNumber", ito::ParamBase::String | ito::ParamBase::Readonly, "", "serial number");
+    paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, "", "serial number");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("firmwareRevision", ito::ParamBase::String | ito::ParamBase::Readonly, "", "firmware revision");
+    paramVal = ito::Param("firmware_revision", ito::ParamBase::String | ito::ParamBase::Readonly, "", "firmware revision");
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("instrumentDriverRevision", ito::ParamBase::String | ito::ParamBase::Readonly, "", "instrument driver revision");
+    paramVal = ito::Param("instrument_driver_revision", ito::ParamBase::String | ito::ParamBase::Readonly, "", "instrument driver revision");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("wavelengthData", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, "wavelength in nm (air) for each pixel");
+    paramVal = ito::Param("wavelength_data", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, "wavelength in nm (air) for each pixel");
     m_params.insert(paramVal.getName(), paramVal);
     
 
@@ -148,6 +146,7 @@ ThorlabsCCS::ThorlabsCCS() : AddInGrabber(), m_isgrabbing(false),
 ThorlabsCCS::~ThorlabsCCS()
 {
 }
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! initialization of plugin
@@ -245,10 +244,10 @@ ito::RetVal ThorlabsCCS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         {
             setIdentifier(QString("%1 (%2)").arg(device).arg(manufacturer));
             m_params["deviceName"].setVal<char*>(device);
-            m_params["manufacturerName"].setVal<char*>(manufacturer);
-            m_params["serialNumber"].setVal<char*>(serial);
-            m_params["firmwareRevision"].setVal<char*>(firmware);
-            m_params["instrumentDriverRevision"].setVal<char*>(driver);
+            m_params["manufacturer_name"].setVal<char*>(manufacturer);
+            m_params["serial_number"].setVal<char*>(serial);
+            m_params["firmware_revision"].setVal<char*>(firmware);
+            m_params["instrument_driver_revision"].setVal<char*>(driver);
         }
     }
 
@@ -257,10 +256,6 @@ ito::RetVal ThorlabsCCS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         //get wavelength table, length of array...
         m_params["sizex"].setMeta(new ito::IntMeta(0, TLCCS_NUM_PIXELS), true);
         m_params["sizex"].setVal<int>(TLCCS_NUM_PIXELS);
-        m_params["x0"].setVal<int>(0);
-        m_params["x0"].setMeta(new ito::IntMeta(0, 0), true);
-        m_params["x1"].setVal<int>(TLCCS_NUM_PIXELS-1);
-        m_params["x1"].setMeta(new ito::IntMeta(TLCCS_NUM_PIXELS - 1, TLCCS_NUM_PIXELS - 1), true);
         
         ViReal64 wavelengthDataArray[TLCCS_NUM_PIXELS];
 
@@ -268,7 +263,7 @@ ito::RetVal ThorlabsCCS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
         if (!retValue.containsError())
         {
-            m_params["wavelengthData"].setVal<double*>(wavelengthDataArray, TLCCS_NUM_PIXELS);
+            m_params["wavelength_data"].setVal<double*>(wavelengthDataArray, TLCCS_NUM_PIXELS);
         }
 
         ViReal64 integrationTime;
@@ -411,6 +406,24 @@ ito::RetVal ThorlabsCCS::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 retValue += checkError(tlccs_getIntegrationTime(m_instrument, &integrationTime));
                 m_params["integration_time"].setVal<double>(integrationTime);
             }
+        }
+        else if (key == "roi")
+        {
+            if (!hasIndex)
+            {
+                retValue += it->copyValueFrom( &(*val) );
+            }
+            else
+            {
+                //index is already checked for limits
+                int *roi = it->getVal<int*>();
+                roi[index] = val->getVal<int>();
+            }
+            const int *roi = it->getVal<int*>();
+            m_params["sizex"].setVal<int>(roi[2]);
+            m_params["sizey"].setVal<int>(roi[3]);
+
+            retValue += checkData();
         }
         else
         {
@@ -611,6 +624,7 @@ ito::RetVal ThorlabsCCS::retrieveData(ito::DataObject *externalDataObject)
     ito::RetVal retValue(ito::retOk);
 
     ito::DataObject *dataObj = externalDataObject ? externalDataObject : &m_data;
+    const int *roi = m_params["roi"].getVal<int*>();
 
     bool hasListeners = (m_autoGrabbingListeners.size() > 0);
     bool copyExternal = (externalDataObject != NULL);
@@ -632,13 +646,13 @@ ito::RetVal ThorlabsCCS::retrieveData(ito::DataObject *externalDataObject)
                 retValue += checkData(externalDataObject); //update external object
                 if (retValue == ito::retOk)
                 {
-                    memcpy(externalDataObject->rowPtr(0,0), buffer, externalDataObject->getSize(1) * sizeof(ito::float64));
+                    memcpy(externalDataObject->rowPtr(0,0), &(buffer[roi[0]]), roi[2] * sizeof(ito::float64));
                 }
             }
             if (hasListeners || !externalDataObject)
             {
                 //size of m_data is checked
-                memcpy(m_data.rowPtr(0,0), buffer, m_data.getSize(1) * sizeof(ito::float64));
+                memcpy(m_data.rowPtr(0,0), &(buffer[roi[0]]), roi[2] * sizeof(ito::float64));
             }
         }       
         

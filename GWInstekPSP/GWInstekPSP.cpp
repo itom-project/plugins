@@ -654,7 +654,7 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
 
                 if (retValue.containsError())
                 {
-                    if (retValue.errorMessage())
+                    if (retValue.hasErrorMessage())
                     {
                         std::cerr << "error while setting ramp: " << retValue.errorMessage() << "\n" << std::endl;
                     }

@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "OpenCV-Grabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -72,9 +72,20 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
         const ito::RetVal showConfDialog(void);    //! Open the config nonmodal dialog to set camera parameters 
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
 
+        bool showNativeSettingsDialog();
+
     private:
 
-        cv::VideoCapture *m_pCam;    /*!< Handle to the openCV-Cam-Class */
+        class VideoCaptureItom : public cv::VideoCapture
+        {
+        public:
+            VideoCaptureItom() : cv::VideoCapture() {}
+            VideoCaptureItom(const std::string& filename) : cv::VideoCapture(filename) {}
+            VideoCaptureItom(int device) : cv::VideoCapture(device) {}
+            cv::Ptr<CvCapture> getDevice() const { return cap; };
+        };
+
+        VideoCaptureItom *m_pCam;    /*!< Handle to the openCV-Cam-Class */
 
         int m_CCD_ID; /*!< Camera ID */
         bool m_isgrabbing; /*!< Check if acquire was called */
@@ -85,6 +96,8 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
         int m_imgBpp; /*!< number of element size of the camera image due to current parameterization */
         bool m_camStatusChecked;
 
+        ito::RetVal m_acquisitionRetVal;
+
         int m_colorMode;
 
         cv::Mat m_pDataMatBuffer;    /*!< OpenCV DataFile to retrieve datas, this image is already filled after acquire command */
@@ -92,6 +105,7 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
         cv::Mat m_alphaChannel; /* simple uint8, 1-channel image with 255 values filled in case of colorMode. This is the alpha plane */
 
         ito::RetVal checkCameraAbilities(); /*!< Funktion to check and set aviable data types */
+        bool propertyExists(int propId);
 
         enum tColorMode
         {
@@ -125,8 +139,6 @@ class OpenCVGrabber : public ito::AddInGrabber //, public OpenCVGrabberInterface
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);
-
-        void updateParameters(QMap<QString, ito::ParamBase> params);
 
     private slots:
 

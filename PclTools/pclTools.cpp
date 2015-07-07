@@ -195,7 +195,7 @@ ito::RetVal PclTools::savePointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
     ito::RetVal retval = ito::retOk;
 
     ito::PCLPointCloud *pointCloud = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();  //Input object
-    QString filename = (*paramsMand)[1].getVal<char*>();
+    QString filename = QString::fromLatin1((*paramsMand)[1].getVal<char*>());
     QString mode = (*paramsOpt)[0].getVal<char*>();
     QString type = (*paramsOpt)[1].getVal<char*>();
     bool binary_mode = true;
@@ -418,7 +418,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 {
     ito::RetVal retval = ito::retOk;
 
-    QString filename = (*paramsMand)[1].getVal<char*>();
+    QString filename = QString::fromLatin1((*paramsMand)[1].getVal<char*>());
     QString typeString = (*paramsOpt)[0].getVal<char*>();
     ito::PCLPointCloud *pointCloud = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
     QString type;
@@ -735,7 +735,7 @@ This file format allows displaying volume data from the given 3D data object for
         }
     }
 
-    QByteArray filename = paramsMand->at(1).getVal<char*>();
+    QString filename = QString::fromLatin1(paramsMand->at(1).getVal<char*>());
     QByteArray scalarName = paramsOpt->at(1).getVal<char*>();
     ito::uint16 t = paramsOpt->at(2).getVal<int>();
 
@@ -752,7 +752,7 @@ This file format allows displaying volume data from the given 3D data object for
             fi = QFileInfo(filename);
         }
 
-        filename = fi.absoluteFilePath().toLatin1().data();
+        filename = fi.absoluteFilePath().toLatin1();
     }
 
     if (!retval.containsError())
@@ -852,7 +852,7 @@ This file format allows displaying volume data from the given 3D data object for
         {
             writer->SetDataModeToAscii();
         }
-        writer->SetFileName(filename.data());
+        writer->SetFileName(filename.toLatin1().data());
 
 #if (VTK_MAJOR_VERSION == 5)
         writer->SetInput (structuredPoints);
@@ -900,7 +900,7 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
     ito::RetVal retval = ito::retOk;
 
     ito::PCLPolygonMesh *polygonMesh = (ito::PCLPolygonMesh*)(*paramsMand)[0].getVal<char*>();  //Input object
-    QString filename = (*paramsMand)[1].getVal<char*>();
+    QString filename = QString::fromLatin1((*paramsMand)[1].getVal<char*>());
     QString type = (*paramsOpt)[0].getVal<char*>();
 //    bool binary_mode = true;
     int ret = 1;
@@ -994,7 +994,7 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 {
     ito::RetVal retval = ito::retOk;
 
-    QString filename = (*paramsMand)[1].getVal<char*>();
+    QString filename = QString::fromLatin1((*paramsMand)[1].getVal<char*>());
     ito::PCLPolygonMesh* mesh = (ito::PCLPolygonMesh*)(*paramsMand)[0].getVal<char*>();
     QString type = (*paramsOpt)[0].getVal<char*>();
 

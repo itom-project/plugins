@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>275</width>
-    <height>215</height>
+    <width>395</width>
+    <height>177</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,19 +17,152 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QGroupBox" name="group1">
-       <property name="title">
-        <string>Group 1</string>
+      <widget class="QGroupBox" name="groupBoxIntegration">
+       <property name="enabled">
+        <bool>true</bool>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout"/>
+       <property name="title">
+        <string>Data Acquisition</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="1">
+         <widget class="SliderWidget" name="sliderIntegrationTime">
+          <property name="decimals">
+           <number>3</number>
+          </property>
+          <property name="minimum">
+           <double>0.005000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>65.000000000000000</double>
+          </property>
+          <property name="suffix">
+           <string> ms</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_integration_time">
+          <property name="text">
+           <string>integration time: </string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="group2">
-       <property name="title">
-        <string>Group 2</string>
+      <widget class="QGroupBox" name="groupBoxSize">
+       <property name="enabled">
+        <bool>true</bool>
        </property>
-       <layout class="QGridLayout" name="gridLayout"/>
+       <property name="title">
+        <string>Size</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="lblx0">
+            <property name="text">
+             <string>x0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="RangeWidget" name="rangeX01">
+            <property name="maximum">
+             <number>2048</number>
+            </property>
+            <property name="maximumValue">
+             <number>99</number>
+            </property>
+            <property name="prefix">
+             <string/>
+            </property>
+            <property name="suffix">
+             <string/>
+            </property>
+            <property name="tickInterval">
+             <number>5</number>
+            </property>
+            <property name="autoSpinBoxWidth">
+             <bool>true</bool>
+            </property>
+            <property name="tracking">
+             <bool>false</bool>
+            </property>
+            <property name="decimals" stdset="0">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="lblx1">
+            <property name="text">
+             <string>x1</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_sizeX">
+            <property name="text">
+             <string>x-size</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinSizeX">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="buttonSymbols">
+             <enum>QAbstractSpinBox::NoButtons</enum>
+            </property>
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
+            <property name="suffix">
+             <string> px</string>
+            </property>
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+            <property name="value">
+             <number>666</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnFullROI">
+            <property name="text">
+             <string>full ROI</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </item>
      <item>
@@ -62,6 +195,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RangeWidget</class>
+   <extends>QWidget</extends>
+   <header>rangeWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SliderWidget</class>
+   <extends>QWidget</extends>
+   <header>sliderWidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

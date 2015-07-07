@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "OpenCV-Grabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -31,46 +31,50 @@
 #include <qdialog.h>
 #include <qrect.h>
 
-class DialogOpenCVGrabber : public QDialog 
+#include "common/param.h"
+#include "common/retVal.h"
+#include "common/sharedStructuresQt.h"
+#include "common/abstractAddInConfigDialog.h"
+
+#include "ui_dialogOpenCVGrabber.h"
+
+#include <qstring.h>
+#include <qmap.h>
+#include <qabstractbutton.h>
+
+
+namespace ito
+{
+    class AddInBase; //forward declaration
+}
+
+class DialogOpenCVGrabber : public ito::AbstractAddInConfigDialog 
 {
     Q_OBJECT
 
     public:
-        DialogOpenCVGrabber(ito::AddInGrabber *grabber, bool colorCam, int camWidth, int camHeight);    //!< Constructor
-        ~DialogOpenCVGrabber() {};//! Destructor
-        int sendVals(void);
+        DialogOpenCVGrabber(ito::AddInBase *grabber, bool colorCam, bool hasNativeSettingsDialog);
+        ~DialogOpenCVGrabber() {};
+
+        ito::RetVal applyParameters();
 
     private:
-        ito::AddInGrabber *m_grabber;
+        void enableDialog(bool enabled);
+        bool m_firstRun;
+        bool m_colorCam;
+        ito::AddInBase *m_pGrabber;
 
         Ui::dialogOpenCVGrabber ui;
-        QMap<QString, ito::Param> m_paramsVals;
-        bool m_colorCam;
-        QRect m_camSize;
-
-        bool sizeXChanged;
-        bool sizeYChanged;
-        bool colorModeChanged;
 
     public slots:
-        void valuesChanged(QMap<QString, ito::Param> params);
+        void parametersChanged(QMap<QString, ito::Param> params);
 
     private slots:
-        
-        void on_applyButton_clicked();    //!< Write the current settings to the internal paramsVals and sent them to the grabber
-
-        void on_btnSetFullROI_clicked();    //!< Set x and y-sizes to maximum valid value
-
-        void on_spinX0_valueChanged(int value);
-        void on_spinX1_valueChanged(int value);
-        void on_spinSizeX_valueChanged(int value);
-
-        void on_spinY0_valueChanged(int value);
-        void on_spinY1_valueChanged(int value);
-        void on_spinSizeY_valueChanged(int value);
-
-        void on_comboColorMode_currentIndexChanged(int index) { colorModeChanged = true; }
-
+        void on_buttonBox_clicked(QAbstractButton* btn);
+        void on_rangeX01_valuesChanged(int minValue, int maxValue);
+        void on_rangeY01_valuesChanged(int minValue, int maxValue);
+        void on_btnFullROI_clicked();
+        void on_btnShowNativeSettings_clicked();
 };
 
 #endif

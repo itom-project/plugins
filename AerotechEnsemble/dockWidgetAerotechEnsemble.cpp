@@ -301,10 +301,9 @@ void DockWidgetAerotechEnsemble::Move(const QVector<int> axis, const QVector<dou
         if (waitCond->returnValue.containsWarningOrError())
         {
             QMessageBox msgBox(this);
-            if (waitCond->returnValue.errorMessage() != NULL)
+            if (waitCond->returnValue.hasErrorMessage())
             {
-                QString errStr = waitCond->returnValue.errorMessage();
-                msgBox.setText(errStr);
+                msgBox.setText(QLatin1String(waitCond->returnValue.errorMessage()));
             }
             else
             {

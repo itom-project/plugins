@@ -1378,7 +1378,7 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
     paramsMand->append( ito::Param("dataObj", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "2d data object whose data is filled with the pattern along the given axis (0, 1). Type must be uint8, uint16 or uint32") );
     paramsMand->append( ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In | ito::ParamBase::Out, 0, 1, 0, "axis along the pattern is generated (0: along columns, 1: along rows)") );
 
-    paramsOpt->append( ito::Param("patternSequence", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "MxN data object of type uint8 than dataObj with the single patterns (0, 255). N corresponds to the necessary bit width, M is equal to the number of rows or columns of dataObj depending on axis") );
+    paramsOpt->append( ito::Param("patternSequence", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "MxN data object of type uint8 with the single patterns (black = 0, white = 255). N corresponds to the necessary bit width, M is equal to the number of rows or columns of dataObj depending on axis") );
     paramsOpt->append( ito::Param("offset", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, "it is possible to apply an offset to each row- or column number before calculating the graycode. This can be done in order to 'center' the graycode sequence. If offsetAutoCenter is 1, the offset is set to [(1<<necessaryBitWidth) - (rows or cols)]/2") );
     paramsOpt->append( ito::Param("offsetAutoCenter", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, "see offset") );
 

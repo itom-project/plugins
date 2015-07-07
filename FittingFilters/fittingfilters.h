@@ -79,27 +79,43 @@ class FittingFilters : public ito::AddInAlgo
     public:
         friend class FittingFiltersInterface;
 
+        static const char *fitPlaneDoc;
         static ito::RetVal fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const char *subtractPlaneDoc;
         static ito::RetVal subtractPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal subtractPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const char *subtractRegressionPlaneDoc;
         static ito::RetVal subtractRegressionPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal subtractRegressionPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const char *fitPolynom2DDoc;
         static ito::RetVal fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal fitPolynom2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const char *polyfitWeighted2DDoc;
         static ito::RetVal polyfitWeighted2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal polyfitWeighted2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const char *polyfitWeighted2DSinglePointsDoc;
+        static ito::RetVal polyfitWeighted2DSinglePoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal polyfitWeighted2DSinglePointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const char *polyval2DDoc;
         static ito::RetVal polyval2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal polyval2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const char *polyval2DSinglePointsDoc;
+        static ito::RetVal polyval2DSinglePoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal polyval2DSinglePointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const char *fitPolynom1D_ZDoc;
         static ito::RetVal fitPolynom1D_Z(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal fitPolynom1D_ZParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const char *getInterpolatedValuesDoc;
         static ito::RetVal getInterpolatedValues(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal getInterpolatedValuesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
@@ -130,8 +146,12 @@ class FittingFilters : public ito::AddInAlgo
         template<typename _Tp> static ito::RetVal lmedsFitPlane(const cv::Mat *mat, double &A, double &B, double &C, const double &valid_probability, const double &alarm_rate);
         template<typename _Tp> static ito::RetVal getRandomValidMinimalSampleSet(const cv::Mat *mat, cv::RNG &rng, int numSamples, int *rows, int *cols, int maxIter = 1000); 
 
-        static ito::RetVal calcPolyfitWeighted2D(const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, double reduceFactor = -1.0, const ito::DataObject *weights = NULL);
-        static ito::RetVal calcPolyval2D(ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> &coefficients);
+        static ito::RetVal calcPolyfitWeighted2DRegularGrid(const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, double reduceFactor = -1.0, const ito::DataObject *weights = NULL);
+        static ito::RetVal calcPolyfitWeighted2DSinglePoints(const ito::DataObject *dataX, const ito::DataObject *dataY, const ito::DataObject *dataZ, int orderX, int orderY, std::vector<double> &coefficients, const ito::DataObject *weights = NULL);
+        template<typename _Tp> static ito::RetVal calcPolyfitWeighted2D(const _Tp *X, const _Tp *Y, const _Tp *Z, const _Tp *W, int orderX, int orderY, int nrOfPoints, std::vector<double> &coefficients);
+        
+        static ito::RetVal calcPolyval2DRegularGrid(ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> &coefficients);
+        static ito::RetVal calcPolyval2DSinglePoints(const ito::DataObject *dataX, const ito::DataObject *dataY, ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> &coefficients);
 
         static void linearRegression(VecDoub_I &x, VecDoub_I &y, VecDoub_I &w, VecDoub_O &p, Doub& residual);
         

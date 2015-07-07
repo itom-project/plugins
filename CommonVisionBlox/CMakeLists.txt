@@ -226,7 +226,7 @@ IF (DEFINED ENV{CVB})
     # 
     # PLUGIN_DOCUMENTATION(${target_name} nameOfTheFile)
     #################################################################
-    PLUGIN_DOCUMENTATION(${target_name} xeneth)
+    PLUGIN_DOCUMENTATION(${target_name} commonVisionBlox)
 
     #################################################################
     # Post-Build Copy Operations

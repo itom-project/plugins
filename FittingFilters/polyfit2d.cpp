@@ -30,6 +30,10 @@
 using namespace ito;
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const char* FittingFilters::fitPolynom2DDoc = "Fit a polynomial p(x,y) of order (orderX, orderY) in x- and y-direction. \n\
+\n\
+Puts the fitted points into the data object 'fittedImage'. This method does not weight the input values and does not \n\
+return the coefficients for the polynomial. Use polyfitWeighted2d if you want to have an enhanced fit.";
 ito::RetVal FittingFilters::fitPolynom2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     RetVal retval = retOk;
@@ -50,16 +54,16 @@ ito::RetVal FittingFilters::fitPolynom2DParams(QVector<ito::Param> *paramsMand, 
     param = Param("fittedImage", ParamBase::DObjPtr | ParamBase::In | ParamBase::Out , NULL, tr("destination data object with fitted values").toLatin1().data());
     paramsMand->append(param);
 
-    param = Param("gradX", ParamBase::Int, NULL, tr("number of polynoms in x-direction").toLatin1().data());
+    param = Param("orderX", ParamBase::Int, NULL, tr("order of the fitting polynomial in x-direction").toLatin1().data());
     paramsMand->append(param);
 
-    param = Param("gradY", ParamBase::Int, NULL, tr("number of polynoms in y-direction").toLatin1().data());
+    param = Param("orderY", ParamBase::Int, NULL, tr("order of the fitting polynomial y-direction").toLatin1().data());
     paramsMand->append(param);
 
     param = Param("replaceNaN", ParamBase::Int, 0, 1, 0, tr("if 0 infinite values in input image will be copied to output").toLatin1().data());
     paramsOpt->append(param);
 
-    *paramsOut << Param("Sigma", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Variance value *sigma* of polynomial fit.").toLatin1().data());
+    *paramsOut << Param("sigma", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Variance value *sigma* of polynomial fit.").toLatin1().data());
 
 
     return retval;
@@ -197,19 +201,18 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 //           double *Sigma, struct Koeffizienten *koeff)
 {
     RetVal retValue(retOk);
-    int   i, j, n, m,            // Zaehlvariable 
-       maxGrad,             // Maximal vorkommender Grad
-       Fehler;              // Fehler aufgerufener Funktionen
+    int   i, j, n, m;            // Zaehlvariable 
+    int maxGrad;             // Maximal vorkommender Grad
 
     double   tx, ty,           // x, y Parameter
-        dx, dy,             // Schrittweiten der X/Y-Koordinaten
-        z;             // berechnete Z-Koordinate
+    dx, dy,             // Schrittweiten der X/Y-Koordinaten
+    z;             // berechnete Z-Koordinate
     float64 buf;
     double    *Sum=NULL,            // Zwischen- Koeffizienten
-        *NormX=NULL,        // Nenner der Koeffizienten 
-        *NormY=NULL,
-        *Werte=NULL,        // Pn-Koeffizienten
-        *ZeilenSumme=NULL;    // Zaehler der Koeffizienten
+    *NormX=NULL,        // Nenner der Koeffizienten 
+    *NormY=NULL,
+    *Werte=NULL,        // Pn-Koeffizienten
+    *ZeilenSumme=NULL;    // Zaehler der Koeffizienten
 
     const float64 *lineBuf = NULL;
     float64 *lineBufOutput = NULL;

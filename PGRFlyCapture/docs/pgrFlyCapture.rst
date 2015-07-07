@@ -54,10 +54,8 @@ parameters can be changed using *setParam*. If a parameter is read-only, it is n
     Camera gamma control in absolute values. Read-only if not available.
 **sizex**, **sizey**: {int}, read-only
     Current width and height in pixel of the region of interest. Adjustable via x0, x1, y0, y1
-**x0**, **x1**: {int}
-    Use these zero-based values to set the left and right margin of the region of interest. 0 <= x0 < x1 < width of camera chip.
-**y0**, **y1**: {int}
-    Use these zero-based values to set the top and bottom margin of the region of interest. 0 <= y0 < y1 < height of camera chip.
+**roi**: {sequence of integers}
+    Current region of interest of camera. Format (x0,y0,width,height). Change one of those parameters by using *setParam("roi[1]",16)*.
 **bpp**: {int}
     Bitdepth of the returned camera image (e.g. 8, 12 or 16 bits per pixel). Please consider that some cameras having an 12bit A/D converter
     allow to obtain 16bit values. This possible however results in a bigger data volume that needs to be transmitted. Consider to use 12bit instead

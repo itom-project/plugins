@@ -442,98 +442,101 @@ ito::RetVal DummyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
-    //first check parameters that influence the size or data type of m_data
-    if (key == "roi" || key == "binning" || key == "bpp")
+    if (!retValue.containsError())
     {
-        if (!retValue.containsError())
+        //first check parameters that influence the size or data type of m_data
+        if (key == "roi" || key == "binning" || key == "bpp")
         {
-            if (grabberStartedCount() > 0)
+            if (!retValue.containsError())
             {
-                running = grabberStartedCount();
-                setGrabberStarted(1);
-                retValue += stopDevice(NULL);
+                if (grabberStartedCount() > 0)
+                {
+                    running = grabberStartedCount();
+                    setGrabberStarted(1);
+                    retValue += stopDevice(NULL);
+                }
+            }
+
+            if (key == "bpp")
+            {
+                retValue += it->copyValueFrom(&(*val));
+            }
+            else if (key == "roi")
+            {
+                if (!hasIndex)
+                {
+                    retValue += it->copyValueFrom(&(*val));
+                    m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
+                    m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);
+                }
+                else
+                {
+                    it->getVal<int*>()[index] = val->getVal<int>();
+                    m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
+                    m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);
+                }
+            }
+            else if (key == "binning")
+            {
+                int oldval = it->getVal<int>();
+
+                int ival = val->getVal<int>();
+                int newY = ival % 100;
+                int newX = (ival - newY) / 100;
+
+                if ((newX != 1 && newX != 2 && newX != 4) || (newY != 1 && newY != 2 && newY != 4))
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "horizontal and vertical binning must be 1, 2 or 4 (hence vertical * 100 + horizontal)");
+                }
+                else
+                {
+                    m_totalBinning = newX * newY;
+
+                    retValue += it->copyValueFrom(&(*val));
+
+                    if (oldval != ival)
+                    {
+                        int oldY = oldval % 100;
+                        int oldX = (oldval - oldY) / 100;
+                        float factorX = (float)oldX / (float)newX;
+                        float factorY = (float)oldY / (float)newY;
+
+                        int width = m_params["sizex"].getVal<int>() * factorX;
+                        int height = m_params["sizey"].getVal<int>() * factorY;
+
+                        int maxWidth = m_params["sizex"].getMax();
+                        int maxHeight = m_params["sizey"].getMax();
+
+                        m_params["sizex"].setVal<int>(width);
+                        m_params["sizex"].setMeta(new ito::IntMeta(4/newX, maxWidth * factorX, 4/newX), true);
+
+                        m_params["sizey"].setVal<int>(height);
+                        m_params["sizey"].setMeta(new ito::IntMeta(4/newY, maxHeight * factorY, 4/newY), true);
+
+                        int sizeX = m_params["roi"].getVal<int*>()[2] * factorX;
+                        int sizeY = m_params["roi"].getVal<int*>()[3] * factorY;
+                        int offsetX = m_params["roi"].getVal<int*>()[0] * factorX;
+                        int offsetY = m_params["roi"].getVal<int*>()[1] * factorY;
+                        int roi[] = {offsetX, offsetY, sizeX, sizeY};
+                        m_params["roi"].setVal<int*>(roi, 4);
+                        m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, width - 1,4/newX,4/newX,maxWidth * factorX,4/newX), ito::RangeMeta(0, height - 1,4/newY,4/newY,maxHeight * factorY,4/newY)), true);
+                    }
+                }
+            }
+
+
+            retValue += checkData(); //check if image must be reallocated
+
+            if (running)
+            {
+                retValue += startDevice(NULL);
+                setGrabberStarted(running);
             }
         }
-
-        if (key == "bpp")
+        else
         {
             retValue += it->copyValueFrom(&(*val));
         }
-        else if (key == "roi")
-        {
-            if (!hasIndex)
-            {
-                retValue += it->copyValueFrom(&(*val));
-                m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
-                m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);
-            }
-            else
-            {
-                val->getVal<int*>()[index] = val->getVal<int>();
-                m_params["sizex"].setVal<int>(it->getVal<int*>()[2]);
-                m_params["sizey"].setVal<int>(it->getVal<int*>()[3]);
-            }
-        }
-        else if (key == "binning")
-        {
-            int oldval = it->getVal<int>();
-
-            int ival = val->getVal<int>();
-            int newY = ival % 100;
-            int newX = (ival - newY) / 100;
-
-            if ((newX != 1 && newX != 2 && newX != 4) || (newY != 1 && newY != 2 && newY != 4))
-            {
-                retValue += ito::RetVal(ito::retError, 0, "horizontal and vertical binning must be 1, 2 or 4 (hence vertical * 100 + horizontal)");
-            }
-            else
-            {
-                m_totalBinning = newX * newY;
-
-                retValue += it->copyValueFrom(&(*val));
-
-                if (oldval != ival)
-                {
-                    int oldY = oldval % 100;
-                    int oldX = (oldval - oldY) / 100;
-                    float factorX = (float)oldX / (float)newX;
-                    float factorY = (float)oldY / (float)newY;
-
-                    int width = m_params["sizex"].getVal<int>() * factorX;
-                    int height = m_params["sizey"].getVal<int>() * factorY;
-
-                    int maxWidth = m_params["sizex"].getMax();
-                    int maxHeight = m_params["sizey"].getMax();
-
-                    m_params["sizex"].setVal<int>(width);
-                    m_params["sizex"].setMeta(new ito::IntMeta(4/newX, maxWidth * factorX, 4/newX), true);
-
-                    m_params["sizey"].setVal<int>(height);
-                    m_params["sizey"].setMeta(new ito::IntMeta(4/newY, maxHeight * factorY, 4/newY), true);
-
-                    int sizeX = m_params["roi"].getVal<int*>()[2] * factorX;
-                    int sizeY = m_params["roi"].getVal<int*>()[3] * factorY;
-                    int offsetX = m_params["roi"].getVal<int*>()[0] * factorX;
-                    int offsetY = m_params["roi"].getVal<int*>()[1] * factorY;
-                    int roi[] = {offsetX, offsetY, sizeX, sizeY};
-                    m_params["roi"].setVal<int*>(roi, 4);
-                    m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, width - 1,4/newX,4/newX,maxWidth * factorX,4/newX), ito::RangeMeta(0, height - 1,4/newY,4/newY,maxHeight * factorY,4/newY)), true);
-                }
-            }
-        }
-
-
-        retValue += checkData(); //check if image must be reallocated
-
-        if (running)
-        {
-            retValue += startDevice(NULL);
-            setGrabberStarted(running);
-        }
-    }
-    else
-    {
-        retValue += it->copyValueFrom(&(*val));
     }
 
 

@@ -105,7 +105,7 @@ FittingFilters::~FittingFilters()
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-static char fitPlaneDoc[] = \
+/*static*/ const char* FittingFilters::fitPlaneDoc = \
 "fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy) \n\
 \n\
 This fit can be executed by different fit strategies: \n\
@@ -246,7 +246,7 @@ RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-static char subtractPlaneDoc[] = "subtracts plane from 2D-dataObject given by plane-parameters A,B,C (z=A+Bx+Cy) \n\
+/*static*/ const char* FittingFilters::subtractPlaneDoc = "subtracts plane from 2D-dataObject given by plane-parameters A,B,C (z=A+Bx+Cy) \n\
 \n\
 If the destinationImage is not the same than the sourceImage, the destinationImage finally is a new data object with the same \
 size and type than the sourceImage and contains the data of the sourceImage subtracted by the given plane. If both are the same, \
@@ -359,7 +359,7 @@ RetVal FittingFilters::subtractPlane(QVector<ito::ParamBase> *paramsMand, QVecto
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-static char subtractRegressionPlaneDoc[] = "subtracts a fitted regression plane from the given 2D input dataObject . \n\
+/*static*/ const char* FittingFilters::subtractRegressionPlaneDoc = "subtracts a fitted regression plane from the given 2D input dataObject . \n\
 \n\
 This method firstly executes the filter *fitPlane* followed by *subtractPlane*.";
 
@@ -406,7 +406,7 @@ RetVal FittingFilters::subtractRegressionPlane(QVector<ito::ParamBase> *paramsMa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-static char polyfitWeighted2DDoc[] = "This method fits a two-dimensional polynomial of given order in x- and y-direction to the \
+/*static*/ const char* FittingFilters::polyfitWeighted2DDoc = "This method fits a two-dimensional polynomial of given order in x- and y-direction to the \
 data 'inputData'. \n\
 \n\
 For the fit, the optional scale and offset values of the input data object are considered. The fit is executed in double precision, \
@@ -438,14 +438,14 @@ no value is taken from this rectangle. The algorithm returns an error if less va
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("inputData", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object") );
+    paramsMand->append( ito::Param("inputData", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object, the fit is based on the regular grid (x,y) defined by the scaling and offset of this data object") );
     paramsMand->append( ito::Param("orderX", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in x-direction"));
     paramsMand->append( ito::Param("orderY", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in y-direction"));
 
-    paramsOpt->append( ito::Param("weights", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "weights") );
+    paramsOpt->append( ito::Param("weights", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "weights, if not given all values are equally weighted") );
     paramsOpt->append( ito::Param("reduceFactor", ito::ParamBase::Double | ito::ParamBase::In, -1.0, 100000.0, -1.0, "If this factor is >= 1.0, every plane of the data object is divided into fields (reduceFactor * (orderXorY+1)) in x-direction and y-direction respectively, where one random, valid value is picked. If < 1.0 (e.g. -1.0 [default]) all valid points are picked"));
 
-    paramsOut->append( ito::Param("coefficients", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, "fitted polynom coefficients"));
+    paramsOut->append( ito::Param("coefficients", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, "fitted polynomial coefficients"));
 
     return retval;
 }
@@ -463,7 +463,7 @@ no value is taken from this rectangle. The algorithm returns an error if less va
 
     std::vector<double> coefficients;
 
-    retval += calcPolyfitWeighted2D(input, orderX, orderY, coefficients, reduceFactor, weights);
+    retval += calcPolyfitWeighted2DRegularGrid(input, orderX, orderY, coefficients, reduceFactor, weights);
 
     (*paramsOut)[0].setVal<double*>( coefficients.data(),  (int)coefficients.size() );
 
@@ -471,7 +471,72 @@ no value is taken from this rectangle. The algorithm returns an error if less va
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-static char polyval2DDoc[] = "This method evaluates a two-dimensional polynom for every point in a given data object\n\
+/*static*/ const char* FittingFilters::polyfitWeighted2DSinglePointsDoc = "This method fits a two-dimensional polynomial of given order in x- and y-direction to the \
+points whose x, y and z coordinates are given in 'xData', 'yData' and 'zData'. \n\
+\n\
+The fit is executed in double precision, \
+such that the input is converted to float64 (if not yet done). NaN values in the x, y or z data objects are ignored. Optionally, you \
+can give a weighting data object (needs to have the same dimension and size than inputData) such that the values are weighted with \
+the values of the data object 'weights'. Values with corresponding weights <= 0 are ignored as well. \n\
+\n\
+All input data objects must have the same size. \n\
+\n\
+Depending on the orders, the fitted polynomial, whose coefficients are returned by this filter, has the following form: \n\
+\n\
+    if (orderX <= orderY): \n\
+        z = f(x,y) = \\sum_{i=0}^orderX \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
+    else: \n\
+        z = f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
+\n\
+The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above. \n\
+\n\
+The solver uses a Vandermonde matrix V as solving strategy and tries to solve V*p=Z, where Z are the valid values of the input data object. \
+The overdetermined system of linear equations is finally solved using a QR factorization of V. If this module is compiled with LAPACK, its solvers \
+are used, else the solve-command of OpenCV (slower) is called.";
+
+
+/*static*/ ito::RetVal FittingFilters::polyfitWeighted2DSinglePointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("xData", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object with x-coordinates of points") );
+    paramsMand->append( ito::Param("yData", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object with y-coordinates of points") );
+    paramsMand->append( ito::Param("zData", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input data object with z-coordinates of points") );
+    paramsMand->append( ito::Param("orderX", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in x-direction"));
+    paramsMand->append( ito::Param("orderY", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in y-direction"));
+
+    paramsOpt->append( ito::Param("weights", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "weights, if not given all values are equally weighted") );
+
+    paramsOut->append( ito::Param("coefficients", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, "fitted polynomial coefficients"));
+
+    return retval;
+}
+
+/*static*/ ito::RetVal FittingFilters::polyfitWeighted2DSinglePoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    const ito::DataObject *xData = paramsMand->at(0).getVal<ito::DataObject*>();
+    const ito::DataObject *yData = paramsMand->at(1).getVal<ito::DataObject*>();
+    const ito::DataObject *zData = paramsMand->at(2).getVal<ito::DataObject*>();
+    ito::DataObject *weights = paramsOpt->at(0).getVal<ito::DataObject*>();
+
+    int orderX = paramsMand->at(3).getVal<int>();
+    int orderY = paramsMand->at(4).getVal<int>();
+
+    std::vector<double> coefficients;
+
+    retval += calcPolyfitWeighted2DSinglePoints(xData, yData, zData, orderX, orderY, coefficients, weights);
+
+    (*paramsOut)[0].setVal<double*>( coefficients.data(),  (int)coefficients.size() );
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const char* FittingFilters::polyval2DDoc = "This method evaluates a two-dimensional polynom for every point in a given data object\n\
 \n\
 For every single pixel in the input data object 'dataZ', its physical coordinate (using scale and offset of the data object) \
 is taken and the polynomial (given by its coefficients) is evaluated and stored in the pixel. \
@@ -518,16 +583,79 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
         memcpy( coefficients.data(), c, sizeof(double)*lp);
     }
 
-    retval += calcPolyval2D(dataZ, paramsMand->at(2).getVal<int>(), paramsMand->at(3).getVal<int>(), coefficients);
+    retval += calcPolyval2DRegularGrid(dataZ, paramsMand->at(2).getVal<int>(), paramsMand->at(3).getVal<int>(), coefficients);
 
     QString msg;
-    msg = tr("Generated object via polyVal with order X = %1, Y = %2").arg(paramsMand->at(2).getVal<int>()).arg(paramsMand->at(3).getVal<int>());
+    msg = tr("Generated object via polyval2D with order X = %1, Y = %2").arg(paramsMand->at(2).getVal<int>()).arg(paramsMand->at(3).getVal<int>());
     dataZ->addToProtocol(std::string(msg.toLatin1().data()));
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
-static char fitPolynom1D_ZDoc[] = "One-dimensional polynomial fit in z-direction for a 3D - data object. \n\
+/*static*/ const char* FittingFilters::polyval2DSinglePointsDoc = "This method evaluates a two-dimensional polynom for every x- and y- coordinate given in xData in yData\n\
+\n\
+For every single pixel whose x- and y-coordinate is given by corresponding values in xData and yData \
+the polynomial (given by its coefficients) is evaluated and stored in zData (float64, same size than xData and yData). \
+\n\
+The polynomial coefficients (p0, p1, ...) are those returned by the filter 'fitPolynom2D' and depend on the polynomial order in X and Y \
+direction: \n\
+    if (orderX <= orderY): \n\
+        f(x,y) = \\sum_{i=0}^orderX \\sum_{j=0}^{orderY-i} p_{ij} x^i y^j \n\
+    else: \n\
+        f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
+\n\
+The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.";
+
+/*static*/ ito::RetVal FittingFilters::polyval2DSinglePointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("dataX", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "data object with x-coordinates (interpreted as float64).") );
+
+    paramsMand->append( ito::Param("dataY", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "data object with y-coordinates (interpreted as float64).") );
+
+    paramsMand->append( ito::Param("dataZ", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "This data object is finally filled with the evaluated polynomial function (float64)") );
+
+    paramsMand->append( ito::Param("coefficients", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, "polynom coefficients as they come from polyfitWeighted2D"));
+
+    paramsMand->append( ito::Param("orderX", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in x-direction"));
+    paramsMand->append( ito::Param("orderY", ito::ParamBase::Int | ito::ParamBase::In, 0, 1000, 2, "polynomial order in y-direction"));
+    
+    return retval;
+}
+
+/*static*/ ito::RetVal FittingFilters::polyval2DSinglePoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    const ito::DataObject *dataX = paramsMand->at(0).getVal<ito::DataObject*>();
+    const ito::DataObject *dataY = paramsMand->at(1).getVal<ito::DataObject*>();
+    ito::DataObject *dataZ = paramsMand->at(2).getVal<ito::DataObject*>();
+
+    int lp = paramsMand->at(3).getLen();
+    double *c = paramsMand->at(3).getVal<double*>();
+
+    std::vector<double> coefficients;
+
+    if (lp > 0)
+    {
+        coefficients.resize(lp);
+        memcpy( coefficients.data(), c, sizeof(double)*lp);
+    }
+
+    retval += calcPolyval2DSinglePoints(dataX, dataY, dataZ, paramsMand->at(4).getVal<int>(), paramsMand->at(5).getVal<int>(), coefficients);
+
+    QString msg;
+    msg = tr("Generated object via polyval2DSinglePoints with order X = %1, Y = %2").arg(paramsMand->at(4).getVal<int>()).arg(paramsMand->at(5).getVal<int>());
+    dataZ->addToProtocol(std::string(msg.toLatin1().data()));
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const char* FittingFilters::fitPolynom1D_ZDoc = "One-dimensional polynomial fit in z-direction for a 3D - data object. \n\
 \n\
 The input data object must be three-dimensional and is internally casted to float64 (if not yet done). The resulting polynomial \
 parameters per pixel are stored in the output data object 'polynoms' whose z-dimension is equal to (order+2). The first (order+1) \
@@ -746,7 +874,7 @@ to parallely compute the approximations for each pixel.";
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-static char getInterpolatedValuesDoc[] = "returns the linearly interpolated values of a given input dataObject at specific 2D point coordinates. \n\
+/*static*/ const char* FittingFilters::getInterpolatedValuesDoc = "returns the linearly interpolated values of a given input dataObject at specific 2D point coordinates. \n\
 \n\
 The given input data object must be a real valued object with two dimensions or a region of interest that only contains one plane (e.g. 1xMxN). \n\
 The point coordinates (coordsSubPix) is a Nx2 floating point data object where each row is the row and column coordinate (sub-pixel) of the desired value. The values must be given \n\
@@ -1607,14 +1735,20 @@ RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<it
     m_filterList.insert("subtractRegressionPlane", filter);
 
 //    TODO: undefined reference see polyfit2d.cpp
-    filter = new FilterDef(FittingFilters::fitPolynom2D, FittingFilters::fitPolynom2DParams, tr("fits 2D-polynomial in 2D-dataObject and returns a double-DataObject with the fitted surface as well as an error value sigma"));
+    filter = new FilterDef(FittingFilters::fitPolynom2D, FittingFilters::fitPolynom2DParams, tr(fitPolynom2DDoc)); 
     m_filterList.insert("fitPolynom2D", filter);
 
     filter = new FilterDef(FittingFilters::polyfitWeighted2D, FittingFilters::polyfitWeighted2DParams, tr(polyfitWeighted2DDoc));
     m_filterList.insert("polyfitWeighted2D", filter);
 
+    filter = new FilterDef(FittingFilters::polyfitWeighted2DSinglePoints, FittingFilters::polyfitWeighted2DSinglePointsParams, tr(polyfitWeighted2DSinglePointsDoc));
+    m_filterList.insert("polyfitWeighted2DSinglePoints", filter);
+
     filter = new FilterDef(FittingFilters::polyval2D, FittingFilters::polyval2DParams, tr(polyval2DDoc));
     m_filterList.insert("polyval2D", filter);
+
+    filter = new FilterDef(FittingFilters::polyval2DSinglePoints, FittingFilters::polyval2DSinglePointsParams, tr(polyval2DSinglePointsDoc));
+    m_filterList.insert("polyval2DSinglePoints", filter);
 
     filter = new FilterDef(FittingFilters::fitPolynom1D_Z, FittingFilters::fitPolynom1D_ZParams, tr(fitPolynom1D_ZDoc));
     m_filterList.insert("fitPolynom1D_Z", filter);
