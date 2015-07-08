@@ -25,6 +25,37 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: DispWindow
 
+Parameters
+============
+
+Every instance of this plugin has the following parameters:
+
+**color**: {int}
+    0: Red, 1: Green, 2: Blue, 3: White
+**gamma**: {int}
+    0: disable gamma correction, 1: enable gamma correction; default disable (see also 'lut')
+**lut**: {seq. of int (char)}
+    Lookup table for a gamma correction with 256 values. The gamma correction itself is en-/disabled via parameter 'gamma'. If enabled, the value to display is modified by lut[value]. Per default the lut is a 1:1 relation.
+**name**: {str}, read-only
+    name of the plugin
+**numgraybits**: {int}, read-only
+    Number of different images: Phaseshift + GrayCode + 2
+**numimg**: {int}
+    Number of current image (phase images, dark image, bright image, graycode images)
+**orientation**: {int}
+    0: vertical, 1: horizontal; default: vertical
+**period**: {int}
+    Cosine period
+**phaseshift**: {int}
+    Count of phase shifts
+**x0**: {int}
+    x0 position of display window [px]
+**xsize**: {int}
+    width of window [px]
+**y0**: {int}
+    y0 position of display window [px]
+**ysize**: {int}
+    height of window [px]
 
 Gamma correction
 =================

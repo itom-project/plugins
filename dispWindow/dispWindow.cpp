@@ -201,7 +201,7 @@ DispWindow::DispWindow() :
 
     //register exec functions done
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DispWindow", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DispWindow", "name of the plugin");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("period", ito::ParamBase::Int, 12, NULL, tr("Cosine period").toLatin1().data());
