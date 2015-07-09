@@ -325,7 +325,7 @@ const ito::RetVal OpenCVGrabber::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 OpenCVGrabber::OpenCVGrabber() : AddInGrabber(), m_isgrabbing(false), m_pCam(NULL), m_CCD_ID(0), m_camStatusChecked(false)
 {
-    ito::Param paramVal("name", ito::ParamBase::String, "OpenCVGrabber", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "OpenCVGrabber", "name of the plugin");
     m_params.insert(paramVal.getName(), paramVal);
 
     int roi[] = {0, 0, 4048, 4048};

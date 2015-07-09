@@ -33,6 +33,7 @@ The company *Vistek* is not responsible for this plugin and therefore does not p
 Changelog
 ==========
 
-* itom setup 1.2.0: This plugin has been compiled using theSVCam GigE SDK 1.4.24.59
-* itom setup 1.3.0: This plugin has been compiled using theSVCam GigE SDK 1.4.24.59
-* itom setup 1.4.0: This plugin has been compiled using theSVCam GigE SDK 1.4.24.59
+* itom setup 1.2.0: This plugin has been compiled using the SVCam GigE SDK 1.4.24.59
+* itom setup 1.3.0: This plugin has been compiled using the SVCam GigE SDK 1.4.24.59
+* itom setup 1.4.0: This plugin has been compiled using the SVCam GigE SDK 1.4.24.59
+* itom setup 2.0.0: This plugin has been compiled using the SVCam GigE SDK 1.4.24.59

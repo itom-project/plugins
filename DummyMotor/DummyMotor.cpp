@@ -144,7 +144,7 @@ DummyMotor::DummyMotor() :
 
     //end register exec functions
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyMotor", NULL);    // Set up the parameter list
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyMotor", "name of the plugin");    // Set up the parameter list
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("numaxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 6, 1, tr("Number of Axis attached to this stage").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);

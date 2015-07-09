@@ -170,6 +170,3 @@ The return integer value will be 1 for MANual, 2 for AUTOmatic, 3 for EXTneral a
 	>>bs.getParam("operation_mode")
 	1
 	>>
-	
-    
-    

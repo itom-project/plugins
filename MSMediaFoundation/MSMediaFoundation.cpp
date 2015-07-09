@@ -154,7 +154,7 @@ const ito::RetVal MSMediaFoundation::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 MSMediaFoundation::MSMediaFoundation() : AddInGrabber(), m_isgrabbing(false), m_pVI(NULL), m_deviceID(0), m_camStatusChecked(false), m_initState(initNotTested)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MSMediaFoundation", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "MSMediaFoundation", "name of the plugin");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::Readonly, "", "name of device");

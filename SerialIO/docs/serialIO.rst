@@ -182,5 +182,3 @@ your user to the **dialout** group, logout once and login again.
     sudo adduser USERNAME dialout
 
 where USERNAME ist the username under which you are running **itom**
-
-

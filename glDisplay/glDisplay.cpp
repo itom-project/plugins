@@ -195,7 +195,7 @@ GLDisplay::GLDisplay() :
 
     //register exec functions done
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "GLDisplay", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "GLDisplay", "name of the plugin");
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("color", ito::ParamBase::Int, 0, 3, 3, tr("0: Red, 1: Green, 2: Blue, 3: White").toLatin1().data());
