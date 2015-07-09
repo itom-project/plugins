@@ -58,6 +58,7 @@ class DialogXimea : public ito::AbstractAddInConfigDialog
 
         inline double msecToSec(double musec) { return (double)musec * 1.0e-3; }
 		inline double secToMsec(double sec) { return (double)(sec * 1.0e3); }
+        bool timing_mode_changed;
 
     public slots: 
 		void parametersChanged(QMap<QString, ito::Param> params);
@@ -67,7 +68,10 @@ class DialogXimea : public ito::AbstractAddInConfigDialog
 		void on_buttonBox_clicked(QAbstractButton* btn);
 		void on_rangeX_valuesChanged(int minValue, int maxValue);
         void on_rangeY_valuesChanged(int minValue, int maxValue);
+        void on_checkTimingMode_clicked(bool checked);
         void on_btnFullROI_clicked();
+        void on_comboTriggerSelector_currentIndexChanged(int index);
+        void on_comboTriggerMode_currentIndexChanged(int index);
 		
 };
 

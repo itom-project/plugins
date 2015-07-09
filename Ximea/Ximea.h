@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
-    Copyright (C) 2013, twip optical solutions GmbH
-    Copyright (C) 2013, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2015, twip optical solutions GmbH
+    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -98,20 +98,23 @@ class Ximea : public ito::AddInGrabber
 
     protected:
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);    /*! <Wait for acquired picture */
-//        ito::RetVal checkData(void);    /*!< Check if objekt has to be reallocated */
+        ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);    /*!< Check if object has to be reallocated */
 
         ito::RetVal setXimeaParam(const char *paramName, int newValue);
 
-		//ito::RetVal adjustROIMeta(bool horizontalNotVertical);
-
     private:
 
-        enum grabState
+        enum DeviceFamily
         {
-            grabberStopped = 0x00,
-            grabberRunning = 0x01,
-            grabberGrabbed = 0x02,
-            grabberGrabError = 0x04
+            familyMR,    //scientific grade firewire
+            familyMQ,    //xiQ USB3, CMOS
+            familyMD,    //xiD USB3, CCD
+            familyMU,    //subminiature, CMOS
+            familyCB,    //xiB, PCI Express, CMOS
+            familyMH,
+            familyCURRERA,
+            familyMT,
+            familyUnknown
         };
 
 		enum SyncParams {          
@@ -121,12 +124,14 @@ class Ximea : public ito::AddInGrabber
             sGain = 0x0008,
             sOffset = 0x0010,
             sTriggerMode = 0x0020,
-			sTriggerMode2 = 0x0040,
+			sTriggerSelector = 0x0040,
 			sBpp = 0x0080,
 			sFrameRate = 0x0100,
 			sGamma = 0x0200,
 			sSharpness = 0x0400,
-            sAll = sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sTriggerMode2 | sBpp | sFrameRate | sGamma | sSharpness };
+            sGpiGpo = 0x0800,
+            sAll = sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sTriggerSelector | sBpp | sFrameRate | sGamma | sSharpness | sGpiGpo 
+        };
 
 		struct RoiMeta
 		{
@@ -145,14 +150,21 @@ class Ximea : public ito::AddInGrabber
 		};
 
 		ito::RetVal synchronizeCameraSettings(int what = sAll);
+        ito::RetVal readCameraIntParam(const char *ximeaParamName, const QString &paramName, bool mandatory = false);
+        ito::RetVal readCameraFloatParam(const char *ximeaParamName, const QString &paramName, bool mandatory = false);
 
 		inline double musecToSec(double musec) { return (double)musec * 1.0e-6; }
 		inline double secToMusec(double sec) { return (double)(sec * 1.0e6); }
 
 		RoiMeta m_roiMeta;
+        DeviceFamily m_family;
+        int m_numGPIPins;
+        int m_numGPOPins;
+        int m_numFrameBurst;
 
         ito::RetVal LoadLib();
         ito::RetVal getErrStr(const int error, const QString &command, const QString &value);
+        ito::RetVal checkError(const XI_RETURN &error, const QString &command, const QString &value = QString());
         int m_saveParamsOnClose;
         
 #if linux
@@ -172,7 +184,7 @@ class Ximea : public ito::AddInGrabber
         SoftwareShading m_shading;
 
 
-        int m_isgrabbing;
+        bool m_isgrabbing;
         ito::RetVal m_acqRetVal;
     signals:
         //void parametersChanged(QMap<QString, ito::Param> params);    /*! Signal send changed or all parameters to listeners */

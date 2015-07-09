@@ -25,6 +25,9 @@
 #include <qdialogbuttonbox.h>
 #include <qvector.h>
 #include <qsharedpointer.h>
+#include <qmessagebox.h>
+
+#include "xiApi.h"
 
 #include "common/addInInterface.h"
 
@@ -32,9 +35,11 @@
 DialogXimea::DialogXimea(ito::AddInBase *grabber) :
     AbstractAddInConfigDialog(grabber),
     m_firstRun(true),
-	m_inEditing(false)
+	m_inEditing(false),
+    timing_mode_changed(false)
 {
     ui.setupUi(this);
+    ui.tabWidget->setCurrentIndex(0);
 
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
@@ -50,30 +55,25 @@ void DialogXimea::enableDialog(bool enabled)
 //---------------------------------------------------------------------------------------------------------------------
 void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 {
+    m_currentParameters = params;
+
     if (m_firstRun)
     {
 		enableDialog(true);
 		setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
 		ui.label_sensor->setText(params["sensor_type"].getVal<char*>());
-		ui.label_serial->setText(QString::number(params["serial_number"].getVal<int>()));
+		ui.label_serial->setText(params["serial_number"].getVal<char*>());
 
 		int binning = params["binning"].getVal<int>();
 		ito::IntMeta *binningMeta = static_cast<ito::IntMeta*>(params["binning"].getMeta());
 		ui.combo_bin->clear();
-		for(int i = binningMeta->getMin(); i <= binningMeta->getMax(); i+=101)
+		for(int i = binningMeta->getMin(); i <= binningMeta->getMax(); i += 101)
 		{
-			ui.combo_bin->addItem(QString("%1").arg(i), i);
-		}
-
-		for(int i = 0; i < ui.combo_bin->count(); ++i)
-		{
-            ui.combo_bin->setCurrentIndex(i);
-			if(ui.combo_bin->currentText().toInt() == binning)
-			{
-				ui.combo_bin->setCurrentIndex(i);
-				break;
-			}
+            if (i != 303)
+            {
+			    ui.combo_bin->addItem(QString("%1x%1").arg(i % 100), i);
+            }
 		}
 		ui.combo_bin->setEnabled(!(params["binning"].getFlags() & ito::ParamBase::Readonly));
 
@@ -94,62 +94,17 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
                 break;
             }
         }
-		ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
-
-		ito::DoubleMeta *gain = static_cast<ito::DoubleMeta*>(params["gain"].getMeta());
-		ui.sliderWidget_Gain->setMinimum(gain->getMin());
-		ui.sliderWidget_Gain->setMaximum(gain->getMax());
-		ui.sliderWidget_Gain->setSingleStep(gain->getStepSize());
-		ui.sliderWidget_Gain->setValue(params["gain"].getVal<int>());
-		ui.sliderWidget_Gain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
-
-		ito::DoubleMeta *integrationtime = static_cast<ito::DoubleMeta*>(params["integration_time"].getMeta());
-		ui.sliderWidget_integrationtime->setMinimum(secToMsec(integrationtime->getMin()));
-		ui.sliderWidget_integrationtime->setMaximum(secToMsec(integrationtime->getMax()));
-		ui.sliderWidget_integrationtime->setSingleStep(secToMsec(integrationtime->getStepSize()));
-		ui.sliderWidget_integrationtime->setValue((secToMsec(params["integration_time"].getVal<double>())));
-
-		ui.sliderWidget_integrationtime->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
-
-		ito::DoubleMeta *framerate = static_cast<ito::DoubleMeta*>(params["framerate"].getMeta());
-		ui.sliderWidget_framerate->setMinimum(framerate->getMin());
-		ui.sliderWidget_framerate->setMaximum(framerate->getMax());
-		ui.sliderWidget_framerate->setSingleStep(framerate->getStepSize());
-		ui.sliderWidget_framerate->setValue(params["framerate"].getVal<int>());
-		ui.sliderWidget_framerate->setEnabled(!(params["framerate"].getFlags() & ito::ParamBase::Readonly));
-
-#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
-        ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
-        ui.rangeX->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
-        ui.rangeY->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
-
-        if (rm->getWidthRangeMeta().getSizeMin() != rm->getWidthRangeMeta().getSizeMax())
-		    ui.rangeX->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
-
-        if (rm->getHeightRangeMeta().getSizeMin() != rm->getHeightRangeMeta().getSizeMax())
-		    ui.rangeY->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
-#else
-        ito::IntMeta *im;
-        im = static_cast<ito::IntMeta*>(params["x0"].getMeta());
-        ui.rangeX->setSingleStep(im->getStepSize());
-        ui.rangeX->setMinimum(0);
-        ui.rangeX->setMinimumValue(0);
-        im = static_cast<ito::IntMeta*>(params["x1"].getMeta());
-        ui.rangeX->setMaximum(im->getMax());
-        ui.rangeX->setMaximumValue(im->getMax());
-
-        im = static_cast<ito::IntMeta*>(params["y0"].getMeta());
-        ui.rangeY->setSingleStep(im->getStepSize());
-        ui.rangeY->setMinimum(0);
-        ui.rangeY->setMinimumValue(0);
-        im = static_cast<ito::IntMeta*>(params["y1"].getMeta());
-        ui.rangeY->setMaximum(im->getMax());
-        ui.rangeY->setMaximumValue(im->getMax());
-#endif
-		ui.spinSizeX->setValue(params["sizex"].getVal<int>());
-		ui.spinSizeY->setValue(params["sizey"].getVal<int>());
 
 		ui.btnFullROI->setEnabled(true);
+
+        ui.checkTimingMode->setEnabled(!(params["timing_mode"].getFlags() & ito::ParamBase::Readonly));
+        ui.comboTriggerMode->setEnabled(!(params["trigger_mode"].getFlags() & ito::ParamBase::Readonly));
+        ui.comboTriggerSelector->setEnabled(!(params["trigger_selector"].getFlags() & ito::ParamBase::Readonly));
+        int numGPIs = params["gpi_mode"].getLen();
+        ui.comboGPI1->setEnabled(numGPIs >= 1);
+        ui.comboGPI2->setEnabled(numGPIs >= 2);
+        ui.comboGPI3->setEnabled(numGPIs >= 3);
+        ui.comboGPI4->setEnabled(numGPIs >= 4);
 
         m_firstRun = false;
     }
@@ -158,62 +113,47 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
     {
         m_inEditing = true;
 
-#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
-		int *roi = params["roi"].getVal<int*>();
-		ui.rangeX->setValues(roi[0], roi[0] + roi[2] - 1);
-		ui.rangeY->setValues(roi[1], roi[1] + roi[3] - 1);
-#else
-		ui.rangeX->setValues(params["x0"].getVal<int>(), params["x1"].getVal<int>());
-		ui.rangeY->setValues(params["y0"].getVal<int>(), params["y1"].getVal<int>());
-		ui.rangeX->setEnabled(! (params["x0"].getFlags() & ito::ParamBase::Readonly));
-		ui.rangeY->setEnabled(! (params["y0"].getFlags() & ito::ParamBase::Readonly));
-#endif
-		ui.spinSizeX->setValue(params["sizex"].getVal<int>());
-		ui.spinSizeY->setValue(params["sizey"].getVal<int>());
+        ui.combo_bpp->setEnabled(!(params["bpp"].getFlags() & ito::ParamBase::Readonly));
 
 		ito::DoubleMeta *gain = static_cast<ito::DoubleMeta*>(params["gain"].getMeta());
-		ui.sliderWidget_Gain->setMinimum(gain->getMin());
-		ui.sliderWidget_Gain->setMaximum(gain->getMax());
-		ui.sliderWidget_Gain->setValue(params["gain"].getVal<double>());
-		if (gain->getStepSize() != 0)
-        {
-            ui.sliderWidget_Gain->setSingleStep(std::max(gain->getStepSize(), 0.00001)); //0.00001 is the minimal step of the spin box
-        }
-        else
-        {
-            ui.sliderWidget_Gain->setSingleStep((gain->getMax() - gain->getMin()) / 100);
-        }
+		ui.sliderWidget_Gain->setMinimum(gain->getMin() * 100.0);
+		ui.sliderWidget_Gain->setMaximum(gain->getMax() * 100.0);
+		ui.sliderWidget_Gain->setValue(params["gain"].getVal<double>() * 100.0);
+		ui.sliderWidget_Gain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
+
+		ito::DoubleMeta *integrationtime = static_cast<ito::DoubleMeta*>(params["integration_time"].getMeta());
+		ui.sliderWidget_integrationtime->setMinimum(secToMsec(integrationtime->getMin()));
+		ui.sliderWidget_integrationtime->setMaximum(secToMsec(integrationtime->getMax()));
+		ui.sliderWidget_integrationtime->setValue((secToMsec(params["integration_time"].getVal<double>())));
+		ui.sliderWidget_integrationtime->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
+
+        int timing_mode = params["timing_mode"].getVal<int>();
+        ui.checkTimingMode->setChecked(timing_mode == XI_ACQ_TIMING_MODE_FRAME_RATE);
+        ui.sliderWidget_framerate->setEnabled(timing_mode == XI_ACQ_TIMING_MODE_FRAME_RATE);
 
 		ito::DoubleMeta *framerate = static_cast<ito::DoubleMeta*>(params["framerate"].getMeta());
 		ui.sliderWidget_framerate->setMinimum(framerate->getMin());
 		ui.sliderWidget_framerate->setMaximum(framerate->getMax());
 		ui.sliderWidget_framerate->setValue(params["framerate"].getVal<double>());
-		if (framerate->getStepSize() != 0)
-        {
-            ui.sliderWidget_framerate->setSingleStep(std::max(framerate->getStepSize(), 0.00001)); //0.00001 is the minimal step of the spin box
-        }
-        else
-        {
-            ui.sliderWidget_framerate->setSingleStep((framerate->getMax() - framerate->getMin()) / 100);
-        }
+		ui.sliderWidget_framerate->setEnabled(!(params["framerate"].getFlags() & ito::ParamBase::Readonly));
 
-		ito::DoubleMeta *integrationtime = static_cast<ito::DoubleMeta*>(params["integration_time"].getMeta());
-		ui.sliderWidget_integrationtime->setMinimum(secToMsec(integrationtime->getMin()));
-		ui.sliderWidget_integrationtime->setMaximum(secToMsec(integrationtime->getMax()));
-		ui.sliderWidget_integrationtime->setValue(secToMsec(params["integration_time"].getVal<double>()));
-		if (integrationtime->getStepSize() != 0)
-        {
-            ui.sliderWidget_integrationtime->setSingleStep(secToMsec(std::max(integrationtime->getStepSize(), 0.00001))); //0.00001 is the minimal step of the spin box
-        }
-        else
-        {
-            ui.sliderWidget_integrationtime->setSingleStep(secToMsec((integrationtime->getMax() - integrationtime->getMin())) / 100);
-        }
+        ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+        ui.rangeX->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+        ui.rangeY->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
+        ui.rangeX->setEnabled(!(params["roi"].getFlags() & ito::ParamBase::Readonly));
+        ui.rangeY->setEnabled(!(params["roi"].getFlags() & ito::ParamBase::Readonly));
+
+		int *roi = params["roi"].getVal<int*>();
+		ui.rangeX->setValues(roi[0], roi[0] + roi[2] - 1);
+		ui.rangeY->setValues(roi[1], roi[1] + roi[3] - 1);
+
+		ui.spinSizeX->setValue(params["sizex"].getVal<int>());
+		ui.spinSizeY->setValue(params["sizey"].getVal<int>());
         
 		int bin = params["binning"].getVal<int>();
 		for(int i = 0; i < ui.combo_bin->count(); ++i)
 		{
-			if(ui.combo_bin->itemData(i, 32).toInt() == bin)
+			if(ui.combo_bin->itemData(i, Qt::UserRole).toInt() == bin)
 			{
 				ui.combo_bin->setCurrentIndex(i);
 				break;
@@ -230,10 +170,37 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 			}
 		}
 
+        const int *gpi_mode = params["gpi_mode"].getVal<int*>();
+        switch (std::min(4,params["gpi_mode"].getLen()))
+        {
+        case 4:
+            ui.comboGPI4->setCurrentIndex(gpi_mode[3]);
+        case 3:
+            ui.comboGPI3->setCurrentIndex(gpi_mode[2]);
+        case 2:
+            ui.comboGPI2->setCurrentIndex(gpi_mode[1]);
+        case 1:
+            ui.comboGPI1->setCurrentIndex(gpi_mode[0]);
+        }
+
+        ui.comboTriggerSelector->setCurrentIndex(params["trigger_selector"].getVal<int>());
+        ui.comboTriggerMode->setCurrentIndex(params["trigger_mode"].getVal<int>());
+
+        if (params["frame_burst_count"].getMax() > 1 && params["trigger_mode"].getVal<int>() > XI_TRG_OFF && params["trigger_selector"].getVal<int>() == XI_TRG_SEL_FRAME_BURST_START)
+        {
+            ui.sliderFrameBurst->setEnabled(true);
+            ui.sliderFrameBurst->setMaximum(params["frame_burst_count"].getMax());
+            ui.sliderFrameBurst->setValue(params["frame_burst_count"].getVal<int>());
+        }
+        else
+        {
+            ui.sliderFrameBurst->setEnabled(false);
+            ui.sliderFrameBurst->setMaximum(params["frame_burst_count"].getMax());
+            ui.sliderFrameBurst->setValue(1);
+        }
+
         m_inEditing = false;
     }
-
-    m_currentParameters = params;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -243,7 +210,6 @@ ito::RetVal DialogXimea::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
 
     //only send parameters which are changed
-#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
 	if(ui.rangeX->isEnabled() || ui.rangeY->isEnabled())
     {
         int x0, x1, y0, y1;
@@ -261,44 +227,10 @@ ito::RetVal DialogXimea::applyParameters()
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("roi", ito::ParamBase::IntArray, 4, roi)));
         }
     }
-
-#else
-	if(ui.rangeX->isEnabled())
-    {
-        int x0;
-        int x1;
-        ui.rangeX->values(x0,x1);
-
-        if((m_currentParameters["x0"].getVal<int>() !=  x0))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x0", ito::ParamBase::Int, x0)));
-        }
-        if((m_currentParameters["x1"].getVal<int>() !=  x1))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("x1", ito::ParamBase::Int, x1)));
-        }
-    }
-
-    if(ui.rangeY->isEnabled())
-    {
-        int y0;
-        int y1;
-        ui.rangeY->values(y0, y1);
-
-        if((m_currentParameters["y0"].getVal<int>() !=  y0))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y0", ito::ParamBase::Int, y0)));
-        }
-        if((m_currentParameters["y1"].getVal<int>() !=  y1))
-        {
-            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("y1", ito::ParamBase::Int, y1)));
-        }
-    }
-#endif
    
 	if (ui.combo_bin->isEnabled())
 	{
-		int bin = ui.combo_bin->itemData(ui.combo_bin->currentIndex()).toInt();//TODO check
+		int bin = ui.combo_bin->itemData(ui.combo_bin->currentIndex()).toInt();
 		if (m_currentParameters["binning"].getVal<int>() != bin)
 		{
 			values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, bin)));
@@ -314,19 +246,78 @@ ito::RetVal DialogXimea::applyParameters()
 		}
 	}
 
-	if (ui.sliderWidget_framerate->isEnabled())
+    if (ui.comboTriggerMode->isEnabled())
 	{
-		double framerate = ui.sliderWidget_framerate->value();
-		if (m_currentParameters["framerate"].getVal<double>() != framerate)
+		int trigger_mode = ui.comboTriggerMode->currentIndex();
+		if (m_currentParameters["trigger_mode"].getVal<int>() != trigger_mode)
 		{
-			values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("framerate", ito::ParamBase::Double, framerate)));
+			values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::Int, trigger_mode)));
 		}
 	}
+
+    if (ui.comboTriggerSelector->isEnabled())
+	{
+		int trigger_selector = ui.comboTriggerSelector->currentIndex();
+		if (m_currentParameters["trigger_selector"].getVal<int>() != trigger_selector)
+		{
+			values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_selector", ito::ParamBase::Int, trigger_selector)));
+		}
+	}
+
+	int frame_burst_count = (int)ui.sliderFrameBurst->value();
+	if (m_currentParameters["frame_burst_count"].getVal<int>() != frame_burst_count)
+	{
+		values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("frame_burst_count", ito::ParamBase::Int, frame_burst_count)));
+	}
+
+    if (ui.comboGPI1->isEnabled())
+    {
+        int gpi[] = {XI_GPI_OFF,XI_GPI_OFF,XI_GPI_OFF,XI_GPI_OFF};
+        if (ui.comboGPI1->isEnabled())
+        {
+            gpi[0] = ui.comboGPI1->currentIndex();
+        }
+        if (ui.comboGPI2->isEnabled())
+        {
+            gpi[1] = ui.comboGPI2->currentIndex();
+        }
+        if (ui.comboGPI3->isEnabled())
+        {
+            gpi[2] = ui.comboGPI3->currentIndex();
+        }
+        if (ui.comboGPI4->isEnabled())
+        {
+            gpi[3] = ui.comboGPI4->currentIndex();
+        }
+
+        if (memcmp(m_currentParameters["gpi_mode"].getVal<int*>(), gpi, std::min(4, m_currentParameters["gpi_mode"].getLen()) * sizeof(int)) != 0)
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gpi_mode", ito::ParamBase::IntArray, m_currentParameters["gpi_mode"].getLen(), gpi)));
+        }
+    }
+
+    if (ui.checkTimingMode->isEnabled())
+    {
+        int timing_mode = (ui.checkTimingMode->isChecked() ? XI_ACQ_TIMING_MODE_FRAME_RATE : XI_ACQ_TIMING_MODE_FREE_RUN);
+        if (timing_mode != m_currentParameters["timing_mode"].getVal<int>())
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timing_mode", ito::ParamBase::Int, timing_mode)));
+        }
+
+	    if (timing_mode == XI_ACQ_TIMING_MODE_FRAME_RATE && ui.sliderWidget_framerate->isEnabled())
+	    {
+		    double framerate = ui.sliderWidget_framerate->value();
+		    if (qAbs(m_currentParameters["framerate"].getVal<double>() - framerate) > std::numeric_limits<double>::epsilon())
+		    {
+			    values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("framerate", ito::ParamBase::Double, framerate)));
+		    }
+	    }
+    }
 
 	if(ui.sliderWidget_Gain->isEnabled())
     {
         double gain = ui.sliderWidget_Gain->value();
-        if(m_currentParameters["gain"].getVal<double>() != gain)
+        if(qAbs(m_currentParameters["gain"].getVal<double>() - gain) > std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, gain)));
         }
@@ -335,7 +326,7 @@ ito::RetVal DialogXimea::applyParameters()
 	if(ui.sliderWidget_integrationtime->isEnabled())
 	{
 		double integrationtime = msecToSec(ui.sliderWidget_integrationtime->value());
-		if (m_currentParameters["integration_time"].getVal<double>() != integrationtime)
+        if (qAbs(m_currentParameters["integration_time"].getVal<double>() - integrationtime) > std::numeric_limits<double>::epsilon())
 		{
 			values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, integrationtime)));
 		}
@@ -368,6 +359,11 @@ void DialogXimea::on_buttonBox_clicked(QAbstractButton* btn)
 
     if (role == QDialogButtonBox::RejectRole)
     {
+        if (timing_mode_changed)
+        {
+            QMessageBox::information(this, tr("timing mode already updated"), tr("You changed the parameter timing_mode. The changed value is automatically applied"));
+        }
+
         reject(); //close dialog with reject
     }
     else if (role == QDialogButtonBox::AcceptRole)
@@ -376,6 +372,7 @@ void DialogXimea::on_buttonBox_clicked(QAbstractButton* btn)
     }
     else
     {
+        timing_mode_changed = false;
         applyParameters(); //ApplyRole
     }
 }
@@ -384,84 +381,62 @@ void DialogXimea::on_buttonBox_clicked(QAbstractButton* btn)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogXimea::on_rangeX_valuesChanged(int minValue, int maxValue)
 {
-#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     ui.spinSizeX->setValue(maxValue - minValue + 1);
-#else
-    int min_ = minValue;
-    int max_ = maxValue;
-    int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["x0"].getMeta() )->getStepSize();
-    int imageOffset = static_cast<ito::IntMeta*>( m_currentParameters["sizex"].getMeta() )->getStepSize();
-    int maxWidth = static_cast<ito::IntMeta*>( m_currentParameters["x1"].getMeta() )->getMax() + 1;
-
-    if ((min_ % stepOffset) != 0)
-    {
-        min_ = stepOffset * qRound((float)min_ / (float)stepOffset);
-        if (min_ >= max_)
-        {
-            min_ = stepOffset * floor((float)min_ / (float)stepOffset);
-        }
-    }
-    min_ = qBound<int>(0, min_, max_);
-
-    if (((max_ - min_ + 1) % imageOffset) != 0)
-    {
-        max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
-    }
-    
-    max_ = qBound<int>(0, max_, maxWidth-1);
-
-    if (min_ != minValue || max_ != maxValue)
-    {
-        ui.rangeX->setValues(min_,max_);
-    }
-    else
-    {
-        ui.spinSizeX->setValue(maxValue - minValue + 1);
-    }
-
-#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogXimea::on_rangeY_valuesChanged(int minValue, int maxValue)
 {
-#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     ui.spinSizeY->setValue(maxValue - minValue + 1);
-#else
-    int min_ = minValue;
-    int max_ = maxValue;
-    int stepOffset = static_cast<ito::IntMeta*>( m_currentParameters["y0"].getMeta() )->getStepSize();
-    int imageOffset = static_cast<ito::IntMeta*>( m_currentParameters["sizey"].getMeta() )->getStepSize();
-    int maxHeight = static_cast<ito::IntMeta*>( m_currentParameters["y1"].getMeta() )->getMax() + 1;
+}
 
-    if ((min_ % stepOffset) != 0)
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogXimea::on_checkTimingMode_clicked(bool checked)
+{
+    QVector<QSharedPointer<ito::ParamBase> > values;
+
+    int timing_mode = (checked ? XI_ACQ_TIMING_MODE_FRAME_RATE : XI_ACQ_TIMING_MODE_FREE_RUN);
+    if (timing_mode != m_currentParameters["timing_mode"].getVal<int>())
     {
-        min_ = stepOffset * qRound((float)min_ / (float)stepOffset);
-        if (min_ >= max_)
-        {
-            min_ = stepOffset * floor((float)min_ / (float)stepOffset);
-        }
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("timing_mode", ito::ParamBase::Int, timing_mode)));
     }
-    min_ = qBound<int>(0, min_, max_);
 
-    if (((max_ - min_ + 1) % imageOffset) != 0)
-    {
-        max_ = min_ - 1 + imageOffset * qRound((float)(max_ - min_ + 1) / (float)imageOffset);
-    }
-    
-    max_ = qBound<int>(0, max_, maxHeight - 1);
+    timing_mode_changed = true;
 
-    if (min_ != minValue || max_ != maxValue)
+    setPluginParameters(values, msgLevelWarningAndError);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogXimea::on_comboTriggerSelector_currentIndexChanged(int index)
+{
+    if (m_currentParameters["frame_burst_count"].getMax() > 1 && ui.comboTriggerMode->currentIndex() > XI_TRG_OFF && index == XI_TRG_SEL_FRAME_BURST_START)
     {
-        ui.rangeY->setValues(min_,max_);
+        ui.sliderFrameBurst->setEnabled(true);
+        ui.sliderFrameBurst->setMaximum(m_currentParameters["frame_burst_count"].getMax());
     }
     else
     {
-        ui.spinSizeY->setValue(maxValue - minValue + 1);
+        ui.sliderFrameBurst->setEnabled(false);
+        ui.sliderFrameBurst->setMaximum(m_currentParameters["frame_burst_count"].getMax());
+        ui.sliderFrameBurst->setValue(1);
     }
-#endif
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogXimea::on_comboTriggerMode_currentIndexChanged(int index)
+{
+    if (m_currentParameters["frame_burst_count"].getMax() > 1 && index > XI_TRG_OFF && ui.comboTriggerSelector->currentIndex() == XI_TRG_SEL_FRAME_BURST_START)
+    {
+        ui.sliderFrameBurst->setEnabled(true);
+        ui.sliderFrameBurst->setMaximum(m_currentParameters["frame_burst_count"].getMax());
+    }
+    else
+    {
+        ui.sliderFrameBurst->setEnabled(false);
+        ui.sliderFrameBurst->setMaximum(m_currentParameters["frame_burst_count"].getMax());
+        ui.sliderFrameBurst->setValue(1);
+    }
+}
 
 
 
