@@ -29,5 +29,3 @@ Compilation
 ===========
 In order to compile LibUSB, get the sources or binaries from LibUSB from libusb.info. Then set LibUSB_DIR to the base
 directory of the 3rd party libusb. libusb is statically linked to the libUSB plugin.
-
-
