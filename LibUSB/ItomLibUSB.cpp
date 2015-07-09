@@ -144,7 +144,7 @@ const ito::RetVal ItomUSBDevice::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL), m_autoDetach(true), m_timeoutMS(4000), m_endpoint_read(1), m_endpoint_write(1)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "ItomUSBDevice", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "ItomUSBDevice", "name of device");
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -152,7 +152,7 @@ ItomUSBDevice::ItomUSBDevice() : AddInDataIO(), m_debugMode(false), m_pDevice(NU
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("endpoint_read", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for reading operations. The used index is LIBUSB_ENDPOINT_IN + endpoint_read, with LIBUSB_ENDPOINT_IN = %1 (default: initialization parameter 'endpoint')").arg(LIBUSB_ENDPOINT_IN).toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("endpoint_write", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for writing operations. The used index is LIBUSB_ENDPOINT_OUT + endpoint_read, with LIBUSB_ENDPOINT_OUT = %1  (default: initialization parameter 'endpoint')").arg(LIBUSB_ENDPOINT_OUT).toLatin1().data());
+    paramVal = ito::Param("endpoint_write", ito::ParamBase::Int, 0, 255, 1, tr("Endpoint index for writing operations. The used index is LIBUSB_ENDPOINT_OUT + endpoint_write, with LIBUSB_ENDPOINT_OUT = %1  (default: initialization parameter 'endpoint')").arg(LIBUSB_ENDPOINT_OUT).toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
