@@ -243,6 +243,10 @@ Ximea::Ximea() :
 	m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("device_type", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Device type (1394, USB2.0, CURRERA, ...)").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("api_version", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("XIMEA API version").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
+	paramVal = ito::Param("device_driver", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Current device driver version").toLatin1().data());
+	m_params.insert(paramVal.getName(), paramVal);
     //now create dock widget for this plugin
         //now create dock widget for this plugin
     DockWidgetXimea *m_dockWidget = new DockWidgetXimea(getID(), this);
@@ -305,20 +309,45 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
                 char strBuf[1024];               
                 DWORD strBufSize = 1024 * sizeof(char);	
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_NAME, &strBuf, &strBufSize, &strType), "get XI_PRM_DEVICE_NAME");
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_NAME, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_NAME);
                 if (!retValue.containsError())
                 {
 			        m_params["sensor_type"].setVal<char*>(strBuf); 
                 }
 
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_TYPE, &strBuf, &strBufSize, &strType), "get XI_PRM_DEVICE_TYPE");
+				int serial_number;
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType), "get XI_PRM_DEVICE_SN");
+                if (!retValue.containsError())
+                {
+                    QString serial_numberHex = QString::number(serial_number, 16);
+                    m_params["serial_number"].setVal<char*>(serial_numberHex.toLatin1().data()); 
+                    m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
+                }
+
+				strBufSize = 1024 * sizeof(char);	
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_TYPE, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_TYPE);
                 if (!retValue.containsError())
                 {
                     m_params["device_type"].setVal<char*>(strBuf);
                 }
+				
+				strBufSize = 1024 * sizeof(char);	
+				retValue += checkError(pxiGetParam(m_handle, XI_PRM_API_VERSION, &strBuf, &strBufSize, &strType), "get: " XI_PRM_API_VERSION);
+                if (!retValue.containsError())
+                {
+                    m_params["api_version"].setVal<char*>(strBuf);
+                }
+				
+				strBufSize = 1024 * sizeof(char);	
+				retValue += checkError(pxiGetParam(m_handle, XI_PRM_DRV_VERSION, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DRV_VERSION);
+                if (!retValue.containsError())
+                {
+                    m_params["device_driver"].setVal<char*>(strBuf);
+                }
 
+#if defined XI_PRM_DEVICE_MODEL_ID
                 int device_model_id = 0;
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_MODEL_ID, &device_model_id, &pSize, &intType), "get XI_PRM_DEVICE_MODEL_ID");
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_MODEL_ID, &device_model_id, &pSize, &intType), "get: " XI_PRM_DEVICE_MODEL_ID);
                 if (!retValue.containsError())
                 {
                     //given by file m3Identify.h
@@ -367,15 +396,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                         m_family = familyMQ;
                     }
                 }
-
-                int serial_number;
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType), "get XI_PRM_DEVICE_SN");
-                if (!retValue.containsError())
-                {
-                    QString serial_numberHex = QString::number(serial_number, 16);
-                    m_params["serial_number"].setVal<char*>(serial_numberHex.toLatin1().data()); 
-                    m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
-                }
+#endif   
             }
 
             if (!retValue.containsError())
@@ -476,11 +497,13 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 // reset timestamp for MQ and MD cameras
 	            if (m_family == familyMD || m_family == familyMQ)
 	            {
+#if defined XI_TS_RST_SRC_SW && defined XI_TS_RST_ARM_ONCE
                     // reset camera timestamp
                     int val = XI_TS_RST_SRC_SW;
                     pxiSetParam(m_handle, XI_PRM_TS_RST_SOURCE, &val, pSize, intType);
                     val = XI_TS_RST_ARM_ONCE;
                     pxiSetParam(m_handle, XI_PRM_TS_RST_MODE, &val, pSize, intType);
+#endif
 	            }
 			    
 			    int badpix = 0;// bad pixel correction default = 0
@@ -555,7 +578,6 @@ ito::RetVal Ximea::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    XI_RETURN ret;
 
     if (this->m_handle == NULL)
     {
@@ -1069,7 +1091,6 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
     int running = 0;
     
     //int trigger_mode = XI_TRG_OUT;    //in new api trg_out does not exist anymore, so we just use free run
-    XI_RETURN ret;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
@@ -1452,7 +1473,6 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
     ito::RetVal retval;
     DWORD pSize = sizeof(int);
     XI_PRM_TYPE pType = xiTypeInteger;
-    XI_RETURN ret;
 
     QByteArray name;
 
@@ -1582,7 +1602,7 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
 	XI_PRM_TYPE intType = xiTypeInteger;
     XI_PRM_TYPE strType = xiTypeString;
 	XI_PRM_TYPE floatType = xiTypeFloat;
-    XI_RETURN ret;
+
 	if (what & sExposure)
 	{
 		it = m_params.find("integration_time");
@@ -1944,8 +1964,10 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
                     if (i == 0)
                     {
+#ifdef SIZE_XI_IMG_V5 //AbsoluteOffsetX and AbsoluteOffsetY is only defined if SIZE_XI_IMG_V5 is defined
                         m_data.setTag("roi_x0", img.AbsoluteOffsetX);
                         m_data.setTag("roi_y0", img.AbsoluteOffsetY);
+#endif
                     }
 
                     if(m_shading.active)

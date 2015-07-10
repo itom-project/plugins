@@ -30,6 +30,8 @@ Parameters
 
 Each instance of this camera has the following internal parameters:
 
+**api_version**: {str}, read-only
+	XIMEA API version
 **bad_pixel**: {int}
     Enable bad pixel correction.
 **binning**: {int}
@@ -42,6 +44,8 @@ Each instance of this camera has the following internal parameters:
     Number of buffers in the queue.
 **cam_number**: {int}, read-only
     Index of the camera device.
+**device_driver**: {str}, read-only
+	Current device driver version
 **device_type**: {str}, read-only
     Device type (1394, USB2.0, CURRERA, ...)
 **frame_burst_count**: {int}
@@ -118,8 +122,8 @@ The tags are:
 
 * timestamp: timestamp of image acquisition in seconds (not MU family)
 * frame_counter: continuous number of frame
-* roi_x0: left offset of ROI
-* roi_y0: top offset of ROI
+* roi_x0: left offset of ROI (only for Ximea API > 4.0.0.5)
+* roi_y0: top offset of ROI (only for Ximea API > 4.0.0.5)
 
 If you change *trigger_mode* to anything else than *Off* and set *trigger_selector* to *frame_burst_start (2)*, it is possible
 to acquire a serie of frames after the software or hardware trigger impulse. This can be adjusted using the parameter *frame_burst_count*.
@@ -142,7 +146,7 @@ only support 24V, modern camera devices support both. This is written at the hou
 Changelog
 ==========
 
-* itom setup 1.2.0: This plugin has been compiled using the XimeaAPI 4.0.0.5
-* itom setup 1.3.0: This plugin has been compiled using the XimeaAPI 4.0.0.5
-* itom setup 1.4.0: This plugin has been compiled using the XimeaAPI 4.0.0.5
-* itom setup 2.0.0: This plugin has been compiled using the XimeaAPI 4.4.0
+* itom setup 1.2.0: This plugin has been compiled using the Ximea API 4.0.0.5
+* itom setup 1.3.0: This plugin has been compiled using the Ximea API 4.0.0.5
+* itom setup 1.4.0: This plugin has been compiled using the Ximea API 4.0.0.5
+* itom setup 2.0.0: This plugin has been compiled using the Ximea API 4.4.0
