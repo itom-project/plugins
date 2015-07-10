@@ -102,7 +102,7 @@ PGRFlyCaptureInterface::PGRFlyCaptureInterface()
 
         char docstring[] = \
 "This plugin supports Point Grey cameras (currently USB models only) that can be run by the FlyCapture2 interface from Point Grey Research. \n\
-The development of this plugin has mainly be done using the USB 3.0 Flea3 camera. \n\
+This plugin was mainly tested with Flea3 (monochrome) and Grasshopper3 cameras (monochrome, color) under Windows and Linux.\n\
 \n\
 The plugin has been compiled using the FlyCapture2 library version %1.%2.%3.%4. \n\
 \n\
@@ -212,7 +212,7 @@ PGRFlyCapture::PGRFlyCapture() :
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PGRFlyCapture", "GrabberName");
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PGRFlyCapture", "name of the camera");
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000006, 1/1.875, 1/1.875, tr("Integrationtime of CCD programmed in seconds.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -239,7 +239,7 @@ PGRFlyCapture::PGRFlyCapture() :
     m_params.insert(paramVal.getName(), paramVal);
 
     int roi[] = {0, 0, 2048, 2048};
-    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]").toLatin1().data());
+    paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("region of interest, ROI (x,y,width,height)").toLatin1().data());
     ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2047), ito::RangeMeta(0, 2047));
     paramVal.setMeta(rm, true);
     m_params.insert(paramVal.getName(), paramVal);
@@ -272,31 +272,31 @@ PGRFlyCapture::PGRFlyCapture() :
     //paramVal = ito::Param("supported_frame_time", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Possible valued for the frame_time in frames per second").toLatin1().data());
     //m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("cam_serial_number", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("Serial number of the attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_serial_number", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, tr("Serial number of the connected camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("cam_model", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Model identifier of the attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_model", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Model identifier of the connected camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("cam_vendor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Name of the attachted camera vendor").toLatin1().data());
+    paramVal = ito::Param("cam_vendor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Name of the camera vendor").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("cam_sensor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Identifier of the chip in attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_sensor", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Identifier of the chip in connected camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("cam_resolution", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Resolution of the chip in attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_resolution", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Resolution of the chip in connected camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("cam_firmware_version", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Serial number of the firmware used in the attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_firmware_version", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Serial number of the firmware used in the connected camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("cam_firmware_build_time", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Built time of the firmware used in the attachted camera").toLatin1().data());
+    paramVal = ito::Param("cam_firmware_build_time", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Built time of the firmware used in the connected camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("cam_interface", ito::ParamBase::String | ito::ParamBase::Readonly, "n.a.", tr("Interface of camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("cam_register", ito::ParamBase::Int, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("Direct read/write of registers").toLatin1().data());
+	paramVal = ito::Param("cam_register", ito::ParamBase::Int, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("Direct read/write of registers, use the hex-number of the register as suffix to read/write a specific register (e.g. getParam('cam_register:0xA01F'))").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
