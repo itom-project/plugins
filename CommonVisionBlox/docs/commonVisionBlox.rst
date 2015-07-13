@@ -82,3 +82,14 @@ Try to enable jumbo frames in your network adapter and set the packet size in Co
 loading the camera in itom. If you want to operate the camera with more than 8bit, make sure to set the CVB Color Format to Mono16 in Common Vision Blox (not auto)
 and save the configuration as well.
 
+Usually you need to configure the camera and its communication first in CommonVisionBlox before using the camera in itom. Open CommonVisionBlox and configure the camera.
+Then safe the configuration (stored in %CVBDATA%/Drivers/GenICam.ini where %CVBDATA% is an environment variable created by CommonVisionBlox) by clicking the corresponding button.
+
+If the camera is loaded in itom, the specific camera and configuration is obtained by this file (if **scanForCameras** is set to False). If you set **scanForCameras** to True,
+CommonVisionBlox will be forced to scan for newly connected cameras and the configuration file is automatically reset to its default.
+
+Things to configure are for example:
+
+* color format
+* packet size
+
