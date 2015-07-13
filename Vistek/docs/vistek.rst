@@ -25,6 +25,46 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: Vistek
 
+Parameters
+===========
+
+An instance of this plugin has the following internal parameters:
+
+**name**: {str}, read-only
+    Vistek
+**cameraModel**: {str}, read-only
+    Camera Model ID
+**cameraManufacturer**: {str}, read-only
+    Camera manufacturer
+**cameraVersion**: {str}, read-only
+    Camera firmware version
+**cameraSerialNo**: {str}, read-only
+    Serial number of the camera (see camera housing)
+**cameraIP**: {str}, read-only
+    IP adress of the camera
+**camnum**: {int}
+    Camera Number
+**exposure**: {float}
+    Exposure time in [s]
+**gain**: {float}
+    Gain [0..18 dB]
+**offset**: {float}
+    Offset [0.0..1.0]
+**binning**: {int}
+    Binning mode (OFF = 0 [default], HORIZONTAL = 1, VERTICAL = 2,  2x2 = 3, 3x3 = 4, 4x4 = 5
+**sizex**: {int}, read-only
+    Width of current camera frame
+**sizey**: {int}, read-only
+    Height of current camera frame
+**bpp**: {int}
+    bit-depth for camera buffer
+**timestamp**: {float}, read-only
+    Time in ms since last image (end of exposure)
+**streamingPacketSize**: {int}, read-only
+    Used streaming packet size (in bytes, more than 1500 usually only possible if you enable jumbo-frames at your network adapter)
+**logLevel**: {int}
+    Log level. The logfile is Vistek_SVGigE.log in the current directory. 0 - logging off (default),  1 - CRITICAL errors that prevent from further operation, 2 - ERRORs that prevent from proper functioning, 3 - WARNINGs which usually do not affect proper work, 4 - INFO for listing camera communication (default), 5 - DIAGNOSTICS for investigating image callbacks, 6 - DEBUG for receiving multiple parameters for image callbacks, 7 - DETAIL for receiving multiple signals for each image callback
+    
 Disclaimer
 ==========
 

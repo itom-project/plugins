@@ -104,7 +104,7 @@ AndorSDK3::AndorSDK3() :
     paramVal = ito::Param("sdk_version", ito::ParamBase::String | ito::ParamBase::Readonly, "[unknown]", tr("Andor SDK3 version").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("trigger_mode", ito::ParamBase::String, "Software", tr("camera trigger (Interal, Software, External, External Start, External Exposure)").toLatin1().data());
+    paramVal = ito::Param("trigger_mode", ito::ParamBase::String, "Software", tr("camera trigger (Internal, Software, External, External Start, External Exposure)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("fan_speed", ito::ParamBase::String, "Off", tr("fan speed (Off, Low, On - not all values are available for every camera)").toLatin1().data());

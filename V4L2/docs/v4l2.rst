@@ -25,3 +25,28 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: V4L2
 
+Parameters
+===========
+
+An instance of this plugin has the following internal parameters:
+
+**name**: {str}, read-only
+    V4L2
+**deviceName**: {str}, read-only
+    name of device
+**x0**: {int}
+    first pixel index in ROI (x-direction)
+**y0**: {int}
+    first pixel index in ROI (y-direction)
+**x1**: {int}
+    last pixel index in ROI (x-direction)
+**y1**: {int}
+    last pixel index in ROI (y-direction)
+**sizex**: {int}, read-only
+    width of ROI (x-direction)
+**sizey**: {int}, read-only
+    height of ROI (y-direction)
+**bpp**: {int}
+    bpp
+**colorMode**: {str}
+    color mode of camera (auto|color|red|green|blue|gray, default: auto -> color or gray)

@@ -26,7 +26,54 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: AVTVimba
         
-Installation
+Parameters
+===========
+
+An instance of this plugin has the following internal parameters:
+
+**name**: {str}, read-only
+    AVTVimba
+**interface**: {str}, read-only
+    Interface type (Firewire, GigE)
+**serial_no**: {str}, read-only
+    Serial number
+**roi**: {int seq.}
+    ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
+**binning**: {int}
+    binning (horizontal_factor * 100 + vertical_factor)
+**timeout**: {float}
+    timeout for image acquisition in sec
+**sizex**: {int}, read-only
+    width of ROI
+**sizex**: {int}, read-only
+    height of ROI
+**camera_number**: {int}
+    Camera Number
+**bpp**: {int}
+    Bit depth of sensor
+**integration_time**: {float}
+    Integrationtime of CCD [s]
+**offset**: {float}
+    Offset as physical value that is a DC offset applied to the video signal. This values changes the blacklevel
+**gain**: {float}
+    Gain of AD in dB, set it to 0.0 for best image quality
+**gain_auto**: {int}
+    auto-controlled gain (0: off, 1: continuously varies the gain; gain will be read-only then)
+**gamma**: {float}
+    Gamma value
+**stream_bps**: {int}
+    Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter Installation
+**packet_size**: {int}
+    Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter
+**device_temperature**:{float}, read-only
+    device temperature of sensor in °C
+**trigger_mode**:{int}
+    trigger mode (0: Off, 1: On)
+**trigger_source**: {str}
+    trigger source (Freerun, Line1, Line2, Line3, Line4, FixedRate, Software, InputLines). Not all values are supported for all cameras
+**trigger_activation**: {str}
+    trigger activation (RisingEdge, FallingEdge, AnyEdge, LevelHigh, LevelLow). Not all values are supported for all cameras
+
 =============
 
 In order to use this plugin, please install the Vimba SDK from Allied Vision in version 1.3.0 or higher (see http://www.alliedvisiontec.com/de/produkte/software.html).

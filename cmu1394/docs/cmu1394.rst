@@ -25,6 +25,40 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: CMU1394
 
+Parameters
+===========
+
+An instance of this plugin has the following internal parameters:
+
+**name**: {str}, read-only
+    Name of plugin
+**integration_time**: {float}
+    Integrationtime of CCD programmed in s
+**gain**: {float}
+    Gain
+**offset**: {float}
+    Offset
+**x0**: {int}
+    Startvalue for ROI
+**y0**: {int}
+    Stoppvalue for ROI
+**sizex**: {int}
+    ROI-Size in x
+**sizey**: {int}
+    ROI-Size in y
+**bpp**: {int}
+    Grabdepth in bpp
+**timeout**: {float}
+    Timeout for grabbing in s
+**trigger_enable**: {int}
+    Enable triggermode
+**CamNumber**: {int}, read-only
+    Number of this Camera
+**trigger_mode**: {int}
+    Set Triggermode
+**swapByteOrder**: {int}
+    Swap byte order for 16bit images
+
 Changelog
 ==========
 

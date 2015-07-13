@@ -25,6 +25,36 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: CommonVisionBlox
         
+Parameters
+===========
+
+An instance of this plugin has the following internal parameters:
+
+**name**: {str}, read-only
+    name of plugin
+**integration_time**: {float}
+    Exposure time of chip (in seconds)
+**heartbeat_timeout**: {int}
+    Heartbeat timeout of GigE Vision Transport Layer
+**acquisition_mode**: {str}
+    'snap' is a single image acquisition (only possible in trigger_mode 'off'), 'grab' is a continuous acquisition
+**trigger_mode**: {str}
+    'off': camera is not explicitely triggered but operated in freerun mode. The next acquired image is provided upon acquire, 'software' sets trigger mode to On and fires a software trigger at acquire (only possible in acquisition_mode 'grab')
+**sizex**: {int}, read-only
+    Pixelsize in x (cols)
+**sizey**: {int}, read-only
+    Pixelsize in y (rows)
+**bpp**: {int}, read-only
+    bit depth
+**raw**: {str}
+    use raw:paramname to set internal paramname of camera to value
+**vendor_name**: {str}, read-only
+    vendor name
+**model_name**: {str}, read-only
+    model name
+**roi**: {int seq.}
+    ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
+    
 Usage
 =====
 
