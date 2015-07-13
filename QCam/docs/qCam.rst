@@ -25,6 +25,36 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: QCam
 
+Parameters
+===========
+
+An instance of this plugin has the following internal parameters:
+
+**name**: {str}, read-only
+    QCam
+**integration_time**: {float}
+    Integrationtime of CCD programmed in s
+**gain**: {float}
+    Gain
+**offset**: {float}
+    Offset
+**x0**: {int}
+    first pixel of ROI in x-direction
+**y0**: {int}
+    first pixel of ROI in y-direction
+**x1**: {int}
+    last pixel of ROI in x-direction
+**y1**: {int}
+    last pixel of ROI in y-direction
+**sizex**: {int}, read-only
+    width of ROI
+**sizey**: {int}, read-only
+    height of ROI
+**bpp**: {int}
+    bit depth per pixel
+**cooled**: {int}
+    CCD cooler
+    
 Changelog
 ==========
 

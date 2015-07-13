@@ -28,7 +28,7 @@ The following parameters are mandatory or optional for initializing an instance 
 Parameters
 ===========
 
-An instance of this plugins has the following internal parameters:
+An instance of this plugin has the following internal parameters:
 
 **debug**: {int}
     If true, all out and inputs are written to dockingWidget
