@@ -87,7 +87,7 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
 
     if (retval.containsError())
     {
-        if (retval != NULL && dObjImages->getDims() == 3)
+        if (dObjImages != NULL && dObjImages->getDims() == 3)
         {
             retval = ito::dObjHelper::verify3DDataObject(dObjImages, "sourceImage", 1, 1,
                                                                                     gradY + 1, std::numeric_limits<short>::max(), 

@@ -1670,7 +1670,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
     it = rawMetaData.constFind("manufacid");
     if (it != rawMetaData.constEnd()) //Manufacturer ID, Unsigned Char, 10-bytes
     {
-        metaData["ManufacID"] = *it;
+        metaData["ManufacID"] = it->data();
         if (it->length() > 10)
         {
             retValue += ito::RetVal(ito::retWarning, 0, "Header ManufacID is longer than 10 characters");
@@ -1799,7 +1799,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
         }
         else
         {
-            metaData["Zresolution"] = *it;
+            metaData["Zresolution"] = it->data();
         }
     }
 

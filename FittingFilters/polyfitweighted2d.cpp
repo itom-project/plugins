@@ -315,7 +315,7 @@ void printFortranMatrix(const char* name, double *vals, int m, int n)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> static ito::RetVal FittingFilters::calcPolyfitWeighted2D(const _Tp *X, const _Tp *Y, const _Tp *Z, const _Tp *W, int orderX, int orderY, int nrOfPoints, std::vector<double> &coefficients)
+template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighted2D(const _Tp *X, const _Tp *Y, const _Tp *Z, const _Tp *W, int orderX, int orderY, int nrOfPoints, std::vector<double> &coefficients)
 {
     ito::RetVal retval;
 

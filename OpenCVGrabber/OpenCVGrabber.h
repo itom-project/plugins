@@ -34,7 +34,7 @@
 #include <windows.h>
 #else
 // linux
-#include "wintypedefs.h"
+//#include "wintypedefs.h"
 #endif
 
 #define BUFFERNUMBER 1 //Maximal Number of Buffers: 32
