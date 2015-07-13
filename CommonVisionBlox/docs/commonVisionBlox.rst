@@ -39,7 +39,7 @@ An instance of this plugin has the following internal parameters:
 **acquisition_mode**: {str}
     'snap' is a single image acquisition (only possible in trigger_mode 'off'), 'grab' is a continuous acquisition
 **trigger_mode**: {str}
-    'off': camera is not explicitely triggered but operated in freerun mode. The next acquired image is provided upon acquire, 'software' sets trigger mode to On and fires a software trigger at acquire (only possible in acquisition_mode 'grab')
+    'off': camera is not explicitly triggered but operated in freerun mode. The next acquired image is provided upon acquire, 'software' sets trigger mode to On and fires a software trigger at acquire (only possible in acquisition_mode 'grab')
 **sizex**: {int}, read-only
     Pixelsize in x (cols)
 **sizey**: {int}, read-only
@@ -47,7 +47,7 @@ An instance of this plugin has the following internal parameters:
 **bpp**: {int}, read-only
     bit depth
 **raw**: {str}
-    use raw:paramname to set internal paramname of camera to value
+    use raw:paramname to set internal paramname of camera to value. paramname is the original GenICam parameter name.
 **vendor_name**: {str}, read-only
     vendor name
 **model_name**: {str}, read-only
@@ -90,6 +90,6 @@ CommonVisionBlox will be forced to scan for newly connected cameras and the conf
 
 Things to configure are for example:
 
-* color format
+* color format (bit depth...)
 * packet size
 

@@ -62,7 +62,7 @@ CommonVisionBlox::CommonVisionBlox() :
     sm.addItem("grab");
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("trigger_mode", ito::ParamBase::String, "off", tr("'off': camera is not explicitely triggered but operated in freerun mode. The next acquired image is provided upon acquire, 'software' sets trigger mode to On and fires a software trigger at acquire (only possible in acquisition_mode 'grab').").toLatin1().data());
+    paramVal = ito::Param("trigger_mode", ito::ParamBase::String, "off", tr("'off': camera is not explicitly triggered but operated in freerun mode. The next acquired image is provided upon acquire, 'software' sets trigger mode to On and fires a software trigger at acquire (only possible in acquisition_mode 'grab').").toLatin1().data());
     ito::StringMeta sm2(ito::StringMeta::String);
     sm2.addItem("off");
     sm2.addItem("software");
@@ -86,7 +86,7 @@ CommonVisionBlox::CommonVisionBlox() :
     m_params.insert(paramVal.getName(), paramVal);
 #endif
 
-    paramVal = ito::Param("raw", ito::ParamBase::String ,"", tr("use raw:paramname to set internal paramname of camera to value").toLatin1().data());
+    paramVal = ito::Param("raw", ito::ParamBase::String ,"", tr("use raw:paramname to set internal paramname of camera to value. paramname is the original GenICam parameter name.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("vendor_name", ito::ParamBase::String | ito::ParamBase::Readonly ,"unknown", tr("vendor name").toLatin1().data());
