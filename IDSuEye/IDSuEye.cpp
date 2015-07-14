@@ -1228,6 +1228,7 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
         if (!rettemp.containsError())
         {
             it->setVal<int>(uintVal);
+			if (uintVal3[2] < 1) uintVal3[2] = 1;
             it->setMeta(new ito::IntMeta(uintVal3[0], uintVal3[1], uintVal3[2]),true);
         }
         else
@@ -1805,12 +1806,20 @@ ito::RetVal IDSuEye::checkData(ito::DataObject *externalDataObject)
 ito::RetVal IDSuEye::setMinimumFrameRate()
 {
     //get frametime range and set the fps to the minimum value in order to achieve a huge exposure time range (frame rate is not important in non-free-run mode)
-    double minFps, maxFps, incFps;
-    ito::RetVal retVal = checkError(is_GetFrameTimeRange(m_camera, &minFps, &maxFps, &incFps));
+    double minFrametime, maxFrametime, incFrametime; //fps is 1/frametime
+    ito::RetVal retVal = checkError(is_GetFrameTimeRange(m_camera, &minFrametime, &maxFrametime, &incFrametime));
     if (!retVal.containsError())
     {
-        retVal += checkError(is_SetFrameRate(m_camera, minFps, &minFps));
-        m_params["frame_rate"].setVal<double>(minFps);
+		if (maxFrametime < minFrametime)
+			std::swap(minFrametime, maxFrametime);
+
+		double minFps = 1.0 / maxFrametime;
+		double maxFps = 1.0 / minFrametime;
+		double current;
+
+        retVal += checkError(is_SetFrameRate(m_camera, minFps, &current));
+		m_params["frame_rate"].setMeta(new ito::DoubleMeta(minFps, maxFps), true);
+        m_params["frame_rate"].setVal<double>(current);
     }
     return retVal;
 }
