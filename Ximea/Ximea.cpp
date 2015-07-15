@@ -1294,7 +1294,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
             if (count == 1)
             {
-                int numBuffers = 2;
+                int numBuffers = std::max( (int)(m_params["buffers_queue_size"].getMin()), 2);
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_ACQ_FRAME_BURST_COUNT, &count, sizeof(int), intType), "set:" XI_PRM_ACQ_FRAME_BURST_COUNT, "1");
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_BUFFERS_QUEUE_SIZE, &numBuffers, sizeof(int), intType), "set:" XI_PRM_BUFFERS_QUEUE_SIZE, "2");
             }
