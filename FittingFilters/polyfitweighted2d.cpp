@@ -852,6 +852,11 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
     }
     else
     {
+        //make x and y flat:
+        int total = dataXFloat.getSize(0) * dataXFloat.getSize(1);
+        cv::Mat xFlatten = dataXFloat.getCvPlaneMat(0)->reshape(0, 1);
+        cv::Mat yFlatten = dataYFloat.getCvPlaneMat(0)->reshape(0, 1);
+
         //Polynomial is:
         //
         // if (order_x=n) <= (order_y=m):
@@ -880,10 +885,8 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
         }
         else
         {
-            ito::DataObject result(dataXFloat.getSize(0), dataXFloat.getSize(1), TYPEID);
-            cv::Mat *result_ = result.getCvPlaneMat(0);
+            cv::Mat result(1, total, TYPEID == ito::tFloat32 ? CV_32FC1 : CV_64FC1);
 
-            const double *coeff = coefficients.data();
             int ordercolumn = 1;
             int lp = (int)coefficients.size();
 
@@ -894,12 +897,12 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
 
             if (TYPEID == ito::tFloat32)
             {
-                Vrow = new cv::Mat(result_->cols, lp, CV_32FC1);
+                Vrow = new cv::Mat(total, lp, CV_32FC1);
                 P = cv::Mat(lp, 1, CV_32FC1);
             }
             else
             {
-                Vrow = new cv::Mat(result_->cols, lp, CV_64FC1);
+                Vrow = new cv::Mat(total, lp, CV_64FC1);
                 P = cv::Mat(lp, 1, CV_64FC1);
             }     
 
@@ -919,78 +922,74 @@ template<typename _Tp> /*static*/ ito::RetVal FittingFilters::calcPolyfitWeighte
             int currentColumn = 0;
             cv::Mat temp;
 
-            const _Tp *xRowPtr;
-            const _Tp *yRowPtr;
+            const _Tp *xRowPtr = (_Tp*)xFlatten.ptr(0);
+            const _Tp *yRowPtr = (_Tp*)yFlatten.ptr(0);
             int cols = dataXFloat.getSize(1);
 
-            for (int row = 0; row < dataXFloat.getSize(0); ++row)
+            majorColumn = 0;
+            currentColumn = 0;
+
+            if (n <= m) // f(x,y) = \sum_{i=0}^n \sum_{j=0}^{m-i} p_{ij} x^i y^j -> coefficients contain p in the order of these sums
             {
-                xRowPtr = (_Tp*)dataXFloat.rowPtr(0, row);
-                yRowPtr = (_Tp*)dataYFloat.rowPtr(0, row);
-
-                majorColumn = 0;
-                currentColumn = 0;
-
-                if (n <= m) // f(x,y) = \sum_{i=0}^n \sum_{j=0}^{m-i} p_{ij} x^i y^j -> coefficients contain p in the order of these sums
+                for (int i = 0; i <= n; ++i)
                 {
-                    for (int i = 0; i <= n; ++i)
+                    //this handles j = 0 (for i = 0 this is already done above)
+                    if (i > 0)
                     {
-                        //this handles j = 0 (for i = 0 this is already done above)
-                        if (i > 0)
+                        currentColumn ++;
+                        for (int idx = 0; idx < total; ++idx)
                         {
-                            currentColumn ++;
-                            for (int col = 0; col < cols; ++col)
-                            {
-                                CVMATREF_2DREAL(Vrow,col,currentColumn) = xRowPtr[col] * CVMATREF_2DREAL(Vrow,col,majorColumn);
-                            }
-                            majorColumn = currentColumn;
+                            CVMATREF_2DREAL(Vrow,idx,currentColumn) = xRowPtr[idx] * CVMATREF_2DREAL(Vrow,idx,majorColumn);
                         }
+                        majorColumn = currentColumn;
+                    }
 
-                        for (int j = 1; j <= m-i; ++j)
+                    for (int j = 1; j <= m-i; ++j)
+                    {
+                        currentColumn ++;
+                        for (int idx = 0; idx < total; ++idx)
                         {
-                            currentColumn ++;
-                            for (int col = 0; col < cols; ++col)
-                            {
-                                CVMATREF_2DREAL(Vrow,col,currentColumn) = yRowPtr[row] * CVMATREF_2DREAL(Vrow,col,currentColumn-1);
-                            }
+                            CVMATREF_2DREAL(Vrow,idx,currentColumn) = yRowPtr[idx] * CVMATREF_2DREAL(Vrow,idx,currentColumn-1);
                         }
                     }
                 }
-                else // \sum_{j=0}^m \sum_{i=0}^{n-j} p_{ij} y^j x^i -> coefficients contain p in the order of these sums
-                {
-                    for (int j = 0; j <= m; ++j)
-                    {
-                        //this handles i = 0 (for j = 0 this is already done above)
-                        if (j > 0)
-                        {
-                            currentColumn ++;
-                            for (int col = 0; col < cols; ++col)
-                            {
-                                CVMATREF_2DREAL(Vrow,col,currentColumn) = yRowPtr[row] * CVMATREF_2DREAL(Vrow,col,majorColumn);
-                            }
-                            majorColumn = currentColumn;
-                        }
-
-                        for (int i = 1; i <= n-j; ++i)
-                        {
-                            currentColumn ++;
-                            for (int col = 0; col < cols; ++col)
-                            {
-                                CVMATREF_2DREAL(Vrow,col,currentColumn) = xRowPtr[col] * CVMATREF_2DREAL(Vrow,col,currentColumn-1);
-                            }
-                        }
-                    }
-                }
-
-                temp = (*Vrow) * P;
-
-                //here it is assumed that data lies continuously in temp
-                memcpy( result_->ptr(row), temp.data, sizeof(_Tp) * result_->cols );
             }
+            else // \sum_{j=0}^m \sum_{i=0}^{n-j} p_{ij} y^j x^i -> coefficients contain p in the order of these sums
+            {
+                for (int j = 0; j <= m; ++j)
+                {
+                    //this handles i = 0 (for j = 0 this is already done above)
+                    if (j > 0)
+                    {
+                        currentColumn ++;
+                        for (int idx = 0; idx < total; ++idx)
+                        {
+                            CVMATREF_2DREAL(Vrow,idx,currentColumn) = yRowPtr[idx] * CVMATREF_2DREAL(Vrow,idx,majorColumn);
+                        }
+                        majorColumn = currentColumn;
+                    }
+
+                    for (int i = 1; i <= n-j; ++i)
+                    {
+                        currentColumn ++;
+                        for (int idx = 0; idx < total; ++idx)
+                        {
+                            CVMATREF_2DREAL(Vrow,idx,currentColumn) = xRowPtr[idx] * CVMATREF_2DREAL(Vrow,idx,currentColumn-1);
+                        }
+                    }
+                }
+            }
+
+            temp = (*Vrow) * P;
+
+            //here it is assumed that data lies continuously in temp
+            memcpy( result.data, temp.data, sizeof(_Tp) * total );
 
             delete Vrow;
 
-            *dataZ = result;
+            int sizes[] = {dataXFloat.getSize(0), dataXFloat.getSize(1)};
+            cv::Mat result2 = result.reshape(0, sizes[0]);
+            *dataZ = ito::DataObject(2, sizes, TYPEID, &result2, 1);
         }
     }
 
