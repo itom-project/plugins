@@ -47,7 +47,6 @@
 IDSuEye::IDSuEye() :
     AddInGrabber(),
     m_camera(IS_INVALID_HIDS),
-    m_pMemory(NULL),
     m_colouredOutput(false)
 {
     m_blacklevelRange.s32Inc = m_blacklevelRange.s32Min = m_blacklevelRange.s32Max = 0;
@@ -62,7 +61,7 @@ IDSuEye::IDSuEye() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 1616, 101, tr("Horizontal and vertical binning, depending on camera ability. 104 means a 1x binning in horizontal and 4x binning in vertical direction. (values up to 1x, 2x, 3x, 4x, 5x, 6x, 8x, 12x are valid; if read only binning is not supported)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("frame_rate", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 10000.0, 0.5, tr("frame rate in fps. This value is always set to the minimum value in order to allow huge exposure times. Since the camera is not run in free-run mode, the frame rate is not important.").toLatin1().data());
+    paramVal = ito::Param("frame_rate", ito::ParamBase::Double, 0.0, 10000.0, 0.5, tr("frame rate in fps.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.5, tr("Gain (normalized value 0..1)").toLatin1().data());
@@ -123,6 +122,8 @@ IDSuEye::IDSuEye() :
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.04, 1000.0, 2.0, tr("Timeout for acquiring images in seconds").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+    paramVal = ito::Param("fps", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1000.0, 0.0, tr("fps reported by camera").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
     DockWidgetIDS *dw = new DockWidgetIDS(this);
@@ -331,14 +332,17 @@ ito::RetVal IDSuEye::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue;
 
-    //if old memory exists try to free it
-    if (m_pMemory)
+    for (int n = 0; n < BUFSIZE; n++)
     {
-        is_FreeImageMem(m_camera, m_pMemory->ppcImgMem, m_pMemory->pid);
-        delete m_pMemory;
-        m_pMemory = NULL;
+        is_ClearSequence (m_camera);
+        if (m_pMemory[n].ppcImgMem != NULL)
+        {
+            is_FreeImageMem(m_camera, m_pMemory[n].ppcImgMem, m_pMemory[n].pid);
+            m_pMemory[n].ppcImgMem = NULL;
+            m_pMemory[n].pid = -1;
+        }
     }
-    
+
     if (m_camera != IS_INVALID_HIDS)
     {
         retValue += checkError(is_ExitCamera(m_camera));
@@ -389,7 +393,14 @@ ito::RetVal IDSuEye::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
 
     if (!retValue.containsError())
     {
-        if (hasIndex)
+        if (key == "fps")
+        {
+            double tmpFps;
+            is_GetFramesPerSecond (m_camera, &tmpFps);
+            it->setVal<double>(tmpFps);
+            *val = *it;
+        }
+        else if (hasIndex)
         {
             *val = apiGetParam(*it, hasIndex, index, retValue);
         }
@@ -541,7 +552,7 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
             if (!retValue.containsError())
             {
-                retValue += setMinimumFrameRate();
+//                retValue += setMinimumFrameRate();
                 retValue += synchronizeCameraSettings(sExposure | sRoi);
             }
 
@@ -621,7 +632,7 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
 
             if (!retValue.containsError())
             {
-                retValue += setMinimumFrameRate();
+//                retValue += setMinimumFrameRate();
                 retValue += synchronizeCameraSettings(sBinning | sRoi | sExposure);
             }
         }
@@ -812,6 +823,10 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                 retValue += synchronizeCameraSettings(sBppAndColorMode);
             }
         }
+        else if (key == "frame_rate")
+        {
+            retValue += setFrameRate(val->getVal<double>());
+        }
         else
         { 
             //e.g. timeout
@@ -835,11 +850,6 @@ ito::RetVal IDSuEye::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
     return retValue;
 }
 
-
-
-
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // function moved into addInGrabber.cpp -> standard for all cameras / ADDA
 
@@ -859,8 +869,10 @@ ito::RetVal IDSuEye::startDevice(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue = ito::retOk;
 
-    checkData(); //this will be reallocated in this method.
+    retValue += checkData(); //this will be reallocated in this method.
 
+    if (grabberStartedCount() == 0)
+        is_CaptureVideo(m_camera, IS_DONT_WAIT);
     incGrabberStarted();
 
     if (waitCond)
@@ -891,7 +903,7 @@ ito::RetVal IDSuEye::stopDevice(ItomSharedSemaphore *waitCond)
     decGrabberStarted();
     if (grabberStartedCount() == 0)
     {
-        
+        is_StopLiveVideo(m_camera, IS_WAIT );
     }
     else if (grabberStartedCount() < 0)
     {
@@ -931,36 +943,33 @@ ito::RetVal IDSuEye::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     {
         retValue += ito::RetVal(ito::retError, 1002, tr("Acquire of IDSuEye can not be executed, since camera has not been started.").toLatin1().data());
     }
-    else if (m_pMemory == NULL)
-    {
-        retValue += ito::RetVal(ito::retError, 1003, tr("no valid camera memory has been allocated").toLatin1().data());
-    }
     else
     {
-        //get timeout in 10ms steps, minimum is 40ms
-        int timeout = std::max(4,qRound(m_params["timeout"].getVal<double>() * 100.0)); //*100 gets from seconds to 10ms base
-        m_acquisitionRetVal = ito::retOk;
         m_pMemory->imageAvailable = false;
-
+/*
         if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
             waitCond = NULL;
         }
-
-        INT code = is_FreezeVideo(m_camera, timeout);
+*/
+        char *pcMemLast;
+		is_GetActSeqBuf(m_camera, &m_pLockedBuf.pid, &m_pLockedBuf.ppcImgMem, &pcMemLast);
+		int code = is_LockSeqBuf(m_camera, m_pLockedBuf.pid, m_pLockedBuf.ppcImgMem);
         if (code == IS_TRANSFER_ERROR)
         {
-            m_acquisitionRetVal = ito::RetVal(ito::retError, 0, "failed capturing an image, transfer failed. Check / reduce pixel clock");
+            retValue += ito::RetVal(ito::retError, 0, "failed capturing an image, transfer failed. Check / reduce pixel clock");
+            is_UnlockSeqBuf(m_camera, m_pLockedBuf.pid, m_pLockedBuf.ppcImgMem);
         }
         else if (code != IS_SUCCESS)
         {
-            m_acquisitionRetVal = checkError(code);
+            retValue += checkError(code);
+            is_UnlockSeqBuf(m_camera, m_pLockedBuf.pid, m_pLockedBuf.ppcImgMem);
         }
         else
         {
-            m_pMemory->imageAvailable = true;
+            m_imageAvailable = true;
         }
     }
 
@@ -1070,7 +1079,7 @@ ito::RetVal IDSuEye::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue = m_acquisitionRetVal;
 
-    if (!m_pMemory || m_pMemory->imageAvailable == false)
+    if (m_imageAvailable == false)
     {
         retValue += ito::RetVal(ito::retError, 0, "no image has been acquired");
     }
@@ -1089,15 +1098,17 @@ ito::RetVal IDSuEye::retrieveData(ito::DataObject *externalDataObject)
         }
 
         int pnX, pnY, pnBits, pnPitch;
-        is_InquireImageMem(m_camera, m_pMemory->ppcImgMem, m_pMemory->pid, &pnX, &pnY, &pnBits, &pnPitch);
+
+        is_InquireImageMem(m_camera, m_pLockedBuf.ppcImgMem, m_pLockedBuf.pid, &pnX, &pnY, &pnBits, &pnPitch);
         int bytesPerLine = m_pMemory->width * m_pMemory->bitspixel / 8;
-        char *startPtr = m_pMemory->ppcImgMem;
+        char *startPtr = m_pLockedBuf.ppcImgMem;
         // pnPitch is in bits
+        // ck 13.07.15 at least for V 4.7 it is in byte ...
 
         //in rgba8_packed, the alpha channel is 0, this must be 255 in itom (opaque)
         if (m_colouredOutput)
         {
-            UCHAR *sourcePtr = (UCHAR*)(m_pMemory->ppcImgMem + 3);
+            UCHAR *sourcePtr = (UCHAR*)(startPtr + 3);
             //set alpha value in image to 255 (else it is transparent)
             for (int y = 0; y < m_pMemory->height; ++y)
             {
@@ -1114,10 +1125,15 @@ ito::RetVal IDSuEye::retrieveData(ito::DataObject *externalDataObject)
         {
             cv::Mat *cvMat = ((cv::Mat *)externalDataObject->get_mdata()[externalDataObject->seekMat(0)]);
 
-            for (int y = 0; y < m_pMemory->height; y++)
+            if (pnPitch == bytesPerLine)
+                memcpy(cvMat->ptr(0), startPtr, m_pMemory->height * bytesPerLine);
+            else
             {
-                memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
-                startPtr += pnPitch;
+                for (int y = 0; y < m_pMemory->height; y++)
+                {
+                    memcpy(cvMat->ptr(y), startPtr, bytesPerLine);
+                    startPtr += pnPitch;
+                }
             }
         }
 
@@ -1125,10 +1141,15 @@ ito::RetVal IDSuEye::retrieveData(ito::DataObject *externalDataObject)
         {
             cv::Mat *cvMat = ((cv::Mat *)m_data.get_mdata()[m_data.seekMat(0)]);
 
-            for (int y = 0; y < m_pMemory->height; y++)
+            if (pnPitch == bytesPerLine)
+                memcpy(cvMat->ptr(0), startPtr, m_pMemory->height * bytesPerLine);
+            else
             {
-                memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
-                startPtr += pnPitch;
+                for (int y = 0; y < m_pMemory->height; y++)
+                {
+                    memcpy(cvMat->ptr(y), startPtr , bytesPerLine);
+                    startPtr += pnPitch;
+                }
             }
         }
 
@@ -1152,7 +1173,9 @@ ito::RetVal IDSuEye::retrieveData(ito::DataObject *externalDataObject)
             retValue += ito::RetVal(ito::retError, 0, "format not supported");
         }*/
 
-        m_pMemory->imageAvailable = false;
+//        m_pMemory->imageAvailable = false;
+        is_UnlockSeqBuf(m_camera, m_pLockedBuf.pid, m_pLockedBuf.ppcImgMem);
+        m_imageAvailable = false;
     }
 
     return retValue;
@@ -1228,6 +1251,9 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
         if (!rettemp.containsError())
         {
             it->setVal<int>(uintVal);
+            // ck 13.07.15 otherwise we get a logic error from setMeta here
+            if (uintVal3[2] < 1)
+                uintVal3[2] = 1;
             it->setMeta(new ito::IntMeta(uintVal3[0], uintVal3[1], uintVal3[2]),true);
         }
         else
@@ -1710,6 +1736,7 @@ ito::RetVal IDSuEye::checkData(ito::DataObject *externalDataObject)
     int futureHeight = m_params["sizey"].getVal<int>();
     int futureWidth = m_params["sizex"].getVal<int>();
     int futureType;
+    ito::RetVal retval;
 
     int bpp = m_params["bpp"].getVal<int>();
     if (bpp <= 8)
@@ -1761,43 +1788,32 @@ ito::RetVal IDSuEye::checkData(ito::DataObject *externalDataObject)
     }
 
     //now check if camera memory needs to be (re)allocated
-    if (!m_pMemory || (m_pMemory->height != futureHeight || m_pMemory->width != futureWidth || m_pMemory->bitspixel != m_bitspixel))
+    if ((m_pMemory[0].height != futureHeight || m_pMemory[0].width != futureWidth || m_pMemory[0].bitspixel != m_bitspixel))
     {
-        //if old memory exists try to free it
-        if (m_pMemory)
+        is_ClearSequence (m_camera);
+        for (int n = 0; n < BUFSIZE; n++)
         {
-            is_FreeImageMem(m_camera, m_pMemory->ppcImgMem, m_pMemory->pid);
-            delete m_pMemory;
-            m_pMemory = NULL;
-        }
-
-        m_pMemory = new MemoryStruct();
-        m_pMemory->height = futureHeight;
-        m_pMemory->width = futureWidth;
-        m_pMemory->bitspixel = m_bitspixel;
-        m_pMemory->pid = 0;
-        m_pMemory->ppcImgMem = NULL;
-        m_pMemory->imageAvailable = false;
-
-        ito::RetVal retval = checkError(is_AllocImageMem(m_camera, futureWidth, futureHeight, m_bitspixel, &(m_pMemory->ppcImgMem), &(m_pMemory->pid)));
-        if (retval.containsError())
-        {
-            delete m_pMemory;
-            m_pMemory = NULL;
-        }
-        else
-        {
-            retval += checkError(is_SetImageMem(m_camera, m_pMemory->ppcImgMem, m_pMemory->pid));
+            if (m_pMemory[n].ppcImgMem)
+                is_FreeImageMem(m_camera, m_pMemory[n].ppcImgMem, m_pMemory[n].pid);
+            m_pMemory[n].height = futureHeight;
+            m_pMemory[n].width = futureWidth;
+            m_pMemory[n].bitspixel = m_bitspixel;
+            m_pMemory[n].pid = 0;
+            m_pMemory[n].ppcImgMem = NULL;
+            m_pMemory[n].imageAvailable = false;
+            retval += checkError(is_AllocImageMem(m_camera, futureWidth, futureHeight, m_bitspixel, &(m_pMemory[n].ppcImgMem), &(m_pMemory[n].pid)));
             if (retval.containsError())
+                return retval;
+            else
             {
-                is_FreeImageMem(m_camera, m_pMemory->ppcImgMem, m_pMemory->pid);
-                delete m_pMemory;
-                m_pMemory = NULL;
+                retval += checkError(is_AddToSequence(m_camera, m_pMemory[n].ppcImgMem, m_pMemory[n].pid));
+                if (retval.containsError())
+                    return retval;
             }
         }
     }
 
-    return ito::retOk;
+    return retval;
 }
 
 
@@ -1805,12 +1821,36 @@ ito::RetVal IDSuEye::checkData(ito::DataObject *externalDataObject)
 ito::RetVal IDSuEye::setMinimumFrameRate()
 {
     //get frametime range and set the fps to the minimum value in order to achieve a huge exposure time range (frame rate is not important in non-free-run mode)
-    double minFps, maxFps, incFps;
-    ito::RetVal retVal = checkError(is_GetFrameTimeRange(m_camera, &minFps, &maxFps, &incFps));
+    double minTime, maxTime, incTime, newFps;
+    ito::RetVal retVal = checkError(is_GetFrameTimeRange(m_camera, &minTime, &maxTime, &incTime));
     if (!retVal.containsError())
     {
-        retVal += checkError(is_SetFrameRate(m_camera, minFps, &minFps));
-        m_params["frame_rate"].setVal<double>(minFps);
+        retVal += checkError(is_SetFrameRate(m_camera, 1.0 / maxTime, &newFps));
+        m_params["frame_rate"].setVal<double>(newFps);
+    }
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------
+ito::RetVal IDSuEye::setFrameRate(ito::float64 framerate)
+{
+    //get frametime range and set the fps to the minimum value in order to achieve a huge exposure time range (frame rate is not important in non-free-run mode)
+    double minTime, maxTime, incTime;
+    ito::RetVal retVal = checkError(is_GetFrameTimeRange(m_camera, &minTime, &maxTime, &incTime));
+    if (!retVal.containsError())
+    {
+        if (framerate > 1.0 / minTime)
+        {
+            framerate = 1.0 / minTime;
+            retVal += ito::RetVal(ito::retWarning, 0, tr("Warning framerate is out of bounds, set to closest value possible").toLatin1().data());
+        }
+        else if (framerate < 1.0 / maxTime)
+        {
+            framerate = 1.0 / maxTime;
+            retVal += ito::RetVal(ito::retWarning, 0, tr("Warning framerate is out of bounds, set to closest value possible").toLatin1().data());
+        }
+        retVal += checkError(is_SetFrameRate(m_camera, framerate, &framerate));
+        m_params["frame_rate"].setVal<double>(framerate);
     }
     return retVal;
 }
@@ -1820,3 +1860,5 @@ const ito::RetVal IDSuEye::showConfDialog(void)
 {
     return apiShowConfigurationDialog(this, new DialogIDS(this));
 }
+
+//----------------------------------------------------------------------------------------

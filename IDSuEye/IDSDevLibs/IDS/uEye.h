@@ -1,8 +1,8 @@
 /*****************************************************************************/
 /*! \file    ueye.h
 *   \author  (c) 2004-2014 by Imaging Development Systems GmbH
-*   \date    Date: 2014/03/10
-*   \version PRODUCTVERSION: 4.40
+*   \date    Date: 2014/11/07
+*   \version PRODUCTVERSION: 4.60
 *
 *   \brief   Library interface for IDS uEye - camera family.
 *            definition of exported API functions and constants
@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 #ifndef UEYE_VERSION_CODE
-#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 40, 0)
+#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 70, 0)
 #endif
 
 
@@ -184,6 +184,21 @@ extern "C" {
 #define IS_SENSOR_UI1493_M_AR       0x0204
 #define IS_SENSOR_UI1493_C_AR       0x0205
 
+#define IS_SENSOR_UI1060_M          0x021A      // 2.3MP global shutter, monochrome
+#define IS_SENSOR_UI1060_C          0x021B      // 2.3MP global shutter, color
+
+#define IS_SENSOR_UI1013XC          0x021D      // 13MP, color
+
+#define IS_SENSOR_UI1140M           0x021E		// 1.3MP global shutter, monochrome
+#define IS_SENSOR_UI1140C           0x021F		// 1.3MP global shutter, color
+#define IS_SENSOR_UI1140NIR         0x0220		// 1.3MP global shutter, NIR
+
+#define IS_SENSOR_UI1590M           0x0222		// 18MP rolling shutter, monochrome
+#define IS_SENSOR_UI1590C           0x0223		// 18MP rolling shutter, color
+
+#define IS_SENSOR_UI1260_M          0x0226      // 2.3MP global shutter, monochrome
+#define IS_SENSOR_UI1260_C          0x0227      // 2.3MP global shutter, color
+
 
 // CCD Sensors
 #define IS_SENSOR_UI223X_M          0x0080      // Sony CCD sensor - XGA monochrome
@@ -224,6 +239,7 @@ extern "C" {
 #define IS_SENSOR_UI2130_M          0x019E      // Sony CCD sensor - WXGA monochrome
 #define IS_SENSOR_UI2130_C          0x019F      // Sony CCD sensor - WXGA color
 
+#define IS_SENSOR_PASSIVE_MULTICAST 0x0F00
 // ----------------------------------------------------------------------------
 // Error codes
 // ----------------------------------------------------------------------------
@@ -496,6 +512,10 @@ extern "C" {
 #define IS_RENDER_PLANAR_MONO_GREEN         0x0800
 #define IS_RENDER_PLANAR_MONO_BLUE          0x1000
 
+#define IS_RENDER_ROTATE_90                 0x0020
+#define IS_RENDER_ROTATE_180                0x0040
+#define IS_RENDER_ROTATE_270                0x2000
+
 #define IS_USE_AS_DC_STRUCTURE              0x4000
 #define IS_USE_AS_DC_HANDLE                 0x8000
 
@@ -672,6 +692,18 @@ extern "C" {
 #define IS_AOI_MULTI_DISABLE_AOI            0x0800
 #define IS_AOI_MULTI_MODE_X_Y_AXES          0x0001
 #define IS_AOI_MULTI_MODE_Y_AXES            0x0002
+#define IS_AOI_MULTI_MODE_GET_MAX_NUMBER    0x0003
+#define IS_AOI_MULTI_MODE_GET_DEFAULT       0x0004
+#define IS_AOI_MULTI_MODE_ONLY_VERIFY_AOIS  0x0005
+#define IS_AOI_MULTI_MODE_GET_MINIMUM_SIZE  0x0006
+#define IS_AOI_MULTI_MODE_GET_ENABLED       0x0007
+
+#define IS_AOI_MULTI_STATUS_SETBYUSER       0x00000001
+#define IS_AOI_MULTI_STATUS_COMPLEMENT      0x00000002
+#define IS_AOI_MULTI_STATUS_VALID           0x00000004
+#define IS_AOI_MULTI_STATUS_CONFLICT        0x00000008
+#define IS_AOI_MULTI_STATUS_ERROR           0x00000010
+#define IS_AOI_MULTI_STATUS_UNUSED          0x00000020
 
 /* AOI sequence */
 #define IS_AOI_SEQUENCE_GET_SUPPORTED       0x0050
@@ -1185,6 +1217,11 @@ extern "C" {
 #define IS_SET_EVENT_CONNECTIONSPEED_CHANGED    18
 #define IS_SET_EVENT_AUTOFOCUS_FINISHED         19
 #define IS_SET_EVENT_FIRST_PACKET_RECEIVED      20
+#define IS_SET_EVENT_PMC_IMAGE_PARAMS_CHANGED   21
+#define IS_SET_EVENT_DEVICE_PLUGGED_IN          22
+#define IS_SET_EVENT_DEVICE_UNPLUGGED           23
+#define IS_SET_EVENT_TEMPERATURE_STATUS         24
+
 
 #define IS_SET_EVENT_REMOVE                 128
 #define IS_SET_EVENT_REMOVAL                129
@@ -1213,6 +1250,10 @@ extern "C" {
   #define IS_CONNECTIONSPEED_CHANGED        0x000D
   #define IS_AUTOFOCUS_FINISHED             0x000E
   #define IS_FIRST_PACKET_RECEIVED          0x000F
+  #define IS_PMC_IMAGE_PARAMS_CHANGED       0x0010
+  #define IS_DEVICE_PLUGGED_IN              0x0011
+  #define IS_DEVICE_UNPLUGGED               0x0012
+  #define IS_TEMPERATURE_STATUS             0x0013
 
   #define IS_DEVICE_REMOVED                 0x1000
   #define IS_DEVICE_REMOVAL                 0x1001
@@ -1267,6 +1308,7 @@ extern "C" {
 #define IS_INTERFACE_TYPE_USB               0x40
 #define IS_INTERFACE_TYPE_USB3              0x60
 #define IS_INTERFACE_TYPE_ETH               0x80
+#define IS_INTERFACE_TYPE_PMC               0xf0
 
 
 // ----------------------------------------------------------------------------
@@ -1281,6 +1323,7 @@ extern "C" {
 #define IS_BOARD_TYPE_UEYE_USB_ML           (IS_INTERFACE_TYPE_USB + 0x05)  // 0x45
 
 #define IS_BOARD_TYPE_UEYE_USB3_LE          (IS_INTERFACE_TYPE_USB3 + 0x02) // 0x62
+#define IS_BOARD_TYPE_UEYE_USB3_XC          (IS_INTERFACE_TYPE_USB3 + 0x03) // 0x63
 #define IS_BOARD_TYPE_UEYE_USB3_CP          (IS_INTERFACE_TYPE_USB3 + 0x04) // 0x64
 #define IS_BOARD_TYPE_UEYE_USB3_ML          (IS_INTERFACE_TYPE_USB3 + 0x05) // 0x65
 
@@ -1306,6 +1349,7 @@ extern "C" {
 #define IS_CAMERA_TYPE_UEYE_USB_ML      IS_BOARD_TYPE_UEYE_USB_ML
 
 #define IS_CAMERA_TYPE_UEYE_USB3_LE     IS_BOARD_TYPE_UEYE_USB3_LE
+#define IS_CAMERA_TYPE_UEYE_USB3_XC	    IS_BOARD_TYPE_UEYE_USB3_XC
 #define IS_CAMERA_TYPE_UEYE_USB3_CP     IS_BOARD_TYPE_UEYE_USB3_CP
 #define IS_CAMERA_TYPE_UEYE_USB3_ML     IS_BOARD_TYPE_UEYE_USB3_ML
 
@@ -1319,6 +1363,7 @@ extern "C" {
 #define IS_CAMERA_TYPE_UEYE_ETH_REP     IS_BOARD_TYPE_UEYE_ETH_REP
 #define IS_CAMERA_TYPE_UEYE_ETH_LEET    IS_BOARD_TYPE_UEYE_ETH_LEET
 #define IS_CAMERA_TYPE_UEYE_ETH_TE      IS_BOARD_TYPE_UEYE_ETH_TE
+#define IS_CAMERA_TYPE_UEYE_PMC         (IS_INTERFACE_TYPE_PMC + 0x01)
 
 
 // ----------------------------------------------------------------------------
@@ -1593,9 +1638,10 @@ extern "C" {
         #undef  UNICODE
         #define __stdcall
         #define __cdecl
-#if defined __i386__
-        #define IDSEXP    __attribute__((cdecl)) INT
-        #define IDSEXPUL  __attribute__((cdecl)) ULONG
+
+#if defined (_IDS_EXPORT)
+        #define IDSEXP    __attribute__((visibility("default"))) INT
+        #define IDSEXPUL  __attribute__((visibility("default"))) ULONG
 #else
         #define IDSEXP    INT
         #define IDSEXPUL  ULONG
@@ -1714,7 +1760,6 @@ typedef int     INT;
   typedef char IS_CHAR;
 #endif
 
-
 // ----------------------------------------------------------------------------
 // Typedefs
 // ----------------------------------------------------------------------------
@@ -1727,6 +1772,27 @@ typedef DWORD   HCAM;
 typedef DWORD   HFALC;
 #define HFALC_DEFINED
 
+/*!
+ * \brief Data type for 32-bit signed int value ranges.
+ */
+typedef struct S_IS_RANGE_S32
+{
+    INT s32Min;
+    INT s32Max;
+    INT s32Inc;
+
+} IS_RANGE_S32;
+
+/*!
+ * \brief Data type for 64-bit signed double value ranges.
+ */
+typedef struct S_IS_RANGE_F64
+{
+    double f64Min;
+    double f64Max;
+    double f64Inc;
+
+} IS_RANGE_F64;
 
 // ----------------------------------------------------------------------------
 // Invalid values for device handles
@@ -1813,19 +1879,21 @@ typedef struct _REVISIONINFO
 // ----------------------------------------------------------------------------
 typedef enum _UEYE_CAPTURE_STATUS
 {
-    IS_CAP_STATUS_API_NO_DEST_MEM       =   0xa2,
-    IS_CAP_STATUS_API_CONVERSION_FAILED =   0xa3,
-    IS_CAP_STATUS_API_IMAGE_LOCKED      =   0xa5,
-    
-    IS_CAP_STATUS_DRV_OUT_OF_BUFFERS    =   0xb2,
-    IS_CAP_STATUS_DRV_DEVICE_NOT_READY  =   0xb4,
+    IS_CAP_STATUS_API_NO_DEST_MEM           =   0xa2,
+    IS_CAP_STATUS_API_CONVERSION_FAILED     =   0xa3,
+    IS_CAP_STATUS_API_IMAGE_LOCKED          =   0xa5,
 
-    IS_CAP_STATUS_USB_TRANSFER_FAILED   =   0xc7,
+    IS_CAP_STATUS_DRV_OUT_OF_BUFFERS        =   0xb2,
+    IS_CAP_STATUS_DRV_DEVICE_NOT_READY      =   0xb4,
 
-    IS_CAP_STATUS_DEV_TIMEOUT           =   0xd6,
+    IS_CAP_STATUS_USB_TRANSFER_FAILED       =   0xc7,
 
-    IS_CAP_STATUS_ETH_BUFFER_OVERRUN    =   0xe4,
-    IS_CAP_STATUS_ETH_MISSED_IMAGES     =   0xe5
+    IS_CAP_STATUS_DEV_MISSED_IMAGES         =   0xe5,
+    IS_CAP_STATUS_DEV_TIMEOUT               =   0xd6,
+    IS_CAP_STATUS_DEV_FRAME_CAPTURE_FAILED  =   0xd9,
+
+    IS_CAP_STATUS_ETH_BUFFER_OVERRUN        =   0xe4,
+    IS_CAP_STATUS_ETH_MISSED_IMAGES         =   0xe5
 
 } UEYE_CAPTURE_STATUS;
 
@@ -1965,7 +2033,8 @@ typedef enum E_AUTO_SHUTTER_PHOTOM
     AS_PM_SENS_CENTER_WEIGHTED  = 0x00000001, // sensor auto shutter: center weighted
     AS_PM_SENS_CENTER_SPOT      = 0x00000002, // sensor auto shutter: center spot
     AS_PM_SENS_PORTRAIT         = 0x00000004, // sensor auto shutter: portrait
-    AS_PM_SENS_LANDSCAPE        = 0x00000008  // sensor auto shutter: landscape
+	AS_PM_SENS_LANDSCAPE		= 0x00000008, // sensor auto shutter: landscape
+    AS_PM_SENS_CENTER_AVERAGE   = 0x00000010  // sensor auto shutter: center average
 
 }AUTO_SHUTTER_PHOTOM;
 
@@ -1997,7 +2066,10 @@ typedef enum E_WHITEBALANCE_MODE
     WB_MODE_INCANDESCENT_LAMP       = 0x00000004,
     WB_MODE_FLUORESCENT_DL          = 0x00000008,
     WB_MODE_OUTDOOR_CLEAR_SKY       = 0x00000010,
-    WB_MODE_OUTDOOR_CLOUDY          = 0x00000020
+    WB_MODE_OUTDOOR_CLOUDY          = 0x00000020,
+    WB_MODE_FLUORESCENT_LAMP        = 0x00000040,
+    WB_MODE_FLUORESCENT_NL          = 0x00000080
+    
 }WHITEBALANCE_MODE;
 
 typedef struct _UEYE_AUTO_INFO
@@ -2468,44 +2540,65 @@ IDSEXP is_FaceDetection (HIDS hCam, UINT nCommand, void *pParam, UINT nSizeOfPar
         FOC_ZONE_WEIGHT_DISABLE     = 0,
         FOC_ZONE_WEIGHT_WEAK        = 0x0021,
         FOC_ZONE_WEIGHT_MIDDLE      = 0x0032,
-        FOC_ZONE_WEIGHT_STRONG      = 0x0042,
+        FOC_ZONE_WEIGHT_STRONG      = 0x0042
 
     } FOCUS_ZONE_WEIGHT;
 
+    /*!
+    * \brief Enumeration of presets for the focus measurement window 
+    */
+    typedef enum E_FOCUS_ZONE_AOI_PRESET
+    {
+        FOC_ZONE_AOI_PRESET_CENTER          = 0,
+        FOC_ZONE_AOI_PRESET_UPPER_LEFT      = 0x0001,
+        FOC_ZONE_AOI_PRESET_BOTTOM_LEFT     = 0x0002,
+        FOC_ZONE_AOI_PRESET_UPPER_RIGHT     = 0x0004,
+        FOC_ZONE_AOI_PRESET_BOTTOM_RIGHT    = 0x0008,
+        FOC_ZONE_AOI_PRESET_UPPER_CENTER    = 0x0010,
+        FOC_ZONE_AOI_PRESET_BOTTOM_CENTER   = 0x0020,
+        FOC_ZONE_AOI_PRESET_CENTER_LEFT     = 0x0040,
+        FOC_ZONE_AOI_PRESET_CENTER_RIGHT    = 0x0080
+
+    } FOCUS_ZONE_AOI_PRESET;
+
+
     typedef enum E_FOCUS_CMD
     {
-        FOC_CMD_GET_CAPABILITIES                    = 0,    /* Get focus capabilities.                                              */
-        FOC_CMD_SET_DISABLE_AUTOFOCUS               = 1,    /* Disable autofocus.                                                   */
-        FOC_CMD_SET_ENABLE_AUTOFOCUS                = 2,    /* Enable autofocus.                                                    */
-        FOC_CMD_GET_AUTOFOCUS_ENABLE                = 3,    /* Autofocus enabled?.                                                  */
-        FOC_CMD_SET_AUTOFOCUS_RANGE                 = 4,    /* Preset autofocus range.                                              */
-        FOC_CMD_GET_AUTOFOCUS_RANGE                 = 5,    /* Get preset of autofocus range.                                       */
-        FOC_CMD_GET_DISTANCE                        = 6,    /* Get distance to focused object.                                      */
-        FOC_CMD_SET_MANUAL_FOCUS                    = 7,    /* Set manual focus.                                                    */
-        FOC_CMD_GET_MANUAL_FOCUS                    = 8,    /* Get the value for manual focus.                                      */
-        FOC_CMD_GET_MANUAL_FOCUS_MIN                = 9,    /* Get the minimum manual focus value.                                  */
-        FOC_CMD_GET_MANUAL_FOCUS_MAX                = 10,   /* Get the maximum manual focus value.                                  */
-        FOC_CMD_GET_MANUAL_FOCUS_INC                = 11,   /* Get the increment of the manual focus value.                         */
-        FOC_CMD_SET_ENABLE_AF_FDT_AOI               = 12,   /* Enable face detection AOI use for autofocus.                         */
-        FOC_CMD_SET_DISABLE_AF_FDT_AOI              = 13,   /* Disable face detection AOI use for autofocus                         */
-        FOC_CMD_GET_AF_FDT_AOI_ENABLE               = 14,   /* Use autofocus FDT AOI?                                               */
-        FOC_CMD_SET_ENABLE_AUTOFOCUS_ONCE           = 15,   /* Enable autofocus once                                                */
-        FOC_CMD_GET_AUTOFOCUS_STATUS                = 16,   /* Get the autofocus status                                             */
-        FOC_CMD_SET_AUTOFOCUS_ZONE_AOI              = 17,   /* Set the focus measurement window                                     */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI              = 18,   /* Get the focus measurement window                                     */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI_DEFAULT      = 19,   /* Get the default focus measurement window                             */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_MIN          = 20,   /* Get the minimal position of the measurement window                   */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_MAX          = 21,   /* Get the maximal position of the measurement window                   */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_INC          = 22,   /* Get the incrementation for the positions of the measurement window   */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_MIN         = 23,   /* Get the minimal size of the measurement window                       */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_MAX         = 24,   /* Get the maxiaml size of the measurement window                       */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_INC         = 25,   /* Get the incrementation for the size of the measurement window        */
-        FOC_CMD_SET_AUTOFOCUS_ZONE_WEIGHT           = 26,   /* Set the weight for the different zones                               */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT           = 27,   /* Get the weight for the different zones                               */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT_COUNT     = 28,   /* Get the zone count                                                   */
-        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT_DEFAULT   = 29,   /* Get the default weight for the different zones                       */
+        FOC_CMD_GET_CAPABILITIES                            = 0,    /* Get focus capabilities.                                                              */
+        FOC_CMD_SET_DISABLE_AUTOFOCUS                       = 1,    /* Disable autofocus.                                                                   */
+        FOC_CMD_SET_ENABLE_AUTOFOCUS                        = 2,    /* Enable autofocus.                                                                    */
+        FOC_CMD_GET_AUTOFOCUS_ENABLE                        = 3,    /* Autofocus enabled?.                                                                  */
+        FOC_CMD_SET_AUTOFOCUS_RANGE                         = 4,    /* Preset autofocus range.                                                              */
+        FOC_CMD_GET_AUTOFOCUS_RANGE                         = 5,    /* Get preset of autofocus range.                                                       */
+        FOC_CMD_GET_DISTANCE                                = 6,    /* Get distance to focused object.                                                      */
+        FOC_CMD_SET_MANUAL_FOCUS                            = 7,    /* Set manual focus.                                                                    */
+        FOC_CMD_GET_MANUAL_FOCUS                            = 8,    /* Get the value for manual focus.                                                      */
+        FOC_CMD_GET_MANUAL_FOCUS_MIN                        = 9,    /* Get the minimum manual focus value.                                                  */
+        FOC_CMD_GET_MANUAL_FOCUS_MAX                        = 10,   /* Get the maximum manual focus value.                                                  */
+        FOC_CMD_GET_MANUAL_FOCUS_INC                        = 11,   /* Get the increment of the manual focus value.                                         */
+        FOC_CMD_SET_ENABLE_AF_FDT_AOI                       = 12,   /* Enable face detection AOI use for autofocus.                                         */
+        FOC_CMD_SET_DISABLE_AF_FDT_AOI                      = 13,   /* Disable face detection AOI use for autofocus                                         */
+        FOC_CMD_GET_AF_FDT_AOI_ENABLE                       = 14,   /* Use autofocus FDT AOI?                                                               */
+        FOC_CMD_SET_ENABLE_AUTOFOCUS_ONCE                   = 15,   /* Enable autofocus once                                                                */
+        FOC_CMD_GET_AUTOFOCUS_STATUS                        = 16,   /* Get the autofocus status                                                             */
+        FOC_CMD_SET_AUTOFOCUS_ZONE_AOI                      = 17,   /* Set the focus measurement window                                                     */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI                      = 18,   /* Get the focus measurement window                                                     */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI_DEFAULT              = 19,   /* Get the default focus measurement window                                             */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_MIN                  = 20,   /* Get the minimal position of the measurement window                                   */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_MAX                  = 21,   /* Get the maximal position of the measurement window                                   */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_POS_INC                  = 22,   /* Get the incrementation for the positions of the measurement window                   */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_MIN                 = 23,   /* Get the minimal size of the measurement window                                       */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_MAX                 = 24,   /* Get the maxiaml size of the measurement window                                       */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_SIZE_INC                 = 25,   /* Get the incrementation for the size of the measurement window                        */
+        FOC_CMD_SET_AUTOFOCUS_ZONE_WEIGHT                   = 26,   /* Set the weight for the different zones                                               */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT                   = 27,   /* Get the weight for the different zones                                               */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT_COUNT             = 28,   /* Get the zone count                                                                   */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_WEIGHT_DEFAULT           = 29,   /* Get the default weight for the different zones                                       */
+        FOC_CMD_SET_AUTOFOCUS_ZONE_AOI_PRESET               = 30,   /* Set the focus measurement window specified by a preset /see FOCUS_ZONE_AOI_PRESET    */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI_PRESET               = 31,   /* Get the focus measurement window specified by a preset                               */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_AOI_PRESET_DEFAULT       = 32,   /* Get the default focus measurement window                                             */
+        FOC_CMD_GET_AUTOFOCUS_ZONE_ARBITRARY_AOI_SUPPORTED  = 33    /* Returns if an arbritrary focus measurement window is supported                       */
         
-
     } FOCUS_CMD;
 
 
@@ -2662,7 +2755,7 @@ typedef enum E_RGB_COLOR_MODELS
     RGB_COLOR_MODEL_SRGB_D65        = 0x0002,
     RGB_COLOR_MODEL_CIE_RGB_E       = 0x0004,
     RGB_COLOR_MODEL_ECI_RGB_D50     = 0x0008,
-    RGB_COLOR_MODEL_ADOBE_RGB_D65   = 0x0010,
+    RGB_COLOR_MODEL_ADOBE_RGB_D65   = 0x0010
 
 } RGB_COLOR_MODELS;
 
@@ -2671,7 +2764,7 @@ typedef enum E_LENS_SHADING_MODELS
     LSC_MODEL_AGL   = 0x0001,
     LSC_MODEL_TL84  = 0x0002,
     LSC_MODEL_D50   = 0x0004,
-    LSC_MODEL_D65   = 0x0008,
+    LSC_MODEL_D65   = 0x0008
 
 } LENS_SHADING_MODELS;
 
@@ -2691,7 +2784,7 @@ typedef enum E_COLOR_TEMPERATURE_CMD
     COLOR_TEMPERATURE_CMD_SET_LENS_SHADING_MODEL            = 10, /* Set a new lens shading model */
     COLOR_TEMPERATURE_CMD_GET_LENS_SHADING_MODEL            = 11, /* Get the current lens shading model */ 
     COLOR_TEMPERATURE_CMD_GET_LENS_SHADING_MODEL_SUPPORTED  = 12, /* Get the supported lens shading models */
-    COLOR_TEMPERATURE_CMD_GET_LENS_SHADING_MODEL_DEFAULT    = 13, /* Get the default lens shading model */ 
+    COLOR_TEMPERATURE_CMD_GET_LENS_SHADING_MODEL_DEFAULT    = 13  /* Get the default lens shading model */ 
 
 } COLOR_TEMPERATURE_CMD;
 
@@ -2882,8 +2975,13 @@ typedef enum E_TRANSFER_TARGET
 IDSEXP is_Transfer(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
 
 
+/**
+ * \defgroup IDS_BootBoost IDS Boot Boost
+ */
+/**@{*/
+
 /*!
- * \brief definition of the boot boost id
+ * \brief Definition of the boot boost id
  *
  * \since uEye SDK 3.90.
  */
@@ -2894,24 +2992,33 @@ typedef BYTE IS_BOOTBOOST_ID;
 #define IS_BOOTBOOST_ID_NONE    0   /*!< \brief special value: no id's */
 #define IS_BOOTBOOST_ID_ALL     255 /*!< \brief special value: all id's */
 
+/*! \brief Default wait timeout for the boot boost 'wait operations':
+ *          \li IS_BOOTBOOST_CMD_ENABLE_AND_WAIT
+ *          \li IS_BOOTBOOST_CMD_DISABLE_AND_WAIT
+ *          \li IS_BOOTBOOST_CMD_WAIT
+ * 
+ * \since uEye SDK 4.50.
+ */
+#define IS_BOOTBOOST_DEFAULT_WAIT_TIMEOUT_SEC   60
+
 /*!
- * \brief definition of the boot boost id list object
+ * \brief Definition of the boot boost id list object
  *
  * \since uEye SDK 3.90.
  */
 typedef struct S_IS_BOOTBOOST_IDLIST
 {
-    /*! \brief the number of listed elements. */
+    /*! \brief The number of listed elements. */
     DWORD u32NumberOfEntries;
 
-    /*! \brief the list. */
+    /*! \brief The list. */
     IS_BOOTBOOST_ID aList[1];
 
 } IS_BOOTBOOST_IDLIST;
 
-/*! \brief size of id list header */
+/*! \brief Size of id list header */
 #define IS_BOOTBOOST_IDLIST_HEADERSIZE  (sizeof(DWORD))
-/*! \brief size of id list element */
+/*! \brief Size of id list element */
 #define IS_BOOTBOOST_IDLIST_ELEMENTSIZE (sizeof(IS_BOOTBOOST_ID))
 
 /*!
@@ -2926,10 +3033,40 @@ typedef enum E_IS_BOOTBOOST_CMD
     IS_BOOTBOOST_CMD_ENABLE             = 0x00010001,
 
     /*!
+     * \brief   Enable BootBoost and wait until all relevant devices are boot-boosted.
+     *          Type of data: Optional UINT timeout value in seconds.
+     *
+     * \since uEye SDK 4.50.
+     * \note If the caller does not specify a timeout,
+     *       the function will default to IS_BOOTBOOST_DEFAULT_WAIT_TIMEOUT_SEC.
+     */
+    IS_BOOTBOOST_CMD_ENABLE_AND_WAIT    = 0x00010101,
+
+    /*!
      * \brief   Disable BootBoost.
      *          Type of data: no data.
      */
     IS_BOOTBOOST_CMD_DISABLE            = 0x00010011,
+
+    /*!
+     * \brief   Disable BootBoost and wait until all relevant devices are non-boot-boosted.
+     *          Type of data: Optional UINT timeout value in seconds.
+     *
+     * \since uEye SDK 4.50.
+     * \note If the caller does not specify a timeout,
+     *       the function will default to IS_BOOTBOOST_DEFAULT_WAIT_TIMEOUT_SEC.
+     */
+    IS_BOOTBOOST_CMD_DISABLE_AND_WAIT   = 0x00010111,
+
+    /*!
+     * \brief   Wait for all relevant devices to apply the configured boot-boost mode (enabled or disabled).
+     *          Type of data: Optional UINT timeout value in seconds.
+     *
+     * \since uEye SDK 4.50.
+     * \note If the caller does not specify a timeout,
+     *       the function will default to IS_BOOTBOOST_DEFAULT_WAIT_TIMEOUT_SEC.
+     */
+    IS_BOOTBOOST_CMD_WAIT               = 0x00010100,
 
     /*!
      * \brief   Query enabled state of BootBoost.
@@ -2986,10 +3123,12 @@ typedef enum E_IS_BOOTBOOST_CMD
  *
  * \since uEye SDK 3.90.
  *
- * \note For the reason of your applications compatibility to future extensions
+ * \note For the reason of your application's compatibility to future extensions
  *       it is strongly recommended to pass the value 0 for hCam.
  */
 IDSEXP is_BootBoost(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
+
+/** @} */ // end of group IDS_BootBoost
 
 
 /*!
@@ -3073,8 +3212,23 @@ typedef enum E_DEVICE_FEATURE_CMD
     IS_DEVICE_FEATURE_CMD_MULTI_INTEGRATION_GET_MODE_DEFAULT                	= 74,
 	IS_DEVICE_FEATURE_CMD_MULTI_INTEGRATION_GET_MODE                     	    = 75,
 	IS_DEVICE_FEATURE_CMD_MULTI_INTEGRATION_SET_MODE                   	        = 76,
-    IS_DEVICE_FEATURE_CMD_SET_I2C_TARGET                                        = 77
-
+    IS_DEVICE_FEATURE_CMD_SET_I2C_TARGET                                        = 77,
+    IS_DEVICE_FEATURE_CMD_SET_WIDE_DYNAMIC_RANGE_MODE                           = 78,
+    IS_DEVICE_FEATURE_CMD_GET_WIDE_DYNAMIC_RANGE_MODE                           = 79,
+    IS_DEVICE_FEATURE_CMD_GET_WIDE_DYNAMIC_RANGE_MODE_DEFAULT                   = 80,
+    IS_DEVICE_FEATURE_CMD_GET_SUPPORTED_BLACK_REFERENCE_MODES                   = 81,
+    IS_DEVICE_FEATURE_CMD_SET_LEVEL_CONTROLLED_TRIGGER_INPUT_MODE               = 82,
+    IS_DEVICE_FEATURE_CMD_GET_LEVEL_CONTROLLED_TRIGGER_INPUT_MODE               = 83,
+    IS_DEVICE_FEATURE_CMD_GET_LEVEL_CONTROLLED_TRIGGER_INPUT_MODE_DEFAULT       = 84,
+    IS_DEVICE_FEATURE_CMD_GET_VERTICAL_AOI_MERGE_MODE_SUPPORTED_LINE_MODES      = 85,
+    IS_DEVICE_FEATURE_CMD_SET_REPEATED_START_CONDITION_I2C                      = 86,
+    IS_DEVICE_FEATURE_CMD_GET_REPEATED_START_CONDITION_I2C                      = 87,
+    IS_DEVICE_FEATURE_CMD_GET_REPEATED_START_CONDITION_I2C_DEFAULT              = 88,
+    IS_DEVICE_FEATURE_CMD_GET_TEMPERATURE_STATUS                                = 89,
+    IS_DEVICE_FEATURE_CMD_GET_MEMORY_MODE_ENABLE                                = 90,
+    IS_DEVICE_FEATURE_CMD_SET_MEMORY_MODE_ENABLE                                = 91,
+    IS_DEVICE_FEATURE_CMD_GET_MEMORY_MODE_ENABLE_DEFAULT                        = 92
+    
 } DEVICE_FEATURE_CMD;
 
 
@@ -3103,10 +3257,28 @@ typedef enum E_DEVICE_FEATURE_MODE_CAPS
     IS_DEVICE_FEATURE_CAP_NOISE_REDUCTION                           = 0x00008000,
     IS_DEVICE_FEATURE_CAP_TIMESTAMP_CONFIGURATION                   = 0x00010000,
     IS_DEVICE_FEATURE_CAP_IMAGE_EFFECT                              = 0x00020000,
-    IS_DEVICE_FEATURE_CAP_EXTENDED_PIXELCLOCK_RANGE					= 0x00040000,
-    IS_DEVICE_FEATURE_CAP_MULTI_INTEGRATION         	            = 0x00080000
-
+    IS_DEVICE_FEATURE_CAP_EXTENDED_PIXELCLOCK_RANGE                 = 0x00040000,
+    IS_DEVICE_FEATURE_CAP_MULTI_INTEGRATION                         = 0x00080000,
+    IS_DEVICE_FEATURE_CAP_WIDE_DYNAMIC_RANGE                        = 0x00100000,
+    IS_DEVICE_FEATURE_CAP_LEVEL_CONTROLLED_TRIGGER                  = 0x00200000,
+    IS_DEVICE_FEATURE_CAP_REPEATED_START_CONDITION_I2C              = 0x00400000,
+    IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS                        = 0x00800000,
+    IS_DEVICE_FEATURE_CAP_MEMORY_MODE                               = 0x01000000
+    
 } DEVICE_FEATURE_MODE_CAPS;
+
+/*!
+ * \brief Enumeration of temperature states.
+ *
+ * \sa is_DeviceFeature
+ */
+typedef enum E_IS_TEMPERATURE_CONTROL_STATUS
+{
+    TEMPERATURE_CONTROL_SATUS_NORMAL   = 0,
+    TEMPERATURE_CONTROL_SATUS_WARNING  = 1,
+    TEMPERATURE_CONTROL_SATUS_CRITICAL = 2,
+
+} IS_TEMPERATURE_CONTROL_STATUS;
 
 /*!
  * \brief Enumeration of Noise modes.
@@ -3153,6 +3325,33 @@ typedef enum E_VERTICAL_AOI_MERGE_MODES
 
 
 /*!
+ * \brief Enumeration of supported Vertical AOI merge mode line trigger modes.
+ *
+ * \sa is_DeviceFeature
+ */
+typedef enum E_VERTICAL_AOI_MERGE_MODE_LINE_TRIGGER
+{
+    IS_VERTICAL_AOI_MERGE_MODE_LINE_FREERUN             = 1,
+    IS_VERTICAL_AOI_MERGE_MODE_LINE_SOFTWARE_TRIGGER    = 2,
+    IS_VERTICAL_AOI_MERGE_MODE_LINE_GPIO_TRIGGER        = 4
+
+} VERTICAL_AOI_MERGE_MODE_LINE_TRIGGER;
+
+
+/*!
+ * \brief Enumeration of LEVEL_CONTROLLED_TRIGGER input modes
+ *
+ * \sa is_DeviceFeature
+ */
+typedef enum E_LEVEL_CONTROLLED_TRIGGER_INPUT_MODES
+{
+    IS_LEVEL_CONTROLLED_TRIGGER_INPUT_OFF = 0,
+    IS_LEVEL_CONTROLLED_TRIGGER_INPUT_ON  = 1
+
+} LEVEL_CONTROLLED_TRIGGER_INPUT_MODES;
+
+
+/*!
  * \brief Enumeration of FPN correction modes.
  *
  * \sa is_DeviceFeature
@@ -3172,8 +3371,9 @@ typedef enum E_FPN_CORRECTION_MODES
  */
 typedef enum E_BLACK_REFERENCE_MODES
 {
-    IS_BLACK_REFERENCE_MODE_OFF           = 0,
-    IS_BLACK_REFERENCE_MODE_COLUMNS_LEFT  = 1
+    IS_BLACK_REFERENCE_MODE_OFF           = 0x00000000,
+    IS_BLACK_REFERENCE_MODE_COLUMNS_LEFT  = 0x00000001,
+    IS_BLACK_REFERENCE_MODE_ROWS_TOP      = 0x00000002
 
 } BLACK_REFERENCE_MODES;
 
@@ -3394,10 +3594,18 @@ IDSEXP is_Exposure(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
 
 typedef enum E_TRIGGER_CMD
 {
-    IS_TRIGGER_CMD_GET_BURST_SIZE_SUPPORTED     = 1,
-    IS_TRIGGER_CMD_GET_BURST_SIZE_RANGE         = 2,
-    IS_TRIGGER_CMD_GET_BURST_SIZE               = 3,
-    IS_TRIGGER_CMD_SET_BURST_SIZE               = 4
+    IS_TRIGGER_CMD_GET_BURST_SIZE_SUPPORTED      = 1,
+    IS_TRIGGER_CMD_GET_BURST_SIZE_RANGE          = 2,
+    IS_TRIGGER_CMD_GET_BURST_SIZE                = 3,
+    IS_TRIGGER_CMD_SET_BURST_SIZE                = 4,
+    IS_TRIGGER_CMD_GET_FRAME_PRESCALER_SUPPORTED = 5,
+	IS_TRIGGER_CMD_GET_FRAME_PRESCALER_RANGE     = 6,
+	IS_TRIGGER_CMD_GET_FRAME_PRESCALER           = 7,
+	IS_TRIGGER_CMD_SET_FRAME_PRESCALER           = 8,
+    IS_TRIGGER_CMD_GET_LINE_PRESCALER_SUPPORTED  = 9,
+	IS_TRIGGER_CMD_GET_LINE_PRESCALER_RANGE      = 10,
+	IS_TRIGGER_CMD_GET_LINE_PRESCALER            = 11,
+	IS_TRIGGER_CMD_SET_LINE_PRESCALER            = 12
 
 } TRIGGER_CMD;
 
@@ -4081,6 +4289,8 @@ typedef enum E_IPCONFIG_CMD
      */
     IPCONFIG_CMD_SET_AUTOCONFIG_IP_BYDEVICE     = 0x01040100,
 
+    IPCONFIG_CMD_RESERVED1                      = 0x01080000,
+
     /*!
      * \brief   Get persistent IP configuration.
      *          Type of value: \ref UEYE_ETH_IP_CONFIGURATION.
@@ -4106,6 +4316,7 @@ typedef enum E_IPCONFIG_CMD
     IPCONFIG_CMD_GET_AUTOCONFIG_IP_BYDEVICE     = 0x02040100
 
 } IPCONFIG_CMD;
+
 
 /*!
  * \brief Generic interface to the device's IP configuration.
@@ -4140,7 +4351,10 @@ typedef enum E_CONFIGURATION_SEL
     IS_CONFIG_INITIAL_PARAMETERSET_2               = 2,
 
     IS_CONFIG_ETH_CONFIGURATION_MODE_OFF           = 0,
-    IS_CONFIG_ETH_CONFIGURATION_MODE_ON            = 1
+    IS_CONFIG_ETH_CONFIGURATION_MODE_ON            = 1,
+
+    IS_CONFIG_TRUSTED_PAIRING_OFF                   = 0,
+    IS_CONFIG_TRUSTED_PAIRING_ON                    = 1 
 
 } CONFIGURATION_SEL;
 
@@ -4166,8 +4380,13 @@ typedef enum E_CONFIGURATION_CMD
     IS_CONFIG_ETH_CONFIGURATION_MODE_CMD_GET_ENABLE        = 12,
 
     IS_CONFIG_IPO_CMD_GET_ALLOWED                          = 13,
-    IS_CONFIG_IPO_CMD_SET_ALLOWED                          = 14
+    IS_CONFIG_IPO_CMD_SET_ALLOWED                          = 14,
 
+    IS_CONFIG_CMD_TRUSTED_PAIRING_SET                      = 15,
+    IS_CONFIG_CMD_TRUSTED_PAIRING_GET                      = 16,
+    IS_CONFIG_CMD_TRUSTED_PAIRING_GET_DEFAULT              = 17,
+	IS_CONFIG_CMD_RESERVED_1                               = 18
+  
 } CONFIGURATION_CMD;
 
 /*!
@@ -4178,7 +4397,9 @@ typedef enum E_CONFIGURATION_CAPS
     IS_CONFIG_CPU_IDLE_STATES_CAP_SUPPORTED                = 0x00000001, /*!< CPU idle state commands are supported by the SDK */
     IS_CONFIG_OPEN_MP_CAP_SUPPORTED                        = 0x00000002, /*!< Open MP commands are supported by the SDK */
     IS_CONFIG_INITIAL_PARAMETERSET_CAP_SUPPORTED           = 0x00000004, /*!< Initial parameter set commands are supported by the SDK */
-    IS_CONFIG_IPO_CAP_SUPPORTED                            = 0x00000008  /*!< "Intel Performance Thread" is supported by the SDK */
+    IS_CONFIG_IPO_CAP_SUPPORTED                            = 0x00000008, /*!< "Intel Performance Thread" is supported by the SDK */
+    IS_CONFIG_TRUSTED_PAIRING_CAP_SUPPORTED                = 0x00000010  /*!< Camera supports trusted pairing when network connection was lost */
+
 } CONFIGURATION_CAPS;
 
 /*!
@@ -4263,6 +4484,7 @@ typedef struct S_IO_GPIO_CONFIGURATION
 #define IS_GPIO_COMPORT_RX                  0x0010
 #define IS_GPIO_COMPORT_TX                  0x0020
 #define IS_GPIO_MULTI_INTEGRATION_MODE      0x0040
+#define IS_GPIO_TRIGGER                     0x0080
 
 #define IS_FLASH_AUTO_FREERUN_OFF           0
 #define IS_FLASH_AUTO_FREERUN_ON            1
@@ -4333,10 +4555,81 @@ typedef enum E_AUTOPARAMETER_CMD
     IS_AWB_CMD_SET_ENABLE                       = 5,
     IS_AWB_CMD_GET_SUPPORTED_RGB_COLOR_MODELS   = 6,
     IS_AWB_CMD_GET_RGB_COLOR_MODEL              = 7,
-    IS_AWB_CMD_SET_RGB_COLOR_MODEL              = 8
+    IS_AWB_CMD_SET_RGB_COLOR_MODEL              = 8,
+
+    IS_AES_CMD_GET_SUPPORTED_TYPES              = 9,
+    IS_AES_CMD_SET_ENABLE                       = 10,
+    IS_AES_CMD_GET_ENABLE                       = 11,
+    IS_AES_CMD_SET_TYPE                         = 12,
+    IS_AES_CMD_GET_TYPE                         = 13,
+    IS_AES_CMD_SET_CONFIGURATION                = 14,
+    IS_AES_CMD_GET_CONFIGURATION                = 15,
+    IS_AES_CMD_GET_CONFIGURATION_DEFAULT        = 16,
+    IS_AES_CMD_GET_CONFIGURATION_RANGE          = 17
     
 } AUTOPARAMETER_CMD;
 
+/*!
+ * \brief AES modes used by is_AutoParameter, \ref is_AutoParameter.
+ */
+typedef enum E_AES_MODE
+{
+    IS_AES_MODE_PEAK = 0x01,
+    IS_AES_MODE_MEAN = 0x02
+
+}AES_MODE;
+
+/*!
+ * \brief AES configuration used by is_AutoParameter, \ref is_AutoParameter.
+ */
+typedef struct 
+{
+    INT nMode;
+    CHAR pConfiguration[1];
+
+} AES_CONFIGURATION;
+
+/*!
+ * \brief AES peak white configuration used by is_AutoParameter, \ref is_AutoParameter.
+ */
+typedef struct
+{
+    IS_RECT rectUserAOI;
+    UINT nFrameSkip;
+    UINT nHysteresis;
+    UINT nReference;
+    UINT nChannel;
+    double f64Maximum;
+    double f64Minimum;
+
+    CHAR reserved[32];
+
+}AES_PEAK_WHITE_CONFIGURATION;
+
+/*!
+ * \brief AES peak white configuration range used by is_AutoParameter, \ref is_AutoParameter.
+ */
+typedef struct 
+{
+    IS_RANGE_S32 rangeFrameSkip;
+    IS_RANGE_S32 rangeHysteresis;
+    IS_RANGE_S32 rangeReference;
+
+    CHAR reserved[32];
+
+}AES_PEAK_WHITE_CONFIGURATION_RANGE;
+
+/*!
+ * \brief AES peak white channel enumeration used by is_AutoParameter, \ref is_AutoParameter.
+ */
+typedef enum E_AES_CHANNEL
+{
+    IS_AES_CHANNEL_MONO = 0x01,
+    IS_AES_CHANNEL_RED = 0x01,
+    IS_AES_CHANNEL_GREEN = 0x02,
+    IS_AES_CHANNEL_BLUE = 0x04
+
+}AES_CHANNEL;
 
 /*!
  * \brief Defines used by is_AutoParameter, \ref is_AutoParameter.
@@ -4507,29 +4800,6 @@ typedef enum E_IMAGE_FILE_CMD
 */
 IDSEXP is_ImageFile(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
 
-
-/*!
- * \brief Data type for 32-bit signed int value ranges.
- */
-typedef struct S_IS_RANGE_S32
-{
-    INT s32Min;
-    INT s32Max;
-    INT s32Inc;
-
-} IS_RANGE_S32;
-
-/*!
- * \brief Data type for 64-bit signed double value ranges.
- */
-typedef struct S_IS_RANGE_F64
-{
-    double f64Min;
-    double f64Max;
-    double f64Inc;
-
-} IS_RANGE_F64;
-
 /*!
  * \brief Enumeration of modes of function \ref is_Blacklevel.
  */
@@ -4696,6 +4966,9 @@ IDSEXP is_Measure(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
 #define IS_LUT_PRESET_ID_ONLY_RED      9
 #define IS_LUT_PRESET_ID_ONLY_GREEN    10
 #define IS_LUT_PRESET_ID_ONLY_BLUE     11
+#define IS_LUT_PRESET_ID_DIGITAL_GAIN_2X     12
+#define IS_LUT_PRESET_ID_DIGITAL_GAIN_4X     13
+#define IS_LUT_PRESET_ID_DIGITAL_GAIN_8X     14
 
 typedef INT IS_LUT_PRESET;
 
@@ -4875,6 +5148,76 @@ typedef struct
  */
 IDSEXP is_Memory(HIDS hf, UINT nCommand, void* pParam, UINT cbSizeOfParam);
 
+
+typedef struct
+{
+    UINT                 nPosX;          // start position in x-direction
+    UINT                 nPosY;          // start position in y-direction
+    UINT                 nWidth;         // width of the AOI
+    UINT                 nHeight;        // height of the AOI
+    UINT                 nStatus;        // Indicates the status of this AOI after a call to IS_AOI(IS_AOI_MULTI_SET_AOI,...);
+
+} IS_MULTI_AOI_DESCRIPTOR;
+
+
+typedef struct
+{
+    UINT                 nNumberOfAOIs; // The number of AOI descriptors in pMultiAOIList
+    IS_MULTI_AOI_DESCRIPTOR * pMultiAOIList; // Contains an array of IS_MULTI_AOI_DESCRIPTOR with nNumberOfAOIs elements
+
+} IS_MULTI_AOI_CONTAINER;
+
+
+typedef struct
+{
+        UEYE_ETH_ADDR_IPV4 ipCamera;
+        UEYE_ETH_ADDR_IPV4 ipMulticast;
+        UINT u32CameraId;
+        UINT u32ErrorHandlingMode;
+} IS_PMC_READONLYDEVICEDESCRIPTOR;
+
+#define IS_MC_CMD_FLAG_ACTIVE               0x1000
+#define IS_MC_CMD_FLAG_PASSIVE              0x2000
+
+/* is_Multicast() commands for passive mode (listener only) */
+#define IS_PMC_CMD_INITIALIZE               (   0x0001 | IS_MC_CMD_FLAG_PASSIVE )
+#define IS_PMC_CMD_DEINITIALIZE             (   0x0002 | IS_MC_CMD_FLAG_PASSIVE )
+
+#define IS_PMC_CMD_ADDMCDEVICE              (   0x0003 | IS_MC_CMD_FLAG_PASSIVE )
+#define IS_PMC_CMD_REMOVEMCDEVICE           (   0x0004 | IS_MC_CMD_FLAG_PASSIVE )
+#define IS_PMC_CMD_STOREDEVICES             (   0x0005 | IS_MC_CMD_FLAG_PASSIVE )
+#define IS_PMC_CMD_LOADDEVICES              (   0x0006 | IS_MC_CMD_FLAG_PASSIVE )
+
+#define IS_PMC_CMD_SYSTEM_SET_ENABLE        (   0x0007 | IS_MC_CMD_FLAG_PASSIVE )
+#define IS_PMC_CMD_SYSTEM_GET_ENABLE        (   0x0008 | IS_MC_CMD_FLAG_PASSIVE )
+
+#define IS_PMC_CMD_REMOVEALLMCDEVICES       (   0x0009 | IS_MC_CMD_FLAG_PASSIVE )
+
+/* is_Multicast() commands for active mode (master) */
+#define IS_AMC_CMD_SET_MC_IP                (   0x0010 | IS_MC_CMD_FLAG_ACTIVE )
+#define IS_AMC_CMD_GET_MC_IP                (   0x0011 | IS_MC_CMD_FLAG_ACTIVE )
+#define IS_AMC_CMD_SET_MC_ENABLED           (   0x0012 | IS_MC_CMD_FLAG_ACTIVE )
+#define IS_AMC_CMD_GET_MC_ENABLED           (   0x0013 | IS_MC_CMD_FLAG_ACTIVE )
+#define IS_AMC_CMD_GET_MC_SUPPORTED         (   0x0014 | IS_MC_CMD_FLAG_ACTIVE )
+
+#define IS_AMC_SUPPORTED_FLAG_DEVICE        (   0x0001 )
+#define IS_AMC_SUPPORTED_FLAG_FIRMWARE      (   0x0002 )
+
+#define IS_PMC_ERRORHANDLING_REJECT_IMAGES                              0x01
+#define IS_PMC_ERRORHANDLING_IGNORE_MISSING_PARTS                       0x02
+#define IS_PMC_ERRORHANDLING_MERGE_IMAGES_RELEASE_ON_COMPLETE           0x03
+#define IS_PMC_ERRORHANDLING_MERGE_IMAGES_RELEASE_ON_RECEIVED_IMGLEN    0x04
+
+/*!
+ * \brief Multicast configuration.
+ *
+ * \param hf            Camera handle. Only used for active multicast commands.
+ * \param u32Command    Multicast command.
+ * \param pParam        I/O parameter, depends on the command.
+ * \param cbParam       Size of *pParam.
+ * \return Status of the execution.
+ */
+IDSEXP is_Multicast( HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParams );
 
 #ifdef __cplusplus
 };
