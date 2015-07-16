@@ -39,8 +39,8 @@
 #if linux
     #include "ueye.h"
 #else
-    #include "IDS/uEye.h"
-    #include "IDS/version.h"
+    #include "uEye.h"
+    #include "version.h"
 #endif
 
 // project-includes

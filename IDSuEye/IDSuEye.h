@@ -28,7 +28,7 @@
 #if linux
     #include "ueye.h"
 #else
-    #include "IDS/uEye.h"
+    #include "uEye.h"
 #endif
 
 #include <qsharedpointer.h>
@@ -65,7 +65,8 @@ class IDSuEye : public ito::AddInGrabber
             sOffset = 32,
             sTriggerMode = 64,
             sBppAndColorMode = 128,
-            sAll = sPixelClock | sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sBppAndColorMode };
+            sFrameTime = 256,
+            sAll = sPixelClock | sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sBppAndColorMode | sFrameTime};
 
         struct MemoryStruct {
             int width;
@@ -78,7 +79,7 @@ class IDSuEye : public ito::AddInGrabber
             ~MemoryStruct() { }
         };
 
-        ito::RetVal checkError(const int &code);
+        ito::RetVal checkError(const int &code, const char* prefix = "");
 
         ito::RetVal synchronizeCameraSettings(int what = sAll);
         ito::RetVal loadSensorInfo();
