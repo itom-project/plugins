@@ -1905,6 +1905,44 @@ ito::RetVal IDSuEye::loadSensorInfo()
             case IS_SENSOR_UI1250_NIR: it->setVal<char*>("UI1250_NIR, 2MP global shutter, NIR"); break;
             case IS_SENSOR_UI1250LE_M: it->setVal<char*>("UI1250LE_M, 2MP global shutter, monochrome, single board"); break;
             case IS_SENSOR_UI1250LE_C: it->setVal<char*>("UI1250LE_C, 2MP global shutter, color, single board"); break;
+            case IS_SENSOR_UI1250LE_NIR: it->setVal<char*>("UI1250LE_NIR, 2MP global shutter, NIR, single board"); break;
+            case IS_SENSOR_UI1250ML_M: it->setVal<char*>("UI1250ML_M, 2MP global shutter, monochrome, single board"); break;
+            case IS_SENSOR_UI1250ML_C: it->setVal<char*>("UI1250ML_C, 2MP global shutter, color, single board"); break;
+            case IS_SENSOR_UI1250ML_NIR: it->setVal<char*>(", 2MP global shutter, NIR, single board"); break;
+            case IS_SENSOR_UI1493_M_AR: it->setVal<char*>("UI1493_M_AR"); break;
+            case IS_SENSOR_UI1493_C_AR: it->setVal<char*>("UI1493_C_AR"); break;
+
+#if defined IS_SENSOR_UI2130_C //>= SDK 4.61
+            case IS_SENSOR_UI1060_M: it->setVal<char*>("UI1060_M, 2.3MP global shutter, monochrome"); break;
+            case IS_SENSOR_UI1060_C: it->setVal<char*>("UI1060_C, 2.3MP global shutter, color"); break;
+            case IS_SENSOR_UI1013XC: it->setVal<char*>("UI1013XC, 13MP, color"); break;
+#endif
+
+            case IS_SENSOR_UI223X_M: it->setVal<char*>("UI223X_M, Sony CCD sensor - XGA monochrome"); break;
+            case IS_SENSOR_UI223X_C: it->setVal<char*>("UI223X_C, Sony CCD sensor - XGA color"); break;
+            case IS_SENSOR_UI241X_M: it->setVal<char*>("UI241X_M, Sony CCD sensor - VGA monochrome"); break;
+            case IS_SENSOR_UI241X_C: it->setVal<char*>("UI241X_C, Sony CCD sensor - VGA color"); break;
+            case IS_SENSOR_UI234X_M: it->setVal<char*>("UI234X_M, Sony CCD sensor - SXGA monochrome"); break;
+            case IS_SENSOR_UI234X_C: it->setVal<char*>("UI234X_C, Sony CCD sensor - SXGA color"); break;
+            case IS_SENSOR_UI221X_M: it->setVal<char*>("UI221X_M, Sony CCD sensor - VGA monochrome"); break;
+            case IS_SENSOR_UI221X_C: it->setVal<char*>("UI221X_C, Sony CCD sensor - VGA color"); break;
+            case IS_SENSOR_UI231X_M: it->setVal<char*>("UI231X_M, Sony CCD sensor - VGA monochrome"); break;
+            case IS_SENSOR_UI231X_C: it->setVal<char*>("UI231X_C, Sony CCD sensor - VGA color"); break;
+            case IS_SENSOR_UI222X_M: it->setVal<char*>("UI222X_M, Sony CCD sensor - CCIR / PAL monochrome"); break;
+            case IS_SENSOR_UI222X_C: it->setVal<char*>("UI222X_C, Sony CCD sensor - CCIR / PAL color"); break;
+            case IS_SENSOR_UI224X_M: it->setVal<char*>("UI224X_M, Sony CCD sensor - SXGA monochrome"); break;
+            case IS_SENSOR_UI224X_C: it->setVal<char*>("UI224X_C, Sony CCD sensor - SXGA color"); break;
+            case IS_SENSOR_UI225X_M: it->setVal<char*>("UI225X_M, Sony CCD sensor - UXGA monochrome"); break;
+            case IS_SENSOR_UI225X_C: it->setVal<char*>("UI225X_C, Sony CCD sensor - UXGA color"); break;
+            case IS_SENSOR_UI214X_M: it->setVal<char*>("UI214X_M, Sony CCD sensor - SXGA monochrome"); break;
+            case IS_SENSOR_UI214X_C: it->setVal<char*>("UI214X_C, Sony CCD sensor - SXGA color"); break;
+            case IS_SENSOR_UI228X_M: it->setVal<char*>("UI228X_M, Sony CCD sensor - QXGA monochrome"); break;
+            case IS_SENSOR_UI228X_C: it->setVal<char*>("UI228X_C, Sony CCD sensor - QXGA color"); break;
+            case IS_SENSOR_UI251X_M: it->setVal<char*>("UI251X_M or UI241X_M_R2, Sony CCD sensor - VGA monochrome"); break;
+            case IS_SENSOR_UI251X_C: it->setVal<char*>("UI251X_C or UI241X_C_R2, Sony CCD sensor - VGA color"); break;
+            case IS_SENSOR_UI2130_M: it->setVal<char*>("UI2130_M, Sony CCD sensor - WXGA monochrome"); break;
+            case IS_SENSOR_UI2130_C: it->setVal<char*>("UI2130_C, Sony CCD sensor - WXGA color"); break;
+
             default: it->setVal<char*>("unknown sensor type"); break;
         }
     }

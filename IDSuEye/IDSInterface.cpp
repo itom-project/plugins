@@ -91,6 +91,7 @@ IDSInterface::IDSInterface(QObject *parent)
  "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
 - UI145xSE-C (colored, USB2) \n\
 - UI124xSE-M (monochrome, USB2). \n\
+- UI224xSE-M (monochrome, USB2). \n\
 - UI337xCP-C (colored, USB3) \n\
 \n\
 The plugin has been compiled using the IDS library version %1.%2. \n\
