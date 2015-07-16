@@ -97,6 +97,9 @@ class IDSuEye : public ito::AddInGrabber
         MemoryStruct m_pMemory[BUFSIZE];
         bool m_colouredOutput;
         ito::RetVal m_acquisitionRetVal;
+#if WIN32
+        HANDLE m_frameEvent;
+#endif
 
     signals:
 
