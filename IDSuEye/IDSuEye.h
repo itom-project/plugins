@@ -34,7 +34,7 @@
 #include <qsharedpointer.h>
 #include <QTimerEvent>
 
-#define BUFSIZE 2
+#define BUFSIZE 4
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class IDSuEye : public ito::AddInGrabber
@@ -83,7 +83,7 @@ class IDSuEye : public ito::AddInGrabber
 
         ito::RetVal synchronizeCameraSettings(int what = sAll);
         ito::RetVal loadSensorInfo();
-        ito::RetVal setMinimumFrameRate();
+        ito::RetVal setMeanFrameRate();
         ito::RetVal setFrameRate(ito::float64 framerate);
 
         IS_POINT_2D m_monochromeBitDepthRange;
@@ -97,6 +97,7 @@ class IDSuEye : public ito::AddInGrabber
         MemoryStruct m_pMemory[BUFSIZE];
         bool m_colouredOutput;
         ito::RetVal m_acquisitionRetVal;
+        bool m_captureVideoActive;
 #if WIN32
         HANDLE m_frameEvent;
 #endif

@@ -97,3 +97,6 @@ With the sources of this plugin, the header and library files of the uEye SDK in
 Nevertheless, you need to have the camera drivers installed on your computer that fit to the uEye SDK of the plugin. However, you can also install the full SDK in any version
 on your computer and set the CMake variable IDS_DEVELOP_DIRECTORY to the develop-subfolder of the SDK (this folder contains the include and Lib subfolder). If you indicated this,
 please delete IDS_HEADER_FILE and IDS_LIBRARY in CMake and press configure again. Then, the plugin will be compiled with your individual SDK.
+
+Please install the 32bit/64bit version of IDS uEye SDK that corresponds to your operating system, not to the type of itom. If you decide to configure the SDK installer, you don't
+need to install any DirectShow or ActiveX components as well as additional drivers if you only want to use the camera with itom.
