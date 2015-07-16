@@ -127,13 +127,10 @@ IDSuEye::IDSuEye() :
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 16, tr("Bitdepth of each pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.04, 1000.0, 2.0, tr("Timeout for acquiring images in seconds").toLatin1().data());
-    m_params.insert(paramVal.getName(), paramVal);
-
     paramVal = ito::Param("fps", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1000.0, 0.0, tr("current fps reported by camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 1000.0, 3.0, tr("timeout in seconds when waiting for the next image.").toLatin1().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.04, 1000.0, 3.0, tr("timeout in seconds when waiting for the next image.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
