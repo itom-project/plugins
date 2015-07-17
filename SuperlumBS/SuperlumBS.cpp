@@ -120,7 +120,7 @@ const ito::RetVal SuperlumBS::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 SuperlumBS::SuperlumBS() : AddInActuator(), m_pSer(NULL), m_delayAfterSendCommandMS(0), m_dockWidget(NULL)
 {
-    ito::Param paramVal("name", ito::ParamBase::String, "Superlum BroadSweeper", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Superlum BroadSweeper", "Name of plugin.");
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -152,13 +152,13 @@ SuperlumBS::SuperlumBS() : AddInActuator(), m_pSer(NULL), m_delayAfterSendComman
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("wavelength_second", ito::ParamBase::Double, 820.00, 870.00, 820.00, tr("second wavelength in Two-Wavelength MODulation mode.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sweep_speed", ito::ParamBase::Int, 2, 10000, 10, tr("sweep speed in AUTOmatic or EXTernal mode between 2nm/s - 10000nm/s. Increment: 1nm/s.").toLatin1().data());
+    paramVal = ito::Param("sweep_speed", ito::ParamBase::Int, 2, 10000, 10, tr("sweep speed in AUTOmatic or EXTernal mode between 2 nm/s - 10000 nm/s. Increment: 1nm/s.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("modification_end_wavelength", ito::ParamBase::Double, 820.00, 870.00, 820.00, tr("end modification wavelength in AUTOmatic or EXTernal sweep mode.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("modification_start_wavelength", ito::ParamBase::Double, 820.00, 870.00, 870.00, tr("start modification wavelength in AUTOmatic or EXTernal sweep mode.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("wavelength", ito::ParamBase::Double, 820.00, 870.00, 845.00, tr("operation wavelength [nm] in MANual Mode. Increment: 0.05nm.").toLatin1().data());
+    paramVal = ito::Param("wavelength", ito::ParamBase::Double, 820.00, 870.00, 845.00, tr("operation wavelength [nm] in MANual Mode. Increment: 0.05 nm.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("( 0 ) optical output is disabeld, ( 1 ) optical output is enabled.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -1681,7 +1681,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         QRegExp regExp("^A73(\\d{4,4})");            
         if (regExp.indexIn(answer) >= 0 && !retval.containsError())
         {
-            m_params["modification_stop_wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
+            m_params["modification_end_wavelength"].setVal<double>(0.05 * regExp.cap(1).toInt() + 700);
         }
         else
         {

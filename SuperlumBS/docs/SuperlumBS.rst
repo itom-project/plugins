@@ -92,48 +92,48 @@ These parameters are available and can be used to configure the **SuperlumBS** i
 parameters of the constructor. During the runtime of an instance, the value of these parameters is obtained by the method *getParam*, writeable
 parameters can be changed using *setParam*.
 
-**name**: {str}, read-only
-    name of the plugin (*Superlum BroadSweeper*).
 **comPort**: {int}, read-only
     The current com-port ID of this specific device. -1 means undefined.
-**serial_number**: {str}, read-only
-    Serial number of Superlum device.
-**remote_interlock**: {int}, read-only [0,1]
-    Remote Interlock is in open (0) or is closed (1).
-**master_key**: {int}, read-only [0,1]
-    Master Key is in position O (0) or position I (1).
-**full_tuning_range_LOW_end**: {double}, read-only [820, 870]
-    This integer queries the end wavelength of the full tuning range for LOW power mode.
-**full_tuning_range_LOW_start**: {double}, read-only [820, 870]
-    This integer queries the start wavelength of the full tuning range for LOW power mode.
-**full_tuning_range_HIGH_end**: {double}, read-only [820, 870]
-    This integer queries the end wavelength of the full tuning range for HIGH power mode.
-**full_tuning_range_HIGH_start**: {double}, read-only [820, 870]
-    This integer queries the start wavelength of the full tuning range for HIGH power mode.
-**operation_mode**: {int} [1,4]
-    ( 1 ) MANual, ( 2 ) AUTOmatic, ( 3 ) EXTernal, ( 4 ) MODulation. 
-**local**: {int} [0,1]
+**full_tuning_range_HIGH_end**: {float}, read-only
+    FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in LOW power mode.
+**full_tuning_range_HIGH_start**: {float}, read-only
+    FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in HIGH power mode.
+**full_tuning_range_LOW_end**: {float}, read-only
+    FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in LOW power mode.
+**full_tuning_range_LOW_start**: {float}, read-only
+    FULL spectral tuning range of sweeping in AUTOmatic OR EXTernal sweep mode in HIGH power mode.
+**local**: {int}
     ( 0 ) local or ( 1 ) remote mode.
-**operation_booster**: {int}, read-only [-1,1]
-    ( -1 ) booster module is not installed, ( 0 ) optical output of booster is disabled, ( 1 ) optical output of booster is enabled.
-**power_mode**: {int} [0,1]
-    ( 0 ) LOW Power mode, ( 1 ) HIGH Power mode.
-**modulation_frequency**: {double} [0.1, 1000]
-    Modulation frequency in Two-Wavelength MODulation mode.
-**wavelength_first**: {double} [820, 870]
-    first wavelength in Two-Wavelength MODulation mode.
-**wavelength_second**: {double} [820, 870]
-    second wavelength in Two-Wavelength MODulation mode.
-**sweep_speed**: {int} [2, 10000]
-    sweep speed in AUTOmatic or EXTernal mode between 2nm/s - 10000nm/s. Increment: 1nm/s.
-**modification_end_wavelength**: {double} [820, 870]
+**master_key**: {int}, read-only
+    Master Key is in position O (0) or position I (1).
+**modification_end_wavelength**: {float}
     end modification wavelength in AUTOmatic or EXTernal sweep mode.
-**modification_start_wavelength**: {double} [820, 870]
+**modification_start_wavelength**: {float}
     start modification wavelength in AUTOmatic or EXTernal sweep mode.
-**wavelength**: {double} [820, 870]
-    operation wavelength [nm] in MANual Mode. Increment: 0.05nm.
-**optical_output**: {int} [0,1]
+**modulation_frequency**: {float}
+    Modulation frequency in Two-Wavelength MODulation mode.
+**name**: {str}, read-only
+    Name of plugin.
+**operation_booster**: {int}, read-only
+    ( -1 ) booster module is not installed, ( 0 ) optical output of booster is disabled, ( 1 ) optical output of booster is enabled.
+**operation_mode**: {int}
+    ( 1 ) MANual, ( 2 ) AUTOmatic, ( 3 ) EXTernal, ( 4 ) MODulation.
+**optical_output**: {int}
     ( 0 ) optical output is disabeld, ( 1 ) optical output is enabled.
+**power_mode**: {int}
+    ( 0 ) LOW Power mode, ( 1 ) HIGH Power mode.
+**remote_interlock**: {int}, read-only
+    Remote Interlock is in open (0) or is closed (1).
+**serial_number**: {str}, read-only
+    Serial number of device.
+**sweep_speed**: {int}
+    sweep speed in AUTOmatic or EXTernal mode between 2nm/s - 10000nm/s. Increment: 1nm/s.
+**wavelength**: {float}
+    operation wavelength [nm] in MANual Mode. Increment: 0.05nm.
+**wavelength_first**: {float}
+    first wavelength in Two-Wavelength MODulation mode.
+**wavelength_second**: {float}
+    second wavelength in Two-Wavelength MODulation mode.
     
 Usage
 =====
