@@ -1912,7 +1912,7 @@ ito::RetVal IDSuEye::loadSensorInfo()
             case IS_SENSOR_UI1493_M_AR: it->setVal<char*>("UI1493_M_AR"); break;
             case IS_SENSOR_UI1493_C_AR: it->setVal<char*>("UI1493_C_AR"); break;
 
-#if defined IS_SENSOR_UI2130_C //>= SDK 4.61
+#if defined IS_SENSOR_UI1060_M //>= SDK 4.61
             case IS_SENSOR_UI1060_M: it->setVal<char*>("UI1060_M, 2.3MP global shutter, monochrome"); break;
             case IS_SENSOR_UI1060_C: it->setVal<char*>("UI1060_C, 2.3MP global shutter, color"); break;
             case IS_SENSOR_UI1013XC: it->setVal<char*>("UI1013XC, 13MP, color"); break;
