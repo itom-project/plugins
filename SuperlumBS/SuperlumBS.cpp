@@ -1416,7 +1416,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
             double value = 0.05 * regExp.cap(1).toDouble() + 700;
             m_params["full_tuning_range_LOW_end"].setVal<double>( value );            
             static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_end"].getMeta() )->setMin(value);
-            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_end"].getMeta() )->setMax(value);
+			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_start"].getMeta() )->setMin(value);
             static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(value);
             static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(value);
             static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(value);
@@ -1440,7 +1440,8 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         {            
             double value = 0.05 * regExp.cap(1).toDouble() + 700;
             m_params["full_tuning_range_LOW_start"].setVal<double>( value );
-            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_start"].getMeta() )->setMin(value);
+            
+			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_end"].getMeta() )->setMax(value);
             static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_LOW_start"].getMeta() )->setMax(value);
             static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(value);
             static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(value);
@@ -1466,7 +1467,7 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
             double value = 0.05 * regExp.cap(1).toDouble() + 700;
             m_params["full_tuning_range_HIGH_end"].setVal<double>( value );
             static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_end"].getMeta() )->setMin(value);
-            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_end"].getMeta() )->setMax(value);
+            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_start"].getMeta() )->setMin(value);
             static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMin(value);
             static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMin(value);
             static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMin(value);
@@ -1490,8 +1491,9 @@ ito::RetVal SuperlumBS::IdentifyAndInitializeSystem()
         {            
             double value = 0.05 * regExp.cap(1).toDouble() + 700;
             m_params["full_tuning_range_HIGH_start"].setVal<double>( value );
-            static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_start"].getMeta() )->setMin(value);
+            
             static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_start"].getMeta() )->setMax(value);
+			static_cast<ito::DoubleMeta*>( m_params["full_tuning_range_HIGH_end"].getMeta() )->setMax(value);
             static_cast<ito::DoubleMeta*>( m_params["modification_end_wavelength"].getMeta() )->setMax(value);
             static_cast<ito::DoubleMeta*>( m_params["modification_start_wavelength"].getMeta() )->setMax(value);
             static_cast<ito::DoubleMeta*>( m_params["wavelength"].getMeta() )->setMax(value);
