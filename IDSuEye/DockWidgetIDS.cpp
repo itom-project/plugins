@@ -87,7 +87,7 @@ void DockWidgetIDS::parametersChanged(QMap<QString, ito::Param> params)
         ui.sliderExposure->setMaximum(dm->getMax());
         if (dm->getStepSize() != 0)
         {
-            ui.sliderExposure->setSingleStep(std::max(dm->getStepSize(), 0.00001)); //0.00001 is the minimal step of the spin box
+            ui.sliderExposure->setSingleStep(std::max(dm->getStepSize(), 0.001)); //0.001 is the minimal step of the spin box (1ms)
         }
         else
         {

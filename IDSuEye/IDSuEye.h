@@ -28,11 +28,13 @@
 #if linux
     #include "ueye.h"
 #else
-    #include "IDS/uEye.h"
+    #include "uEye.h"
 #endif
 
 #include <qsharedpointer.h>
 #include <QTimerEvent>
+
+#define BUFSIZE 4
 
 //----------------------------------------------------------------------------------------------------------------------------------
 class IDSuEye : public ito::AddInGrabber
@@ -63,7 +65,8 @@ class IDSuEye : public ito::AddInGrabber
             sOffset = 32,
             sTriggerMode = 64,
             sBppAndColorMode = 128,
-            sAll = sPixelClock | sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sBppAndColorMode };
+            sFrameTime = 256,
+            sAll = sPixelClock | sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sBppAndColorMode | sFrameTime};
 
         struct MemoryStruct {
             int width;
@@ -72,13 +75,16 @@ class IDSuEye : public ito::AddInGrabber
             char *ppcImgMem;
             INT pid;
             bool imageAvailable;
+            MemoryStruct() { width = 0; height = 0; bitspixel = 0; ppcImgMem = NULL, pid = -1; imageAvailable = 0; }
+            ~MemoryStruct() { }
         };
 
-        ito::RetVal checkError(const int &code);
+        ito::RetVal checkError(const int &code, const char* prefix = "");
 
         ito::RetVal synchronizeCameraSettings(int what = sAll);
         ito::RetVal loadSensorInfo();
-        ito::RetVal setMinimumFrameRate();
+        ito::RetVal setMeanFrameRate();
+        ito::RetVal setFrameRate(ito::float64 framerate);
 
         IS_POINT_2D m_monochromeBitDepthRange;
 
@@ -86,9 +92,15 @@ class IDSuEye : public ito::AddInGrabber
         IS_RANGE_S32 m_blacklevelRange; //range for the offset
         SENSORINFO m_sensorInfo;
         int m_bitspixel; //bits per pixel that needs to be allocated
-        MemoryStruct *m_pMemory;
+        int m_imageAvailable;
+        MemoryStruct m_pLockedBuf;
+        MemoryStruct m_pMemory[BUFSIZE];
         bool m_colouredOutput;
         ito::RetVal m_acquisitionRetVal;
+        bool m_captureVideoActive;
+#if WIN32
+        HANDLE m_frameEvent;
+#endif
 
     signals:
 
@@ -106,8 +118,6 @@ class IDSuEye : public ito::AddInGrabber
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
 };
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 

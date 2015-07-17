@@ -49,28 +49,14 @@ void DialogIDS::parametersChanged(QMap<QString, ito::Param> params)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
 
-#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
-        ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
-        ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
-        ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
-#else
-        ito::IntMeta *im;
-        im = static_cast<ito::IntMeta*>(params["x0"].getMeta());
-        ui.rangeX01->setSingleStep(im->getStepSize());
-        ui.rangeX01->setMinimum(0);
-        ui.rangeX01->setMinimumValue(0);
-        im = static_cast<ito::IntMeta*>(params["x1"].getMeta());
-        ui.rangeX01->setMaximum(im->getMax());
-        ui.rangeX01->setMaximumValue(im->getMax());
+        const ito::StringMeta *triggerMeta = static_cast<ito::StringMeta*>(params["trigger_mode"].getMeta());
 
-        im = static_cast<ito::IntMeta*>(params["y0"].getMeta());
-        ui.rangeY01->setSingleStep(im->getStepSize());
-        ui.rangeY01->setMinimum(0);
-        ui.rangeY01->setMinimumValue(0);
-        im = static_cast<ito::IntMeta*>(params["y1"].getMeta());
-        ui.rangeY01->setMaximum(im->getMax());
-        ui.rangeY01->setMaximumValue(im->getMax());
-#endif
+        ui.comboTriggerMode->clear();
+        for (int i = 0; i < triggerMeta->getLen(); ++i)
+        {
+            ui.comboTriggerMode->addItem(triggerMeta->getString(i));
+        }
+        
 
         ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
         ito::StringMeta *colorModeMeta = static_cast<ito::StringMeta*>(params["color_mode"].getMeta());
@@ -100,44 +86,42 @@ void DialogIDS::parametersChanged(QMap<QString, ito::Param> params)
         }
         else
         {
+            int maxBin = params["binning"].getMax();
+            int maxVert = maxBin % 100;
+            int maxHorz = maxBin / 100;
+
             ui.comboBinHor->setEnabled(true);
             ui.comboBinVer->setEnabled(true);
             ui.comboBinHor->addItem("1x", 1);
-            ui.comboBinHor->addItem("2x", 2);
-            ui.comboBinHor->addItem("3x", 3);
-            ui.comboBinHor->addItem("4x", 4);
-            ui.comboBinHor->addItem("5x", 5);
-            ui.comboBinHor->addItem("6x", 6);
-            ui.comboBinHor->addItem("8x", 8);
-            ui.comboBinHor->addItem("16x", 16);
+            if (maxHorz >= 2) ui.comboBinHor->addItem("2x", 2);
+            if (maxHorz >= 3) ui.comboBinHor->addItem("3x", 3);
+            if (maxHorz >= 4) ui.comboBinHor->addItem("4x", 4);
+            if (maxHorz >= 5) ui.comboBinHor->addItem("5x", 5);
+            if (maxHorz >= 6) ui.comboBinHor->addItem("6x", 6);
+            if (maxHorz >= 8) ui.comboBinHor->addItem("8x", 8);
+            if (maxHorz >= 16) ui.comboBinHor->addItem("16x", 16);
             ui.comboBinVer->addItem("1x", 1);
-            ui.comboBinVer->addItem("2x", 2);
-            ui.comboBinVer->addItem("3x", 3);
-            ui.comboBinVer->addItem("4x", 4);
-            ui.comboBinVer->addItem("5x", 5);
-            ui.comboBinVer->addItem("6x", 6);
-            ui.comboBinVer->addItem("8x", 8);
-            ui.comboBinVer->addItem("16x", 16);
+            if (maxVert >= 2) ui.comboBinVer->addItem("2x", 2);
+            if (maxVert >= 3) ui.comboBinVer->addItem("3x", 3);
+            if (maxVert >= 4) ui.comboBinVer->addItem("4x", 4);
+            if (maxVert >= 5) ui.comboBinVer->addItem("5x", 5);
+            if (maxVert >= 6) ui.comboBinVer->addItem("6x", 6);
+            if (maxVert >= 8) ui.comboBinVer->addItem("8x", 8);
+            if (maxVert >= 16) ui.comboBinVer->addItem("16x", 16);
         }
 
         m_firstRun = false;
     }
 
-    bool updateSizeX = false;
-    bool updateSizeY = false;
+    ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+    ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+    ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());
 
-#if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     int *roi = params["roi"].getVal<int*>();
     ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
     ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
     ui.rangeX01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
     ui.rangeY01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
-#else
-    ui.rangeX01->setValues(params["x0"].getVal<int>(), params["x1"].getVal<int>());
-    ui.rangeY01->setValues(params["y0"].getVal<int>(), params["y1"].getVal<int>());
-    ui.rangeX01->setEnabled(! (params["x0"].getFlags() & ito::ParamBase::Readonly));
-    ui.rangeY01->setEnabled(! (params["y0"].getFlags() & ito::ParamBase::Readonly));
-#endif
 
     ui.spinSizeX->setValue(params["sizex"].getVal<int>());
     ui.spinSizeY->setValue(params["sizey"].getVal<int>());
@@ -157,6 +141,13 @@ void DialogIDS::parametersChanged(QMap<QString, ito::Param> params)
     ui.sliderIntegrationTime->setSingleStep(dm->getStepSize());
     ui.sliderIntegrationTime->setValue(params["integration_time"].getVal<double>());
     ui.sliderIntegrationTime->setEnabled(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly));
+
+    dm = static_cast<ito::DoubleMeta*>(params["frame_rate"].getMeta());
+    ui.sliderFrameRate->setMinimum(dm->getMin());
+    ui.sliderFrameRate->setMaximum(dm->getMax());
+    ui.sliderFrameRate->setSingleStep(std::max(0.1, dm->getStepSize()));
+    ui.sliderFrameRate->setValue(params["frame_rate"].getVal<double>());
+    ui.sliderFrameRate->setEnabled(!(params["frame_rate"].getFlags() & ito::ParamBase::Readonly));
 
     ito::IntMeta *im = static_cast<ito::IntMeta*>(params["pixel_clock"].getMeta());
     ui.sliderPixelClock->setMinimum(im->getMin());
@@ -194,6 +185,15 @@ void DialogIDS::parametersChanged(QMap<QString, ito::Param> params)
         if (ui.comboBppMode->itemData(i, 32).toInt() == userData)
         {
             ui.comboBppMode->setCurrentIndex(i);
+            break;
+        }
+    }
+
+    for (int i = 0; i < ui.comboTriggerMode->count(); ++i)
+    {
+        if (ui.comboTriggerMode->itemText(i) == params["trigger_mode"].getVal<char*>())
+        {
+            ui.comboTriggerMode->setCurrentIndex(i);
             break;
         }
     }
@@ -284,7 +284,7 @@ ito::RetVal DialogIDS::applyParameters()
 
     if (ui.comboBinHor->isEnabled() && ui.comboBinVer->isEnabled())
     {
-        int bin = ui.comboBinHor->itemData(ui.comboBinHor->currentIndex()).toInt() * 100 + ui.comboBinVer->itemData(ui.comboBinHor->currentIndex()).toInt();
+        int bin = ui.comboBinHor->itemData(ui.comboBinHor->currentIndex()).toInt() * 100 + ui.comboBinVer->itemData(ui.comboBinVer->currentIndex()).toInt();
         if (m_currentParameters["binning"].getVal<int>() != bin)
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("binning", ito::ParamBase::Int, bin)));
@@ -336,6 +336,24 @@ ito::RetVal DialogIDS::applyParameters()
            qAbs(dval[2] - curdval[2]) >= std::numeric_limits<double>::epsilon() )
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain_rgb", ito::ParamBase::DoubleArray, 3, dval)));
+        }
+    }
+
+    if (ui.comboTriggerMode->isEnabled())
+    {
+        QString mode = ui.comboTriggerMode->currentText();
+        if (mode != m_currentParameters["trigger_mode"].getVal<char*>())
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::String, mode.toLatin1().data())));
+        }
+    }
+
+    if (ui.sliderFrameRate->isEnabled())
+    {
+        double dval = ui.sliderFrameRate->value();
+        if (qAbs(m_currentParameters["frame_rate"].getVal<double>() - dval) >= 0.00001) //the smallest range is 1musec, given by the number of decimals of the spin box. //std::numeric_limits<double>::epsilon())
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("frame_rate", ito::ParamBase::Double, dval)));
         }
     }
 
