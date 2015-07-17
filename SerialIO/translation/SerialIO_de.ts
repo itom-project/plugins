@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DockWidgetSerialIO</name>
     <message>
-        <location filename="../dockWidgetSerialIO.ui"/>
+        <location filename="../dockWidgetSerialIO.ui" line="+59"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+59"/>
         <source>SerialIO Log</source>
         <translation>SerialIO-Protokoll</translation>
     </message>
     <message>
-        <location/>
+        <location line="+49"/>
         <source>Decimal</source>
         <translation>Dezimal</translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source>Hexadecimal</source>
         <translation>Hexadezimal</translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Binary</source>
         <translation>Binär</translation>
     </message>
     <message>
-        <location/>
+        <location line="+18"/>
         <source>Clear</source>
         <translation>Löschen</translation>
     </message>
@@ -38,27 +38,27 @@
         <translation type="obsolete">Leere Nachrichten ignorieren</translation>
     </message>
     <message>
-        <location/>
+        <location line="-188"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+119"/>
         <source>ASCII</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+62"/>
         <source>ignore empty messages</source>
         <translation>Leere Nachrichten ignorieren</translation>
     </message>
     <message>
-        <location/>
+        <location line="-136"/>
         <source>Port:</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>[Identifier]</source>
         <translation></translation>
     </message>
@@ -66,26 +66,26 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+219"/>
-        <location line="+174"/>
+        <location filename="../SerialIO.cpp" line="+267"/>
+        <location line="+148"/>
         <source>invalid baud rate</source>
         <translation>Ungültige Baudrate</translation>
     </message>
     <message>
-        <location line="-151"/>
-        <location line="+170"/>
+        <location line="-125"/>
+        <location line="+135"/>
         <source>invalid number of bits</source>
         <translation>Ungültige Anzahl Datenbits</translation>
     </message>
     <message>
-        <location line="-157"/>
-        <location line="+166"/>
+        <location line="-122"/>
+        <location line="+131"/>
         <source>invalid number of stopbits</source>
         <translation>Ungültige Anzahl Stopbits</translation>
     </message>
     <message>
-        <location line="-146"/>
-        <location line="+159"/>
+        <location line="-111"/>
+        <location line="+124"/>
         <source>invalid parity</source>
         <translation>Ungültige Parität</translation>
     </message>
@@ -105,8 +105,10 @@
         <translation>Ungültiges Terminierungszeichen</translation>
     </message>
     <message>
-        <location line="+69"/>
-        <location line="+24"/>
+        <location line="+76"/>
+        <location line="+25"/>
+        <location line="+15"/>
+        <location line="+20"/>
         <source>could not open device</source>
         <translation>Kann Gerät nicht öffnen</translation>
     </message>
@@ -169,17 +171,17 @@
         <translation>K.A.</translation>
     </message>
     <message>
-        <location line="+285"/>
+        <location line="+289"/>
         <source>Mandatory paramers are NULL</source>
         <translation>Pflichtparameter ist NULL</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+18"/>
         <source>Optinal paramers are NULL</source>
         <translation>Optionaler Parameter ist NULL</translation>
     </message>
     <message>
-        <location filename="../dialogSerialIO.cpp" line="+293"/>
+        <location filename="../dialogSerialIO.cpp" line="+436"/>
         <source>Char token not closed correctly or number to big.</source>
         <translation>Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
     </message>
@@ -192,12 +194,17 @@
 <context>
     <name>SerialIO</name>
     <message>
-        <location filename="../SerialIO.cpp" line="-244"/>
-        <source>Serial port number of this device</source>
-        <translation>Serielle Portnummer dieses Geräts</translation>
+        <location filename="../SerialIO.cpp" line="-240"/>
+        <source>The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</source>
+        <translation>Portnummer der seriellen Schnittstelle, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
+        <source>Serial port number of this device</source>
+        <translation>Portnummer der seriellen Schnittstelle dieses Geräts</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Number of bits to be written in line</source>
         <translation>Anzahl der pro Zeile geschriebenen Bits</translation>
     </message>
@@ -262,7 +269,7 @@
         <translation>Löscht den Eingabe- oder Ausgabepuffer der seriellen Schnittstelle</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+43"/>
         <source>name of requested parameter is empty.</source>
         <translation>Name des angeforderten Parameters ist leer.</translation>
     </message>
@@ -302,7 +309,7 @@
         <translation>Parameter wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+153"/>
+        <location line="+152"/>
         <source>StartDevice not necessary</source>
         <translation>&quot;StartDevice&quot; nicht nötig</translation>
     </message>
@@ -317,7 +324,7 @@
         <translation>&quot;Acquire&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="-356"/>
+        <location line="-348"/>
         <source>Current baudrate in bits/s</source>
         <translation>Aktuelle Baudrate ist bits/s</translation>
     </message>
@@ -325,17 +332,22 @@
 <context>
     <name>SerialIOInterface</name>
     <message>
-        <location line="-105"/>
+        <location line="-116"/>
         <source>itom-plugin for a serial port communication</source>
         <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
     <message>
         <location line="+45"/>
+        <source>The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</source>
+        <translation>Portnummer der seriellen Schnittstelle, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>The number of the serial port, starting with 1 (linux 0)</source>
         <translation>Nummer der seriellen Portnummer, beginnend mit 1 (bei Linux mit 0)</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>The endline character, which is added automatically after every setVal()</source>
         <translation>Der Terminierungsstring, der automatisch nach jedem setVal() hinzugefügt wird</translation>
     </message>
@@ -403,387 +415,250 @@
         <translation>Fehler: %1 konnte nicht interpretiert werden - nicht gesendet</translation>
     </message>
     <message>
-        <location filename="../dialogSerialIO.ui"/>
+        <location filename="../dialogSerialIO.ui" line="+45"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Basic</source>
         <translation>Grundeinstellungen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Baud</source>
         <translation>Baudrate</translation>
     </message>
     <message>
-        <location/>
+        <location line="+169"/>
         <source>Endline</source>
         <translation>Terminierung</translation>
     </message>
     <message>
-        <location/>
+        <location line="+35"/>
         <source>&lt;none&gt;</source>
         <translation>&lt;nichts&gt;</translation>
     </message>
     <message>
-        <location/>
+        <location line="-176"/>
         <source>Parity</source>
         <translation>Parität</translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
+        <location line="+304"/>
+        <location line="+72"/>
+        <location line="+32"/>
+        <location line="+56"/>
+        <location line="+17"/>
         <source>disable</source>
         <translation>ausschalten</translation>
     </message>
     <message>
-        <location/>
+        <location line="-476"/>
+        <location line="+304"/>
+        <location line="+72"/>
+        <location line="+32"/>
+        <location line="+56"/>
+        <location line="+17"/>
         <source>enable</source>
         <translation>einschalten</translation>
     </message>
     <message>
-        <location/>
+        <location line="-406"/>
         <source>Time out</source>
         <translation>Timeout</translation>
     </message>
     <message>
-        <location/>
+        <location line="+155"/>
         <source>Debug Mode</source>
         <translation>Protokollierung</translation>
     </message>
     <message>
-        <location/>
+        <location line="+479"/>
         <source>Read delay</source>
         <translation>Leseverzögerung</translation>
     </message>
     <message>
-        <location/>
+        <location line="-459"/>
         <source>Flow control</source>
         <translation>Flusskontrolle</translation>
     </message>
     <message>
-        <location/>
+        <location line="+293"/>
         <source>Send message</source>
         <translation>Nachricht versenden</translation>
     </message>
     <message>
-        <location/>
+        <location line="+26"/>
         <source>Transfer</source>
         <translation>Übertragung</translation>
     </message>
     <message>
-        <location/>
+        <location line="+87"/>
         <source>Decimal</source>
         <translation>Dezimal</translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Hexadecimal</source>
         <translation>Hexadezimal</translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Binary</source>
         <translation>Binär</translation>
     </message>
     <message>
-        <location/>
+        <location line="-75"/>
         <source>Send</source>
         <translation>Senden</translation>
     </message>
     <message>
-        <location/>
+        <location line="+84"/>
         <source>Read</source>
         <translation>Lesen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+76"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location/>
+        <location line="-216"/>
         <source>Use input below to send characters to the serial port. Characters will be send as their ASCII code from the character written. To directly write ASCII codes use the format $(code) or select Decimal, Hexadecimal or Binary separated by space.</source>
         <translation>Um Nachrichten an die serielle Schnittstelle zu senden, die Eingabezeile benutzen. Zeichen werden als ASCII-Zeichen übermittelt. Um direkt ASCII-Code zu schreiben, das Format $(Code) oder Dezimal, Hexadezimal oder Binär mit Leerzeichen getrennt benutzen.</translation>
     </message>
     <message>
-        <location/>
+        <location line="+226"/>
         <source>Apply</source>
         <translation>Übernehmen</translation>
     </message>
     <message>
-        <location/>
+        <location line="-283"/>
         <source>Python Command</source>
         <translation>Python-Befehl</translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Create</source>
         <translation>Erzeugen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+226"/>
         <source>Clear</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location/>
+        <location line="-565"/>
         <source>Send Delay</source>
         <translation>Verzögerung</translation>
     </message>
     <message>
-        <location/>
+        <location line="-256"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
-        <source>50</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>75</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>110</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>134</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>150</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>200</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>300</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>600</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1200</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1800</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>2400</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>4800</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>9600</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>19200</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>38400</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>57600</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>115200</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>230400</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>460800</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>500000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>576000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>921600</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1000000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1152000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>1500000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>2000000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>2500000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>3000000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>3500000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>4000000</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
+        <location line="+105"/>
         <source>Bits</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>5</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>6</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>7</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>8</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+40"/>
+        <location line="+89"/>
+        <location line="+539"/>
         <source>ms</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="-580"/>
         <source>\r</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>\n</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>\r\n</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+46"/>
         <source>Stopbits</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>1</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>2</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+59"/>
         <source>Xon/Xoff</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+60"/>
         <source>rts</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+15"/>
         <source>cts</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+38"/>
         <source>dtr</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
+        <location line="+73"/>
         <source>handshake</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="-47"/>
         <source>dsr</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+195"/>
         <source>ASCII</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+126"/>
         <source>OK</source>
         <translation></translation>
     </message>
@@ -791,19 +666,16 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
-        <translation>Uninitialisierte Vektoren für Pflichtparameter!</translation>
+        <translation type="vanished">Uninitialisierte Vektoren für Pflichtparameter!</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
-        <translation>Uninitialisierte Vektoren für optionale Parameter!</translation>
+        <translation type="vanished">Uninitialisierte Vektoren für optionale Parameter!</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
-        <translation>Uninitialisierte Vektoren für Ausgabeparameter!</translation>
+        <translation type="vanished">Uninitialisierte Vektoren für Ausgabeparameter!</translation>
     </message>
 </context>
 </TS>

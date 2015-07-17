@@ -1,140 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogIDS</name>
     <message>
-        <location filename="../dialogIDS.ui"/>
+        <location filename="../dialogIDS.ui" line="+26"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Color Mode and Bits per Pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Binning (horizontal, vertical)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Data Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+12"/>
+        <location line="+41"/>
+        <location line="+63"/>
+        <location line="+40"/>
+        <location line="+13"/>
         <source> %</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-150"/>
         <source>auto blacklevel correction (offset)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>gain boost (analog hardware gain)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Master Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+35"/>
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Integration Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Green Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>enable long integration time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Red Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Pixel Clock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source> Mhz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Blue Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+39"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+8"/>
         <source>x0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+35"/>
         <source>x1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>y0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+38"/>
         <source>y1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+11"/>
         <source>x-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
+        <location line="+29"/>
         <source> px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-16"/>
         <source>y-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+42"/>
         <source>full ROI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -143,111 +148,118 @@
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+31"/>
+        <source>gray %1 bit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DockWidgetIDS</name>
     <message>
-        <location filename="../dockWidgetIDS.ui"/>
+        <location filename="../dockWidgetIDS.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Camera Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+21"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Sensor:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Camera Model:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Camera ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>[Model]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>[Sensor]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source>Image Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+36"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Bit depth:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
+        <location line="+7"/>
+        <location line="+7"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Camera Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Exposure:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Gain:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+35"/>
         <source>Offset:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+35"/>
         <source>Gain Green:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Gain Red:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+91"/>
         <source>Gain Blue:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -255,7 +267,7 @@
 <context>
     <name>IDSInterface</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="+100"/>
+        <location filename="../IDSInterface.cpp" line="+107"/>
         <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -428,13 +440,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+713"/>
-        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
+        <location line="+714"/>
+        <source>Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
+        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

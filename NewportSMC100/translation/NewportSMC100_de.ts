@@ -2,364 +2,329 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>DockWidgetGWInstekPSP</name>
+    <name>DialogSMC100</name>
     <message>
-        <location filename="../dockWidgetGWInstekPSP.ui" line="+32"/>
-        <source>Form</source>
+        <source>SMC Piezo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
-        <source>General Information</source>
+        <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
-        <source>ID:</source>
+        <source>Device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>[ID]</source>
+        <source>[unknown]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
-        <source>SerialIO Log</source>
+        <source>Number of Axis:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
-        <location line="+24"/>
-        <location line="+75"/>
-        <source>Limit</source>
+        <source>Homing (Calibration)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-59"/>
-        <location line="+38"/>
-        <source> A</source>
+        <source>Calibrate Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-19"/>
-        <location line="+56"/>
-        <source> W</source>
+        <source>Asynchrone</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DockWidgetSMC100</name>
+    <message>
+        <source>Newport SMC100</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
-        <source>Current</source>
+        <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <location line="+40"/>
-        <source> V</source>
+        <source>Number of found axis: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-13"/>
-        <source>Voltage</source>
+        <source>10</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
-        <source>Load</source>
+        <source>COM-Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Auto update</source>
+        <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <source>Step Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Nr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>move step</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>curr. pos.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>target pos.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>go</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>GWInstekPSP</name>
     <message>
-        <location filename="../GWInstekPSP.cpp" line="+193"/>
-        <source>Undefined answer from serial port</source>
+        <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
-        <source>No answer from serial port</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Current status string of controller</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Ouput voltage; the unit: V</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Ouput current; the unit: A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Ouput load; the unit: W</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Ouput voltage limit; the unit: V</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Ouput current limit; the unit: A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Ouput load limit; the unit: W</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Save the present status to the EEPROM on exit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Relay status 0: off, 1: on</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Temperature status 0: normal, 1: overheat</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Wheel knob 0: normal, 1: fine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Wheel knob 0: lock, 1: unlock</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Remote status 0: normal, 1: remote</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Lock status 0: lock, 1: unlock</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <location line="+3"/>
-        <source>start voltage in volt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-2"/>
-        <source>end voltage in volt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>total ramp time in ms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>synchronous (0) or asynchronous (1, default)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>todo</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>name of requested parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>name of given parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
-        <source>Parameter is read only, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>New value is larger than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>New value is smaller than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Parameter type conflict</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+104"/>
-        <source>Doesn&apos;t fit to interface DataIO!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-163"/>
-        <location line="+120"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>GWInstekPSPInterface</name>
-    <message>
-        <location line="-383"/>
-        <source>An initialized SerialIO</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Save the present status to the EEPROM</source>
+        <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-19"/>
-        <source>Controller for power supplies PSP-405, PSP-603 and PSP-2010 of GWInstek</source>
+        <source>Newport SMC100CC/PP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
-        <source>Licensed under LGPL</source>
+        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>dialogGWInstekPSP</name>
+    <name>SMC100</name>
     <message>
-        <location filename="../dialogGWInstekPSP.cpp" line="+45"/>
-        <source>Configuration Dialog</source>
+        <source>The current com-port ID of this specific device. -1 means undefined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogGWInstekPSP.ui" line="+26"/>
-        <source>Dialog</source>
+        <source>device information string</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
-        <source>SerialIO Log</source>
+        <source>Displays the current status in the Newport system.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Voltage Limit</source>
+        <source>Number of Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source> V</source>
+        <source>asychronous (1) or sychronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source> W</source>
+        <source>Calibration / Homing mode for each axis for further information refer to datasheet command HT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>Load Limit</source>
+        <source>Reset Controller and switch to configmode (1) or set it back to unreferenced (0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>Current Limit</source>
+        <source>Expects an array with the axis that should be calibrated ([1,3,4])</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source> A</source>
+        <source>timeout when calibrating axes in seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+50"/>
-        <source>Settings</source>
+        <source>no serialIO instance given.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>Relay on</source>
+        <source>could not connect to %i axes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Remote</source>
+        <source>timeout while entering config mode (axis %i)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Wheel knob fine</source>
+        <source>this motor only has one axis, therefore it is not allowed to get a parameter with index unequal to 0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Temperature overheat</source>
+        <source>The given array must have %i entries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>Wheel knob unlock</source>
+        <source>The requested axis is not in config mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Unlock</source>
+        <source>The requested axis for setting homing mode could not be found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
-        <source>Save</source>
+        <source>invalid axis number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>Save the present status to the EEPROM on exit</source>
+        <source>The requested axis is not in notReferenced mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>OK</source>
+        <source>timeout when calibrating axes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>Cancel</source>
+        <source>invalid axis number (%i)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Array size doesn�t match the number of axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>could not read endline parameter from serial port</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>error while checking error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown message code or floating point controller address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Controller address not correct.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Parameter missing or out of range.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command not allowed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Home sequence already started.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ESP stage name unknown.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Displacement out of limits.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command not allowed in NOT REFERENCED state.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command not allowed in CONFIGURATION state.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command not allowed in DISABLE state.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command not allowed in READY state.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command not allowed in HOMING state.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command not allowed in MOVING state.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current position out of software limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Communication Time Out.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error during EEPROM access.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error during command execution.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command not allowed for PP version.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command not allowed for CC version.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>value could not be parsed to a double value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Axis %i does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>interrupt occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not implemented, use calibmode to set actual position as zero.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SMC100Interface</name>
+    <message>
+        <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>number of connected axes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If 1 the current configuration of the given serial port is kept, else 0 [default].</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

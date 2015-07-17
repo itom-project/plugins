@@ -1,135 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogDispWindow</name>
     <message>
-        <location filename="../dialogDispWindow.ui"/>
+        <location filename="../dialogDispWindow.ui" line="+26"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Window size</source>
         <translation type="unfinished">Fenstermaße</translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>x0:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>y0:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>x size:</source>
         <translation type="unfinished">x-Größe:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>y size:</source>
         <translation type="unfinished">y-Größe:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+33"/>
         <source>Window settings</source>
         <translation type="unfinished">Fenstereinstellungen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Cosine period:</source>
         <translation type="unfinished">Cosinus-Periode:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source># phase shifts:</source>
         <translation type="unfinished">Phasenschiebungen:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+8"/>
         <source>Color:</source>
         <translation type="unfinished">Farbe:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+11"/>
         <source>red</source>
         <translation type="unfinished">rot</translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>green</source>
         <translation type="unfinished">grün</translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>blue</source>
         <translation type="unfinished">blau</translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>white</source>
         <translation type="unfinished">weiß</translation>
     </message>
     <message>
-        <location/>
+        <location line="+8"/>
         <source>Orientation:</source>
         <translation type="unfinished">Ausrichtung:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+11"/>
         <source>vertical</source>
         <translation type="unfinished">vertikal</translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>horizontal</source>
         <translation type="unfinished">horizontal</translation>
     </message>
     <message>
-        <location/>
+        <location line="+8"/>
         <source>Gamma correction:</source>
         <translation type="unfinished">Gammakorrektur:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+25"/>
         <source>Show image</source>
         <translation type="unfinished">Anzeigebild</translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Image #:</source>
         <translation type="unfinished">Bildnummer:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+29"/>
         <source>99</source>
         <translation type="unfinished"></translation>
     </message>
@@ -157,7 +157,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+21"/>
         <source>Cosine period</source>
         <translation type="unfinished"></translation>
     </message>
@@ -182,12 +182,12 @@
         <translation type="unfinished">Anzahl der unterschiedlichen Bilder: Phasenschiebung + Grauwert + 2</translation>
     </message>
     <message>
-        <location line="+230"/>
+        <location line="+227"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-272"/>
+        <location line="-273"/>
         <source>Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter &apos;lut&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -202,7 +202,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+2"/>
+        <source>unique gray value. Depending on the projected color, all color channels are reduced by this value [0..255]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>projects an image where all pixels have the same gray-level. This is used for the determination of the gamma correction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>x0 position of display window [px]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -232,12 +242,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+3"/>
         <source>Lookup table for a gamma correction with 256 values. The gamma correction itself is en-/disabled via parameter &apos;gamma&apos;. If enabled, the value to display is modified by lut[value]. Per default the lut is a 1:1 relation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+386"/>
+        <location line="+380"/>
         <source>mandatory or optional parameters vector not initialized!!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -281,7 +291,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+116"/>
         <source>function name &apos;%s&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -289,7 +299,7 @@
 <context>
     <name>DispWindowInterface</name>
     <message>
-        <location line="-927"/>
+        <location line="-939"/>
         <source>Window for SLM/LCD-Applications</source>
         <translation type="unfinished">Fenster für SLM/LCD-Anwendungen</translation>
     </message>
@@ -342,32 +352,32 @@
 <context>
     <name>DockWidgetDispWindow</name>
     <message>
-        <location filename="../dockWidgetDispWindow.ui"/>
+        <location filename="../dockWidgetDispWindow.ui" line="+20"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+15"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>ID:</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source>Show image</source>
         <translation>Anzeigebild</translation>
     </message>
     <message>
-        <location filename="../dockWidgetDispWindow.cpp" line="+56"/>
+        <location filename="../dockWidgetDispWindow.cpp" line="+61"/>
         <source>phase shift %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -390,7 +400,7 @@
 <context>
     <name>PrjWindow</name>
     <message>
-        <location filename="../projWindow.cpp" line="+1122"/>
+        <location filename="../projWindow.cpp" line="+1124"/>
         <source>error out of memory (cosine init 7)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -519,24 +529,6 @@
     <message>
         <source># phase shifts:</source>
         <translation type="obsolete">Phasenschiebungen:</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

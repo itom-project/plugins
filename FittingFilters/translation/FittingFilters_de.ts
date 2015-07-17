@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>FittingFilters</name>
     <message>
@@ -16,42 +16,41 @@
         <translation type="obsolete">Fittet eine Ebene im 2D-Datenobjekt und subtrahiert diese Ebene vom Datenobjekt -&gt; dies ist eine Kombination von &apos;fitPlane&apos; und &apos;subtractPlane&apos;</translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="+1589"/>
         <source>fits 2D-polynomial in 2D-dataObject and returns a double-DataObject with the fitted surface as well as an error value sigma</source>
-        <translation>Fittet ein 2D-Polynom n-ter Ordnung in ein 2D-Datenobjekt und gibt ein &apos;Double&apos;-Datenobjekt mit den gefitteten Daten und der mittleren Abweichung (sigma-Wert) zurück</translation>
+        <translation type="vanished">Fittet ein 2D-Polynom n-ter Ordnung in ein 2D-Datenobjekt und gibt ein &apos;Double&apos;-Datenobjekt mit den gefitteten Daten und der mittleren Abweichung (sigma-Wert) zurück</translation>
     </message>
     <message>
-        <location filename="../polyfit2d.cpp" line="+40"/>
+        <location filename="../polyfit2d.cpp" line="+44"/>
         <source>uninitialized vector for mandatory, optional or output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-1461"/>
+        <location line="+7"/>
+        <location filename="../fittingfilters.cpp" line="+128"/>
         <location line="+135"/>
         <location line="+109"/>
-        <location filename="../polyfit2d.cpp" line="+7"/>
         <source>source image data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-242"/>
+        <location filename="../fittingfilters.cpp" line="-242"/>
         <source>fitting method (leastSquareFit [default], leastSquareFitSVD, leastMedianFit)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+6"/>
-        <location line="+644"/>
+        <location line="+772"/>
         <source>probability that 3 randomly selected point of all points only contain trustful (valid) points. (only important for leastMedianFit)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-643"/>
-        <location line="+644"/>
+        <location line="-771"/>
+        <location line="+772"/>
         <source>allowed probability that the fit is based on a possible outlier (non correct fit). (only important for leastMedianFit)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-516"/>
+        <location line="-644"/>
         <source>Parameter A of regression plane z = A + Bx + Cy, which is subtracted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -76,12 +75,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+400"/>
+        <location line="+214"/>
+        <source>Generated object via polyval2D with order X = %1, Y = %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>Generated object via polyval2DSinglePoints with order X = %1, Y = %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+252"/>
         <source>LeastSquares (default), LMedS (Least median of squares)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-636"/>
+        <location line="-764"/>
         <source>Parameter A of regression plane z = A + Bx + Cy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -107,23 +116,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-79"/>
         <location filename="../polyfit2d.cpp" line="+55"/>
+        <location filename="../fittingfilters.cpp" line="-79"/>
         <source>destination matrix is NULL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location filename="../fittingfilters.cpp" line="+60"/>
         <source>Substracted plane with A = %1, B = %2, C = %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+170"/>
-        <source>Generated object via polyVal with order X = %1, Y = %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+218"/>
+        <location line="+516"/>
         <source>Caluclated polynomical coeffs along z-direction with order Z = %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -139,12 +143,12 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>number of polynoms in x-direction</source>
+        <source>order of the fitting polynomial in x-direction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>number of polynoms in y-direction</source>
+        <source>order of the fitting polynomial y-direction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -158,7 +162,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+162"/>
+        <location line="+161"/>
         <source>2:  gradX und gradY =0, Funktion abgebrochen</source>
         <translation type="unfinished"></translation>
     </message>
@@ -195,7 +199,7 @@
         <translation type="obsolete">Filter-Plugin für Fitting-Methoden.</translation>
     </message>
     <message>
-        <location filename="../fittingfilters.cpp" line="-673"/>
+        <location filename="../fittingfilters.cpp" line="-801"/>
         <source>Plugin with fitting algorithms.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -207,24 +211,6 @@
     <message>
         <location line="+1"/>
         <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

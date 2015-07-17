@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>FFTWFilters</name>
     <message>
@@ -154,7 +154,7 @@
     </message>
     <message>
         <location line="+31"/>
-        <source>R_z over 200µm</source>
+        <source>R_z over 200�m</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -222,24 +222,6 @@
     <message>
         <location line="+1"/>
         <source>Algorithms using FFTW</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

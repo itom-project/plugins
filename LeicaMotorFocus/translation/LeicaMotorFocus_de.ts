@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogLeicaMotorFocus</name>
     <message>
@@ -117,92 +117,93 @@
 <context>
     <name>DockWidgetLeicaMotorFocus</name>
     <message>
-        <location filename="../dockWidgetLeicaMotorFocus.ui"/>
+        <location filename="../dockWidgetLeicaMotorFocus.ui" line="+20"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+15"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Axis:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source>Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+26"/>
         <source>Step Size</source>
         <translation type="unfinished"></translation>
     </message>
-    <message utf8="true">
-        <location/>
+    <message>
+        <location line="+13"/>
         <source> µm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+32"/>
         <source>Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+18"/>
         <source>Absolut Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Actual Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
+        <location line="+35"/>
         <source>mm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-16"/>
         <source>Target Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+42"/>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -390,101 +391,83 @@
 <context>
     <name>dialogLeicaMotorFocus</name>
     <message>
-        <location filename="../dialogLeicaMotorFocus.ui"/>
+        <location filename="../dialogLeicaMotorFocus.ui" line="+26"/>
         <source>Leica Motor Focus - Configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+8"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Speed:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source> mm/s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Handwheel sensitivity:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+21"/>
         <source>invert axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Homing (Calibration)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+9"/>
         <source>move to upper reference switch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>move to lower reference switch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Starts the calibration. Actuator is moved towards reference switch (new origin) and will be reset to current position afterwards.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+3"/>
         <source>start reference movement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Origin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+12"/>
         <source>If clicked, the current position of the actuator will be set to the origin (0.0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+3"/>
         <source>set current position as origin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+30"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

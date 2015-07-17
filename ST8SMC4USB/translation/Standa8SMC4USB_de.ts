@@ -2,458 +2,381 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>DockWidgetFileGrabber</name>
+    <name>DialogST8SMC4USB</name>
     <message>
-        <location filename="../dockWidgetFileGrabber.ui" line="+20"/>
-        <source>Form</source>
+        <source>Standa 8SMC4-USB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>General Information</source>
+        <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
-        <source>ID:</source>
+        <source>Controller:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>[ID]</source>
+        <source>[unknown]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>Image Dimensions</source>
+        <source>Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
-        <source>Width:</source>
+        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Height:</source>
+        <source>Unit of axis:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Bits per Pixel:</source>
+        <source> steps/sec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <location line="+19"/>
-        <source> px</source>
+        <source>Target speed:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source> bits</source>
+        <source> steps/sec²</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>Integration</source>
+        <source>Micro steps for motor:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
-        <source>Offset</source>
+        <source>Motor shaft acceleration:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
-        <location line="+33"/>
-        <source>%</source>
+        <source>Units (deg or mm) per step of axis:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-20"/>
-        <source>Gain</source>
+        <source>1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
-        <source>Integrationtime</source>
+        <source>2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>ms</source>
+        <source>4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>8</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>16</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>32</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>64</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>128</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>256</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Motor shaft deceleration:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>asynchronous mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configuration Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>degree</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>mm</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>FileGrabber</name>
+    <name>DockWidgetST8SMC4USB</name>
     <message>
-        <location filename="../FileGrabber.cpp" line="+224"/>
-        <source>Integrationtime of CCD programmed in s</source>
+        <source>standa 8SMC4-USB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Time between two frames</source>
+        <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Virtual gain</source>
+        <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Virtual offset</source>
+        <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Binning of different pixel</source>
+        <source>Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <source>Pixelsize in x (cols)</source>
+        <source>[unknown]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-8"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <source>Pixelsize in y (rows)</source>
+        <source>Device number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Grabdepth of the images</source>
+        <source>Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Timeout for acquiring images</source>
+        <source>Step Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The current shown image</source>
+        <source> °</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The maximal number if images</source>
+        <source>Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+943"/>
-        <source>Unable to load file</source>
+        <source>Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+119"/>
-        <source>Nice try but wrong turn.</source>
+        <source>Absolut Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-880"/>
-        <source>parameter not found in m_params.</source>
+        <source>Actual Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-86"/>
-        <source>name of given parameter is empty.</source>
+        <source>Target Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
-        <source>Parameter is read only, input ignored</source>
+        <source> µm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>New value is larger than parameter range, input ignored</source>
+        <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>New value is smaller than parameter range, input ignored</source>
+        <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Parameter type conflict</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+491"/>
-        <source>StopDevice of FileGrabber can not be executed, since camera has not been started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>Acquire of FileGrabber can not be executed, since camera has not been started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+43"/>
-        <source>data object of getVal is NULL or cast failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>Empty object handle retrieved from caller</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+171"/>
-        <source>getVal of FileGrabber failed, since undefined bitdepth.</source>
+        <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1080"/>
-        <source>A virtual grabber</source>
+        <source>Standa8SMC4USB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>Licensed under LPGL.</source>
+        <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>File-Type, e.g. &apos;*.tif&apos;, &apos;*.png&apos;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Absolute path of the source images</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Destination bit depth. 0: Auto or 8, 12, 14, 16, 24</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>If 0, no preloading is active, else the first n image are loaded to a stack.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>If not NULL and preloading is active, an 3D-Object can to used for the grabber.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+428"/>
-        <source>Folder %1 does not contain any matching files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Folder %1 does not exist or is not readable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-64"/>
-        <source>Stack object must be 3 dimensional</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Stack object type must be UInt8, UInt16 or Int32</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+212"/>
-        <source>Image loading failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>No suitable images found</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>dialogFileGrabber</name>
+    <name>ST8SMC4USB</name>
     <message>
-        <location filename="../dialogFileGrabber.cpp" line="+28"/>
-        <source>Configuration Dialog</source>
+        <source>Success</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogFileGrabber.ui" line="+26"/>
-        <source>Dialog</source>
+        <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>Integration</source>
+        <source>Not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>Offset</source>
+        <source>value error (e.g. out of range)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
-        <location line="+55"/>
-        <source>%</source>
+        <source>no device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-42"/>
-        <source>Gain</source>
+        <source>Unknown error %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+55"/>
-        <source>Integrationtime</source>
+        <source>Error reading move settings: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+35"/>
-        <source>ms</source>
+        <source>Error setting move settings: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-13"/>
-        <source>Frametime</source>
+        <source>Error getting status: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+47"/>
-        <source>Size</source>
+        <source>Name of controller</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>X0</source>
+        <source>units (deg or mm) per step of axis, e.g. full step resolution of data sheet of actuator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Y0</source>
+        <source>The current number of this specific device, if there are more than one devices connected. (0 = first device)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>X1</source>
+        <source>Serial port of device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
-        <source>Y1</source>
+        <source>unit of axis, 0: degree (default), 1: mm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
-        <source>Set X Max</source>
+        <source>micro steps for motor [1,2,4,8,16,32,64,128,256]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>XSize</source>
+        <source>asychronous (1) or sychronous (0) mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>YSize</source>
+        <source>Motor shaft acceleration, steps/s^2(stepper motor) or RPM/s(DC); range: 0.0..65535.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
-        <source>Set Y Max</source>
+        <source>Motor shaft deceleration, steps/s^2(stepper motor) or RPM/s(DC); range: 0.0..65535.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
-        <source>Buffer and Binning</source>
+        <source>Target speed (for stepper motor: steps/s, for DC: rpm); range: 0.0..1000000.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>Binning X</source>
+        <source>micro_steps value must be a power of two &lt;= 256</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
-        <location line="+34"/>
-        <source>BitPerPix</source>
+        <source>Error enumerating devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-20"/>
-        <source>Binning Y</source>
+        <source>No device found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
-        <source>8</source>
+        <source>Device %1 could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>10</source>
+        <source>Error zeroing: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>12</source>
+        <source>Error sending stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>14</source>
+        <source>Error reading serial number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>16</source>
+        <source>Error reading controller name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>24</source>
+        <source>Error getting engine settings: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>30</source>
+        <source>Error setting engine settings: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>32</source>
+        <source>Error closing device: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Cancel</source>
+        <source>given value must be a power of two &lt;= 256</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>OK</source>
+        <source>Not implemented, use calibmode to set actual position as zero.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>Apply</source>
+        <source>This device have only one axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>motor is running. Further action is not possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error while moving: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error while stopping: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>interrupt occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ST8SMC4USBInterface</name>
+    <message>
+        <source>units (deg or mm) per step of axis, e.g. full step resolution of data sheet of actuator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>unit of axis, 0: degree (default), 1: mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The current number of this specific device, if there are more than one devices connected. (0 = first device)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>micro steps for motor [1,2,4,8,16,32,64,128,256]</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

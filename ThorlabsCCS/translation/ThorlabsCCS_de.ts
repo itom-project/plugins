@@ -1,25 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogThorlabsCCS</name>
     <message>
-        <location filename="../dialogThorlabsCCS.ui"/>
+        <location filename="../dialogThorlabsCCS.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Group 1</source>
+        <location line="+11"/>
+        <source>Data Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Group 2</source>
+        <location line="+15"/>
+        <source> ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogThorlabsCCS.cpp" line="+36"/>
+        <location line="+7"/>
+        <source>integration time: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>x0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>x1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>x-size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source> px</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>full ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogThorlabsCCS.cpp" line="+37"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27,52 +62,52 @@
 <context>
     <name>DockWidgetThorlabsCCS</name>
     <message>
-        <location filename="../dockWidgetThorlabsCCS.ui"/>
+        <location filename="../dockWidgetThorlabsCCS.ui" line="+14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Identifier:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>[Identifier]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Image Dimensions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Bits per Pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+23"/>
         <source>Width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+23"/>
         <source>Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Integration Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source> ms</source>
         <translation type="unfinished"></translation>
     </message>
@@ -93,27 +128,12 @@
 <context>
     <name>ThorlabsCCS</name>
     <message>
-        <location line="+51"/>
-        <source>first pixel index in ROI (x-direction)</source>
+        <location line="+52"/>
+        <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>first pixel index in ROI (y-direction)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>last pixel index in ROI (x-direction)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>last pixel index in ROI (y-direction)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+5"/>
         <source>width of ROI (x-direction)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -133,7 +153,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+363"/>
+        <location line="+378"/>
         <source>The grabber has already been stopped.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -143,7 +163,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+112"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>

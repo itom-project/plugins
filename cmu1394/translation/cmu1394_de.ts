@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>CMU1394</name>
     <message>
@@ -293,37 +293,37 @@ time out!</source>
 <context>
     <name>DockWidgetCMU1394</name>
     <message>
-        <location filename="../dockWidgetcmu1394.ui"/>
+        <location filename="../dockWidgetcmu1394.ui" line="+20"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+15"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+18"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Image Dimensions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+18"/>
         <source>Offest</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+33"/>
         <source>Gain   </source>
         <translation type="unfinished"></translation>
     </message>
@@ -344,82 +344,82 @@ time out!</source>
 <context>
     <name>dialogCMU1394</name>
     <message>
-        <location filename="../dialogcmu1394.ui"/>
+        <location filename="../dialogcmu1394.ui" line="+26"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+12"/>
         <source>Camera Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+39"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+145"/>
         <source>Integration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-155"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>X0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+30"/>
         <source>Size X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+33"/>
         <source>Set X Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Y0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Size Y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Set Y Max</source>
         <translation type="unfinished"></translation>
     </message>
@@ -429,26 +429,8 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogcmu1394.ui"/>
+        <location filename="../dialogcmu1394.ui" line="-139"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

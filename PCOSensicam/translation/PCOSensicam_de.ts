@@ -1,115 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogPCOSensicam</name>
     <message>
-        <location filename="../DialogPCOSensicam.ui"/>
+        <location filename="../dialogPCOSensicam.ui" line="+26"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Binning X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+11"/>
+        <location line="+25"/>
+        <source>1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-11"/>
         <source>Binning Y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Bits per Pixel</source>
+        <location line="+30"/>
+        <source>Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Data Acquisition</source>
+        <location line="+6"/>
+        <source>Gain Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source> %</source>
+        <location line="+10"/>
+        <source>Integration Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Gain</source>
+        <location line="+14"/>
+        <source>Fast Acquisition Mode (changed exposure and delay range)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Offset</source>
+        <location line="+7"/>
+        <source>Delay Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Integrationtime</source>
+        <location line="+14"/>
+        <source>Trigger Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>ms</source>
+        <location line="+8"/>
+        <source>Software (0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Pixelrate</source>
+        <location line="+5"/>
+        <source>External Rising Edge (1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
+        <source>External Falling Edge (2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+8"/>
         <source>x0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+35"/>
         <source>x1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>y0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+38"/>
         <source>y1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+11"/>
         <source>x-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
+        <location line="+29"/>
         <source> px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-16"/>
         <source>y-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+42"/>
         <source>full ROI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DialogPCOSensicam.cpp" line="+52"/>
+        <location filename="../dialogPCOSensicam.cpp" line="+52"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -117,106 +129,102 @@
 <context>
     <name>DockWidgetPCOSensicam</name>
     <message>
-        <location filename="../DockWidgetPCOSensicam.ui"/>
+        <location filename="../dockWidgetPCOSensicam.ui" line="+20"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+15"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Image Dimensions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+18"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Bits per Pixel:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
+        <location line="+25"/>
         <source> px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source> bits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Integration</source>
+        <location line="+25"/>
+        <source>Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Offset</source>
+        <location line="+6"/>
+        <source>Gain Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>%</source>
+        <location line="+10"/>
+        <source>Integration Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Gain</source>
+        <location line="+14"/>
+        <source>Fast integration time range</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Integrationtime</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>ms</source>
+        <location line="+7"/>
+        <source>Delay Time</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>PCOSensicam</name>
     <message>
-        <location filename="../PCOSensicam.cpp" line="+192"/>
-        <source>camera interface</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location filename="../PCOSensicam.cpp" line="+184"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>Virtual gain</source>
+        <location line="+2"/>
+        <source>Delay time between trigger signal and start of image acquisition in s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Virtual offset</source>
+        <source>gain (not available here, see gain mode)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>offset (not available here)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -225,7 +233,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
+        <source>long exposure camera types can enable a fast acquisition mode. The step size and range of integration_time and delay_time are then changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>0: normal analog gain, 1: extended analog gain, 3: low light mode (only for sensicam qe standard and sensicam qe double shutter)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Pixelsize in x (cols)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -235,109 +253,72 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>First column within the region of interest (zero-based, x0 &lt; x1)</source>
+        <location line="+4"/>
+        <source>ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>first pixel index in ROI (x-direction)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>First row within the region of interest (zero-based, y0 &lt; y1)</source>
+        <source>first pixel index in ROI (y-direction)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Last column within the region of interest (zero-based, x0 &lt; x1)</source>
+        <source>last pixel index in ROI (x-direction)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Last row within the region of interest (zero-based, y0 &lt; y1)</source>
+        <source>last pixel index in ROI (y-direction)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>current temperature of CCD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
+        <source>current temperature of electronics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>trigger: software (0, default), external rising edge (1), external falling edge (2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>PCO internal type number of camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1164"/>
+        <source>Wrong picture type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1168"/>
         <source>bits per pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>CCD, camera and power supply temperatures in degree celcius</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Switch the IR sensitivity of the image sensor, Parameter is not available for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+160"/>
-        <source>binning in X and Y must be &gt;= 1 (&gt;= 101 in total)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>binning in X must be in range [1,%i]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>binning in Y must be in range [1,%i]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>binning in X must be in binary steps [1,2,4,8 ...]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>binning in Y must be in binary steps [1,2,4,8 ...]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-195"/>
-        <source>Desired set point temperature for cooling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Pixelrate of the image sensor in MHz</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Conversion factor in electrons/count</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+845"/>
+        <location line="+620"/>
         <source>StopDevice of PCOSensicam can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+436"/>
         <source>Acquire of PCOSensicam can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+93"/>
-        <source>Error waiting for image acquisition (%1).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>timeout while waiting for image from PCO camera device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <location line="+22"/>
-        <location line="+23"/>
-        <source>getVal of PCOSensicam failed, since retrieved NULL-Pointer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+87"/>
+        <location line="+149"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -346,21 +327,16 @@
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location line="-108"/>
-        <source>getVal of PCOSensicam failed, since undefined bitdepth.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1355"/>
-        <source>DLL for PCO-Cameras</source>
+        <location line="-1373"/>
+        <source>DLL for PCO-Sensicam cameras</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+15"/>
         <source>LGPL / copyright of the external DLLs belongs to PCO</source>
         <translation type="unfinished"></translation>
     </message>

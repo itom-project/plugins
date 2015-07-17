@@ -1,71 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
-    <name>AS5216</name>
+    <name>AvantesAvaSpec</name>
     <message>
-        <location filename="../AS5216.cpp" line="+243"/>
-        <source>Please run stopDevice() and shut down live data before configuration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+38"/>
-        <source>Number of this Camera</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location filename="../avantesAvaSpec.cpp" line="+159"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Shortes time between two frames of CCD in s</source>
+        <source>Shortest time between two frames of CCD in s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>ROI (x,y,width,height)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>current width of ROI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Gain</source>
+        <source>current height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>First Pixel of ROI in x starting with 0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>First Pixel of ROI in y starting with 0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Last Pixel of ROI in x starting with 0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Last Pixel of ROI in y starting with 0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>ROI-Size in x</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>ROI-Size in y</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Grabdepth in bpp</source>
+        <source>Bit depth. 16 (uint16), if single acquisition. 32 (float32), if averaging.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -80,16 +45,16 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>Activate nxn binning (not implemented yet)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
         <source>Enable triggermode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>Coefficients for polynom that determines lambda_table (lambda_table[idx] = c[0] + c[1]*idx + c[2]*idx^2 + ... + c[4]*idx^4)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Vector with the wavelength of all active pixels</source>
         <translation type="unfinished"></translation>
     </message>
@@ -99,364 +64,185 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+175"/>
-        <source>name of requested parameter is empty.</source>
+        <location line="+3"/>
+        <source>Serial number of spectrometer. Same as identifier.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+41"/>
-        <source>name of given parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Parameter is read only, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>New value is larger than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>New value is smaller than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Parameter type conflict</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+98"/>
-        <source>Parameter not found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+69"/>
-        <source>Maximal number of AS5216 grabber already running</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Device handle invalid, init failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>No active spectrometer found, init failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+213"/>
-        <source>StartImageAcquisition failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+51"/>
-        <source>Cameraflag was &lt; 0 </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+20"/>
+        <location line="+417"/>
         <source>Tried to acquire without starting device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+59"/>
-        <source>Tried to get picture into buffer with wrong size in AS5216::retrieveData</source>
+        <location line="+116"/>
+        <source>Wrong picture type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>Tried to get picture without triggering exposure in AS5216::retrieveData</source>
+        <location line="+49"/>
+        <source>Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
-        <source>Internal grabber error while trying to get data in AS5216::retrieveData</source>
+        <location line="+4"/>
+        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Dropped to timeout while trying to get data in AS5216::retrieveData</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Internal buffer not allocated! in AS5216::retrieveData</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+74"/>
-        <source>F Wrong picture Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+70"/>
+        <location line="+44"/>
         <source>Empty object handle retrieved from caller</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+118"/>
-        <source>Read spectrometer returned ERR_INVALID_SIZE</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+41"/>
-        <source>Realloc memory failed!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>AS5216Interface</name>
+    <name>AvantesAvaSpecInterface</name>
     <message>
-        <location line="-1391"/>
-        <source>Non Windows-Version not implemented yet</source>
+        <location line="-705"/>
+        <source>VendorID of spectrometer, 0x1992 for AvaSpec-3648, 0x471 for AvaSpec-ULS3648...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>%1</source>
+        <location line="+2"/>
+        <source>ProductID of spectrometer, 0x0667 for spectrometer</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>DockWidgetAvantesAvaSpec</name>
     <message>
-        <location line="+40"/>
-        <source>error while loading DLL &apos;AS5216.dll&apos;: %1</source>
+        <location filename="../dockWidgetAvantesAvaSpec.ui" line="+20"/>
+        <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+12"/>
-        <source>DLL could not be unloaded</source>
+        <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+58"/>
-        <source>Identifier of USB-Port, 0 = AutoSearch</source>
+        <location line="+18"/>
+        <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Line size (0 for auto)</source>
+        <location line="+13"/>
+        <source>[ID]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Acquisition</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Integrationtime</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Average</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-16"/>
-        <source>Avespec Spectrometer-DLL</source>
+        <location filename="../avantesAvaSpec.cpp" line="-14"/>
+        <source>Avantes AvaSpec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>This DLL integrates the Avantis AS5216 spectrometer series into itoM. It is used for CCM / CCSI with the AvaSpec 3468 USB-Spectrometer.</source>
+        <source>This DLL integrates the Avantis AvantesAvaSpec spectrometer series into itoM. It is used for CCM / CCSI with the AvaSpec 3468 USB-Spectrometer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>LGPL with ITO itom-exception / do not copy Avantis-DLLs</source>
+        <location line="+2"/>
+        <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>dialogAS5216</name>
     <message>
-        <location filename="../dialogAS5216.ui"/>
+        <location filename="../dialogAvantesAvaSpec.ui" line="+26"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+12"/>
         <source>Camera Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+39"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+104"/>
         <source>Integration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-114"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>X0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+30"/>
         <source>Size X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+33"/>
         <source>Set X Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogAS5216.cpp" line="+25"/>
-        <source>Configuration Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dialogAS5216.ui"/>
+        <location line="-98"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="+683"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location line="+92"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+985"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInBase</name>
-    <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInInterface.cpp" line="-577"/>
-        <source>function execution unused in this plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Toolbox</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+147"/>
-        <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInDataIO</name>
-    <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>listener does not have a slot </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>this object already has been registered as listener</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>timer could not be set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>the object could not been removed from the listener list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <location line="+20"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <location line="+18"/>
-        <source>not implemented</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInGrabber</name>
-    <message>
-        <location filename="../../../../../../Build/itom/SDK/include/common/addInGrabber.cpp" line="+85"/>
-        <location line="+15"/>
-        <source>slot &apos;setSource&apos; of live source node could not be invoked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+118"/>
-        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

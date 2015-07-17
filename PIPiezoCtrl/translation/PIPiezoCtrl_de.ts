@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogPIPiezoCtrl</name>
     <message>
@@ -9,102 +9,105 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogPIPiezoCtrl.ui"/>
+        <location filename="../dialogPIPiezoCtrl.ui" line="+14"/>
         <source>PI Piezo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
+        <location line="+13"/>
+        <location line="+23"/>
         <source>[unknown]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-13"/>
         <source>Piezo:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+34"/>
         <source>Mode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>remote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>local</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>asynchronous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Position limits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>low:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message utf8="true">
-        <location/>
+    <message>
+        <location line="+7"/>
+        <location line="+23"/>
         <source> µm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-7"/>
         <source>high:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+35"/>
         <source>Delay after positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Delay (Offset)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source> ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Delay (Proportional)</source>
         <translation type="unfinished"></translation>
     </message>
-    <message utf8="true">
-        <location/>
+    <message>
+        <location line="+7"/>
         <source> ms/µm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>the total delay is offset + proportional * distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>this user-defined delay is only considered if the device has no built-in on-target flag.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -112,102 +115,106 @@
 <context>
     <name>DockWidgetPIPiezoCtrl</name>
     <message>
-        <location filename="../dockWidgetPIPiezoCtrl.ui"/>
+        <location filename="../dockWidgetPIPiezoCtrl.ui" line="+20"/>
         <source>PI Piezo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+29"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Piezo:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
+        <location line="+33"/>
+        <location line="+13"/>
         <source>[unknown]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-26"/>
         <source>Devices:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+61"/>
         <source>Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+29"/>
         <source>Step Size</source>
         <translation type="unfinished"></translation>
     </message>
-    <message utf8="true">
-        <location/>
+    <message>
+        <location line="+13"/>
+        <location line="+172"/>
+        <location line="+35"/>
         <source> µm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-175"/>
         <source>Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Joystick Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+21"/>
         <source>Remote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Local</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+27"/>
         <source>Absolut Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Actual Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+38"/>
         <source>Target Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+42"/>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -535,24 +542,6 @@
     <message>
         <location line="+1"/>
         <source>N.A.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

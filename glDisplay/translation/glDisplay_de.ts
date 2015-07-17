@@ -1,186 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
-<context>
-    <name>DialogDispWindow</name>
-    <message>
-        <location filename="../dialogGLDisplay.cpp" line="+69"/>
-        <source>Configuration Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+140"/>
-        <source>Error while configuring projection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Warning while configuring projection</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
+<TS version="2.1" language="de">
 <context>
     <name>DialogGLDisplay</name>
     <message>
-        <location filename="../dialogGLDisplay.ui"/>
+        <location filename="../dialogGLDisplay.ui" line="+26"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Window size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>x0:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>y0:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>x size:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>y size:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+33"/>
         <source>Window settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Cosine period:</source>
+        <location line="+53"/>
+        <source>If enabled, projected 8bit gray value = lut[8bit value in matrix]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source># phase shifts:</source>
+        <location line="+3"/>
+        <source>Gamma correction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>8</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
+        <location line="-50"/>
         <source>Color:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+11"/>
         <source>red</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>green</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>blue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>white</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Orientation:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>vertical</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>horizontal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Gamma correction:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
+        <location line="+36"/>
         <source>Show image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Image #:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+29"/>
         <source>99</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogGLDisplay.cpp" line="+66"/>
+        <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>DockWidgetGLDisplay</name>
     <message>
-        <location filename="../dockWidgetGLDisplay.ui"/>
+        <location filename="../dockWidgetGLDisplay.ui" line="+20"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+15"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source>Show image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+34"/>
         <source>0 of 0</source>
         <translation type="unfinished"></translation>
     </message>
@@ -188,7 +135,7 @@
 <context>
     <name>GLDisplay</name>
     <message>
-        <location filename="../glDisplay.cpp" line="+176"/>
+        <location filename="../glDisplay.cpp" line="+177"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -215,6 +162,16 @@
     <message>
         <location line="+1"/>
         <source>method to add further textures</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>first index (zero-based) of given texture that is replaced. If a 3D data object is given, the following textures are replaced, too.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>method to edit existing textures and replace them by a new data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -263,22 +220,62 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+44"/>
+        <source>Supported OpenGL Version is lower than 2.0 and therefore not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+148"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+105"/>
+        <location line="+16"/>
+        <source>Currently the lut only has %i values, therefore the index must be in the range [0,%i]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+89"/>
         <source>mandatory or optional parameters vector not initialized!!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+13"/>
+        <source>timeout getting initialization status of OpenGL display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>OpenGL display window is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>You need to pass a lut with 256 values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+65"/>
         <source>insufficient gray values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+100"/>
+        <source>timeout while adding textures</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>timeout while editing textures</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>timeout while grabbing current OpenGL frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>function name &apos;%s&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -286,7 +283,7 @@
 <context>
     <name>GLDisplayInterface</name>
     <message>
-        <location line="-645"/>
+        <location line="-694"/>
         <source>Frameless window to display images using OpenGL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -301,7 +298,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>x0 position of window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -312,12 +309,12 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>height of window, if 0 (default) the window is positioned in the second screen or gets a default width of 100px if no second screen is available.</source>
+        <source>width of window, if 0 (default) the window is positioned in the second screen or gets a default width of 100px if no second screen is available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>width of window, if 0 (default) the window is positioned in the second screen or gets a default height of 100px if no second screen is available.</source>
+        <source>height of window, if 0 (default) the window is positioned in the second screen or gets a default height of 100px if no second screen is available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

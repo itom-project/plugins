@@ -1,290 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
+<context>
+    <name>DialogDummyGrabber</name>
+    <message>
+        <location filename="../dialogDummyGrabber.cpp" line="+49"/>
+        <source>Configuration Dialog</source>
+        <translation type="unfinished">Konfigurationsdialog</translation>
+    </message>
+</context>
 <context>
     <name>DockWidgetDummyGrabber</name>
     <message>
-        <location filename="../dockWidgetDummyGrabber.ui"/>
+        <location filename="../dockWidgetDummyGrabber.ui" line="+35"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+47"/>
         <source>Image Dimensions</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location/>
+        <location line="+18"/>
         <source>Width:</source>
         <translation>Breite:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Height:</source>
         <translation>Höhe:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Bits per Pixel:</source>
         <translation>Bits pro Pixel:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+48"/>
         <source> bits</source>
         <translation> Bits</translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Integration</source>
         <translation>Belichtung</translation>
     </message>
     <message>
-        <location/>
+        <location line="+38"/>
+        <location line="+33"/>
+        <source> %</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Integrationtime</source>
         <translation>Belichtungszeit</translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
+        <source> ms</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="-255"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+39"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>ID:</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+58"/>
+        <location line="+19"/>
         <source> px</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+56"/>
         <source>Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>%</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+33"/>
         <source>Gain</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>ms</source>
         <translation></translation>
     </message>
 </context>
 <context>
     <name>DummyGrabber</name>
     <message>
-        <location filename="../DummyGrabber.cpp" line="+471"/>
-        <source>Time between two frames</source>
-        <translation type="unfinished"></translation>
+        <location filename="../DummyGrabber.cpp" line="+242"/>
+        <source>Minimum time between the start of two consecutive acquisitions [s], default: 0.0.</source>
+        <translation type="unfinished">Mindestzeit zwischen zwei fortlaufenden Bildanforderungen [s], standard: 0,0.</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Virtual gain</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Virtuelles Gain</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Virtual offset</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Virtuelles Offset</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Binning of different pixel</source>
-        <translation type="unfinished"></translation>
+        <source>Binning of different pixel, binning = x-factor * 100 + y-factor</source>
+        <translation type="unfinished">Binning unterschiedlicher Pixel, binning = x-factor * 100 + y-factor</translation>
     </message>
     <message>
-        <location line="+152"/>
-        <source>New value in X is larger than maximal value, input ignored</source>
-        <translation type="unfinished"></translation>
+        <location line="+9"/>
+        <source>ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]</source>
+        <translation type="unfinished">ROI (x, y, Breite, Höhe) [ersetzt die Werte x0, x1, y0, y1]</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>New value in Y is larger than maximal value, input ignored</source>
-        <translation type="unfinished"></translation>
+        <location line="+351"/>
+        <source>stopDevice of DummyGrabber can not be executed, since camera has not been started.</source>
+        <translation type="unfinished">&apos;stopDevice&apos; des DummyGrabbers kann nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>New value in X is smaller than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
+        <location line="+47"/>
+        <source>wrong bit depth</source>
+        <translation type="unfinished">Falsche Bittiefe</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>New value in Y is smaller than parameter range, input ignored</source>
-        <translation type="unfinished"></translation>
+        <location line="+220"/>
+        <source>image could not be obtained since no image has been acquired.</source>
+        <translation type="unfinished">Es konnte kein Bild abgeholt werden, da keines angefordert wurde.</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Set binning failed</source>
-        <translation type="unfinished"></translation>
+        <location line="-624"/>
+        <source>size in x (cols) [px]</source>
+        <translation type="unfinished">Größe in x (Spalten) [px]</translation>
     </message>
     <message>
-        <location line="-180"/>
-        <source>Integrationtime of CCD [s]</source>
-        <translation type="unfinished"></translation>
+        <location line="-10"/>
+        <source>Minimum integration time for an acquisition [s], default: 0.0 (as fast as possible).</source>
+        <translation type="unfinished">Mindest-&apos;integration time&apos; für eine Bildanforderungen [s], standard: 0,0 (so schnell wie möglich).</translation>
     </message>
     <message>
         <location line="+12"/>
-        <source>size in x (cols) [px]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
         <source>size in y (rows) [px]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Größe in y (Zeilen) [px]</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>first pixel in x (cols) within ROI [zero-based, &lt;= x1]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>first pixel in y (rows) within ROI [zero-based, &lt;= y1]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>last pixel in x (cols) within ROI [zero-based, &gt;= x0]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>last pixel in y (rows) within ROI [zero-based, &gt;= y0]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>bitdepth of images</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bittiefe des Images</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Timeout for acquiring images [s]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+219"/>
-        <source>Error during initialisation of DummyGrabber: SizeX must be a dividable of 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Error during initialisation of DummyGrabber: SizeY must be a dividable of 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>Error during initialisation of DummyGrabber</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+82"/>
-        <source>Error during virtual camera preparation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Error during virtual camera stop command.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>StopDevice of DummyGrabber can not be executed, since camera has not been started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+34"/>
+        <location line="+397"/>
         <source>Acquire of DummyGrabber can not be executed, since camera has not been started.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;acquire&apos; kann vom DummyGrabber nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>Error during virtual camera acquisition.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+40"/>
+        <location line="+143"/>
         <source>data object of getVal is NULL or cast failed</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Datenobjekt von &apos;getVal&apos; ist NULL oder enthält ein falsches Bildformat</translation>
     </message>
     <message>
         <location line="+40"/>
         <source>Empty object handle retrieved from caller</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+76"/>
-        <source>Set integrationtime failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Set offset and gain failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+41"/>
-        <source>getVal of DummyGrabber can not be executed, since acquire was called.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>getVal of DummyGrabber can not be executed, since camera has not been started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>getVal of DummyGrabber can not be executed, since no buffer allocated.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>getVal of DummyGrabber failed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <location line="+19"/>
-        <location line="+19"/>
-        <source>getVal of DummyGrabber failed, since retrived NULL-Pointer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>getVal of DummyGrabber failed, since undefined bitdepth.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurde ein leeres Objekt übergeben</translation>
     </message>
 </context>
 <context>
     <name>DummyGrabberInterface</name>
     <message>
-        <location line="-813"/>
+        <location line="-677"/>
         <source>N.A.</source>
         <translation>Nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Maximum x size of image</source>
-        <translation type="unfinished">Maximale Bildbreite</translation>
+        <source>Width of virtual sensor chip</source>
+        <translation type="unfinished">Breite des virtuellen Sensors</translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>Height of virtual sensor chip</source>
+        <translation type="unfinished">Höhe des virtuellen Sensors</translation>
+    </message>
+    <message>
+        <source>Maximum x size of image</source>
+        <translation type="obsolete">Maximale Bildbreite</translation>
+    </message>
+    <message>
         <source>Maximum y size of image</source>
-        <translation type="unfinished">Maximale Bildhöhe</translation>
+        <translation type="obsolete">Maximale Bildhöhe</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -308,209 +219,185 @@
 <context>
     <name>dialogDummyGrabber</name>
     <message>
-        <location filename="../dialogDummyGrabber.ui"/>
         <source>Buffer and Binning</source>
-        <translation type="unfinished">Puffer und Binning</translation>
+        <translation type="obsolete">Puffer und Binning</translation>
     </message>
     <message>
-        <location/>
         <source>BitPerPix</source>
-        <translation type="unfinished">BitProPix</translation>
+        <translation type="obsolete">BitProPix</translation>
     </message>
     <message>
-        <location/>
         <source>Apply</source>
-        <translation type="unfinished">Übernehmen</translation>
+        <translation type="obsolete">Übernehmen</translation>
     </message>
     <message>
-        <location/>
         <source>Cancel</source>
-        <translation type="unfinished">Abbrechen</translation>
+        <translation type="obsolete">Abbrechen</translation>
     </message>
     <message>
-        <location/>
+        <location filename="../dialogDummyGrabber.ui" line="+157"/>
         <source>Integration</source>
         <translation type="unfinished">Belichtung</translation>
     </message>
     <message>
-        <location/>
+        <location line="+100"/>
         <source>Integrationtime</source>
         <translation type="unfinished">Belichtungszeit</translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
+        <location line="+35"/>
+        <source> ms</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="-13"/>
         <source>Frametime</source>
         <translation type="unfinished">Zeitrahmen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+41"/>
         <source>Size</source>
         <translation type="unfinished">Größe</translation>
     </message>
     <message>
-        <location/>
         <source>XSize</source>
-        <translation type="unfinished">X-Größe</translation>
+        <translation type="obsolete">X-Größe</translation>
     </message>
     <message>
-        <location/>
         <source>YSize</source>
-        <translation type="unfinished">Y-Größe</translation>
+        <translation type="obsolete">Y-Größe</translation>
     </message>
     <message>
-        <location filename="../dialogDummyGrabber.cpp" line="+31"/>
         <source>Configuration Dialog</source>
-        <translation>Konfigurationsdialog</translation>
+        <translation type="vanished">Konfigurationsdialog</translation>
     </message>
     <message>
-        <location line="+603"/>
-        <location line="+15"/>
         <source>ROI (Binning changed, press apply or save)</source>
-        <translation>RIO (Binning wurde geändert, auf Übernehmen oder Speichern klicken)</translation>
+        <translation type="vanished">RIO (Binning wurde geändert, auf Übernehmen oder Speichern klicken)</translation>
     </message>
     <message>
-        <location filename="../dialogDummyGrabber.ui"/>
+        <location line="+99"/>
         <source>x-size</source>
         <translation type="unfinished">X-Größe</translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
+        <location line="+29"/>
+        <source> px</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="-16"/>
         <source>y-size</source>
         <translation type="unfinished">Y-Größe</translation>
     </message>
     <message>
-        <location/>
-        <location filename="../dialogDummyGrabber.cpp" line="-101"/>
         <source>Region of Interest (ROI)</source>
-        <translation>Bildausschnitt (ROI)</translation>
+        <translation type="vanished">Bildausschnitt (ROI)</translation>
     </message>
     <message>
-        <location/>
         <source>reset to full size</source>
-        <translation type="unfinished">Vollbild</translation>
+        <translation type="obsolete">Vollbild</translation>
     </message>
     <message>
-        <location/>
+        <location line="-438"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
+        <source>Buffer</source>
+        <translation type="unfinished">Puffer</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Binning X</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+8"/>
+        <location line="+32"/>
+        <source>1</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="-27"/>
+        <location line="+32"/>
+        <source>2</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="-27"/>
+        <location line="+32"/>
+        <source>4</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="-18"/>
         <source>Binning Y</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>8</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
-        <source>10</source>
+        <location line="+30"/>
+        <source>Bits per Pixel</source>
+        <translation type="unfinished">Bits pro Pixel</translation>
+    </message>
+    <message>
+        <location line="+222"/>
+        <source>x0</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
-        <source>12</source>
+        <location line="+35"/>
+        <source>x1</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
-        <source>14</source>
+        <location line="+7"/>
+        <source>y0</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
-        <source>16</source>
+        <location line="+38"/>
+        <source>y1</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
-        <source>24</source>
-        <translation></translation>
+        <location line="+85"/>
+        <source>full ROI</source>
+        <translation type="unfinished">Komplettes RIO</translation>
     </message>
     <message>
-        <location/>
-        <source>30</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>32</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
+        <location line="-343"/>
         <source>Offset</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+26"/>
+        <location line="+55"/>
         <source>%</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="-26"/>
         <source>Gain</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>ms</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>0</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Y0</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>X1</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Y1</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>X0</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
-        <source>OK</source>
         <translation></translation>
     </message>
 </context>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
         <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished">Nicht initialisierter Vektor für Pflichtparameter!</translation>
+        <translation type="obsolete">Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished">Nicht initialisierter Vektor für optionale Parameter!</translation>
+        <translation type="obsolete">Nicht initialisierter Vektor für optionale Parameter!</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished">Nicht initialisierter Vektor fürAusgabeparameter!</translation>
+        <translation type="obsolete">Nicht initialisierter Vektor fürAusgabeparameter!</translation>
     </message>
 </context>
 </TS>

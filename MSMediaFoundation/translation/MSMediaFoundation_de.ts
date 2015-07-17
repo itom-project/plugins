@@ -1,60 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogMSMediaFoundation</name>
     <message>
-        <location filename="../dialogMSMediaFoundation.ui"/>
+        <location filename="../dialogMSMediaFoundation.ui" line="+14"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+8"/>
         <source>Color Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Region of Interest (ROI)</source>
+        <location line="+19"/>
+        <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>X0</source>
+        <location line="+8"/>
+        <source>x0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>X1</source>
+        <location line="+35"/>
+        <source>x1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Size X</source>
+        <location line="+7"/>
+        <source>y0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Y0</source>
+        <location line="+38"/>
+        <source>y1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Y1</source>
+        <location line="+11"/>
+        <source>x-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Size Y</source>
+        <location line="+19"/>
+        <location line="+29"/>
+        <source> px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Set Full ROI</source>
+        <location line="-16"/>
+        <source>y-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dialogMSMediaFoundation.cpp" line="+46"/>
+        <location line="+42"/>
+        <source>full ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dialogMSMediaFoundation.cpp" line="+48"/>
         <source>Configuration Dialog</source>
         <translation type="unfinished"></translation>
     </message>
@@ -62,77 +68,79 @@
 <context>
     <name>DockWidgetMSMediaFoundation</name>
     <message>
-        <location filename="../dockWidgetMSMediaFoundation.ui"/>
+        <location filename="../dockWidgetMSMediaFoundation.ui" line="+20"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+27"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+21"/>
         <source>[Identifier]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Identifier:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source>Image Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+36"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Bit depth:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
+        <location line="+7"/>
+        <location line="+7"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Integration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Brightness:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Contrast:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+21"/>
         <source>Saturation:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Sharpness:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Gain:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -140,7 +148,7 @@
 <context>
     <name>MSMediaFoundation</name>
     <message>
-        <location filename="../MSMediaFoundation.cpp" line="+174"/>
+        <location filename="../MSMediaFoundation.cpp" line="+184"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -265,7 +273,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+267"/>
+        <location line="+297"/>
         <source>invalid cameraNumber. Only %i cameras found</source>
         <translation type="unfinished"></translation>
     </message>
@@ -290,17 +298,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+382"/>
+        <location line="+412"/>
         <source>Timeout while acquiring image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-646"/>
+        <location line="+233"/>
+        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or an uninitialized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitialized image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-936"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-136"/>
+        <location line="-149"/>
+        <source>ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>first pixel index in ROI (x-direction)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -335,12 +358,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+337"/>
+        <location line="+367"/>
         <source>No frame could be aquired from device %i</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+81"/>
         <source>Parameter not available or useless range</source>
         <translation type="unfinished"></translation>
     </message>
@@ -380,7 +403,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+51"/>
         <source>unknown color, conversion... combination in retrieveImage</source>
         <translation type="unfinished"></translation>
     </message>
@@ -395,17 +418,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
-        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+63"/>
+        <location line="+103"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
@@ -413,7 +426,7 @@
 <context>
     <name>MSMediaFoundationInterface</name>
     <message>
-        <location line="-1154"/>
+        <location line="-1221"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -423,7 +436,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+13"/>
         <source>ID of the media format. 0 (default) takes the first from the list (must be MFVideoFormat_RGBA24 as subtype). -1: prints out a list of devices and quits the initialization, other: other index from the list of available types</source>
         <translation type="unfinished"></translation>
     </message>
@@ -436,7 +449,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-48"/>
+        <location line="-50"/>
         <source>MSMediaFoundation</source>
         <translation type="unfinished"></translation>
     </message>

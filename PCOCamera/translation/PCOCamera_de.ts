@@ -1,110 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogPCOCamera</name>
     <message>
-        <location filename="../dialogPCOCamera.ui"/>
+        <location filename="../dialogPCOCamera.ui" line="+26"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Binning X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Binning Y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Bits per Pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+38"/>
         <source>Data Acquisition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+12"/>
+        <location line="+13"/>
         <source> %</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Integrationtime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source>Pixelrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+8"/>
         <source>x0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+35"/>
         <source>x1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>y0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+38"/>
         <source>y1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+11"/>
         <source>x-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
+        <location line="+29"/>
         <source> px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-16"/>
         <source>y-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+42"/>
         <source>full ROI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -117,82 +119,84 @@
 <context>
     <name>DockWidgetPCOCamera</name>
     <message>
-        <location filename="../dockWidgetPCOCamera.ui"/>
+        <location filename="../dockWidgetPCOCamera.ui" line="+20"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+15"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Image Dimensions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+18"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Bits per Pixel:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
+        <location line="+25"/>
         <source> px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source> bits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Integration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+18"/>
         <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+23"/>
+        <location line="+36"/>
         <source>%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-23"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+36"/>
         <source>Integrationtime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
@@ -200,7 +204,7 @@
 <context>
     <name>PCOCamera</name>
     <message>
-        <location filename="../PCOCamera.cpp" line="+192"/>
+        <location filename="../PCOCamera.cpp" line="+189"/>
         <source>camera interface</source>
         <translation type="unfinished"></translation>
     </message>
@@ -255,7 +259,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
+        <source>ROI (x,y,width,height)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>bits per pixel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -310,12 +319,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+845"/>
+        <location line="+869"/>
         <source>StopDevice of PCOCamera can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+226"/>
         <source>Acquire of PCOCamera can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,7 +364,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1355"/>
+        <location line="-1405"/>
         <source>DLL for PCO-Cameras</source>
         <translation type="unfinished"></translation>
     </message>

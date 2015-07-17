@@ -1,45 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
+<context>
+    <name>DialogOpenCVGrabber</name>
+    <message>
+        <location filename="../dialogOpenCVGrabber.cpp" line="+74"/>
+        <source>Configuration Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 <context>
     <name>OpenCVGrabber</name>
     <message>
-        <location filename="../OpenCVGrabber.cpp" line="+345"/>
+        <location filename="../OpenCVGrabber.cpp" line="+342"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+266"/>
+        <location line="+405"/>
         <source>Camera (%i) could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-183"/>
+        <location line="-299"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-96"/>
-        <source>first pixel index in ROI (x-direction)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>first pixel index in ROI (y-direction)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>last pixel index in ROI (x-direction)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>last pixel index in ROI (y-direction)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="-111"/>
         <source>width of ROI (x-direction)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -49,42 +37,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>Integrationtime of CCD [s], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>brightness [0..1], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>contrast [0..1], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>saturation [0..1], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>hue [0..1], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Gain [0..1], does not exist for all cameras</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
+        <location line="+23"/>
         <source>color mode of camera (auto|color|red|green|blue|gray, default: auto -&gt; color or gray)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+410"/>
+        <location line="+603"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -99,22 +57,72 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+71"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
-        <source>Error: no data grabbed</source>
+        <location line="-729"/>
+        <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+12"/>
+        <source>Exposure time, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Brightness, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Contrast, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Saturation, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Hue, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Gain, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sharpness, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Gamma, this is a device dependent property directly redirected to the driver without unified physical unit (not available for all plugins)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>use &apos;native_parameter:idx&apos; to request the value of a native OpenCV parameter. idx is the enumeration value for enum items starting with CV_CAP_PROP...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>number of useless images acquired before each real acquisition. This might be necessary since some devices have an internal buffer and deliver older images than the time of acquisition</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+697"/>
         <source>Error: grabbed image is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+14"/>
         <source>Error: bpp other than 8 or 16 not allowed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -134,32 +142,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+51"/>
         <source>unknown color, conversion... combination in retrieveImage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
-        <source>current camera status is undefined</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+45"/>
-        <source>A camera with a bitdepth &gt; 8 cannot be operated in color mode.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.</source>
+        <location line="+90"/>
+        <source>Error during check data, external dataObject invalid. Object has more than 1 plane or 0 planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.</source>
+        <source>Error during check data, external dataObject invalid. Object must be of right size and type or a uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="-36"/>
+        <source>A camera with a bitdepth &gt; 8 cannot be operated in color mode.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+99"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
@@ -167,7 +170,7 @@
 <context>
     <name>OpenCVGrabberInterface</name>
     <message>
-        <location line="-904"/>
+        <location line="-1070"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -180,12 +183,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-25"/>
+        <location line="-32"/>
         <source>OpenCV Video Capture (USB-Cams, Firewire CMU1394...)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+24"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -198,111 +201,84 @@
 <context>
     <name>dialogOpenCVGrabber</name>
     <message>
-        <location filename="../dialogOpenCVGrabber.ui"/>
+        <location filename="../dialogOpenCVGrabber.ui" line="+26"/>
         <source>Configuration OpenCV Grabber</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Buffer Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Bit per Pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
+        <source># dump grabs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>some devices deliver older images. To avoid this, set dump grabs to &gt; 0 such that a certain number of images are grabbed before each real acquisition.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+28"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>X0</source>
+        <location line="+8"/>
+        <source>x0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Size X</source>
+        <location line="+35"/>
+        <source>x1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Set Full ROI</source>
+        <location line="+7"/>
+        <source>y0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Y0</source>
+        <location line="+38"/>
+        <source>y1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Size Y</source>
+        <location line="+11"/>
+        <source>x-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>Y1</source>
+        <location line="+19"/>
+        <location line="+29"/>
+        <source> px</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
-        <source>X1</source>
+        <location line="-16"/>
+        <source>y-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+42"/>
+        <source>full ROI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>show native settings dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-200"/>
         <source>Color Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Integration Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>ms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location/>
-        <source>Apply</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

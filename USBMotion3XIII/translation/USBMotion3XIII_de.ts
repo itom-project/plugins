@@ -1,280 +1,405 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogUSBMotion3XIII</name>
     <message>
-        <location filename="../dialogUSBMotion3XIII.ui"/>
+        <location filename="../dialogUSBMotion3XIII.ui" line="+26"/>
         <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>General</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+3"/>
         <source>general settings for motor driver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>General Information:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
+        <location line="+28"/>
+        <location line="+14"/>
+        <location line="+14"/>
+        <location line="+14"/>
+        <location line="+124"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-1036"/>
         <source>Connected:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>No</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Serial Number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Product Version:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Vendor Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Product Name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Run-Mode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Sychronous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>Asychronous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+25"/>
         <source>Motor 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+3"/>
         <source>Properties for first motor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-841"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>Available:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-842"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>Steps per Turn:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-826"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>Micro Steps:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-835"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-835"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>motor enabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-841"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-844"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-844"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-844"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-844"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>16</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-844"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-844"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-836"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>Motor speed and acceleration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-837"/>
+        <location line="+429"/>
+        <location line="+420"/>
         <source>Vmin:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-836"/>
+        <location line="+436"/>
+        <location line="+420"/>
         <source>Vmax:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message utf8="true">
-        <location/>
+    <message>
+        <location line="-849"/>
+        <location line="+33"/>
+        <location line="+383"/>
+        <location line="+20"/>
+        <location line="+400"/>
+        <location line="+20"/>
         <source> °/s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-840"/>
+        <location line="+433"/>
+        <location line="+420"/>
         <source>Amax:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message utf8="true">
-        <location/>
+    <message>
+        <location line="-846"/>
+        <location line="+44"/>
+        <location line="+389"/>
+        <location line="+31"/>
+        <location line="+389"/>
+        <location line="+31"/>
         <source> °/s²</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-861"/>
+        <location line="+420"/>
+        <location line="+420"/>
         <source>Coil current</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-826"/>
+        <location line="+420"/>
+        <location line="+420"/>
         <source>Acc. threshold:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-820"/>
+        <location line="+420"/>
+        <location line="+420"/>
         <source>High current:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-829"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
         <source>12.5%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-951"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
         <source>25%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-951"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
         <source>37.5%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-951"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
         <source>50%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-951"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
         <source>62.5%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-951"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
         <source>75%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-951"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
         <source>87.5%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-951"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
+        <location line="+304"/>
+        <location line="+58"/>
+        <location line="+58"/>
         <source>100%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-944"/>
+        <location line="+420"/>
+        <location line="+420"/>
         <source>Low current:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-782"/>
+        <location line="+420"/>
+        <location line="+420"/>
         <source>Rest current:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-765"/>
         <source>Motor 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+3"/>
         <source>Properties for second motor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+417"/>
         <source>Motor 3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+3"/>
         <source>Properties for third motor</source>
         <translation type="unfinished"></translation>
     </message>
@@ -287,122 +412,128 @@
 <context>
     <name>DockWidgetUSBMotion3XIII</name>
     <message>
-        <location filename="../dockWidgetUSBMotion3XIII.ui"/>
+        <location filename="../dockWidgetUSBMotion3XIII.ui" line="+32"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+27"/>
         <source>General Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+36"/>
         <source>ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>[ID]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+25"/>
         <source>Axis:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>[Axis]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+28"/>
         <source>Relative Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+32"/>
         <source>Step Size</source>
         <translation type="unfinished"></translation>
     </message>
-    <message utf8="true">
-        <location/>
+    <message>
+        <location line="+13"/>
+        <location line="+284"/>
+        <location line="+43"/>
+        <location line="+43"/>
+        <location line="+50"/>
+        <location line="+43"/>
+        <location line="+46"/>
         <source> °</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-468"/>
         <source>axis 1 +</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>axis 2 +</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>axis 3 +</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>axis 1 -</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>axis 2 -</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>axis 3 -</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+30"/>
         <source>Absolut Positioning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Position</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>axis 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>axis 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>axis 3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Actual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+139"/>
         <source>Target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+146"/>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
@@ -410,7 +541,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../USBMotion3XIII.cpp" line="+112"/>
+        <location filename="../USBMotion3XIII.cpp" line="+114"/>
         <source>A motor driver for the USB Motion 3x III card, COPTONIX GmbH, www.coptonix.com</source>
         <translation type="unfinished"></translation>
     </message>
@@ -428,7 +559,7 @@
 <context>
     <name>USBMotion3XIII</name>
     <message>
-        <location line="+240"/>
+        <location line="+243"/>
         <source>indicates whether motor driver is connected (1) or not (0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -494,13 +625,13 @@
     </message>
     <message>
         <location line="+1"/>
-        <location line="+11"/>
-        <location line="+11"/>
+        <location line="+12"/>
+        <location line="+13"/>
         <source>threshold acceleration for distinction between coilCurrentHigh and coilCurrentLow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-21"/>
+        <location line="-24"/>
         <source>determine if motor 1 is enabled (1) or disabled (0). If disabled, this motor is manually moveable</source>
         <translation type="unfinished"></translation>
     </message>
@@ -510,7 +641,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+1"/>
+        <location line="+12"/>
+        <location line="+13"/>
+        <source>bitmask of switch settings (bit 1: DISABLE_STOP_L, bit 2: DISABLE_STOP_R, bit 3: SOFT_STOP, bit 4: REF_RnL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-23"/>
         <source>number of full steps per turn of motor 2, 0: motor not connected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -555,7 +693,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>number of full steps per turn of motor 3, 0: motor not connected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -600,7 +738,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+32"/>
         <source>DLL USB3xIII.dll not loaded</source>
         <translation type="unfinished"></translation>
     </message>
@@ -615,7 +753,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+179"/>
         <source>DLL USB3xIII.dll (USB3xIII64.dll for 64bit) not loaded</source>
         <translation type="unfinished"></translation>
     </message>
@@ -625,54 +763,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+75"/>
         <source>device could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+133"/>
+        <location line="+153"/>
         <source>device could not be closed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+1094"/>
+        <source>interrupt occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+22"/>
-        <source>name of requested parameter is empty.</source>
+        <source>timeout occurred</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
-        <location line="+108"/>
-        <source>parameter not found in m_params.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-82"/>
-        <source>Motor is moving. Parameters cannot be set.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>name of given parameter is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>this parameter is only readable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>async parameter needs value 0 or 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+52"/>
-        <source>given parameter and m_param do not have the same type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <location line="+53"/>
+        <location line="-855"/>
         <location line="+102"/>
         <location line="+86"/>
         <location line="+48"/>
@@ -685,7 +796,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="-157"/>
+        <source>any axis is moving. Parameters cannot be set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+144"/>
+        <source>axis %1 is not available (axisSteps = 0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
         <location line="+102"/>
         <location line="+86"/>
         <location line="+48"/>
@@ -768,7 +889,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+37"/>
         <source>calibration not possible</source>
         <translation type="unfinished"></translation>
     </message>
@@ -810,27 +931,47 @@
 <context>
     <name>USBMotion3XIIIInterface</name>
     <message>
-        <location line="-1541"/>
-        <source>serial number or string of the device to open</source>
+        <location line="-1663"/>
+        <source>serial number or string of the device to open, or &apos;auto&apos; if next unused device should be opened or &apos;0&apos;,&apos;1&apos;... to indicate the index of the device to open.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>number of full steps per turn of axis 1, 0: axis not connected [default]</source>
+        <source>number of full steps per unit (deg or mm) of axis 1, 0: axis not connected [default]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>number of full steps per turn of axis 2, 0: axis not connected [default]</source>
+        <source>number of full steps per unit (deg or mm) of axis 2, 0: axis not connected [default]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>number of full steps per turn of axis 3, 0: axis not connected [default]</source>
+        <source>number of full steps per unit (deg or mm) of axis 3, 0: axis not connected [default]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+1"/>
+        <source>unit of axis 1, 0: degree (default), 1: mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>unit of axis 2, 0: degree (default), 1: mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>unit of axis 3, 0: degree (default), 1: mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>SwitchSettings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+28"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -840,26 +981,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+13"/>
         <source>DLL could not be unloaded</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

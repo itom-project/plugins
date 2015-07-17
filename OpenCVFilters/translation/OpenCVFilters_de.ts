@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>OpenCVFilters</name>
     <message>
@@ -14,29 +14,29 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location filename="../calib3d.cpp" line="+86"/>
+        <location filename="../OpenCVFilters.cpp" line="+14"/>
         <location line="+367"/>
         <location line="+292"/>
         <location line="+256"/>
         <location line="+157"/>
         <location line="+147"/>
-        <location filename="../calib3d.cpp" line="+86"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1214"/>
+        <location line="+6"/>
+        <location filename="../OpenCVFilters.cpp" line="-1214"/>
         <location line="+367"/>
         <location line="+292"/>
         <location line="+256"/>
         <location line="+157"/>
         <location line="+147"/>
-        <location filename="../calib3d.cpp" line="+6"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1180"/>
+        <location filename="../OpenCVFilters.cpp" line="-1180"/>
         <source>Error: pointer of input and output objects are equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -58,7 +58,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-194"/>
+        <location filename="../calib3d.cpp" line="+432"/>
+        <location filename="../OpenCVFilters.cpp" line="-194"/>
         <location line="+17"/>
         <location line="+204"/>
         <location line="+254"/>
@@ -66,12 +67,11 @@
         <location line="+155"/>
         <location line="+141"/>
         <location line="+202"/>
-        <location filename="../calib3d.cpp" line="+426"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1036"/>
+        <location filename="../OpenCVFilters.cpp" line="-1036"/>
         <source>Unknown or unexpected CV-Datatype recived.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -161,7 +161,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../calib3d.cpp" line="-470"/>
+        <location line="+727"/>
+        <source>Rotated object by 90� clockwise with cvRotateM90-Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Rotated object by 90� counter clockwise with cvRotateP90-Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+131"/>
+        <source>Rotated object by 180� using cvRotate180-Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../calib3d.cpp" line="-476"/>
         <source>Must be 8bit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -201,7 +216,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../OpenCVFilters.cpp" line="+58"/>
+        <location filename="../OpenCVFilters.cpp" line="-800"/>
         <source>Input Object handle, must be a single plane</source>
         <translation type="unfinished"></translation>
     </message>
@@ -249,22 +264,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-38"/>
-        <source>Rotated object by 90° clockwise with cvRotateM90-Filter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Rotated object by 90° counter clockwise with cvRotateP90-Filter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+131"/>
-        <source>Rotated object by 180° using cvRotate180-Filter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+43"/>
+        <location line="+136"/>
         <source>sourceObject must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>

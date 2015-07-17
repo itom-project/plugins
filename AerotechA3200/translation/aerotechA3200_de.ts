@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>AerotechA3200</name>
     <message>
-        <location filename="../aerotechA3200.cpp" line="+123"/>
+        <location filename="../aerotechA3200.cpp" line="+128"/>
         <source>asynchronous move (1), synchronous (0) [default]</source>
         <translation>Asynchrone Fahrt (1), synchrone Fahrt (0) [Voreinstellung]</translation>
     </message>
@@ -287,7 +287,7 @@
         <translation type="obsolete">Liste der aktiven Achsen-IDs (0..9). Die erste ID entspricht dem Index 0, die zweite ID Index 1,... [Voreinstellung: Leere Liste, alle möglichen Achsen werden verbunden]</translation>
     </message>
     <message>
-        <location line="-1283"/>
+        <location line="-1285"/>
         <source>list of axes IDs that are enabled (0..2). The first ID then obtains index 0, the second ID index 1... [default: empty list, all available axes are connected]</source>
         <translation type="unfinished">Liste der aktiven Achsen-IDs (0..9). Die erste ID entspricht dem Index 0, die zweite ID Index 1,... [Voreinstellung: Leere Liste, alle möglichen Achsen werden verbunden] {0..2)?} {0,?} {1.?}</translation>
     </message>
@@ -302,99 +302,101 @@
 <context>
     <name>DockWidgetAerotechA3200</name>
     <message>
-        <location filename="../dockWidgetAerotechA3200.ui"/>
+        <location filename="../dockWidgetAerotechA3200.ui" line="+32"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+27"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+36"/>
         <source>ID:</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+25"/>
         <source>Axis:</source>
         <translation>Achsen:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>[Axis]</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source>Relative Positioning</source>
         <translation>Relative Positionierung</translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Step Size</source>
         <translation>Schrittweite</translation>
     </message>
     <message>
-        <location/>
+        <location line="+67"/>
         <source>Actual</source>
         <translation>Aktuell</translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Target</source>
         <translation>Ziel</translation>
     </message>
     <message>
-        <location/>
+        <location line="+133"/>
         <source>Start</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Stop</source>
         <translation>Abbruch</translation>
     </message>
     <message>
-        <location/>
-        <location filename="../dockWidgetAerotechA3200.cpp" line="+126"/>
+        <location line="-201"/>
+        <location line="+102"/>
+        <location line="+40"/>
+        <location filename="../dockWidgetAerotechA3200.cpp" line="+128"/>
         <location line="+13"/>
         <source>mm</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="-99"/>
         <source>Positioning</source>
         <translation>Positionierung</translation>
     </message>
     <message>
-        <location/>
+        <location line="+25"/>
         <source>Name 1</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+102"/>
         <source>+</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>-</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+38"/>
         <source>Refresh</source>
         <translation>Aktualisierung</translation>
     </message>
     <message>
-        <location filename="../dockWidgetAerotechA3200.cpp" line="+173"/>
+        <location filename="../dockWidgetAerotechA3200.cpp" line="+172"/>
         <source>unknown error or warning when moving any axis</source>
         <translation>Unbekannter Fehler/Warnung beim Verfahren einer Achse</translation>
     </message>
@@ -430,57 +432,57 @@
 <context>
     <name>dialogAerotechA3200</name>
     <message>
-        <location filename="../dialogAerotechA3200.ui"/>
+        <location filename="../dialogAerotechA3200.ui" line="+26"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Speed X</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source> mm/s</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+39"/>
         <source>Axis</source>
         <translation>Achsen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+11"/>
         <source>Enable A</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Enable X</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+9"/>
         <source>Calibrate</source>
         <translation>Kalibrieren</translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../dialogAerotechA3200.cpp" line="+56"/>
+        <location filename="../dialogAerotechA3200.cpp" line="+57"/>
         <source>Speed</source>
         <translation>Geschwindigkeit</translation>
     </message>

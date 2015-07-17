@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>AerotechEnsemble</name>
     <message>
@@ -241,99 +241,101 @@
 <context>
     <name>DockWidgetAerotechEnsemble</name>
     <message>
-        <location filename="../dockWidgetAerotechEnsemble.ui"/>
+        <location filename="../dockWidgetAerotechEnsemble.ui" line="+32"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+27"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+36"/>
         <source>ID:</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>[ID]</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+25"/>
         <source>Axis:</source>
         <translation>Achsen:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>[Axis]</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source>Relative Positioning</source>
         <translation>Relative Positionierung</translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Step Size</source>
         <translation>Schrittweite</translation>
     </message>
     <message>
-        <location/>
+        <location line="+67"/>
         <source>Actual</source>
         <translation>Aktuell</translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Target</source>
         <translation>Ziel</translation>
     </message>
     <message>
-        <location/>
+        <location line="+133"/>
         <source>Start</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Stop</source>
         <translation>Abbruch</translation>
     </message>
     <message>
-        <location/>
+        <location line="-201"/>
+        <location line="+102"/>
+        <location line="+40"/>
         <location filename="../dockWidgetAerotechEnsemble.cpp" line="+125"/>
         <location line="+13"/>
         <source>mm</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="-99"/>
         <source>Positioning</source>
         <translation>Positionierung</translation>
     </message>
     <message>
-        <location/>
+        <location line="+25"/>
         <source>Name 1</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+102"/>
         <source>+</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>-</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+38"/>
         <source>Refresh</source>
         <translation>Aktualisierung</translation>
     </message>
     <message>
-        <location filename="../dockWidgetAerotechEnsemble.cpp" line="+173"/>
+        <location filename="../dockWidgetAerotechEnsemble.cpp" line="+172"/>
         <source>unknown error or warning when moving any axis</source>
         <translation>Unbekannter Fehler/Warnung beim Verfahren einer Achse</translation>
     </message>
@@ -369,52 +371,52 @@
 <context>
     <name>dialogAerotechEnsemble</name>
     <message>
-        <location filename="../dialogAerotechEnsemble.ui"/>
+        <location filename="../dialogAerotechEnsemble.ui" line="+26"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Speed X</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source> mm/s</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+39"/>
         <source>Axis</source>
         <translation>Achsen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+11"/>
         <source>Enable A</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+10"/>
         <source>Enable X</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+9"/>
         <source>Calibrate</source>
         <translation>Kalibrieren</translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
@@ -453,24 +455,6 @@
         <location line="+4"/>
         <source>Timeout while calibrating axes.</source>
         <translation>Zeitüberschreitung beim Achsenkalibrieren.</translation>
-    </message>
-</context>
-<context>
-    <name>ito::AddInAlgo</name>
-    <message>
-        <location filename="../../../../../Build/itom/SDK/include/common/addInInterface.h" line="+1075"/>
-        <source>uninitialized vector for mandatory parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for optional parameters!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>uninitialized vector for output parameters!</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

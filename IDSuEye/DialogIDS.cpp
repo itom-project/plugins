@@ -78,7 +78,7 @@ void DialogIDS::parametersChanged(QMap<QString, ito::Param> params)
 
         for (int i = bppMeta->getMin(); i <= bppMeta->getMax(); i+=2)
         {
-            ui.comboBppMode->addItem(QString("gray %1 bit").arg(i), i);
+            ui.comboBppMode->addItem(tr("gray %1 bit").arg(i), i);
         }
 
         for (int i = 0; i < colorModeMeta->getLen(); ++i)

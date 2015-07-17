@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>DialogVistek</name>
     <message>
@@ -32,7 +32,7 @@
 <context>
     <name>DockWidgetVistek</name>
     <message>
-        <location filename="../dockWidgetVistek.ui"/>
+        <location filename="../dockWidgetVistek.ui" line="+14"/>
         <source>Form</source>
         <translation></translation>
     </message>
@@ -41,52 +41,52 @@
         <translation type="obsolete">Allgemeine Informationen</translation>
     </message>
     <message>
-        <location/>
+        <location line="+24"/>
         <source>Camera Data</source>
         <translation>Kameradaten</translation>
     </message>
     <message>
-        <location/>
+        <location line="+27"/>
         <source>Manufacturer:</source>
         <translation>Hersteller:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Camera Model:</source>
         <translation>Kameramodell:</translation>
     </message>
     <message>
-        <location/>
+        <location line="-13"/>
         <source>[Manufacturer]</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>[Model]</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Camera Serial Nr.:</source>
         <translation>Seriennummer:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>[Serial Number]</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Camera IP:</source>
         <translation>IP-Adresse:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>[IP]</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+22"/>
         <source>Image Properties</source>
         <translation>Bildeigenschaften</translation>
     </message>
@@ -99,7 +99,7 @@
         <translation type="obsolete">Höhe [px]:</translation>
     </message>
     <message>
-        <location/>
+        <location line="+105"/>
         <source>Camera Properties</source>
         <translation>Kameraeigenschaften</translation>
     </message>
@@ -108,47 +108,49 @@
         <translation type="obsolete">Belichtung (s):</translation>
     </message>
     <message>
-        <location/>
+        <location line="-69"/>
         <source>Width:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Height:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Bit depth:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
+        <location line="+7"/>
+        <location line="+7"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>Exposure:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source> s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+19"/>
         <source>Gain:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source> dB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>Offset:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -182,7 +184,7 @@
 <context>
     <name>Vistek</name>
     <message>
-        <location filename="../Vistek.cpp" line="+120"/>
+        <location filename="../Vistek.cpp" line="+124"/>
         <source>Camera Model ID</source>
         <translation>Kameramodell ID</translation>
     </message>
@@ -232,7 +234,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+56"/>
         <source>getVal of Vistek can not be executed, since no image has been acquired.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -241,7 +243,7 @@
         <translation type="obsolete">Binning der unterschiedlichen Pixel</translation>
     </message>
     <message>
-        <location line="-610"/>
+        <location line="-608"/>
         <source>Width of current camera frame</source>
         <translation>Breite des aktuellen Kamerabilds</translation>
     </message>
@@ -290,7 +292,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+88"/>
         <source>getVal of Vistek can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -367,42 +369,42 @@
 <context>
     <name>dialogVistek</name>
     <message>
-        <location filename="../dialogVistek.ui"/>
+        <location filename="../dialogVistek.ui" line="+26"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+315"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location/>
+        <location line="-198"/>
         <source>8</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>12</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>16</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+70"/>
         <source>Gain</source>
         <translation></translation>
     </message>
     <message>
-        <location/>
+        <location line="+39"/>
         <source>Offset</source>
         <translation></translation>
     </message>
@@ -462,7 +464,7 @@
         <source>Initial phase (phi0)</source>
         <translation type="obsolete">Startphase (phi0)</translation>
     </message>
-    <message utf8="true">
+    <message>
         <source>µm / Step</source>
         <translation type="obsolete">µm / Schritt</translation>
     </message>
@@ -471,117 +473,122 @@
         <translation type="obsolete">Signalbreite (FWHM)</translation>
     </message>
     <message>
-        <location/>
+        <location line="-235"/>
         <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+7"/>
+        <location line="+14"/>
+        <location line="+14"/>
+        <location line="+14"/>
+        <location line="+14"/>
+        <location line="+14"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="-63"/>
         <source>Serial No</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Camera IP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Manufacturer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+20"/>
         <source>Buffer and Binning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+6"/>
         <source>Bit Depth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+32"/>
         <source>Binning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+17"/>
         <source>Off (0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>Horizontal (1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>Vertical (2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>2x2 (3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>3x3 (4)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+5"/>
         <source>4x4 (5)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+14"/>
         <source>Integration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+16"/>
         <source>%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+36"/>
         <source>Exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+13"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+25"/>
         <source> dB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location/>
+        <location line="+44"/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
