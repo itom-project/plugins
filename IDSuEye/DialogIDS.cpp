@@ -182,7 +182,7 @@ void DialogIDS::parametersChanged(QMap<QString, ito::Param> params)
 
     for (int i = 0; i < ui.comboBppMode->count(); ++i)
     {
-        if (ui.comboBppMode->itemData(i, 32).toInt() == userData)
+        if (ui.comboBppMode->itemData(i, Qt::UserRole).toInt() == userData)
         {
             ui.comboBppMode->setCurrentIndex(i);
             break;
@@ -203,7 +203,7 @@ void DialogIDS::parametersChanged(QMap<QString, ito::Param> params)
 
     for (int i = 0; i < ui.comboBinHor->count(); ++i)
     {
-        if (ui.comboBinHor->itemData(i, 32).toInt() == binHor)
+        if (ui.comboBinHor->itemData(i, Qt::UserRole).toInt() == binHor)
         {
             ui.comboBinHor->setCurrentIndex(i);
             break;
@@ -212,7 +212,7 @@ void DialogIDS::parametersChanged(QMap<QString, ito::Param> params)
 
     for (int i = 0; i < ui.comboBinVer->count(); ++i)
     {
-        if (ui.comboBinVer->itemData(i, 32).toInt() == binVer)
+        if (ui.comboBinVer->itemData(i, Qt::UserRole).toInt() == binVer)
         {
             ui.comboBinVer->setCurrentIndex(i);
             break;

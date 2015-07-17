@@ -1531,10 +1531,10 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             int currentY1 = size.s32Y + offset.s32Y - 1;
             it = m_params.find("sizex");
             it->setVal<int>(size.s32X);
-            it->setMeta(new ito::IntMeta(sizeMin.s32X, sizeMax.s32X + offset.s32X, sizeInc.s32X), true);
+            it->setMeta(new ito::IntMeta(sizeMin.s32X, sizeMax.s32X, sizeInc.s32X), true);
             it = m_params.find("sizey");
             it->setVal<int>(size.s32Y);
-            it->setMeta(new ito::IntMeta(sizeMin.s32Y, sizeMax.s32Y + offset.s32Y, sizeInc.s32Y), true);
+            it->setMeta(new ito::IntMeta(sizeMin.s32Y, sizeMax.s32Y, sizeInc.s32Y), true);
             it = m_params.find("x0");
             it->setVal<int>(offset.s32X);
             //x0 max is one smaller than the current x1 value, considering the increment value
@@ -1549,11 +1549,11 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             it->setFlags(0);
             it = m_params.find("x1");
             it->setVal<int>(currentX1);
-            it->setMeta(new ito::IntMeta(offset.s32X + sizeMin.s32X - 1, offset.s32X + sizeMax.s32X - 1, sizeInc.s32X), true);
+            it->setMeta(new ito::IntMeta(offset.s32X + sizeMin.s32X - 1, sizeMax.s32X - 1, sizeInc.s32X), true);
             it->setFlags(0);
             it = m_params.find("y1");
             it->setVal<int>(currentY1);
-            it->setMeta(new ito::IntMeta(offset.s32Y + sizeMin.s32Y - 1, offset.s32Y + sizeMax.s32Y - 1, sizeInc.s32Y), true);
+            it->setMeta(new ito::IntMeta(offset.s32Y + sizeMin.s32Y - 1, sizeMax.s32Y - 1, sizeInc.s32Y), true);
             it->setFlags(0);
 
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
@@ -1563,8 +1563,8 @@ ito::RetVal IDSuEye::synchronizeCameraSettings(int what /*= sAll*/)
             roi[1] = offset.s32Y;
             roi[2] = size.s32X;
             roi[3] = size.s32Y;
-            ito::RangeMeta widthMeta(offsetMin.s32X, sizeMax.s32X + offset.s32X - 1, offsetInc.s32X, sizeMin.s32X, sizeMax.s32X + offset.s32X, sizeInc.s32X);
-            ito::RangeMeta heightMeta(offsetMin.s32Y, sizeMax.s32Y + offset.s32Y - 1, offsetInc.s32Y, sizeMin.s32Y, sizeMax.s32Y + offset.s32Y, sizeInc.s32Y);
+            ito::RangeMeta widthMeta(offsetMin.s32X, sizeMax.s32X - 1, offsetInc.s32X, sizeMin.s32X, sizeMax.s32X, sizeInc.s32X);
+            ito::RangeMeta heightMeta(offsetMin.s32Y, sizeMax.s32Y - 1, offsetInc.s32Y, sizeMin.s32Y, sizeMax.s32Y, sizeInc.s32Y);
             it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
 #endif            
         }
