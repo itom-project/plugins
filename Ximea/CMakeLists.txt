@@ -47,6 +47,7 @@ IF(XIMEA_APIDIR)
         ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
     ENDIF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DCMAKE)
+    #ADD_DEFINITIONS(-DITOMWIDGETS_SHARED)
 
     IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
         ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
@@ -64,8 +65,10 @@ IF(XIMEA_APIDIR)
     INCLUDE_DIRECTORIES(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${QT_QTCORE_INCLUDE_DIR}
         ${OpenCV_DIR}/include
-        ${ITOM_SDK_INCLUDE_DIRS}
+        ${ITOM_SDK_INCLUDE_DIR}
+        ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
         ${VISUALLEAKDETECTOR_INCLUDE_DIR}
         ${XIMEA_APIDIR}
     )
@@ -95,6 +98,7 @@ IF(XIMEA_APIDIR)
     )
 
     set(plugin_SOURCES 
+
         ${CMAKE_CURRENT_SOURCE_DIR}/dialogXimea.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetXimea.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/Ximea.cpp
@@ -103,7 +107,6 @@ IF(XIMEA_APIDIR)
     set(plugin_RCC
     )
 
-    #Add version information to the plugIn-dll unter MSVC
     if(MSVC)
         list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
     endif(MSVC)
@@ -118,13 +121,21 @@ IF(XIMEA_APIDIR)
         QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
     endif (QT5_FOUND)
 
+    #handle translations BEGIN STEP 1
+    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+    set (TRANSLATION_OUTPUT_FILES)
+    set (TRANSLATIONS_FILES)
+
+
     file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
     ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES})
     if (QT5_FOUND)
-        qt5_use_modules(${target_name} ${QT_COMPONENTS})
-    endif (QT5_FOUND)
+        TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
+        qt5_use_modules(${target_name} Widgets UiTools Xml)
+    else (QT5_FOUND)
+        TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTXML_LIBRARY} ${OpenCV_LIBS} ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_dataobject_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${ITOM_SDK_itomCommonLib_LIBRARY} ${ITOM_SDK_itomCommonQtLib_LIBRARY})
+    endif (QT5_FOUND)    
 
     #translation
     set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
@@ -144,7 +155,8 @@ IF(XIMEA_APIDIR)
     else(BUILD_TARGET64)    
         file(GLOB dlls "${XIMEA_APIDIR}/x86/*.dll")
     endif(BUILD_TARGET64)
-    POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
+        POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
+        
 ELSE (XIMEA_APIDIR)
     message(WARNING "${target_name}-API directory could not be found. ${target_name} will not be build")    
 ENDIF (XIMEA_APIDIR)

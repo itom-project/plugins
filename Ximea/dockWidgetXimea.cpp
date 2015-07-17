@@ -21,89 +21,112 @@
 *********************************************************************** */
 
 #include "dockWidgetXimea.h"
+#include "common/addInInterface.h"
+#include <qmessagebox.h>
+#include <qmetaobject.h>
 
- DockWidgetXimea::DockWidgetXimea(QMap<QString, ito::Param> params, int uniqueID)
- {
-    ui.setupUi(this); 
-    
-    char* temp = params["name"].getVal<char*>(); //borrowed reference
-//    ui.lblName->setText(temp);
-    ui.lblID->setText(QString::number(uniqueID));
-
-    valuesChanged(params);
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+DockWidgetXimea::DockWidgetXimea(int uniqueID, ito::AddInDataIO *grabber) :
+    AbstractAddInDockWidget(grabber),  
+	m_inEditing(false),  
+	m_firstRun(true)
+{
+     ui.setupUi(this); 
+     identifierChanged(QString::number(uniqueID));
+     enableWidget(true);
  }
 
- void DockWidgetXimea::valuesChanged(QMap<QString, ito::Param> params)
- {
-    ui.spinBpp->setValue(params["bpp"].getVal<int>());
-    ui.spinWidth->setValue(params["sizex"].getVal<int>());
-    ui.spinHeight->setValue(params["sizey"].getVal<int>());
-
-
-    if(!(params["gain"].getFlags() & ito::ParamBase::Readonly))
-    {
-        ui.spinBox_gain->setEnabled(true);
-    }
-    else
-    {
-        ui.spinBox_gain->setEnabled(false);
-    }
-    ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
-    ui.horizontalSlider_gain->setValue(ui.spinBox_gain->value());
-
-    if(!(params["offset"].getFlags() & ito::ParamBase::Readonly))
-    {
-        ui.spinBox_offset->setEnabled(true);
-    }
-    else
-    {
-        ui.spinBox_offset->setEnabled(false);
-    }
-    ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
-    ui.horizontalSlider_offset->setValue(ui.spinBox_offset->value());
-
-    if(!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
-    {
-        ui.doubleSpinBox_integration_time->setEnabled(true);
-    }
-    else
-    {
-        ui.doubleSpinBox_integration_time->setEnabled(false);
-    }
-
-    ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
-    ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
-    ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>()*1000.0);
- }
-
-void DockWidgetXimea::on_spinBox_gain_editingFinished()
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
 {
-    ui.horizontalSlider_gain->setValue(ui.spinBox_gain->value());
-    emit GainPropertiesChanged( ui.spinBox_gain->value()/100.0);
+    ui.sliderWidget_gain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
+    ui.sliderWidget_gain->setVisible( !(params["gain"].getFlags() & ito::ParamBase::Readonly ));
+    ui.sliderWidget_integrationtime->setDisabled( params["integration_time"].getFlags() & ito::ParamBase::Readonly );
+    ui.sliderWidget_integrationtime->setVisible( !(params["integration_time"].getFlags() & ito::ParamBase::Readonly ));
+    if (m_firstRun)
+    {
+		ui.label_sensor->setText(params["sensor_type"].getVal<char*>());
+		ui.label_serial->setText(params["serial_number"].getVal<char*>());
+		ui.label_width->setText(QString::number(params["sizex"].getVal<int>()));
+		ui.label_height->setText(QString::number(params["sizey"].getVal<int>()));
+		ui.label_bits->setText(QString::number(params["bpp"].getVal<int>()));
+        //use params (identical to m_params of the plugin)
+        //and initialize all widgets (e.g. min, max values, labels, enable some,...)
+        
+        m_firstRun = false;
+    }
+
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+
+        if (params.contains("gain") & !(params["gain"].getFlags() & ito::ParamBase::Readonly))
+        {
+            ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["gain"].getMeta());
+            ui.sliderWidget_gain->setMinimum(dm->getMin() * 100);
+            ui.sliderWidget_gain->setMaximum(dm->getMax() * 100);
+            ui.sliderWidget_gain->setValue(params["gain"].getVal<double>() * 100);
+        }
+
+        if (params.contains("integration_time") & !(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
+        {
+            ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["integration_time"].getMeta());
+            ui.sliderWidget_integrationtime->setMinimum(dm->getMin()*1000);
+            ui.sliderWidget_integrationtime->setMaximum(dm->getMax()*1000);
+            ui.sliderWidget_integrationtime->setValue(params["integration_time"].getVal<double>()*1000);
+        }
+    }    
+    m_inEditing = false;
+
+    m_currentParams = params;
 }
 
-void DockWidgetXimea::on_horizontalSlider_gain_sliderMoved(int d)
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetXimea::on_sliderWidget_offset_valueChanged(double value)
 {
-    ui.spinBox_gain->setValue(d);
-    emit GainPropertiesChanged(ui.spinBox_gain->value()/100.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("offset",ito::ParamBase::Double,value));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }
 
-void DockWidgetXimea::on_spinBox_offset_editingFinished()
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetXimea::on_sliderWidget_gain_valueChanged(double value)
 {
-    ui.horizontalSlider_offset->setValue(ui.spinBox_offset->value());
-    emit OffsetPropertiesChanged(ui.spinBox_offset->value()/100.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain",ito::ParamBase::Double,value / 100.0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }
 
-void DockWidgetXimea::on_horizontalSlider_offset_sliderMoved(int d)
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetXimea::on_sliderWidget_integrationtime_valueChanged(double value)
 {
-    ui.spinBox_offset->setValue(d);
-    emit OffsetPropertiesChanged(ui.spinBox_offset->value()/100.0);
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+		value = value/1000;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,value));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
 }
 
-void DockWidgetXimea::on_doubleSpinBox_integration_time_editingFinished()
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetXimea::enableWidget(bool enabled)
 {
-    emit IntegrationPropertiesChanged( ui.doubleSpinBox_integration_time->value() / 1000.0);
+	ui.sliderWidget_gain->setEnabled(enabled);
+	ui.sliderWidget_integrationtime->setEnabled(enabled);
 }
 
-
-
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetXimea::identifierChanged(const QString &identifier)
+{
+    ui.label_ID->setText(identifier);
+}

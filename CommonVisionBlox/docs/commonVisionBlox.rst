@@ -25,6 +25,36 @@ The following parameters are mandatory or optional for initializing an instance 
     .. plugininitparams::
         :plugin: CommonVisionBlox
         
+Parameters
+===========
+
+An instance of this plugin has the following internal parameters:
+
+**name**: {str}, read-only
+    name of plugin
+**integration_time**: {float}
+    Exposure time of chip (in seconds)
+**heartbeat_timeout**: {int}
+    Heartbeat timeout of GigE Vision Transport Layer
+**acquisition_mode**: {str}
+    'snap' is a single image acquisition (only possible in trigger_mode 'off'), 'grab' is a continuous acquisition
+**trigger_mode**: {str}
+    'off': camera is not explicitly triggered but operated in freerun mode. The next acquired image is provided upon acquire, 'software' sets trigger mode to On and fires a software trigger at acquire (only possible in acquisition_mode 'grab')
+**sizex**: {int}, read-only
+    Pixelsize in x (cols)
+**sizey**: {int}, read-only
+    Pixelsize in y (rows)
+**bpp**: {int}, read-only
+    bit depth
+**raw**: {str}
+    use raw:paramname to set internal paramname of camera to value. paramname is the original GenICam parameter name.
+**vendor_name**: {str}, read-only
+    vendor name
+**model_name**: {str}, read-only
+    model name
+**roi**: {int seq.}
+    ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
+    
 Usage
 =====
 
@@ -51,4 +81,15 @@ Hints
 Try to enable jumbo frames in your network adapter and set the packet size in Common Vision Blox to the highest rate. Save the configuration before
 loading the camera in itom. If you want to operate the camera with more than 8bit, make sure to set the CVB Color Format to Mono16 in Common Vision Blox (not auto)
 and save the configuration as well.
+
+Usually you need to configure the camera and its communication first in CommonVisionBlox before using the camera in itom. Open CommonVisionBlox and configure the camera.
+Then safe the configuration (stored in %CVBDATA%/Drivers/GenICam.ini where %CVBDATA% is an environment variable created by CommonVisionBlox) by clicking the corresponding button.
+
+If the camera is loaded in itom, the specific camera and configuration is obtained by this file (if **scanForCameras** is set to False). If you set **scanForCameras** to True,
+CommonVisionBlox will be forced to scan for newly connected cameras and the configuration file is automatically reset to its default.
+
+Things to configure are for example:
+
+* color format (bit depth...)
+* packet size
 

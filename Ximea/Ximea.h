@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
-    Copyright (C) 2013, twip optical solutions GmbH
-    Copyright (C) 2013, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2015, twip optical solutions GmbH
+    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -27,7 +27,7 @@
 #include "dialogXimea.h"
 #include <qsharedpointer.h>
 
-#include "xiApi.h" //in order to include windows.h for windows necessary to get the type HANDLE
+#include "xiApi.h"
 
 struct SoftwareShading
 {
@@ -89,6 +89,7 @@ class Ximea : public ito::AddInGrabber
         ~Ximea();
         //! Constructor
         Ximea();
+        void dockWidgetVisibilityChanged(bool visible);
 
     public:
         friend class XimeaInterface;
@@ -97,37 +98,93 @@ class Ximea : public ito::AddInGrabber
 
     protected:
         ito::RetVal retrieveData(ito::DataObject *externalDataObject = NULL);    /*! <Wait for acquired picture */
-//        ito::RetVal checkData(void);    /*!< Check if objekt has to be reallocated */
+        ito::RetVal checkData(ito::DataObject *externalDataObject = NULL);    /*!< Check if object has to be reallocated */
 
         ito::RetVal setXimeaParam(const char *paramName, int newValue);
 
     private:
 
-        enum grabState
+        enum DeviceFamily
         {
-            grabberStopped = 0x00,
-            grabberRunning = 0x01,
-            grabberGrabbed = 0x02,
-            grabberGrabError = 0x04
+            familyMR,    //scientific grade firewire
+            familyMQ,    //xiQ USB3, CMOS
+            familyMD,    //xiD USB3, CCD
+            familyMU,    //subminiature, CMOS
+            familyCB,    //xiB, PCI Express, CMOS
+            familyMH,
+            familyCURRERA,
+            familyMT,
+            familyUnknown
         };
 
+		enum SyncParams {          
+            sExposure = 0x0001, 
+            sBinning = 0x0002,
+            sRoi = 0x0004,
+            sGain = 0x0008,
+            sOffset = 0x0010,
+            sTriggerMode = 0x0020,
+			sTriggerSelector = 0x0040,
+			sBpp = 0x0080,
+			sFrameRate = 0x0100,
+			sGamma = 0x0200,
+			sSharpness = 0x0400,
+            sGpiGpo = 0x0800,
+            sAll = sExposure | sBinning | sRoi | sGain | sOffset | sTriggerMode | sTriggerSelector | sBpp | sFrameRate | sGamma | sSharpness | sGpiGpo 
+        };
+
+		struct RoiMeta
+		{
+			int offsetXMin;
+			int offsetXMax;
+			int offsetXStep;
+			int offsetYMin;
+			int offsetYMax;
+			int offsetYStep;
+			int widthMin;
+			int widthMax;
+			int widthStep;
+			int heightMin;
+			int heightMax;
+			int heightStep;
+		};
+
+		ito::RetVal synchronizeCameraSettings(int what = sAll);
+        ito::RetVal readCameraIntParam(const char *ximeaParamName, const QString &paramName, bool mandatory = false);
+        ito::RetVal readCameraFloatParam(const char *ximeaParamName, const QString &paramName, bool mandatory = false);
+
+		inline double musecToSec(double musec) { return (double)musec * 1.0e-6; }
+		inline double secToMusec(double sec) { return (double)(sec * 1.0e6); }
+
+		RoiMeta m_roiMeta;
+        DeviceFamily m_family;
+        int m_numGPIPins;
+        int m_numGPOPins;
+        int m_numFrameBurst;
+
         ito::RetVal LoadLib();
-        ito::RetVal getErrStr(const int error, const bool asWarning = false);
-        int m_numDevices;
-        int m_device;
+        ito::RetVal getErrStr(const int error, const QString &command, const QString &value);
+        ito::RetVal checkError(const XI_RETURN &error, const QString &command, const QString &value = QString());
         int m_saveParamsOnClose;
+        
 #if linux
         void *m_handle;
 #else
         HANDLE m_handle;
 #endif
 
+#if linux
+        void *ximeaLib;
+#else
+        HMODULE ximeaLib;
+#endif
+    
         void* m_pvShadingSettings;
 
         SoftwareShading m_shading;
 
 
-        int m_isgrabbing;
+        bool m_isgrabbing;
         ito::RetVal m_acqRetVal;
     signals:
         //void parametersChanged(QMap<QString, ito::Param> params);    /*! Signal send changed or all parameters to listeners */
@@ -155,15 +212,6 @@ class Ximea : public ito::AddInGrabber
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
         void updateParameters(QMap<QString, ito::Param> params);
-
-        //! Slot to synchronize this plugin with dockingwidget
-        void GainPropertiesChanged(double gain);
-
-        //! Slot to synchronize this plugin with dockingwidget
-        void OffsetPropertiesChanged(double offset);
-
-        //! Slot to synchronize this plugin with dockingwidget
-        void IntegrationPropertiesChanged(double integrationtime);
 
         //! Slot to run special function
         ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond);
@@ -193,10 +241,11 @@ class Ximea : public ito::AddInGrabber
 class XimeaInterface : public ito::AddInInterfaceBase
 {
     Q_OBJECT
-#if QT_VERSION >=  QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >=  QT_VERSION_CHECK(5,0,0)
     Q_PLUGIN_METADATA(IID "ito.AddInInterfaceBase" )
 #endif
     Q_INTERFACES(ito::AddInInterfaceBase)
+
     PLUGIN_ITOM_API
 
     protected:

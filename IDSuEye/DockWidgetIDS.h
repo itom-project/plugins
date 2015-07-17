@@ -30,6 +30,11 @@
 #include <qstring.h>
 
 #include "ui_dockWidgetIDS.h"
+#include <qabstractbutton.h>
+#include <QtGui>
+#include <qwidget.h>
+#include <qsharedpointer.h>
+#include <qmetaobject.h>
 
 class DockWidgetIDS : public ito::AbstractAddInDockWidget
 {

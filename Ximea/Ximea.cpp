@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
-    Copyright (C) 2013, twip optical solutions GmbH
-    Copyright (C) 2013, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2015, twip optical solutions GmbH
+    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -27,6 +27,7 @@
 #include "XimeaFuncsImport.h"
 #include "pluginVersion.h"
 #include "dockWidgetXimea.h"
+#include "dialogXimea.h"
 
 #include "common/sharedFunctionsQt.h"
 
@@ -40,19 +41,18 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
-
-Q_DECLARE_METATYPE(ito::DataObject)
+#include <qmetaobject.h>
 
 //int XimeaInterface::m_instCounter = 5;  // initialization starts with five due to normal boards are 0..4
 
 static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successfull initialized boards (max = 5) */
 static char Initnum = 0;    /*!< Number of successfull initialized cameras */
 
-#if linux
-    void *ximeaLib = NULL;
-#else
-    HMODULE ximeaLib = NULL;
+#ifndef XI_PRMM_DIRECT_UPDATE //workaround for very old APIs
+    #define XI_PRMM_DIRECT_UPDATE ""
 #endif
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal XimeaInterface::getAddInInst(ito::AddInBase **addInInst)
@@ -75,18 +75,19 @@ XimeaInterface::XimeaInterface()
     setObjectName("Ximea");
 
     m_description = QObject::tr("Ximea xiQ-Camera");
-    m_detaildescription = QObject::tr("Developed for Windows only. Tested with Ximea xIQ-cameras for black and white.");
-    m_author = "C. Kohler, twip optical solutions GmbH, Stuttgart";
+    m_detaildescription = QObject::tr("Plugin for cameras from XIMEA that run with the XIMEA API. \n\
+This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ042RG-CM) under Windows.");
+    m_author = "C. Kohler, twip optical solutions GmbH, Stuttgart, J. Krauter, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("LGPL / do not copy Ximea-DLLs");
     m_aboutThis = QObject::tr("N.A.");     
     
-    ito::Param paramVal = ito::Param("camera Number", ito::ParamBase::Int | ito::ParamBase::In, 0, 3, 0, "The index of the addressed camera starting with 0");
+    ito::Param paramVal = ito::Param("camera Number", ito::ParamBase::Int | ito::ParamBase::In, 0, 254, 0, "The index of the addressed camera starting with 0");
     m_initParamsOpt.append(paramVal);
 
-    paramVal = ito::Param("restoreLast", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, "Toogle if the driver should try to connect to the last initilized camera");
+    paramVal = ito::Param("restoreLast", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, "Toggle if the driver should try to connect to the last initialized camera");
     m_initParamsOpt.append(paramVal);
 
     paramVal = ito::Param("bandwidthLimit", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 0, "bandwidth limit in Mb/sec. If 0 the maximum bandwidth of the USB3 controller is used [default]. The allowed value range depends on the device and will be checked at startup.");
@@ -106,167 +107,538 @@ XimeaInterface::~XimeaInterface()
 #if QT_VERSION < 0x050000
     Q_EXPORT_PLUGIN2(XimeaInterface, XimeaInterface)
 #endif
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal Ximea::showConfDialog(void)
 {
-    ito::RetVal retValue(ito::retOk);
-
-    dialogXimea *confDialog = new dialogXimea(this);
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-
-    QMetaObject::invokeMethod(this, "sendParameterRequest");
-
-    if (confDialog->exec())
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-        confDialog->sendVals();
-    }
-    else
-    {
-        disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    }
-    delete confDialog;
-
-    return retValue;
+   return apiShowConfigurationDialog(this, new DialogXimea(this));
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-Ximea::Ximea() : AddInGrabber(), m_numDevices(0), m_device(-1), m_saveParamsOnClose(false), m_handle(NULL), m_isgrabbing(0), m_acqRetVal(ito::retOk), m_pvShadingSettings(NULL)
-{
-    //qRegisterMetaType<ito::DataObject>("ito::DataObject");
-    //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
 
+//----------------------------------------------------------------------------------------------------------------------------------
+Ximea::Ximea() : 
+    AddInGrabber(),  
+    m_saveParamsOnClose(false), 
+    m_handle(NULL), 
+    m_isgrabbing(false), 
+    m_acqRetVal(ito::retOk), 
+    m_pvShadingSettings(NULL),
+    ximeaLib(NULL),
+    m_family(familyUnknown),
+    m_numFrameBurst(1)
+{
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>()
-                               << ito::Param("darkImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
-                               << ito::Param("whiteImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data())
-                               << ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1280, 0, tr("Position of ROI in x").toLatin1().data())
-                               << ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1024, 0, tr("Position of ROI in y").toLatin1().data());
+        << ito::Param("dark_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
+        << ito::Param("white_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data())
+        << ito::Param("x0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1280, 0, tr("Position of ROI in x").toLatin1().data())
+        << ito::Param("y0", ito::ParamBase::Int | ito::ParamBase::In, 0, 1024, 0, tr("Position of ROI in y").toLatin1().data());
     QVector<ito::Param> pOpt = QVector<ito::Param>();
 
     QVector<ito::Param> pOut = QVector<ito::Param>();
-    registerExecFunc("initializeShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction. At the moment you can only use one set of data which will be rescaled each time"));
+    registerExecFunc("initialize_shading", pMand, pOpt, pOut, tr("Initialize pixel shading correction. At the moment you can only use one set of data which will be rescaled each time"));
 
     pMand = QVector<ito::Param>()
-            << ito::Param("illumination", ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 0, tr("Current intensity value").toLatin1().data());
+        << ito::Param("illumination", ito::ParamBase::Int | ito::ParamBase::In, 0, 9, 0, tr("Current intensity value").toLatin1().data());
     pOpt = QVector<ito::Param>();
     pOut = QVector<ito::Param>();
-    registerExecFunc("updateShading", pMand, pOpt, pOut, tr("Change value of the shading correction"));
+    registerExecFunc("update_shading", pMand, pOpt, pOut, tr("Change value of the shading correction"));
 
     pMand = QVector<ito::Param>()
-            << ito::Param("integration_time", ito::ParamBase::Double, 0.016, 0.134, 0.033, tr("Integrationtime of CCD programmed in s").toLatin1().data())
-            << ito::Param("shadingCorrectionFaktor", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("Corresponding values for shading correction").toLatin1().data());
+        << ito::Param("integration_time", ito::ParamBase::Double, 0.000000, 0.000000, 0.000000, tr("Integrationtime of CCD programmed in s").toLatin1().data())
+        << ito::Param("shading_correction_factor", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("Corresponding values for shading correction").toLatin1().data());
     pOpt = QVector<ito::Param>();
     pOut = QVector<ito::Param>();
-    registerExecFunc("shadingCorrectionValues", pMand, pOpt, pOut, tr("Change value of the shading correction"));
+    registerExecFunc("shading_correction_values", pMand, pOpt, pOut, tr("Change value of the shading correction"));
     /*
     pMand = QVector<ito::Param>();
-    pOpt = QVector<ito::Param>() << ito::Param("darkImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
-                                 << ito::Param("whiteImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data());
-    registerExecFunc("updateShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
+    pOpt = QVector<ito::Param>() << ito::Param("dark_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Dark Image, if null, empty image will be generated").toLatin1().data())
+                                 << ito::Param("white_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("White Image, if null, empty image will be generated").toLatin1().data());
+    registerExecFunc("update_shading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
     registerExecFunc("calculateShading", pMand, pOpt, pOut, tr("Initialize pixel shading correction"));
     pOpt.clear();
     */
     //end register exec functions
 
-   ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Ximea", NULL);
+   ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Ximea", "name of the camera");
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.000010, 4.0, 0.005, tr("Integrationtime of CCD programmed in s").toLatin1().data());
+   paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.00000, 0.000, 0.0000, tr("Exposure time (in seconds).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("gain in dB").toLatin1().data());
+   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain in %.").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Currently not used").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
-   paramVal = ito::Param("gamma", ito::ParamBase::Double, 0.3, 1.0, 1.0, tr("gamma").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("sharpness").toLatin1().data());
+   paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.0, tr("Currently not used.").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 1, tr("Enable hdr mode").toLatin1().data());
+   paramVal = ito::Param("gamma", ito::ParamBase::Double, 0.3, 1.0, 1.0, tr("Luminosity gamma value (0.3 highest correction, 1 no correction).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_knee1", ito::ParamBase::Int, 0, 100, 40, tr("").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_knee2", ito::ParamBase::Int, 0, 100, 60, tr("").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_it1", ito::ParamBase::Int, 0, 100, 50, tr("").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("hdr_it2", ito::ParamBase::Int, 0, 100, 75, tr("").toLatin1().data());
+   paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("Sharpness strength (-4 less sharp, +4 more sharp).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1279, 0, tr("Startvalue for ROI").toLatin1().data());
+   paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 0, tr("Enable HDR mode. default is OFF (not supported by all devices).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 1023, 0, tr("Startvalue for ROI").toLatin1().data());
+   paramVal = ito::Param("hdr_knee1", ito::ParamBase::Int, 0, 100, 40, tr("First kneepoint (% of sensor saturation - not supported by all devices).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 1279, 1279, tr("Stopvalue for ROI").toLatin1().data());
+   paramVal = ito::Param("hdr_knee2", ito::ParamBase::Int, 0, 100, 60, tr("Second kneepoint (% of sensor saturation - not supported by all devices).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 1023, 1023, tr("Stopvalue for ROI").toLatin1().data());
+   paramVal = ito::Param("hdr_it1", ito::ParamBase::Int, 0, 100, 50, tr("Exposure time of first slope (in % of exposure time - not supported by all devices).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1280, tr("ROI-Size in x").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 1024, tr("ROI-Size in y").toLatin1().data());
+   paramVal = ito::Param("hdr_it2", ito::ParamBase::Int, 0, 100, 75, tr("Exposure time of second slope (in % of exposure time - not supported by all devices).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 60.0, 2.0, tr("Camera time out").toLatin1().data());
+   int roi[] = {0, 0, 0, 0};
+   paramVal = ito::Param("roi", ito::ParamBase::IntArray, 4, roi, tr("ROI (x, y, width, height) [this replaces the values x0, x1, y0, y1].").toLatin1().data());
+   ito::RectMeta *rm = new ito::RectMeta(ito::RangeMeta(0, 2048), ito::RangeMeta(0, 2048));
+   paramVal.setMeta(rm, true);
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 12, tr("Grabdepth in bpp").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
-   paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 202, 101, tr("Activate 2x2 binning").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, 0, 4, 0, tr("Set Triggermode, 0: free run, 1: ext. rising edge, 2: ext. falling edge, 3: software").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("trigger_mode2", ito::ParamBase::Int, 0, 3, 1, tr("Set Triggermode2, 0: single image, 1: frame duration, 2: burst, 3: burst with frame duration").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("timing_mode", ito::ParamBase::Int, 0, 1, 1, tr("Acquisition timing: 0: free run, 1: by frame rate").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("framerate", ito::ParamBase::Double, 0.0, 1000.0, 60.0, tr("Set Triggermode, currently not implemented").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("camNumber", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Number / ximea-internal IDX of this camera").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("badPixel", ito::ParamBase::Int, 0, 1, 1, tr("Enable bad pixel correction").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-
-   //XI_GPO_BUSY_NEG does not exist in older APIs
-   paramVal = ito::Param("gpoMode", ito::ParamBase::Int, XI_GPO_OFF, 11 /*XI_GPO_BUSY_NEG*/, XI_GPO_OFF, tr("Set the output pin mode for the camera, default is off").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("gpiMode", ito::ParamBase::Int, XI_GPI_OFF, XI_GPI_EXT_EVENT, XI_GPI_OFF, tr("Set the input pin mode for the camera, default is off").toLatin1().data());
-   m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 0, 0, tr("First horizontal index within current ROI (deprecated, use parameter 'roi' instead).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y0", ito::ParamBase::Int, 0, 0, 0, tr("First vertical index within current ROI (deprecated, use parameter 'roi' instead).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("x1", ito::ParamBase::Int, 0, 0, 0, tr("Last horizontal index within current ROI (deprecated, use parameter 'roi' instead).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("y1", ito::ParamBase::Int, 0, 0, 0, tr("Last vertical index within current ROI (deprecated, use parameter 'roi' instead).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 0, 0, tr("Width of ROI (number of columns).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 0, 0, tr("Height of ROI (number of rows).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 60.0, 2.0, tr("Acquisition timeout in s.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 14, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth).").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("1x1 (101), 2x2 (202) or 4x4 (404) binning if available. See param 'binning_type' for setting the way binning is executed.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("binning_type", ito::ParamBase::Int, XI_BINNING, XI_SKIPPING, XI_BINNING, tr("Type of binning if binning is enabled. %1: pixels are interpolated, %2: pixels are skipped (faster).").arg(XI_BINNING).arg(XI_SKIPPING).toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, XI_TRG_OFF, XI_TRG_SOFTWARE, XI_TRG_SOFTWARE, tr("Set triggermode, %1: free run, %2: ext. rising edge, %3: ext. falling edge, %4: software.").arg(XI_TRG_OFF).arg(XI_TRG_EDGE_RISING).arg(XI_TRG_EDGE_FALLING).arg(XI_TRG_SOFTWARE).toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("trigger_selector", ito::ParamBase::Int, XI_TRG_SEL_FRAME_START, XI_TRG_SEL_FRAME_BURST_ACTIVE, XI_TRG_SEL_FRAME_START , tr("Set trigger selector, %1: Exposure Frame Start, %2: Exposure Frame duration, %3: Frame Burst Start, %4: Frame Burst duration (this parameter was called trigger_mode2 in a previous version of this plugin).").arg(XI_TRG_SEL_FRAME_START).arg(XI_TRG_SEL_EXPOSURE_ACTIVE).arg(XI_TRG_SEL_FRAME_BURST_START).arg(XI_TRG_SEL_FRAME_BURST_ACTIVE).toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("frame_burst_count", ito::ParamBase::Int, 0, 3, 1, tr("Define and set the number of frames in a burst (trigger_mode2 should be set to XI_TRG_SEL_FRAME_BURST_START.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("buffers_queue_size", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 3, 1, tr("Number of buffers in the queue.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+#ifndef USE_OLD_API
+    paramVal = ito::Param("timing_mode", ito::ParamBase::Int, XI_ACQ_TIMING_MODE_FREE_RUN, XI_ACQ_TIMING_MODE_FRAME_RATE, XI_ACQ_TIMING_MODE_FREE_RUN, tr("Acquisition timing: %1: free run (default), %2: by frame rate.").arg(XI_ACQ_TIMING_MODE_FREE_RUN).arg(XI_ACQ_TIMING_MODE_FRAME_RATE).toLatin1().data());
+#else
+    paramVal = ito::Param("timing_mode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 0, 0 , tr("Acquisition timing: not available due to old Ximea API.").toLatin1().data());
+#endif
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("framerate", ito::ParamBase::Double, 0.0, 1000.0, 60.0, tr("Framerate of image acquisition (in fps). This parameter reflects the current framerate. If timing_mode is in XI_ACQ_TIMING_MODE_FREE_RUN (%1, default), the framerate is readonly and fixed to the highest possible rate. For xiQ cameras only, timing_mode can be set to XI_ACQ_TIMING_MODE_FRAME_RATE (%2) and the framerate is adjustable to a fixed value.").arg(XI_ACQ_TIMING_MODE_FREE_RUN).arg(XI_ACQ_TIMING_MODE_FRAME_RATE).toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("cam_number", ito::ParamBase::Int | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Index of the camera device.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("bad_pixel", ito::ParamBase::Int, 0, 1, 1, tr("Enable bad pixel correction.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gpo_mode", ito::ParamBase::IntArray, NULL, tr("Set the output pin modes for all available gpo pins. This is a list whose lengths corresponds to the number of available pins. Use gpo_mode[i] to access the i-th pin.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gpi_mode", ito::ParamBase::IntArray, NULL, tr("Set the input pin modes for all available gpi pins. This is a list whose lengths corresponds to the number of available pins. Use gpo_mode[i] to access the i-th pin. %1: Off, %2: trigger, %3: external signal input (not implemented by Ximea api)").arg(XI_GPI_OFF).arg(XI_GPI_TRIGGER).arg(XI_GPI_EXT_EVENT).toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("gpi_level", ito::ParamBase::IntArray | ito::ParamBase::Readonly, NULL, tr("Current level of all available gpi pins. (0: low level, 1: high level)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("serial_number", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Serial number of device.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("sensor_type", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Sensor type of the attached camera").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("device_type", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Device type (1394, USB2.0, CURRERA, ...)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("api_version", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("XIMEA API version").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("device_driver", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Current device driver version").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     //now create dock widget for this plugin
-    DockWidgetXimea *XI = new DockWidgetXimea(m_params, getID());
-
-    connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), XI, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-    connect(XI, SIGNAL(OffsetPropertiesChanged(double)), this, SLOT(OffsetPropertiesChanged(double)));
-    connect(XI, SIGNAL(GainPropertiesChanged(double)), this, SLOT(GainPropertiesChanged(double)));
-    connect(XI, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
+        //now create dock widget for this plugin
+    DockWidgetXimea *m_dockWidget = new DockWidgetXimea(getID(), this);
 
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
-    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, XI);
+    createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, m_dockWidget);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 Ximea::~Ximea()
 {
-    m_params.clear();
-// Already freed in Ximea::close
-//    if(!Initnum && ximeaLib)
-//    {
-//#if linux
-//        dlclose(ximeaLib);
-//#else
-//        FreeLibrary(ximeaLib);
-//#endif
-//        ximeaLib = NULL;
-//    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal Ximea::getErrStr(const int error, const bool asWarning)
+ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
-    ito::tRetValue type = asWarning ? ito::retWarning : ito::retError;
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+    int bandwidthLimit = paramsOpt->at(2).getVal<int>(); //0 auto bandwidth calculation
+    int icam_number = (*paramsOpt)[0].getVal<int>();
+    XI_RETURN ret;
+
+    QFile paramFile;
+
+    // Load parameterlist from XML-file
+    int loadPrev = (*paramsOpt)[1].getVal<int>();
+
+    DWORD pSize = sizeof(int);
+    DWORD intSize = sizeof(int);
+    DWORD floatSize = sizeof(float);
+    DWORD charSize = sizeof(char);
+    XI_PRM_TYPE intType = xiTypeInteger;
+    XI_PRM_TYPE strType = xiTypeString;
+    XI_PRM_TYPE floatType = xiTypeFloat;
+    ParamMapIterator it;
+    retValue += LoadLib();
+
+    if (!retValue.containsError())
+    {
+    
+        m_params["cam_number"].getVal<int>(icam_number);
+        Initnum++;  // so we have a new running instance of this grabber (or not)
+
+        if( ++InitList[icam_number] > 1)    // It does not matter if the rest works or not. The close command will fix this anyway
+        {
+            retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized. Try another camera number.").toLatin1().data());
+        }
+        else
+        {
+            ret = pxiOpenDevice(icam_number, &m_handle);
+            if (!m_handle || ret != XI_OK)
+            {
+                m_handle = NULL;
+                retValue += checkError(ret, "pxiOpenDevice", QString::number(icam_number));
+            }
+            else
+            {
+                m_params["cam_number"].setVal<int>(icam_number);
+
+                char strBuf[1024];               
+                DWORD strBufSize = 1024 * sizeof(char);    
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_NAME, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_NAME);
+                if (!retValue.containsError())
+                {
+                    m_params["sensor_type"].setVal<char*>(strBuf); 
+                }
+
+                int serial_number;
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serial_number, &pSize, &intType), "get XI_PRM_DEVICE_SN");
+                if (!retValue.containsError())
+                {
+                    QString serial_numberHex = QString::number(serial_number, 16);
+                    m_params["serial_number"].setVal<char*>(serial_numberHex.toLatin1().data()); 
+                    m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serial_numberHex);
+                }
+
+                strBufSize = 1024 * sizeof(char);    
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_TYPE, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DEVICE_TYPE);
+                if (!retValue.containsError())
+                {
+                    m_params["device_type"].setVal<char*>(strBuf);
+                }
+                
+                strBufSize = 1024 * sizeof(char);    
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_API_VERSION, &strBuf, &strBufSize, &strType), "get: " XI_PRM_API_VERSION);
+                if (!retValue.containsError())
+                {
+                    m_params["api_version"].setVal<char*>(strBuf);
+                }
+                
+                strBufSize = 1024 * sizeof(char);    
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DRV_VERSION, &strBuf, &strBufSize, &strType), "get: " XI_PRM_DRV_VERSION);
+                if (!retValue.containsError())
+                {
+                    m_params["device_driver"].setVal<char*>(strBuf);
+                }
+
+#if defined XI_PRM_DEVICE_MODEL_ID
+                int device_model_id = 0;
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_DEVICE_MODEL_ID, &device_model_id, &pSize, &intType), "get: " XI_PRM_DEVICE_MODEL_ID);
+                if (!retValue.containsError())
+                {
+                    //given by file m3Identify.h
+                    if ((device_model_id >= 0x1 && device_model_id <= 0x18) || device_model_id == 0x116 || \
+                        device_model_id == 0x21 || device_model_id == 0x75 || device_model_id == 0x79  || device_model_id == 0x80  || device_model_id == 0x81 \
+                         || device_model_id == 0x83  || device_model_id == 0x84  || device_model_id == 0x85  || device_model_id == 0x86 \
+                          || device_model_id == 0x90 || device_model_id == 0x91 || device_model_id == 0x92 || device_model_id == 0x93 \
+                           || device_model_id == 0x96 || (device_model_id >= 0x100 && device_model_id <= 0x108) || device_model_id == 0x111 || device_model_id == 0x114 \
+                            || device_model_id == 0x115)
+                    {
+                        m_family = familyMR;
+                    }
+                    else if (device_model_id == 0x142 /*MODEL_ID_CAL_Simulator*/)
+                    {
+                        m_family = familyUnknown;
+                    }
+                    else if (device_model_id >= 0x148 && device_model_id <= 0x151)
+                    {
+                        m_family = familyMT;
+                    }
+                    else if (device_model_id >= 0x132 && device_model_id <= 0x133)
+                    {
+                        m_family = familyCB;
+                    }
+                    else if ((device_model_id >= 0x120 && device_model_id <= 0x140))
+                    {
+                        //0x132, 0x133 are familyCB
+                        m_family = familyMD;
+                    }
+                    else if (device_model_id == 0x110 || device_model_id == 0x112 || device_model_id == 0x113 || device_model_id == 0x82 || device_model_id == 0x87 || device_model_id == 0x88)
+                    {
+                        m_family = familyMH;
+                    }
+                    else if ((device_model_id >= 0x25 && device_model_id <= 0x35) || device_model_id == 0x74)
+                    {
+                        m_family = familyCURRERA;
+                    }
+                    else if ((device_model_id >= 0x20 && device_model_id <= 0x24) || device_model_id == 0x62 || device_model_id == 0x117  || device_model_id == 0x118)
+                    {
+                        //0x21 is familyMR, 0x62 is familyMU
+                        m_family = familyMU;
+                    }
+                    else if ((device_model_id >= 0x49 && device_model_id <= 0x78) || device_model_id == 0x134 || device_model_id == 0x135  || device_model_id == 0x136 || (device_model_id >= 0x141 && device_model_id <= 0x147))
+                    {
+                        //0x74 is currera, 0x75 is mr, 0x79 is mr, 0x142 is simulator
+                        m_family = familyMQ;
+                    }
+                }
+#endif   
+            }
+
+            if (!retValue.containsError())
+            {
+                //get available bandwidth in Mb/sec
+                //int availableBandwidth;
+                //retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_AVAILABLE_BANDWIDTH, &availableBandwidth, &pSize, &intType), "XI_PRM_AVAILABLE_BANDWIDTH", QString::number(availableBandwidth));
+                //std::cout << "available bandwidth: " << availableBandwidth << std::endl;
+#ifndef USE_OLD_API
+                if (bandwidthLimit > 0) //manually set bandwidthLimit
+                {
+                    retValue += setXimeaParam(XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
+                    retValue += setXimeaParam(XI_PRM_LIMIT_BANDWIDTH, bandwidthLimit);
+                }
+#endif
+            }
+
+            // Load parameterlist from XML-file
+            if(loadPrev && !retValue.containsError())
+            {
+                QMap<QString, ito::Param> paramListXML;
+                if (!retValue.containsError())
+                {
+                    retValue += ito::generateAutoSaveParamFile(this->getBasePlugin()->getFilename(), paramFile);
+                }
+
+                // Read parameter list from file to paramListXML
+                if (!retValue.containsError())
+                {
+                    retValue += ito::loadXML2QLIST(&paramListXML, QString::number(icam_number), paramFile);
+                }
+
+                // Merge parameter list from file to paramListXML with current mparams
+                if (!retValue.containsError())
+                {
+
+                }
+                paramListXML.clear();
+            }
+
+            if (!retValue.containsError())
+            {
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_GPO_SELECTOR XI_PRM_INFO_MAX, &m_numGPOPins, &pSize, &intType), "get XI_PRM_GPO_SELECTOR:max");
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_GPI_SELECTOR XI_PRM_INFO_MAX, &m_numGPIPins, &pSize, &intType), "get XI_PRM_GPI_SELECTOR:max");
+                int dummy[] = {0,0,0,0,0,0,0,0};
+                m_params["gpi_level"].setMeta(new ito::IntArrayMeta(0,1,1,m_numGPIPins,m_numGPIPins,1), true);
+                m_params["gpi_level"].setVal<int*>(dummy, m_numGPIPins);
+                m_params["gpi_mode"].setMeta(new ito::IntArrayMeta(0,1,1,m_numGPIPins,m_numGPIPins,1), true);
+                m_params["gpi_mode"].setVal<int*>(dummy, m_numGPIPins);
+                m_params["gpo_mode"].setMeta(new ito::IntArrayMeta(0,1,1,m_numGPOPins,m_numGPIPins,1), true);
+                m_params["gpo_mode"].setVal<int*>(dummy, m_numGPOPins);
+
+                retValue += readCameraIntParam(XI_PRM_HDR, "hdr_enable", false);
+                retValue += readCameraIntParam(XI_PRM_HDR_T1, "hdr_it1", false);
+                retValue += readCameraIntParam(XI_PRM_HDR_T2, "hdr_it2", false);
+                retValue += readCameraIntParam(XI_PRM_KNEEPOINT1, "hdr_knee1", false);
+                retValue += readCameraIntParam(XI_PRM_KNEEPOINT2, "hdr_knee2", false);
+                retValue += readCameraIntParam(XI_PRM_TRG_SOURCE, "trigger_mode", true);
+                retValue += readCameraIntParam(XI_PRM_ACQ_FRAME_BURST_COUNT, "frame_burst_count", false);
+                m_numFrameBurst = m_params["frame_burst_count"].getVal<int>();
+                retValue += readCameraIntParam(XI_PRM_BUFFERS_QUEUE_SIZE, "buffers_queue_size", false);
+
+#ifdef XI_PRM_ACQ_TIMING_MODE
+                retValue += readCameraIntParam(XI_PRM_ACQ_TIMING_MODE, "timing_mode", false);
+
+                if (m_family == familyMQ || m_family == familyUnknown)
+                {
+                    //xiQ cameras may support the fixed-framerate feature, for unknown cameras (or newer cameras) we let the camera decide if it is possible (via the max value of timing_mode)
+                }
+                else
+                {
+                    //usually even not all xiQ cameras support fixed framerates, however we don't want to implement a fix restriction table here
+                    m_params["timing_mode"].setVal<int>(XI_ACQ_TIMING_MODE_FREE_RUN);
+                    m_params["timing_mode"].setMeta(new ito::IntMeta(XI_ACQ_TIMING_MODE_FREE_RUN, XI_ACQ_TIMING_MODE_FREE_RUN), true);
+                    m_params["timing_mode"].setFlags(ito::ParamBase::Readonly);
+                }
+#else
+                m_params["timing_mode"].setFlags(ito::ParamBase::Readonly);
+#endif
+                //check the min-max-bitdepth by changing the format and reading the data_bit_depth value
+                int output_bit_depth = 0;
+                int bitppix = XI_MONO8;
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, pSize, intType), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bitppix));
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
+                if (!retValue.containsError())
+                {
+                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMin(output_bit_depth);
+                }
+
+                bitppix = XI_MONO16;
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, pSize, intType), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bitppix));
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
+                if (!retValue.containsError())
+                {
+                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(output_bit_depth);
+                }
+
+                // reset timestamp for MQ and MD cameras
+                if (m_family == familyMD || m_family == familyMQ)
+                {
+#if defined XI_TS_RST_SRC_SW && defined XI_TS_RST_ARM_ONCE
+                    // reset camera timestamp
+                    int val = XI_TS_RST_SRC_SW;
+                    pxiSetParam(m_handle, XI_PRM_TS_RST_SOURCE, &val, pSize, intType);
+                    val = XI_TS_RST_ARM_ONCE;
+                    pxiSetParam(m_handle, XI_PRM_TS_RST_MODE, &val, pSize, intType);
+#endif
+                }
+                
+                int badpix = 0;// bad pixel correction default = 0
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_BPC, &badpix, pSize, intType), "set XI_PRM_BPC", QString::number(badpix));
+                retValue += readCameraIntParam(XI_PRM_BPC, "bad_pixel", false);
+            }
+
+            if (!retValue.containsError())
+            {
+                int val = XI_BP_SAFE;
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_BUFFER_POLICY, &val, pSize, intType), "set XI_PRM_BUFFER_POLICY", QString::number(val));
+            }
+
+            int device_exist = 0;
+
+            if (m_handle)
+            {
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_IS_DEVICE_EXIST, &device_exist, &pSize, &intType), "get XI_PRM_IS_DEVICE_EXIST");
+            }
+            if (device_exist != 1)
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("Camera is not connected or does not work properly!").toLatin1().data());
+            }
+            else
+            {
+                retValue += synchronizeCameraSettings();
+            }
+
+            if (!retValue.containsError())
+            {
+                retValue += checkData();
+            }
+        }
+
+        if (retValue.containsError())
+        {
+            if(Initnum <= 1) //this instance already incremented Initnum in any cases, it will be decremented in case of error in the close method
+            {
+                if (ximeaLib)
+                {
+    #if linux
+                    dlclose(ximeaLib);
+    #else
+                    FreeLibrary(ximeaLib);
+    #endif
+                    ximeaLib = NULL;
+                }
+            }
+            else
+            {
+                //std::cerr << "DLLs not unloaded due to further running grabber instances\n" << std::endl;
+            }
+        }
+        else
+        {
+            m_saveParamsOnClose = true;
+        }
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    setInitialized(true); //init method has been finished (independent on retval)
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal Ximea::close(ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retValue(ito::retOk);
+
+    if (this->m_handle == NULL)
+    {
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Camera handle deleted before closing procedure").toLatin1().data());
+    }
+    else
+    {
+        setGrabberStarted(1);
+        retValue += this->stopDevice(0);
+        Sleep(50);
+
+        retValue += checkError(pxiCloseDevice(m_handle), "pxiCloseDevice");
+        m_handle = NULL;
+    }
+
+    int nr = m_params["cam_number"].getVal<int>();
+    InitList[nr] = 0;
+    Initnum--; // so we closed a further instance of this grabber
+
+    if(!Initnum)
+    {
+        if (ximeaLib)
+        {
+#if linux
+            dlclose(ximeaLib);
+#else
+            FreeLibrary(ximeaLib);
+#endif
+            ximeaLib = NULL;
+        }
+    }
+    else
+    {
+        retValue += ito::RetVal(ito::retWarning, 0, tr("DLLs not unloaded due to still living instances of Ximea-Cams").toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal Ximea::getErrStr(const int error, const QString &command, const QString &value)
+{
+    return checkError(error, command, value);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal Ximea::checkError(const XI_RETURN &error, const QString &command, const QString &value /*= QString()*/)
+{
+    if (error == XI_OK)
+    {
+        return ito::retOk;
+    }
+
+    QString msg = "";
+
     switch (error)
     {
         case 0:
@@ -274,212 +646,225 @@ ito::RetVal Ximea::getErrStr(const int error, const bool asWarning)
         break;
         //errors from m3Api.h
         case 1:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid handle").toLatin1().data());
+            msg = "Invalid handle during sending";
         break;
         case 2:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Register read error").toLatin1().data());
+            msg = "Register read error";
         break;
         case 3:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Register write error").toLatin1().data());
+            msg = "Register write error";
         break;
         case 4:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Freeing resources error").toLatin1().data());
+            msg = "Freeing resources error";
         break;
         case 5:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Freeing channel error").toLatin1().data());
+            msg = "Freeing channel error";
         break;
         case 6:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Freeing bandwith error").toLatin1().data());
+            msg = "Freeing bandwith error";
         break;
         case 7:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Read block error").toLatin1().data());
+            msg = "Read block error";
         break;
         case 8:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Write block error").toLatin1().data());
+            msg = "Write block error";
         break;
         case 9:
-            return ito::RetVal(type, error, tr("Ximea (m3api): No image").toLatin1().data());
+            msg = "No image";
         break;
         case 10:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Timeout").toLatin1().data());
+            msg = "Timeout";
         break;
         case 11:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid arguments supplied").toLatin1().data());
+            msg = "Invalid arguments supplied";
         break;
         case 12:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Not supported").toLatin1().data());
+            msg = "Not supported";
         break;
         case 13:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Attach buffers error").toLatin1().data());
+            msg = "Attach buffers error";
         break;
         case 14:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Overlapped result").toLatin1().data());
+            msg = "Overlapped result";
         break;
         case 15:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Memory allocation error").toLatin1().data());
+            msg = "Memory allocation error";
         break;
         case 16:
-            return ito::RetVal(type, error, tr("Ximea (m3api): DLL context is NULL").toLatin1().data());
+            msg = "DLL context is NULL";
         break;
         case 17:
-            return ito::RetVal(type, error, tr("Ximea (m3api): DLL context is non zero").toLatin1().data());
+            msg = "DLL context is non zero";
         break;
         case 18:
-            return ito::RetVal(type, error, tr("Ximea (m3api): DLL context exists").toLatin1().data());
+            msg = "DLL context exists";
         break;
         case 19:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Too many devices connected").toLatin1().data());
+            msg = "Too many devices connected";
         break;
         case 20:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Camera context error").toLatin1().data());
+            msg = "Camera context error";
         break;
         case 21:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Unknown hardware").toLatin1().data());
+            msg = "Unknown hardware";
         break;
         case 22:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid TM file").toLatin1().data());
+            msg = "Invalid TM file";
         break;
         case 23:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid TM tag").toLatin1().data());
+            msg = "Invalid TM tag";
         break;
         case 24:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Incomplete TM").toLatin1().data());
+            msg = "Incomplete TM";
         break;
         case 25:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Bus reset error").toLatin1().data());
+            msg = "Bus reset error";
         break;
         case 26:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Not implemented").toLatin1().data());
+            msg = "Not implemented";
         break;
         case 27:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Shading too bright").toLatin1().data());
+            msg = "Shading too bright";
         break;
         case 28:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Shading too dark").toLatin1().data());
+            msg = "Shading too dark";
         break;
         case 29:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Gain is too low").toLatin1().data());
+            msg = "Gain is too low";
         break;
         case 30:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid bad pixel list").toLatin1().data());
+            msg = "Invalid bad pixel list";
         break;
         case 31:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Bad pixel list realloc error").toLatin1().data());
+            msg = "Bad pixel list realloc error";
         break;
         case 32:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid pixel list").toLatin1().data());
+            msg = "Invalid pixel list";
         break;
         case 33:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid Flash File System").toLatin1().data());
+            msg = "Invalid Flash File System";
         break;
         case 34:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid profile").toLatin1().data());
+            msg = "Invalid profile";
         break;
         case 35:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid bad pixel list").toLatin1().data());
+            msg = "Invalid bad pixel list";
         break;
         case 36:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid buffer").toLatin1().data());
+            msg = "Invalid buffer";
         break;
         case 38:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Invalid data").toLatin1().data());
+            msg = "Invalid data";
         break;
         case 39:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Timing generator is busy").toLatin1().data());
+            msg = "Timing generator is busy";
         break;
         case 40:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Wrong operation open/write/read/close").toLatin1().data());
+            msg = "Wrong operation open/write/read/close";
         break;
         case 41:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Acquisition already started").toLatin1().data());
+            msg = "Acquisition already started";
         break;
         case 42:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Old version of device driver installed to the system").toLatin1().data());
+            msg = "Old version of device driver installed to the system";
         break;
         case 43:
-            return ito::RetVal(type, error, tr("Ximea (m3api): To get error code please call GetLastError function").toLatin1().data());
+            msg = "To get error code please call GetLastError function";
         break;
         case 44:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Data can't be processed").toLatin1().data());
+            msg = "Data can't be processed";
         break;
         case 45:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Error occured and acquisition has been stoped or didn't start").toLatin1().data());
+            msg = "Error occured and acquisition has been stoped or didn't start";
         break;
         case 46:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Acquisition has been stoped with error").toLatin1().data());
+            msg = "Acquisition has been stoped with error";
         break;
         case 47:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Input ICC profile missed or corrupted").toLatin1().data());
+            msg = "Input ICC profile missed or corrupted";
         break;
         case 48:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Output ICC profile missed or corrupted").toLatin1().data());
+            msg = "Output ICC profile missed or corrupted";
         break;
         case 49:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Device not ready to operate").toLatin1().data());
+            msg = "Device not ready to operate";
         break;
         case 50:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Shading too contrast").toLatin1().data());
+            msg = "Shading too contrast";
         break;
         case 51:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Module already initialized").toLatin1().data());
+            msg = "Module already initialized";
         break;
         case 52:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Application doesn't enough privileges(one or more applications opened)").toLatin1().data());
+            msg = "Application doesn't enough privileges(one or more applications opened)";
         break;
         case 53:
-            return ito::RetVal(type, error, tr("Ximea (m3api): installed driver incompatible with current software").toLatin1().data());
+            msg = "installed driver incompatible with current software";
         break;
         case 54:
-            return ito::RetVal(type, error, tr("Ximea (m3api): TM file was not loaded successfully from resources").toLatin1().data());
+            msg = "TM file was not loaded successfully from resources";
         break;
         case 55:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Device has been reseted, abnormal initial state").toLatin1().data());
+            msg = "Device has been reseted, abnormal initial state";
         break;
         case 56:
-            return ito::RetVal(type, error, tr("Ximea (m3api): No Devices found").toLatin1().data());
+            msg = "No Devices found";
         break;
         case 57:
-            return ito::RetVal(type, error, tr("Ximea (m3api): Resource (device) or function  locked by mutex").toLatin1().data());
+            msg = "Resource (device) or function  locked by mutex";
         break;
 
         //errors from xiApi.h
         case 100:
-            return ito::RetVal(type, error, tr("Ximea (m3api): unknown parameter").toLatin1().data());
+            msg = "unknown parameter";
         break;
         case 101:
-            return ito::RetVal(type, error, tr("Ximea (m3api): wrong parameter value").toLatin1().data());
+            msg = "wrong parameter value";
         break;
         case 103:
-            return ito::RetVal(type, error, tr("Ximea (m3api): wrong parameter type").toLatin1().data());
+            msg = "wrong parameter type";
         break;
         case 104:
-            return ito::RetVal(type, error, tr("Ximea (m3api): wrong parameter size").toLatin1().data());
+            msg = "wrong parameter size";
         break;
         case 105:
-            return ito::RetVal(type, error, tr("Ximea (m3api): input buffer too small").toLatin1().data());
+            msg = "input buffer too small";
         break;
         case 106:
-            return ito::RetVal(type, error, tr("Ximea (m3api): parameter info not supported").toLatin1().data());
+            msg = "parameter info not supported";
         break;
         case 107:
-            return ito::RetVal(type, error, tr("Ximea (m3api): parameter info not supported").toLatin1().data());
+            msg = "parameter info not supported";
         break;
         case 108:
-            return ito::RetVal(type, error, tr("Ximea (m3api): data format not supported").toLatin1().data());
+            msg = "data format not supported";
         break;
         case 109:
-            return ito::RetVal(type, error, tr("Ximea (m3api): read only parameter").toLatin1().data());
+            msg = "read only parameter";
         break;
         case 110:
-            return ito::RetVal(type, error, tr("Ximea (m3api): no devices found").toLatin1().data());
+            msg = "no devices found";
         break;
         case 111:
-            return ito::RetVal(type, error, tr("Ximea (m3api): this camera does not support currently available bandwidth").toLatin1().data());
+            msg = "this camera does not support currently available bandwidth";
         break;
         default:
-            return ito::RetVal(type, error, tr("Ximea (m3api): unknown error code").toLatin1().data());
+            msg = "unknown error code";
         break;
     }
+
+    QString msg_final;
+    
+    if (value != "")
+    {
+        msg_final = QString("ximea m3api error '%1' (%2). Value: %3").arg(msg, command, value);
+    }
+    else
+    {
+        msg_final = QString("ximea m3api error '%1' (%2)").arg(msg, command);
+    }
+
+    return ito::RetVal(ito::retError, error, msg_final.toLatin1().data());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -499,9 +884,9 @@ ito::RetVal Ximea::LoadLib(void)
 #else
 #if _WIN64
 #if UNICODE
-        ximeaLib = LoadLibrary(L"./lib/m3apiX64.dll");
+        ximeaLib = LoadLibrary(L"m3apiX64.dll"); //L"./lib/m3apiX64.dll");
 #else
-        ximeaLib = LoadLibrary("./lib/m3apiX64.dll");
+        ximeaLib = LoadLibrary("m3apiX64.dll"); //"./lib/m3apiX64.dll");
 #endif
         //ximeaLib = LoadLibrary("./plugins/Ximea/m3apiX64.dll");
         if (!ximeaLib)
@@ -546,26 +931,24 @@ ito::RetVal Ximea::LoadLib(void)
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) dlsym(ximeaLib, "xiGetParam")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 
-#ifdef USE_SHADING
         if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) dlsym(ximeaLib, "mmUpdateFrameShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
 
         if ((pCalculateShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) dlsym(ximeaLib, "mmCalculateShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());
 
-        if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) dlsym(ximeaLib, "mmCalculateShadingRaw")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());
+        /*if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) dlsym(ximeaLib, "mmCalculateShadingRaw")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());*/
         
 
-        if ((pInitializeShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) dlsym(ximeaLib, "mmInitializeShading")) == NULL)
+        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) dlsym(ximeaLib, "mmInitializeShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 
-        if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) dlsym(ximeaLib, "mmSetShadingRaw")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());
+        /*if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) dlsym(ximeaLib, "mmSetShadingRaw")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());*/
 
         if ((pProcessFrame = (MM40_RETURN(*)(HANDLE)) dlsym(ximeaLib, "mmProcessFrame")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());
-#endif // USE_SHADING
 #else
         if ((pxiGetNumberDevices = (XI_RETURN(*)(PDWORD)) GetProcAddress(ximeaLib, "xiGetNumberDevices")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetNumberDevices").toLatin1().data());
@@ -591,7 +974,6 @@ ito::RetVal Ximea::LoadLib(void)
         if ((pxiGetParam = (XI_RETURN(*)(HANDLE,const char*,void*,DWORD*,XI_PRM_TYPE*)) GetProcAddress(ximeaLib, "xiGetParam")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function xiGetParam").toLatin1().data());
 
-#ifdef USE_SHADING
         if ((pUpdateFrameShading = (MM40_RETURN(*)(HANDLE,HANDLE,LPMMSHADING)) GetProcAddress(ximeaLib, "mmUpdateFrameShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmUpdateFrameShading").toLatin1().data());
 
@@ -599,18 +981,18 @@ ito::RetVal Ximea::LoadLib(void)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());
 
 
-        if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShadingRaw")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShadingRaw").toLatin1().data());
+        /*if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShadingRaw")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShadingRaw").toLatin1().data());*/
 
-        if ((pInitializeShading = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) GetProcAddress(ximeaLib, "mmInitializeShading")) == NULL)
+        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) GetProcAddress(ximeaLib, "mmInitializeShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 
-        if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) GetProcAddress(ximeaLib, "mmSetShadingRaw")) == NULL)
-            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());
+        /*if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) GetProcAddress(ximeaLib, "mmSetShadingRaw")) == NULL)
+            retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmSetShadingRaw").toLatin1().data());*/
 
         if ((pProcessFrame = (MM40_RETURN(*)(HANDLE)) GetProcAddress(ximeaLib, "mmProcessFrame")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmProcessFrame").toLatin1().data());
-#endif // USE_SHADING        
+        
 #endif
     }
 
@@ -647,24 +1029,30 @@ ito::RetVal Ximea::LoadLib(void)
 ito::RetVal Ximea::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
+    QMap<QString,ito::Param>::iterator it;
 
-    if(key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-        if (paramIt != m_params.constEnd())
+        if (key == "gpi_level")
         {
-            *val = paramIt.value();
+            retValue += synchronizeCameraSettings(sGpiGpo);
         }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
-        }
+
+        *val = it.value();
     }
 
     if (waitCond)
@@ -673,7 +1061,7 @@ ito::RetVal Ximea::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore 
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -689,477 +1077,382 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    QMap<QString, ito::Param>::iterator it;
 
-    int maxxsize = 0;
-    int maxysize = 0;
-    int x0old = m_params["x0"].getVal<int>();
-    int y0old = m_params["y0"].getVal<int>();
-    int x1old = m_params["x1"].getVal<int>();
-    int y1old = m_params["y1"].getVal<int>();
+    XI_PRM_TYPE intType = xiTypeInteger;
+    XI_PRM_TYPE floatType = xiTypeFloat;
+    DWORD intSize = sizeof(int);
+    DWORD floatSize = sizeof(float);
 
     int running = 0;
-    int bin = 1;
-    float gain = 0.0f, sharpness = 0.0f, gamma = 0.0f;
-    int bitppix = 10;
-    int bitppix_old = m_params["bpp"].getVal<int>();
-    int shift = 0;
-
-/*
-    int trigger_mode = XI_TRG_OFF;
-    int trigger_mode2 = XI_TRG_SEL_EXPOSURE_ACTIVE;
-    int timing_mode = XI_ACQ_TIMING_MODE_FRAME_RATE;
-*/
-    int trigger_mode = m_params["trigger_mode"].getVal<int>();
-    int trigger_mode2 = m_params["trigger_mode2"].getVal<int>();
-
-#ifndef USE_OLD_API
-    int timing_mode = m_params["timing_mode"].getVal<int>();
-#endif
-
-    float frameRate = m_params["framerate"].getVal<double>();
+    
     //int trigger_mode = XI_TRG_OUT;    //in new api trg_out does not exist anymore, so we just use free run
-    int integration_time = 2000;
-    XI_RETURN ret;
 
-    QString key = val->getName();
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
-    if(key == "")    // Check if the key is valied
+    if(!retValue.containsError())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
-    else    // key valid so go on
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);    // try to find the parameter in the parameter list
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
+    }
 
-        if (paramIt != m_params.end()) // Okay the camera has this parameter so go on
+    if(!retValue.containsError())
+    {
+        if (grabberStartedCount() && key != "integration_time" && key != "gain") //gain and integration_time does not need to stop the camera
         {
+            running = grabberStartedCount();
+            setGrabberStarted(1);
+            retValue += this->stopDevice(0);
+        }
 
-            if (strcmp(paramIt.value().getName(),"integration_time") != 0)
+        if (QString::compare(key, "bpp", Qt::CaseInsensitive) == 0)
+        {
+            int bitppix = val->getVal<int>();
+            int bpp = 0; 
+            switch (val->getVal<int>())
             {
-                if (grabberStartedCount())
-                {
-                    running = grabberStartedCount();
-                    setGrabberStarted(1);
-                    retValue += this->stopDevice(0);
-                }
-                else
-                {
-                    setGrabberStarted(1);
-                    this->stopDevice(0);
-                }
+            case 8:
+                bpp = XI_MONO8;
+                break;
+            case 10:
+            case 12:
+            case 14:
+            case 16:
+                bpp = XI_MONO16;
+                break;
+            default:
+                retValue = ito::RetVal(ito::retError, 0, tr("bpp value not supported").toLatin1().data());
             }
 
-            if(paramIt->getFlags() & ito::ParamBase::Readonly)
+            if (!retValue.containsError())
             {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
-                goto end;
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bpp));
             }
-            else if(val->isNumeric() && paramIt->isNumeric())
+
+            retValue += synchronizeCameraSettings(sBpp | sExposure | sRoi);
+        }
+        else if (QString::compare(key, "binning", Qt::CaseInsensitive) == 0)
+        {
+            int bin = val->getVal<int>(); //requested binning value from user
+            if(bin != 101 && bin != 202 && bin != 404)
             {
-                double curval = val->getVal<double>();
-                if( curval > paramIt->getMax())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else if(curval < paramIt->getMin())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else
-                {
-                    paramIt.value().setVal<double>(curval);
-                }
-            }
-            else if (paramIt->getType() == val->getType())
-            {
-                retValue += paramIt.value().copyValueFrom( &(*val) );
+                retValue = ito::RetVal(ito::retError, 0, tr("Binning value must be 101 (1x1), 202 (2x2) or 404 (4x4) (depending on supported binning values)").toLatin1().data());
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
-                goto end;
+                bin = (bin % 100); //101 -> 1, 202 -> 2, 404 -> 4         
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING, &bin, sizeof(int), xiTypeInteger), "set XI_PRM_DOWNSAMPLING", QString::number(bin));
             }
 
-            Sleep(5);
+            retValue += synchronizeCameraSettings(sBinning | sRoi | sExposure);
+        }
+        else if (QString::compare(key, "binning_type", Qt::CaseInsensitive) == 0)
+        {
+            int type = val->getVal<int>();
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING, &type, sizeof(int), xiTypeInteger), "set XI_PRM_DOWNSAMPLING", QString::number(type));
+            retValue += readCameraIntParam(XI_PRM_DOWNSAMPLING_TYPE, "binning_type", false);
+        }
+        else if (QString::compare(key, "bad_pixel", Qt::CaseInsensitive) == 0)
+        {
+            int enable = val->getVal<int>();            
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_BPC, &enable, sizeof(int), xiTypeInteger), "set XI_PRM_BPC", QString::number(enable));
+            retValue += readCameraIntParam(XI_PRM_BPC, "bad_pixel", false);
+        }
+        else if (QString::compare(key, "gpo_mode", Qt::CaseInsensitive) == 0)
+        {
+            const int *newvals = val->getVal<int*>();
+            const int *vals = it->getVal<int*>();
 
-            integration_time = (int)(m_params["integration_time"].getVal<double>() * 1000000);
-            trigger_mode = m_params["trigger_mode"].getVal<int>();
-
-            bin = m_params["binning"].getVal<int>();
-            gain = (int)(m_params["gain"].getVal<double>() * 10 + 0.5);
-
-            gamma = (float)m_params["gamma"].getVal<double>();
-            sharpness = (float)m_params["sharpness"].getVal<double>();
-
-            bitppix = (int) m_params["bpp"].getVal<int>();
-
-            if (strcmp(paramIt.value().getName(),"bpp") == 0)
+            for (int i = 1; i <= m_numGPOPins; ++i)
             {
-                if ((bitppix != 8) && (bitppix != 10))
+                if (newvals[i-1] != vals[i-1])
                 {
-                    m_params["bpp"].setVal<int>(bitppix_old);
-                    retValue += ito::RetVal(ito::retError, 0, tr("Tried to set invalid Bits per Pixe").toLatin1().data());
-                    return retValue;
-                }
-                if (bitppix == 8)
-                {
-                    int bpp = XI_RAW8;
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-                else
-                {
-                    int bpp = XI_RAW16;
-                    //int bpp = XI_MONO16;
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
+                    int mode = newvals[i-1];
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_GPO_SELECTOR, &i, sizeof(int), xiTypeInteger), "set XI_PRM_GPO_SELECTOR", QString::number(i));
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_GPO_MODE, &mode, sizeof(int), xiTypeInteger), "set XI_PRM_GPO_MODE", QString::number(mode));
                 }
             }
-            else if (strcmp(paramIt.value().getName(),"binning") == 0)
+
+            retValue += synchronizeCameraSettings(sGpiGpo);
+        }
+        else if (QString::compare(key, "gpi_mode", Qt::CaseInsensitive) == 0)
+        {
+            const int *newvals = val->getVal<int*>();
+            const int *vals = it->getVal<int*>();
+
+            for (int i = 1; i <= m_numGPIPins; ++i)
             {
-                int curxsize;
-                int curysize;
-                int xbin = (int)(bin / 100);
-                int ybin = bin - xbin * 100;
-                if(xbin != ybin)
+                if (newvals[i-1] != vals[i-1])
                 {
-                    retValue = ito::RetVal(ito::retWarning, 0, tr("Set binning faild. Must be 101 or 202.").toLatin1().data());
-                    goto end;
-                }
-
-                if ((ret = pxiSetParam(m_handle, XI_PRM_DOWNSAMPLING, &ybin, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
-
-                DWORD pSize = sizeof(int);
-                XI_PRM_TYPE pType = xiTypeInteger;
-
-                ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &maxxsize, &pSize, &pType);
-                ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &maxysize, &pSize, &pType);
-                ret = pxiGetParam(m_handle, XI_PRM_WIDTH, &curxsize, &pSize, &pType);
-                ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &curysize, &pSize, &pType);
-
-                maxxsize = (int)(maxxsize / (xbin));
-                maxysize = (int)(maxysize / (ybin));
-
-                static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax(maxxsize);
-                static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax(maxysize);
-                //m_params["sizex"].setMax(maxxsize);
-                //m_params["sizey"].setMax(maxysize);
-                m_params["sizex"].setVal(curxsize);
-                m_params["sizey"].setVal(curysize);
-
-                m_params["x0"].setMeta( new ito::IntMeta(0,maxxsize-1), true );
-                m_params["y0"].setMeta( new ito::IntMeta(0,maxysize-1), true );
-                /*m_params["x0"].setMin(0);
-                m_params["y0"].setMin(0);
-                m_params["x0"].setMax(maxxsize-1);
-                m_params["y0"].setMax(maxysize-1);*/
-                m_params["x0"].setVal<int>(0);
-                m_params["y0"].setVal<int>(0);
-
-                m_params["x1"].setMeta( new ito::IntMeta(0,maxxsize-1), true );
-                m_params["y1"].setMeta( new ito::IntMeta(0,maxysize-1), true );
-               /* m_params["x1"].setMax(maxxsize-1);
-                m_params["y1"].setMax(maxysize-1);
-                m_params["x1"].setMin(0);
-                m_params["y1"].setMin(0);*/
-                m_params["x1"].setVal<int>(curxsize-1);
-                m_params["y1"].setVal<int>(curysize-1);
-            }
-            else if (strcmp(paramIt.value().getName(),"badPixel") == 0)
-            {
-                int enable = m_params["badPixel"].getVal<int>() > 0 ? 1 : 0;
-                int maxVal = 0;
-                int curVal = 0;
-                DWORD pSize = sizeof(int);
-                XI_PRM_TYPE pType = xiTypeInteger;
-
-                if ((ret = pxiSetParam(m_handle, XI_PRM_BPC, &enable, sizeof(int), xiTypeInteger)))
-                {
-                    retValue += getErrStr(ret);
-                }
-                if (ret = pxiGetParam(m_handle, XI_PRM_BPC, &curVal, &pSize, &pType))
-                {
-                    retValue += getErrStr(ret);
-                }
-                else
-                {
-                    m_params["badPixel"].setVal(curVal);
+                    int mode = newvals[i-1];
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_GPI_SELECTOR, &i, sizeof(int), xiTypeInteger), "set XI_PRM_GPI_SELECTOR", QString::number(i));
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_GPI_MODE, &mode, sizeof(int), xiTypeInteger), "set XI_PRM_GPI_MODE", QString::number(mode));
                 }
             }
-            else if (strcmp(paramIt.value().getName(),"gpoMode") == 0)
-            {
-                int mode = m_params["gpoMode"].getVal<int>();
-                int maxVal = 0;
-                int curVal = 0;
-                DWORD pSize = sizeof(int);
-                XI_PRM_TYPE pType = xiTypeInteger;
 
-                if ((ret = pxiSetParam(m_handle, XI_PRM_GPO_MODE, &mode, sizeof(int), xiTypeInteger)))
-                {
-                    retValue += getErrStr(ret);
-                }
-                if (ret = pxiGetParam(m_handle, XI_PRM_GPO_MODE, &curVal, &pSize, &pType))
-                {
-                    retValue += getErrStr(ret);
-                }
-                else
-                {
-                    m_params["gpoMode"].setVal(curVal);
-                }
-            }
-            else if (strcmp(paramIt.value().getName(),"gpiMode") == 0)
-            {
-                int mode = m_params["gpiMode"].getVal<int>();
-                int maxVal = 0;
-                int curVal = 0;
-                DWORD pSize = sizeof(int);
-                XI_PRM_TYPE pType = xiTypeInteger;
+            retValue += synchronizeCameraSettings(sGpiGpo);
+        }
 
-                if ((ret = pxiSetParam(m_handle, XI_PRM_GPI_MODE, &mode, sizeof(int), xiTypeInteger)))
-                {
-                    retValue += getErrStr(ret);
-                }
-                if (ret = pxiGetParam(m_handle, XI_PRM_GPI_MODE, &curVal, &pSize, &pType))
-                {
-                    retValue += getErrStr(ret);
-                }
-                else
-                {
-                    m_params["gpiMode"].setVal(curVal);
-                }
-            }
-            else if (strcmp(paramIt.value().getName(),"hdr_enable") == 0)
-            {
-                int enable = (int)m_params["hdr_enable"].getVal<int>() > 0 ? 1 : 0;
-                int intTime1 = (int)m_params["hdr_it1"].getVal<int>();
-                int intTime2 = (int)m_params["hdr_it2"].getVal<int>();
+        else if (QString::compare(key, "hdr_enable", Qt::CaseInsensitive) == 0)
+        {
+            int enable = val->getVal<int>() > 0 ? 1 : 0;
+            int intTime1 = (int)m_params["hdr_it1"].getVal<int>();
+            int intTime2 = (int)m_params["hdr_it2"].getVal<int>();
+            int knee1 = (int)m_params["hdr_knee1"].getVal<int>();
+            int knee2 = (int)m_params["hdr_knee2"].getVal<int>();
 #ifdef USE_OLD_API
-                if(enable)
-                {
-                    integration_time += integration_time / 4;
-                    //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), xiTypeInteger)))
-                    if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                    DWORD pSize = sizeof(int);
-                    XI_PRM_TYPE pType = xiTypeInteger;
-                    retValue += getErrStr(pxiGetParam(m_handle, "hdr" XI_PRM_INFO , &enable, &pSize, &pType)); 
+            if(enable)
+            {
+                integration_time += integration_time / 4;
+                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), intType)))
+                retValue += getErrStr(pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), intType), "XI_PRM_INFO", QString::number(enable));
+                retValue += getErrStr(pxiGetParam(m_handle, "hdr" XI_PRM_INFO , &enable, &intSize, &intType), "XI_PRM_INFO", QString::number(enable)); 
 
-                    //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &knee1, sizeof(int), xiTypeInteger)))
-                    //if ((ret = pxiSetParam(m_handle, "hdr_ratio" , &knee1, sizeof(int), xiTypeInteger)))
-                    //{
-                    //    retValue += getErrStr(ret);
-                    //}
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-                else
-                {
-                    //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), xiTypeInteger)))
-                    if ((ret = pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
+                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_RATIO , &knee1, sizeof(int), intType)))
+                //if ((ret = pxiSetParam(m_handle, "hdr_ratio" , &knee1, sizeof(int), intType)))
+                //{
+                //    retValue += getErrStr(ret, "XI_PRM_HDR_RATIO", QString::number(knee1));
+                //}
+                retValue += getErrStr(pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), intType), "XI_PRM_EXPOSURE", QString::number(integration_time));
+            }
+            else
+            {
+                //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), intType)))
+                retValue += getErrStr(pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), intType), "XI_PRM_HDR", QString::number(enable));
+                retValue += getErrStr(pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), intType), "XI_PRM_EXPOSURE", QString::number(integration_time));
+            }
 
-#else
-                int knee1 = (int)m_params["hdr_knee1"].getVal<int>();
-                int knee2 = (int)m_params["hdr_knee2"].getVal<int>();
-                
-                if(enable)
-                {
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                    else if ((ret = pxiSetParam(m_handle, XI_PRM_KNEEPOINT2 , &knee2, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                    else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T1 , &intTime1, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                    else if ((ret = pxiSetParam(m_handle, XI_PRM_HDR_T2, &intTime2, sizeof(int), xiTypeInteger)))
-                    {
-                        retValue += getErrStr(ret);
-                    }
-                }
-                if ((ret = pxiSetParam(m_handle, XI_PRM_HDR, &enable, sizeof(int), xiTypeInteger)))
-                {
-                    retValue += getErrStr(ret);
-                }
+#else  
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), intType), XI_PRM_HDR, QString::number(enable));
+            if (!retValue.containsError())
+                it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
 #endif
+        }
+        else if (QString::compare(key, "hdr_it1", Qt::CaseInsensitive) == 0)
+        {
+            int hdr1 = val->getVal<int>();
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_HDR_T1 , &hdr1, sizeof(int), intType), XI_PRM_HDR_T1, QString::number(hdr1));
+            if (!retValue.containsError())
+                it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+        }
+        else if (QString::compare(key, "hdr_it2", Qt::CaseInsensitive) == 0)
+        {
+            int hdr2 = val->getVal<int>();
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_HDR_T2 , &hdr2, sizeof(int), intType), XI_PRM_HDR_T2, QString::number(hdr2));
+            if (!retValue.containsError())
+                it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+        }
+        else if (QString::compare(key, "hdr_knee1", Qt::CaseInsensitive) == 0)
+        {
+            int knee1 = val->getVal<int>();
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_KNEEPOINT1 , &knee1, sizeof(int), intType), XI_PRM_KNEEPOINT1, QString::number(knee1));
+            if (!retValue.containsError())
+                it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+        }
+        else if (QString::compare(key, "hdr_knee2", Qt::CaseInsensitive) == 0)
+        {
+            int knee2 = val->getVal<int>();
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_KNEEPOINT2 , &knee2, sizeof(int), intType), XI_PRM_KNEEPOINT2, QString::number(knee2));
+            if (!retValue.containsError())
+                it->copyValueFrom(&(*val)); //copy value from user to m_params, represented by iterator it
+        }
+        else if (QString::compare(key, "integration_time", Qt::CaseInsensitive) == 0)
+        {
+            int integration_time = secToMusec(val->getVal<double>());   
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_EXPOSURE XI_PRMM_DIRECT_UPDATE, &integration_time, sizeof(int), xiTypeInteger), "set XI_PRM_EXPOSURE", QString("%1 ms").arg(integration_time));
+
+            retValue += synchronizeCameraSettings(sExposure | sFrameRate | sGain);
+
+        }
+        else if (QString::compare(key, "sharpness", Qt::CaseInsensitive) == 0)
+        {
+            float sharpness = (float)val->getVal<double>();
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat), "set XI_PRM_SHARPNESS", QString::number(sharpness));
+            retValue += synchronizeCameraSettings(sSharpness);
+        }
+        else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
+        {
+            float gamma = (float)val->getVal<double>();
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat), "set XI_PRM_GAMMAY", QString::number(gamma));
+            retValue += synchronizeCameraSettings(sGamma);
+        } 
+        else if (QString::compare(key, "frame_burst_count", Qt::CaseInsensitive) == 0)
+        {
+            int trigger_mode = m_params["trigger_mode"].getVal<int>();
+            int trigger_selector = m_params["trigger_selector"].getVal<int>();
+            int count = val->getVal<int>();
+
+            if (count == 1)
+            {
+                int numBuffers = 2;
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_ACQ_FRAME_BURST_COUNT, &count, sizeof(int), intType), "set:" XI_PRM_ACQ_FRAME_BURST_COUNT, "1");
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_BUFFERS_QUEUE_SIZE, &numBuffers, sizeof(int), intType), "set:" XI_PRM_BUFFERS_QUEUE_SIZE, "2");
             }
-            else if (strcmp(paramIt.value().getName(),"integration_time") == 0)
+            else
             {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
-                DWORD varSize = sizeof(int);
-                XI_PRM_TYPE varType = xiTypeInteger;
-                if ((ret = pxiGetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, &varSize, &varType)))
-                    retValue += getErrStr(ret);
-                else
-                    m_params["integration_time"].setVal<double>(integration_time / 1.0e6);
-            }
-            else if (strcmp(paramIt.value().getName(),"sharpness") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat)))
-                    retValue += getErrStr(ret);
-            }
-            else if (strcmp(paramIt.value().getName(),"gamma") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
-                    retValue += getErrStr(ret);
-            }    
-            else if (strcmp(paramIt.value().getName(),"trigger_mode") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
-            }
-#ifndef USE_OLD_API
-            else if (strcmp(paramIt.value().getName(),"trigger_mode2") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
+                if (trigger_mode == XI_TRG_OFF || trigger_selector != XI_TRG_SEL_FRAME_BURST_START)
                 {
-                    retValue += getErrStr(ret);
+                    retValue += ito::RetVal::format(ito::retError, 0, "frame_burst_count != 1 can only be applied if trigger_selector = frame_burst_start (%i) and trigger_mode != off (0)", XI_TRG_SEL_FRAME_BURST_START);
+                }
+                else if (count > m_params["buffers_queue_size"].getMax() || count == 0)
+                {
+                    retValue += ito::RetVal::format(ito::retWarning, 0, "frame_burst_count > %i or infinite frame_burst_count (0) is not recommended since the maximum number of buffers in this plugin is %i", m_params["buffers_queue_size"].getMax(), m_params["buffers_queue_size"].getMax());
+                }
+
+                if (!retValue.containsError())
+                {
+                    int numBuffers = std::min((int)m_params["buffers_queue_size"].getMax(), std::max((int)m_params["buffers_queue_size"].getMin()+1,count+1));
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_ACQ_FRAME_BURST_COUNT, &count, sizeof(int), intType), "set:" XI_PRM_ACQ_FRAME_BURST_COUNT);
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_BUFFERS_QUEUE_SIZE, &numBuffers, sizeof(int), intType), "set:" XI_PRM_BUFFERS_QUEUE_SIZE);
+                }
+            }
+
+            retValue += readCameraIntParam(XI_PRM_ACQ_FRAME_BURST_COUNT, "frame_burst_count", false);
+            retValue += readCameraIntParam(XI_PRM_BUFFERS_QUEUE_SIZE, "buffers_queue_size", false);
+            m_numFrameBurst = m_params["frame_burst_count"].getVal<int>();
+        }
+        else if (QString::compare(key, "trigger_mode", Qt::CaseInsensitive) == 0)
+        {
+            int trigger_mode = val->getVal<int>();
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger), "set XI_PRM_TRG_SOURCE", QString::number(trigger_mode));
+            retValue += synchronizeCameraSettings(sTriggerMode | sTriggerSelector | sFrameRate | sExposure);
+        }
+
+        else if (QString::compare(key, "trigger_selector", Qt::CaseInsensitive) == 0)
+        {
+            int trigger_mode2 = val->getVal<int>();
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger), "set XI_PRM_TRG_SELECTOR", QString::number(trigger_mode2));
+            retValue += synchronizeCameraSettings(sTriggerMode | sTriggerSelector | sFrameRate | sExposure);
+        }
+
+        else if (QString::compare(key, "timing_mode", Qt::CaseInsensitive) == 0)
+        {
+            int timing_mode = val->getVal<int>();
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger), "set XI_PRM_ACQ_TIMING_MODE", QString::number(timing_mode));
+            retValue += readCameraIntParam(XI_PRM_ACQ_TIMING_MODE, "timing_mode", false);
+            retValue += synchronizeCameraSettings(sFrameRate);
+
+        }
+        else if (QString::compare(key, "framerate", Qt::CaseInsensitive) == 0)
+        {
+            float frameRate = val->getVal<double>();//TODO set Readonly, if not available
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_FRAMERATE, &frameRate, sizeof(float), xiTypeFloat), "set XI_PRM_FRAMERATE", QString::number(frameRate));
+            retValue += synchronizeCameraSettings(sExposure | sFrameRate);
+        }
+        else if (QString::compare(key, "gain", Qt::CaseInsensitive) == 0)
+        {
+            float gain = val->getVal<double>();
+            float gain_max;
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_MAX, &gain_max, &floatSize, &floatType), XI_PRM_GAIN XI_PRM_INFO_MAX);
+            gain = gain * gain_max;
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_GAIN XI_PRMM_DIRECT_UPDATE, &gain, sizeof(float), xiTypeFloat), XI_PRM_GAIN XI_PRMM_DIRECT_UPDATE, QString::number(gain));
+            retValue += synchronizeCameraSettings(sGain | sFrameRate | sExposure);
+        }
+        else if (QString::compare(key, "x1", Qt::CaseInsensitive) == 0)
+        {
+            int size = val->getVal<int>() - m_params["x0"].getVal<int>() + 1;
+            QSharedPointer<ito::ParamBase> val(new ito::ParamBase("roi[2]", ito::ParamBase::Int, size));
+            retValue += setParam(val, NULL);
+        }
+        else if (QString::compare(key, "y1", Qt::CaseInsensitive) == 0)
+        {
+            int size = val->getVal<int>() - m_params["y0"].getVal<int>() + 1;
+            QSharedPointer<ito::ParamBase> val(new ito::ParamBase("roi[3]", ito::ParamBase::Int, size));
+            retValue += setParam(val, NULL);
+        }
+        else if (QString::compare(key, "x0", Qt::CaseInsensitive) == 0)
+        {
+            QSharedPointer<ito::ParamBase> val(new ito::ParamBase("roi[0]", ito::ParamBase::Int, val->getVal<int>()));
+            retValue += setParam(val, NULL);
+        }
+        else if (QString::compare(key, "y0", Qt::CaseInsensitive) == 0)
+        {
+            QSharedPointer<ito::ParamBase> val(new ito::ParamBase("roi[1]", ito::ParamBase::Int, val->getVal<int>()));
+            retValue += setParam(val, NULL);
+        }
+
+        else if(QString::compare(key, "roi", Qt::CaseInsensitive) == 0)
+        {
+            if (!hasIndex)
+            {
+                if (val->getLen() !=4)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "roi must have 4 values");
+                }
+            }
+            
+            if (!retValue.containsError())
+            {
+                int *roi_old = m_params["roi"].getVal<int*>();
+                int *roi_set = val->getVal<int*>();
+                int offset_x = hasIndex && index == 0 ? val->getVal<int>() : roi_set[0];
+                int offset_y = hasIndex && index == 1 ? val->getVal<int>() : roi_set[1];
+                int width =    hasIndex && index == 2 ? val->getVal<int>() : roi_set[2];
+                int height =   hasIndex && index == 3 ? val->getVal<int>() : roi_set[3];
+                    
+                ito::RectMeta *rm = static_cast<ito::RectMeta*>(m_params["roi"].getMeta());
+                int offset_x_old = roi_old[0];
+                int offset_y_old = roi_old[1];
+                int width_old = roi_old[2];
+                int height_old = roi_old[3];
+
+                //set x roi
+                if ((offset_x + width_old) <= width)
+                {
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset_x, sizeof(int), xiTypeInteger), "set XI_PRM_OFFSET_X", QString::number(offset_x));
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_WIDTH, &width, sizeof(int), xiTypeInteger), "set XI_PRM_WIDTH", QString::number(width));
+                }
+                else 
+                {
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_WIDTH, &width, sizeof(int), xiTypeInteger), "set XI_PRM_WIDTH", QString::number(width));
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset_x, sizeof(int), xiTypeInteger), "set XI_PRM_OFFSET_X", QString::number(offset_x));
+                }
+
+                // set y roi
+                if ((offset_y + height_old) <= height)
+                {
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, sizeof(int), xiTypeInteger), "set XI_PRM_OFFSET_Y", QString::number(offset_y));
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_HEIGHT, &height, sizeof(int), xiTypeInteger), "set XI_PRM_HEIGHT", QString::number(height));
+                }
+                else 
+                {
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_HEIGHT, &height, sizeof(int), xiTypeInteger), "set XI_PRM_HEIGHT", QString::number(height));
+                    retValue += checkError(pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, sizeof(int), xiTypeInteger), "set XI_PRM_OFFSET_Y", QString::number(offset_y));
                 }
                     
+                if (!retValue.containsError())
+                {
+                    retValue += synchronizeCameraSettings(sExposure | sRoi | sFrameRate);
+                }            
             }
 
-            else if (strcmp(paramIt.value().getName(),"timing_mode") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
-            }
-#endif
-            else if (strcmp(paramIt.value().getName(),"framerate") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &frameRate, sizeof(float), xiTypeFloat)))
-                    retValue += getErrStr(ret);
-            }
-            else if (strcmp(paramIt.value().getName(),"gain") == 0)
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_GAIN, &gain, sizeof(float), xiTypeFloat)))
-                    retValue += getErrStr(ret);
-            }
-            else if (strcmp(paramIt.value().getName(),"x1") == 0)
-            {
-                int size = m_params["x1"].getVal<int>() - m_params["x0"].getVal<int>() + 1;
-
-                if(size % 2 != 0)
-                {
-                    retValue = ito::RetVal(ito::retWarning, 0, tr("Size must be multiply of 2").toLatin1().data());
-                    m_params["x1"].setVal<int>(x1old);
-                    goto end;
-                }
-
-                if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
-                {
-                    retValue += getErrStr(ret);
-                }
-                else
-                {
-                    static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax( m_params["x1"].getVal<int>() );
-                    //m_params["x0"].setMax(m_params["x1"].getVal<int>());
-                    m_params["sizex"].setVal<int>(size);
-                }
-            }
-            else if (strcmp(paramIt.value().getName(),"y1") == 0)
-            {
-                int size = m_params["y1"].getVal<int>() - m_params["y0"].getVal<int>() + 1;
-                if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
-                else
-                {
-                    static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax( m_params["y1"].getVal<int>() );
-                    //m_params["y0"].setMax(m_params["y1"].getVal<int>());
-                    m_params["sizey"].setVal<int>(size);
-                }
-            }
-            else if (strcmp(paramIt.value().getName(),"x0") == 0)
-            {
-                int offset = m_params["x0"].getVal<int>();
-                int maxsize = m_params["sizex"].getMax();
-                int size = m_params["x1"].getVal<int>() - offset + 1;
-
-                if(size % 2 != 0)
-                {
-                    retValue = ito::RetVal(ito::retWarning, 0, tr("Size must be multiply of 2").toLatin1().data());
-                    m_params["x0"].setVal<int>(x0old);
-                    goto end;
-                }
-
-                if (x0old < offset)
-                {
-                    m_params["sizex"].setVal<int>(size);
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-                else
-                {
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &offset, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &size, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-
-                m_params["sizex"].setVal<int>(size);
-                //m_params["x1"].setMin(m_params["x0"].getVal<int>());
-                static_cast<ito::IntMeta*>( m_params["x1"].getMeta() )->setMin( m_params["x0"].getVal<int>() );
-
-            }
-            else if (strcmp(paramIt.value().getName(),"y0") == 0)
-            {
-                int offset = m_params["y0"].getVal<int>();
-                int size = m_params["y1"].getVal<int>() - offset + 1;
-                
-                if (y0old < offset)
-                {
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-                else
-                {
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &offset, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);                    
-                    if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &size, sizeof(int), xiTypeInteger)))
-                        retValue += getErrStr(ret);
-                }
-                m_params["sizey"].setVal<int>(size);
-                //m_params["y1"].setMin(m_params["y0"].getVal<int>());
-                static_cast<ito::IntMeta*>( m_params["y1"].getMeta() )->setMin( m_params["y0"].getVal<int>() );
-            }
         }
         else
         {
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Parameter not found").toLatin1().data());
+            it->copyValueFrom(&(*val));
         }
     }
 
-end:
-
-    retValue += checkData();
+    if(!retValue.containsError())
+    {
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+        retValue += checkData();
+    }
 
     if (running)
     {
         retValue += this->startDevice(0);
         setGrabberStarted(running);
-    }
-
-    if (!retValue.containsWarningOrError())
-    {
-        emit parametersChanged(m_params);
     }
 
     if (waitCond)
@@ -1168,7 +1461,7 @@ end:
         waitCond->release();
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1181,19 +1474,17 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
     DWORD pSize = sizeof(int);
     XI_PRM_TYPE pType = xiTypeInteger;
 
-
     QByteArray name;
 
     //get parameter ranges
     name = QByteArray(paramName) + XI_PRM_INFO_MIN;
-    retval +=  getErrStr(pxiGetParam(m_handle, name.data(), &min, &pSize, &pType));
-
+    retval += checkError(pxiGetParam(m_handle, name.data(), &min, &pSize, &pType), name);
     name = QByteArray(paramName) + XI_PRM_INFO_MAX;
-    retval +=  getErrStr(pxiGetParam(m_handle, name.data(), &max, &pSize, &pType));
+    retval += checkError(pxiGetParam(m_handle, name.data(), &max, &pSize, &pType), name);
 
 #ifndef USE_OLD_API
     name = QByteArray(paramName) + XI_PRM_INFO_INCREMENT;
-    retval +=  getErrStr(pxiGetParam(m_handle, name.data(), &inc, &pSize, &pType));
+    retval += checkError(pxiGetParam(m_handle, name.data(), &inc, &pSize, &pType), name);
 #endif
 
     if (!retval.containsError())
@@ -1212,7 +1503,48 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
 
         if (!retval.containsError())
         {
-            retval += getErrStr(pxiSetParam(m_handle, paramName, &newValue, sizeof(int), xiTypeInteger));
+            retval += checkError(pxiSetParam(m_handle, paramName, &newValue, sizeof(int), xiTypeInteger), paramName, QString::number(newValue));
+        }
+    }
+
+    return retval;
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal Ximea::readCameraIntParam(const char *ximeaParamName, const QString &paramName, bool mandatory /*= false*/)
+{
+    DWORD intSize = sizeof(int);
+    XI_PRM_TYPE intType = xiTypeInteger;
+    int val, minVal, maxVal, stepVal;
+
+    ito::RetVal retval = checkError(pxiGetParam(m_handle, ximeaParamName, &val, &intSize, &intType), ximeaParamName);
+
+    if (retval.containsError())
+    {
+        if (!mandatory)
+        {
+            retval = ito::retOk;
+            m_params[paramName].setFlags(ito::ParamBase::Readonly);
+        }
+    }
+    else
+    {
+        m_params[paramName].setVal<int>(val);
+
+        QByteArray name = ximeaParamName;
+        QByteArray minInfo = name + XI_PRM_INFO_MIN;
+        QByteArray maxInfo = name + XI_PRM_INFO_MAX;
+        QByteArray stepInfo = name + XI_PRM_INFO_INCREMENT;
+        //get info
+        retval += checkError(pxiGetParam(m_handle, minInfo.data(), &minVal, &intSize, &intType), minInfo.data());
+        retval += checkError(pxiGetParam(m_handle, maxInfo.data(), &maxVal, &intSize, &intType), maxInfo.data());
+        retval += checkError(pxiGetParam(m_handle, stepInfo.data(), &stepVal, &intSize, &intType), stepInfo.data());
+
+        if (!retval.containsError())
+        {
+            m_params[paramName].setMeta(new ito::IntMeta(minVal, maxVal, stepVal), true);
         }
     }
 
@@ -1220,420 +1552,282 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
+ito::RetVal Ximea::readCameraFloatParam(const char *ximeaParamName, const QString &paramName, bool mandatory /*= false*/)
 {
-    ItomSharedSemaphoreLocker locker(waitCond);
+    DWORD floatSize = sizeof(float);
+    XI_PRM_TYPE floatType = xiTypeFloat;
+    float val, minVal, maxVal, stepVal;
 
-    ito::RetVal retValue(ito::retOk);
-    int iCamNumber = (*paramsOpt)[0].getVal<int>();
-    int bandwidthLimit = paramsOpt->at(2).getVal<int>(); //0 auto bandwidth calculation
-    int maxxsize = 0;
-    int maxysize = 0;
-    int curxsize = 0;
-    int curysize = 0;
-    int x0 = 0;
-    int y0 = 0;
-    int bitppix = 10;
-    XI_RETURN ret;
+    ito::RetVal retval = checkError(pxiGetParam(m_handle, ximeaParamName, &val, &floatSize, &floatType), ximeaParamName);
 
-    int integration_time = 2;
-    int trigger_mode = 0;
-    int trigger_mode2 = 0;
-
-#ifndef USE_OLD_API
-    int timing_mode = 0;
-#endif
-
-    float framerate = 30;
-    float gamma = 0.0;
-    float sharpness = 1.0;
-    double gain = 0;
-    QFile paramFile;
-
-    // Load parameterlist from XML-file
-    int loadPrev = (*paramsOpt)[1].getVal<int>();
-
-    DWORD pSize = sizeof(int);
-    XI_PRM_TYPE pType = xiTypeInteger;
-    XI_PRM_TYPE strType = xiTypeString;
-
-    retValue += LoadLib();
-
-    m_params["camNumber"].setVal<int>(iCamNumber);
-
-    Initnum++;  // so we have a new running instance of this grabber (or not)
-
-    if( ++InitList[iCamNumber] > 1)    // It does not matter if the rest works or not. The close command will fix this anyway
+    if (retval.containsError())
     {
-        retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized. Try with another camera number").toLatin1().data());
-    }
-    else if(!retValue.containsError())
-    {
-        ret = pxiOpenDevice(iCamNumber, &m_handle);
-        if (!m_handle || ret != XI_OK)
+        if (!mandatory)
         {
-            m_handle = NULL;
-            retValue += getErrStr(ret);
-            retValue += ito::RetVal(ito::retError, 0, tr("Unable open camera").toLatin1().data());
-        }
-        else
-        {
-            char strBuf[1024];
-            int serialNumber;
-            DWORD strBufSize = 1024 * sizeof(char);
-            retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_DEVICE_NAME, &strBuf, &strBufSize, &strType));
-
-            retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_DEVICE_SN, &serialNumber, &pSize, &pType));
-
-            if (!retValue.containsError())
-            {
-                QString serialNumberHex = QString::number(serialNumber, 16);
-                m_identifier = QString("%1 (SN:%2)").arg(strBuf).arg(serialNumberHex);
-            }
-        }
-
-        
-    
-        if (!retValue.containsError())
-        {
-            //get available bandwidth in Mb/sec
-            //int availableBandwidth;
-            //retValue += getErrStr(pxiGetParam(m_handle, XI_PRM_AVAILABLE_BANDWIDTH, &availableBandwidth, &pSize, &pType));
-            //std::cout << "available bandwidth: " << availableBandwidth << std::endl;
-#ifndef USE_OLD_API
-            if (bandwidthLimit > 0) //manually set bandwidthLimit
-            {
-                retValue += setXimeaParam(XI_PRM_AUTO_BANDWIDTH_CALCULATION, XI_OFF);
-                retValue += setXimeaParam(XI_PRM_LIMIT_BANDWIDTH, bandwidthLimit);
-            }
-#endif
-        }
-
-        // Load parameterlist from XML-file
-        if(loadPrev && !retValue.containsError())
-        {
-            QMap<QString, ito::Param> paramListXML;
-            if (!retValue.containsError())
-            {
-                retValue += ito::generateAutoSaveParamFile(this->getBasePlugin()->getFilename(), paramFile);
-            }
-
-            // Read parameter list from file to paramListXML
-            if (!retValue.containsError())
-            {
-                retValue += ito::loadXML2QLIST(&paramListXML, QString::number(iCamNumber), paramFile);
-            }
-
-            // Merge parameter list from file to paramListXML with current mparams
-            if (!retValue.containsError())
-            {
-
-            }
-            paramListXML.clear();
-        }
-
-        if (!retValue.containsError())
-        {
-            // Camera-exposure is set in µsec, itom uses s
-            integration_time = (int)(m_params["integration_time"].getVal<double>() * 1000000);
-            trigger_mode = m_params["trigger_mode"].getVal<int>();
-#ifndef USE_OLD_API
-            trigger_mode2 = m_params["trigger_mode2"].getVal<int>();
-
-
-            timing_mode = m_params["timing_mode"].getVal<int>();
-#endif
-
-            framerate = m_params["framerate"].getVal<double>();
-
-            gamma = m_params["gamma"].getVal<double>();
-            sharpness = m_params["sharpness"].getVal<double>();
-
-            if ((ret = pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), xiTypeInteger)))
-                retValue += getErrStr(ret);
-            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOURCE, &trigger_mode, sizeof(int), xiTypeInteger)))
-            {
-                if(ret == 12)
-                {
-                    m_params["trigger_mode"].setFlags(m_params["trigger_mode"].getFlags() | ito::ParamBase::Readonly);
-                    retValue += getErrStr(ret, true);
-                }
-                else
-                {
-                    retValue += getErrStr(ret);
-                }
-            }
-
-#ifndef USE_OLD_API
-            // Though in api the dll reports not supported ...
-            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SELECTOR, &trigger_mode2, sizeof(int), xiTypeInteger)))
-            {
-                if(ret == 12)
-                {
-                    m_params["trigger_mode2"].setFlags(m_params["trigger_mode2"].getFlags() | ito::ParamBase::Readonly);
-                    retValue += getErrStr(ret, true);
-                }
-                else
-                {
-                    retValue += getErrStr(ret);
-                }
-            }
-                
-
-            if ((ret = pxiSetParam(m_handle, XI_PRM_ACQ_TIMING_MODE, &timing_mode, sizeof(int), xiTypeInteger)))
-            {
-                if(ret == 12)
-                {
-                    m_params["timing_mode"].setFlags(m_params["timing_mode"].getFlags() | ito::ParamBase::Readonly);
-                    retValue += getErrStr(ret, true);
-                }
-                else
-                {
-                    retValue += getErrStr(ret);
-                }
-            }
-#endif
-
-            // Though in api the dll reports not supported ...
-    //        if ((ret = pxiSetParam(m_handle, XI_PRM_FRAMERATE, &framerate, sizeof(float), xiTypeFloat)))
-    //            retValue += getErrStr(ret);
-            if ((ret = pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat)))
-                retValue += getErrStr(ret);
-            if ((ret = pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat)))
-                retValue += getErrStr(ret); 
-
-            switch (m_params["bpp"].getVal<int>())
-            {
-                case 8:
-                    bitppix = XI_RAW8;
-                break;
-                default:
-                    bitppix = XI_RAW16;
-                    //bitppix = XI_MONO16;
-                break;
-            }
-            if ((ret = pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, sizeof(int), xiTypeInteger)))
-                retValue += getErrStr(ret);
-
-            ret = pxiGetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, &pSize, &pType);
-            if ((bitppix == XI_RAW8) || (bitppix == XI_MONO8))
-                m_params["bpp"].setVal<int>(8);
-            else
-                m_params["bpp"].setVal<int>(12);
-        }
-
-        if (!retValue.containsError())
-        {
-            int maxVal = 0;
-            int curVal = 0;
-            ret = pxiGetParam(m_handle, XI_PRM_BPC XI_PRM_INFO_MAX, &maxVal, &pSize, &pType);
-            ret = pxiGetParam(m_handle, XI_PRM_BPC, &curVal, &pSize, &pType);
-
-            static_cast<ito::IntMeta*>(m_params["badPixel"].getMeta())->setMax(maxVal);
-            m_params["badPixel"].setVal(curVal);
-        }
-        
-        if (!retValue.containsError())
-        {
-        
-
-            ret = pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &maxxsize, &pSize, &pType);
-            ret = pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &maxysize, &pSize, &pType);
-
-            curxsize = m_params["sizex"].getVal<int>();
-            curysize = m_params["sizey"].getVal<int>();
-            x0 = m_params["x0"].getVal<int>();
-            y0 = m_params["y0"].getVal<int>();
-            if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &curxsize, sizeof(int), xiTypeInteger)))
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_WIDTH, &maxxsize, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
-            }
-            if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &curysize, sizeof(int), xiTypeInteger)))
-            {
-                if ((ret = pxiSetParam(m_handle, XI_PRM_HEIGHT, &maxysize, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
-            }
-            if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &x0, sizeof(int), xiTypeInteger)))
-            {
-                x0 = 0;
-                if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_X, &x0, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
-            }
-            if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &y0, sizeof(int), xiTypeInteger)))
-            {
-                y0 = 0;
-                if ((ret = pxiSetParam(m_handle, XI_PRM_OFFSET_Y, &y0, sizeof(int), xiTypeInteger)))
-                    retValue += getErrStr(ret);
-            }
-
-            ret = pxiGetParam(m_handle, XI_PRM_WIDTH, &curxsize, &pSize, &pType);
-            ret = pxiGetParam(m_handle, XI_PRM_HEIGHT, &curysize, &pSize, &pType);
-            ret = pxiGetParam(m_handle, XI_PRM_OFFSET_X, &x0, &pSize, &pType);
-            ret = pxiGetParam(m_handle, XI_PRM_OFFSET_Y, &y0, &pSize, &pType);
-            //m_params["sizex"].setMax(maxxsize);
-            //m_params["sizey"].setMax(maxysize);
-            static_cast<ito::IntMeta*>(m_params["sizex"].getMeta())->setMax(maxxsize);
-            static_cast<ito::IntMeta*>(m_params["sizey"].getMeta())->setMax(maxysize);
-            m_params["sizex"].setVal(curxsize);
-            m_params["sizey"].setVal(curysize);
-            //m_params["x0"].setMax(maxxsize-1);
-            //m_params["y0"].setMax(maxysize-1);
-            static_cast<ito::IntMeta*>(m_params["x0"].getMeta())->setMax(maxxsize-1);
-            static_cast<ito::IntMeta*>(m_params["y0"].getMeta())->setMax(maxysize-1);
-            m_params["x0"].setVal<int>(x0);
-            m_params["y0"].setVal<int>(y0);
-
-            //m_params["x1"].setMax(maxxsize-1);
-            //m_params["y1"].setMax(maxysize-1);
-            static_cast<ito::IntMeta*>(m_params["x1"].getMeta())->setMax(maxxsize-1);
-            static_cast<ito::IntMeta*>(m_params["y1"].getMeta())->setMax(maxysize-1);
-            m_params["x1"].setVal<int>(curxsize - x0 + 1);
-            m_params["y1"].setVal<int>(curysize - y0 + 1);
-            //m_params["x1"].setMin(x0);
-            //m_params["y1"].setMin(y0);
-            static_cast<ito::IntMeta*>(m_params["x1"].getMeta())->setMin(x0);
-            static_cast<ito::IntMeta*>(m_params["y1"].getMeta())->setMin(y0);
-        }
-
-        if (!retValue.containsError())
-        {
-            int val = XI_BP_SAFE;
-            if ((ret = pxiSetParam(m_handle, XI_PRM_BUFFER_POLICY, &val, sizeof(int), xiTypeInteger)))
-                retValue += getErrStr(ret);
-        }
-
-        if (!retValue.containsError())
-        {
-            int pin = 1;
-            ret = pxiSetParam(m_handle, XI_PRM_GPO_SELECTOR, &pin, sizeof(int), xiTypeInteger);
-            if (ret)
-                retValue += getErrStr(ret);
-        }
-
-        if (!retValue.containsError())
-        {
-            int curVal = 0;
-            DWORD pSize = sizeof(int);
-            XI_PRM_TYPE pType = xiTypeInteger;
-            if (ret = pxiGetParam(m_handle, XI_PRM_GPO_MODE, &curVal, &pSize, &pType))
-            {
-                retValue += getErrStr(ret);
-            }
-            else
-            {
-                m_params["gpoMode"].setVal(curVal);
-            }
-        }
-        if (!retValue.containsError())
-        {
-            int curVal = 0;
-            DWORD pSize = sizeof(int);
-            XI_PRM_TYPE pType = xiTypeInteger;
-
-
-            if (ret = pxiGetParam(m_handle, XI_PRM_GPI_MODE, &curVal, &pSize, &pType))
-            {
-                retValue += getErrStr(ret);
-            }
-            else
-            {
-                m_params["gpiMode"].setVal(curVal);
-            }
-        }
-
-        if (!retValue.containsError())
-        {
-            retValue += checkData();
-        }
-    }
-
-    if (retValue.containsError())
-    {
-        if(Initnum <= 1) //this instance already incremented Initnum in any cases, it will be decremented in case of error in the close method
-        {
-            if (ximeaLib)
-            {
-#if linux
-                dlclose(ximeaLib);
-#else
-                FreeLibrary(ximeaLib);
-#endif
-                ximeaLib = NULL;
-            }
-        }
-        else
-        {
-            //std::cerr << "DLLs not unloaded due to further running grabber instances\n" << std::endl;
+            retval = ito::retOk;
+            m_params[paramName].setFlags(ito::ParamBase::Readonly);
         }
     }
     else
     {
-        m_saveParamsOnClose = true;
+        m_params[paramName].setVal<double>(val);
+
+        QByteArray name = ximeaParamName;
+        QByteArray minInfo = name + XI_PRM_INFO_MIN;
+        QByteArray maxInfo = name + XI_PRM_INFO_MAX;
+        QByteArray stepInfo = name + XI_PRM_INFO_INCREMENT;
+        //get info
+        retval += checkError(pxiGetParam(m_handle, minInfo.data(), &minVal, &floatSize, &floatType), minInfo.data());
+        retval += checkError(pxiGetParam(m_handle, maxInfo.data(), &maxVal, &floatSize, &floatType), maxInfo.data());
+        retval += checkError(pxiGetParam(m_handle, stepInfo.data(), &stepVal, &floatSize, &floatType), stepInfo.data());
+
+        if (!retval.containsError())
+        {
+            m_params[paramName].setMeta(new ito::DoubleMeta(minVal, maxVal, stepVal), true);
+        }
     }
 
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    setInitialized(true); //init method has been finished (independent on retval)
-    return retValue;
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal Ximea::close(ItomSharedSemaphore *waitCond)
+ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
 {
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    XI_RETURN ret;
+    ito::RetVal retValue;
+    ito::RetVal retValTemp;
+    ParamMapIterator it;
 
-    if (this->m_handle == NULL)
+    DWORD intSize = sizeof(int);
+    DWORD floatSize = sizeof(float);
+    XI_PRM_TYPE intType = xiTypeInteger;
+    XI_PRM_TYPE strType = xiTypeString;
+    XI_PRM_TYPE floatType = xiTypeFloat;
+
+    if (what & sExposure)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Camera handle deleted before closing procedure").toLatin1().data());
-        goto endclose;
-    }
+        it = m_params.find("integration_time");
 
-    setGrabberStarted(1);
-    retValue += this->stopDevice(0);
-    Sleep(50);
-
-    if ((ret = pxiCloseDevice(m_handle)))
-    {
-        retValue += getErrStr(ret);
-    }
-
-endclose:
-    int nr = m_params["camNumber"].getVal<int>();
-    InitList[nr] = 0;
-    Initnum--; // so we closed a further instance of this grabber
-
-    if(!Initnum)
-    {
-        if (ximeaLib)
+        // Camera-exposure is set in µsec, itom uses s
+        int integration_time, integration_max, integration_min, integration_step; 
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_EXPOSURE XI_PRM_INFO_MIN, &integration_min, &intSize, &intType), XI_PRM_EXPOSURE XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_EXPOSURE XI_PRM_INFO_MAX, &integration_max, &intSize, &intType), XI_PRM_EXPOSURE XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_EXPOSURE XI_PRM_INFO_INCREMENT, &integration_step, &intSize, &intType), XI_PRM_EXPOSURE XI_PRM_INFO_INCREMENT);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, &intSize, &intType), XI_PRM_EXPOSURE);
+        
+        if (!retValue.containsError())
         {
-#if linux
-            dlclose(ximeaLib);
-#else
-            FreeLibrary(ximeaLib);
-#endif
-            ximeaLib = NULL;
+            if (integration_step == 0)
+            {
+                integration_step = integration_max - integration_min;
+            }
+            if (integration_time == 0)
+            {
+                integration_time = integration_min;
+            }
+
+            it->setVal<double>(musecToSec(integration_time));
+            it->setMeta(new ito::DoubleMeta(musecToSec(integration_min + integration_step), musecToSec(integration_max - integration_step), musecToSec(integration_step)), true);
+            it->setFlags(0);
+        }
+        else
+        {
+            it->setFlags(ito::ParamBase::Readonly);
         }
     }
-    else
+    if (what & sBinning)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("DLLs not unloaded due to still living instances of Ximea-Cams").toLatin1().data());
+        it = m_params.find("binning");
+
+        // set binning
+        int binning, binning_min, binning_max;
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING XI_PRM_INFO_MIN, &binning_min, &intSize, &intType), XI_PRM_DOWNSAMPLING XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING XI_PRM_INFO_MAX, &binning_max, &intSize, &intType), XI_PRM_DOWNSAMPLING XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_DOWNSAMPLING, &binning, &intSize, &intType), XI_PRM_DOWNSAMPLING);
+        
+        if (!retValue.containsError())
+        {
+            it->setVal<int>(binning * 101);
+            it->setMeta(new ito::IntMeta(binning_min * 101, binning_max * 101, 101), true);
+            it->setFlags(0);
+        }
+        else
+        {
+            it->setFlags(ito::ParamBase::Readonly);
+        }
+    }
+    if (what & sFrameRate)
+    {
+        retValue += readCameraFloatParam(XI_PRM_FRAMERATE, "framerate", false);
+        if (!retValue.containsError())
+        {
+            float val = m_params["framerate"].getVal<double>();
+            if (pxiSetParam(m_handle, XI_PRM_FRAMERATE, &val, sizeof(float), floatType) == XI_READ_ONLY_PARAM || (m_params["timing_mode"].getVal<int>() == XI_ACQ_TIMING_MODE_FREE_RUN))
+            {
+                m_params["framerate"].setFlags(ito::ParamBase::Readonly);
+            }
+            else
+            {
+                m_params["framerate"].setFlags(0);
+            }
+        }
+    }
+    if (what & sRoi)
+    {
+        int offset_x, offsetMin_x, offsetMax_x, offsetInc_x;
+        int size_x, sizeMin_x, sizeMax_x, sizeInc_x;
+        int offset_y, offsetMin_y, offsetMax_y, offsetInc_y;
+        int size_y, sizeMin_y, sizeMax_y, sizeInc_y;
+
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_WIDTH, &size_x, &intSize, &intType), "get XI_PRM_WIDTH");
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MIN, &sizeMin_x, &intSize, &intType), "get XI_PRM_WIDTH" XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_MAX, &sizeMax_x, &intSize, &intType), "get XI_PRM_WIDTH" XI_PRM_INFO_MAX);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_WIDTH XI_PRM_INFO_INCREMENT, &sizeInc_x, &intSize, &intType), "get XI_PRM_WIDTH" XI_PRM_INFO_INCREMENT);
+        if (sizeInc_x == 0)
+        {
+            sizeInc_x = 1;
+        }
+
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_OFFSET_X, &offset_x, &intSize, &intType), "get XI_PRM_OFFSET_X");
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_MIN, &offsetMin_x, &intSize, &intType), "get XI_PRM_OFFSET_X" XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_MAX, &offsetMax_x, &intSize, &intType), "get XI_PRM_OFFSET_X" XI_PRM_INFO_MAX);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_OFFSET_X XI_PRM_INFO_INCREMENT, &offsetInc_x, &intSize, &intType), "get XI_PRM_OFFSET_X" XI_PRM_INFO_INCREMENT);
+        if (offsetInc_x == 0)
+        {
+            offsetInc_x = 1;
+        }
+
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_HEIGHT, &size_y, &intSize, &intType), "get XI_PRM_HEIGHT");
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MIN, &sizeMin_y, &intSize, &intType), "get XI_PRM_HEIGHT" XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_MAX, &sizeMax_y, &intSize, &intType), "get XI_PRM_HEIGHT" XI_PRM_INFO_MAX);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_HEIGHT XI_PRM_INFO_INCREMENT, &sizeInc_y, &intSize, &intType), "get XI_PRM_HEIGHT" XI_PRM_INFO_INCREMENT);
+        if (sizeInc_y == 0)
+        {
+            sizeInc_y = 1;
+        }
+
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_OFFSET_Y, &offset_y, &intSize, &intType), "get XI_PRM_OFFSET_Y");
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_MIN, &offsetMin_y, &intSize, &intType), "get XI_PRM_OFFSET_Y" XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_MAX, &offsetMax_y, &intSize, &intType), "get XI_PRM_OFFSET_Y" XI_PRM_INFO_MAX);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_OFFSET_Y XI_PRM_INFO_INCREMENT, &offsetInc_y, &intSize, &intType), "get XI_PRM_OFFSET_Y" XI_PRM_INFO_INCREMENT);
+        if (offsetInc_y == 0)
+        {
+            offsetInc_y = 1;
+        }
+
+        m_params["x0"].setVal<int>(offset_x);
+        m_params["x0"].setMeta(new ito::IntMeta(offsetMin_x, sizeMax_x - sizeMin_x, offsetInc_x), true);
+
+        m_params["x1"].setVal<int>(offset_x + size_x - 1);
+        m_params["x1"].setMeta(new ito::IntMeta(offset_x + sizeMin_x - 1, sizeMax_x - 1, sizeInc_x), true);
+
+        m_params["y0"].setVal<int>(offset_y);
+        m_params["y0"].setMeta(new ito::IntMeta(offsetMin_y, sizeMax_y - sizeMin_y, offsetInc_y), true);
+
+        m_params["y1"].setVal<int>(offset_y + size_y - 1);
+        m_params["y1"].setMeta(new ito::IntMeta(offset_y + sizeMin_y - 1, sizeMax_y - 1, sizeInc_y), true);
+
+        m_params["sizex"].setVal<int>(size_x);
+        m_params["sizex"].setMeta(new ito::IntMeta(sizeMin_x, sizeMax_x, sizeInc_x), true);
+
+        m_params["sizey"].setVal<int>(size_y);
+        m_params["sizey"].setMeta(new ito::IntMeta(sizeMin_y, sizeMax_y, sizeInc_y), true);
+
+        it = m_params.find("roi");
+        int *roi = it->getVal<int*>();
+        roi[0] = offset_x;
+        roi[1] = offset_y;
+        roi[2] = size_x;
+        roi[3] = size_y;
+        if (sizeMin_x % sizeInc_x != 0)
+        {
+            sizeMin_x = sizeMin_x - (sizeMin_x % sizeInc_x) + sizeInc_x;
+        }
+        if (sizeMin_y % sizeInc_y != 0)
+        {
+            sizeMin_y = sizeMin_y - (sizeMin_x % sizeInc_x) + sizeInc_x;
+        }
+
+        ito::RangeMeta widthMeta(offsetMin_x, sizeMax_x + offset_x - 1, offsetInc_x, sizeMin_x, sizeMax_x + offset_x, sizeInc_x);
+        ito::RangeMeta heightMeta(offsetMin_y, sizeMax_y + offset_y - 1, offsetInc_y, sizeMin_y, sizeMax_y + offset_y, sizeInc_y);    
+        it->setMeta(new ito::RectMeta(widthMeta, heightMeta), true);
+    }
+    if (what & sGain)
+    {
+        it = m_params.find("gain");
+        //sets gain value interval
+        float gain, gain_min, gain_max, gain_inc;
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_MIN, &gain_min, &floatSize, &floatType), XI_PRM_GAIN XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_MAX, &gain_max, &floatSize, &floatType), XI_PRM_GAIN XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_INCREMENT, &gain_inc, &floatSize, &floatType), XI_PRM_GAIN XI_PRM_INFO_INCREMENT);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAIN, &gain, &floatSize, &floatType), XI_PRM_GAIN);
+        
+        if (!retValue.containsError())
+        {
+            it->setVal<double>(gain/ gain_max);
+            it->setMeta(new ito::DoubleMeta(gain_min/ gain_max, gain_max/ gain_max, gain_inc/ gain_max), true);
+            it->setFlags(0);
+        }
+        else
+        {
+            it->setFlags(ito::ParamBase::Readonly);
+        }
+    }
+    if (what & sOffset)
+    {
+        //retValue += readCameraFloatParam(XI_PRM_IMAGE_BLACK_LEVEL, "offset", false); //optional, not always available
+    }
+    if (what & sGamma)
+    {
+        retValue += readCameraFloatParam(XI_PRM_SHARPNESS, "gamma", false);
+    }
+    if (what & sSharpness)
+    {
+        retValue += readCameraFloatParam(XI_PRM_SHARPNESS, "sharpness", false);
+    }
+    if (what & sTriggerMode)
+    {
+        retValue += readCameraIntParam(XI_PRM_TRG_SOURCE, "trigger_mode", true);
+    }
+    if (what & sTriggerSelector)
+    {
+        retValue += readCameraIntParam(XI_PRM_TRG_SELECTOR, "trigger_selector", true);
+    }
+    if (what & sBpp)
+    {
+        it = m_params.find("bpp");
+        int output_bit_depth = 0;
+        retValTemp = checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &intSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
+        if (!retValTemp.containsError())
+        {
+            it->setVal<int>(output_bit_depth);
+        }
+        retValue += retValTemp;
     }
 
-    if (waitCond)
+    if (what & sGpiGpo)
     {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
+        int *gpi_mode = m_params["gpi_mode"].getVal<int*>();
+        int *gpi_level = m_params["gpi_level"].getVal<int*>();
+        int *gpo_mode = m_params["gpo_mode"].getVal<int*>();
 
+        for (int i = 1; i <= m_numGPIPins; ++i)
+        {
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_GPI_SELECTOR, &i, intSize, intType), XI_PRM_GPI_SELECTOR);
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_GPI_MODE, &(gpi_mode[i-1]),&intSize, &intType), "get:" XI_PRM_GPI_MODE);
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_GPI_LEVEL, &(gpi_level[i-1]),&intSize, &intType), "get:" XI_PRM_GPI_LEVEL);
+        }
+
+        for (int i = 1; i <= m_numGPOPins; ++i)
+        {
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_GPO_SELECTOR, &i, intSize, intType), XI_PRM_GPO_SELECTOR);
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_GPO_MODE, &(gpo_mode[i-1]),&intSize, &intType), "get:" XI_PRM_GPO_MODE);
+        }
+    }
+    
     return retValue;
 }
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Ximea::startDevice(ItomSharedSemaphore *waitCond)
@@ -1644,18 +1838,13 @@ ito::RetVal Ximea::startDevice(ItomSharedSemaphore *waitCond)
     if(grabberStartedCount() < 1)
     {
         setGrabberStarted(0);
-        XI_RETURN ret;
-        ret = pxiStartAcquisition(m_handle);
-        if (ret)
-            retValue += getErrStr(ret);
+        retValue += checkError(pxiStartAcquisition(m_handle), "pxiStartAcquisition");
     }
 
     if (!retValue.containsError())
     {
         incGrabberStarted();
     }
-
-    m_isgrabbing = Ximea::grabberRunning;
 
     if (waitCond)
     {
@@ -1675,14 +1864,12 @@ ito::RetVal Ximea::stopDevice(ItomSharedSemaphore *waitCond)
 
     if(grabberStartedCount() < 1)
     {
-        XI_RETURN ret;
-        if ((ret = pxiStopAcquisition(m_handle)))
-            retValue += getErrStr(ret);
-        m_isgrabbing = Ximea::grabberStopped;
+        retValue += checkError(pxiStopAcquisition(m_handle), "pxiStopAquisition");
     }
+
     if(grabberStartedCount() < 0)
     {
-        retValue += ito::RetVal(ito::retWarning, 0, tr("Cameraflag was < 0").toLatin1().data());
+        retValue += ito::RetVal(ito::retWarning, 0, tr("stopDevice ignored since camera was not started.").toLatin1().data());
         setGrabberStarted(0);
     }
 
@@ -1700,29 +1887,29 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
     int triggermode = m_params["trigger_mode"].getVal<int>();
+    
 
     if (grabberStartedCount() <= 0)
     {
         retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toLatin1().data());
+        m_isgrabbing = false;
 
-        m_isgrabbing &= ~Ximea::grabberGrabbed;
-        m_isgrabbing |= Ximea::grabberGrabbed;
+        if (waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+        }
     }
     else
     {
-        XI_RETURN ret;
-        if(m_isgrabbing & Ximea::grabberGrabbed)
-        {
-            retValue = ito::RetVal(ito::retWarning, 0, tr("Tried to acquire multiple times without calling getVal.").toLatin1().data());
-        }
-
+        m_isgrabbing = true;
         if (triggermode == XI_TRG_SOFTWARE)
         {
             int val = 1;
-            if ((ret = pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, &val, sizeof(int), xiTypeInteger))) //TODO: isn't it necessary to set the value to XI_TRG_SOFTWARE here?
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_TRG_SOFTWARE, &val, sizeof(int), xiTypeInteger), XI_PRM_TRG_SOFTWARE);
+            if (retValue != ito::retOk)
             {
-                retValue += getErrStr(ret); 
-                m_acqRetVal += retValue;
+                m_isgrabbing = false;
             }
         }
 
@@ -1732,62 +1919,95 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             waitCond->release();
         }
 
-        int iPicTimeOut = (int)(m_params["timeout"].getVal<double>() * 1000 + 1.0); //timeout in ms
         XI_IMG img;
-        img.size = sizeof(XI_IMG);
-        img.bp = m_data.rowPtr(0, 0);
-        int curxsize = m_params["sizex"].getVal<int>();
-        int curysize = m_params["sizey"].getVal<int>();
 
+        if (!retValue.containsError())
+        {
+            int iPicTimeOut = (int)(m_params["timeout"].getVal<double>() * 1000 + 1.0); //timeout in ms
+            int curxsize = m_params["sizex"].getVal<int>();
+            int curysize = m_params["sizey"].getVal<int>();
+            std::string number;
 
-        img.bp_size = curxsize * curysize * (m_data.getType() == ito::tUInt16 ? 2 : 1);
-        if ((ret = pxiGetImage(m_handle, iPicTimeOut, &img)))
-        {
-            retValue += getErrStr(ret);
-            m_acqRetVal += retValue;
-            m_isgrabbing |= Ximea::grabberGrabError;
-        }
-        if(m_shading.active && ret == 0)
-        {
-            ito::uint16* ptrSub = m_shading.sub;
-            ito::uint16* ptrMul = m_shading.mul;
-            ito::uint16* ptrDst = (ito::uint16*)m_data.rowPtr(0, m_shading.y0);
-            ptrDst += m_shading.x0;
-            ito::int32 stepY = img.width - m_shading.xsize;
-            for(int y = 0; y < m_shading.ysize; y++)
+            for (int i = 0; i < m_numFrameBurst; ++i)
             {
-                
-                for(int x = 0; x < m_shading.xsize; x++)
+                img.size = sizeof(XI_IMG);
+                img.bp = m_data.rowPtr(i, 0);
+                img.bp_size = curxsize * curysize * (m_data.getType() == ito::tUInt16 ? 2 : 1);
+
+                retValue += checkError(pxiGetImage(m_handle, iPicTimeOut, &img), "pxiGetImage");
+
+                if (!retValue.containsError())
                 {
-                    if(*ptrSub > *ptrDst)
+                    if (m_numFrameBurst == 1)
                     {
-                        *ptrDst = 0;
+                        if (m_family != familyMU)
+                        {
+                            m_data.setTag("timestamp", (double)img.tsSec + ((double)img.tsUSec * 1.0e-6));
+                        }
+                        m_data.setTag("frame_counter", img.nframe);
                     }
                     else
                     {
-                        *ptrDst -= *ptrSub;
-                        //*ptrDst *= *ptrMul;
+#if __cplusplus > 199711L //C++11 support
+                        number = std::to_string((long long)i);
+#else
+                        std::stringstream out;
+                        out << i;
+                        number = out.str();
+#endif
+                        if (m_family != familyMU)
+                        {
+                            m_data.setTag("timestamp" + number, (double)img.tsSec + ((double)img.tsUSec * 1.0e-6));
+                        }
+                        m_data.setTag("frame_counter" + number, img.nframe);
                     }
-                    ptrDst++;
-                    ptrMul++;
-                    ptrSub++;
-                }            
-                ptrDst += stepY;
+
+                    if (i == 0)
+                    {
+#ifdef SIZE_XI_IMG_V5 //AbsoluteOffsetX and AbsoluteOffsetY is only defined if SIZE_XI_IMG_V5 is defined
+                        m_data.setTag("roi_x0", img.AbsoluteOffsetX);
+                        m_data.setTag("roi_y0", img.AbsoluteOffsetY);
+#endif
+                    }
+
+                    if(m_shading.active)
+                    {
+                        ito::uint16* ptrSub = m_shading.sub;
+                        ito::uint16* ptrMul = m_shading.mul;
+                        ito::uint16* ptrDst = (ito::uint16*)m_data.rowPtr(i, m_shading.y0);
+                        ptrDst += m_shading.x0;
+                        ito::int32 stepY = img.width - m_shading.xsize;
+                        for(int y = 0; y < m_shading.ysize; y++)
+                        {
+                
+                            for(int x = 0; x < m_shading.xsize; x++)
+                            {
+                                if(*ptrSub > *ptrDst)
+                                {
+                                    *ptrDst = 0;
+                                }
+                                else
+                                {
+                                    *ptrDst -= *ptrSub;
+                                    //*ptrDst *= *ptrMul;
+                                }
+                                ptrDst++;
+                                ptrMul++;
+                                ptrSub++;
+                            }            
+                            ptrDst += stepY;
+                        }
+                    }
+                }
+                else
+                {
+                    m_isgrabbing = false;
+                    break;
+                }
             }
-            
-        
         }
-
-        m_isgrabbing |= Ximea::grabberGrabbed;
-        return retValue;
     }
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
+    
     return retValue;
 }
 
@@ -1798,43 +2018,78 @@ ito::RetVal Ximea::retrieveData(ito::DataObject *externalDataObject)
 
     bool copyExternal = externalDataObject != NULL;
 
-    if (!(this->m_isgrabbing & Ximea::grabberRunning))
+    if (grabberStartedCount() <= 0)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without starting device").toLatin1().data());
     }
-    else if (!(this->m_isgrabbing & Ximea::grabberGrabbed))
+    else if (!m_isgrabbing)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("Tried to get picture without triggering exposure").toLatin1().data());
     }
-    else if (this->m_isgrabbing & Ximea::grabberGrabError)
+    else
     {
         retValue += m_acqRetVal;
         m_acqRetVal = ito::retOk;      
     }
-    else if(copyExternal)
+
+    if (!retValue.containsError())
     {
-        //here we wait until the Event is set to signaled state
-        //or the timeout runs out
-
-        cv::Mat* internalMat = (cv::Mat*)(m_data.get_mdata()[0]);
-        cv::Mat* externalMat = (cv::Mat*)(externalDataObject->get_mdata()[externalDataObject->seekMat(0)]);
-
-        if (externalMat->isContinuous())
+        if(copyExternal)
         {
-            memcpy(externalMat->ptr(0), internalMat->ptr(0), internalMat->cols * internalMat->rows * externalMat->elemSize());
-        }
-        else
-        {
-            for (int y = 0; y < internalMat->rows; y++)
+            //here we wait until the Event is set to signaled state
+            //or the timeout runs out
+            int planes = m_data.getNumPlanes();
+            bool valid;
+            std::string number;
+
+            for (int i = 0; i < planes; ++i)
             {
-                memcpy(externalMat->ptr(y), internalMat->ptr(y), internalMat->cols * externalMat->elemSize());
-            }
-        }
+                const cv::Mat* internalMat = m_data.getCvPlaneMat(i);
+                cv::Mat* externalMat = externalDataObject->getCvPlaneMat(i);
 
+                if (externalMat->isContinuous())
+                {
+                    memcpy(externalMat->ptr(0), internalMat->ptr(0), internalMat->cols * internalMat->rows * externalMat->elemSize());
+                }
+                else
+                {
+                    for (int y = 0; y < internalMat->rows; y++)
+                    {
+                        memcpy(externalMat->ptr(y), internalMat->ptr(y), internalMat->cols * externalMat->elemSize());
+                    }
+                }
+
+                if (planes <= 1)
+                {
+                    if (m_family != familyMU)
+                    {
+                        externalDataObject->setTag("timestamp", m_data.getTag("timestamp", valid));
+                    }
+                    externalDataObject->setTag("frame_counter", m_data.getTag("frame_counter", valid));
+                }
+                else
+                {
+#if __cplusplus > 199711L //C++11 support
+                    number = std::to_string((long long)i);
+#else
+                    std::stringstream out;
+                    out << i;
+                    number = out.str();
+#endif
+                    if (m_family != familyMU)
+                    {
+                        externalDataObject->setTag("timestamp" + number, m_data.getTag("timestamp" + number, valid));
+                    }
+                    externalDataObject->setTag("frame_counter" + number, m_data.getTag("frame_counter" + number, valid));
+                }
+            }
+
+            externalDataObject->setTag("roi_x0", m_data.getTag("roi_x0", valid));
+            externalDataObject->setTag("roi_y0", m_data.getTag("roi_y0", valid));           
+        }
     }
 
-    this->m_isgrabbing &= ~ Ximea::grabberGrabbed;
-    this->m_isgrabbing &= ~ Ximea::grabberGrabError;
+    m_isgrabbing = false;
 
     return retValue;
 }
@@ -1920,7 +2175,7 @@ void Ximea::updateParameters(QMap<QString, ito::Param> params)
     int binning_old = 0;
     int bitppix_new = 0;
     int binning_new = 0;
-    double offset_new = 0.0;
+    int offset_new = 0;
     double value = 0.0;
 
     char name[40]={0};
@@ -1947,7 +2202,7 @@ void Ximea::updateParameters(QMap<QString, ito::Param> params)
 
     bitppix_new = m_params["bpp"].getVal<int>();
     binning_new = m_params["binning"].getVal<int>();
-    offset_new = m_params["offset"].getVal<double>();
+    offset_new = m_params["offset"].getVal<int>();
 
     if (bitppix_new != bitppix_old)
     {
@@ -1959,53 +2214,7 @@ void Ximea::updateParameters(QMap<QString, ito::Param> params)
     }
     else
     {
-        setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Double, offset_new)), NULL);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if gain parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void Ximea::GainPropertiesChanged(double gain)
-{
-    if( gain <= m_params["gain"].getMax() &&
-        gain >= m_params["gain"].getMin())
-    {
-        setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", m_params["gain"].getType(), gain)));
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if  offset parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void Ximea::OffsetPropertiesChanged(double offset)
-{
-    if( offset <= m_params["offset"].getMax() &&
-        offset >= m_params["offset"].getMin())
-    {
-        setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", m_params["offset"].getType(), offset)));
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if integrationtime parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void Ximea::IntegrationPropertiesChanged(double integrationtime)
-{
-    if( integrationtime <= m_params["integration_time"].getMax() &&
-        integrationtime >= m_params["integration_time"].getMin())
-    {
-        setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", m_params["integration_time"].getType(), integrationtime)));
+        setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("offset", ito::ParamBase::Int, offset_new)), NULL);
     }
 }
 
@@ -2032,7 +2241,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
     
     int illm = 0;
 
-    if (funcName == "updateShading")
+    if (funcName == "update_shading")
     {    
         param1 = ito::getParamByName(&(*paramsMand), "illumination", &retValue);
 
@@ -2042,10 +2251,10 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
             updateShadingCorrection(illm);
         }
     }
-    else if (funcName == "shadingCorrectionValues")
+    else if (funcName == "shading_correction_values")
     {    
         param1 = ito::getParamByName(&(*paramsMand), "integration_time", &retValue);
-        param2 = ito::getParamByName(&(*paramsMand), "shadingCorrectionFaktor", &retValue);
+        param2 = ito::getParamByName(&(*paramsMand), "shading_correction_factor", &retValue);
         int intTime = 0;
         if (!retValue.containsError())
         {
@@ -2073,11 +2282,11 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
 
         
     }
-    else if (funcName == "initializeShading")
+    else if (funcName == "initialize_shading")
     {
 
-        param1 = ito::getParamByName(&(*paramsMand), "darkImage", &retValue);
-        param2 = ito::getParamByName(&(*paramsMand), "whiteImage", &retValue);              
+        param1 = ito::getParamByName(&(*paramsMand), "dark_image", &retValue);
+        param2 = ito::getParamByName(&(*paramsMand), "white_image", &retValue);              
 
         param3 = ito::getParamByName(&(*paramsMand), "x0", &retValue);
         param4 = ito::getParamByName(&(*paramsMand), "y0", &retValue);
@@ -2146,7 +2355,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
         /*
         if (!retValue.containsError())
         {
-            int ret = pInitializeShading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), param1->getVal<int>(), param2->getVal<int>());
+            int ret = pinitialize_shading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), param1->getVal<int>(), param2->getVal<int>());
             if(ret != MM40_OK)
             {
                 retValue += ito::RetVal(ito::retError, ret, tr("mmInitializeShading failed").toLatin1().data());
@@ -2164,11 +2373,11 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
         }
         */
     }
-#ifdef USE_SHADING
-    else if (funcName == "updateShading")
+/*
+    else if (funcName == "update_shading")
     {    
-        param1 = ito::getParamByName(&(*paramsOpt), "darkImage", &retValue);
-        param2 = ito::getParamByName(&(*paramsOpt), "whiteImage", &retValue);       
+        param1 = ito::getParamByName(&(*paramsOpt), "dark_image", &retValue);
+        param2 = ito::getParamByName(&(*paramsOpt), "white_image", &retValue);       
 
         if (!retValue.containsError())
         {
@@ -2182,8 +2391,8 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
     }
     else if (funcName == "calculateShading")
     {    
-        param1 = ito::getParamByName(&(*paramsOpt), "darkImage", &retValue);
-        param2 = ito::getParamByName(&(*paramsOpt), "whiteImage", &retValue);              
+        param1 = ito::getParamByName(&(*paramsOpt), "dark_image", &retValue);
+        param2 = ito::getParamByName(&(*paramsOpt), "white_image", &retValue);              
 
         cv::Mat_<WORD> darkMat = cv::Mat_<WORD>::zeros(cv::Size(this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>()));
         cv::Mat_<WORD> whiteMat = cv::Mat_<WORD>::ones(cv::Size(this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>()));
@@ -2223,7 +2432,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
             
         }
     }
-#endif
+*/
     else
     {
         retValue += ito::RetVal(ito::retError, 0, tr("function name '%1' does not exist").arg(funcName.toLatin1().data()).toLatin1().data());
@@ -2270,4 +2479,103 @@ void Ximea::activateShadingCorrection(bool enable)
     }
     m_shading.active = enable;
     return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void Ximea::dockWidgetVisibilityChanged(bool visible)
+{
+    if (getDockWidget())
+    {
+        QWidget *widget = getDockWidget()->widget();
+        if (visible)
+        {
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+
+            emit parametersChanged(m_params);
+        }
+        else
+        {
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal Ximea::checkData(ito::DataObject *externalDataObject /*= NULL*/)
+{
+    int futureHeight = m_params["sizey"].getVal<int>();
+    int futureWidth = m_params["sizex"].getVal<int>();
+    int futureType;
+
+    int bpp = m_params["bpp"].getVal<int>();
+    if (bpp <= 8)
+    {
+        futureType = ito::tUInt8;
+    }
+    else if (bpp <= 16)
+    {
+        futureType = ito::tUInt16;
+    }
+    else if (bpp <= 32)
+    {
+        futureType = ito::tInt32;
+    }
+    else 
+    {
+        futureType = ito::tFloat64;
+    }
+
+    if (externalDataObject == NULL)
+    {
+        if (m_numFrameBurst == 1)
+        {
+            if (m_data.getDims() < 2 || m_data.getSize(0) != (unsigned int)futureHeight || m_data.getSize(1) != (unsigned int)futureWidth || m_data.getType() != futureType)
+            {
+                m_data = ito::DataObject(futureHeight,futureWidth,futureType);
+            }
+        }
+        else
+        {
+            if (m_data.getDims() != 3 || m_data.getSize(0) != m_numFrameBurst || m_data.getSize(1) != (unsigned int)futureHeight || m_data.getSize(2) != (unsigned int)futureWidth || m_data.getType() != futureType)
+            {
+                m_data = ito::DataObject(m_numFrameBurst,futureHeight,futureWidth,futureType);
+            }
+        }
+    }
+    else
+    {
+        int dims = externalDataObject->getDims();
+        if (m_numFrameBurst == 1)
+        {
+            if (externalDataObject->getDims() == 0)
+            {
+                *externalDataObject = ito::DataObject(futureHeight,futureWidth,futureType);
+            }
+            else if (externalDataObject->calcNumMats () != 1)
+            {
+                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());            
+            }
+            else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+            {
+                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
+            }
+        }
+        else
+        {
+            if (externalDataObject->getDims() == 0)
+            {
+                *externalDataObject = ito::DataObject(m_numFrameBurst,futureHeight,futureWidth,futureType);
+            }
+            else if (externalDataObject->calcNumMats () != m_numFrameBurst)
+            {
+                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Frame burst is %1, the external object must then have %1 planes.").arg(m_numFrameBurst).toLatin1().data());            
+            }
+            else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
+            {
+                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
+            }
+        }
+    }
+
+    return ito::retOk;
 }
