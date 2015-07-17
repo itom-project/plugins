@@ -33,7 +33,7 @@ extern "C" {
 #endif
 
 #ifndef UEYE_VERSION_CODE
-#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 70, 0)
+#   define UEYE_VERSION_CODE   UEYE_VERSION(4, 60, 0)
 #endif
 
 
@@ -188,16 +188,6 @@ extern "C" {
 #define IS_SENSOR_UI1060_C          0x021B      // 2.3MP global shutter, color
 
 #define IS_SENSOR_UI1013XC          0x021D      // 13MP, color
-
-#define IS_SENSOR_UI1140M           0x021E		// 1.3MP global shutter, monochrome
-#define IS_SENSOR_UI1140C           0x021F		// 1.3MP global shutter, color
-#define IS_SENSOR_UI1140NIR         0x0220		// 1.3MP global shutter, NIR
-
-#define IS_SENSOR_UI1590M           0x0222		// 18MP rolling shutter, monochrome
-#define IS_SENSOR_UI1590C           0x0223		// 18MP rolling shutter, color
-
-#define IS_SENSOR_UI1260_M          0x0226      // 2.3MP global shutter, monochrome
-#define IS_SENSOR_UI1260_C          0x0227      // 2.3MP global shutter, color
 
 
 // CCD Sensors
@@ -1220,7 +1210,6 @@ extern "C" {
 #define IS_SET_EVENT_PMC_IMAGE_PARAMS_CHANGED   21
 #define IS_SET_EVENT_DEVICE_PLUGGED_IN          22
 #define IS_SET_EVENT_DEVICE_UNPLUGGED           23
-#define IS_SET_EVENT_TEMPERATURE_STATUS         24
 
 
 #define IS_SET_EVENT_REMOVE                 128
@@ -1253,7 +1242,6 @@ extern "C" {
   #define IS_PMC_IMAGE_PARAMS_CHANGED       0x0010
   #define IS_DEVICE_PLUGGED_IN              0x0011
   #define IS_DEVICE_UNPLUGGED               0x0012
-  #define IS_TEMPERATURE_STATUS             0x0013
 
   #define IS_DEVICE_REMOVED                 0x1000
   #define IS_DEVICE_REMOVAL                 0x1001
@@ -1638,10 +1626,9 @@ extern "C" {
         #undef  UNICODE
         #define __stdcall
         #define __cdecl
-
-#if defined (_IDS_EXPORT)
-        #define IDSEXP    __attribute__((visibility("default"))) INT
-        #define IDSEXPUL  __attribute__((visibility("default"))) ULONG
+#if defined __i386__
+        #define IDSEXP    __attribute__((cdecl)) INT
+        #define IDSEXPUL  __attribute__((cdecl)) ULONG
 #else
         #define IDSEXP    INT
         #define IDSEXPUL  ULONG
@@ -1760,6 +1747,7 @@ typedef int     INT;
   typedef char IS_CHAR;
 #endif
 
+
 // ----------------------------------------------------------------------------
 // Typedefs
 // ----------------------------------------------------------------------------
@@ -1772,27 +1760,6 @@ typedef DWORD   HCAM;
 typedef DWORD   HFALC;
 #define HFALC_DEFINED
 
-/*!
- * \brief Data type for 32-bit signed int value ranges.
- */
-typedef struct S_IS_RANGE_S32
-{
-    INT s32Min;
-    INT s32Max;
-    INT s32Inc;
-
-} IS_RANGE_S32;
-
-/*!
- * \brief Data type for 64-bit signed double value ranges.
- */
-typedef struct S_IS_RANGE_F64
-{
-    double f64Min;
-    double f64Max;
-    double f64Inc;
-
-} IS_RANGE_F64;
 
 // ----------------------------------------------------------------------------
 // Invalid values for device handles
@@ -1879,21 +1846,19 @@ typedef struct _REVISIONINFO
 // ----------------------------------------------------------------------------
 typedef enum _UEYE_CAPTURE_STATUS
 {
-    IS_CAP_STATUS_API_NO_DEST_MEM           =   0xa2,
-    IS_CAP_STATUS_API_CONVERSION_FAILED     =   0xa3,
-    IS_CAP_STATUS_API_IMAGE_LOCKED          =   0xa5,
+    IS_CAP_STATUS_API_NO_DEST_MEM       =   0xa2,
+    IS_CAP_STATUS_API_CONVERSION_FAILED =   0xa3,
+    IS_CAP_STATUS_API_IMAGE_LOCKED      =   0xa5,
+    
+    IS_CAP_STATUS_DRV_OUT_OF_BUFFERS    =   0xb2,
+    IS_CAP_STATUS_DRV_DEVICE_NOT_READY  =   0xb4,
 
-    IS_CAP_STATUS_DRV_OUT_OF_BUFFERS        =   0xb2,
-    IS_CAP_STATUS_DRV_DEVICE_NOT_READY      =   0xb4,
+    IS_CAP_STATUS_USB_TRANSFER_FAILED   =   0xc7,
 
-    IS_CAP_STATUS_USB_TRANSFER_FAILED       =   0xc7,
+    IS_CAP_STATUS_DEV_TIMEOUT           =   0xd6,
 
-    IS_CAP_STATUS_DEV_MISSED_IMAGES         =   0xe5,
-    IS_CAP_STATUS_DEV_TIMEOUT               =   0xd6,
-    IS_CAP_STATUS_DEV_FRAME_CAPTURE_FAILED  =   0xd9,
-
-    IS_CAP_STATUS_ETH_BUFFER_OVERRUN        =   0xe4,
-    IS_CAP_STATUS_ETH_MISSED_IMAGES         =   0xe5
+    IS_CAP_STATUS_ETH_BUFFER_OVERRUN    =   0xe4,
+    IS_CAP_STATUS_ETH_MISSED_IMAGES     =   0xe5
 
 } UEYE_CAPTURE_STATUS;
 
@@ -3220,14 +3185,7 @@ typedef enum E_DEVICE_FEATURE_CMD
     IS_DEVICE_FEATURE_CMD_SET_LEVEL_CONTROLLED_TRIGGER_INPUT_MODE               = 82,
     IS_DEVICE_FEATURE_CMD_GET_LEVEL_CONTROLLED_TRIGGER_INPUT_MODE               = 83,
     IS_DEVICE_FEATURE_CMD_GET_LEVEL_CONTROLLED_TRIGGER_INPUT_MODE_DEFAULT       = 84,
-    IS_DEVICE_FEATURE_CMD_GET_VERTICAL_AOI_MERGE_MODE_SUPPORTED_LINE_MODES      = 85,
-    IS_DEVICE_FEATURE_CMD_SET_REPEATED_START_CONDITION_I2C                      = 86,
-    IS_DEVICE_FEATURE_CMD_GET_REPEATED_START_CONDITION_I2C                      = 87,
-    IS_DEVICE_FEATURE_CMD_GET_REPEATED_START_CONDITION_I2C_DEFAULT              = 88,
-    IS_DEVICE_FEATURE_CMD_GET_TEMPERATURE_STATUS                                = 89,
-    IS_DEVICE_FEATURE_CMD_GET_MEMORY_MODE_ENABLE                                = 90,
-    IS_DEVICE_FEATURE_CMD_SET_MEMORY_MODE_ENABLE                                = 91,
-    IS_DEVICE_FEATURE_CMD_GET_MEMORY_MODE_ENABLE_DEFAULT                        = 92
+    IS_DEVICE_FEATURE_CMD_GET_VERTICAL_AOI_MERGE_MODE_SUPPORTED_LINE_MODES      = 85
     
 } DEVICE_FEATURE_CMD;
 
@@ -3257,28 +3215,12 @@ typedef enum E_DEVICE_FEATURE_MODE_CAPS
     IS_DEVICE_FEATURE_CAP_NOISE_REDUCTION                           = 0x00008000,
     IS_DEVICE_FEATURE_CAP_TIMESTAMP_CONFIGURATION                   = 0x00010000,
     IS_DEVICE_FEATURE_CAP_IMAGE_EFFECT                              = 0x00020000,
-    IS_DEVICE_FEATURE_CAP_EXTENDED_PIXELCLOCK_RANGE                 = 0x00040000,
+    IS_DEVICE_FEATURE_CAP_EXTENDED_PIXELCLOCK_RANGE					= 0x00040000,
     IS_DEVICE_FEATURE_CAP_MULTI_INTEGRATION                         = 0x00080000,
     IS_DEVICE_FEATURE_CAP_WIDE_DYNAMIC_RANGE                        = 0x00100000,
-    IS_DEVICE_FEATURE_CAP_LEVEL_CONTROLLED_TRIGGER                  = 0x00200000,
-    IS_DEVICE_FEATURE_CAP_REPEATED_START_CONDITION_I2C              = 0x00400000,
-    IS_DEVICE_FEATURE_CAP_TEMPERATURE_STATUS                        = 0x00800000,
-    IS_DEVICE_FEATURE_CAP_MEMORY_MODE                               = 0x01000000
+    IS_DEVICE_FEATURE_CAP_LEVEL_CONTROLLED_TRIGGER                  = 0x00200000
     
 } DEVICE_FEATURE_MODE_CAPS;
-
-/*!
- * \brief Enumeration of temperature states.
- *
- * \sa is_DeviceFeature
- */
-typedef enum E_IS_TEMPERATURE_CONTROL_STATUS
-{
-    TEMPERATURE_CONTROL_SATUS_NORMAL   = 0,
-    TEMPERATURE_CONTROL_SATUS_WARNING  = 1,
-    TEMPERATURE_CONTROL_SATUS_CRITICAL = 2,
-
-} IS_TEMPERATURE_CONTROL_STATUS;
 
 /*!
  * \brief Enumeration of Noise modes.
@@ -4384,8 +4326,7 @@ typedef enum E_CONFIGURATION_CMD
 
     IS_CONFIG_CMD_TRUSTED_PAIRING_SET                      = 15,
     IS_CONFIG_CMD_TRUSTED_PAIRING_GET                      = 16,
-    IS_CONFIG_CMD_TRUSTED_PAIRING_GET_DEFAULT              = 17,
-	IS_CONFIG_CMD_RESERVED_1                               = 18
+    IS_CONFIG_CMD_TRUSTED_PAIRING_GET_DEFAULT              = 17
   
 } CONFIGURATION_CMD;
 
@@ -4555,81 +4496,10 @@ typedef enum E_AUTOPARAMETER_CMD
     IS_AWB_CMD_SET_ENABLE                       = 5,
     IS_AWB_CMD_GET_SUPPORTED_RGB_COLOR_MODELS   = 6,
     IS_AWB_CMD_GET_RGB_COLOR_MODEL              = 7,
-    IS_AWB_CMD_SET_RGB_COLOR_MODEL              = 8,
-
-    IS_AES_CMD_GET_SUPPORTED_TYPES              = 9,
-    IS_AES_CMD_SET_ENABLE                       = 10,
-    IS_AES_CMD_GET_ENABLE                       = 11,
-    IS_AES_CMD_SET_TYPE                         = 12,
-    IS_AES_CMD_GET_TYPE                         = 13,
-    IS_AES_CMD_SET_CONFIGURATION                = 14,
-    IS_AES_CMD_GET_CONFIGURATION                = 15,
-    IS_AES_CMD_GET_CONFIGURATION_DEFAULT        = 16,
-    IS_AES_CMD_GET_CONFIGURATION_RANGE          = 17
+    IS_AWB_CMD_SET_RGB_COLOR_MODEL              = 8
     
 } AUTOPARAMETER_CMD;
 
-/*!
- * \brief AES modes used by is_AutoParameter, \ref is_AutoParameter.
- */
-typedef enum E_AES_MODE
-{
-    IS_AES_MODE_PEAK = 0x01,
-    IS_AES_MODE_MEAN = 0x02
-
-}AES_MODE;
-
-/*!
- * \brief AES configuration used by is_AutoParameter, \ref is_AutoParameter.
- */
-typedef struct 
-{
-    INT nMode;
-    CHAR pConfiguration[1];
-
-} AES_CONFIGURATION;
-
-/*!
- * \brief AES peak white configuration used by is_AutoParameter, \ref is_AutoParameter.
- */
-typedef struct
-{
-    IS_RECT rectUserAOI;
-    UINT nFrameSkip;
-    UINT nHysteresis;
-    UINT nReference;
-    UINT nChannel;
-    double f64Maximum;
-    double f64Minimum;
-
-    CHAR reserved[32];
-
-}AES_PEAK_WHITE_CONFIGURATION;
-
-/*!
- * \brief AES peak white configuration range used by is_AutoParameter, \ref is_AutoParameter.
- */
-typedef struct 
-{
-    IS_RANGE_S32 rangeFrameSkip;
-    IS_RANGE_S32 rangeHysteresis;
-    IS_RANGE_S32 rangeReference;
-
-    CHAR reserved[32];
-
-}AES_PEAK_WHITE_CONFIGURATION_RANGE;
-
-/*!
- * \brief AES peak white channel enumeration used by is_AutoParameter, \ref is_AutoParameter.
- */
-typedef enum E_AES_CHANNEL
-{
-    IS_AES_CHANNEL_MONO = 0x01,
-    IS_AES_CHANNEL_RED = 0x01,
-    IS_AES_CHANNEL_GREEN = 0x02,
-    IS_AES_CHANNEL_BLUE = 0x04
-
-}AES_CHANNEL;
 
 /*!
  * \brief Defines used by is_AutoParameter, \ref is_AutoParameter.
@@ -4799,6 +4669,29 @@ typedef enum E_IMAGE_FILE_CMD
 * \return  error code
 */
 IDSEXP is_ImageFile(HIDS hCam, UINT nCommand, void* pParam, UINT cbSizeOfParam);
+
+
+/*!
+ * \brief Data type for 32-bit signed int value ranges.
+ */
+typedef struct S_IS_RANGE_S32
+{
+    INT s32Min;
+    INT s32Max;
+    INT s32Inc;
+
+} IS_RANGE_S32;
+
+/*!
+ * \brief Data type for 64-bit signed double value ranges.
+ */
+typedef struct S_IS_RANGE_F64
+{
+    double f64Min;
+    double f64Max;
+    double f64Inc;
+
+} IS_RANGE_F64;
 
 /*!
  * \brief Enumeration of modes of function \ref is_Blacklevel.
