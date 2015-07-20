@@ -27,7 +27,7 @@ The following parameters are mandatory or optional for initializing an instance 
     
     .. plugininitparams::
         :plugin: NewportSMC100
-		
+
 Parameters
 ==========
 
@@ -38,33 +38,33 @@ parameters can be changed using *setParam*.
 **name**: {str}, read-only
     name of the plugin
 **comPort**: {int}, read-only
-	port number of used COM port (not implemented yet) For further information search the info of the corresponding SerialIO plugin.
+    port number of used COM port (not implemented yet) For further information search the info of the corresponding SerialIO plugin.
 **ctrlId**: {str}, read-only
     device information string
 **current_status**: {intArray}, read-only
     This intArray stores the status of each controller. While no error occures, the controller should be 
-	notReferenced (LED = orange)
-	Referenced (LED = green)
-	ConfigMode (LED = red [blinking])
+    notReferenced (LED = orange)
+    Referenced (LED = green)
+    ConfigMode (LED = red [blinking])
 **numaxis**: {int}, read-only
-	return the number of axes, here always 1
+    return the number of axes, here always 1
 **async**: {int} [0,1]
-	Defines if the code continues while a controller is processing a task.
+    Defines if the code continues while a controller is processing a task.
 **accel**: {doubleArray}
     Array of the accelerations of each axis. Notice that if the acceleration is too high, errors can occure because of physical boundaries. These boundaries might be changeable due the serialport. For further information refer to the datasheet.
 **calib_mode**: {intArray} [0,4]
-	Defines the calibration mode, each axis performs when exec_calib is called with an 1 for the corresponding axis. 
-	0 use MZ switch and encoder Index.
-	1 use current position as HOME.
-	2 use MZ switch only.
-	3 use EoR- switch and encoder Index.
-	4 use EoR- switch only.
+    Defines the calibration mode, each axis performs when exec_calib is called with an 1 for the corresponding axis. 
+    0 use MZ switch and encoder Index.
+    1 use current position as HOME.
+    2 use MZ switch only.
+    3 use EoR- switch and encoder Index.
+    4 use EoR- switch only.
 **config_state**: {intArray} [0,1]
-	Defines wheather an axis switches to config mode. Notice that if an axis is in referenced state a reset is automatically performed to set the axis to notRef state and further into config state. 
+    Defines wheather an axis switches to config mode. Notice that if an axis is in referenced state a reset is automatically performed to set the axis to notRef state and further into config state. 
 **speed**: {doubleArray}
-	Array of the velocity of each axis. 
+    Array of the velocity of each axis. 
 **exec_calib**: {intArray} [0,1]
-	By setting this parameter with either a 1 or a 0 for each axis, all axis marked with 1 are calibrated.
+    By setting this parameter with either a 1 or a 0 for each axis, all axis marked with 1 are calibrated.
 
 Example
 =======
@@ -73,35 +73,35 @@ Create new Instance:
 
 .. code-block:: python
 
-	serialPort = dataIO("SerialIO", 3, 57600, endline="\r\n")
-	plugin = actuator("NewPortSMC100", serialPort, 2)
-	del serialPort #can be deleted since plugin still holds a reference
+    serialPort = dataIO("SerialIO", 3, 57600, endline="\r\n")
+    plugin = actuator("NewPortSMC100", serialPort, 2)
+    del serialPort #can be deleted since plugin still holds a reference
 
 Switch acceleration, velocity and calib_mode
 
 .. code-block:: python  
 
-	# switch 2 controller to config mode
-	plugin.setParam("config_state", [1,1])
-	# plugin.setParam("config_state", [1,0]) => switch ctrl0 to config and if ctrl1 is on config, leave config 
+# switch 2 controller to config mode
+    plugin.setParam("config_state", [1,1])
+    # plugin.setParam("config_state", [1,0]) => switch ctrl0 to config and if ctrl1 is on config, leave config 
 
-	# set velocity 
-	plugin.setParam("speed", [5.0,7.0])
+    # set velocity 
+    plugin.setParam("speed", [5.0,7.0])
 
-	# set acceleration
-	plugin.setParam("accel", [2.0,3.0])
+    # set acceleration
+    plugin.setParam("accel", [2.0,3.0])
 
-	# set calib_mode
-	plugin.setParam("calib_mode", [2,2])
+    # set calib_mode
+    plugin.setParam("calib_mode", [2,2])
 
-	# leave config mode
-	plugin.setParam("config_state", [0,0])
+    # leave config mode
+    plugin.setParam("config_state", [0,0])
 
-	# calibrate
-	plugin.calib(0,1) #calibrate first and second axis
+    # calibrate
+    plugin.calib(0,1) #calibrate first and second axis
 
-	# Controller calibrate and move to referenced state
-	
+    # Controller calibrate and move to referenced state
+    
 Known Issues
 ============
 

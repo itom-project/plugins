@@ -47,18 +47,18 @@ parameters can be changed using *setParam*.
     
 **port**: {int}, read-only
     port used for IP communication or device ID for ModbusRTU
-	
+    
 **baud**: {int}, read-only
-	The baudrate of the port for RTU communication
+    The baudrate of the port for RTU communication
 
 **parity**: {str}, read-only
-	Parity for RTU communication (N->None, E->Even, O->Odd)
-	
+    Parity for RTU communication (N->None, E->Even, O->Odd)
+    
 **databit**: {int}, read-only
-	Number of bits to be written in line for RTU communication
-	
+    Number of bits to be written in line for RTU communication
+    
 **stopbit**: {int}, read-only
-	Stop bits after every n bits for RTU communication
+    Stop bits after every n bits for RTU communication
 
 **output_mode**: {bool}
     if output_mode is true, multiple outputs will be sent to command line, e.g. register values of getVal function. Default is false
