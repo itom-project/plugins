@@ -106,6 +106,11 @@ class DataObjectArithmetic : public ito::AddInAlgo
         static ito::RetVal centerOfGravity(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut); //*< Static filter function to calcuate the center of gravity of a dataObject in x and y */
         static ito::RetVal centerOfGravityParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);              //*< Static parameter function for the centerOfGravity-Filter */
         
+		static const char* boundingBoxDoc;
+        static ito::RetVal boundingBox(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut); //*< Static filter function to calcuate the center of gravity of a dataObject in x and y */
+        static ito::RetVal boundingBoxParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);              //*< Static parameter function for the centerOfGravity-Filter */
+        
+
         static const char* centerOfGravity1DimDoc;
         static ito::RetVal centerOfGravity1Dim(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);    //*< Static filter function to calcuate the center of gravity of a dataObject along the x or y axis*/ 
         static ito::RetVal centerOfGravity1DimParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);          //*< Static parameter function for the centerOfGravity1Dim-Filter */
@@ -117,6 +122,7 @@ class DataObjectArithmetic : public ito::AddInAlgo
 
     private:
         template<typename _Tp> static ito::RetVal centroidHelper(const cv::Mat *mat, const ito::float64 &lowTreshold, const ito::float64 &highTreshold, ito::float64 &xCOG, ito::float64 &yCOG);             
+		template<typename _Tp> static ito::RetVal boundingBoxHelper(const cv::Mat *mat, const ito::float64 &lowThreshold, const ito::float64 &highThreshold, int *roi);
         template<typename _Tp> static ito::RetVal centroidHelperFor1D(const cv::Mat *inMat, ito::float64 *outCOG, _Tp *outINT, const _Tp &pvThreshold, const _Tp &lowerThreshold, const ito::float64 &dynamicTreshold, const ito::float64 &scale, const ito::float64 &offset, bool alongCols);
 
         template<typename _Tp> static ito::RetVal getPercentageThresholdHelper(const ito::DataObject *dObj, double percentage, double &value);

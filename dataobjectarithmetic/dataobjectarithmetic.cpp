@@ -1599,6 +1599,198 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+const char* DataObjectArithmetic::boundingBoxDoc = "This filter calculates the minimum ROI that contains all values within a lower and optional upper threshold. \n\
+\n\
+The return value contains the [x0,y0,width,height] of the minimum ROI.\n\
+\n\
+Values of the data object belong to the ROI if they are >= lowThreshold and <= highThreshold. \n\
+The highThreshold is only checked, if it is different than the default value (maximum value of double). \n\
+\n\
+The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types.";
+
+RetVal DataObjectArithmetic::boundingBoxParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if(!retval.containsError())
+    {
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("2D source image data object (u)int8, (u)int16, int32, float32 or float64 only.").toLatin1().data());
+        paramsMand->append(param);
+        param = Param("lowThreshold", ito::ParamBase::Double, -1*std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), 0.0, tr("only values >= lowThreshold are considered for the ROI").toLatin1().data());
+        paramsMand->append(param);
+        param = Param("highThreshold", ito::ParamBase::Double, -1*std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), tr("if given, only values <= highThreshold are considered for the ROI").toLatin1().data());
+        paramsOpt->append(param);
+
+        paramsOut->append( ito::Param("roi", ito::ParamBase::IntArray | ito::ParamBase::Out, NULL, tr("ROI of bounding box [x0,y0,width,height]").toLatin1().data()));
+    }
+
+    return retval;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DataObjectArithmetic::boundingBox(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+    const ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
+    if(dObj == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is NULL").toLatin1().data());
+    }
+    if(dObj->getDims() < 1)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is not initialized").toLatin1().data());    
+    }
+
+    ito::float64 lowThreshold = (*paramsMand)[1].getVal<ito::float64>();
+    ito::float64 highThreshold = (*paramsOpt)[0].getVal<ito::float64>();
+
+    retval += ito::dObjHelper::verifyDataObjectType(dObj, "sourceImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    if(dObj->getNumPlanes() != 1)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source image must have one plane").toLatin1().data());    
+    }    
+
+	int roi[] = {0,0,0,0};
+
+    if(!retval.containsError())
+    {
+        const cv::Mat *plane = dObj->getCvPlaneMat(0);
+
+        switch(dObj->getType())
+        {
+            case ito::tInt8:
+                boundingBoxHelper<ito::int8>(plane, lowThreshold, highThreshold, roi);
+            break;
+            case ito::tUInt8:
+                boundingBoxHelper<ito::uint8>(plane, lowThreshold, highThreshold, roi);
+            break;
+            case ito::tInt16:
+                boundingBoxHelper<ito::int16>(plane, lowThreshold, highThreshold, roi);
+            break;
+            case ito::tUInt16:
+                boundingBoxHelper<ito::uint16>(plane, lowThreshold, highThreshold, roi);
+            break;
+            case ito::tInt32:
+                boundingBoxHelper<ito::int32>(plane, lowThreshold, highThreshold, roi);
+            break;
+            case ito::tFloat32:
+                boundingBoxHelper<ito::float32>(plane, lowThreshold, highThreshold, roi);
+            break;
+            case ito::tFloat64:
+                boundingBoxHelper<ito::float64>(plane, lowThreshold, highThreshold, roi);
+            break;
+            default:
+                return ito::RetVal(ito::retError, 0, tr("Unknown type or type not implemented for phase shifting evaluation").toLatin1().data());
+        }
+    }
+
+    (*paramsOut)[0].setVal<int*>(roi, 4);
+
+    return retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> ito::RetVal DataObjectArithmetic::boundingBoxHelper(const cv::Mat *mat, const ito::float64 &lowThreshold, const ito::float64 &highThreshold, int *roi)
+{
+    unsigned int x, y;
+    unsigned int x0 = std::numeric_limits<unsigned int>::max();
+	unsigned int x1 = 0;
+	unsigned int y0 = std::numeric_limits<unsigned int>::max();
+	unsigned int y1 = 0;
+    
+	const _Tp *pValue = NULL;
+    
+    if(std::numeric_limits<_Tp>::is_exact)
+    {
+        const _Tp lowThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(std::numeric_limits<_Tp>::min()), lowThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
+        const _Tp highThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(std::numeric_limits<_Tp>::min()), highThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
+
+		if (highThreshold < std::numeric_limits<ito::float64>::max())
+		{
+			for(y = 0; y < (unsigned int)mat->rows; ++y)
+			{
+				pValue = mat->ptr<_Tp>(y);
+				for(x = 0; x < (unsigned int)mat->cols; ++x)
+				{
+					if (pValue[x] >= lowThres && pValue[x] <= highThres)
+					{
+						x0 = std::min(x0, x);
+						x1 = std::max(x1, x);
+						y0 = std::min(y0, y);
+						y1 = std::max(y1, y);  
+					}
+				}
+			}
+		}
+		else
+		{
+			for(y = 0; y < (unsigned int)mat->rows; ++y)
+			{
+				pValue = mat->ptr<_Tp>(y);
+				for(x = 0; x < (unsigned int)mat->cols; ++x)
+				{
+					if (pValue[x] >= lowThres)
+					{
+						x0 = std::min(x0, x);
+						x1 = std::max(x1, x);
+						y0 = std::min(y0, y);
+						y1 = std::max(y1, y);  
+					}
+				}
+			}
+		}
+    }
+    else
+    {
+        const _Tp lowThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(-std::numeric_limits<_Tp>::max()), lowThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
+        const _Tp highThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(-std::numeric_limits<_Tp>::max()), highThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
+
+        if (highThreshold < std::numeric_limits<ito::float64>::max())
+		{
+			for(y = 0; y < (unsigned int)mat->rows; ++y)
+			{
+				pValue = mat->ptr<_Tp>(y);
+				for(x = 0; x < (unsigned int)mat->cols; ++x)
+				{
+					if (pValue[x] >= lowThres && pValue[x] <= highThres)
+					{
+						x0 = std::min(x0, x);
+						x1 = std::max(x1, x);
+						y0 = std::min(y0, y);
+						y1 = std::max(y1, y);  
+					}
+				}
+			}
+		}
+		else
+		{
+			for(y = 0; y < (unsigned int)mat->rows; ++y)
+			{
+				pValue = mat->ptr<_Tp>(y);
+				for(x = 0; x < (unsigned int)mat->cols; ++x)
+				{
+					if (pValue[x] >= lowThres)
+					{
+						x0 = std::min(x0, x);
+						x1 = std::max(x1, x);
+						y0 = std::min(y0, y);
+						y1 = std::max(y1, y);  
+					}
+				}
+			}
+		}
+    }
+
+	roi[0] = x0;
+	roi[1] = y0;
+	roi[2] = 1+x1-x0;
+	roi[3] = 1+y1-y0;
+
+    return ito::retOk;
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 DataObjectArithmetic::~DataObjectArithmetic()
 {
     FilterDef *filter;
@@ -1629,6 +1821,9 @@ RetVal DataObjectArithmetic::init(QVector<ito::ParamBase> * /*paramsMand*/, QVec
 
     filter = new FilterDef(DataObjectArithmetic::centerOfGravity, DataObjectArithmetic::centerOfGravityParams, tr(centerOfGravityDoc));
     m_filterList.insert("centroidXY", filter);
+
+	filter = new FilterDef(DataObjectArithmetic::boundingBox, DataObjectArithmetic::boundingBoxParams, tr(boundingBoxDoc));
+    m_filterList.insert("boundingBox", filter);
 
     filter = new FilterDef(DataObjectArithmetic::centerOfGravity1Dim, DataObjectArithmetic::centerOfGravity1DimParams, tr(centerOfGravity1DimDoc));
     m_filterList.insert("centroid1D", filter);
