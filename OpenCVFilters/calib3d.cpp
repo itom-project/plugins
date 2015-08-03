@@ -28,8 +28,11 @@
 #include <qnumeric.h>
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-
 #include "opencv2/calib3d/calib3d.hpp"
+
+#if (CV_MAJOR_VERSION >= 3)
+#include "opencv\highgui.h"
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const char* OpenCVFilters::cvFindCirclesDoc = "Finds circles in a grayscale image using the Hough transform.\n\
@@ -110,7 +113,11 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
     cvplaneIn = (cv::Mat_<unsigned char> *)(dObjImages->get_mdata())[0];
 
     // Declare the output vector to hold the circle coordinates and radii
+#if (CV_MAJOR_VERSION >= 3)
+    std::vector<cv::Vec3f> circles;
+#else
     cv::vector<cv::Vec3f> circles;
+#endif
 
     /*    void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0 )
         dp – Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.

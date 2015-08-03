@@ -855,7 +855,9 @@ ito::RetVal OpenCVGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         qDebug() << "CV_CAP_PROP_EXPOSURE" << m_pCam->get(CV_CAP_PROP_EXPOSURE);
         qDebug() << "CV_CAP_PROP_GAIN" << m_pCam->get(CV_CAP_PROP_GAIN);
         qDebug() << "CV_CAP_PROP_WHITE_BALANCE_BLUE_U" << m_pCam->get(CV_CAP_PROP_WHITE_BALANCE_BLUE_U);
+#if (CV_MAJOR_VERSION < 3)
         qDebug() << "CV_CAP_PROP_MONOCROME" << m_pCam->get(CV_CAP_PROP_MONOCROME);
+#endif
         qDebug() << "CV_CAP_PROP_GAMMA" << m_pCam->get(CV_CAP_PROP_GAMMA);
         qDebug() << "CV_CAP_PROP_SHARPNESS" << m_pCam->get(CV_CAP_PROP_SHARPNESS);
         qDebug() << "CV_CAP_PROP_SATURATION" << m_pCam->get(CV_CAP_PROP_SATURATION);

@@ -1445,7 +1445,7 @@ template<typename _Tp> ito::RetVal FittingFilters::lmedsFitPlane(const cv::Mat *
             {
                 for (int c = 0; c < mat->cols; ++c)
                 {
-                    if (!cvIsNaN(rowPtr[c]))
+                    if (!cvIsNaN((double)rowPtr[c]))
                     {
                         p1[0] = (double)c;
                         p1[2] = (double)rowPtr[c];
@@ -1525,7 +1525,7 @@ template<typename _Tp> ito::RetVal FittingFilters::getRandomValidMinimalSampleSe
             c = uni % mat->cols;
             r = (uni - c) / mat->cols;
             
-            if (!cvIsNaN(mat->at<_Tp>(r,c)))
+            if (!cvIsNaN((double)mat->at<_Tp>(r,c)))
             {
                 rows[nd++] = uni;
 
@@ -1585,7 +1585,7 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
 
         for (j=0; j<inputMatrix->cols; j++)
         {
-            if (!cvIsNaN(row[j]))
+            if (!cvIsNaN((double)row[j]))
             {
                 rowDest[j] = row[j] - Anew - Bx[j] - Cy[i];
             }
