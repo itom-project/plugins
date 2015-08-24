@@ -250,6 +250,12 @@ IF (WIN32)
   endif (PLUGIN_PCOPixelFly)
 ENDIF (WIN32)
 
+# PiezosystemJena_NV40_1
+OPTION(PLUGIN_PiezosystemJena_NV40_1 "Build with this plugin." ON)
+if (PLUGIN_PiezosystemJena_NV40_1)
+  ADD_SUBDIRECTORY(PiezosystemJena_NV40_1)
+endif (PLUGIN_PiezosystemJena_NV40_1)
+
 # PGRFlyCapture
 OPTION(PLUGIN_PGRFlyCapture "Build with this plugin." ON)
 if (PLUGIN_PGRFlyCapture)
