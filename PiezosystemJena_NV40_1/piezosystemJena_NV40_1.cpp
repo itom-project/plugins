@@ -88,34 +88,23 @@ PiezosystemJena_NV40_1::PiezosystemJena_NV40_1() :
     AddInActuator(),
     m_pSer(NULL),
     m_delayAfterSendCommandMS(0),
-    m_dockWidget(NULL)
+    m_dockWidget(NULL),
+    m_async(0),
+    m_closedLoop(true)
 {
-    
-    
-    m_scale = 1e3; // PI is programmed in µm, this evil Programm sents in mm
-    m_async = 0;
-    m_numAxis = 1;
-
-    m_delayProp = 0.5; //s
-    m_delayOffset = 0.02; //s
-
-    m_AbsPosCmd = "set,";
-    m_RelPosCmd = "";
-    m_PosQust = "mess";
-
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "PiezosystemJena", NULL);
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("async", ito::ParamBase::Int, 0, 1, m_async, tr("asychronous (1) or synchronous (0) mode").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("numAxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, tr("Number of axes (here always 1)").toLatin1().data());
+    paramVal = ito::Param("numAxis", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1, 1, tr("number of axes (here always 1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("closedLoop", ito::ParamBase::Int, 0, 1, 0, tr("open loop (0, unit is voltage) or closed loop (1, unit is millimeters)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("delayProp", ito::ParamBase::Double, 0.0, 10.0, m_delayProp, tr("delay [s] per step size [mm] (e.g. value of 1 means that a delay of 100ms is set for a step of 100mu)").toLatin1().data());
+    paramVal = ito::Param("delayMode", ito::ParamBase::Int, 0, 1, 0, tr("0: target position is continuously read after each positioning to check for end of movement (default), 1: sleep for a constant delayTime after each movement").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("delayOffset", ito::ParamBase::Double, 0.0, 10.0, m_delayOffset, tr("offset delay [s] per movement (independent on step size)").toLatin1().data());
+    paramVal = ito::Param("delayTime", ito::ParamBase::Double, 0.0, 2.0, 0.02, tr("offset delay [s] after each movement (only considered for delayMode: 1)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("remote", ito::ParamBase::Int, 0, 1, 1, tr("defines whether device is in local (0) or remote (1) mode (default).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -163,7 +152,7 @@ ito::RetVal PiezosystemJena_NV40_1::getParam(QSharedPointer<ito::Param> val, Ito
 
     if (hasIndex)
     {
-        retValue += ito::RetVal(ito::retError,0,"index based parametername not supported by this plugin");
+        retValue += ito::RetVal(ito::retError,0,"index based parameter name not supported by this plugin");
     }
 
     if(!retValue.containsError())
@@ -227,17 +216,7 @@ ito::RetVal PiezosystemJena_NV40_1::setParam(QSharedPointer<ito::ParamBase> val,
 
     if(!retValue.containsError())
     {
-        if (key == "delayProp")
-        {
-            m_delayProp = val->getVal<double>();
-            it->copyValueFrom(&(*val));
-        }
-        else if (key == "delayOffset")
-        {
-            m_delayOffset = val->getVal<double>();
-            it->copyValueFrom(&(*val));
-        }
-        else if (key == "closedLoop")
+        if (key == "closedLoop")
         {
             if (val->getVal<int>() > 0)
             {
@@ -250,6 +229,10 @@ ito::RetVal PiezosystemJena_NV40_1::setParam(QSharedPointer<ito::ParamBase> val,
                     retValue += ito::RetVal(ito::retError, 0, "closed loop not possible. No sensor connected.");
                     it->setVal<int>(0);
                 }
+                else
+                {
+                    m_closedLoop = true;
+                }
             }
             else
             {
@@ -261,6 +244,10 @@ ito::RetVal PiezosystemJena_NV40_1::setParam(QSharedPointer<ito::ParamBase> val,
                 {
                     retValue += ito::RetVal(ito::retError, 0, "closed loop not possible. No sensor connected.");
                     it->setVal<int>(0);
+                }
+                else
+                {
+                    m_closedLoop = false;
                 }
             }
 
@@ -284,6 +271,11 @@ ito::RetVal PiezosystemJena_NV40_1::setParam(QSharedPointer<ito::ParamBase> val,
             {
                 it->copyValueFrom(&(*val));
             }
+        }
+        else if (key == "async")
+        {
+            m_async = val->getVal<int>();
+            it->copyValueFrom(&(*val));
         }
         else
         {
@@ -323,10 +315,6 @@ ito::RetVal PiezosystemJena_NV40_1::init(QVector<ito::ParamBase> *paramsMand, QV
     QByteArray answer;
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval = ito::retOk;
-
-    m_AbsPosCmd = "wr,";
-    m_RelPosCmd = "wr,";
-    m_PosQust = "rd,";
 
     if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
     {
@@ -501,12 +489,19 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const int axis, QSharedPointer<double
 
     if (axis != 0)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Axis %i does not exist").arg(axis).toLatin1().data());
     }
     else
     {
-        retval += sendQuestionWithAnswerDouble(m_PosQust, axpos, 1500);
-        *pos = (double)axpos / 1000;
+        retval += sendQuestionWithAnswerDouble("rd,", axpos, 1500);
+        if (m_closedLoop)
+        {
+            *pos = axpos / 1000.0; //µm to mm
+        }
+        else
+        {
+            *pos = axpos; //Volt
+        }
         m_currentPos[0] = *pos;
     }
 
@@ -533,16 +528,19 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const QVector<int> axis, QSharedPoint
     ito::RetVal retval = ito::retOk;
     QSharedPointer<double> sharedpos = QSharedPointer<double>(new double);
 
-    if ((axis.size() == 1) && (axis.value(0) == 0))
+    if (axis.size() == 1)
     {
-        retval += getPos(axis.value(0), sharedpos, 0);
-        (*pos)[0] = *sharedpos;
-        m_currentPos[0] = *sharedpos;
+        retval += getPos(axis.at(0), sharedpos, NULL);
+        if (!retval.containsError())
+        {
+            (*pos)[0] = *sharedpos;
+        }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Error. Too many or wrong axes").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Error: controller only supports one axis.").toLatin1().data());
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
@@ -564,10 +562,7 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const QVector<int> axis, QSharedPoint
 */
 ito::RetVal PiezosystemJena_NV40_1::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::retOk;
-    double target_posMM = pos;
-    retval = setPos(axis, target_posMM, false, waitCond);
-    return retval;
+    return setPos(axis, pos, false, waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -586,7 +581,7 @@ ito::RetVal PiezosystemJena_NV40_1::setPosAbs(const QVector<int> axis, QVector<d
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
 
-    if (axis.size() > 1)
+    if (axis.size() != 1)
     {
         retval += ito::RetVal(ito::retError, 0, tr("Too many axes. This is a single axis device.").toLatin1().data());
 
@@ -616,26 +611,7 @@ ito::RetVal PiezosystemJena_NV40_1::setPosAbs(const QVector<int> axis, QVector<d
 */
 ito::RetVal PiezosystemJena_NV40_1::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
-    ito::RetVal retval = ito::retOk;
-
-    double axpos = 0.0;
-
-    retval += sendQuestionWithAnswerDouble(m_PosQust, axpos, 1500);   
-    
-    if(retval.containsError())
-    {
-        if (waitCond)
-        {
-            waitCond->returnValue = retval;
-            waitCond->release();
-        }    
-    }
-    else
-    {
-        double target_posMM = axpos / 1000.0 + pos;
-        retval += setPos(axis, target_posMM, false, waitCond);
-    }
-    return retval;
+    return setPos(axis, pos, true, waitCond);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -654,9 +630,9 @@ ito::RetVal PiezosystemJena_NV40_1::setPosRel(const QVector<int> axis, QVector<d
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval(ito::retOk);
 
-    if (axis.size() > 1)
+    if (axis.size() != 1)
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Too many axes. This is a single axis device").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Too many axes. This is a single axis device.").toLatin1().data());
 
         if (waitCond)
         {
@@ -671,6 +647,190 @@ ito::RetVal PiezosystemJena_NV40_1::setPosRel(const QVector<int> axis, QVector<d
 
     return retval;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm. 
+            If the axisnumber is not 0, this function returns an error.
+
+    \param [in] axis        axis number
+    \param [in] dpos        target position in mm
+    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
+    \return retOk
+*/
+ito::RetVal PiezosystemJena_NV40_1::setPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond)
+{
+    double dpos_temp;
+    ito::RetVal retval = ito::retOk;
+    bool released = false;
+    int delayTimeMS = 0;
+    QByteArray cmdTotal;
+
+    if (axis != 0)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
+
+        if (waitCond && !released)
+        {
+            waitCond->returnValue = retval;
+            waitCond->release();
+            released = true;
+        }
+    }
+    else if (m_params["remote"].getVal<int>() == 0)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Remote mode must be enabled for movement").toLatin1().data());
+    }
+    else
+    {
+        retval += serialDummyRead();
+
+        if (relNotAbs)
+        {
+            QSharedPointer<double> actPos = QSharedPointer<double>(new double);
+
+            retval += getPos(0, actPos, NULL);
+            if (!retval.containsError())
+            {
+                m_targetPos[0] = m_currentPos[0] + posMM;
+            }
+
+            if (m_closedLoop)
+            {
+                dpos_temp = m_targetPos[0] * 1000;
+            }
+            else
+            {
+                dpos_temp = m_targetPos[0];
+            }
+
+            cmdTotal = "wr,";
+            cmdTotal = cmdTotal.append( QByteArray::number(dpos_temp, 'g') );
+        }
+        else
+        {
+            if (m_closedLoop)
+            {
+                dpos_temp = posMM * 1000;
+            }
+            else
+            {
+                dpos_temp = posMM;
+            }
+
+            cmdTotal = "wr,";
+            cmdTotal = cmdTotal.append( QByteArray::number(dpos_temp, 'g') );
+            m_targetPos[0] = posMM;
+        }
+
+        if (!retval.containsError())
+        {
+            setStatus(m_currentStatus[0], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
+            sendStatusUpdate(false);
+            sendTargetUpdate();
+
+            retval += serialSendCommand(cmdTotal);
+            retval += serialDummyRead();
+
+            if (retval.errorCode() == PI_READTIMEOUT)
+            {
+                retval = ito::RetVal(ito::retError, 0, tr("timeout").toLatin1().data());
+            }
+        }
+
+        if (!retval.containsError())
+        {
+            if (m_async && waitCond && !released)
+            {
+                waitCond->returnValue = retval;
+                waitCond->release();
+                released = true;
+            }
+
+            retval += waitForDone(5000, QVector<int>(1,axis));
+
+            if (!m_async && waitCond && !released)
+            {
+                waitCond->returnValue = retval;
+                waitCond->release();
+                released = true;
+            }
+        }
+    }
+
+    if (waitCond && !released)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+        released = true;
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PiezosystemJena_NV40_1::waitForDone(const int timeoutMS, const QVector<int> /*axis*/ /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
+{
+    ito::RetVal retVal;
+    QSharedPointer<double> actPos = QSharedPointer<double>(new double);
+
+    if (m_params["delayMode"].getVal<int>() > 0) //sleep
+    {
+        sleep(m_params["delayTime"].getVal<double>() * 1000); //0..2sec, no need to call setAlive
+        replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorAtTarget);
+
+        retVal += getPos(0, actPos, NULL);
+        sendStatusUpdate(false);
+    }
+    else //wait for end of placement
+    {
+        QElapsedTimer timer;
+        bool done = false;
+        ito::RetVal retval2;
+        timer.start();
+
+        while (!done && !retVal.containsError() && timer.elapsed() < timeoutMS)
+        {
+            sleep(5);
+            retval2 = getPos(0, actPos, NULL);
+            if (retval2.errorCode() == PI_READTIMEOUT)
+            {
+                serialDummyRead();
+                //ignore timeout when obtaining the current position
+            }
+            else
+            {
+                retVal += retval2;
+            }
+
+            if (!retVal.containsError())
+            {
+                if (std::abs(m_currentPos[0] - m_targetPos[0]) < (m_closedLoop ? 0.001 : 0.1))
+                {
+                    m_targetPos[0] = m_currentPos[0];
+                    replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorAtTarget);
+                    done = true;
+                }
+            }
+            sendStatusUpdate(false);
+            setAlive();
+        }
+
+        if (!done && timer.elapsed() > timeoutMS)
+        {
+            retVal += ito::RetVal(ito::retError, 0, "timeout while waiting for end of movement");
+            replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorTimeout);
+            sendStatusUpdate(true);
+        }
+        else if (retVal.containsError())
+        {
+            replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorUnknown);
+        }
+    }
+
+    return retVal;
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
             It sends the current postion and the status to the world.
@@ -688,13 +848,6 @@ ito::RetVal PiezosystemJena_NV40_1::requestStatusAndPosition(bool sendCurrentPos
     if (sendCurrentPos)
     {
         retval += getPos(0, sharedpos, 0);
-        m_currentPos[0] = *sharedpos;
-
-        if (std::abs(*sharedpos-m_targetPos[0]) > 0.01)
-        {
-            m_targetPos[0] = *sharedpos;
-        }
-        
         sendStatusUpdate(false);
     }
     else
@@ -777,7 +930,7 @@ ito::RetVal PiezosystemJena_NV40_1::readString(QByteArray &result, int &len, int
         {
             *curBufLen = buflen;
             retValue += m_pSer->getVal(curBuf, curBufLen, NULL);
-            qDebug() << *curBufLen;
+            //qDebug() << *curBufLen;
 
             if (!retValue.containsError())
             {
@@ -944,147 +1097,6 @@ ito::RetVal PiezosystemJena_NV40_1::sendQuestionWithAnswerString(const QByteArra
     }
 
     return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/*! \detail Set the position (abs or rel) of a one axis spezified by "axis" to the position "dpos". The value in device independet in mm. 
-            If the axisnumber is not 0, this function returns an error.
-
-    \param [in] axis        axis number
-    \param [in] dpos        target position in mm
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk
-*/
-ito::RetVal PiezosystemJena_NV40_1::setPos(const int axis, const double posMM, bool relNotAbs, ItomSharedSemaphore *waitCond)
-{
-    double dpos_temp = posMM * 1e3;    // Round value by m_scale
-    ito::RetVal retval = ito::retOk;
-    bool released = false;
-    int delayTimeMS = 0;
-    QByteArray cmdTotal;
-
-    if (axis != 0)
-    {
-        retval += ito::RetVal(ito::retError, 0, tr("Axis does not exist").toLatin1().data());
-
-        if (waitCond && !released)
-        {
-            waitCond->returnValue = retval;
-            waitCond->release();
-            released = true;
-        }
-    }
-    else
-    {
-        retval += serialDummyRead();
-
-        if (relNotAbs)
-        {
-            cmdTotal = m_RelPosCmd;
-            cmdTotal = cmdTotal.append("").append( QByteArray::number(dpos_temp, 'g') );
-
-            if (m_params["closedLoop"].getVal<int>() > 0) //closed loop, mm [0,0.1]
-            {
-                delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + abs(posMM) * m_delayProp /*in seconds/mm*/ * 1000.0;
-            }
-            else //open loop, Volt [0,100]
-            {
-                delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0 + abs(posMM) * m_delayProp /*in seconds/mm*/ * (0.1 / 100.0 /*mm/Volt*/) * 1000.0;
-            }
-
-            m_targetPos[0] += posMM;
-        }
-        else
-        {
-            cmdTotal = m_AbsPosCmd;
-            cmdTotal = cmdTotal.append("").append( QByteArray::number(dpos_temp, 'g') );
-            delayTimeMS = m_delayOffset /*in seconds*/ * 1000.0; 
-            m_targetPos[0] = posMM;
-        }
-
-        setStatus(m_currentStatus[0], ito::actuatorMoving, ito::actSwitchesMask | ito::actStatusMask);
-        sendStatusUpdate(false);
-
-        sendTargetUpdate();
-        retval += serialSendCommand(cmdTotal);
-        retval += serialDummyRead();
-
-        if (retval.errorCode() == PI_READTIMEOUT)
-        {
-            retval = ito::RetVal(ito::retError, 0, tr("timeout").toLatin1().data());
-           }
-        
-        if (!retval.containsError())
-        {
-            if (m_async && waitCond && !released)
-            {
-                waitCond->returnValue = retval;
-                waitCond->release();
-                released = true;
-            }
-
-            retval += waitForDone(delayTimeMS, QVector<int>(1,axis));
-
-            if (!m_async && waitCond && !released)
-            {
-                waitCond->returnValue = retval;
-                waitCond->release();
-                released = true;
-            }
-        }
-        else
-        {
-            replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorAtTarget);
-            sendStatusUpdate(true);
-
-            if (waitCond && !released)
-            {
-                waitCond->returnValue = retval;
-                waitCond->release();
-                released = true;
-            }
-        }
-    }
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PiezosystemJena_NV40_1::waitForDone(const int timeoutMS, const QVector<int> /*axis*/ /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
-{
-    ito::RetVal retVal(ito::retOk);
-    QMutex waitMutex;
-    QWaitCondition waitCondition;
-    bool atTarget = false;
-    int timeoutMS_ = timeoutMS;
-    QSharedPointer<double> actPos = QSharedPointer<double>(new double);
-
-    while(timeoutMS_ > 0 && !atTarget)
-    {
-        //short delay
-        waitMutex.lock();
-        if (timeoutMS > 1000)
-        {
-            waitCondition.wait(&waitMutex, 1000);
-            timeoutMS_ -= 1000;
-        }
-        else
-        {
-            waitCondition.wait(&waitMutex, timeoutMS);
-            timeoutMS_ = 0;
-        }
-        waitMutex.unlock();
-        setAlive();
-    }
-
-    replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorAtTarget);
-
-    retVal += getPos(0, actPos, NULL);
-    m_targetPos[0] = *actPos;
-    m_currentPos[0] = *actPos;
-    sendStatusUpdate(false);
-    sendTargetUpdate();
-
-    return retVal;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>363</width>
-    <height>340</height>
+    <width>362</width>
+    <height>329</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
         <string>Information</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="0">
+        <item row="3" column="0">
          <widget class="QCheckBox" name="checkAsync">
           <property name="text">
            <string>Asychronous</string>
@@ -39,6 +39,20 @@
           </property>
           <property name="text">
            <string>NV40/1 CL E</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Open-loop mode: -10..150 V</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Closed-loop range depends on device</string>
           </property>
          </widget>
         </item>
@@ -109,25 +123,8 @@
         <string>Delay after positioning</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0" colspan="2">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>the total delay is offset + proportional * distance</string>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Delay (Offset)</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="1">
-         <widget class="QDoubleSpinBox" name="spinDelayOffset">
+         <widget class="QDoubleSpinBox" name="spinSleep">
           <property name="suffix">
            <string> ms</string>
           </property>
@@ -142,26 +139,20 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_4">
+        <item row="0" column="0" colspan="2">
+         <widget class="QRadioButton" name="radioDelayAsk">
           <property name="text">
-           <string>Delay (Proportional)</string>
+           <string>read position data until target is reached.</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QDoubleSpinBox" name="spinDelayProp">
-          <property name="suffix">
-           <string> ms/µm</string>
+        <item row="1" column="0">
+         <widget class="QRadioButton" name="radioDelayConst">
+          <property name="text">
+           <string>sleep for ...</string>
           </property>
-          <property name="decimals">
-           <number>1</number>
-          </property>
-          <property name="minimum">
-           <double>0.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>99.000000000000000</double>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -199,5 +190,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>radioDelayConst</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>spinSleep</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>77</x>
+     <y>292</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>152</x>
+     <y>292</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioDelayAsk</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>spinSleep</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>264</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>184</x>
+     <y>286</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

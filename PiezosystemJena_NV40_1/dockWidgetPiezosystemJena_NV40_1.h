@@ -24,6 +24,8 @@ class DockWidgetPiezosystemJena_NV40_1 : public ito::AbstractAddInDockWidget
 
     private:
         void enableWidget(bool enabled);
+        bool m_closedLoop;
+        bool m_remote;
 
         Ui::dockWidgetPiezosystemJena_NV40_1 ui;
 

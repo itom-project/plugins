@@ -32,23 +32,13 @@ class PiezosystemJena_NV40_1 : public ito::AddInActuator
 
     private:
         ito::AddInDataIO *m_pSer;
-        double m_scale; //! in steps per mm
-        int m_numAxis;
         int m_async;
+        bool m_closedLoop;
         int m_delayAfterSendCommandMS;
 
         QByteArray m_receiveEndline;
 
-        double m_delayProp; //s
-        double m_delayOffset; //s
-        bool m_hasHardwarePositionLimit;
-        double m_posLimitLow;
-        double m_posLimitHigh;
         DockWidgetPiezosystemJena_NV40_1 *m_dockWidget;
-
-        QByteArray m_AbsPosCmd;        /*!< This contains the command for absolut positioning. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (E-816, E-621, E-625, E-665) */
-        QByteArray m_RelPosCmd;        /*!< This contains the command for relative positioning. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (E-816, E-621, E-625, E-665) */
-        QByteArray m_PosQust;        /*!< This contains the command for position request. It is created & allocated in PISwitchType and freed in close(). This differs between E662 and (E-816, E-621, E-625, E-665) */
 
         ito::RetVal serialDummyRead(QByteArray *content = NULL); /*!< reads buffer of serial port without delay in order to clear it */
         ito::RetVal serialSendCommand(const QByteArray &command);

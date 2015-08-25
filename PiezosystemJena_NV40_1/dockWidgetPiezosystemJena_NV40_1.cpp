@@ -6,7 +6,7 @@
 #include <qmetaobject.h>
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DockWidgetPiezosystemJena_NV40_1::DockWidgetPiezosystemJena_NV40_1(ito::AddInActuator *actuator) : ito::AbstractAddInDockWidget(actuator)
+DockWidgetPiezosystemJena_NV40_1::DockWidgetPiezosystemJena_NV40_1(ito::AddInActuator *actuator) : ito::AbstractAddInDockWidget(actuator), m_closedLoop(true), m_remote(true)
 {
     ui.setupUi(this); 
 
@@ -18,15 +18,24 @@ void DockWidgetPiezosystemJena_NV40_1::parametersChanged(QMap<QString, ito::Para
     if (params["remote"].getVal<int>() > 0)
     {
         ui.radioRemote->setChecked(true);
+        ui.groupBox_2->setEnabled(true);
+        ui.spinBoxTargetPos->setEnabled(true);
+        ui.btnStart->setEnabled(true);
+        m_remote = true;
     }
     else
     {
         ui.radioLocal->setChecked(true);
+        ui.groupBox_2->setEnabled(false);
+        ui.spinBoxTargetPos->setEnabled(false);
+        ui.btnStart->setEnabled(false);
+        m_remote = false;
     }
 
     ui.spinBoxStepSize->setSuffix(params["closedLoop"].getVal<int>() ? " µm" : " V");
     ui.spinBoxActPos->setSuffix(params["closedLoop"].getVal<int>() ? " µm" : " V");
     ui.spinBoxTargetPos->setSuffix(params["closedLoop"].getVal<int>() ? " µm" : " V");
+    m_closedLoop = params["closedLoop"].getVal<int>() > 0;
 }
 
  //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -36,7 +45,7 @@ void DockWidgetPiezosystemJena_NV40_1::parametersChanged(QMap<QString, ito::Para
 
     if (actPosition.size() > 0)
     {
-        ui.spinBoxActPos->setValue(actPosition[0] * 1000);
+        ui.spinBoxActPos->setValue(m_closedLoop ? actPosition[0] * 1000 : actPosition[0]);
     }
 
     bool running = false;
@@ -48,6 +57,10 @@ void DockWidgetPiezosystemJena_NV40_1::parametersChanged(QMap<QString, ito::Para
         running = true;
     }
     else if (status[0] & ito::actuatorInterrupted)
+    {
+        style = "background-color: red";
+    }
+    else if (status[0] & ito::actuatorUnknown)
     {
         style = "background-color: red";
     }
@@ -69,16 +82,17 @@ void DockWidgetPiezosystemJena_NV40_1::targetChanged(QVector<double> targetPosit
 {
     if (targetPositions.size() > 0)
     {
-        ui.spinBoxTargetPos->setValue(targetPositions[0] * 1000);
+        ui.spinBoxTargetPos->setValue(m_closedLoop ? targetPositions[0] * 1000 : targetPositions[0]);
     }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPiezosystemJena_NV40_1::enableWidget(bool enabled)
 {
-    ui.spinBoxTargetPos->setEnabled(enabled);
+    ui.spinBoxTargetPos->setEnabled(m_remote && enabled);
     ui.btnUp->setEnabled(enabled);
     ui.btnDown->setEnabled(enabled);
+    ui.btnStart->setEnabled(m_remote && enabled);
     ui.groupBoxMode->setEnabled(enabled);
 }
 
@@ -101,19 +115,19 @@ void DockWidgetPiezosystemJena_NV40_1::on_radioLocal_clicked()
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPiezosystemJena_NV40_1::on_btnUp_clicked()
 {
-    setActuatorPosition(0, ui.spinBoxStepSize->value() / 1000.0, true);
+    setActuatorPosition(0, m_closedLoop ? ui.spinBoxStepSize->value() / 1000.0 : ui.spinBoxStepSize->value(), true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPiezosystemJena_NV40_1::on_btnDown_clicked()
 {
-    setActuatorPosition(0, -ui.spinBoxStepSize->value() / 1000.0, true);
+    setActuatorPosition(0, m_closedLoop ? -ui.spinBoxStepSize->value() / 1000.0 : -ui.spinBoxStepSize->value(), true);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetPiezosystemJena_NV40_1::on_btnStart_clicked()
 {
-    setActuatorPosition(0, ui.spinBoxTargetPos->value() / 1000.0, false);
+    setActuatorPosition(0, m_closedLoop ? ui.spinBoxTargetPos->value() / 1000.0 : ui.spinBoxTargetPos->value(), false);
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

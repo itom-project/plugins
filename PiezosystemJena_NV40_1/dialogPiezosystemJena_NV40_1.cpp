@@ -34,13 +34,11 @@ void DialogPiezosystemJena_NV40_1::parametersChanged(QMap<QString, ito::Param> p
     ui.radioRemoteOn->setChecked(params["remote"].getVal<int>() > 0);
     ui.radioClosedLoop->setChecked(params["closedLoop"].getVal<int>() > 0);
 
-    ui.spinDelayOffset->setMinimum(0);
-    ui.spinDelayOffset->setMaximum(params["delayOffset"].getMax() * 1000);
-    ui.spinDelayOffset->setValue(params["delayOffset"].getVal<double>() * 1000);
+    ui.spinSleep->setMinimum(0);
+    ui.spinSleep->setMaximum(params["delayTime"].getMax() * 1000);
+    ui.spinSleep->setValue(params["delayTime"].getVal<double>() * 1000);
 
-    ui.spinDelayProp->setMinimum(0);
-    ui.spinDelayProp->setMaximum(params["delayProp"].getMax() * 1000);
-    ui.spinDelayProp->setValue(params["delayProp"].getVal<double>());
+    ui.radioDelayAsk->setChecked(params["delayMode"].getVal<int>() == 0);
 
     //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
     enableDialog(true);
@@ -75,16 +73,16 @@ ito::RetVal DialogPiezosystemJena_NV40_1::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("async", ito::ParamBase::Int, i)));
     }
 
-    double v = ui.spinDelayOffset->value() / 1000.0;
-    if (m_currentParameters["delayOffset"].getVal<double>() != v)
+    i = ui.radioDelayAsk->isChecked() ? 0 : 1;
+    if (m_currentParameters["delayMode"].getVal<int>() != i)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayOffset", ito::ParamBase::Double, v)));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayMode", ito::ParamBase::Int, i)));
     }
 
-    v = ui.spinDelayProp->value();
-    if (m_currentParameters["delayProp"].getVal<double>() != v)
+    double v = ui.spinSleep->value() / 1000.0;
+    if (qAbs(m_currentParameters["delayTime"].getVal<double>() - v) > 0.001)
     {
-        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayProp", ito::ParamBase::Double, v)));
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("delayTime", ito::ParamBase::Double, v)));
     }
 
     retValue += setPluginParameters(values, msgLevelWarningAndError);
