@@ -731,9 +731,10 @@ ito::RetVal PiezosystemJena_NV40_1::setPos(const int axis, const double posMM, b
             retval += serialSendCommand(cmdTotal);
             retval += serialDummyRead();
 
-            if (retval.errorCode() == PI_READTIMEOUT)
+            if (retval.containsError())
             {
-                retval = ito::RetVal(ito::retError, 0, tr("timeout").toLatin1().data());
+                setStatus(m_currentStatus[0], ito::actuatorUnknown, ito::actSwitchesMask | ito::actStatusMask);
+                sendStatusUpdate(false);
             }
         }
 
