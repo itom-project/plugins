@@ -1606,7 +1606,8 @@ The return value contains the [x0,y0,width,height] of the minimum ROI.\n\
 Values of the data object belong to the ROI if they are >= lowThreshold and <= highThreshold. \n\
 The highThreshold is only checked, if it is different than the default value (maximum value of double). \n\
 \n\
-The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types.";
+The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types. This filter has got a fast \n\
+implementation for fixed-point data types without an higher threshold (since version 0.0.3).";
 
 RetVal DataObjectArithmetic::boundingBoxParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1693,9 +1694,9 @@ ito::RetVal DataObjectArithmetic::boundingBox(QVector<ito::ParamBase> *paramsMan
 template<typename _Tp> ito::RetVal DataObjectArithmetic::boundingBoxHelper(const cv::Mat *mat, const ito::float64 &lowThreshold, const ito::float64 &highThreshold, int *roi)
 {
     unsigned int x, y;
-    unsigned int x0 = std::numeric_limits<unsigned int>::max();
+    unsigned int x0 = mat->cols - 1;
 	unsigned int x1 = 0;
-	unsigned int y0 = std::numeric_limits<unsigned int>::max();
+	unsigned int y0 = mat->rows - 1;
 	unsigned int y1 = 0;
     
 	const _Tp *pValue = NULL;
@@ -1724,20 +1725,91 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::boundingBoxHelper(const
 		}
 		else
 		{
-			for(y = 0; y < (unsigned int)mat->rows; ++y)
+            //this is a faster version for the special case of integer based numbers without a higher threshold
+            //this version tries to detect the first valid line beginning from line 0,
+            //then the last valid line beginning from the last line,
+            //and finally it detects the x0 and x1 boundary from left and right only in between
+            //the valid line range.
+            for(y = 0; y < (unsigned int)mat->rows; ++y)
 			{
 				pValue = mat->ptr<_Tp>(y);
-				for(x = 0; x < (unsigned int)mat->cols; ++x)
+                for(x = 0; x < (unsigned int)mat->cols; ++x)
 				{
-					if (pValue[x] >= lowThres)
+                    if (pValue[x] >= lowThres)
 					{
-						x0 = std::min(x0, x);
-						x1 = std::max(x1, x);
-						y0 = std::min(y0, y);
-						y1 = std::max(y1, y);  
-					}
-				}
-			}
+                        y0 = y;
+                        y1 = y;
+                        x0 = x;
+                        x1 = x;
+
+                        //search for last valid x-value in this row
+                        for(x = (unsigned int)mat->cols - 1; x > x0; --x)
+                        {
+                            if (pValue[x] >= lowThres)
+                            {
+                                x1 = x;
+                                break;
+                            }
+                        }
+
+                        goto step2; //goto command in order to leave both nested for loops
+                    }
+                }
+            }
+
+step2: 
+            //search for last line with at least one valid value
+            for(y = (unsigned int)mat->rows - 1; y > y0; --y)
+			{
+				pValue = mat->ptr<_Tp>(y);
+                for(x = 0; x < (unsigned int)mat->cols; ++x)
+				{
+                    if (pValue[x] >= lowThres)
+					{
+                        y1 = y;
+                        x0 = std::min(x, x0);
+                        x1 = std::max(x, x1);
+
+                        //search for last valid x-value in this row
+                        for(x = (unsigned int)mat->cols - 1; x > x0; --x)
+                        {
+                            if (pValue[x] >= lowThres)
+                            {
+                                x1 = std::max(x, x1);
+                                break;
+                            }
+                        }
+
+                        goto step3; //goto command in order to leave both nested for loops
+                    }
+                }
+            }
+
+step3: 
+            //search for smaller valid x-values than recent x0 in lines (y0+1::x1-1)
+            //and for bigger valid x-values than recent x1 in the same lines
+            for (y = y0 + 1; y < y1; ++y)
+            {
+                pValue = mat->ptr<_Tp>(y);
+                for(x = 0; x < (unsigned int)mat->cols; ++x)
+				{
+                    if (pValue[x] >= lowThres)
+					{
+                        x0 = std::min(x0,x);
+                        x1 = std::max(x1,x);
+                        break;
+                    }
+                }
+
+                for(x = (unsigned int)mat->cols - 1; x > x0; --x)
+				{
+                    if (pValue[x] >= lowThres)
+					{
+                        x1 = std::max(x1,x);
+                        break;
+                    }
+                }
+            }
 		}
     }
     else
