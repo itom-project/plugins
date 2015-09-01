@@ -4689,8 +4689,17 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
         const ito::float64 *row = (const ito::float64*)source.rowPtr(0,0);
         for (int i = 0; i < len; ++i)
         {
-            dataOut.write(QByteArray::number(row[i] * valueScale, 'f', decimals));
-            dataOut.write("\n");
+            if (ito::dObjHelper::isFinite(row[i]))
+            {
+                dataOut.write(QByteArray::number(row[i] * valueScale, 'f', decimals));
+                dataOut.write("\n");
+            }
+            else
+            {
+                dataOut.write(QByteArray::number(0.0, 'f', decimals));
+                dataOut.write("\n");
+                ret += ito::RetVal::format(ito::retWarning, 0, "invalid value encountered in column %i", (i+1));
+            }
         }
     }
 
