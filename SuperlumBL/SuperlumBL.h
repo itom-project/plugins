@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "SuperlumBL" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -39,13 +39,13 @@
   *\class    SuperlumBL
   *\brief    ToDo
   *
-  *    \sa    AddInActuator, SuperlumBL, 
+  *    \sa    AddInDataIO, SuperlumBL, 
   *    \date    31.08.2015
   *    \author    J. Krauter, T. Boettcher
   * \warning    NA
   *
   */
-class SuperlumBL : public ito::AddInActuator 
+class SuperlumBL : public ito::AddInDataIO 
 {
     Q_OBJECT
 
@@ -85,32 +85,6 @@ class SuperlumBL : public ito::AddInActuator
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal close(ItomSharedSemaphore *waitCond);
 
-        //! Starts calibration for a single axis
-        ito::RetVal calib(const int axis, ItomSharedSemaphore *waitCond = NULL);
-        //! Starts calibration for all axis -> calls single axis version
-        ito::RetVal calib(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
-        //! Not implelemted yet
-        ito::RetVal setOrigin(const int axis, ItomSharedSemaphore *waitCond = NULL);
-        //! Not implelemted yet
-        ito::RetVal setOrigin(const QVector<int> axis, ItomSharedSemaphore *waitCond = NULL);
-        //! Reads out status request answer and gives back ito::retOk or ito::retError
-        ito::RetVal getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond);
-        //! Get the position of a single axis
-        ito::RetVal getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond);
-        //! Get the position of a all axis -> calls single axis version
-        ito::RetVal getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond);
-        //! Set an absolut position and go thier. Waits if m_async=0. Calls PISetPos of axis=0 else ito::retError
-        ito::RetVal setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set an absolut position and go thier. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
-        ito::RetVal setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls PISetPos of axis=0 else ito::retError
-        ito::RetVal setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond = NULL);
-        //! Set a relativ offset of current position and go thier. Waits if m_async=0. Calls PISetPos of axis[0]=0 && axis.size()=1 else ito::retError
-        ito::RetVal setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond = NULL);
-        
-        //! Emits status and position if triggered. Used form the dockingwidget
-        ito::RetVal requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos);
-
     private slots:
         void dockWidgetVisibilityChanged( bool visible );
 };
@@ -121,7 +95,7 @@ class SuperlumBL : public ito::AddInActuator
   *
   *\brief    Interface-Class for SuperlumBLInterface-Class
   *
-  *    \sa    AddInActuator, SuperlumBL
+  *    \sa    AddInDataIO, SuperlumBL
   *    \date    31.08.2015
   *    \author    J. Krauter, T.Boettcher
   * \warning    NA

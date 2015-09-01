@@ -28,8 +28,8 @@
 #include <qmetaobject.h>
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DockWidgetSuperlumBL::DockWidgetSuperlumBL(int uniqueID, ito::AddInBase *actuator) :  
-    AbstractAddInDockWidget(actuator),  
+DockWidgetSuperlumBL::DockWidgetSuperlumBL(int uniqueID, ito::AddInBase *dataIO) :  
+    AbstractAddInDockWidget(dataIO),  
     m_inEditing(false),  
     m_firstRun(true)
 {

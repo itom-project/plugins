@@ -1,7 +1,7 @@
 ﻿/* ********************************************************************
     Plugin "SuperlumBS" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -71,23 +71,23 @@ ito::RetVal SuperlumBLInterface::closeThisInst(ito::AddInBase **addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 SuperlumBLInterface::SuperlumBLInterface()
 {
-    m_type = ito::typeActuator;
+    m_type = ito::typeDataIO | ito::typeRawIO;
     setObjectName("SuperlumBL");
 
     m_description = QObject::tr("Plugin for Superlum S-series BroadLighter SLDs.");
 
     char docstring[] = \
-"The SuperlumBL is an itom-plugin (based on SuperlumBS-plugin), which can be used to communicate with a BroadLighter.\n\
+"The SuperlumBL is an itom-plugin (loosely based on SuperlumBS-plugin), which can be used to communicate with a BroadLighter.\n\
 Only S-840-B-I-20 is tested by now.\n\
 The company website can be found under http://www.superlumdiodes.com \n\
 This system needs a serial port, which differs depending on the controller type. \
 The parameters of the serial port (besides port number) are set automatically during initialization. \n\
 \n\
-It is initialized by actuator(\"SuperlumBS\", SerialIO).";
+It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).";
 
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "J. Krauter, T.Boettcher, ITO, University Stuttgart";
+    m_author = "T.Boettcher, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
@@ -117,7 +117,7 @@ const ito::RetVal SuperlumBL::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-SuperlumBL::SuperlumBL() : AddInActuator(), m_pSer(NULL), m_delayAfterSendCommandMS(0), m_dockWidget(NULL)
+SuperlumBL::SuperlumBL() : AddInDataIO(), m_pSer(NULL), m_delayAfterSendCommandMS(0), m_dockWidget(NULL)
 {
 	ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Superlum BroadLighter", "Name of plugin.");
 	m_params.insert(paramVal.getName(), paramVal);
@@ -577,222 +577,6 @@ ito::RetVal SuperlumBL::close(ItomSharedSemaphore *waitCond)
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::calib(const int axis, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::calib(const QVector<int> /*axis*/, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::setOrigin(const int axis, ItomSharedSemaphore * waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::getStatus(QSharedPointer<QVector<int> > status, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::getPos(const int axis, QSharedPointer<double> pos, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::getPos(const QVector<int> axis, QSharedPointer<QVector<double> > pos, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::setPosAbs(const int axis, const double pos, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::setPosAbs(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::setPosRel(const QVector<int> axis, QVector<double> pos, ItomSharedSemaphore *waitCond)
-{    
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::waitForDone(const int timeoutMS, const QVector<int> /*axis*/ /*if empty -> all axis*/, const int /*flags*/ /*for your use*/)
-{
-
-    ito::RetVal retVal(ito::retOk);
-    QMutex waitMutex;
-    QWaitCondition waitCondition;
-    bool atTarget = false;
-    int timeoutMS_ = timeoutMS;
-    ito::RetVal ontRetVal;
-    int ontIterations = 10;
-    QSharedPointer<double> actPos = QSharedPointer<double>(new double);
-
-    while(timeoutMS_ > 0 && !atTarget)
-    {
-        //short delay
-        waitMutex.lock();
-        if (timeoutMS > 1000)
-        {
-            waitCondition.wait(&waitMutex, 1000);
-            timeoutMS_ -= 1000;
-        }
-        else
-        {
-            waitCondition.wait(&waitMutex, timeoutMS);
-            timeoutMS_ = 0;
-        }
-        waitMutex.unlock();
-        setAlive();
-    }
-
-    replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorAtTarget);
-
-    return retVal;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal SuperlumBL::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
-{
-    ito::RetVal retValue;
-    retValue += ito::RetVal::format(ito::retError,0, tr("function not defined").toLatin1().data());
-    return retValue;
-}
-
 //---------------------------------------------------------------------------------------------------------------------------------- 
 void SuperlumBL::dockWidgetVisibilityChanged( bool visible )
 {
@@ -804,24 +588,11 @@ void SuperlumBL::dockWidgetVisibilityChanged( bool visible )
             QObject::connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, \
                 SLOT(parametersChanged(QMap<QString, ito::Param>)));
             emit parametersChanged(m_params); //send current parameters
-
-            //actuators only
-            QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), w, \
-                SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-            QObject::connect(this, SIGNAL(targetChanged(QVector<double>)), w, \
-                SLOT(targetChanged(QVector<double>)));
-            requestStatusAndPosition(true,true); //send current status, positions and targets
-        }
+		}
         else
         {
             QObject::disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), w, \
                 SLOT(parametersChanged(QMap<QString, ito::Param>)));
-
-            //actuators only
-            QObject::disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), w, \
-                SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-            QObject::disconnect(this, SIGNAL(targetChanged(QVector<double>)), w, \
-                SLOT(targetChanged(QVector<double>)));
         }
     }
 }

@@ -37,7 +37,7 @@
 
 namespace ito
 {
-    class AddInActuator; //forward declaration
+    class AddInDataIO; //forward declaration
 }
 
 class DialogSuperlumBL : public ito::AbstractAddInConfigDialog 

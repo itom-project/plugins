@@ -65,7 +65,7 @@ Then create a new instance of the plugin **SuperlumBL** using the instance of th
 .. code-block:: python
     
     serial = dataIO("SerialIO", COM-Port, Baudrate, endline="\r\n")
-    bs = actuator("SuperlumBS", serial, deviceName)
+    bs = dataIO("SuperlumBS", serial, deviceName)
 	
 After the initialization of the plugin **SuperlumBL** the remote communication is set. The plugin works only, if the **remote access** is available. 
 If the instance of **SuperlumBL** is deleted, the remote access is switched to the local mode. 

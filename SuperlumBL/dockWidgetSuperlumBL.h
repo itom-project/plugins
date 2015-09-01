@@ -46,7 +46,7 @@ class DockWidgetSuperlumBL : public ito::AbstractAddInDockWidget
     Q_OBJECT
 
     public:
-        DockWidgetSuperlumBL(int uniqueID, ito::AddInBase *actuator);
+        DockWidgetSuperlumBL(int uniqueID, ito::AddInBase *dataIO);
         ~DockWidgetSuperlumBL() {};
 
     private:
