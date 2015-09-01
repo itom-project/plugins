@@ -19,20 +19,25 @@ Overview
     
 Applications: 
 
--   biomedical imaging 
--   optical coherence tomography 
--   spectroscopy 
--   optical metrology
+-   Optical coherence tomography
+-	Characterization of optical components
+-	Optical fiber metrology
+-	Optical measurement
 
-Features:
--todo
--  3-mW output power ex fiber. 
--  PM- or SM-fiber output. 
--  Powered directly from a wall outlet. 
--  RS-232 remote control capability.  
 
-Description: 
-superlum text
+Features(S840-B-I-20):
+
+-	50nm Bandwidth
+-	840nm Center wavelength
+-	15mW ex fiber (single-mode)	
+-	Built-in optical isolator
+-  	Powered directly from a wall outlet. 
+-  	RS-232 remote control capability.  
+
+
+Description (from www.superlumdiodes.com):
+ 
+S-series Broadlighters are high-power, high-stability, low-coherence, broadband AC powered SLD light sources. They are based on Superlum's high-power (HP) SLD modules. The most high-power Broadlighters are equipped with appropriate polarization-insensitive fiber-optic isolators that protect the SLD modules from being damaged by optical feedback. All the light sources have two operating modes: the High Power mode and the Low Power mode. During normal operation, the High Power mode of the Broadlighter is always employed, whereas the Low Power mode is intended for safe alignment of optical components and circuits in the customer's optical system during the set-up process. The devices are developed for optical test and measurement applications.
 
 Initialization
 ==============

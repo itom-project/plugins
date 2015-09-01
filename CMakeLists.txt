@@ -302,6 +302,12 @@ if (PLUGIN_SuperlumBS)
     ADD_SUBDIRECTORY(SuperlumBS)
 endif (PLUGIN_SuperlumBS)
 
+# SuperlumBL
+OPTION(PLUGIN_SuperlumBL "Build with this plugin." ON)
+if (PLUGIN_SuperlumBL)
+    ADD_SUBDIRECTORY(SuperlumBL)
+endif (PLUGIN_SuperlumBL)
+
 # ThorlabsCCS Spectrometer
 IF (WIN32)
     OPTION(PLUGIN_ThorlabsCCS "Build with this plugin." ON)
