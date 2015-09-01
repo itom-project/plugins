@@ -162,6 +162,9 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(DataObjectIO::loadDataFromTxt, DataObjectIO::loadDataFromTxtParams, tr(loadDataFromTxtDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("ASCII Data (*.txt *.csv *.tsv)"));
     m_filterList.insert("loadTXT", filter);
 
+    filter = new FilterDef(DataObjectIO::savePtbPR, DataObjectIO::savePtbPRParams, tr(savePtbPRDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("PR Line Profile (*.pr)"));
+    m_filterList.insert("savePtbPR", filter);
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
@@ -4509,3 +4512,192 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
     return ret;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! saveNistSDFParams
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const char* DataObjectIO::savePtbPRDoc = \
+"saves a 1D data object to the PR format used for the reference software for roughness metrology (https://www.ptb.de/rptb) of PTB (Physikalisch Technische Bundesanstalt).\n\
+\n\
+The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, µm, nm) is given in the axis unit tag, an automatic conversion is applied. Else a \n\
+warning is returned. The same holds for the values (ordinate). You can choose if the .pr format should contain the ordinate values in nm or µm. An auto-conversion is implemented, too.";
+
+
+/** saveNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
+*   @param [in] paramsMand  mandatory argument parameters
+*   @param [in] paramsOpt   optional argument parameters
+*    @param [out] outVals   optional output parameters
+*
+*   This Function interacts with itom Python application, constructs plugin functionality, creates necessary parameters (eg. Mandatory and Optional parameters)
+*    and their specifications as required for converting DataObject into Raw-Text data and save it into Hard drive.
+*/
+ito::RetVal DataObjectIO::savePtbPRParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (!retval.containsError())
+    {
+        ito::Param  param = ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("1D data object of any real data type. No invalid values are allowed.").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("decimalSigns",ito::ParamBase::Int | ito::ParamBase::In, 0, 12, 6, tr("Number of decimal signs (default: 6).").toLatin1().data());
+        paramsOpt->append(param);
+        param = ito::Param("ordinateUnit", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("unit of ordinate (0: nm [default], 1: µm)").toLatin1().data());
+        paramsOpt->append(param);
+    }
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! saveNistSDF
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal ret = ito::retOk;
+    char *filename = (*paramsMand)[1].getVal<char*>();
+    QFileInfo fileinfo(QString::fromLatin1(filename));
+    QFile dataOut(filename);
+
+    ito::DataObject source = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "sourceObject", ito::Range(1,1), ito::Range::all(), ret, ito::tFloat64, 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tUInt32, ito::tFloat32, ito::tFloat64);
+
+    int decimals = (*paramsOpt)[0].getVal<int>();
+    int ordinateUnit = paramsOpt->at(1).getVal<int>(); //0: nm, 1: µm
+    
+    int flags = DataObjectIO::invWrite;
+
+
+    if (ret.containsError())
+    {
+    
+    }
+    else if ( !dataOut.open(QIODevice::WriteOnly) )
+    {
+        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no writeable file.").toLatin1().data(), filename);
+    }
+
+    if (!ret.containsError())
+    {   
+        int len = source.getSize(1);
+        double valueScale = 1.0;
+
+        std::string valueUnit = source.getValueUnit();
+        if (valueUnit == "mm")
+        {
+            if (ordinateUnit == 0) //nm
+            {
+                valueScale = 1.e-6;
+            }
+            else //1, µm
+            {
+                valueScale = 1.e-3;
+            }
+        }
+        else if (valueUnit == "µm")
+        {
+            if (ordinateUnit == 0) //nm
+            {
+                valueScale = 1.e-3;
+            }
+        }
+        else if (valueUnit == "nm")
+        {
+            if (ordinateUnit == 0) //nm
+            {
+            }
+            else //1, µm
+            {
+                valueScale = 1.e3;
+            }
+        }
+        else if (valueUnit == "cm")
+        {
+            if (ordinateUnit == 0) //nm
+            {
+                valueScale = 1.e-7;
+            }
+            else //1, µm
+            {
+                valueScale = 1.e-4;
+            }
+        }
+        else if (valueUnit == "m")
+        {
+            if (ordinateUnit == 0) //nm
+            {
+                valueScale = 1.e-9;
+            }
+            else //1, µm
+            {
+                valueScale = 1.e-6;
+            }
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retWarning, 0, "The given input object does not have a metric value unit defined (m, cm, mm, µm, nm). No correct value transformation to µm or nm can be applied.");
+        }
+
+        double length = len * source.getAxisScale(1); //length is assumed to be in mm
+        bool valid;
+        std::string axisUnit = source.getAxisUnit(1, valid);
+        if (axisUnit == "mm")
+        {
+            
+        }
+        else if (axisUnit == "µm")
+        {
+            length *= 1.e-3;
+        }
+        else if (axisUnit == "nm")
+        {
+            length *= 1.e-6;
+        }
+        else if (axisUnit == "cm")
+        {
+            length *= 10.0;
+        }
+        else if (axisUnit == "m")
+        {
+            length *= 1.e3;
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retWarning, 0, "The given input object does not have a metric axis unit defined (m, cm, mm, µm, nm). No correct lateral unit value can be read. Values are assumed to be in mm.");
+        }
+
+
+        //write header
+        dataOut.write("Profil ");
+        dataOut.write(fileinfo.fileName().replace(" ", "_").toLatin1());
+        dataOut.write("\n");
+        dataOut.write("X-Mass = ");
+        dataOut.write(QByteArray::number(length, 'f', decimals));
+        dataOut.write(" X-Resolution ");
+        if (length != 0.0)
+        {
+            dataOut.write(QByteArray::number((double)len / length , 'f', decimals));
+        }
+        else
+        {
+            dataOut.write("0.0");
+            ret += ito::RetVal(ito::retWarning, 0, "length of data set is 0.0");
+        }
+        dataOut.write(" Points/Line : ");
+        dataOut.write(QByteArray::number(len));
+        dataOut.write("\n");
+
+        //write data
+        const ito::float64 *row = (const ito::float64*)source.rowPtr(0,0);
+        for (int i = 0; i < len; ++i)
+        {
+            dataOut.write(QByteArray::number(row[i] * valueScale, 'f', decimals));
+            dataOut.write("\n");
+        }
+    }
+
+    if (dataOut.isOpen())
+    {
+        dataOut.close();
+    }
+
+    return ret;
+}
