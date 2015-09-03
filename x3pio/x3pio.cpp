@@ -309,6 +309,60 @@ ito::RetVal X3pIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::P
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal parseLastOpenGpsError(const QString &prefix)
+{
+    ito::RetVal retval;
+
+    // Check for error opening
+    if(ogps_HasError())
+    {
+        const OGPS_Character *errorMessage_ = ogps_GetErrorMessage();
+        const OGPS_Character *errorDescription_ = ogps_GetErrorDescription();
+        QString message;
+
+        if (errorMessage_ && errorDescription_)
+        {
+            message = QString("%1 (%2)").arg(OpenGPS::String(errorMessage_).ToChar()).arg(OpenGPS::String(errorDescription_).ToChar());
+        }
+        else if (errorMessage_)
+        {
+            message = OpenGPS::String(errorMessage_).ToChar();
+        }
+        else
+        {
+            message = "no error details";
+        }
+
+        switch (ogps_GetErrorId())
+        {
+            /*! No failure condition trapped. This serves as some kind of default value. */
+            case OGPS_ExNone:
+                break;
+
+            /*! A failure condition occured, but it has not been specified in detail. */
+            case OGPS_ExGeneral:
+            /*! The value of at least one of the parameters passed to a function is invalid in the current context. */
+            case OGPS_ExInvalidArgument:
+            /*! Due to the state of the object an operation could not be performed. */
+            case OGPS_ExInvalidOperation:
+            /*! A specific implementation of an interface does not implement this operation. */
+            case OGPS_ExNotImplemented:
+            /*! An overflow occured. There is no guarantee of the integrity of further processing steps. */
+            case OGPS_ExOverflow:
+                return ito::RetVal::format(ito::retError, 0, "%s%s", prefix.toLatin1().data(), message.toLatin1().data());
+                break;
+
+            /*! Indicates a non-fatal error that may be ignored. This is for informational purpose only. */
+            case OGPS_ExWarning:
+                return ito::RetVal::format(ito::retWarning, 0, "%s%s", prefix.toLatin1().data(), message.toLatin1().data());
+                break;
+        }
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal X3pIO::saveDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
@@ -327,6 +381,8 @@ ito::RetVal X3pIO::saveDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *dObj, bool zScalingNecessary, double zFactor)
 {
+    ito::RetVal retval;
+
     // Add data points
     // 1. Create point vector buffer for three points.
     OGPS_PointVectorPtr vector = ogps_CreatePointVector();
@@ -356,7 +412,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                if (retval.containsError())
+                                {
+                                    return retval;
+                                }
                             }
                         }
                     }
@@ -373,7 +433,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                if (retval.containsError())
+                                {
+                                    return retval;
+                                }
                             }
                         }
                     }
@@ -394,7 +458,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                if (retval.containsError())
+                                {
+                                    return retval;
+                                }
                             }
                         }
                     }
@@ -411,7 +479,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                if (retval.containsError())
+                                {
+                                    return retval;
+                                }
                             }
                         }
                     }
@@ -432,7 +504,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                         if(ogps_HasError())
                         {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                            if (retval.containsError())
+                            {
+                                return retval;
+                            }
                         }
                     }
                 }
@@ -449,7 +525,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                if (retval.containsError())
+                                {
+                                    return retval;
+                                }
                             }
                         }
                     }
@@ -476,7 +556,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                if (retval.containsError())
+                                {
+                                    return retval;
+                                }
                             }
                         }
                     }
@@ -500,7 +584,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                if (retval.containsError())
+                                {
+                                    return retval;
+                                }
                             }
                         }
                     }
@@ -527,7 +615,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                if (retval.containsError())
+                                {
+                                    return retval;
+                                }
                             }
                         }
                     }
@@ -551,7 +643,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                if (retval.containsError())
+                                {
+                                    return retval;
+                                }
                             }
                         }
                     }
@@ -579,7 +675,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                         if(ogps_HasError())
                         {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                            if (retval.containsError())
+                            {
+                                return retval;
+                            }
                         }
                     }
                 }
@@ -606,7 +706,11 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                         if(ogps_HasError())
                         {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("error writing is5436_2 file").toLatin1().data());
+                            retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                            if (retval.containsError())
+                            {
+                                return retval;
+                            }
                         }
                     }
                 }
@@ -634,7 +738,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
        ogps_FreePointIterator(&iterator);
     }
    */
-    return 0;
+    return retval;
 }
 
 
@@ -773,14 +877,22 @@ ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, OGPS_DataPointType &po
 
         if(ogps_HasError())
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("error reading is5436_2 file").toLatin1().data());
+            retval += parseLastOpenGpsError("error reading is5436_2 file: ");
         }
 
     }
     catch(OpenGPS::Exception &e)
     {
-        OpenGPS::String err=e.details();
-        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("error opening file: %s").toLatin1().data(), err.ToChar() );
+        OpenGPS::String err = e.details();
+        if (e.id() == OGPS_ExWarning)
+        {
+            retval += ito::RetVal::format(ito::retWarning, 0, QObject::tr("warning while opening the file: %s").toLatin1().data(), err.ToChar());
+        }
+        else if (e.id() != OGPS_ExNone)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, QObject::tr("error while opening the file: %s").toLatin1().data(), err.ToChar());
+            return retval;
+        }
     }
 
 
@@ -1048,7 +1160,11 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     bool ismatrix=ogps_IsMatrix(handle);
     if (ogps_HasError())
     {
-      return FALSE;
+       retval += parseLastOpenGpsError("data set is no matrix: ");
+       if (retval.containsError())
+       {
+           return retval;
+       }
     }
 
     // Check for Matrix or List
@@ -1201,10 +1317,15 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     OpenGPS::String fname;
     fname.FromChar(filename);
     OpenGPS::ISO5436_2 iso5436_2(fname);
+
     // Check for error opening
     if(ogps_HasError())
     {
-        return ito::RetVal(ito::retError, 0, QObject::tr("error opening file").toLatin1().data());
+        retval += parseLastOpenGpsError("error opening file: ");
+        if (retval.containsError())
+        {
+            return retval;
+        }
     }
 
     // Try to open in read only mode
@@ -1214,8 +1335,16 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     }
     catch(OpenGPS::Exception &e)
     {
-        OpenGPS::String err=e.details();
-        return ito::RetVal::format(ito::retError, 0, QObject::tr("error opening file: %s").toLatin1().data(), err.ToChar() );
+        OpenGPS::String err = e.details();
+        if (e.id() == OGPS_ExWarning)
+        {
+            retval += ito::RetVal::format(ito::retWarning, 0, tr("warning while opening the file: %s").toLatin1().data(), err.ToChar());
+        }
+        else if (e.id() != OGPS_ExNone)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, tr("error while opening the file: %s").toLatin1().data(), err.ToChar());
+            return retval;
+        }
     }
 
     // Obtain handle to xml document.
@@ -1466,4 +1595,4 @@ ito::RetVal X3pIO::close(ItomSharedSemaphore * /*waitCond*/)
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+
