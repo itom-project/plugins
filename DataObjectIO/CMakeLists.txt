@@ -25,7 +25,12 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIR
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets UiTools Xml LinguistTools)
 
+#run once so we get the installed opencv version
 find_package(OpenCV COMPONENTS core highgui REQUIRED)
+if (OpenCV_VERSION_MAJOR GREATER 2)
+    # for opencv >= 3 we need the imgcodecs module which is not present in opencv < 3 so run again
+    find_package(OpenCV COMPONENTS core highgui imgcodecs REQUIRED)
+endif (OpenCV_VERSION_MAJOR GREATER 2)
 find_package(VisualLeakDetector QUIET)
 
 IF (BUILD_UNICODE)
