@@ -1920,10 +1920,27 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
         }
 
         newObject = ito::DataObject(ysize, xsize, dataType);
-        newObject.setAxisScale(0, yscale * xyFactor);
+
+        if (std::abs(yscale) > std::numeric_limits<ito::float64>::epsilon())
+        {
+            newObject.setAxisScale(0, yscale * xyFactor);
+        }
+        else
+        {
+            newObject.setAxisScale(0, 1.0);
+        }
         newObject.setAxisUnit(0, xyUnit.data());
-        newObject.setAxisScale(1, xscale * xyFactor);
+
+        if (std::abs(xscale) > std::numeric_limits<ito::float64>::epsilon())
+        {
+            newObject.setAxisScale(1, xscale * xyFactor);
+        }
+        else
+        {
+            newObject.setAxisScale(1, 1.0);
+        }
         newObject.setAxisUnit(1, xyUnit.data());
+
         std::map<std::string, std::string>::iterator it = metaData.begin();
         while (it != metaData.end())
         {
