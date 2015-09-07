@@ -687,7 +687,7 @@ to parallely compute the approximations for each pixel.";
 
     paramsOpt->append( ito::Param("weights", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "weights (same dimensions than data)") );
     paramsOpt->append( ito::Param("xVals", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, "x-value vector (length must be the same than z-size of data) [default: equally spaced values are assumed using scale and offset of the data object in z-direction]") );
-    paramsOpt->append( ito::Param("numThreads", ito::ParamBase::Int | ito::ParamBase::In, 1, omp_get_max_threads(), 1,  "weights (same dimensions than data)") );
+    paramsOpt->append( ito::Param("numThreads", ito::ParamBase::Int | ito::ParamBase::In, 1, omp_get_max_threads(), 1,  "number of threads used for the parallel determination") );
 
     return retval;
 }
@@ -867,8 +867,262 @@ to parallely compute the approximations for each pixel.";
     if (!retval.containsError())
     {
         QString msg;
-        msg = tr("Caluclated polynomical coeffs along z-direction with order Z = %1").arg(order);
+        msg = tr("Calculated polynomical coeffs along z-direction with order Z = %1").arg(order);
         output->addToProtocol(std::string(msg.toLatin1().data()));
+    }
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const char* FittingFilters::subtract1DRegressionPolynomDoc = "subtracts a one-dimensional fitted polynom (along a given axis) from the values in the given 1D or 2D data object. \n\
+\n\
+This filter operates inplace and subtracts from fitted one-dimensional polynoms from the values in the given 2D data object 'data'. The polynoms are either fitted along the \n\
+vertical or horizontal axis. You can choose a polynomial order between 1 (line) and 7. The values are uniformly weighted for the fit. The algorithm uses a fast, direct solution \n\
+for the line regression fits and a singular value decomposition for all other cases (see fitPolynom1D_Z). The fit is done in double precision while the type of 'data' is not changed.";
+
+/*static*/ ito::RetVal FittingFilters::subtract1DRegressionPolynomParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError()) return retval;
+
+    paramsMand->append( ito::Param("data", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "real valued input object (1D or 2D)") );
+    paramsMand->append( ito::Param("order", ito::ParamBase::Int | ito::ParamBase::In, 1, 7, 1, "polynomial order"));
+    
+    paramsOpt->append( ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, "axis index along which the 1d regressions are independently determined and subtracted (0: vertical, 1: horizontal)."));
+    paramsOpt->append( ito::Param("numThreads", ito::ParamBase::Int | ito::ParamBase::In, 1, omp_get_max_threads(), 1,  "number of threads used for the parallel determination") );
+
+    return retval;
+}
+
+/*static*/ ito::RetVal FittingFilters::subtract1DRegressionPolynom(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    ito::DataObject *input = paramsMand->at(0).getVal<ito::DataObject*>();
+    int m = 0;
+    int n = 0;
+    
+    int numThreads = paramsOpt->at(1).getVal<int>();
+    int axis = paramsOpt->at(0).getVal<int>();
+
+    int order = paramsMand->at(1).getVal<int>();
+
+    if (input == NULL)
+    {
+        retval += ito::RetVal(ito::retError,0,"parameter 'data' is NULL");
+    }
+    else
+    {
+        retval += ito::dObjHelper::verify2DDataObject(input, "input", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    }
+
+    if (!retval.containsError())
+    {
+        m = input->getSize(0);
+        n = input->getSize(1);
+
+        if (axis == 0 && m <= order)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "input must have at least %i rows", order+1);
+        }
+        else if (axis == 1 && n <= order)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "input must have at least %i columns", order+1);
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        cv::Mat *input_ = input->getCvPlaneMat(0);
+        size_t step = input_->step1(axis);
+        FitSVDSimple *fit = NULL;
+
+        switch(order)
+        {
+        case 1:
+            fit = NULL; //new FitSVDSimple( FitSVDSimple::poly1d_1 );
+            break;
+        case 2:
+            fit = new FitSVDSimple( FitSVDSimple::poly1d_2 );
+            break;
+        case 3:
+            fit = new FitSVDSimple( FitSVDSimple::poly1d_3 );
+            break;
+        case 4:
+            fit = new FitSVDSimple( FitSVDSimple::poly1d_4 );
+            break;
+        case 5:
+            fit = new FitSVDSimple( FitSVDSimple::poly1d_5 );
+            break;
+        case 6:
+            fit = new FitSVDSimple( FitSVDSimple::poly1d_6 );
+            break;
+        case 7:
+            fit = new FitSVDSimple( FitSVDSimple::poly1d_7 );
+            break;
+        }
+
+        VecDoub values(axis == 0 ? m : n);
+        VecDoub indices(axis == 0 ? m : n);
+        for (int i = 0; i < indices.size(); ++i)
+        {
+            indices[i] = i;
+        }
+        VecDoub weights(axis == 0 ? m : n, 1.0);
+        VecDoub coefficients(order+1);
+
+        omp_set_num_threads( std::min(omp_get_max_threads(),numThreads));
+
+        if (axis == 0) //vertical
+        {
+            switch (input->getType())
+            {
+            case ito::tUInt8:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < n; ++i)
+                {   
+                    polyfit1d_basic(&((const ito::uint8*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::uint8*)(input_->data))[i], m, coefficients, step);
+                }
+                break;
+            case ito::tInt8:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < n; ++i)
+                {   
+                    polyfit1d_basic(&((const ito::int8*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::int8*)(input_->data))[i], m, coefficients, step);
+                }
+                break;
+            case ito::tUInt16:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < n; ++i)
+                {   
+                    polyfit1d_basic(&((const ito::uint16*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::uint16*)(input_->data))[i], m, coefficients, step);
+                }
+                break;
+            case ito::tInt16:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < n; ++i)
+                {   
+                    polyfit1d_basic(&((const ito::int16*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::int16*)(input_->data))[i], m, coefficients, step);
+                }
+                break;
+            case ito::tUInt32:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < n; ++i)
+                {   
+                    polyfit1d_basic(&((const ito::uint32*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::uint32*)(input_->data))[i], m, coefficients, step);
+                }
+                break;
+            case ito::tInt32:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < n; ++i)
+                {   
+                    polyfit1d_basic(&((const ito::int32*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::int32*)(input_->data))[i], m, coefficients, step);
+                }
+                break;
+            case ito::tFloat32:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < n; ++i)
+                {   
+                    polyfit1d_basic(&((const ito::float32*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::float32*)(input_->data))[i], m, coefficients, step);
+                }
+                break;
+            case ito::tFloat64:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < n; ++i)
+                {   
+                    polyfit1d_basic(&((const ito::float64*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::float64*)(input_->data))[i], m, coefficients, step);
+                }
+                break;
+            }
+        }
+        else //horizontal
+        {
+            switch (input->getType())
+            {
+            case ito::tUInt8:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < m; ++i)
+                {   
+                    polyfit1d_basic((const ito::uint8*)(input_->ptr(i)), n, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(((ito::uint8*)(input_->ptr(i))), n, coefficients);
+                }
+                break;
+            case ito::tInt8:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < n; ++i)
+                {   
+                    polyfit1d_basic(((const ito::int8*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(((ito::int8*)(input_->ptr(i))), n, coefficients);
+                }
+                break;
+            case ito::tUInt16:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < m; ++i)
+                {   
+                    polyfit1d_basic(((const ito::uint16*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(((ito::uint16*)(input_->ptr(i))), n, coefficients);
+                }
+                break;
+            case ito::tInt16:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < m; ++i)
+                {   
+                    polyfit1d_basic(((const ito::int16*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(((ito::int16*)(input_->ptr(i))), n, coefficients);
+                }
+                break;
+            case ito::tUInt32:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < m; ++i)
+                {   
+                    polyfit1d_basic(((const ito::uint32*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(((ito::uint32*)(input_->ptr(i))), n, coefficients);
+                }
+                break;
+            case ito::tInt32:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < m; ++i)
+                {   
+                    polyfit1d_basic(((const ito::int32*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(((ito::int32*)(input_->ptr(i))), n, coefficients);
+                }
+                break;
+            case ito::tFloat32:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < m; ++i)
+                {   
+                    polyfit1d_basic(((const ito::float32*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(((ito::float32*)(input_->ptr(i))), n, coefficients);
+                }
+                break;
+            case ito::tFloat64:
+                #pragma omp parallel for firstprivate(coefficients)
+                for (int i = 0; i < m; ++i)
+                {   
+                    polyfit1d_basic(((const ito::float64*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
+                    polyval1d_subtract_basic(((ito::float64*)(input_->ptr(i))), n, coefficients);
+                }
+                break;
+            }
+        }
+
+        delete fit;
+    }
+
+    if (!retval.containsError())
+    {
+        QString msg;
+        msg = tr("Subtracted polynomial of %1th order along axis %2").arg(order).arg(axis);
+        input->addToProtocol(std::string(msg.toLatin1().data()));
     }
     return retval;
 }
@@ -1718,6 +1972,111 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> /*static*/ void FittingFilters::polyval1d_subtract_basic(_Tp *output, size_t length, const VecDoub &coeffs, size_t output_step /*= 1*/)
+{
+    _Tp *o_ = output;
+    int degree = coeffs.size() - 1;
+
+    switch (degree)
+    {
+    case 0:
+        for (size_t c = 0;  c < length; ++c)
+        {
+            *o_ -= cv::saturate_cast<_Tp>(coeffs[0]);
+            o_ += output_step;
+        }
+        break;
+    case 1:
+        for (size_t c = 0;  c < length; ++c)
+        {
+            *o_ -= cv::saturate_cast<_Tp>((coeffs[1] * c) + coeffs[0]);
+            o_ += output_step;
+        }
+        break;
+    case 2:
+        for (size_t c = 0;  c < length; ++c)
+        {
+            *o_ -= cv::saturate_cast<_Tp>((coeffs[2] * c * c) +(coeffs[1] * c) + coeffs[0]);
+            o_ += output_step;
+        }
+        break;
+    case 3:
+        for (size_t c = 0;  c < length; ++c)
+        {
+            *o_ -= cv::saturate_cast<_Tp>((coeffs[3] * c * c * c) + (coeffs[2] * c * c) + (coeffs[1] * c) + coeffs[0]);
+            o_ += output_step;
+        }
+        break;
+    default:
+        {
+            ito::float64 v_temp = 1;
+            for (size_t c = 0;  c < length; ++c)
+            {
+                *o_ -= cv::saturate_cast<_Tp>(coeffs[0]);
+                v_temp = 1;
+                for (int d = 1; d <= degree; ++d)
+                {
+                    v_temp *= c;
+                    *o_ -= cv::saturate_cast<_Tp>(v_temp * coeffs[d]);
+                }
+                o_ += output_step;
+            }
+        }
+        break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> /*static*/ void FittingFilters::polyfit1d_basic(const _Tp *input, size_t length, VecDoub &indices_storage, VecDoub &value_storage, VecDoub &weight_storage, FitSVDSimple *fit_func, VecDoub &coeffs, size_t input_step /*= 1*/)
+{
+    const _Tp *input_ = input;
+    Doub chisq;
+
+    if (std::numeric_limits<_Tp>::is_exact)
+    {
+        for (size_t i = 0; i < length; ++i)
+        {
+            value_storage[i] = cv::saturate_cast<double>(*input_);
+            input_ += input_step;
+        }
+
+        if (fit_func)
+        {
+            fit_func->fit( indices_storage, value_storage, weight_storage, coeffs, chisq );
+        }
+        else
+        {
+            linearRegression( indices_storage, value_storage, weight_storage, coeffs, chisq );
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < length; ++i)
+        {
+            if (ito::dObjHelper::isFinite(*input_))
+            {
+                value_storage[i] = cv::saturate_cast<double>(*input_);
+            }
+            else
+            {
+                value_storage[i] = std::numeric_limits<double>::quiet_NaN();
+            }
+            input_ += input_step;
+        }
+
+        if (fit_func)
+        {
+            fit_func->fit( indices_storage, value_storage, weight_storage, coeffs, chisq );
+        }
+        else
+        {
+            linearRegression( indices_storage, value_storage, weight_storage, coeffs, chisq );
+        }
+    }
+    
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
@@ -1755,6 +2114,10 @@ RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<it
 
     filter = new FilterDef(FittingFilters::getInterpolatedValues, FittingFilters::getInterpolatedValuesParams, tr(getInterpolatedValuesDoc));
     m_filterList.insert("getInterpolatedValues", filter);
+
+    filter = new FilterDef(FittingFilters::subtract1DRegressionPolynom, FittingFilters::subtract1DRegressionPolynomParams, tr(subtract1DRegressionPolynomDoc));
+    m_filterList.insert("subtract1DRegression", filter);
+    
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;

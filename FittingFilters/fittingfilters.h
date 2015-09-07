@@ -115,6 +115,10 @@ class FittingFilters : public ito::AddInAlgo
         static ito::RetVal fitPolynom1D_Z(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal fitPolynom1D_ZParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const char *subtract1DRegressionPolynomDoc;
+        static ito::RetVal subtract1DRegressionPolynom(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal subtract1DRegressionPolynomParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
         static const char *getInterpolatedValuesDoc;
         static ito::RetVal getInterpolatedValues(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal getInterpolatedValuesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
@@ -154,6 +158,9 @@ class FittingFilters : public ito::AddInAlgo
         static ito::RetVal calcPolyval2DSinglePoints(const ito::DataObject *dataX, const ito::DataObject *dataY, ito::DataObject *dataZ, int orderX, int orderY, const std::vector<double> &coefficients);
 
         static void linearRegression(VecDoub_I &x, VecDoub_I &y, VecDoub_I &w, VecDoub_O &p, Doub& residual);
+
+        template<typename _Tp> static void polyval1d_subtract_basic(_Tp *output, size_t length, const VecDoub &coeffs, size_t output_step = 1);
+        template<typename _Tp> static void polyfit1d_basic(const _Tp *input, size_t length, VecDoub &indices_storage, VecDoub &value_storage, VecDoub &weight_storage, FitSVDSimple *fit_func, VecDoub &coeffs, size_t input_step = 1);
         
     public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);
