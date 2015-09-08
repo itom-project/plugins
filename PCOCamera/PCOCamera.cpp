@@ -370,7 +370,7 @@ ito::RetVal PCOCamera::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
         // meta structure.
-        retVal += apiValidateParam(*it, *val, false, true);
+        retVal += apiValidateAndCastParam(*it, *val, false, true, true);
     }  
 
     char errbuffer[400] = {0};
