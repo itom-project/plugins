@@ -319,6 +319,15 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
             options.c_cflag &= (~PARODD);
             options.c_cflag |= PARENB;
         break;
+        // mark parity
+        case 3:
+            options.c_cflag |= PARENB | CMSPAR | PARODD;
+        break;
+        // space parity
+        case 4:
+            options.c_cflag |= PARENB | CMSPAR;
+            options.c_cflag &= ~PARODD;
+        break;
         default:
             return ito::RetVal(ito::retError, 0, QObject::tr("invalid parity").toLatin1().data());
     }
@@ -442,6 +451,8 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
         case 0: dcbSerialParams.Parity = NOPARITY;      break;
         case 1: dcbSerialParams.Parity = ODDPARITY;     break;
         case 2: dcbSerialParams.Parity = EVENPARITY;    break;
+        case 3: dcbSerialParams.Parity = MARKPARITY;    break;
+        case 4: dcbSerialParams.Parity = SPACEPARITY;   break;
         // space parity and mark parity not supported
         default:
             return ito::RetVal(ito::retError, 0, QObject::tr("invalid parity").toLatin1().data());
@@ -821,8 +832,11 @@ const ito::RetVal SerialPort::sread(char *buf, int *len, const int sendDelay)
                 {
                     return ito::RetVal(ito::retError, 0, QObject::tr("error reading from com port").toLatin1().data());
                 }
-                readable++;
-                buf--;
+                // changed ck 04/09/2015, I guess this loop would run quite long in that way
+                //readable++;
+                //buf--;
+                readable--;
+                buf++;
                 Sleep(sendDelay);
             }
         }
@@ -1133,7 +1147,7 @@ Example \n\
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("stopbits", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::Int, 0, 2, 0, tr("Parity: 0 -> no parity, 1 -> odd parity, 2 -> even parity").toLatin1().data());
+    paramVal = ito::Param("parity", ito::ParamBase::Int, 0, 2, 0, tr("Parity: 0 -> none, 1 -> odd parity, 2 -> even parity, 3 -> mark, 4 -> space").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("flow", ito::ParamBase::Int, 0, 127, 0, tr("Bitmask for flow control (see docstring for more information)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -1383,7 +1397,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     // 3. endline [\n, \r, \r\n]
     // 4. bits [5 .. 8]
     // 5. stopbits [1 .. 2]
-    // 6. parity [0 .. 2: none, odd, even]
+    // 6. parity [0 .. 4: none, odd, even, mark, space]
     // 7. flow control [off, hardware, xoff]
     // 8. sendDelay [0 .. 65000]
     // 9. timeout [0 .. 30000]

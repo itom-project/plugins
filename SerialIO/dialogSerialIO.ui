@@ -110,12 +110,27 @@
             </property>
             <item>
              <property name="text">
-              <string>disable</string>
+              <string>none</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>enable</string>
+              <string>odd</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>even</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>mark</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>space</string>
              </property>
             </item>
            </widget>

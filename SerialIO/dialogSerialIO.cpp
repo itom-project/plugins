@@ -720,7 +720,7 @@ void dialogSerialIO::on_pushButtonCreateCommand_clicked()
 
     char *deviceName = (*paramList)["name"].getVal<char*>(); //borrowed reference
     sprintf(txt,
-            "dataIO(\"%s\",%d,%d,\"%s\",%d,%d,%d,%d,%d,%f)",
+            "dataIO(\"%s\",%d,%d,\"%s\",%d,%d,%d,%d,%d,%.3f)",
             deviceName,
             (*paramList)["port"].getVal<int>(),
             baud,
