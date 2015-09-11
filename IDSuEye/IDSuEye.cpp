@@ -1151,9 +1151,9 @@ ito::RetVal IDSuEye::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             retValue += checkError(is_UnlockSeqBuf(m_camera, m_pMemory[idx].pid, m_pMemory[idx].ppcImgMem));
 
             m_imageAvailable = true;
-
-            m_acquisitionRetVal = retValue;
         }
+
+        m_acquisitionRetVal = retValue;
     }
 
     return retValue;
