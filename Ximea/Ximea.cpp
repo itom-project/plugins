@@ -840,7 +840,7 @@ ito::RetVal Ximea::checkError(const XI_RETURN &error, const QString &command, co
             msg = "input buffer too small";
         break;
         case 106:
-            msg = "parameter info not supported";
+            msg = "parameter not supported";
         break;
         case 107:
             msg = "parameter info not supported";
