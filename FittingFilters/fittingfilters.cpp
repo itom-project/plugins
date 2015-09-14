@@ -887,7 +887,8 @@ for the line regression fits and a singular value decomposition for all other ca
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("data", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "real valued input object (1D or 2D)") );
+    paramsMand->append( ito::Param("input", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "real valued input object (1D or 2D)") );
+    paramsMand->append( ito::Param("output", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "resulting output object (same than input is allowed, else output has the same type and size than input)") );
     paramsMand->append( ito::Param("order", ito::ParamBase::Int | ito::ParamBase::In, 1, 7, 1, "polynomial order"));
     
     paramsOpt->append( ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, "axis index along which the 1d regressions are independently determined and subtracted (0: vertical, 1: horizontal)."));
@@ -899,22 +900,31 @@ for the line regression fits and a singular value decomposition for all other ca
 /*static*/ ito::RetVal FittingFilters::subtract1DRegressionPolynom(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-    ito::DataObject *input = paramsMand->at(0).getVal<ito::DataObject*>();
+    const ito::DataObject *input = paramsMand->at(0).getVal<const ito::DataObject*>();
+    ito::DataObject *output = paramsMand->at(1).getVal<ito::DataObject*>();
     int m = 0;
     int n = 0;
     
     int numThreads = paramsOpt->at(1).getVal<int>();
     int axis = paramsOpt->at(0).getVal<int>();
 
-    int order = paramsMand->at(1).getVal<int>();
+    int order = paramsMand->at(2).getVal<int>();
 
     if (input == NULL)
     {
-        retval += ito::RetVal(ito::retError,0,"parameter 'data' is NULL");
+        retval += ito::RetVal(ito::retError,0,"parameter 'input' is NULL");
     }
     else
     {
         retval += ito::dObjHelper::verify2DDataObject(input, "input", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    }
+
+    if (!retval.containsError())
+    {
+        if (input != output) //not inplace
+        {
+            retval += input->copyTo(*output);
+        }
     }
 
     if (!retval.containsError())
@@ -934,7 +944,8 @@ for the line regression fits and a singular value decomposition for all other ca
 
     if (!retval.containsError())
     {
-        cv::Mat *input_ = input->getCvPlaneMat(0);
+        const cv::Mat *input_ = input->getCvPlaneMat(0);
+        cv::Mat *output_ = output->getCvPlaneMat(0);
         size_t step = input_->step1(axis);
         FitSVDSimple *fit = NULL;
 
@@ -983,7 +994,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < n; ++i)
                 {   
                     polyfit1d_basic(&((const ito::uint8*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(&((ito::uint8*)(input_->data))[i], m, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::uint8*)(output_->data))[i], m, coefficients, step);
                 }
                 break;
             case ito::tInt8:
@@ -991,7 +1002,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < n; ++i)
                 {   
                     polyfit1d_basic(&((const ito::int8*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(&((ito::int8*)(input_->data))[i], m, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::int8*)(output_->data))[i], m, coefficients, step);
                 }
                 break;
             case ito::tUInt16:
@@ -999,7 +1010,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < n; ++i)
                 {   
                     polyfit1d_basic(&((const ito::uint16*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(&((ito::uint16*)(input_->data))[i], m, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::uint16*)(output_->data))[i], m, coefficients, step);
                 }
                 break;
             case ito::tInt16:
@@ -1007,7 +1018,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < n; ++i)
                 {   
                     polyfit1d_basic(&((const ito::int16*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(&((ito::int16*)(input_->data))[i], m, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::int16*)(output_->data))[i], m, coefficients, step);
                 }
                 break;
             case ito::tUInt32:
@@ -1015,7 +1026,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < n; ++i)
                 {   
                     polyfit1d_basic(&((const ito::uint32*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(&((ito::uint32*)(input_->data))[i], m, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::uint32*)(output_->data))[i], m, coefficients, step);
                 }
                 break;
             case ito::tInt32:
@@ -1023,7 +1034,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < n; ++i)
                 {   
                     polyfit1d_basic(&((const ito::int32*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(&((ito::int32*)(input_->data))[i], m, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::int32*)(output_->data))[i], m, coefficients, step);
                 }
                 break;
             case ito::tFloat32:
@@ -1031,7 +1042,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < n; ++i)
                 {   
                     polyfit1d_basic(&((const ito::float32*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(&((ito::float32*)(input_->data))[i], m, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::float32*)(output_->data))[i], m, coefficients, step);
                 }
                 break;
             case ito::tFloat64:
@@ -1039,7 +1050,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < n; ++i)
                 {   
                     polyfit1d_basic(&((const ito::float64*)(input_->data))[i], m, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(&((ito::float64*)(input_->data))[i], m, coefficients, step);
+                    polyval1d_subtract_basic(&((ito::float64*)(output_->data))[i], m, coefficients, step);
                 }
                 break;
             }
@@ -1053,7 +1064,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < m; ++i)
                 {   
                     polyfit1d_basic((const ito::uint8*)(input_->ptr(i)), n, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(((ito::uint8*)(input_->ptr(i))), n, coefficients);
+                    polyval1d_subtract_basic(((ito::uint8*)(output_->ptr(i))), n, coefficients);
                 }
                 break;
             case ito::tInt8:
@@ -1061,7 +1072,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < n; ++i)
                 {   
                     polyfit1d_basic(((const ito::int8*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(((ito::int8*)(input_->ptr(i))), n, coefficients);
+                    polyval1d_subtract_basic(((ito::int8*)(output_->ptr(i))), n, coefficients);
                 }
                 break;
             case ito::tUInt16:
@@ -1069,7 +1080,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < m; ++i)
                 {   
                     polyfit1d_basic(((const ito::uint16*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(((ito::uint16*)(input_->ptr(i))), n, coefficients);
+                    polyval1d_subtract_basic(((ito::uint16*)(output_->ptr(i))), n, coefficients);
                 }
                 break;
             case ito::tInt16:
@@ -1077,7 +1088,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < m; ++i)
                 {   
                     polyfit1d_basic(((const ito::int16*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(((ito::int16*)(input_->ptr(i))), n, coefficients);
+                    polyval1d_subtract_basic(((ito::int16*)(output_->ptr(i))), n, coefficients);
                 }
                 break;
             case ito::tUInt32:
@@ -1085,7 +1096,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < m; ++i)
                 {   
                     polyfit1d_basic(((const ito::uint32*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(((ito::uint32*)(input_->ptr(i))), n, coefficients);
+                    polyval1d_subtract_basic(((ito::uint32*)(output_->ptr(i))), n, coefficients);
                 }
                 break;
             case ito::tInt32:
@@ -1093,7 +1104,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < m; ++i)
                 {   
                     polyfit1d_basic(((const ito::int32*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(((ito::int32*)(input_->ptr(i))), n, coefficients);
+                    polyval1d_subtract_basic(((ito::int32*)(output_->ptr(i))), n, coefficients);
                 }
                 break;
             case ito::tFloat32:
@@ -1101,7 +1112,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < m; ++i)
                 {   
                     polyfit1d_basic(((const ito::float32*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(((ito::float32*)(input_->ptr(i))), n, coefficients);
+                    polyval1d_subtract_basic(((ito::float32*)(output_->ptr(i))), n, coefficients);
                 }
                 break;
             case ito::tFloat64:
@@ -1109,7 +1120,7 @@ for the line regression fits and a singular value decomposition for all other ca
                 for (int i = 0; i < m; ++i)
                 {   
                     polyfit1d_basic(((const ito::float64*)(input_->ptr(i))), n, indices, values, weights, fit, coefficients, step);
-                    polyval1d_subtract_basic(((ito::float64*)(input_->ptr(i))), n, coefficients);
+                    polyval1d_subtract_basic(((ito::float64*)(output_->ptr(i))), n, coefficients);
                 }
                 break;
             }
@@ -1122,7 +1133,7 @@ for the line regression fits and a singular value decomposition for all other ca
     {
         QString msg;
         msg = tr("Subtracted polynomial of %1th order along axis %2").arg(order).arg(axis);
-        input->addToProtocol(std::string(msg.toLatin1().data()));
+        output->addToProtocol(std::string(msg.toLatin1().data()));
     }
     return retval;
 }
