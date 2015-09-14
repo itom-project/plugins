@@ -231,6 +231,8 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("bad_pixel", ito::ParamBase::Int, 0, 1, 1, tr("Enable bad pixel correction.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("aeag", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 1, 0, tr("Enable / Disable Automatic exposure / gain. AEAG is disabled in the current implementation.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gpo_mode", ito::ParamBase::IntArray, NULL, tr("Set the output pin modes for all available gpo pins. This is a list whose lengths corresponds to the number of available pins. Use gpo_mode[i] to access the i-th pin.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gpi_mode", ito::ParamBase::IntArray, NULL, tr("Set the input pin modes for all available gpi pins. This is a list whose lengths corresponds to the number of available pins. Use gpo_mode[i] to access the i-th pin. %1: Off, %2: trigger, %3: external signal input (not implemented by Ximea api)").arg(XI_GPI_OFF).arg(XI_GPI_TRIGGER).arg(XI_GPI_EXT_EVENT).toLatin1().data());
@@ -509,6 +511,13 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 int badpix = 0;// bad pixel correction default = 0
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_BPC, &badpix, pSize, intType), "set XI_PRM_BPC", QString::number(badpix));
                 retValue += readCameraIntParam(XI_PRM_BPC, "bad_pixel", false);
+
+                //disable AEAG
+                pxiSetParam(m_handle, XI_PRM_AEAG, &badpix, pSize, intType);
+                retValue += readCameraIntParam(XI_PRM_AEAG, "aeag", false);
+
+                //disable LUT
+                pxiSetParam(m_handle, XI_PRM_LUT_EN, &badpix, pSize, intType);
             }
 
             if (!retValue.containsError())
