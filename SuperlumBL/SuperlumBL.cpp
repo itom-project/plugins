@@ -35,6 +35,10 @@
 #include <qmutex.h>
 #include <QTime>
 
+#ifdef WIN32
+	#include <windows.h>
+#endif
+
 #include "common/helperCommon.h"
 #include "common/apiFunctionsInc.h"
 //#include "iostream"
