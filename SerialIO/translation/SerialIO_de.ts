@@ -67,25 +67,25 @@
     <name>QObject</name>
     <message>
         <location filename="../SerialIO.cpp" line="+267"/>
-        <location line="+148"/>
+        <location line="+157"/>
         <source>invalid baud rate</source>
         <translation>Ungültige Baudrate</translation>
     </message>
     <message>
-        <location line="-125"/>
-        <location line="+135"/>
+        <location line="-134"/>
+        <location line="+144"/>
         <source>invalid number of bits</source>
         <translation>Ungültige Anzahl Datenbits</translation>
     </message>
     <message>
-        <location line="-122"/>
-        <location line="+131"/>
+        <location line="-131"/>
+        <location line="+140"/>
         <source>invalid number of stopbits</source>
         <translation>Ungültige Anzahl Stopbits</translation>
     </message>
     <message>
         <location line="-111"/>
-        <location line="+124"/>
+        <location line="+126"/>
         <source>invalid parity</source>
         <translation>Ungültige Parität</translation>
     </message>
@@ -120,7 +120,7 @@
     <message>
         <location line="+68"/>
         <location line="+36"/>
-        <location line="+58"/>
+        <location line="+61"/>
         <location line="+10"/>
         <location line="+48"/>
         <location line="+30"/>
@@ -130,8 +130,8 @@
         <translation>COM-Port nicht geöffnet</translation>
     </message>
     <message>
-        <location line="-204"/>
-        <location line="+13"/>
+        <location line="-207"/>
+        <location line="+16"/>
         <source>error reading from com port</source>
         <translation>Fehler beim Lesen vom COM-Port</translation>
     </message>
@@ -214,12 +214,11 @@
         <translation>Stopbits nach jedem n-ten Bit</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>Toggle parity check</source>
-        <translation>Schalter Paritätsprüfung</translation>
+        <translation type="vanished">Schalter Paritätsprüfung</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Bitmask for flow control as integer</source>
         <translation>Bitmaske für Flusskontrolle als Ganzzahl</translation>
     </message>
@@ -229,23 +228,40 @@
         <translation>Terminierung, wird bei setVal() automatisch hinzugefügt</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>0 -&gt; write output buffer as block at once or single characters with delay (1..65000)</source>
-        <translation>0 -&gt; Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
+        <translation type="vanished">0 -&gt; Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Timeout for reading commands in [s]</source>
         <translation>Timeout für Lesebefehle in [s]</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>If true, all out and inputs are written to dockingWidget</source>
+        <translation type="vanished">Wenn aktiviert, wird die Kommunikation in der Toolbox protokolliert</translation>
+    </message>
+    <message>
+        <source>If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored</source>
+        <translation type="vanished">Wenn das Protokoll aktiviert wurde, können mit diesem Parameter leer Nachrichten ignoriert werden</translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>Parity: 0 -&gt; none, 1 -&gt; odd parity, 2 -&gt; even parity, 3 -&gt; mark, 4 -&gt; space</source>
+        <translation>Paritätsbit: 0 -&gt; keines, 1 -&gt; Paritätssumme ungerade (odd), 2 -&gt; Paritätssumme gerade (even), 3 -&gt; Mark-Parität, 4 -&gt; Space-Parität</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>0: write output buffer as block, else: single characters with delay (1..65000 ms)</source>
+        <translation>0 -&gt; Schreibt den Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000)</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>If true, all outputs and inputs are written to the toolbox</source>
         <translation>Wenn aktiviert, wird die Kommunikation in der Toolbox protokolliert</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored</source>
+        <source>If debug-param is true, all outputs and inputs are written to the toolbox. If debugIgnoreEmpty is true, empty messages will be ignored</source>
         <translation>Wenn das Protokoll aktiviert wurde, können mit diesem Parameter leer Nachrichten ignoriert werden</translation>
     </message>
     <message>
@@ -363,21 +379,29 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>Parity: 0 -&gt; no parity, 1 -&gt; odd parity, 2 -&gt; even parity</source>
-        <translation>Paritätsprüfung: 0 -&gt; keine Parität, 1 -&gt; ODD Parität, 2 -&gt; Parität</translation>
+        <source>Parity: 0 -&gt; none, 1 -&gt; odd parity, 2 -&gt; even parity, 3 -&gt; mark, 4 -&gt; space</source>
+        <translation>Paritätsbit: 0 -&gt; keines, 1 -&gt; Paritätssumme ungerade (odd), 2 -&gt; Paritätssumme gerade (even), 3 -&gt; Mark-Parität, 4 -&gt; Space-Parität</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
+        <source>0: write output buffer as block, else: single characters with delay (1..65000 ms)</source>
+        <translation>0 -&gt; Schreibt den Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000)</translation>
+    </message>
+    <message>
+        <source>Parity: 0 -&gt; no parity, 1 -&gt; odd parity, 2 -&gt; even parity</source>
+        <translation type="vanished">Paritätsprüfung: 0 -&gt; keine Parität, 1 -&gt; ODD Parität, 2 -&gt; Parität</translation>
+    </message>
+    <message>
+        <location line="-2"/>
         <source>Bitmask for flow control (see docstring for more information)</source>
         <translation>Bitmaske für Flusskontrolle (für nähere Informationen siehe Docstring)</translation>
     </message>
     <message>
-        <location line="+2"/>
         <source>0 -&gt; write output buffer as block or single characters with delay (1..65000)</source>
-        <translation>Ausgabepuffer als ganzen Block (0) oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
+        <translation type="vanished">Ausgabepuffer als ganzen Block (0) oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Timeout for reading commands in [s]</source>
         <translation>Timeout für Lesebefehle in [s]</translation>
     </message>
@@ -430,7 +454,7 @@
         <translation>Baudrate</translation>
     </message>
     <message>
-        <location line="+169"/>
+        <location line="+184"/>
         <source>Endline</source>
         <translation>Terminierung</translation>
     </message>
@@ -440,13 +464,12 @@
         <translation>&lt;nichts&gt;</translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-191"/>
         <source>Parity</source>
-        <translation>Parität</translation>
+        <translation>Paritätsbit</translation>
     </message>
     <message>
-        <location line="+20"/>
-        <location line="+304"/>
+        <location line="+339"/>
         <location line="+72"/>
         <location line="+32"/>
         <location line="+56"/>
@@ -455,8 +478,7 @@
         <translation>ausschalten</translation>
     </message>
     <message>
-        <location line="-476"/>
-        <location line="+304"/>
+        <location line="-172"/>
         <location line="+72"/>
         <location line="+32"/>
         <location line="+56"/>
@@ -555,12 +577,37 @@
         <translation>Verzögerung</translation>
     </message>
     <message>
-        <location line="-256"/>
+        <location line="-271"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+105"/>
+        <location line="+87"/>
+        <source>none</source>
+        <translation>keine</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>odd</source>
+        <translation>ungerade</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>even</source>
+        <translation>gerade</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>mark</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>space</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Bits</source>
         <translation></translation>
     </message>
