@@ -1147,11 +1147,11 @@ Example \n\
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("stopbits", ito::ParamBase::Int, 1, 2, 1, tr("Stop bits after every n bits").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::Int, 0, 2, 0, tr("Parity: 0 -> none, 1 -> odd parity, 2 -> even parity, 3 -> mark, 4 -> space").toLatin1().data());
+    paramVal = ito::Param("parity", ito::ParamBase::Int, 0, 4, 0, tr("Parity: 0 -> none, 1 -> odd parity, 2 -> even parity, 3 -> mark, 4 -> space").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("flow", ito::ParamBase::Int, 0, 127, 0, tr("Bitmask for flow control (see docstring for more information)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-    paramVal = ito::Param("sendDelay", ito::ParamBase::Int, 0, 65000, 0, tr("0 -> write output buffer as block or single characters with delay (1..65000)").toLatin1().data());
+    paramVal = ito::Param("sendDelay", ito::ParamBase::Int, 0, 65000, 0, tr("0: write output buffer as block, else: single characters with delay (1..65000 ms)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_initParamsOpt.append(paramVal);
@@ -1209,19 +1209,19 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(fal
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("stopbits", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 1, 2, 1, tr("Stop bits after every n bits").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("parity", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 2, 0, tr("Toggle parity check").toLatin1().data());
+    paramVal = ito::Param("parity", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 4, 0, tr("Parity: 0 -> none, 1 -> odd parity, 2 -> even parity, 3 -> mark, 4 -> space").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("flow", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 127, 0, tr("Bitmask for flow control as integer").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("endline", ito::ParamBase::String | ito::ParamBase::NoAutosave, "\n", tr("Endline character, will be added automatically during setVal").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sendDelay", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 65000, 0, tr("0 -> write output buffer as block at once or single characters with delay (1..65000)").toLatin1().data());
+    paramVal = ito::Param("sendDelay", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 65000, 0, tr("0: write output buffer as block, else: single characters with delay (1..65000 ms)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double | ito::ParamBase::NoAutosave, 0.0, 65.0, 4.0, tr("Timeout for reading commands in [s]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
+    paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 1, 0, tr("If true, all outputs and inputs are written to the toolbox").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("debugIgnoreEmpty", ito::ParamBase::Int, 0, 1, 0, tr("If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored").toLatin1().data());
+    paramVal = ito::Param("debugIgnoreEmpty", ito::ParamBase::Int, 0, 1, 0, tr("If debug-param is true, all outputs and inputs are written to the toolbox. If debugIgnoreEmpty is true, empty messages will be ignored").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     //register exec functions
