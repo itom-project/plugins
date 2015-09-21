@@ -307,6 +307,17 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             }
             else
             {
+                //especially under Windows, pxiOpenDevice does not fail if camera is already opened by another process. However
+                //any xiSetParam command will fail and no image acquisition is possible (http://www.ximea.com/support/wiki/apis/XiAPI). This should be checked in the following small code:
+                float testGain = 0.0;
+                if (pxiSetParam(m_handle, XI_PRM_GAIN, &testGain, sizeof(float), xiTypeFloat) == XI_RESOURCE_OR_FUNCTION_LOCKED)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "this camera cannot be configured and used since it is propably used by another process");
+                }
+            }
+
+            if (!retValue.containsError())
+            {
                 m_params["cam_number"].setVal<int>(icam_number);
 
                 char strBuf[1024];               
@@ -528,17 +539,20 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
 
             int device_exist = 0;
 
-            if (m_handle)
+            if (!retValue.containsError())
             {
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_IS_DEVICE_EXIST, &device_exist, &pSize, &intType), "get XI_PRM_IS_DEVICE_EXIST");
-            }
-            if (device_exist != 1)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("Camera is not connected or does not work properly!").toLatin1().data());
-            }
-            else
-            {
-                retValue += synchronizeCameraSettings();
+                if (m_handle)
+                {
+                    retValue += checkError(pxiGetParam(m_handle, XI_PRM_IS_DEVICE_EXIST, &device_exist, &pSize, &intType), "get XI_PRM_IS_DEVICE_EXIST");
+                }
+                if (device_exist != 1)
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("Camera is not connected or does not work properly!").toLatin1().data());
+                }
+                else
+                {
+                    retValue += synchronizeCameraSettings();
+                }
             }
 
             if (!retValue.containsError())
@@ -547,26 +561,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             }
         }
 
-        if (retValue.containsError())
-        {
-            if(Initnum <= 1) //this instance already incremented Initnum in any cases, it will be decremented in case of error in the close method
-            {
-                if (ximeaLib)
-                {
-    #if linux
-                    dlclose(ximeaLib);
-    #else
-                    FreeLibrary(ximeaLib);
-    #endif
-                    ximeaLib = NULL;
-                }
-            }
-            else
-            {
-                //std::cerr << "DLLs not unloaded due to further running grabber instances\n" << std::endl;
-            }
-        }
-        else
+        if (!retValue.containsError())
         {
             m_saveParamsOnClose = true;
         }
