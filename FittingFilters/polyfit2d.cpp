@@ -78,6 +78,9 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
     int gradX = static_cast<int>( (*paramsMand)[2].getVal<int>() );
     int gradY = static_cast<int>( (*paramsMand)[3].getVal<int>() );
 
+    if (gradX < 1 || gradY < 1)
+        return ito::RetVal(ito::retError, 0, tr("Polynomial degrees must not be below 1.").toLatin1().data());
+
     int fillNaNValues = static_cast<int>( (*paramsOpt)[0].getVal<int>() );
 
     retval = ito::dObjHelper::verify2DDataObject(dObjImages, "sourceImage", gradY + 1, std::numeric_limits<short>::max(), 
