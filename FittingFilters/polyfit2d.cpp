@@ -78,9 +78,6 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
     int gradX = static_cast<int>( (*paramsMand)[2].getVal<int>() );
     int gradY = static_cast<int>( (*paramsMand)[3].getVal<int>() );
 
-    if (gradX < 1 || gradY < 1)
-        return ito::RetVal(ito::retError, 0, tr("Polynomial degrees must not be below 1.").toLatin1().data());
-
     int fillNaNValues = static_cast<int>( (*paramsOpt)[0].getVal<int>() );
 
     retval = ito::dObjHelper::verify2DDataObject(dObjImages, "sourceImage", gradY + 1, std::numeric_limits<short>::max(), 
@@ -126,7 +123,7 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
     int  *x,*y;
     int   xsize,ysize,i;
     struct Koeffizienten koeff;
-    double Sigma;
+    double Sigma = 0.0;
 
     xsize=plane->cols;
     ysize=plane->rows;
@@ -221,18 +218,16 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     float64 *lineBufOutput = NULL;
     double inf = std::numeric_limits<double>::infinity();
     double nan =std::numeric_limits<double>::quiet_NaN();
-    
-
 
     // Kontrolle der Polynomgrade -------------------------------------------
-    if (gradX == 0 && gradY == 0)
+    if (gradX < 1 || gradY < 1)
     {
-        return retValue += ito::RetVal(retError, 2, tr("2:  gradX und gradY =0, Funktion abgebrochen").toLatin1().data());
+        return retValue += ito::RetVal(retError, 2, tr("2:  polynomial orders must not be below 1, aborted").toLatin1().data());
     }
 
-    if ( (gradX > (sizeX-1)) || (gradY > (sizeY-1)) )
+    if ( (gradX > (sizeX - 1)) || (gradY > (sizeY - 1)) )
     {
-        return retValue += ito::RetVal(retError, 3, tr("3:  gradX und/oder gradY zu gross").toLatin1().data());
+        return retValue += ito::RetVal(retError, 3, tr("3:  polynomial order in x and/or y too big, aborted").toLatin1().data());
     }
   
     maxGrad = gradX < gradY ? gradY : gradX;
@@ -263,7 +258,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     
     if (koeff->alphaY == NULL || koeff->alphaX == NULL || koeff->betaX == NULL || koeff->betaY == NULL || koeff->gammaX == NULL || koeff->gammaY == NULL)
     {
-        retValue += ito::RetVal(retError, 5, tr("5:  Fehler bei Speicherzuweisung fuer Rekursionskoeffizienten").toLatin1().data());
+        retValue += ito::RetVal(retError, 5, tr("5:  error allocating memory for recursion coefficients").toLatin1().data());
         goto Error;
     }
 
@@ -289,7 +284,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 
     if (Sum == NULL || koeff->b == NULL || Werte == NULL || NormX == NULL || NormY == NULL)
     {
-        retValue += RetVal(retError, 6, tr("6:  Fehler bei Speicherzuweisung fuer Werte, NormX, NormY oder Sum").toLatin1().data());
+        retValue += RetVal(retError, 6, tr("6: error allocating memory for NormX, NormY or Sum").toLatin1().data());
         goto Error;
     }
 
@@ -298,7 +293,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     dy = 1;
 
     // Berechnung der NormX mit der Funktion OrthPolAuswerten ---------------- 
-    for(n=0 ; n < koeff->sizeX ; n++)
+    for(n=0; n < koeff->sizeX; n++)
     {
         if (n == 0) 
         {
@@ -321,7 +316,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     ZeilenSumme=(double *)calloc(koeff->gradX+1, sizeof(double));
     if (ZeilenSumme == NULL)
     {
-        retValue += ito::RetVal(retError, 7, tr("7:  Fehler bei Speicherzuweisung fuer ZeilenSumme").toLatin1().data());
+        retValue += ito::RetVal(retError, 7, tr("7:  error allocating memory for line sum").toLatin1().data());
         goto Error;
     }
 

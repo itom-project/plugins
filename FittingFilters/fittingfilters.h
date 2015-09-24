@@ -125,6 +125,9 @@ class FittingFilters : public ito::AddInAlgo
 
     private:
         struct Koeffizienten {
+            Koeffizienten() : gradX(0), gradY(0), sizeX(0), sizeY(0), b(NULL), alphaX(NULL), gammaX(NULL),
+                betaX(NULL), alphaY(NULL), betaY(NULL), gammaY(NULL) {}
+            ~Koeffizienten() {}
              int    gradX;
              int    gradY;
              int    sizeX;
