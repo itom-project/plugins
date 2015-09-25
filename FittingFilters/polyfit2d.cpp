@@ -32,6 +32,12 @@ using namespace ito;
 //---------------------------------------------------------------------------------------------------------------------------------------------
 /*static*/ const char* FittingFilters::fitPolynom2DDoc = "Fit a polynomial p(x,y) of order (orderX, orderY) in x- and y-direction. \n\
 \n\
+The fit function always looks like this: \n\
+\n\
+f(x,y) = sum_{m=0}^{M} sum_{n=0}^{N} ( p_nm * x^n * y^m ) \n\
+\n\
+This definition is slightly different from the polynomial fitted by the similar function 'polyfitWeighted2d'. \n\
+\n\
 Puts the fitted points into the data object 'fittedImage'. This method does not weight the input values and does not \n\
 return the coefficients for the polynomial. Use polyfitWeighted2d if you want to have an enhanced fit.";
 ito::RetVal FittingFilters::fitPolynom2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)

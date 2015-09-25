@@ -428,7 +428,9 @@ The overdetermined system of linear equations is finally solved using a QR facto
 are used, else the solve-command of OpenCV (slower) is called. In order to speed up the calculation you can use the parameter 'reduceFactor'. If \
 it is set to any value >= 1, The input plane is divided into a grid of (orderY+1)*reduceFactor x (orderX+1)*reduceFactor rectangles. In every rectangle \
 an arbitrary valid value is selected and used for the determination only. If no valid value could be found after a certain number of new random values, \
-no value is taken from this rectangle. The algorithm returns an error if less values could have been selected than are needed for the fit of given orders.";
+no value is taken from this rectangle. The algorithm returns an error if less values could have been selected than are needed for the fit of given orders. \n\
+\n\
+The definition of the polynomial function is slightly different than the one used in the similar fitting function 'fitPolynom2D'.";
 
 
 /*static*/ ito::RetVal FittingFilters::polyfitWeighted2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -492,7 +494,9 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
 \n\
 The solver uses a Vandermonde matrix V as solving strategy and tries to solve V*p=Z, where Z are the valid values of the input data object. \
 The overdetermined system of linear equations is finally solved using a QR factorization of V. If this module is compiled with LAPACK, its solvers \
-are used, else the solve-command of OpenCV (slower) is called.";
+are used, else the solve-command of OpenCV (slower) is called. \n\
+\n\
+The definition of the polynomial function is slightly different than the one used in the similar fitting function 'fitPolynom2D'.";
 
 
 /*static*/ ito::RetVal FittingFilters::polyfitWeighted2DSinglePointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
