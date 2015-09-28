@@ -234,6 +234,9 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("gamma", ito::ParamBase::Int, 500, 4095, 1024, tr("Gamma adjustment").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
+	paramVal = ito::Param("metadata", ito::ParamBase::Int, 0, 1, 1, tr("If 1 (default), the timestamp, frame counter and roi position (depending on the camera model) will be acquired and added into the first pixels of the image (available as tag of the data object as well), 0: metadata disabled").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+
     //binning is GigE only
 
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 2048, 2048, tr("Pixelsize in x (cols)").toLatin1().data());
@@ -592,6 +595,60 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
             retValue += flyCapSetExtendedShutter(val->getVal<int>() > 0);
             retValue += flyCapSynchronizeFrameRateShutter();
         }
+		else if (key == "metadata")
+		{
+			bool enabled = val->getVal<int>() > 0;
+			if (!checkError(m_myCam.GetEmbeddedImageInfo(&m_embeddedInfo)).containsError() && m_embeddedInfo.timestamp.available)
+			{
+				if (m_embeddedInfo.timestamp.available)
+				{
+					m_embeddedInfo.timestamp.onOff = enabled;
+				}
+				if (m_embeddedInfo.gain.available)
+				{
+					m_embeddedInfo.gain.onOff = false;
+				}
+				if (m_embeddedInfo.shutter.available)
+				{
+					m_embeddedInfo.shutter.onOff = false;
+				}
+				if (m_embeddedInfo.brightness.available)
+				{
+					m_embeddedInfo.brightness.onOff = false;
+				}
+				if (m_embeddedInfo.exposure.available)
+				{
+					m_embeddedInfo.exposure.onOff = false;
+				}
+				if (m_embeddedInfo.whiteBalance.available)
+				{
+					m_embeddedInfo.whiteBalance.onOff = false;
+				}
+				if (m_embeddedInfo.frameCounter.available)
+				{
+					m_embeddedInfo.frameCounter.onOff = enabled;
+				}
+				if (m_embeddedInfo.strobePattern.available)
+				{
+					m_embeddedInfo.strobePattern.onOff = false;
+				}
+				if (m_embeddedInfo.GPIOPinState.available)
+				{
+					m_embeddedInfo.GPIOPinState.onOff = false;
+				}
+				if (m_embeddedInfo.ROIPosition.available)
+				{
+					m_embeddedInfo.ROIPosition.onOff = enabled;
+				}
+
+				retValue += checkError(m_myCam.SetEmbeddedImageInfo(&m_embeddedInfo));
+
+				if (!retValue.containsError())
+				{
+					it->copyValueFrom(&(*val));
+				}
+			}
+		}
         else if(key == "frame_time")
         {
             FlyCapture2::Property prop;
@@ -1313,7 +1370,14 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             if (m_myCam.ReadRegister(k_frameInfoReg, &frameInfoRegVal) == FlyCapture2::PGRERROR_OK && (frameInfoRegVal >> 31) != 0)
             {
                 m_hasFrameInfo = true;
+				m_params["metadata"].setVal<int>(1);
+				m_params["metadata"].setFlags(0);
             }
+			else
+			{
+				m_params["metadata"].setVal<int>(0);
+				m_params["metadata"].setFlags(ito::ParamBase::Readonly);
+			}
         }
     }
 
@@ -2097,7 +2161,7 @@ ito::RetVal PGRFlyCapture::retrieveData(ito::DataObject *externalDataObject)
             retValue += ito::RetVal::format(ito::retError, 1002, tr("retrieveData of PGRFlyCapture failed, since bitdepth %i not implemented.").toLatin1().data(), bpp);
         }
 
-        if (!retValue.containsError() && m_hasFrameInfo)
+        if (!retValue.containsError() && m_hasFrameInfo && m_params["metadata"].getVal<int>() > 0)
         {
             double timestamp = timeStampToDouble(m_imageBuffer.GetTimeStamp());
             FlyCapture2::ImageMetadata metadata = m_imageBuffer.GetMetadata();
@@ -2495,8 +2559,6 @@ ito::RetVal PGRFlyCapture::flyCapChangeFormat7_(bool changeBpp, bool changeROI, 
 
         if (!ret2.containsError())
         {
-            ito::IntMeta *im;
-
             ParamMapIterator it = m_params.find("roi");
             int *roi = it->getVal<int*>();
             roi[0] = m_currentFormat7Settings.offsetX;

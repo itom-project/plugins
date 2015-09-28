@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`PGRFlyCapture`
 **License**:    :pluginlicense:`PGRFlyCapture`
 **Platforms**:  Windows, Linux
-**Devices**:    Point Grey cameras (USB3) supported by Fly Capture driver. (GigE possible, but yet not implemented)
+**Devices**:    Point Grey cameras (USB3) supported by Fly Capture driver. (GigE possible, but not implemented yet)
 **Author**:     :pluginauthor:`PGRFlyCapture`
 =============== ========================================================================================================
  
@@ -72,6 +72,8 @@ parameters can be changed using *setParam*. If a parameter is read-only, it is n
     integration time in seconds. The range of the integration is limited if *extended_shutter* is False. Enable extended shutter to set bigger values for the integration time.
 **name**: {str}, read-only
     name of the camera
+**metadata**: {int}
+	If 1 (default), the timestamp, frame counter and roi position (depending on the camera model) will be acquired and added into the first pixels of the image (available as tag of the data object as well), 0: metadata disabled
 **offset**: {float}
     The normalized offset of the camera[0,1]. Read-only if not available. Corresponds to Point Grey property Brightness.
 **packetsize**: {int}
@@ -96,7 +98,7 @@ parameters can be changed using *setParam*. If a parameter is read-only, it is n
 Image Acquisition
 ===================
 
-If you acquire an image, the obtained data object has some tags defined::
+If you acquire an image, the obtained data object has some tags defined if the parameter 'metadata' is set to 1::
     
     obj = dataObject()
     cam.acquire() #cam must be started before
@@ -110,6 +112,9 @@ The tags are:
 * frame_counter: continuous number of frame (if camera does not run in any trigger mode, this number can increase more than by one from one acquired image to the next one)
 * roi_x0: left offset of ROI
 * roi_y0: top offset of ROI
+
+If 'metadata' is 0 or if the camera model does not support this additional information, no tags are appended to each data object.
+Please consider, that the image information is embedded in the first pixels of each image (see https://www.ptgrey.com/tan/10563).
 
 Changelog
 ==========
