@@ -102,7 +102,6 @@ class PGRFlyCapture : public ito::AddInGrabber
         int m_camIdx;
         int m_colorCam;
         bool m_colouredOutput;
-        bool m_RunSync;
         bool m_RunSoftwareSync;
         double m_gainMax;
         double m_gainMin;

@@ -198,7 +198,6 @@ PGRFlyCapture::PGRFlyCapture() :
     m_isgrabbing(false),
     m_camIdx(-1),
     m_colorCam(false),
-    m_RunSync(true),
     m_RunSoftwareSync(false),
     m_hasFormat7(false),
     m_gainMax(1.0),
@@ -257,13 +256,13 @@ PGRFlyCapture::PGRFlyCapture() :
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.001, 60.0, 2.0, tr("Timeout for acquiring images in seconds").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, -1, 2, 0, tr("-1: Complete free run, 0: Disable trigger, 1: enable trigger mode, 2: enable software-trigger").toLatin1().data());
+    paramVal = ito::Param("trigger_mode", ito::ParamBase::Int, -1, 3, -1, tr("-1: Complete free run, 0: enable standard external trigger (PtGrey mode 0), 1: Software Trigger (PtGrey mode 0, Software Source), 2: Bulb shutter external trigger (PtGrey mode 1), 3: Overlapped external trigger (PtGrey mode 14)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
 	paramVal = ito::Param("trigger_polarity", ito::ParamBase::Int, 0, 1, 0, tr("For hardware trigger only: Set the polarity of the trigger (0: trigger active low, 1: trigger active high)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-	paramVal = ito::Param("packetsize", ito::ParamBase::Int, 0, 48048, 41184, tr("Packet size of current image settings").toLatin1().data());
+	paramVal = ito::Param("packetsize", ito::ParamBase::Int, 0, 48048, 48048, tr("Packet size of current image settings").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("video_mode", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, FlyCapture2::NUM_VIDEOMODES - 1, FlyCapture2::VIDEOMODE_FORMAT7, tr("Current video mode, default is Mode7").toLatin1().data());
@@ -552,19 +551,17 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
 				if (old_roi[2] != new_roi[2] || old_roi[3] != new_roi[3])
 				{
-					//height or width changed -> full reconfiguration:
-					retValue += flyCapChangeFormat7_(false, true, -1, new_roi[0], new_roi[1], new_roi[2], new_roi[3]);
+				//height or width changed -> full reconfiguration:
+				retValue += flyCapChangeFormat7_(false, true, -1, new_roi[0], new_roi[1], new_roi[2], new_roi[3]);
 				}
 				else
 				{
-
 					write_value = (new_roi[0] << 16) + new_roi[1];
 
 					m_myCam.WriteRegister( k_imagePosition, write_value );
 
 					//overwrite old roi
 					memcpy(old_roi, new_roi, 4 * sizeof(int)); 
-
 				}
 			}
             bool valid;
@@ -677,31 +674,46 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
             // The trigger must be present --> because the m_param is not readonly
             FlyCapture2::TriggerMode triggerModeSetup;
+            FlyCapture2::TriggerMode currentSetup;
             m_myCam.GetTriggerMode(&triggerModeSetup);
 
             int triggerMode = val->getVal<int>();
                     
             switch(triggerMode)
             {
-                case 0: //Basic Mode
-                    m_RunSync = true;   // Force a synchronisation by delay
-                    m_RunSoftwareSync = false;  // Force synchronisation by software trigger during aquire
-                    triggerModeSetup.onOff = false;
-                    break;
-                case 1: //Hardware Trigger
-                    m_RunSync = false;
+                case -1: //Free run
                     m_RunSoftwareSync = false;
-                    triggerModeSetup.onOff = true; 
+                    triggerModeSetup.onOff = false;
+                    triggerModeSetup.parameter = 0; //only important for multi-acquisition (burst) mode 15
+                    triggerModeSetup.mode = 0;
                     break;
-                case 2: //Software Trigger
-                    m_RunSync = false;
+                case 0: //Standard external hardware trigger [Mode 0, Source External]
+                    m_RunSoftwareSync = false;  // Force synchronisation by software trigger during aquire
+                    triggerModeSetup.onOff = true;
+                    triggerModeSetup.parameter = 0; //only important for multi-acquisition (burst) mode 15
+                    triggerModeSetup.mode = 0;
+                    triggerModeSetup.source = 0;
+                    break;
+                case 1: //Software Trigger [Mode 0, Source Software]
                     m_RunSoftwareSync = true;
                     triggerModeSetup.onOff = true;
-                    break;
-                case -1: //Free run
-                    m_RunSync = false;
+                    triggerModeSetup.parameter = 0; //only important for multi-acquisition (burst) mode 15
+                    triggerModeSetup.mode = 0;
+                    triggerModeSetup.source = 7;
+                    break; 
+                case 2: //Bulb shutter external hardware trigger (Exposure duration = trigger width) [Mode 1]
                     m_RunSoftwareSync = false;
-                    triggerModeSetup.onOff = false;
+                    triggerModeSetup.onOff = true;
+                    triggerModeSetup.parameter = 0; //only important for multi-acquisition (burst) mode 15
+                    triggerModeSetup.mode = 1;
+                    triggerModeSetup.source = 0;
+                    break;
+                case 3: //Overlapped external hardware trigger [Mode 14]
+                    m_RunSoftwareSync = false;
+                    triggerModeSetup.onOff = true; 
+                    triggerModeSetup.parameter = 0; //only important for multi-acquisition (burst) mode 15
+                    triggerModeSetup.mode = 14;
+                    triggerModeSetup.source = 0;
                     break;
             }
 
@@ -1491,10 +1503,9 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
         m_myCam.GetTriggerModeInfo(&pTriggerInfo);
         m_myCam.GetTriggerMode(&triggerModeSetup);
         
-        m_RunSync = true;
         m_RunSoftwareSync = false;
 
-		if (pTriggerInfo.present)
+        if (pTriggerInfo.present && pTriggerInfo.polaritySupported)
 		{
 			m_params["trigger_polarity"].setVal<int>(triggerModeSetup.polarity);
 		}
@@ -1503,16 +1514,15 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
 			m_params["trigger_polarity"].setFlags(ito::ParamBase::Readonly);
 		}
 
+        //set default trigger to -1: freerun
+        setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::Int, -1)), NULL);
+
         if(pTriggerInfo.present && pTriggerInfo.softwareTriggerSupported)
         {
-            triggerModeSetup.onOff = false;
-            m_myCam.SetTriggerMode(&triggerModeSetup);
-            m_params["trigger_mode"].setVal<int>(0);  
-
             if(pTriggerInfo.softwareTriggerSupported)
             {
-                //m_params["trigger_mode"].setMax(2); 
-                static_cast<ito::IntMeta*>( m_params["trigger_mode"].getMeta() )->setMax(2);
+                //m_params["trigger_mode"].setMax(3); 
+                static_cast<ito::IntMeta*>( m_params["trigger_mode"].getMeta() )->setMax(3);
             }
             else
             {
@@ -1527,21 +1537,6 @@ ito::RetVal PGRFlyCapture::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
             //m_params["trigger_mode"].setMax(0);
             static_cast<ito::IntMeta*>( m_params["trigger_mode"].getMeta() )->setMax(0);
         }
-
-        if(startSyncronized && (m_params["trigger_mode"].getMax() == 2))
-        {
-            retVal += setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("trigger_mode", ito::ParamBase::Int, 2)), 0);
-            if(!retVal.containsError())
-            {
-                m_myCam.GetTriggerMode(&triggerModeSetup);
-                triggerModeSetup.onOff = false;
-                m_myCam.SetTriggerMode(&triggerModeSetup);
-                m_params["trigger_mode"].setVal<int>(0);
-                //m_params["trigger_mode"].setMax(1); 
-                static_cast<ito::IntMeta*>( m_params["trigger_mode"].getMeta() )->setMax(1);
-            }
-        }
-
     }
 
     if(!retVal.containsError())
