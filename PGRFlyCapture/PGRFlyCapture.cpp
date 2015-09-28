@@ -47,6 +47,10 @@ static char Initnum = 0;
 
 #define EVALSPEED 0
 
+#ifdef WIN32
+	#include <Windows.h>
+#endif
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -454,84 +458,97 @@ ito::RetVal PGRFlyCapture::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 				const unsigned int k_imageSize = 0xA0C;
 
 				unsigned int read_value = 0;
-				unsigned int write_value = val->getVal<int>();
+				unsigned int new_value = val->getVal<int>();
+				unsigned int write_value = 0;
 
-				int *old_roi = it->getVal<int*>(); 
-				const int new_roi_value = val->getVal<int>();
-
-				int64 t = 0.0;
+				int *roi = it->getVal<int*>(); 
+				FlyCapture2::Error err;
 
 				switch (index)
 				{
-				case 0:
+				case 0: //x0
 
 					// Linksshift um 16 Stellen, da zur Anpassung des Offsets in x-Richtung die ersten 16 Bits des Registers,
 					// welches zusammen mit dem y-Offset 32 Bit umfasst, gesetzt werden muessen.
-					write_value = (write_value << 16) + old_roi[1];
+					write_value = (new_value << 16) + roi[1];
 
 					// Direkter Schreibzugriff auf das entsprechende Kameraregister zum einstellen des x-Offsets
-					m_myCam.WriteRegister(k_imagePosition, write_value);
-
-					// Uebergabe des aktualisierten x-Offsets an itom
-					old_roi[0] = new_roi_value;
-					m_params["roi"].setVal<int*>(old_roi,4);
+					err = m_myCam.WriteRegister(k_imagePosition, write_value);
+					if (err == FlyCapture2::PGRERROR_OK)
+					{
+						roi[0] = new_value;
+					}
+					else
+					{
+						retValue += checkError(err);
+						m_myCam.ReadRegister( k_imagePosition, &read_value );
+						unsigned int val = (read_value >> 16);
+						roi[0] = val;
+					}
 					
 					break;
 
-				case 1:
+				case 1: //y0
+					write_value = (roi[0] << 16) + new_value;
 
-					// Aufzeichnung der benoetigten Zeit zum Setzen des entsprechenden Registers
-					t = cv::getTickCount();
-
-					write_value = (old_roi[0] << 16) + write_value;
-
-					// Direkter Schreibzugriff auf das entsprechende Kameraregister zum einstellen des y-Offsets
-					m_myCam.WriteRegister( k_imagePosition, write_value );
-
-					qDebug() << (double)(cv::getTickCount() - t)/cv::getTickFrequency();
-
-					// Uebergabe des aktualisierten y-Offsets an itom
-					old_roi[1] = new_roi_value;
-					m_params["roi"].setVal<int*>(old_roi,4);
-
-					// Auslesen des vorher gesetzten Registers zur Visualisierung und Ueberpruefung
-					m_myCam.ReadRegister( k_imageSize, &read_value );
-					read_value &= ~(0x1 << 0);
-
+					// Direkter Schreibzugriff auf das entsprechende Kameraregister zum einstellen des x-Offsets
+					err = m_myCam.WriteRegister(k_imagePosition, write_value);
+					if (err == FlyCapture2::PGRERROR_OK)
+					{
+						roi[1] = new_value;
+					}
+					else
+					{
+						retValue += checkError(err);
+						m_myCam.ReadRegister( k_imagePosition, &read_value );
+						unsigned int val = (read_value & 0xffff);
+						roi[1] = val;
+					}
+					
 					break;
 
 				case 2:
 
 					// Linksshift um 16 Stellen, da zur Anpassung der Groesse in x-Richtung die ersten 16 Bits des Registers,
 					// welches zusammen mit der Groesse in y-Richtung 32 Bit umfasst, gesetzt werden muessen.
-					write_value = (write_value << 16) + old_roi[3];
+					write_value = (new_value << 16) + roi[3];
 
-					// Direkter Schreibzugriff auf das entsprechende Kameraregister für die Groesse in x-Richtung
-					m_myCam.WriteRegister( k_imageSize, write_value );
-
-					// Uebergabe des aktualisierten Groesse in x-Richtung an itom
-					m_params["sizex"].setVal<int>(new_roi_value);
+					// Direkter Schreibzugriff auf das entsprechende Kameraregister zum einstellen des x-Offsets
+					err = m_myCam.WriteRegister(k_imageSize, write_value);
+					if (err == FlyCapture2::PGRERROR_OK)
+					{
+						roi[2] = new_value;
+						m_params["sizex"].setVal<int>(new_value);
+					}
+					else
+					{
+						retValue += checkError(err);
+						m_myCam.ReadRegister( k_imageSize, &read_value );
+						unsigned int val = (read_value >> 16);
+						roi[2] = val;
+						m_params["sizex"].setVal<int>(val);
+					}
 
 					break;
 
 				case 3:
+					write_value = (roi[2] << 16) + new_value;
 
-					//time recording for setting the sizey register
-					t = cv::getTickCount();
-
-					write_value = (old_roi[2] << 16) + write_value;
-
-					//access sizey camera register
-					m_myCam.WriteRegister( k_imageSize, write_value );
-
-					qDebug() << (double)(cv::getTickCount() - t)/cv::getTickFrequency();
-
-					//set new sizey in m_params for itom
-					m_params["sizey"].setVal<int>(new_roi_value);
-
-					//checking the sizey register
-					m_myCam.ReadRegister( k_imageSize, &read_value );
-					read_value &= ~(0x1 << 0);
+					// Direkter Schreibzugriff auf das entsprechende Kameraregister zum einstellen des x-Offsets
+					err = m_myCam.WriteRegister(k_imageSize, write_value);
+					if (err == FlyCapture2::PGRERROR_OK)
+					{
+						roi[3] = new_value;
+						m_params["sizey"].setVal<int>(new_value);
+					}
+					else
+					{
+						retValue += checkError(err);
+						m_myCam.ReadRegister( k_imageSize, &read_value );
+						unsigned int val = (read_value & 0xffff);
+						roi[3] = val;
+						m_params["sizey"].setVal<int>(val);
+					}
 
 					break;
 
@@ -1599,6 +1616,13 @@ ito::RetVal PGRFlyCapture::close(ItomSharedSemaphore *waitCond)
 
     if(m_camIdx > -1)
     {
+		//stop camera if started
+        if (grabberStartedCount() > 0)
+        {
+            setGrabberStarted(1);
+            retValue += stopDevice(NULL);
+        }
+
         retError = m_myCam.Disconnect();
         if (retError != FlyCapture2::PGRERROR_OK)
         {
@@ -1708,6 +1732,11 @@ ito::RetVal PGRFlyCapture::stopDevice(ItomSharedSemaphore *waitCond)
     decGrabberStarted();
     if(grabberStartedCount() == 0)
     {
+#if QT_VERSION >= 0x050200
+		QThread::msleep(100); //prevents possible crashes due to a heap allocation error when stopping the camera too early
+#else
+		Sleep(100); //prevents possible crashes due to a heap allocation error when stopping the camera too early
+#endif
         retValue += checkError(m_myCam.StopCapture());
     }
     else if(grabberStartedCount() < 0)
