@@ -44,23 +44,14 @@ Q_DECLARE_METATYPE(QVector<unsigned char>)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DispWindowInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-   *addInInst = (ito::AddInBase *) new DispWindow();
-   ((DispWindow *)*addInInst)->setBasePlugin(this);
-   m_InstList.append(*addInInst);
-
+   NEW_PLUGININSTANCE(DispWindow)
    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DispWindowInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-        delete ((DispWindow *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(DispWindow)
    return ito::retOk;
 }
 

@@ -228,13 +228,7 @@ ito::RetVal X3pIOInterface::getAddInInst(ito::AddInBase **addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal X3pIOInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-    if (*addInInst)
-    {
-        delete ((X3pIO *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-    }
-
+    REMOVE_PLUGININSTANCE(X3pIO)
     return ito::retOk;
 }
 

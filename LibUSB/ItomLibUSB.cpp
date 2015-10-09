@@ -50,25 +50,14 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ItomUSBDeviceInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    ItomUSBDevice* newInst = new ItomUSBDevice();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(ItomUSBDevice)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ItomUSBDeviceInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-        delete ((ItomUSBDevice *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(ItomUSBDevice)
    return ito::retOk;
 }
 

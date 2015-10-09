@@ -50,25 +50,14 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBLInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    SuperlumBL* newInst = new SuperlumBL();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(SuperlumBL)
     return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal SuperlumBLInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-        delete ((SuperlumBL *)*addInInst);
-        int idx = m_InstList.indexOf(*addInInst);
-        m_InstList.removeAt(idx);
-   }
-
+   REMOVE_PLUGININSTANCE(SuperlumBL)
    return ito::retOk;
 }
 

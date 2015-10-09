@@ -23,7 +23,7 @@ ENDIF(BUILD_SHARED_LIBS)
 find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Core Widgets LinguistTools)
-find_package(OpenCV REQUIRED)
+find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
 
 IF (BUILD_UNICODE)

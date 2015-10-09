@@ -314,7 +314,7 @@ OpenCVGrabberInterface::~OpenCVGrabberInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal OpenCVGrabber::showConfDialog(void)
 {
-#if (CV_VERSION_MAJOR > 2 || (CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR >= 4))
+#if (CV_MAJOR_VERSION > 2 || (CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION >= 4))
     return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), cvGetCaptureDomain(m_pCam->getDevice()) == CV_CAP_DSHOW));
 #else
     return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), false));
@@ -1382,7 +1382,7 @@ bool OpenCVGrabber::propertyExists(int propId)
 //----------------------------------------------------------------------------------------------------------------------------------
 bool OpenCVGrabber::showNativeSettingsDialog()
 {
-#if (CV_VERSION_MAJOR > 2 || (CV_VERSION_MAJOR == 2 && CV_VERSION_MINOR >= 4))
+#if (CV_MAJOR_VERSION > 2 || (CV_MAJOR_VERSION == 2 && CV_MINOR_VERSION >= 4))
     return m_pCam->set(CV_CAP_PROP_SETTINGS, 0.0);
 #else
     return false;
