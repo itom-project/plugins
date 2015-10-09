@@ -81,7 +81,7 @@ void DialogDummyGrabber::parametersChanged(QMap<QString, ito::Param> params)
     ui.rangeX01->setValues(roi[0], roi[0] + roi[2] - 1);
     ui.rangeY01->setValues(roi[1], roi[1] + roi[3] - 1);
     ui.rangeX01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
-    ui.rangeY01->setEnabled(! (params["roi"].getFlags() & ito::ParamBase::Readonly));
+    ui.rangeY01->setEnabled((!(params["roi"].getFlags() & ito::ParamBase::Readonly)) && params["sizey"].getMax() > 1);
 
     ui.spinSizeX->setValue(params["sizex"].getVal<int>());
     ui.spinSizeY->setValue(params["sizey"].getVal<int>());
@@ -151,7 +151,16 @@ ito::RetVal DialogDummyGrabber::applyParameters()
     {
         int x0, x1, y0, y1;
         ui.rangeX01->values(x0,x1);
-        ui.rangeY01->values(y0,y1);
+        if (ui.rangeY01->isEnabled())
+        {
+            ui.rangeY01->values(y0,y1);
+        }
+        else
+        {
+            y0 = 0;
+            y1 = 0;
+        }
+
         int roi[] = {0,0,0,0};
         memcpy(roi, m_currentParameters["roi"].getVal<int*>(), 4*sizeof(int));
 

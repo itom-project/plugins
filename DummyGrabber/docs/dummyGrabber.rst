@@ -32,7 +32,7 @@ An instance of this plugin has the following parameters:
 
 Plugin parameters are:
 **binning**: {int}
-    Binning of different pixel, binning = x-factor * 100 + y-factor
+    Binning of different pixel, binning = x-factor * 100 + y-factor (binning in y only possible if height of sensor >= 4.
 **bpp**: {int}
     bitdepth of images
 **frame_time**: {float}
@@ -46,7 +46,7 @@ Plugin parameters are:
 **offset**: {float}
     Virtual offset
 **roi**: {int rect [x0,y0,width,height]}
-    ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
+    ROI (x,y,width,height)
 **sizex**: {int}, read-only
     size in x (cols) [px]
 **sizey**: {int}, read-only

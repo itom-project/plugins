@@ -104,12 +104,7 @@ template<typename _Tp> inline _Tp fastrand_mean(ito::uint32 &seed, _Tp maxval, i
 */
 ito::RetVal DummyGrabberInterface::getAddInInst(ito::AddInBase **addInInst)
 {
-    DummyGrabber* newInst = new DummyGrabber();
-    newInst->setBasePlugin(this);
-    *addInInst = qobject_cast<ito::AddInBase*>(newInst);
-
-    m_InstList.append(*addInInst);
-
+    NEW_PLUGININSTANCE(DummyGrabber)
     return ito::retOk;
 }
 
@@ -122,14 +117,8 @@ ito::RetVal DummyGrabberInterface::getAddInInst(ito::AddInBase **addInInst)
 */
 ito::RetVal DummyGrabberInterface::closeThisInst(ito::AddInBase **addInInst)
 {
-   if (*addInInst)
-   {
-      delete ((DummyGrabber *)*addInInst);
-      int idx = m_InstList.indexOf(*addInInst);
-      m_InstList.removeAt(idx);
-   }
-
-   return ito::retOk;
+    REMOVE_PLUGININSTANCE(DummyGrabber)
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -153,10 +142,11 @@ DummyGrabberInterface::DummyGrabberInterface()
 \n\
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
 The noise is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The real size of the camera \
-image is controlled using the parameters x0, y0, x1 and y1 if the sizes stay within the limits given by the size of the camera chip.\n\
+image is controlled using the parameter 'roi' if the sizes stay within the limits given by the size of the camera chip.\n\
 \n\
-This plugin can also be used as template for other grabber. For the simulation of real measurement systems, \
-please also check the plugin 'emulationGrabber'";
+You can initialize this camera either as a 2D sensor with a width and height >= 4 or as line camera whose height is equal to 1. \n\
+\n\
+This plugin can also be used as template for other grabber.";
    
     m_description = QObject::tr("A virtual white noise grabber");
     m_detaildescription = QObject::tr(docstring);
@@ -172,7 +162,7 @@ please also check the plugin 'emulationGrabber'";
     ito::Param param("maxXSize", ito::ParamBase::Int, 640, new ito::IntMeta(4, 4096, 4), tr("Width of virtual sensor chip").toLatin1().data());
     m_initParamsOpt.append(param);
 
-    param = ito::Param("maxYSize", ito::ParamBase::Int, 480, new ito::IntMeta(4, 4096, 4), tr("Height of virtual sensor chip").toLatin1().data());
+    param = ito::Param("maxYSize", ito::ParamBase::Int, 480, new ito::IntMeta(1, 4096, 1), tr("Height of virtual sensor chip, please set this value to 1 (line camera) or a value dividable by 4 for a 2D camera.").toLatin1().data());
     m_initParamsOpt.append(param);
 
     param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
@@ -234,7 +224,8 @@ const ito::RetVal DummyGrabber::showConfDialog(void)
 DummyGrabber::DummyGrabber() :
     AddInGrabber(),
     m_isgrabbing(false),
-    m_totalBinning(1)
+    m_totalBinning(1),
+    m_lineCamera(false)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DummyGrabber", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
@@ -252,7 +243,7 @@ DummyGrabber::DummyGrabber() :
 
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 4, 4096, 4096, tr("size in x (cols) [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 4, 4096, 4096, tr("size in y (rows) [px]").toLatin1().data());
+    paramVal = ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 4096, tr("size in y (rows) [px]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     int roi[] = {0, 0, 2048, 2048};
@@ -299,18 +290,41 @@ ito::RetVal DummyGrabber::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
 
     int sizeX = paramsOpt->at(0).getVal<int>();     // first optional parameter, corresponding to the grabber width
     int sizeY = paramsOpt->at(1).getVal<int>();     // second optional parameter, corresponding to the grabber heigth
-    int bpp = paramsOpt->at(2).getVal<int>();       // third optional parameter, corresponding to the grabber bit depth per pixel
-    m_params["bpp"].setVal<int>(bpp);
+    if (sizeY > 1 && sizeY % 4 != 0)
+    {
+        retVal += ito::RetVal(ito::retError, 0, "maxYSize must be 1 or dividable by 4");
+    }
+    else
+    {
+        int bpp = paramsOpt->at(2).getVal<int>();       // third optional parameter, corresponding to the grabber bit depth per pixel
+        m_params["bpp"].setVal<int>(bpp);
 
-    m_params["sizex"].setVal<int>(sizeX);
-    m_params["sizex"].setMeta(new ito::IntMeta(4, sizeX, 4), true);
+        m_params["sizex"].setVal<int>(sizeX);
+        m_params["sizex"].setMeta(new ito::IntMeta(4, sizeX, 4), true);
 
-    m_params["sizey"].setVal<int>(sizeY);
-    m_params["sizey"].setMeta(new ito::IntMeta(4, sizeY, 4), true);
+        m_params["sizey"].setVal<int>(sizeY);
+        if (sizeY == 1)
+        {
+            m_lineCamera = true;
+            m_params["sizey"].setMeta(new ito::IntMeta(1, 1, 1), true);
+        }
+        else
+        {
+            m_lineCamera = false;
+            m_params["sizey"].setMeta(new ito::IntMeta(4, sizeY, 4), true);
+        }
 
-    int roi[] = {0, 0, sizeX, sizeY};
-    m_params["roi"].setVal<int*>(roi, 4);
-    m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, sizeY - 1, 4,  4, sizeY, 4)), true);
+        int roi[] = {0, 0, sizeX, sizeY};
+        m_params["roi"].setVal<int*>(roi, 4);
+        if (sizeY == 1)
+        {
+            m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, 0, 1)), true);
+        }
+        else
+        {
+            m_params["roi"].setMeta(new ito::RectMeta(ito::RangeMeta(0, sizeX - 1, 4, 4, sizeX, 4), ito::RangeMeta(0, sizeY - 1, 4,  4, sizeY, 4)), true);
+        }
+    }
 
     if (!retVal.containsError())
     {
@@ -483,7 +497,11 @@ ito::RetVal DummyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
                 int newY = ival % 100;
                 int newX = (ival - newY) / 100;
 
-                if ((newX != 1 && newX != 2 && newX != 4) || (newY != 1 && newY != 2 && newY != 4))
+                if (m_lineCamera && (newY != 1))
+                {
+                    retValue += ito::RetVal(ito::retError, 0, "the vertical binning for a line camera must be 1");
+                }
+                else if ((newX != 1 && newX != 2 && newX != 4) || (newY != 1 && newY != 2 && newY != 4))
                 {
                     retValue += ito::RetVal(ito::retError, 0, "horizontal and vertical binning must be 1, 2 or 4 (hence vertical * 100 + horizontal)");
                 }
@@ -887,39 +905,6 @@ ito::RetVal DummyGrabber::retrieveData(ito::DataObject *externalDataObject)
     }
 
     return retValue;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if gain or offset parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void DummyGrabber::GainOffsetPropertiesChanged(double gain, double offset)
-{
-    if (checkNumericParamRange(m_params["offset"], offset))
-    {
-        m_params["offset"].setVal<double>(offset);
-    }
-    if (checkNumericParamRange(m_params["gain"], gain))
-    {
-        m_params["gain"].setVal<double>(gain);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! slot invoked if gain or offset parameters in docking toolbox have been manually changed
-/*!
-    \param [in] gain
-    \param [in] offset
-*/
-void DummyGrabber::IntegrationPropertiesChanged(double integrationtime)
-{
-    if (checkNumericParamRange(m_params["integration_time"], integrationtime))
-    {
-        m_params["integration_time"].setVal<double>(integrationtime);
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -70,6 +70,7 @@ class DummyGrabber : public ito::AddInGrabber
         bool m_isgrabbing;
         int64 m_startOfLastAcquisition;
         ito::uint8 m_totalBinning;
+        bool m_lineCamera;
 
     signals:
 
@@ -85,9 +86,6 @@ class DummyGrabber : public ito::AddInGrabber
         ito::RetVal acquire(const int trigger, ItomSharedSemaphore *waitCond = NULL);
         ito::RetVal getVal(void *dObj, ItomSharedSemaphore *waitCond);
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
-
-        void GainOffsetPropertiesChanged(double gain, double offset);
-        void IntegrationPropertiesChanged(double integrationtime);
 
     private slots:
         void dockWidgetVisibilityChanged(bool visible);
