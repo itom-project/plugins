@@ -54,14 +54,9 @@
 *
 *   This function delivers the noise for the image.
 */
-template<typename _Tp> inline _Tp fastrand(ito::uint32 &seed, _Tp maxval, float offset, float gain)
+template<typename _Tp> inline _Tp fastrand(cv::RNG &rng, _Tp maxval, float offset, float gain)
 {
-    seed <<= 1;
-    if ((ito::int32)seed <= 0)
-    {
-        seed ^= 0x1d872b41;
-    }
-    return cv::saturate_cast<_Tp>(offset * maxval + gain * (seed & maxval));
+    return cv::saturate_cast<_Tp>(offset * maxval + gain * (((ito::uint32)rng.next()) & maxval));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -70,22 +65,16 @@ template<typename _Tp> inline _Tp fastrand(ito::uint32 &seed, _Tp maxval, float 
 *
 *   This function delivers the noise for the image.
 */
-template<typename _Tp> inline _Tp fastrand_mean(ito::uint32 &seed, _Tp maxval, ito::uint8 numMeans, float offset, float gain)
+template<typename _Tp> inline _Tp fastrand_mean(cv::RNG &rng, _Tp maxval, ito::uint8 numMeans, float offset, float gain)
 {
     ito::uint32 val = 0;
 
     for (ito::uint8 i = 0; i < numMeans; ++i)
     {
-        seed <<= 1;
-        if ((ito::int32)seed <= 0)
-        {
-            seed ^= 0x1d872b41;
-        }
-
-        val += seed & maxval;
+        val += ((ito::uint32)rng.next()) & maxval;
     }
 
-    return cv::saturate_cast<_Tp>(offset * maxval + (gain / numMeans) * val);
+    return cv::saturate_cast<_Tp>(offset * maxval + (gain / (float)numMeans) * val);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -693,7 +682,8 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
         }
 
         m_startOfLastAcquisition = cv::getTickCount();
-        ito::uint32 seed = m_startOfLastAcquisition % std::numeric_limits<ito::uint32>::max();
+        //ito::uint32 seed = m_startOfLastAcquisition % std::numeric_limits<ito::uint32>::max();
+        cv::RNG &rng = cv::theRNG();
 
         if (m_totalBinning == 1)
         {
@@ -706,7 +696,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                     linePtr = (ito::uint8*)m_data.rowPtr(0, m);
                     for (int n = 0; n < m_data.getSize(1); ++n)
                     {
-                        *linePtr++ = fastrand<ito::uint8>(seed, maxInt, offset, gain);
+                        *linePtr++ = fastrand<ito::uint8>(rng, maxInt, offset, gain);
                     }
                 }
             }
@@ -719,7 +709,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                     linePtr = (ito::uint16*)m_data.rowPtr(0, m);
                     for (int n = 0; n < m_data.getSize(1); ++n)
                     {
-                        *linePtr++ = fastrand<ito::uint16>(seed, maxInt, offset, gain);
+                        *linePtr++ = fastrand<ito::uint16>(rng, maxInt, offset, gain);
                     }
                 }
             }
@@ -732,7 +722,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                     linePtr = (ito::int32*)m_data.rowPtr(0, m);
                     for (int n = 0; n < m_data.getSize(1); ++n)
                     {
-                        *linePtr++ = fastrand<ito::int32>(seed, maxInt, offset, gain);
+                        *linePtr++ = fastrand<ito::int32>(rng, maxInt, offset, gain);
                     }
                 }
             }
@@ -748,7 +738,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                     linePtr = (ito::uint8*)m_data.rowPtr(0, m);
                     for (int n = 0; n < m_data.getSize(1); ++n)
                     {
-                        *linePtr++ = fastrand_mean<ito::uint8>(seed, maxInt, m_totalBinning, offset, gain);
+                        *linePtr++ = fastrand_mean<ito::uint8>(rng, maxInt, m_totalBinning, offset, gain);
                     }
                 }
             }
@@ -761,7 +751,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                     linePtr = (ito::uint16*)m_data.rowPtr(0, m);
                     for (int n = 0; n < m_data.getSize(1); ++n)
                     {
-                        *linePtr++ = fastrand_mean<ito::uint16>(seed, maxInt,m_totalBinning, offset, gain);
+                        *linePtr++ = fastrand_mean<ito::uint16>(rng, maxInt,m_totalBinning, offset, gain);
                     }
                 }
             }
@@ -774,7 +764,7 @@ ito::RetVal DummyGrabber::acquire(const int /*trigger*/, ItomSharedSemaphore *wa
                     linePtr = (ito::int32*)m_data.rowPtr(0, m);
                     for (int n = 0; n < m_data.getSize(1); ++n)
                     {
-                        *linePtr++ = fastrand_mean<ito::int32>(seed, maxInt, m_totalBinning, offset, gain);
+                        *linePtr++ = fastrand_mean<ito::int32>(rng, maxInt, m_totalBinning, offset, gain);
                     }
                 }
             }
