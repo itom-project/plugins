@@ -25,7 +25,12 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIR
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
 find_package(VisualLeakDetector QUIET)
-find_package(OpenCV COMPONENTS core nonfree features2d REQUIRED)
+
+IF(${OpenCV_VERSION_MAJOR} STRGREATER "2")
+    find_package(OpenCV COMPONENTS core xfeatures2d REQUIRED)
+ELSE()
+    find_package(OpenCV COMPONENTS core nonfree features2d REQUIRED)
+ENDIF()
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 IF (BUILD_UNICODE)
@@ -49,7 +54,7 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/../OpenCVFilters
+    ${CMAKE_CURRENT_SOURCE_DIR}/../OpenCVFilters
     ${QT_QTCORE_INCLUDE_DIR}
     ${ITOM_SDK_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
