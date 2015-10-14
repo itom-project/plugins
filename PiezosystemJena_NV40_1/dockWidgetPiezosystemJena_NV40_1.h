@@ -7,7 +7,7 @@
 #include <qmap.h>
 #include <qstring.h>
 
-#include "ui_DockWidgetPiezosystemJena_NV40_1.h"
+#include "ui_dockWidgetPiezosystemJena_NV40_1.h"
 
 namespace ito
 {
