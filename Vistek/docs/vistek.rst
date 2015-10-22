@@ -45,13 +45,17 @@ An instance of this plugin has the following internal parameters:
 **camnum**: {int}
     Camera Number
 **exposure**: {float}
+    Exposure time in [s] (deprecated: use integration_time instead; this is an alias for integration_time only)
+**integration_time**: {float}
     Exposure time in [s]
 **gain**: {float}
     Gain [0..18 dB]
 **offset**: {float}
     Offset [0.0..1.0]
 **binning**: {int}
-    Binning mode (OFF = 0 [default], HORIZONTAL = 1, VERTICAL = 2,  2x2 = 3, 3x3 = 4, 4x4 = 5
+    Binning mode (OFF = 0 [default], HORIZONTAL = 1, VERTICAL = 2,  2x2 = 3, 3x3 = 4, 4x4 = 5).
+    In order to be compatible with the default binning definition of itom plugins, the following values can be set, too:
+    OFF = 0, HORIZONTAL = 102, VERTICAL = 201, 2x2=202, 3x3 = 303, 4x4 = 404. getParam returns the values 0-5.
 **sizex**: {int}, read-only
     Width of current camera frame
 **sizey**: {int}, read-only

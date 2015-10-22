@@ -126,10 +126,10 @@ void DialogVistek::valuesChanged(QMap<QString, ito::Param> params)
     }
 
     ui.doubleSpinBox_integration_time->setEnabled( m_features->adjustExposureTime );
-    if (params.contains("exposure"))
+    if (params.contains("integration_time"))
     {
-        m_currentExposure = params["exposure"].getVal<double>()  * 1000.0; //ms
-        ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["exposure"].getMeta());
+        m_currentExposure = params["integration_time"].getVal<double>()  * 1000.0; //ms
+        ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["integration_time"].getMeta());
 
         ui.doubleSpinBox_integration_time->setMinimum( dm->getMin() * 1000.0 );
         ui.doubleSpinBox_integration_time->setMaximum( dm->getMax() * 1000.0 );
@@ -188,10 +188,10 @@ int DialogVistek::sendParameters(void)
         outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, ui.spinBox_gain->value())));
     }
 
-    //exposure
+    //integration_time
     if (m_features->adjustExposureTime && qAbs(ui.doubleSpinBox_integration_time->value() - m_currentExposure) > 0.0001)
     {
-        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("exposure", ito::ParamBase::Double, ui.doubleSpinBox_integration_time->value() / 1000.0)));
+        outVector.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, ui.doubleSpinBox_integration_time->value() / 1000.0)));
     }
 
     if(m_Grabber)   // Grabber exists

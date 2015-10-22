@@ -134,13 +134,15 @@ Vistek::Vistek(QObject *parent) :
     paramVal = ito::Param("camnum", ito::ParamBase::Int, 0, 63, 0, tr("Camera Number").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("exposure", ito::ParamBase::Double, 0.00001, 2.0, 0.0, tr("Exposure time in [s]").toLatin1().data());
+    paramVal = ito::Param("exposure", ito::ParamBase::Double, 0.00001, 2.0, 0.0, tr("Exposure time in [s] (deprecated: use integration_time instead; this is an alias for integration_time only)").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.00001, 2.0, 0.0, tr("Exposure time in [s].").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 18.0, 0.0, tr("Gain [0..18 dB]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Offset [0.0..1.0]").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("binning", ito::ParamBase::Int, 0, 5, 0, tr("Binning mode (OFF = 0 [default], HORIZONTAL = 1, VERTICAL = 2,  2x2 = 3, 3x3 = 4, 4x4 = 5").toLatin1().data());
+    paramVal = ito::Param("binning", ito::ParamBase::Int, 0, 404, 0, tr("Binning mode (OFF = 0 [default], HORIZONTAL = 1 (or 102), VERTICAL = 2 (or 201),  2x2 = 3 (or 202), 3x3 = 4 (or 303), 4x4 = 5 (or 404)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 4096, 1024, tr("Width of current camera frame").toLatin1().data());
@@ -264,10 +266,16 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
         {
             retValue += checkError("set log level",Camera_registerForLogMessages(m_cam,val->getVal<int>(),"Vistek_SVGigE.log",NULL));
         }
-        else if (!key.compare("exposure"))
+        else if (!key.compare("exposure") || !key.compare("integration_time"))
         {
             // Camera_setExposureTime expects µs, so multiply by 10^6
             retValue += checkError("set exposure time",Camera_setExposureTime(m_cam, val->getVal<double>()*1.e6));
+
+            float val;
+            Camera_getExposureTime(m_cam, &val);
+            m_params["exposure"].setVal<double>(val / 1.e6);
+            m_params["integration_time"].setVal<double>(val / 1.e6);
+            set = true;
         }
         else if (!key.compare("gain"))
         {
@@ -291,22 +299,27 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
                 mode = BINNING_MODE_OFF;
                 break;
             case 1:
+            case 102:
                 mode = BINNING_MODE_HORIZONTAL;
                 break;
             case 2:
+            case 201:
                 mode = BINNING_MODE_VERTICAL;
                 break;
             case 3:
+            case 202:
                 mode = BINNING_MODE_2x2;
                 break;
             case 4:
+            case 303:
                 mode = BINNING_MODE_3x3;
                 break;
             case 5:
+            case 404:
                 mode = BINNING_MODE_4x4;
                 break;
             default:
-                retValue += ito::RetVal(ito::retError,0,"binning invalid: Accepted values are OFF = 0 [default], HORIZONTAL = 1, VERTICAL = 2,  2x2 = 3, 3x3 = 4, 4x4 = 5");
+                retValue += ito::RetVal(ito::retError,0,"binning invalid: Accepted values are OFF = 0 [default], HORIZONTAL = 1 (or 102), VERTICAL = 2 (or 201),  2x2 = 3 (or 202), 3x3 = 4 (or 303), 4x4 = 5 (or 404)");
                 break;
             }
 
@@ -1069,6 +1082,15 @@ ito::RetVal Vistek::initCamera(int CameraNumber)
         if (m_features.adjustExposureTime == false)
         {
             m_params["exposure"].setFlags(ito::ParamBase::Readonly);
+        }
+
+        dm = (ito::DoubleMeta*)(m_params["integration_time"].getMeta());
+        dm->setMin(valMin / 1.e6);
+        dm->setMax(valMax / 1.e6);
+        m_params["integration_time"].setVal<double>(val / 1.e6);
+        if (m_features.adjustExposureTime == false)
+        {
+            m_params["integration_time"].setFlags(ito::ParamBase::Readonly);
         }
 
         //binning and bpp is read in registerCallbacks later

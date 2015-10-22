@@ -44,7 +44,7 @@ void DockWidgetVistek::parametersChanged(QMap<QString, ito::Param> params)
 
         ui.sliderGain->setDisabled( params["gain"].getFlags() & ito::ParamBase::Readonly );
         ui.sliderOffset->setDisabled( params["offset"].getFlags() & ito::ParamBase::Readonly );
-        ui.sliderExposure->setDisabled( params["exposure"].getFlags() & ito::ParamBase::Readonly );
+        ui.sliderExposure->setDisabled( params["integration_time"].getFlags() & ito::ParamBase::Readonly );
 
         if (params.contains("cameraModel"))
         {
@@ -66,13 +66,13 @@ void DockWidgetVistek::parametersChanged(QMap<QString, ito::Param> params)
             ui.ManufacturerLabel->setText(params["cameraManufacturer"].getVal<char*>());
         }
 
-        if (params.contains("exposure"))
+        if (params.contains("integration_time"))
         {
-            ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["exposure"].getMeta());
+            ito::DoubleMeta *dm = (ito::DoubleMeta*)(params["integration_time"].getMeta());
             ui.sliderExposure->setMinimum(dm->getMin());
             ui.sliderExposure->setMaximum(dm->getMax());
             ui.sliderExposure->setSingleStep((dm->getMax() - dm->getMin()) / 100);
-            ui.sliderExposure->setValue(params["exposure"].getVal<double>());
+            ui.sliderExposure->setValue(params["integration_time"].getVal<double>());
         }
 
         if (params.contains("gain"))
@@ -99,7 +99,7 @@ void DockWidgetVistek::on_sliderExposure_valueChanged(double value)
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("exposure",ito::ParamBase::Double,value));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time",ito::ParamBase::Double,value));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
