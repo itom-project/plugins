@@ -25,6 +25,10 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib itomWi
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core highgui imgproc REQUIRED)
+if (OpenCV_VERSION_MAJOR GREATER 2)
+    # for opencv >= 3 we need the imgcodecs module which is not present in opencv < 3 so run again
+    find_package(OpenCV COMPONENTS core highgui imgproc imgcodecs videoio REQUIRED)
+endif (OpenCV_VERSION_MAJOR GREATER 2)
 find_package(VisualLeakDetector QUIET)
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
