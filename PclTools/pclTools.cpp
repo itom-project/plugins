@@ -26,6 +26,7 @@
 #include "pclTools.h"
 #include "pluginVersion.h"
 #define EIGEN_QT_SUPPORT
+#define EIGEN2_SUPPORT
 
 #include "DataObject/dataobj.h"
 #include "common/helperCommon.h"
@@ -53,6 +54,7 @@
 #include <pcl/io/obj_io.h>
 
 #include <pcl/features/normal_3d.h>
+#include <pcl/features/principal_curvatures.h>
 
 #include <pcl/filters/filter.h>
 #include <pcl/filters/passthrough.h>
@@ -92,6 +94,7 @@
 
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/impl/normal_3d_omp.hpp>
+#include <pcl/features/impl/principal_curvatures.hpp>
 
 
 int PclTools::nthreads = 2;
@@ -1402,6 +1405,115 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
     return retval;
 }
 
+
+
+////------------------------------------------------------------------------------------------------------------------------------
+//const char* PclTools::pclEstimateMaxCurvatureDOC = "estimates the curvature of a given point cloud with normal vectors based on nearest neighbours. \n\
+//\n\
+//The nearest neighbours are determined by a flann based kd-tree search that can be parametrized by the number of nearest neighbours (kSearch) \n\
+//and / or the maximum distance to nearest neighbours (searchRadius). Both values can be considered, too. The maximum curvature is set to the\n\
+//curvature value of the input 'pointCloudNormalIn'.";
+//
+////----------------------------------------------------------------------------------------------------------------------------------
+///*static*/ ito::RetVal PclTools::pclEstimateMaxCurvatureParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+//{
+//    ito::Param param;
+//    ito::RetVal retval = ito::retOk;
+//    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+//    if (retval.containsError())
+//    {
+//        return retval;
+//    }
+//
+//    paramsMand->clear();
+//    paramsMand->append(ito::Param("pointCloudNormalIn", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Valid point cloud with normals. The curvature value of this point cloud is set to the maximum curvature value determined by this filter.").toLatin1().data()));
+//    
+//    paramsOpt->clear();
+//    paramsOpt->append(ito::Param("kSearch", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 7, tr("the number of k nearest neighbours to use for the feature estimation [default: 7, if 0: not set]").toLatin1().data()));
+//    paramsOpt->append(ito::Param("searchRadius", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 0.0, tr("search radius for nearest neighbours (if 0.0, this value is not set)").toLatin1().data()));
+//    return retval;
+//}
+//
+//template<typename PointT> ito::RetVal _pclEstimateMaxCurvature(typename pcl::PointCloud<PointT>::Ptr cloud, int kSearch, double searchRadius)
+//{
+//    pcl::PointCloud<pcl::PrincipalCurvatures> curvatures;
+//    pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
+//    pcl::PrincipalCurvaturesEstimation<PointT, PointT, pcl::PrincipalCurvatures> curvatureEstimator;
+//    curvatureEstimator.setSearchMethod(tree);
+//    curvatureEstimator.setInputCloud(cloud);
+//    curvatureEstimator.setInputNormals(cloud);
+//    if (searchRadius > 0) 
+//    {
+//        curvatureEstimator.setRadiusSearch(searchRadius);
+//    }
+//    else if (kSearch > 0) 
+//    {
+//        curvatureEstimator.setKSearch(kSearch);
+//    }
+//    curvatureEstimator.compute(curvatures);
+//    for (int i = 0; i < curvatures.size(); ++i)
+//    {
+//        cloud->points[i].curvature = curvatures[i].pc2; //max curvature value
+//    }
+//    return ito::retOk;
+//}
+//
+////----------------------------------------------------------------------------------------------------------------------------------
+///*static*/ ito::RetVal PclTools::pclEstimateMaxCurvature(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+//{
+//    ito::RetVal retval = ito::retOk;
+//
+//    //read params from mandatory and optional params
+//    
+//    ito::PCLPointCloud *pclIn = (*paramsMand)[0].getVal<ito::PCLPointCloud*>();
+//    
+//    int kSearch = paramsOpt->at(0).getVal<int>();
+//    double searchRadius = paramsOpt->at(1).getVal<double>();
+//    
+//    if ((kSearch == 0 && searchRadius == 0.0) || (kSearch > 0 && searchRadius > 0.0))
+//    {
+//        retval += ito::RetVal(ito::retError, 0, tr("you need to indicate either the parameter 'kSearch' or 'searchRadius'").toLatin1().data());
+//    }
+//
+//    if (pclIn == NULL)
+//    {
+//        retval += ito::RetVal(ito::retError, 0, tr("point cloud must not be NULL").toLatin1().data());
+//    }
+//
+//    pcl::PointCloud<pcl::PrincipalCurvatures> curvatures;
+//
+//    if (!retval.containsError())
+//    {
+//        switch(pclIn->getType())
+//        {
+//        case ito::pclInvalid:
+//            retval += ito::RetVal(ito::retError, 0, tr("input point cloud must be valid").toLatin1().data());
+//            break;
+//        case ito::pclXYZNormal:
+//            {
+//                _pclEstimateMaxCurvature<pcl::PointNormal>(pclIn->toPointXYZNormal(), kSearch, searchRadius);
+//            }
+//            break;
+//        case ito::pclXYZINormal:
+//            {
+//                _pclEstimateMaxCurvature<pcl::PointXYZINormal>(pclIn->toPointXYZINormal(), kSearch, searchRadius);
+//            }
+//            break;
+//        case ito::pclXYZRGBNormal:
+//            {
+//                _pclEstimateMaxCurvature<pcl::PointXYZRGBNormal>(pclIn->toPointXYZRGBNormal(), kSearch, searchRadius);
+//            }
+//            break;
+//        
+//        default:
+//            retval += ito::RetVal(ito::retError, 0, tr("type of input point cloud not supported (only normal based input types allowed.)").toLatin1().data());
+//            break;
+//        }
+//    }
+//
+//    return retval;
+//}
+
 //------------------------------------------------------------------------------------------------------------------------------
 const char* PclTools::pclRemoveNaNDOC = "\n\
 \n\
@@ -1471,7 +1583,6 @@ const char* PclTools::pclRemoveNaNDOC = "\n\
                 ptr->is_dense = true;
             }
         }
-        //pcl::removeNaNFromPointCloud<pcl::PointXYZI>(*(pclIn->toPointXYZI()), *(pclOut->toPointXYZI()), indices);
         break;
     case ito::pclXYZRGBA:
         {
@@ -1483,7 +1594,6 @@ const char* PclTools::pclRemoveNaNDOC = "\n\
                 ptr->is_dense = true;
             }
         }
-        //pcl::removeNaNFromPointCloud<pcl::PointXYZRGBA>(*(pclIn->toPointXYZRGBA()), *(pclOut->toPointXYZRGBA()), indices);
         break;
     case ito::pclXYZNormal:
         {
@@ -1495,7 +1605,6 @@ const char* PclTools::pclRemoveNaNDOC = "\n\
                 ptr->is_dense = true;
             }
         }
-        //pcl::removeNaNFromPointCloud<pcl::PointNormal>(*(pclIn->toPointXYZNormal()), *(pclOut->toPointXYZNormal()), indices);
         break;
     case ito::pclXYZINormal:
         {
@@ -1507,7 +1616,6 @@ const char* PclTools::pclRemoveNaNDOC = "\n\
                 ptr->is_dense = true;
             }
         }
-        //pcl::removeNaNFromPointCloud<pcl::PointXYZINormal>(*(pclIn->toPointXYZINormal()), *(pclOut->toPointXYZINormal()), indices);
         break;
     case ito::pclXYZRGBNormal:
         {
@@ -1519,7 +1627,6 @@ const char* PclTools::pclRemoveNaNDOC = "\n\
                 ptr->is_dense = true;
             }
         }
-        //pcl::removeNaNFromPointCloud<pcl::PointXYZRGBNormal>(*(pclIn->toPointXYZRGBNormal()), *(pclOut->toPointXYZRGBNormal()), indices);
         break;
     }
 
@@ -4072,6 +4179,49 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
     return retval;
 }
 
+/*static*/ const char *PclTools::pclGetNormalsAtCogFromMeshDOC = "calculates a point cloud with normal information which contains the normal at each triangle of the given \n\
+polygonal mesh centered at the center of gravity of the triangle. Use indices to filter only certain triangles.";
+/*static*/ ito::RetVal PclTools::pclGetNormalsAtCogFromMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("mesh", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In, NULL, tr("Valid polygonal mesh").toLatin1().data()));
+    paramsMand->append(ito::Param("cloudWithNormals", ito::ParamBase::PointCloudPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output point cloud with the same point type than contained in the mesh but including normal vectors.").toLatin1().data()));
+
+    paramsOpt->clear();
+    paramsOpt->append(ito::Param("indices", ito::ParamBase::IntArray | ito::ParamBase::In , NULL, tr("Optional list with indices that should be considered.").toLatin1().data()));
+
+    return retval;
+}
+
+/*static*/ ito::RetVal PclTools::pclGetNormalsAtCogFromMesh(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    const ito::PCLPolygonMesh *mesh = paramsMand->at(0).getVal<const ito::PCLPolygonMesh*>();
+    ito::PCLPointCloud *cloud = paramsMand->at(1).getVal<ito::PCLPointCloud*>();
+    const int *indices = paramsOpt->at(0).getVal<int*>();
+    int indices_len = paramsOpt->at(0).getLen();
+
+    if (indices_len > 0)
+    {
+        std::vector<int> idx;
+        idx.resize(indices_len);
+        memcpy(idx.data(), indices, indices_len *sizeof(int));
+        return ito::pclHelper::normalsAtCogFromPolygonMesh(*mesh, *cloud, idx);
+    }
+    else
+    {
+        return ito::pclHelper::normalsAtCogFromPolygonMesh(*mesh, *cloud);
+    }
+}
+
+
 // ---------------------------------------------------------------------- DO NOT ADD FILTER BELOW THIS!!! -----------------------------------------------------------
 /** initialize filter functions within this addIn
 *    @param [in]    paramsMand    mandatory parameters that have to passed to the addIn on initialization
@@ -4150,7 +4300,10 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclEstimateNormals, PclTools::pclEstimateNormalsParams, tr("estimates normal vectors to the given input point cloud and returns the normal-enhanced representation of the input point cloud"));
     m_filterList.insert("pclEstimateNormals", filter);
-    
+
+    /*filter = new FilterDef(PclTools::pclEstimateMaxCurvature, PclTools::pclEstimateMaxCurvatureParams, pclEstimateMaxCurvatureDOC);
+    m_filterList.insert("pclEstimateMaxCurvature", filter);*/
+
     filter = new FilterDef(PclTools::pclRemoveNaN, PclTools::pclRemoveNaNParams, tr("removes NaN values from input point cloud (input and output can be the same)."));
     m_filterList.insert("pclRemoveNaN", filter);
 
@@ -4201,6 +4354,9 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclSampleToDataObject, PclTools::pclSampleToDataObjectParams, tr("Uses copy an organized and dense pointcloud to an dataObject."));
     m_filterList.insert("pclSampleToDataObject", filter);
+
+    filter = new FilterDef(PclTools::pclGetNormalsAtCogFromMesh, PclTools::pclGetNormalsAtCogFromMeshParams, pclGetNormalsAtCogFromMeshDOC);
+    m_filterList.insert("pclGetNormalsAtCogFromMesh", filter);
 
     if (waitCond)
     {

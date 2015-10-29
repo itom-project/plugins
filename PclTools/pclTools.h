@@ -156,6 +156,10 @@ class PclTools : public ito::AddInAlgo
         static ito::RetVal pclEstimateNormals(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal pclEstimateNormalsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        //static const char *pclEstimateMaxCurvatureDOC;
+        //static ito::RetVal pclEstimateMaxCurvature(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        //static ito::RetVal pclEstimateMaxCurvatureParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
         static const char *pclRemoveNaNDOC;
         static ito::RetVal pclRemoveNaN(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal pclRemoveNaNParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
@@ -223,6 +227,10 @@ class PclTools : public ito::AddInAlgo
         static const char *pclPoissonDOC;
         static ito::RetVal pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal pclPoissonParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+        static const char *pclGetNormalsAtCogFromMeshDOC;
+        static ito::RetVal pclGetNormalsAtCogFromMesh(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal pclGetNormalsAtCogFromMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
     protected:
         //static int savePolygonFileSTLB(const std::string &file_name, const pcl::PolygonMesh& mesh);
