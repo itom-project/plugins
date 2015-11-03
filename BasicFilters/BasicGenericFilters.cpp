@@ -979,7 +979,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tUInt8:
@@ -994,7 +994,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tInt16:
@@ -1009,7 +1009,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tUInt16:
@@ -1024,7 +1024,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tInt32:
@@ -1039,7 +1039,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tFloat32:
@@ -1054,7 +1054,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tFloat64:
@@ -1069,7 +1069,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
         }
@@ -1090,7 +1090,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tUInt8:
@@ -1105,7 +1105,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tInt16:
@@ -1120,7 +1120,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tUInt16:
@@ -1135,7 +1135,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tInt32:
@@ -1150,7 +1150,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tFloat32:
@@ -1165,7 +1165,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
             case ito::tFloat64:
@@ -1180,7 +1180,7 @@ ito::RetVal BasicFilters::genericLowHighValueFilter(QVector<ito::ParamBase> *par
                                                           kernelsizey, 
                                                           kernelsizex / 2, 
                                                           kernelsizey / 2);
-                filterEngine.runFilter(replaceNaN);
+				retval += filterEngine.runFilter(replaceNaN);
             }
             break;
         }
@@ -1549,7 +1549,7 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt8:
@@ -1564,7 +1564,7 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt16:
@@ -1579,7 +1579,7 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt16:
@@ -1594,7 +1594,7 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt32:
@@ -1609,7 +1609,7 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat32:
@@ -1624,7 +1624,7 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat64:
@@ -1639,7 +1639,7 @@ ito::RetVal BasicFilters::genericMedianFilter(QVector<ito::ParamBase> *paramsMan
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
     }
@@ -1899,7 +1899,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+            retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt8:
@@ -1914,7 +1914,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt16:
@@ -1929,7 +1929,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tUInt16:
@@ -1944,7 +1944,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tInt32:
@@ -1959,7 +1959,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat32:
@@ -1974,7 +1974,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
         case ito::tFloat64:
@@ -1989,7 +1989,7 @@ ito::RetVal BasicFilters::genericLowPassFilter(QVector<ito::ParamBase> *paramsMa
                                                 kernelsizey, 
                                                 kernelsizex / 2, 
                                                 kernelsizey / 2);
-            filterEngine.runFilter(replaceNaN);
+			retval += filterEngine.runFilter(replaceNaN);
         }
         break;
     }
