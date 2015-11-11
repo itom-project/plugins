@@ -348,6 +348,14 @@ IF (WIN32)
     endif (PLUGIN_Vistek)
 ENDIF (WIN32)
 
+# VRMagic
+IF (WIN32)
+    OPTION(PLUGIN_VRMagic "Build with this plugin." ON)
+    if (PLUGIN_VRMagic)
+        ADD_SUBDIRECTORY(VRMagic)
+    endif (PLUGIN_VRMagic)
+ENDIF (WIN32)
+
 # XIMEA
 OPTION(PLUGIN_XIMEA "Build with this plugin." ON)
 if (PLUGIN_XIMEA)
