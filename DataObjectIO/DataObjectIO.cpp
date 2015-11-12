@@ -2026,10 +2026,10 @@ template<typename _Tp> ito::RetVal DataObjectIO::readDataBlock(QFile &inFile, it
 
     int x = 0, y = 0;
 
-    size_t xsize = (size_t)newObject.getSize(1);
-    size_t ysize = (size_t)newObject.getSize(0);
-    size_t total = xsize * ysize;
-    size_t c = 0; //total counter
+    int xsize = newObject.getSize(1);
+    int ysize = newObject.getSize(0);
+    int total = xsize * ysize;
+    int c = 0; //total counter
 
     cv::Mat* dstMat = newObject.getCvPlaneMat(0);
     _Tp *p_Dst = NULL;
@@ -4718,17 +4718,17 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
             ret += ito::RetVal(ito::retWarning, 0, "The given input object does not have a metric axis unit defined (m, cm, mm, µm, nm). No correct lateral unit value can be read. Values are assumed to be in mm.");
         }
 
-        char key1[] = { 'X', '-', 'M', 'a', 0xDF, ' ', '=', ' ', '\0' };
-        char key2[] = { ' ', 'X', '-', 'A', 'u', 'f', 'l', 0xF6, 's', 'u', 'n', 'g', ' ', '\0'};
+        unsigned char key1[] = { 'X', '-', 'M', 'a', 0xDF, ' ', '=', ' ', '\0' };
+        unsigned char key2[] = { ' ', 'X', '-', 'A', 'u', 'f', 'l', 0xF6, 's', 'u', 'n', 'g', ' ', '\0' };
 
 
         //write header
         dataOut.write("Profil ");
         dataOut.write(fileinfo.fileName().replace(" ", "_").toLatin1());
         dataOut.write("\n");
-        dataOut.write(key1);
+        dataOut.write((char*)key1);
         dataOut.write(QByteArray::number(length, 'f', decimals));
-        dataOut.write(key2);
+        dataOut.write((char*)key2);
         if (length != 0.0)
         {
             dataOut.write(QByteArray::number((double)len / length , 'f', decimals));
