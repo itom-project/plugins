@@ -1003,7 +1003,7 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
 //! saveNistSDFParams
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ const char* DataObjectIO::saveNistSDFDoc = \
-"saves 1D and 2D dataObject to the ascii surface data file format (sdf), version aNIST-1.0.";
+"saves 1D and 2D dataObject to the ascii surface data file format (sdf), version aNIST-1.0 (no official standard) or aISO-1.0 (in compliance with ISO 25178-71).";
 
 
 /** saveNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
@@ -1030,6 +1030,12 @@ ito::RetVal DataObjectIO::saveNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         param = ito::Param("invalidHandling",ito::ParamBase::Int | ito::ParamBase::In, 0, 3, 0, tr("Toggles NaN handling if dataObject is floating-type. 0: Write NaN (Default); 1: Skip Value, 2: Substitute by InvalidValue, 3: Substitute by BAD for MountainsMaps.").toLatin1().data());
         paramsOpt->append(param);
         param = ito::Param("invalidValue",ito::ParamBase::Double | ito::ParamBase::In, -1 * std::numeric_limits<double>::max(), std::numeric_limits<double>::max() , -42.0, tr("New value for invalid substitution. Default is 0.0").toLatin1().data());
+        paramsOpt->append(param);
+        param = ito::Param("version", ito::ParamBase::String | ito::ParamBase::In, "aNIST-1.0", tr("File format version: 'aNIST-1.0' or 'aISO-1.0' for DIN EN ISO 25178-71").toLatin1().data());
+        ito::StringMeta sm(ito::StringMeta::String);
+        sm.addItem("aNIST-1.0");
+        sm.addItem("aISO-1.0");
+        param.setMeta(&sm, false);
         paramsOpt->append(param);
 
     }
@@ -1064,6 +1070,8 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 
     double verticalScale = pow(10.0, (*paramsOpt)[1].getVal<int>());
     int decimals = (*paramsOpt)[0].getVal<int>();
+    QString version = paramsOpt->at(4).getVal<char*>();
+    bool is_iso25178 = (version == "aISO-1.0");
     
     int flags = DataObjectIO::invWrite;
 
@@ -1093,7 +1101,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     }
 
     if (!ret.containsWarningOrError())
-    {   
+    {
         QByteArray outLine(100, 0);
         ito::ByteArray tag;
         std::string unitStr;
@@ -1102,7 +1110,14 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
         bool isLine = (dObjSrc->getSize(0) == 1 || dObjSrc->getSize(1) == 1) ? true : false;
         bool changeXY = dObjSrc->getSize(1) == 1 ? true : false;
 
-        dataOut.write("aNIST-1.0\n");
+        if (is_iso25178)
+        {
+            dataOut.write("aISO-1.0\n");
+        }
+        else
+        {
+            dataOut.write("aNIST-1.0\n");
+        }
         
         outLine = ("ManufacID\t\t= ");
         tag = dObjSrc->getTag("ManufacID", dummyBool).getVal_ToString();
@@ -1247,8 +1262,28 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
         outLine = ("Compression\t\t= 0\n");
         dataOut.write(outLine);
 
-        switch(dObjSrc->getType())
+        if (is_iso25178)
         {
+            switch (dObjSrc->getType())
+            {
+            case ito::tUInt8:
+            case ito::tUInt16:
+            case ito::tUInt32:
+            case ito::tInt8:
+            case ito::tInt16:
+            case ito::tInt32:
+                outLine = ("DataType\t\t= 6");
+                break;
+            case ito::tFloat32:
+            case ito::tFloat64:
+                outLine = ("DataType\t\t= 7");
+                break;
+            }
+        }
+        else
+        {
+            switch (dObjSrc->getType())
+            {
             case ito::tUInt8:
                 outLine = ("DataType\t\t= 0");
                 break;
@@ -1273,7 +1308,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
             case ito::tFloat64:
                 outLine = ("DataType\t\t= 7");
                 break;
-
+            }
         }
         outLine.append('\n');
         dataOut.write(outLine);
