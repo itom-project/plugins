@@ -4537,7 +4537,9 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
 "saves a 1D data object to the PR format used for the reference software for roughness metrology (https://www.ptb.de/rptb) of PTB (Physikalisch Technische Bundesanstalt).\n\
 \n\
 The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, µm, nm) is given in the axis unit tag, an automatic conversion is applied. Else a \n\
-warning is returned. The same holds for the values (ordinate). You can choose if the .pr format should contain the ordinate values in nm or µm. An auto-conversion is implemented, too.";
+warning is returned. The same holds for the values (ordinate). You can choose if the .pr format should contain the ordinate values in nm or µm. An auto-conversion is implemented, too. \n\
+\n\
+This filter uses the hex-code DF for the german Umlaut 'ö' and F6 for 'ß' like required by the input file format description of the RPTB tool (since RPTB Version 2.01).";
 
 
 /** saveNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
@@ -4681,14 +4683,17 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
             ret += ito::RetVal(ito::retWarning, 0, "The given input object does not have a metric axis unit defined (m, cm, mm, µm, nm). No correct lateral unit value can be read. Values are assumed to be in mm.");
         }
 
+        char key1[] = { 'X', '-', 'M', 'a', 0xDF, ' ', '=', ' ', '\0' };
+        char key2[] = { ' ', 'X', '-', 'A', 'u', 'f', 'l', 0xF6, 's', 'u', 'n', 'g', ' ', '\0'};
+
 
         //write header
         dataOut.write("Profil ");
         dataOut.write(fileinfo.fileName().replace(" ", "_").toLatin1());
         dataOut.write("\n");
-        dataOut.write("X-Mass = ");
+        dataOut.write(key1);
         dataOut.write(QByteArray::number(length, 'f', decimals));
-        dataOut.write(" X-Resolution ");
+        dataOut.write(key2);
         if (length != 0.0)
         {
             dataOut.write(QByteArray::number((double)len / length , 'f', decimals));
@@ -4698,7 +4703,7 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
             dataOut.write("0.0");
             ret += ito::RetVal(ito::retWarning, 0, "length of data set is 0.0");
         }
-        dataOut.write(" Points/Line : ");
+        dataOut.write(" Punkte/Zeile: ");
         dataOut.write(QByteArray::number(len));
         dataOut.write("\n");
 
