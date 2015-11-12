@@ -175,6 +175,17 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 		{
 			retValue += checkError(VRmUsbCamGetDeviceKeyListSize(&device_list_size), "Get device key list size");
 		}
+        if (!retValue.containsError())
+        {
+            if (device_list_size == 0)
+            {
+                retValue += ito::RetVal(ito::retError, 0, "no VRmagic device connected to this computer.");
+            }
+            else if (device_num < 0 || device_num >= device_list_size)
+            {
+                retValue += ito::RetVal::format(ito::retError, 0, "device_num is out of range [0,%i]. %i connected devices detected.", device_list_size - 1, device_list_size);
+            }
+        }
 		if (!retValue.containsError())
 		{
 			retValue += checkError(VRmUsbCamGetDeviceKeyListEntry(device_num, &m_device_key), "Get device key of chosen device");
@@ -754,53 +765,24 @@ ito::RetVal VRMagic::retrieveData(ito::DataObject *externalDataObject)
     {
         if(copyExternal)
         {
-            //here we wait until the Event is set to signaled state
-            //or the timeout runs out
-            int planes = m_data.getNumPlanes();
-            bool valid;
-            std::string number;
+            const cv::Mat* internalMat = m_data.getCvPlaneMat(0);
+            cv::Mat* externalMat = externalDataObject->getCvPlaneMat(0);
 
-            for (int i = 0; i < planes; ++i)
+            if (externalMat->isContinuous())
             {
-                const cv::Mat* internalMat = m_data.getCvPlaneMat(i);
-                cv::Mat* externalMat = externalDataObject->getCvPlaneMat(i);
-
-                if (externalMat->isContinuous())
-                {
-                    memcpy(externalMat->ptr(0), internalMat->ptr(0), internalMat->cols * internalMat->rows * externalMat->elemSize());
-                }
-                else
-                {
-                    for (int y = 0; y < internalMat->rows; y++)
-                    {
-                        memcpy(externalMat->ptr(y), internalMat->ptr(y), internalMat->cols * externalMat->elemSize());
-                    }
-                }
-
-                if (planes <= 1)
-                {
-                    externalDataObject->setTag("frame_counter", m_data.getTag("frame_counter", valid));
-                }
-                else
-                {
-#if __cplusplus > 199711L //C++11 support
-                    number = std::to_string((long long)i);
-#else
-                    std::stringstream out;
-                    out << i;
-                    number = out.str();
-#endif
-                    externalDataObject->setTag("frame_counter" + number, m_data.getTag("frame_counter" + number, valid));
-                }
+                memcpy(externalMat->ptr(0), internalMat->ptr(0), internalMat->cols * internalMat->rows * externalMat->elemSize());
             }
-
-            externalDataObject->setTag("roi_x0", m_data.getTag("roi_x0", valid));
-            externalDataObject->setTag("roi_y0", m_data.getTag("roi_y0", valid));           
+            else
+            {
+                for (int y = 0; y < internalMat->rows; y++)
+                {
+                    memcpy(externalMat->ptr(y), internalMat->ptr(y), internalMat->cols * externalMat->elemSize());
+                }
+            }      
         }
     }
 
     return retValue;
-	return 0;
 }
 
 

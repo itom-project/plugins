@@ -29,9 +29,14 @@ FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
 
 find_package(VisualLeakDetector QUIET)
 
-FIND_PATH( VRMAGIC_SDKDIR vrmusbcam2.h PATH_SUFFIXES include CACHE PATH "XIMEA SDK directory (must contain the subdirectory include and lib)")
+IF(WIN32)
+    FIND_PATH( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATHS "$ENV{CommonProgramFiles}\\VRmagic\\VRmUsbCamSDK" PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h). Usually in %CommonProgramFiles%/VRmagic/VRmUsbCamSDK/include.")
+ELSE()
+    FIND_PATH( VRMAGIC_INCLUDE_DIR vrmusbcam2.h PATH_SUFFIXES include DOC "VRmagic include directory (must contain the file vrmusbcam2.h).")
+ENDIF()
 
-IF(VRMAGIC_SDKDIR)
+IF(VRMAGIC_INCLUDE_DIR)
+    get_filename_component(VRMAGIC_SDK_DIR ${VRMAGIC_INCLUDE_DIR} DIRECTORY)
     
     ADD_DEFINITIONS(${QT_DEFINITIONS})
     IF (BUILD_UNICODE)
@@ -61,16 +66,16 @@ IF(VRMAGIC_SDKDIR)
         ${ITOM_SDK_INCLUDE_DIR}
         ${ITOM_SDK_INCLUDE_DIR}/itomWidgets
         ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-        ${VRMAGIC_SDKDIR}/include
+        ${VRMAGIC_INCLUDE_DIR}
     )
 
     if(BUILD_TARGET64)
         LINK_DIRECTORIES(
-            ${VRMAGIC_SDKDIR}/lib/x64
+            ${VRMAGIC_SDK_DIR}/lib/x64
         )
     else(BUILD_TARGET64)
         LINK_DIRECTORIES(
-            ${VRMAGIC_SDKDIR}/lib/x86
+            ${VRMAGIC_SDK_DIR}/lib/x86
         )
     endif(BUILD_TARGET64)
 
@@ -134,12 +139,12 @@ IF(VRMAGIC_SDKDIR)
     POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
     if(BUILD_TARGET64)
-        file(GLOB dlls "${VRMAGIC_SDKDIR}/lib/x64/*.dll")
+        file(GLOB dlls "${VRMAGIC_SDK_DIR}/lib/x64/*.dll")
     else(BUILD_TARGET64)    
-        file(GLOB dlls "${VRMAGIC_SDKDIR}/lib/x86/*.dll")
+        file(GLOB dlls "${VRMAGIC_SDK_DIR}/lib/x86/*.dll")
     endif(BUILD_TARGET64)
     POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} dlls)
         
-ELSE (VRMAGIC_SDKDIR)
+ELSE (VRMAGIC_INCLUDE_DIR)
     message(WARNING "${target_name}-SDK directory could not be found. ${target_name} will not be build")    
-ENDIF (VRMAGIC_SDKDIR)
+ENDIF (VRMAGIC_INCLUDE_DIR)

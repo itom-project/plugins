@@ -183,23 +183,23 @@
             <item row="0" column="0">
              <widget class="QLabel" name="label_gain">
               <property name="text">
-               <string>Gain</string>
+               <string>Brightness</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="SliderWidget" name="sliderWidget_Gain">
+             <widget class="SliderWidget" name="sliderWidget_brightness">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="decimals">
-               <number>0</number>
+               <number>3</number>
               </property>
               <property name="maximum">
                <double>100.000000000000000</double>
               </property>
               <property name="suffix">
-               <string> %</string>
+               <string/>
               </property>
               <property name="tracking">
                <bool>false</bool>
@@ -209,12 +209,12 @@
             <item row="1" column="0">
              <widget class="QLabel" name="label_integration_time">
               <property name="text">
-               <string>Integrationtime</string>
+               <string>Contrast</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="SliderWidget" name="sliderWidget_integrationtime">
+             <widget class="SliderWidget" name="sliderWidget_contrast">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -225,43 +225,10 @@
                <double>999999999.000000000000000</double>
               </property>
               <property name="suffix">
-               <string> ms</string>
+               <string/>
               </property>
               <property name="tracking">
                <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_framerate">
-              <property name="text">
-               <string>Framerate</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="SliderWidget" name="sliderWidget_framerate">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="minimum">
-               <double>0.800000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>1000.000000000000000</double>
-              </property>
-              <property name="suffix">
-               <string> fps</string>
-              </property>
-              <property name="tracking">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0" colspan="2">
-             <widget class="QCheckBox" name="checkTimingMode">
-              <property name="text">
-               <string>Enable fixed framerate</string>
               </property>
              </widget>
             </item>

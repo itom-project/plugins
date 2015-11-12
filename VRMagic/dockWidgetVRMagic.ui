@@ -153,7 +153,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="1" column="1">
-       <widget class="SliderWidget" name="sliderWidget_integrationtime">
+       <widget class="SliderWidget" name="sliderWidget_contrast">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -161,7 +161,7 @@
          <number>3</number>
         </property>
         <property name="suffix">
-         <string> ms</string>
+         <string/>
         </property>
         <property name="tracking">
          <bool>false</bool>
@@ -171,23 +171,23 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Exposure</string>
+         <string>Contrast</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="SliderWidget" name="sliderWidget_gain">
+       <widget class="SliderWidget" name="sliderWidget_brightness">
         <property name="enabled">
          <bool>false</bool>
         </property>
         <property name="decimals">
-         <number>0</number>
+         <number>3</number>
         </property>
         <property name="maximum">
          <double>100.000000000000000</double>
         </property>
         <property name="suffix">
-         <string> %</string>
+         <string/>
         </property>
         <property name="tracking">
          <bool>false</bool>
@@ -202,7 +202,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Gain</string>
+         <string>Brightness</string>
         </property>
        </widget>
       </item>
