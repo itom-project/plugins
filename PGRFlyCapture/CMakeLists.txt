@@ -29,9 +29,9 @@ FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
 find_package(VisualLeakDetector QUIET)
 
 IF(WIN32)
-    FIND_PATH( PGRFLYCAP_INCLUDE_DIR FlyCapture2.h CACHE PATH "Include directory of Point Gray Research FlyCapture API")
+    FIND_PATH( PGRFLYCAP_INCLUDE_DIR FlyCapture2.h DOC "Include directory of Point Gray Research FlyCapture API")
 ELSE(WIN32)
-    FIND_PATH( PGRFLYCAP_INCLUDE_DIR FlyCapture2.h PATHS /usr/include/flycapture CACHE PATH "Include directory of Point Gray Research FlyCapture API")
+    FIND_PATH( PGRFLYCAP_INCLUDE_DIR FlyCapture2.h PATHS /usr/include/flycapture DOC "Include directory of Point Gray Research FlyCapture API")
 ENDIF(WIN32)
 
 IF(PGRFLYCAP_INCLUDE_DIR)

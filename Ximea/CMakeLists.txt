@@ -30,7 +30,7 @@ FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
 
-FIND_PATH( XIMEA_APIDIR m3Api.h CACHE PATH "XIMEA Api directory (must contain the file m3Api.h)")
+FIND_PATH( XIMEA_APIDIR m3Api.h DOC "XIMEA Api directory (must contain the file m3Api.h)")
 
 IF(XIMEA_APIDIR)
 

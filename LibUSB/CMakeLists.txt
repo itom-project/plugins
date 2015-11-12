@@ -28,7 +28,7 @@ find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
 find_package(LibUSB QUIET)
 
-#FIND_PATH( LIBUSB_INC_DIR libusb.h CACHE PATH "Include directory of libUSB static include directory")
+#FIND_PATH( LIBUSB_INC_DIR libusb.h DOC "Include directory of libUSB static include directory")
 
 IF(LibUSB_FOUND)
     ADD_DEFINITIONS(${QT_DEFINITIONS})

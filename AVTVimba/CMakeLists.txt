@@ -60,7 +60,7 @@ find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector 
 # possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport,LinguistTools...
 FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
 
-FIND_PATH( AVTVIMBA_INCLUDE_DIR VimbaCPP.h CACHE PATH "Include directory of VimbaCPP SDK")
+FIND_PATH( AVTVIMBA_INCLUDE_DIR VimbaCPP.h DOC "Include directory of VimbaCPP SDK")
 set(AVTVIMBA_API_DIR ${AVTVIMBA_INCLUDE_DIR}/../ CACHE PATH "Base directory of VimbaCPP SDK")
 
 IF(AVTVIMBA_INCLUDE_DIR)
