@@ -28,7 +28,47 @@ The following parameters are mandatory or optional for initializing an instance 
 Parameters
 ============
 
+**bpp**: {int}
+    Bit depth of the output data from camera in bpp (can differ from sensor bit depth).
 
+**brightness**: {int}
+    Brightness of camera / framegrabber (0 to 255)
+
+**contrast**: {int}
+    Contrast of camera / framegrabber (0 to 255)
+
+**format**: {str}, read-only
+    Format of the image. See documentation of SDK for explanation.
+
+**group_ID**: {int}, read-only
+    Group ID of device (gid).
+
+**hue**: {int}
+    Hue of camera / framegrabber (0 to 255)
+
+**name**: {str}, read-only
+    name of the camera
+
+**product_ID**: {int}, read-only
+    Product ID of device (pid).
+
+**saturation**: {int}
+    Saturation of camera / framegrabber (0 to 255)
+
+**serial_number**: {str}, read-only
+    Serial number of device.
+
+**signal_source**: {str}
+    Signal source of the grabber [svideo, composite, yc].
+
+**sizex**: {int}, read-only
+    Width of ROI (number of columns).
+
+**sizey**: {int}, read-only
+    Height of ROI (number of rows).
+
+**vendor_ID**: {int}, read-only
+    Vendor ID of device (vid).
     
 Installation
 =============
