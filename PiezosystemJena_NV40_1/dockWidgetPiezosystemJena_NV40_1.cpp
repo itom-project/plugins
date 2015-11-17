@@ -32,9 +32,9 @@ void DockWidgetPiezosystemJena_NV40_1::parametersChanged(QMap<QString, ito::Para
         m_remote = false;
     }
 
-    ui.spinBoxStepSize->setSuffix(params["closedLoop"].getVal<int>() ? " µm" : " V");
-    ui.spinBoxActPos->setSuffix(params["closedLoop"].getVal<int>() ? " µm" : " V");
-    ui.spinBoxTargetPos->setSuffix(params["closedLoop"].getVal<int>() ? " µm" : " V");
+    ui.spinBoxStepSize->setSuffix(params["closedLoop"].getVal<int>() ? " \u00B5m" : " V");  // mu m
+    ui.spinBoxActPos->setSuffix(params["closedLoop"].getVal<int>() ? " \u00B5m" : " V");  // mu m
+    ui.spinBoxTargetPos->setSuffix(params["closedLoop"].getVal<int>() ? " \u00B5m" : " V");  // mu m
     m_closedLoop = params["closedLoop"].getVal<int>() > 0;
 }
 

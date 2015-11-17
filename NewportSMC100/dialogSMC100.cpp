@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Newport SMC100" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2014, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2014, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -306,7 +306,7 @@ void DialogSMC100::createUiListEntry(const int i)
 
     QDoubleSpinBox *speedSpin = new QDoubleSpinBox(frame);
     speedSpin->setToolTip("Speed");
-    // TODO hier müssen noch die Werte ausgelesen werden
+    // TODO hier muessen noch die Werte ausgelesen werden
     speedSpin->setMaximum(100);
     speedSpin->setMinimum(0);
     speedSpin->setSuffix(" units/sec");

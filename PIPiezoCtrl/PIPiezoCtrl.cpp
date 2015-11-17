@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PIPiezoControl" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -91,7 +91,7 @@ PIPiezoCtrl::PIPiezoCtrl() :
 #endif
     m_params.insert(paramVal.getName(), paramVal);
     
-    m_scale = 1e3; // PI is programmed in µm, this evil Programm sents in mm
+    m_scale = 1e3; // PI is programmed in mu m, this evil Programm sents in mm
     m_async = 0;
     m_delayProp = 4; //s
     m_delayOffset = 0.08; //s

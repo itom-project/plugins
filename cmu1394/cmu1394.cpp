@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "cmu1394" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -816,11 +816,11 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
             }
 
             case 7: //basler Mode 7 geht nur mit der a602f die anderen mit a602 und 601
-                //achtung! a602 nur für Mahr, und die benutzen einen modifizierten s->FireWire-Controllertreiber
+                //achtung! a602 nur fuer Mahr, und die benutzen einen modifizierten s->FireWire-Controllertreiber
                 //und einen modifizierten Kameratreiber
-                //der Standard-Treiber vom Windows für den Controller und der spezialtreiber vom M machen nur Mode 0 und 1
+                //der Standard-Treiber vom Windows fuer den Controller und der spezialtreiber vom M machen nur Mode 0 und 1
                 //ansonsten ist der Cam-Mode benutzerdefiniert!
-                //die Kamera hat Defaultwerte für Mode 7, unterstützt aber auch andere Größen wenn
+                //die Kamera hat Defaultwerte fuer Mode 7, unterstuetzt aber auch andere Groessen wenn
                 //in der entsprechenden TReiberdll ein SetROI-Befehl exportiert wird.
                 {    
     /*
@@ -962,7 +962,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 
        if (!retValue.containsError())
     {
-        // Camera-exposure is set in µsec, itom uses s
+        // Camera-exposure is set in m/s, itom uses s
         trigger_mode = m_params["trigger_mode"].getVal<int>();
 
         unsigned short Min, Max, Val, dummy;

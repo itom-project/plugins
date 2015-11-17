@@ -1,8 +1,8 @@
 /* *******************************************************************
     Plugin "USBMotion3XIII" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -753,8 +753,8 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
                 retValue += errorCheck(setmode(2, 0x00, mcStatus, DWTIMEOUT));
 
                 //iprom: ich habe jetzt switchSettings1..switchSettings3 als Parameter angelegt.
-                //Damit lässt sich jederzeit die Settings-Einstellungen ändern. Brauchen wir
-                //dann die init-Parameter hier überhaupt noch?
+                //Damit laesst sich jederzeit die Settings-Einstellungen aendern. Brauchen wir
+                //dann die init-Parameter hier ueberhaupt noch?
                 // %% setswitchsettings for all axis
                 // calculate Settings
                 int Switches = paramsOpt->value(6).getVal<int>();

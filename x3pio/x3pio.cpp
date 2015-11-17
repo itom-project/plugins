@@ -2,7 +2,7 @@
     Plugin "x3pio" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2013, twip optical solutions GmbH
-    Copyright (C) 2013, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2013, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
 
@@ -292,7 +292,7 @@ ito::RetVal X3pIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::P
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
 
-    filter = new FilterDef(X3pIO::saveDObj, X3pIO::saveDObjParams, QObject::tr("saves dataObject to x3p file. x3p defines all axes in meter, if the unit of any axis is m, cm, mm, µm or nm they are correctly converted to m."), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("X3P Files (*.x3p)"));
+    filter = new FilterDef(X3pIO::saveDObj, X3pIO::saveDObjParams, QObject::tr("saves dataObject to x3p file. x3p defines all axes in meter, if the unit of any axis is m, cm, mm, \u00B5m or nm they are correctly converted to m."), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("X3P Files (*.x3p)"));  // mu m
     m_filterList.insert("saveX3p", filter);
 
     filter = new FilterDef(X3pIO::loadDObj, X3pIO::loadDObjParams, QObject::tr("loads dataObject from x3p file"), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("X3P Files (*.x3p)"));
@@ -1192,7 +1192,7 @@ ito::RetVal X3pIO::parseUnit(const std::string &unitString, double &unitScale)
     {
         unitScale = 1.0e-3;
     }
-    else if (unitString == "µm")
+    else if (unitString == "\u00B5m")  // mu m
     {
         unitScale = 1.0e-6;
     }
@@ -1223,7 +1223,7 @@ ito::RetVal X3pIO::loadDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::
         ito::StringMeta sm(ito::StringMeta::String, "m");
         sm.addItem("cm");
         sm.addItem("mm");
-        sm.addItem("µm");
+        sm.addItem("\u00B5m");  // mu m
         sm.addItem("nm");
         param.setMeta(&sm, false);
         paramsOpt->append(param);
@@ -1232,7 +1232,7 @@ ito::RetVal X3pIO::loadDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::
         ito::StringMeta sm2(ito::StringMeta::String, "m");
         sm2.addItem("cm");
         sm2.addItem("mm");
-        sm2.addItem("µm");
+        sm2.addItem("\u00B5m");  // mu m
         sm2.addItem("nm");
         param.setMeta(&sm2, false);
         paramsOpt->append(param);
@@ -1274,7 +1274,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
    {
        xyScaleFactor = 1000.0;
    }
-   else if (xyUnit == "µm")
+   else if (xyUnit == "\u00B5m")  // mu m
    {
        xyScaleFactor = 1.0e6;
    }
@@ -1297,7 +1297,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
    {
        valueScaleFactor = 1000.0;
    }
-   else if (valueUnit == "µm")
+   else if (valueUnit == " \u00B5m")  // mu m
    {
        valueScaleFactor = 1.0e6;
    }

@@ -330,11 +330,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         switch(dObjIn->getType())
         {
             case ito::tInt8:
-                for(int z = 0; z < inputObject.calcNumMats(); z++)
+                for (int z = 0; z < inputObject.calcNumMats(); z++)
                 {
                     scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
                     cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for(int y = 0; y < ySize; y++)
+                    for (int y = 0; y < ySize; y++)
                     {
                         ito::dObjHelper::GetHLineC<ito::int8>(scrMat, 0, y, xSize, cRowPtr);
                         cRowPtr = &(cRowPtr[xSize]);
@@ -342,11 +342,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 }
                 break;
             case ito::tUInt8:
-                for(int z = 0; z < inputObject.calcNumMats(); z++)
+                for (int z = 0; z < inputObject.calcNumMats(); z++)
                 {
                     scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
                     cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for(int y = 0; y < ySize; y++)
+                    for (int y = 0; y < ySize; y++)
                     {
                         ito::dObjHelper::GetHLineC<ito::uint8>(scrMat, 0, y, xSize, cRowPtr);
                         cRowPtr = &(cRowPtr[xSize]);
@@ -354,11 +354,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 }
                 break;
             case ito::tInt16:
-                for(int z = 0; z < inputObject.calcNumMats(); z++)
+                for (int z = 0; z < inputObject.calcNumMats(); z++)
                 {
                     scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
                     cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for(int y = 0; y < ySize; y++)
+                    for (int y = 0; y < ySize; y++)
                     {
                         ito::dObjHelper::GetHLineC<ito::int16>(scrMat, 0, y, xSize, cRowPtr);
                         cRowPtr = &(cRowPtr[xSize]);
@@ -366,11 +366,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 }
                 break;
             case ito::tUInt16:
-                for(int z = 0; z < inputObject.calcNumMats(); z++)
+                for (int z = 0; z < inputObject.calcNumMats(); z++)
                 {
                     scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
                     cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for(int y = 0; y < ySize; y++)
+                    for (int y = 0; y < ySize; y++)
                     {
                         ito::dObjHelper::GetHLineC<ito::uint16>(scrMat, 0, y, xSize, cRowPtr);
                         cRowPtr = &(cRowPtr[xSize]);
@@ -378,11 +378,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 }
                 break;
             case ito::tInt32:
-                for(int z = 0; z < inputObject.calcNumMats(); z++)
+                for (int z = 0; z < inputObject.calcNumMats(); z++)
                 {
                     scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
                     cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for(int y = 0; y < ySize; y++)
+                    for (int y = 0; y < ySize; y++)
                     {
                         ito::dObjHelper::GetHLineC<ito::int32>(scrMat, 0, y, xSize, cRowPtr);
                         cRowPtr = &(cRowPtr[xSize]);
@@ -390,11 +390,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 }
                 break;
             case ito::tFloat32:
-                for(int z = 0; z < inputObject.calcNumMats(); z++)
+                for (int z = 0; z < inputObject.calcNumMats(); z++)
                 {
                     scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
                     cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for(int y = 0; y < ySize; y++)
+                    for (int y = 0; y < ySize; y++)
                     {
                         ito::dObjHelper::GetHLineC<ito::float32>(scrMat, 0, y, xSize, cRowPtr);
                         cRowPtr = &(cRowPtr[xSize]);
@@ -402,11 +402,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 }
                 break;
             case ito::tFloat64:
-                for(int z = 0; z < inputObject.calcNumMats(); z++)
+                for (int z = 0; z < inputObject.calcNumMats(); z++)
                 {
                     scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
                     cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for(int y = 0; y < ySize; y++)
+                    for (int y = 0; y < ySize; y++)
                     {
                         ito::dObjHelper::GetHLineC<ito::float64>(scrMat, 0, y, xSize, cRowPtr);
                         cRowPtr = &(cRowPtr[xSize]);
@@ -414,11 +414,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 }
                 break;
             case ito::tComplex64:
-                for(int z = 0; z < inputObject.calcNumMats(); z++)
+                for (int z = 0; z < inputObject.calcNumMats(); z++)
                 {
                     scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
                     cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for(int y = 0; y < ySize; y++)
+                    for (int y = 0; y < ySize; y++)
                     {
                         ito::dObjHelper::GetHLineC<ito::complex64>(scrMat, 0, y, xSize, cRowPtr);
                         cRowPtr = &(cRowPtr[xSize]);
@@ -426,11 +426,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 }
                 break;
             case ito::tComplex128:
-                for(int z = 0; z < inputObject.calcNumMats(); z++)
+                for (int z = 0; z < inputObject.calcNumMats(); z++)
                 {
                     scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
                     cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for(int y = 0; y < ySize; y++)
+                    for (int y = 0; y < ySize; y++)
                     {
                         ito::dObjHelper::GetHLineC<ito::complex128>(scrMat, 0, y, xSize, cRowPtr);
                         cRowPtr = &(cRowPtr[xSize]);
@@ -523,7 +523,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
             fftw_plan plan = fftw_plan_dft_1d(xSize, in, out, planForwardBackWard, plan_sel);
             fftw_execute(plan);
 
-            for(int z = 1; z < inputObject.calcNumMats(); z++)
+            for (int z = 1; z < inputObject.calcNumMats(); z++)
             {
                 fftw_complex *in  = (fftw_complex*)(((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>());
                 fftw_complex *out = (fftw_complex*)(((cv::Mat*)outputObject.get_mdata()[outputObject.seekMat(z)])->ptr<ito::complex128>());
@@ -539,7 +539,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
             fftw_plan plan = fftw_plan_many_dft(1, _xSize, ySize, in, NULL, 1, xSize, out, NULL, 1, xSize, planForwardBackWard, plan_sel);            
             fftw_execute(plan);
 
-            for(int z = 1; z < inputObject.calcNumMats(); z++)
+            for (int z = 1; z < inputObject.calcNumMats(); z++)
             {
                 fftw_complex *in  = (fftw_complex*)(((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>());
                 fftw_complex *out = (fftw_complex*)(((cv::Mat*)outputObject.get_mdata()[outputObject.seekMat(z)])->ptr<ito::complex128>());
@@ -558,7 +558,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         fftw_plan plan = fftw_plan_dft_2d(ySize, xSize, in, out, planForwardBackWard, plan_sel);
         fftw_execute(plan);
 
-        for(int z = 1; z < inputObject.calcNumMats(); z++)
+        for (int z = 1; z < inputObject.calcNumMats(); z++)
         {
             fftw_complex *in  = (fftw_complex*)(((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>());
             fftw_complex *out = (fftw_complex*)(((cv::Mat*)outputObject.get_mdata()[outputObject.seekMat(z)])->ptr<ito::complex128>());
@@ -593,7 +593,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
             newScale = 1.0;
             dObjOut->setAxisUnit(curDim, "");
         }
-        dObjOut->setAxisScale(curDim, newScale );
+        dObjOut->setAxisScale(curDim, newScale);
         dObjOut->setAxisOffset(curDim, 0.0);
 
         if (!lineWise)
@@ -613,7 +613,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                 newScale = 1.0;
                 dObjOut->setAxisUnit(curDim, "");
             }
-            dObjOut->setAxisScale(curDim, newScale );
+            dObjOut->setAxisScale(curDim, newScale);
             dObjOut->setAxisOffset(curDim, 0.0);
         }
     }    
@@ -1502,7 +1502,7 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
         }
         else if (R_z >= 200.e-3)
         {
-            return ito::RetVal(ito::retError, 0, tr("R_z over 200µm").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, tr("R_z over 200 \u00B5m").toLatin1().data());  // mu m
         }
     }
     
@@ -1538,25 +1538,25 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     switch(dObj_in->getType())
     {
         case ito::tUInt8:
-            ito::dObjHelper::GetHLineD<ito::uint8>( scrMat, 0, 0, sizeX, srcInput);
+            ito::dObjHelper::GetHLineD<ito::uint8>(scrMat, 0, 0, sizeX, srcInput);
             break;
         case ito::tInt8:
-            ito::dObjHelper::GetHLineD<ito::int8>( scrMat, 0, 0, sizeX, srcInput);
+            ito::dObjHelper::GetHLineD<ito::int8>(scrMat, 0, 0, sizeX, srcInput);
             break;
         case ito::tInt16:
-            ito::dObjHelper::GetHLineD<ito::int16>( scrMat, 0, 0, sizeX, srcInput);
+            ito::dObjHelper::GetHLineD<ito::int16>(scrMat, 0, 0, sizeX, srcInput);
             break;
         case ito::tUInt16:
-            ito::dObjHelper::GetHLineD<ito::uint16>( scrMat, 0, 0, sizeX, srcInput);
+            ito::dObjHelper::GetHLineD<ito::uint16>(scrMat, 0, 0, sizeX, srcInput);
             break;
         case ito::tInt32:
-            ito::dObjHelper::GetHLineD<ito::int32>( scrMat, 0, 0, sizeX, srcInput);
+            ito::dObjHelper::GetHLineD<ito::int32>(scrMat, 0, 0, sizeX, srcInput);
             break;
         case ito::tFloat32:
-            ito::dObjHelper::GetHLineD<ito::float32>( scrMat, 0, 0, sizeX, srcInput);
+            ito::dObjHelper::GetHLineD<ito::float32>(scrMat, 0, 0, sizeX, srcInput);
             break;
         case ito::tFloat64:
-            ito::dObjHelper::GetHLineD<ito::float64>( scrMat, 0, 0, sizeX, srcInput);
+            ito::dObjHelper::GetHLineD<ito::float64>(scrMat, 0, 0, sizeX, srcInput);
             break;
     }
 
@@ -1565,9 +1565,9 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     //Roughness Filtering
     //filtRough[0][0] = fourDomain[0][0];    //real fourier component (amplitude)
 
-    //const ito::float64 cAlpha =  0.8493218002880191;// 1 / sqrt( 2 * ln(2));
-    //const ito::float64 cAlpha =  1.2011224087864498;// 1 / sqrt( 2 * ln(sqrt(2)));
-    const ito::float64 cAlpha =  1.48809737131601248;// 1 / sqrt( 2 * ln(sqrt(pi/2)));
+    //const ito::float64 cAlpha =  0.8493218002880191;// 1 / sqrt(2 * ln(2));
+    //const ito::float64 cAlpha =  1.2011224087864498;// 1 / sqrt(2 * ln(sqrt(2)));
+    const ito::float64 cAlpha =  1.48809737131601248;// 1 / sqrt(2 * ln(sqrt(pi/2)));
 
     ito::float64 sigmaFS = cAlpha / lambda_s;
     ito::float64 sigmaFC = cAlpha / lambda_c;

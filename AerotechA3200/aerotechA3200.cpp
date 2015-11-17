@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "AerotechA3200" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -141,7 +141,7 @@ AerotechA3200::AerotechA3200() :
     m_params.insert("zenabled", Param("zenabled", ParamBase::Int, 0, 1, 0, tr("check if z-axis is enabled").toLatin1().data()));
     
 
-    double axisSpeeds[] = {20.0, 20.0, 20.0}; //mm/s, nämlich "rate" in altem Skript mcpp
+    double axisSpeeds[] = {20.0, 20.0, 20.0}; //mm/s, naemlich "rate" in altem Skript mcpp
     Param param = Param("speed", ParamBase::DoubleArray, NULL, tr("speed of every axis").toLatin1().data());
     param.setVal<double*>(axisSpeeds, 3);
     m_params.insert("speed", param);
@@ -316,7 +316,7 @@ ito::RetVal AerotechA3200::init(QVector<ito::ParamBase> *paramsMand, QVector<ito
     {
         AXISMASK availableMask;
 
-        //es ist natürlich besser, eine Funktion bezüglich A3200 aufzurufen, aber da reichen 3 "available" Achsen aus.  
+        //es ist natuerlich besser, eine Funktion bezueglich A3200 aufzurufen, aber da reichen 3 "available" Achsen aus.  
         availableMask= AXISMASK_1 | AXISMASK_2 | AXISMASK_3;
 
         if (!retValue.containsError())
@@ -1198,7 +1198,7 @@ ito::RetVal AerotechA3200::waitForDone(const int timeoutMS, const QVector<int> a
         retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toLatin1().data());
     }
 
-    //100 ms damit die Achsen sich einpegeln können
+    //100 ms damit die Achsen sich einpegeln koennen
     waitMutex.lock();
     waitCondition.wait(&waitMutex, 100);
     waitMutex.unlock();

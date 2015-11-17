@@ -496,7 +496,7 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const int axis, QSharedPointer<double
         retval += sendQuestionWithAnswerDouble("rd,", axpos, 1500);
         if (m_closedLoop)
         {
-            *pos = axpos / 1000.0; //µm to mm
+            *pos = axpos / 1000.0; // mu m to mm
         }
         else
         {

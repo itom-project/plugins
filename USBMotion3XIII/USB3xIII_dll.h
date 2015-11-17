@@ -29,7 +29,7 @@
         die 64Bit-DLL wurde mit Delphi XE2/64Bit geschrieben.
         Daher hat der Typ Char 2Bytes.
 
-        Mit freundlichen Grüßen,
+        Mit freundlichen Gruessen,
         Yasar Channaa
     */
     typedef unsigned int (__stdcall* LPINITUSBMC)(wchar_t*);

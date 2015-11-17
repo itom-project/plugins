@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PcoPixelFly" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -1283,7 +1283,7 @@ ito::RetVal PCOPixelFly::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
            if (!retValue.containsError())
         {
-            // Camera-exposure is set in µsec, itom uses s
+            // Camera-exposure is set in mu/sec, itom uses s
             integration_time = (int)(m_params["integration_time"].getVal<double>()*1000000);
             trigger_mode = m_params["trigger_mode"].getVal<int>();
         

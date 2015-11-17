@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "FittingFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -349,7 +349,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
             OrthPolAuswerten(koeff->sizeX, koeff->gradX, tx, Werte, koeff->alphaX, koeff->betaX, koeff->gammaX);
             
             buf = lineBuf[n];
-            //nicht so tolle version (verfälscht das ergebnis durch addition von 0.0 bei nan-werten - kommentar marc gronle, interpolation wäre besser, aber aufwand)
+            //nicht so tolle version (verfaelscht das ergebnis durch addition von 0.0 bei nan-werten - kommentar marc gronle, interpolation waere besser, aber aufwand)
             if (qIsFinite(buf))
             {
                 for(i=0 ; i <= koeff->gradX ; i++)
@@ -540,7 +540,7 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
         *(S + i*(PolyGrad+1) + 1) = -(i-1)* *(S + (i-1)*(PolyGrad+1) +1); // Rekursionsformel
     }
 
-    for (i=3; i<=PolyGrad; i++)   // für die Stirlingzahlen
+    for (i=3; i<=PolyGrad; i++)   // fuer die Stirlingzahlen
     {
         for (j=2; j<=i-1; j++)
         {
@@ -571,8 +571,8 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
     free(S); S=NULL;
    
     /*************************************************
-     Berechnung der Koeffizienten für die Rekursion. Daß so eine Rekursion
-     existiert, ist klar, es genügt alpha, beta und gamma so zu bestimmen, daß
+     Berechnung der Koeffizienten fuer die Rekursion. Dass so eine Rekursion
+     existiert, ist klar, es genuegt alpha, beta und gamma so zu bestimmen, dass
      die ersten drei Koeffizienten des Polynoms Pn richtig dargestellt werden,
      die anderen sind dann automatisch richtig.
     ***************************************************/

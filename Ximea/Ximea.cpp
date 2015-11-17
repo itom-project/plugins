@@ -2,7 +2,7 @@
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2015, twip optical solutions GmbH
-    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2015, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -1611,7 +1611,7 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
     {
         it = m_params.find("integration_time");
 
-        // Camera-exposure is set in µsec, itom uses s
+        // Camera-exposure is set in m/s, itom uses s
         int integration_time, integration_max, integration_min, integration_step; 
         retValue += checkError(pxiGetParam(m_handle, XI_PRM_EXPOSURE XI_PRM_INFO_MIN, &integration_min, &intSize, &intType), XI_PRM_EXPOSURE XI_PRM_INFO_MIN);
         retValue += checkError(pxiGetParam(m_handle, XI_PRM_EXPOSURE XI_PRM_INFO_MAX, &integration_max, &intSize, &intType), XI_PRM_EXPOSURE XI_PRM_INFO_MIN);

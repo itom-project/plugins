@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "Vistek" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -268,7 +268,7 @@ ito::RetVal Vistek::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemap
         }
         else if (!key.compare("exposure") || !key.compare("integration_time"))
         {
-            // Camera_setExposureTime expects µs, so multiply by 10^6
+            // Camera_setExposureTime expects mu/s, so multiply by 10^6
             retValue += checkError("set exposure time",Camera_setExposureTime(m_cam, val->getVal<double>()*1.e6));
 
             float val;
