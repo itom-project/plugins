@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include <Strmif.h>
-#include "vfwmsgs.h" //nur für fehlermeldung
+#include "vfwmsgs.h" //only for error message
 
 
 #include "VideoDevice.h"

@@ -35,7 +35,7 @@ if (PLUGIN_AvantesAvaSpec)
         ADD_SUBDIRECTORY(AvantesAvaSpec)
 endif (PLUGIN_AvantesAvaSpec)
 
-#AVTVimba
+# AVTVimba
 IF (WIN32)
     OPTION(PLUGIN_AVTVimba "Build with this plugin." ON)
     if (PLUGIN_AVTVimba)
@@ -189,6 +189,12 @@ if (PLUGIN_MSMediaFoundation)
     ADD_SUBDIRECTORY(MSMediaFoundation)
 endif (PLUGIN_MSMediaFoundation)
 ENDIF(WIN32)
+
+# NanotecStepMotor
+#OPTION(PLUGIN_NanotecStepMotor "Build with this plugin." OFF)
+#if (PLUGIN_NanotecStepMotor)
+#    ADD_SUBDIRECTORY(NanotecStepMotor)
+#endif (PLUGIN_NanotecStepMotor)
 
 # NewportSMC100
 OPTION(PLUGIN_NEWPORT_SMC100 "Build with this plugin." ON)

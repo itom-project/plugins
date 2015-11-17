@@ -1045,13 +1045,13 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retWarning,0,"timebase register of camera is not available. Timebase is set to 20탎 per default");
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu s
                         m_exposureParams.timebaseMs = 20.0 / 1000.0;
                     }
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retWarning,0,"timebase register of camera could not be read. Timebase is set to 20탎 per default");
+                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu s
                     m_exposureParams.timebaseMs = 20.0 / 1000.0;
                 }
 
@@ -1101,7 +1101,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retWarning,0,"no exposure offset is available for this camera model. Therefore the offset is set to 0 and your exposure time might be few microseconds smaller than the real value.");
+                    retValue += ito::RetVal(ito::retWarning, 0, tr("no exposure offset is available for this camera model. Therefore the offset is set to 0 and your exposure time might be few microseconds smaller than the real value.").toLatin1().data());
                     m_exposureParams.offsetMs = 0.0;
                 }
             }
@@ -1110,7 +1110,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 m_exposureParams.AVTCam = false;
                 m_exposureParams.offsetMs = 0.0;
                 m_exposureParams.timebaseMs = 20.0;
-                retValue += ito::RetVal(ito::retWarning,0,"Camera model is not known. Therefore the integration time represents the shutter value, not the real exposure time in seconds.");
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Camera model is not known. Therefore the integration time represents the shutter value, not the real exposure time in seconds.").toLatin1().data());
             }
         }
         else
@@ -1468,13 +1468,13 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retWarning,0,"timebase register of camera is not available. Timebase is set to 20탎 per default");
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu m
                         m_exposureParams.timebaseMs = 20.0 / 1000.0;
                     }
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retWarning,0,"timebase register of camera could not be read. Timebase is set to 20탎 per default");
+                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu m
                     m_exposureParams.timebaseMs = 20.0 / 1000.0;
                 }
 
@@ -1524,7 +1524,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retWarning,0,"no exposure offset is available for this camera model. Therefore the offset is set to 0 and your exposure time might be few microseconds smaller than the real value.");
+                    retValue += ito::RetVal(ito::retWarning, 0, tr("no exposure offset is available for this camera model. Therefore the offset is set to 0 and your exposure time might be few microseconds smaller than the real value.").toLatin1().data());
                     m_exposureParams.offsetMs = 0.0;
                 }
             }
@@ -1533,7 +1533,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 m_exposureParams.AVTCam = false;
                 m_exposureParams.offsetMs = 0.0;
                 m_exposureParams.timebaseMs = 20.0;
-                retValue += ito::RetVal(ito::retWarning,0,"Camera model is not known. Therefore the integration time represents the shutter value, not the real exposure time in seconds.");
+                retValue += ito::RetVal(ito::retWarning, 0, tr("Camera model is not known. Therefore the integration time represents the shutter value, not the real exposure time in seconds.").toLatin1().data());
             }
         }
         else
@@ -2070,7 +2070,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 
     if (frame.Flags & FGF_INVALID)
     {
-        retValue += ito::RetVal(ito::retError, 0, "Framebuffer of FireWire-DLL invalid during retrieveImage");
+        retValue += ito::RetVal(ito::retError, 0, tr("Framebuffer of FireWire-DLL invalid during retrieveImage").toLatin1().data());
     }
 
     retValue += AlliedChkError(Camera.GetParameter(FGP_XSIZE, &m_xSize));

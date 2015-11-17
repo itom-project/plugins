@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PCOSensicam" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2015, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -80,14 +80,14 @@ void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
         case FASTEXP: //"Fast Exposure"
         case FASTEXPQE: //"Fast Exposure QE"
             exposureToSecFactor = 1e-6;
-            ui.slider_delay->setSuffix(" µs");
+            ui.slider_delay->setSuffix(" \u00B5s");  // mu s
             ui.slider_delay->setMinimum(0.0);
             ui.slider_delay->setMaximum(1000.0);
             ui.slider_delay->setSingleStep(0.1);
             ui.slider_delay->setDecimals(1);
             ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
 
-            ui.slider_exposure->setSuffix(" µs");
+            ui.slider_exposure->setSuffix(" \u00B5s");  // mu s
             ui.slider_exposure->setMinimum(0.0);
             ui.slider_exposure->setMaximum(1000.0);
             ui.slider_exposure->setSingleStep(0.1);
@@ -99,14 +99,14 @@ void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
                 if (params["fast_mode"].getVal<int>())
                 {
                     exposureToSecFactor = 1e-6;
-                    ui.slider_delay->setSuffix(" µs");
+                    ui.slider_delay->setSuffix(" \u00B5s");  // mu s
                     ui.slider_delay->setMinimum(0.0);
                     ui.slider_delay->setMaximum(50000.0);
                     ui.slider_delay->setSingleStep(0.1);
                     ui.slider_delay->setDecimals(1);
                     ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
 
-                    ui.slider_exposure->setSuffix(" µs");
+                    ui.slider_exposure->setSuffix(" \u00B5s");  // mu s
                     ui.slider_exposure->setMinimum(0.5);
                     ui.slider_exposure->setMaximum(10000.0);
                     ui.slider_exposure->setSingleStep(0.1);
@@ -139,14 +139,14 @@ void DockWidgetPCOSensicam::parametersChanged(QMap<QString, ito::Param> params)
                 if (params["fast_mode"].getVal<int>())
                 {
                     exposureToSecFactor = 75.0 * (1e-6);
-                    ui.slider_delay->setSuffix(" * 75 µs");
+                    ui.slider_delay->setSuffix(" * 75 \u00B5s");  // mu s
                     ui.slider_delay->setMinimum(0.0);
                     ui.slider_delay->setMaximum(200.0);
                     ui.slider_delay->setSingleStep(1.0);
                     ui.slider_delay->setDecimals(0);
                     ui.slider_delay->setValue(params["delay_time"].getVal<double>() / exposureToSecFactor);
 
-                    ui.slider_exposure->setSuffix(" * 75 µs");
+                    ui.slider_exposure->setSuffix(" * 75 \u00B5s");  // mu s
                     ui.slider_exposure->setMinimum(1.0);
                     ui.slider_exposure->setMaximum(200.0);
                     ui.slider_exposure->setSingleStep(1.0);

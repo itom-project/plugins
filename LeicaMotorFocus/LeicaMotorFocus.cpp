@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "LeicaMotorFocus" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -565,7 +565,7 @@ LeicaMotorFocus::LeicaMotorFocus() : AddInActuator(), m_async(0), m_direction(1)
     ito::Param paramVal("name", ito::ParamBase::String, "LeicaMotorFocus", NULL);
     m_params.insert(paramVal.getName(), paramVal);
     
-    m_scale = 1e3; // Leica is Programmes in µm, this evil Programm sent in mm
+    m_scale = 1e3; // Leica is Programmes in mu m, this evil Programm sent in mm
 
     paramVal = ito::Param("speed", ito::ParamBase::Double, FULLSPEED/1000, FULLSPEED, FULLSPEED, tr("Speed in m/s (Default=Maximum: 23,33 mm/s)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -742,7 +742,7 @@ ito::RetVal LeicaMotorFocus::init(QVector<ito::ParamBase> *paramsMand, QVector<i
     long speed;
     char unit70[30], version70[20], unit71[30], version71[20];
 
-// TODO: Prüfen ob übergebener Parameter tatsächlich eine serielle Schnittstelle ist!
+// TODO: Pruefen ob uebergebener Parameter tatsaechlich eine serielle Schnittstelle ist!
 //    m_pSer = qobject_cast<ito::AddInDataIO*>( reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>()) );
 //    if (m_pSer)
 //    {
@@ -853,7 +853,7 @@ ito::RetVal LeicaMotorFocus::calib(const int /*axis*/, ItomSharedSemaphore *wait
         {
             retval += LMFWriteCmdArg(70, SET_VELOCITY, 1000);    // Ugly SET_VELOCITY is something between 1 and 1000
         }
-        // Wait einfügen
+        // insert wait
 
         retval += getPos(0, oldPos, NULL); //get current, uncalibrated position
 

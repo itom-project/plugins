@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "AerotechEnsemble" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -71,7 +71,7 @@ For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributabl
 
     m_description = QObject::tr("Plugin for the Ensemble-controller of Aerotech");
     m_detaildescription = QObject::tr(docstring);
-    m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart, Jürgen Ortmann, Ortmann Digitaltechnik";
+    m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart, J\u00FCrgen Ortmann, Ortmann Digitaltechnik";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
@@ -1144,7 +1144,7 @@ ito::RetVal AerotechEnsemble::waitForDone(const int timeoutMS, const QVector<int
         retVal += ito::RetVal(ito::retError, 9999, tr("timeout occurred").toLatin1().data());
     }
 
-    //100 ms damit die Achsen sich einpegeln können
+    //100 ms damit die Achsen sich einpegeln koennen
     waitMutex.lock();
     waitCondition.wait(&waitMutex, 100);
     waitMutex.unlock();

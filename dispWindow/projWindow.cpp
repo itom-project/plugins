@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "dispWindow" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -150,7 +150,7 @@ int PrjWindow::initOGL2(const int width, const int height)
     int ret = 0;
 #if QT_VERSION < 0x050000
 
-    glMatrixMode(GL_PROJECTION);                    //Projektionsmatrix wählen
+    glMatrixMode(GL_PROJECTION);                    //Projektionsmatrix waehlen
     glLoadIdentity();
     gluOrtho2D(0, width, 0, height);
 

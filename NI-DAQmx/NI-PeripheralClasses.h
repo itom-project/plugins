@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "NI-DAQmx" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -221,7 +221,7 @@ class niCounterChannel : public niBaseChannel
 class niChannelList : public QMap<QString, niBaseChannel*>
 {
     public:
-        niChannelList(QString device = "Dev1"); // TODO: Wie kann man hier den default weg lassen? muss dafür die "getchannelsofdevice" static werden?
+        niChannelList(QString device = "Dev1"); // TODO: Wie kann man hier den default weg lassen? muss dafuer die "getchannelsofdevice" static werden?
         ~niChannelList();
 
         void getChannelsOfDevice(const QString dev); // DAQmxGetDevAIPhysicalChans
