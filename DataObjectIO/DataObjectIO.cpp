@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "DataObjectIO" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
   
@@ -4574,7 +4574,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
 The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, µm, nm) is given in the axis unit tag, an automatic conversion is applied. Else a \n\
 warning is returned. The same holds for the values (ordinate). You can choose if the .pr format should contain the ordinate values in nm or µm. An auto-conversion is implemented, too. \n\
 \n\
-This filter uses the hex-code DF for the german Umlaut 'ö' and F6 for 'ß' like required by the input file format description of the RPTB tool (since RPTB Version 2.01).";
+This filter uses the hex-code DF for the german Umlaut 'oe' and F6 for 'sz' like required by the input file format description of the RPTB tool (since RPTB Version 2.01).";
 
 
 /** saveNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
