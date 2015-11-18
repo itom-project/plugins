@@ -1045,13 +1045,13 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu s
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
                         m_exposureParams.timebaseMs = 20.0 / 1000.0;
                     }
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu s
+                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
                     m_exposureParams.timebaseMs = 20.0 / 1000.0;
                 }
 
@@ -1468,13 +1468,13 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu m
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
                         m_exposureParams.timebaseMs = 20.0 / 1000.0;
                     }
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu m
+                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
                     m_exposureParams.timebaseMs = 20.0 / 1000.0;
                 }
 
