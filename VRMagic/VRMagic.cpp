@@ -28,14 +28,8 @@
 #include "dialogVRMagic.h"
 
 #include "common/sharedFunctionsQt.h"
-
 #include "common/helperCommon.h"
 
-#if linux
-    #include <dlfcn.h>
-    #include <unistd.h>
-#endif
-#include <QFile>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
@@ -65,12 +59,13 @@ VRMagicInterface::VRMagicInterface()
 
     m_description = QObject::tr("VRMagic Camera / Framegrabber");
     m_detaildescription = QObject::tr("Plugin for cameras / framgrabbers from VRMagic that run with the VRMagic API. \n\
+Currently, only monochrome cameras with 8, 10 or 16 bit depth are supported. \n\
 This plugin has been tested using the VRmAVC-2 grabber  under Windows.");
     m_author = "M. Gronle, C. Lingel, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("LGPL / do not copy VRMagic-DLLs");
+    m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");     
     
 	m_initParamsMand.clear();
@@ -140,7 +135,12 @@ VRMagic::VRMagic() :
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 8, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth).").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("signal_source", ito::ParamBase::String, "unknown", tr("Signal source of the grabber [svideo, composite, yc].").toLatin1().data());
+	paramVal = ito::Param("signal_source", ito::ParamBase::String, "svideo", tr("Signal source of the grabber [svideo, composite, yc].").toLatin1().data());
+    ito::StringMeta sm(ito::StringMeta::String);
+    sm.addItem("svideo");
+    sm.addItem("composite");
+    sm.addItem("yc");
+    paramVal.setMeta(&sm, false);
 	m_params.insert(paramVal.getName(), paramVal);
 	
     //now create dock widget for this plugin
@@ -683,6 +683,7 @@ ito::RetVal VRMagic::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 	VRmImage* image;
 	VRmDWORD droppedframes;
 	int timeout_ms = 100;
+    int elem_size = 1; //bytes
 
 	for (int repeats = 0; repeats < (m_imagesAreInterlaced ? 2 : 1); ++repeats)
 	{
@@ -700,41 +701,51 @@ ito::RetVal VRMagic::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 			{
 				m_acqRetVal += ito::RetVal(ito::retWarning, 0, "image was vertically or horizontally mirrored. This property is currently ignored");
 			}
-		
-			if (image_format.m_color_format == VRM_GRAY_8)
-			{
-				cv::Mat *dest_image = m_data.getCvPlaneMat(0);
-				const ito::uint8 *src_ptr = image->mp_buffer;
+		    
+            switch (image_format.m_color_format)
+            {
+            
+            case VRM_GRAY_10:
+            case VRM_GRAY_16:
+                elem_size = 2; //both 10 and 16 bit pixels are stored in 2 bytes
+            case VRM_GRAY_8:
+                elem_size = std::max(elem_size, 1); //only 8 bit pixel is stored in 1 byte (max is there in order to let 10 and 16 bit case pass)
+                {
+                    cv::Mat *dest_image = m_data.getCvPlaneMat(0);
+                    VRmBYTE *src_ptr = image->mp_buffer;
 
-				if (image_format.m_image_modifier & VRM_INTERLACED_FIELD0)
-				{
-					for (VRmDWORD row = 0; row < 2 * image_format.m_height; row += 2)
-					{
-						memcpy(dest_image->ptr(row), src_ptr, image_format.m_width * sizeof(ito::uint8));
-						src_ptr += image->m_pitch * sizeof(ito::uint8);
-					}
-				}
-				else if (image_format.m_image_modifier & VRM_INTERLACED_FIELD1)
-				{
-					for (VRmDWORD row = 1; row < 2 * image_format.m_height; row += 2)
-					{
-						memcpy(dest_image->ptr(row), src_ptr, image_format.m_width * sizeof(ito::uint8));
-						src_ptr += image->m_pitch * sizeof(ito::uint8);
-					}
-				}
-				else //full-image
-				{
-					for (VRmDWORD row = 0; row < image_format.m_height; ++row)
-					{
-						memcpy(dest_image->ptr(row), src_ptr, image_format.m_width * sizeof(ito::uint8));
-						src_ptr += image->m_pitch * sizeof(ito::uint8);
-					}
-				}
-			}
-			else
-			{
-				m_acqRetVal += ito::RetVal::format(ito::retError, 0, "color format (%i) not implemented yet", image_format.m_color_format);
-			}
+                    if (image_format.m_image_modifier & VRM_INTERLACED_FIELD0)
+                    {
+                        for (VRmDWORD row = 0; row < 2 * image_format.m_height; row += 2)
+                        {
+                            memcpy(dest_image->ptr(row), src_ptr, image_format.m_width * elem_size);
+                            src_ptr += image->m_pitch * elem_size;
+                        }
+                    }
+                    else if (image_format.m_image_modifier & VRM_INTERLACED_FIELD1)
+                    {
+                        for (VRmDWORD row = 1; row < 2 * image_format.m_height; row += 2)
+                        {
+                            memcpy(dest_image->ptr(row), src_ptr, image_format.m_width * elem_size);
+                            src_ptr += image->m_pitch * elem_size;
+                        }
+                    }
+                    else //full-image
+                    {
+                        for (VRmDWORD row = 0; row < image_format.m_height; ++row)
+                        {
+                            memcpy(dest_image->ptr(row), src_ptr, image_format.m_width * elem_size);
+                            src_ptr += image->m_pitch * elem_size;
+                        }
+                    }
+                }
+                break;
+            default:
+                {
+                    m_acqRetVal += ito::RetVal::format(ito::retError, 0, "color format (%i) not implemented yet", image_format.m_color_format);
+                }
+                break;
+            }
 
 			m_acqRetVal += checkError(VRmUsbCamUnlockNextImage(m_handle, &image), "Unlock next image");
 		}
