@@ -1071,8 +1071,8 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
 
     ito::float64 pvThreshold = (*paramsOpt)[0].getVal<ito::float64>();
     ito::float64 dynThreshold = (*paramsOpt)[1].getVal<ito::float64>();
-    ito::float64 lowerThreshold = (*paramsOpt)[3].getVal<ito::float64>();
-    bool columnWise = (*paramsOpt)[2].getVal<ito::int32>() > 0 ? true: false;
+    ito::float64 lowerThreshold = (*paramsOpt)[2].getVal<ito::float64>();
+    bool columnWise = (*paramsOpt)[3].getVal<ito::int32>() > 0 ? true: false;
 
     ito::float64 scaleVert = 1.0;   // Scale along depth ScanAxis
     ito::float64 offsetVert = 0.0; //offset along depth ScanAxis
