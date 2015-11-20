@@ -37,7 +37,6 @@
 
 using namespace ito;
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FittingFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -59,22 +58,28 @@ FittingFiltersInterface::FittingFiltersInterface()
     m_type = ito::typeAlgo;
     setObjectName("FittingFilters");
     
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin contains algorithms for fitting planes and other two dimensional polynomials to dataObjects \
 mainly using the method of least-squares. Some of the included algorithms can also be called with \
 weighted values, such that more precise fitting results are achievable. \n\
 \n\
 Furthermore this plugin also contains methods to finally subtract or reconstruct the fitted surfaces.";
-    
+*/    
     m_description = QObject::tr("Plugin with fitting algorithms.");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(
+"This plugin contains algorithms for fitting planes and other two dimensional polynomials to dataObjects \
+mainly using the method of least-squares. Some of the included algorithms can also be called with \
+weighted values, such that more precise fitting results are achievable. \n\
+\n\
+Furthermore this plugin also contains methods to finally subtract or reconstruct the fitted surfaces.");
+
     m_author = "M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LPGL");
     m_aboutThis = QObject::tr("N.A.");      
-    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -101,11 +106,8 @@ FittingFilters::~FittingFilters()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::fitPlaneDoc = \
+/*static*/ const QString FittingFilters::fitPlaneDoc = QObject::tr(
 "fits plane in 2D-dataObject and returns plane-parameters A,B,C (z=A+Bx+Cy) \n\
 \n\
 This fit can be executed by different fit strategies: \n\
@@ -116,7 +118,7 @@ This fit can be executed by different fit strategies: \n\
 The probability values are only important for the least median fit and determine the number of iterations for the \n\
 a random search using the equation \n\
 \n\
-iterations >= ceil(log(allowedErrorProbability)/log(1-validPointProbability)))";
+iterations >= ceil(log(allowedErrorProbability)/log(1-validPointProbability)))");
 
 RetVal FittingFilters::fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -143,6 +145,7 @@ RetVal FittingFilters::fitPlaneParams(QVector<ito::Param> *paramsMand, QVector<i
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
@@ -244,15 +247,14 @@ RetVal FittingFilters::fitPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito
     return retval;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::subtractPlaneDoc = "subtracts plane from 2D-dataObject given by plane-parameters A,B,C (z=A+Bx+Cy) \n\
+/*static*/ const QString FittingFilters::subtractPlaneDoc = QObject::tr("subtracts plane from 2D-dataObject given by plane-parameters A,B,C (z=A+Bx+Cy) \n\
 \n\
 If the destinationImage is not the same than the sourceImage, the destinationImage finally is a new data object with the same \
 size and type than the sourceImage and contains the data of the sourceImage subtracted by the given plane. If both are the same, \
 the subtraction is executed in-place. \n\
 \n\
-If the input dataObject contains more than one plane, the subtraction is executed separately for each plane.";
+If the input dataObject contains more than one plane, the subtraction is executed separately for each plane.");
 
 RetVal FittingFilters::subtractPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -269,6 +271,7 @@ RetVal FittingFilters::subtractPlaneParams(QVector<ito::Param> *paramsMand, QVec
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal FittingFilters::subtractPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal retval = ito::retOk;
@@ -357,11 +360,10 @@ RetVal FittingFilters::subtractPlane(QVector<ito::ParamBase> *paramsMand, QVecto
     return retOk;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::subtractRegressionPlaneDoc = "subtracts a fitted regression plane from the given 2D input dataObject . \n\
+/*static*/ const QString FittingFilters::subtractRegressionPlaneDoc = QObject::tr("subtracts a fitted regression plane from the given 2D input dataObject . \n\
 \n\
-This method firstly executes the filter *fitPlane* followed by *subtractPlane*.";
+This method firstly executes the filter *fitPlane* followed by *subtractPlane*.");
 
 RetVal FittingFilters::subtractRegressionPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -376,6 +378,7 @@ RetVal FittingFilters::subtractRegressionPlaneParams(QVector<ito::Param> *params
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal FittingFilters::subtractRegressionPlane(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
@@ -406,7 +409,7 @@ RetVal FittingFilters::subtractRegressionPlane(QVector<ito::ParamBase> *paramsMa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::polyfitWeighted2DDoc = "This method fits a two-dimensional polynomial of given order in x- and y-direction to the \
+/*static*/ const QString FittingFilters::polyfitWeighted2DDoc = QObject::tr("This method fits a two-dimensional polynomial of given order in x- and y-direction to the \
 data 'inputData'. \n\
 \n\
 For the fit, the optional scale and offset values of the input data object are considered. The fit is executed in double precision, \
@@ -430,8 +433,7 @@ it is set to any value >= 1, The input plane is divided into a grid of (orderY+1
 an arbitrary valid value is selected and used for the determination only. If no valid value could be found after a certain number of new random values, \
 no value is taken from this rectangle. The algorithm returns an error if less values could have been selected than are needed for the fit of given orders. \n\
 \n\
-The definition of the polynomial function is slightly different than the one used in the similar fitting function 'fitPolynom2D'.";
-
+The definition of the polynomial function is slightly different than the one used in the similar fitting function 'fitPolynom2D'.");
 
 /*static*/ ito::RetVal FittingFilters::polyfitWeighted2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -452,6 +454,7 @@ The definition of the polynomial function is slightly different than the one use
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FittingFilters::polyfitWeighted2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -473,7 +476,7 @@ The definition of the polynomial function is slightly different than the one use
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::polyfitWeighted2DSinglePointsDoc = "This method fits a two-dimensional polynomial of given order in x- and y-direction to the \
+/*static*/ const QString FittingFilters::polyfitWeighted2DSinglePointsDoc = QObject::tr("This method fits a two-dimensional polynomial of given order in x- and y-direction to the \
 points whose x, y and z coordinates are given in 'xData', 'yData' and 'zData'. \n\
 \n\
 The fit is executed in double precision, \
@@ -496,7 +499,7 @@ The solver uses a Vandermonde matrix V as solving strategy and tries to solve V*
 The overdetermined system of linear equations is finally solved using a QR factorization of V. If this module is compiled with LAPACK, its solvers \
 are used, else the solve-command of OpenCV (slower) is called. \n\
 \n\
-The definition of the polynomial function is slightly different than the one used in the similar fitting function 'fitPolynom2D'.";
+The definition of the polynomial function is slightly different than the one used in the similar fitting function 'fitPolynom2D'.");
 
 
 /*static*/ ito::RetVal FittingFilters::polyfitWeighted2DSinglePointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -519,6 +522,7 @@ The definition of the polynomial function is slightly different than the one use
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FittingFilters::polyfitWeighted2DSinglePoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -540,7 +544,7 @@ The definition of the polynomial function is slightly different than the one use
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::polyval2DDoc = "This method evaluates a two-dimensional polynom for every point in a given data object\n\
+/*static*/ const QString FittingFilters::polyval2DDoc = QObject::tr("This method evaluates a two-dimensional polynom for every point in a given data object\n\
 \n\
 For every single pixel in the input data object 'dataZ', its physical coordinate (using scale and offset of the data object) \
 is taken and the polynomial (given by its coefficients) is evaluated and stored in the pixel. \
@@ -553,7 +557,7 @@ direction: \n\
     else: \n\
         f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
 \n\
-The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.";
+The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.");
 
 /*static*/ ito::RetVal FittingFilters::polyval2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -571,6 +575,7 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FittingFilters::polyval2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -597,7 +602,7 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::polyval2DSinglePointsDoc = "This method evaluates a two-dimensional polynom for every x- and y- coordinate given in xData in yData\n\
+/*static*/ const QString FittingFilters::polyval2DSinglePointsDoc = QObject::tr("This method evaluates a two-dimensional polynom for every x- and y- coordinate given in xData in yData\n\
 \n\
 For every single pixel whose x- and y-coordinate is given by corresponding values in xData and yData \
 the polynomial (given by its coefficients) is evaluated and stored in zData (float64, same size than xData and yData). \
@@ -609,7 +614,7 @@ direction: \n\
     else: \n\
         f(x,y) = \\sum_{j=0}^orderY \\sum_{i=0}^{orderX-i} p_{ij} x^i y^j \n\
 \n\
-The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.";
+The coefficients p_ij are stored in the coefficients vector in the order they appear in the equation above.");
 
 /*static*/ ito::RetVal FittingFilters::polyval2DSinglePointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -631,6 +636,7 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FittingFilters::polyval2DSinglePoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -659,7 +665,7 @@ The coefficients p_ij are stored in the coefficients vector in the order they ap
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::fitPolynom1D_ZDoc = "One-dimensional polynomial fit in z-direction for a 3D - data object. \n\
+/*static*/ const QString FittingFilters::fitPolynom1D_ZDoc = QObject::tr("One-dimensional polynomial fit in z-direction for a 3D - data object. \n\
 \n\
 The input data object must be three-dimensional and is internally casted to float64 (if not yet done). The resulting polynomial \
 parameters per pixel are stored in the output data object 'polynoms' whose z-dimension is equal to (order+2). The first (order+1) \
@@ -676,7 +682,7 @@ weights <= 0 are ignored. If a fit cannot be done due to too less or degenerated
 \n\
 For a first order fit, a direct least squares solution is used which is very fast, for the other orders a system of linear equations \
 is solved (using a SVD decomposition) which can be slower. On a multi-core processor you can assign a number of threads that are used \
-to parallely compute the approximations for each pixel.";
+to parallely compute the approximations for each pixel.");
 
 /*static*/ ito::RetVal FittingFilters::fitPolynom1D_ZParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -696,6 +702,7 @@ to parallely compute the approximations for each pixel.";
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FittingFilters::fitPolynom1D_Z(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -874,15 +881,17 @@ to parallely compute the approximations for each pixel.";
         msg = tr("Calculated polynomical coeffs along z-direction with order Z = %1").arg(order);
         output->addToProtocol(std::string(msg.toLatin1().data()));
     }
+
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::subtract1DRegressionPolynomDoc = "subtracts a one-dimensional fitted polynom (along a given axis) from the values in the given 1D or 2D data object. \n\
+/*static*/ const QString FittingFilters::subtract1DRegressionPolynomDoc = QObject::tr(
+"subtracts a one-dimensional fitted polynom (along a given axis) from the values in the given 1D or 2D data object. \n\
 \n\
 This filter operates inplace and subtracts from fitted one-dimensional polynoms from the values in the given 2D data object 'data'. The polynoms are either fitted along the \n\
 vertical or horizontal axis. You can choose a polynomial order between 1 (line) and 7. The values are uniformly weighted for the fit. The algorithm uses a fast, direct solution \n\
-for the line regression fits and a singular value decomposition for all other cases (see fitPolynom1D_Z). The fit is done in double precision while the type of 'data' is not changed.";
+for the line regression fits and a singular value decomposition for all other cases (see fitPolynom1D_Z). The fit is done in double precision while the type of 'data' is not changed.");
 
 /*static*/ ito::RetVal FittingFilters::subtract1DRegressionPolynomParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -901,6 +910,7 @@ for the line regression fits and a singular value decomposition for all other ca
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FittingFilters::subtract1DRegressionPolynom(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -1139,11 +1149,12 @@ for the line regression fits and a singular value decomposition for all other ca
         msg = tr("Subtracted polynomial of %1th order along axis %2").arg(order).arg(axis);
         output->addToProtocol(std::string(msg.toLatin1().data()));
     }
+
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::getInterpolatedValuesDoc = "returns the linearly interpolated values of a given input dataObject at specific 2D point coordinates. \n\
+/*static*/ const QString FittingFilters::getInterpolatedValuesDoc = QObject::tr("returns the linearly interpolated values of a given input dataObject at specific 2D point coordinates. \n\
 \n\
 The given input data object must be a real valued object with two dimensions or a region of interest that only contains one plane (e.g. 1xMxN). \n\
 The point coordinates (coordsSubPix) is a Nx2 floating point data object where each row is the row and column coordinate (sub-pixel) of the desired value. The values must be given \n\
@@ -1153,7 +1164,7 @@ The resulting interpolated values are returned as 'values' list. The input data 
 For the interpolation a search rectangle whose height and width is given by 'searchRect' is centered at the rounded coordinate and a plane is robustly fitted into the valid \n\
 values that lie within the rectangle. The value is then determined using the coefficients of the fitted plane. Infinite values are ignored for the determination of the plane. \n\
 The plane is calculated by least-squares fit. If the rectangle exceeds the boundaries of the given matrix, it moved inside of the matrix such that the searched coordinate still lies within \n\
-the rectangle. If this is not possible, NaN is returned as value.";
+the rectangle. If this is not possible, NaN is returned as value.");
 
 /*static*/ ito::RetVal FittingFilters::getInterpolatedValuesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -1182,6 +1193,7 @@ the rectangle. If this is not possible, NaN is returned as value.";
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FittingFilters::getInterpolatedValues(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -1394,7 +1406,6 @@ the rectangle. If this is not possible, NaN is returned as value.";
             {
                 val[i] = std::numeric_limits<ito::float64>::quiet_NaN();
             }
-
         }
 
         (*paramsOut)[0].setVal<ito::float64*>(val, numCoords);
@@ -1407,8 +1418,7 @@ the rectangle. If this is not possible, NaN is returned as value.";
     return retval;
 }
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 //----- HELPER METHODS ------------------------------
 
 //! brief description
@@ -1474,7 +1484,6 @@ RetVal FittingFilters::fitLeastSquarePlaneSVD(const cv::Mat *inputMatrix, double
     C = result.at<double>(2,0);
 
     return retOk;
-
 }
 
 //---------------------------------------------------------------------------------------------------------------
@@ -1591,8 +1600,6 @@ template<typename _Tp> ito::RetVal FittingFilters::lsqFitPlane(const cv::Mat *ma
         denom = sy*sy - n*syy;
         retVal += ito::RetVal(ito::retWarning, 0, "Please use polynomical fit or 1D-Linefitting for Mx1 objects.");
     }
-
-
 
     if (std::abs(denom) < std::numeric_limits<double>::epsilon())
     {
@@ -1733,7 +1740,6 @@ template<typename _Tp> ito::RetVal FittingFilters::lmedsFitPlane(const cv::Mat *
             best_normal = normal;
             best_distance = d;
         }
-
     }
 
     if (!retval.containsError())
@@ -1749,7 +1755,6 @@ template<typename _Tp> ito::RetVal FittingFilters::lmedsFitPlane(const cv::Mat *
     }
 
     return ito::retOk;
-
 }
 
 //---------------------------------------------------------------------------------------------------------------
@@ -1824,6 +1829,7 @@ template<typename _Tp> ito::RetVal FittingFilters::getRandomValidMinimalSampleSe
 
         return ito::retOk;
     }
+
     return ito::RetVal(ito::retError, 0, "no valid minimal sample set could be found");
 }
 
@@ -1867,7 +1873,6 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
 
     delete[] Bx;
     delete[] Cy;
-
 
     return retOk;
 }
@@ -1982,8 +1987,6 @@ template<typename _Tp> RetVal FittingFilters::subtractPlaneTemplate(cv::Mat *inp
         b[1] = sw2xy;*/
         /*SVD svd(aa);
         svd.solve(b,p,-1.);*/
-
-        
     }
 }
 
@@ -2089,9 +2092,7 @@ template<typename _Tp> /*static*/ void FittingFilters::polyfit1d_basic(const _Tp
             linearRegression( indices_storage, value_storage, weight_storage, coeffs, chisq );
         }
     }
-    
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
@@ -2099,41 +2100,40 @@ RetVal FittingFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<it
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
 
-    filter = new FilterDef(FittingFilters::fitPlane, FittingFilters::fitPlaneParams, tr(fitPlaneDoc));
+    filter = new FilterDef(FittingFilters::fitPlane, FittingFilters::fitPlaneParams, fitPlaneDoc);
     m_filterList.insert("fitPlane", filter);
 
-    filter = new FilterDef(FittingFilters::subtractPlane, FittingFilters::subtractPlaneParams, tr(subtractPlaneDoc));
+    filter = new FilterDef(FittingFilters::subtractPlane, FittingFilters::subtractPlaneParams, subtractPlaneDoc);
     m_filterList.insert("subtractPlane", filter);
 
-    filter = new FilterDef(FittingFilters::subtractRegressionPlane, FittingFilters::subtractRegressionPlaneParams, tr(subtractRegressionPlaneDoc));
+    filter = new FilterDef(FittingFilters::subtractRegressionPlane, FittingFilters::subtractRegressionPlaneParams, subtractRegressionPlaneDoc);
     m_filterList.insert("subtractRegressionPlane", filter);
 
 //    TODO: undefined reference see polyfit2d.cpp
-    filter = new FilterDef(FittingFilters::fitPolynom2D, FittingFilters::fitPolynom2DParams, tr(fitPolynom2DDoc)); 
+    filter = new FilterDef(FittingFilters::fitPolynom2D, FittingFilters::fitPolynom2DParams, fitPolynom2DDoc); 
     m_filterList.insert("fitPolynom2D", filter);
 
-    filter = new FilterDef(FittingFilters::polyfitWeighted2D, FittingFilters::polyfitWeighted2DParams, tr(polyfitWeighted2DDoc));
+    filter = new FilterDef(FittingFilters::polyfitWeighted2D, FittingFilters::polyfitWeighted2DParams, polyfitWeighted2DDoc);
     m_filterList.insert("polyfitWeighted2D", filter);
 
-    filter = new FilterDef(FittingFilters::polyfitWeighted2DSinglePoints, FittingFilters::polyfitWeighted2DSinglePointsParams, tr(polyfitWeighted2DSinglePointsDoc));
+    filter = new FilterDef(FittingFilters::polyfitWeighted2DSinglePoints, FittingFilters::polyfitWeighted2DSinglePointsParams, polyfitWeighted2DSinglePointsDoc);
     m_filterList.insert("polyfitWeighted2DSinglePoints", filter);
 
-    filter = new FilterDef(FittingFilters::polyval2D, FittingFilters::polyval2DParams, tr(polyval2DDoc));
+    filter = new FilterDef(FittingFilters::polyval2D, FittingFilters::polyval2DParams, polyval2DDoc);
     m_filterList.insert("polyval2D", filter);
 
-    filter = new FilterDef(FittingFilters::polyval2DSinglePoints, FittingFilters::polyval2DSinglePointsParams, tr(polyval2DSinglePointsDoc));
+    filter = new FilterDef(FittingFilters::polyval2DSinglePoints, FittingFilters::polyval2DSinglePointsParams, polyval2DSinglePointsDoc);
     m_filterList.insert("polyval2DSinglePoints", filter);
 
-    filter = new FilterDef(FittingFilters::fitPolynom1D_Z, FittingFilters::fitPolynom1D_ZParams, tr(fitPolynom1D_ZDoc));
+    filter = new FilterDef(FittingFilters::fitPolynom1D_Z, FittingFilters::fitPolynom1D_ZParams, fitPolynom1D_ZDoc);
     m_filterList.insert("fitPolynom1D_Z", filter);
 
-    filter = new FilterDef(FittingFilters::getInterpolatedValues, FittingFilters::getInterpolatedValuesParams, tr(getInterpolatedValuesDoc));
+    filter = new FilterDef(FittingFilters::getInterpolatedValues, FittingFilters::getInterpolatedValuesParams, getInterpolatedValuesDoc);
     m_filterList.insert("getInterpolatedValues", filter);
 
-    filter = new FilterDef(FittingFilters::subtract1DRegressionPolynom, FittingFilters::subtract1DRegressionPolynomParams, tr(subtract1DRegressionPolynomDoc));
+    filter = new FilterDef(FittingFilters::subtract1DRegressionPolynom, FittingFilters::subtract1DRegressionPolynomParams, subtract1DRegressionPolynomDoc);
     m_filterList.insert("subtract1DRegression", filter);
     
-
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }

@@ -27,11 +27,14 @@ PiezosystemJena_NV40_1Interface::PiezosystemJena_NV40_1Interface()
 
     m_description = QObject::tr("Piezosystem Jena NV40/1 CLE");
 
-    char docstring[] = \
+/*    char docstring[] = \
 "The PiezosystemJena is an itom-plugin, which can be used to communicate with the one-axis piezo controller Piezosystem Jena NV40/1 CLE.\n\
 This system needs a serial port. The parameters are set automatically during initialization.\n\
 It is initialized by actuator(\"PiezosystemJena_NV40_1\", serialInstance).";
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr("The PiezosystemJena is an itom-plugin, which can be used to communicate with the one-axis piezo controller Piezosystem Jena NV40/1 CLE.\n\
+This system needs a serial port. The parameters are set automatically during initialization.\n\
+It is initialized by actuator(\"PiezosystemJena_NV40_1\", serialInstance).");
 
     m_author = "V. Ferreras-Paz, M. Gronle, W. Lyda, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -226,7 +229,7 @@ ito::RetVal PiezosystemJena_NV40_1::setParam(QSharedPointer<ito::ParamBase> val,
                 readString(answer, len, 1500);
                 if (answer == "only OL mode\r\n")
                 {
-                    retValue += ito::RetVal(ito::retError, 0, "closed loop not possible. No sensor connected.");
+                    retValue += ito::RetVal(ito::retError, 0, tr("closed loop not possible. No sensor connected.").toLatin1().data());
                     it->setVal<int>(0);
                 }
                 else
@@ -242,7 +245,7 @@ ito::RetVal PiezosystemJena_NV40_1::setParam(QSharedPointer<ito::ParamBase> val,
                 readString(answer, len, 1500);
                 if (answer == "only OL mode\r\n")
                 {
-                    retValue += ito::RetVal(ito::retError, 0, "closed loop not possible. No sensor connected.");
+                    retValue += ito::RetVal(ito::retError, 0, tr("closed loop not possible. No sensor connected.").toLatin1().data());
                     it->setVal<int>(0);
                 }
                 else
@@ -321,12 +324,12 @@ ito::RetVal PiezosystemJena_NV40_1::init(QVector<ito::ParamBase> *paramsMand, QV
         m_pSer = (ito::AddInDataIO *)(*paramsMand)[0].getVal<void *>();
 
         //set serial settings
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud",ito::ParamBase::Int,9600)),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits",ito::ParamBase::Int,8)),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity",ito::ParamBase::Int,0)),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",ito::ParamBase::Int,1)),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,33)),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\r")),NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 9600)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Int, 0)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 33)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, "\r")), NULL);
         m_receiveEndline = "\r\n";
     }
 
@@ -363,6 +366,7 @@ ito::RetVal PiezosystemJena_NV40_1::init(QVector<ito::ParamBase> *paramsMand, QV
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail close method which is called before that this instance is deleted by the PiezosystemJenaInterface
     notice that this method is called in the actual thread of this instance.
@@ -381,6 +385,7 @@ ito::RetVal PiezosystemJena_NV40_1::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -414,6 +419,7 @@ ito::RetVal PiezosystemJena_NV40_1::calib(const QVector<int> /*axis*/, ItomShare
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -447,6 +453,7 @@ ito::RetVal PiezosystemJena_NV40_1::setOrigin(QVector<int> /*axis*/, ItomSharedS
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -469,6 +476,7 @@ ito::RetVal PiezosystemJena_NV40_1::getStatus(QSharedPointer<QVector<int> > stat
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -510,6 +518,7 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const int axis, QSharedPointer<double
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -546,9 +555,9 @@ ito::RetVal PiezosystemJena_NV40_1::getPos(const QVector<int> axis, QSharedPoint
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail Set the absolute position of a one axis spezified by "axis" to the position "pos" . The value in device independet in mm. 
@@ -818,7 +827,7 @@ ito::RetVal PiezosystemJena_NV40_1::waitForDone(const int timeoutMS, const QVect
 
         if (!done && timer.elapsed() > timeoutMS)
         {
-            retVal += ito::RetVal(ito::retError, 0, "timeout while waiting for end of movement");
+            retVal += ito::RetVal(ito::retError, 0, tr("timeout while waiting for end of movement").toLatin1().data());
             replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorTimeout);
             sendStatusUpdate(true);
         }
@@ -830,7 +839,6 @@ ito::RetVal PiezosystemJena_NV40_1::waitForDone(const int timeoutMS, const QVect
 
     return retVal;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail This slot is triggerd by the request signal from the dockingwidged dialog to update the position after ever positioning command.
@@ -862,7 +870,6 @@ ito::RetVal PiezosystemJena_NV40_1::requestStatusAndPosition(bool sendCurrentPos
     }
 
     return retval;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -965,25 +972,25 @@ ito::RetVal PiezosystemJena_NV40_1::readString(QByteArray &result, int &len, int
             switch (reg.cap(1).toInt())
             {
             case 1:
-                retValue += ito::RetVal(ito::retError,0,"unknown command");
+                retValue += ito::RetVal(ito::retError, 0, tr("unknown command").toLatin1().data());
                 break;
             case 2:
-                retValue += ito::RetVal(ito::retError,0,"to many characters in the command");
+                retValue += ito::RetVal(ito::retError, 0, tr("to many characters in the command").toLatin1().data());
                 break;
             case 3:
-                retValue += ito::RetVal(ito::retError,0,"to many characters in the parameter");
+                retValue += ito::RetVal(ito::retError, 0, tr("to many characters in the parameter").toLatin1().data());
                 break;
             case 4:
-                retValue += ito::RetVal(ito::retError,0,"to many parameter");
+                retValue += ito::RetVal(ito::retError, 0, tr("to many parameter").toLatin1().data());
                 break;
             case 5:
-                retValue += ito::RetVal(ito::retError,0,"wrong character in parameter");
+                retValue += ito::RetVal(ito::retError, 0, tr("wrong character in parameter").toLatin1().data());
                 break;
             case 6:
-                retValue += ito::RetVal(ito::retError,0,"wrong separator");
+                retValue += ito::RetVal(ito::retError, 0, tr("wrong separator").toLatin1().data());
                 break;
             case 7:
-                retValue += ito::RetVal(ito::retError,0,"overload");
+                retValue += ito::RetVal(ito::retError, 0, tr("overload").toLatin1().data());
                 break;
             }
         }
@@ -1014,6 +1021,7 @@ ito::RetVal PiezosystemJena_NV40_1::serialSendCommand(const QByteArray &command)
         waitCondition.wait(&mutex,m_delayAfterSendCommandMS);
         mutex.unlock();
     }
+
     return retVal;
 }
 
@@ -1122,7 +1130,7 @@ ito::RetVal PiezosystemJena_NV40_1::identifyAndInitializeSystem(QString &identif
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError,0,"identification %s does not fit to required identification string NV1CL Vxxxx", answer.data());
+            retval += ito::RetVal::format(ito::retError, 0, tr("identification %s does not fit to required identification string NV1CL Vxxxx").toLatin1().data(), answer.data());
         }
     }
 

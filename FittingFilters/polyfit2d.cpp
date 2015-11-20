@@ -30,7 +30,7 @@
 using namespace ito;
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* FittingFilters::fitPolynom2DDoc = "Fit a polynomial p(x,y) of order (orderX, orderY) in x- and y-direction. \n\
+/*static*/ const QString FittingFilters::fitPolynom2DDoc = QObject::tr("Fit a polynomial p(x,y) of order (orderX, orderY) in x- and y-direction. \n\
 \n\
 The fit function always looks like this: \n\
 \n\
@@ -39,7 +39,8 @@ f(x,y) = sum_{m=0}^{M} sum_{n=0}^{N} ( p_nm * x^n * y^m ) \n\
 This definition is slightly different from the polynomial fitted by the similar function 'polyfitWeighted2d'. \n\
 \n\
 Puts the fitted points into the data object 'fittedImage'. This method does not weight the input values and does not \n\
-return the coefficients for the polynomial. Use polyfitWeighted2d if you want to have an enhanced fit.";
+return the coefficients for the polynomial. Use polyfitWeighted2d if you want to have an enhanced fit.");
+
 ito::RetVal FittingFilters::fitPolynom2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     RetVal retval = retOk;
@@ -71,9 +72,9 @@ ito::RetVal FittingFilters::fitPolynom2DParams(QVector<ito::Param> *paramsMand, 
 
     *paramsOut << Param("sigma", ParamBase::Double | ParamBase::Out, 0.0, ito::DoubleMeta::all(), tr("Variance value *sigma* of polynomial fit.").toLatin1().data());
 
-
     return retval;
 }
+
 //---------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -136,8 +137,15 @@ ito::RetVal FittingFilters::fitPolynom2D(QVector<ito::ParamBase> *paramsMand, QV
     x = new int[xsize];
     y = new int[ysize];
 
-    for(i=0;i<xsize;i++) x[i] = i;
-    for(i=0;i<ysize;i++) y[i] = i;
+    for (i=0;i<xsize;i++)
+    {
+        x[i] = i;
+    }
+
+    for (i=0;i<ysize;i++)
+    {
+        y[i] = i;
+    }
 
     retval += polyfit(x, y, &inputImage, &outputImage, gradX, gradY, xsize, ysize, &Sigma, &koeff, fillNaNValues > 0);
 
@@ -299,7 +307,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     dy = 1;
 
     // Berechnung der NormX mit der Funktion OrthPolAuswerten ---------------- 
-    for(n=0; n < koeff->sizeX; n++)
+    for (n=0; n < koeff->sizeX; n++)
     {
         if (n == 0) 
         {
@@ -312,7 +320,7 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
         
         OrthPolAuswerten(koeff->sizeX, koeff->gradX, tx, Werte, koeff->alphaX, koeff->betaX, koeff->gammaX);
      
-        for(i=0 ; i <= koeff->gradX ; i++)
+        for (i=0 ; i <= koeff->gradX ; i++)
         {
             NormX[i]+=Werte[i]*Werte[i];
         }
@@ -326,16 +334,14 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
         goto Error;
     }
 
-    
-
-    for(m=0 ; m < koeff->sizeY ; m++)
+    for (m=0 ; m < koeff->sizeY ; m++)
     {
         // Initialisierung der Zeilensumme ------------------------------------ 
         memset(ZeilenSumme, 0, (koeff->gradX+1) * sizeof(double));
         lineBuf = dblData->ptr< double >(m);
 
         // Berechnung der Zeilensumme  ---------------------------------------- 
-        for(n= 0 ; n < koeff->sizeX ; n++)
+        for (n= 0 ; n < koeff->sizeX ; n++)
         {
             if (n == 0) 
             {
@@ -352,14 +358,14 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
             //nicht so tolle version (verfaelscht das ergebnis durch addition von 0.0 bei nan-werten - kommentar marc gronle, interpolation waere besser, aber aufwand)
             if (qIsFinite(buf))
             {
-                for(i=0 ; i <= koeff->gradX ; i++)
+                for (i=0 ; i <= koeff->gradX ; i++)
                 {
                     ZeilenSumme[i]+=Werte[i]*buf;
                 }
             }
             else
             {
-                for(i=0 ; i <= koeff->gradX ; i++)
+                for (i=0 ; i <= koeff->gradX ; i++)
                 {
                     ZeilenSumme[i]+=0.0;
                 }
@@ -378,15 +384,15 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 
         OrthPolAuswerten(koeff->sizeY, koeff->gradY, ty, Werte, koeff->alphaY, koeff->betaY, koeff->gammaY);
 
-        for(j=0 ; j <= koeff->gradY ; j++)
+        for (j=0 ; j <= koeff->gradY ; j++)
         {
             NormY[j]+=Werte[j]*Werte[j];
         }
 
         // Berechnung von Sum -------------------------------------------------
-        for(i=0 ; i <= koeff->gradX ; i++)
+        for (i=0 ; i <= koeff->gradX ; i++)
         {
-            for(j=0 ; j <= koeff->gradY ; j++)
+            for (j=0 ; j <= koeff->gradY ; j++)
             {
                 Sum[i*(koeff->gradY+1)+j]+=ZeilenSumme[i]*Werte[j];
             }
@@ -394,18 +400,18 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
     }
 
     // Weitere Berechnungen mit Sum ------------------------------------------
-    for(i=0 ; i <= koeff->gradX ; i++)
+    for (i=0 ; i <= koeff->gradX ; i++)
     {
-        for(j=0 ; j <= koeff->gradY ; j++)
+        for (j=0 ; j <= koeff->gradY ; j++)
         {
             Sum[i*(koeff->gradY+1)+j]/=NormX[i]*NormY[j];
         }
     }
 
     // Uebergabe der Koeffizienten an die Structure 
-    for(i=0 ; i <= koeff->gradX ; i++)
+    for (i=0 ; i <= koeff->gradX ; i++)
     {
-        for(j=0 ; j <= koeff->gradY ; j++)
+        for (j=0 ; j <= koeff->gradY ; j++)
         {
             *(koeff->b + i*(koeff->gradY+1) + j)=Sum[ i*(koeff->gradY+1) + j];
         }
@@ -416,14 +422,14 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
 
     if (fillNaNValues)
     {
-        for(m=0 ; m < koeff->sizeY ; m++)
+        for (m=0 ; m < koeff->sizeY ; m++)
         {
             lineBuf = dblData->ptr< double >(m);
             lineBufOutput = dblFittedData->ptr< double >(m);
             ty=(y[m]-y[0])/dy;
             //STATUSBAR(1.0*n/koeff->AnzahlX);
 
-            for(n=0 ; n < koeff->sizeX ; n++)
+            for (n=0 ; n < koeff->sizeX ; n++)
             {
                 tx=(x[n]-x[0])/dx;
                 z=Fitwerte(tx, ty, koeff);
@@ -440,19 +446,19 @@ ito::RetVal FittingFilters::polyfit(int *x, int *y, cv::Mat *dblData, cv::Mat *d
                     lineBufOutput[n] = z;
                     //*sigma += 0.0;
                 }
-             }
+            }
         }
     }
     else
     {
-        for(m=0 ; m < koeff->sizeY ; m++)
+        for (m = 0 ; m < koeff->sizeY ; m++)
         {
             lineBuf = dblData->ptr< double >(m);
             lineBufOutput = dblFittedData->ptr< double >(m);
             ty=(y[m]-y[0])/dy;
             //STATUSBAR(1.0*n/koeff->AnzahlX);
 
-            for(n=0 ; n < koeff->sizeX ; n++)
+            for (n = 0 ; n < koeff->sizeX ; n++)
             {
                 tx=(x[n]-x[0])/dx;
                 z=Fitwerte(tx, ty, koeff);
@@ -491,7 +497,7 @@ Error:
     return retValue;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, double *Beta, double *Gamma)
 {
     int     i, j, k;
@@ -511,7 +517,7 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
         return ito::RetVal(retError, 1000, tr("error while allocating memory").toLatin1().data());
     }
 
-    for( i=0 ; i<=PolyGrad ; i++)  // laeuft von 0 bis Grad +1
+    for ( i=0 ; i<=PolyGrad ; i++)  // laeuft von 0 bis Grad +1
     {
         *(P + i*(PolyGrad+1) )=1;      // P[i][0] = 1 
         for (j=1; j<=PolyGrad; j++)
@@ -522,7 +528,6 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
     }
 
     // *** Berechnung der Stirlingzahlen (11.13) ****************************
-    
 
     for (i=0; i<=PolyGrad; i++)
     {
@@ -553,7 +558,6 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
     P (t) = Q[n][n] t  + Q[n][n-1] t    + ... + Q[n,0]
      n
     ************************************************/
-    
 
     // Matrixmultiplikation 
     for (i=0; i<=PolyGrad; i++)
@@ -576,7 +580,7 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
      die ersten drei Koeffizienten des Polynoms Pn richtig dargestellt werden,
      die anderen sind dann automatisch richtig.
     ***************************************************/
-    for (i=2; i<=PolyGrad; i++)
+    for (i = 2; i<=PolyGrad; i++)
     {
         if ( ( *(Q + (i-1)*(PolyGrad+1) + i-1) != 0) && ( *(Q + (i-2)*(PolyGrad+1) + i-2) != 0))
         {
@@ -603,6 +607,7 @@ ito::RetVal FittingFilters::calcKoeff(int anzahl,int PolyGrad, double *Alpha, do
     return retOk;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void FittingFilters::OrthPolAuswerten(int anzahl, int PolyGrad, double t, double *W, double *alpha,double *beta, double *gamma)
 {
     int i;
@@ -610,15 +615,16 @@ void FittingFilters::OrthPolAuswerten(int anzahl, int PolyGrad, double t, double
 
     if (PolyGrad > 0)
     {
-        W[1] = 1.0 - 2.0*t/(anzahl-1);
+        W[1] = 1.0 - 2.0 * t / (anzahl - 1);
     }
 
-    for (i=2; i<=PolyGrad;i++)
+    for (i = 2; i <= PolyGrad; i++)
     {
-        W[i] = (alpha[i]*t + beta[i])*W[i-1] + gamma[i]*W[i-2];
+        W[i] = (alpha[i] * t + beta[i]) * W[i - 1] + gamma[i] * W[i - 2];
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 double FittingFilters::Fitwerte(double tx, double ty, struct Koeffizienten *koeff)
 {
     int      n, m;        // Zaehlvariable
@@ -634,9 +640,9 @@ double FittingFilters::Fitwerte(double tx, double ty, struct Koeffizienten *koef
     OrthPolAuswerten(koeff->sizeY, koeff->gradY, ty, Py, koeff->alphaY, koeff->betaY, koeff->gammaY);
 
     // --------- Berechnung des Funktionswertes nach Gl. 11.8 ----------------
-    for(n=0, z=0.0 ; n <= koeff->gradX ; n++)
+    for (n=0, z=0.0 ; n <= koeff->gradX ; n++)
     {
-        for(m=0 ; m <= koeff->gradY ; m++)
+        for (m=0 ; m <= koeff->gradY ; m++)
         {
             z+=koeff->b[n*(koeff->gradY+1)+m] * Px[n] * Py[m];
         }

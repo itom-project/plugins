@@ -63,11 +63,14 @@ ST8SMC4USBInterface::ST8SMC4USBInterface()
     m_description = QObject::tr("Standa8SMC4USB");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "Standa8SMC4USB is an itom-plugin, which can be used to communicate with the STANDA controllers 8SMC4-USB.\
 \n\
 It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.";
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr("Standa8SMC4USB is an itom-plugin, which can be used to communicate with the STANDA controllers 8SMC4-USB.\
+\n\
+It has been tested with one connected controller 8SMC4-USB-B8-1 and one axis.");
 
     m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;

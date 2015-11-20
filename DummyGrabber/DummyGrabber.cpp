@@ -126,7 +126,7 @@ DummyGrabberInterface::DummyGrabberInterface()
     setObjectName("DummyGrabber");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "The DummyGrabber is a virtual camera which emulates a camera with white noise. \n\
 \n\
 The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
@@ -135,10 +135,21 @@ image is controlled using the parameter 'roi' if the sizes stay within the limit
 \n\
 You can initialize this camera either as a 2D sensor with a width and height >= 4 or as line camera whose height is equal to 1. \n\
 \n\
-This plugin can also be used as template for other grabber.";
+This plugin can also be used as template for other grabber.";*/
    
     m_description = QObject::tr("A virtual white noise grabber");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(
+"The DummyGrabber is a virtual camera which emulates a camera with white noise. \n\
+\n\
+The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). \
+The noise is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The real size of the camera \
+image is controlled using the parameter 'roi' if the sizes stay within the limits given by the size of the camera chip.\n\
+\n\
+You can initialize this camera either as a 2D sensor with a width and height >= 4 or as line camera whose height is equal to 1. \n\
+\n\
+This plugin can also be used as template for other grabber.");
+
     m_author = "C. Kohler, W. Lyda, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = CREATEVERSION(1,4,0);
@@ -157,8 +168,6 @@ This plugin can also be used as template for other grabber.";
     param = ito::Param("bpp", ito::ParamBase::Int, 8, new ito::IntMeta(8, 30, 2), tr("Bits per Pixel, usually 8-16bit grayvalues").toLatin1().data());
     m_initParamsOpt.append(param);
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
@@ -530,7 +539,6 @@ ito::RetVal DummyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
                 }
             }
 
-
             retValue += checkData(); //check if image must be reallocated
 
             if (running)
@@ -545,12 +553,10 @@ ito::RetVal DummyGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShare
         }
     }
 
-
     if (!retValue.containsError())
     {
         emit parametersChanged(m_params);
     }
-
 
     if (waitCond)
     {
@@ -617,7 +623,6 @@ ito::RetVal DummyGrabber::stopDevice(ItomSharedSemaphore *waitCond)
         retValue += ito::RetVal(ito::retWarning, 1001, tr("stopDevice of DummyGrabber can not be executed, since camera has not been started.").toLatin1().data());
         setGrabberStarted(0);
     }
-
 
     if (waitCond)
     {

@@ -96,7 +96,6 @@
 #include <pcl/features/impl/normal_3d_omp.hpp>
 #include <pcl/features/impl/principal_curvatures.hpp>
 
-
 int PclTools::nthreads = 2;
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -120,7 +119,7 @@ PclToolsInterface::PclToolsInterface()
     m_type = ito::typeAlgo;
     setObjectName("PclTools");
     
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin contains methods for filtering, transforming, saving and loading \n\
 point clouds and polygon meshes. Most methods are wrappers for functions provided \n\
 by the open source project PointCloudLibrary (pcl). The function calls are usually \n\
@@ -134,9 +133,23 @@ This plugin also covers the methods for loading and saving point clouds and poly
 meshes to common formats like pcd, ply, stl, obj... Once the plugin is loaded \n\
 itom in general is also able to load and save such structures using the methods provided \n\
 by this plugin.";
-
+*/
     m_description = tr("Filters and methods for pointClouds and polygonMeshes");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr("This plugin contains methods for filtering, transforming, saving and loading \n\
+point clouds and polygon meshes. Most methods are wrappers for functions provided \n\
+by the open source project PointCloudLibrary (pcl). The function calls are usually \n\
+implemented for the cloud types supported by the itom classes itom.pointCloud \n\
+and itom.polygonMesh (XYZ,XYZI,XYZRGBA,XYZNormals...). \n\
+\n\
+This library uses also methods from the current pcl version 1.7.1, however also \n\
+compiles with older versions. In this case some methods are not compiled. \n\
+\n\
+This plugin also covers the methods for loading and saving point clouds and polygon \n\
+meshes to common formats like pcd, ply, stl, obj... Once the plugin is loaded \n\
+itom in general is also able to load and save such structures using the methods provided \n\
+by this plugin.");
+
     m_author = "M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -165,12 +178,13 @@ PclTools::PclTools() : AddInAlgo()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //ItomDoc_STRVAR(savePointCloud_doc, "saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii)");
-const char* PclTools::savePointCloudDOC = "\n\
+const QString PclTools::savePointCloudDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::savePointCloudParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -391,11 +405,11 @@ ito::RetVal PclTools::savePointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::loadPointCloudDOC = "\n\
+const QString PclTools::loadPointCloudDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::loadPointCloudParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -504,7 +518,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError,0,"file '%s' does not contain point cloud data.", filename_.data());
+                retval += ito::RetVal::format(ito::retError, 0, tr("file '%s' does not contain point cloud data.").toLatin1().data(), filename_.data());
             }
         }        
 #else
@@ -669,9 +683,11 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *PclTools::saveVTKImageDataDOC = "saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image\n\
+/*static*/ const QString PclTools::saveVTKImageDataDOC = tr("saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image\n\
 \n\
-This file format allows displaying volume data from the given 3D data object for instance using ParaView.";
+This file format allows displaying volume data from the given 3D data object for instance using ParaView.");
+
+//------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::saveVTKImageDataParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -695,7 +711,6 @@ This file format allows displaying volume data from the given 3D data object for
     paramsOpt->append(ito::Param("scalarFieldName", ito::ParamBase::String, "scalars", tr("name of scalar field, e.g. 'scalars' (zero values will be transparent), 'ImageScalars' (zero values will be displayed)...").toLatin1().data()));
     paramsOpt->append(ito::Param("scalarThreshold", ito::ParamBase::Int, 0, std::numeric_limits<ito::uint16>::max(), 0, tr("values <= threshold will be set to 0 (transparent values for scalar field name 'scalars')").toLatin1().data()));
     
-
     return retval;
 }
 
@@ -718,7 +733,7 @@ This file format allows displaying volume data from the given 3D data object for
             dobj = apiCreateFromDataObject(input, 3, ito::tUInt16, sizeLimits, &retval);
             break;
         default:
-            retval += ito::RetVal(ito::retError, 0, "dataObject must be uint8 or uint16");
+            retval += ito::RetVal(ito::retError, 0, tr("dataObject must be uint8 or uint16").toLatin1().data());
             break;
         }
     }
@@ -733,7 +748,7 @@ This file format allows displaying volume data from the given 3D data object for
             dobj = apiCreateFromDataObject(input, 2, ito::tUInt16, sizeLimits, &retval);
             break;
         default:
-            retval += ito::RetVal(ito::retError, 0, "dataObject must be uint8 or uint16");
+            retval += ito::RetVal(ito::retError, 0, tr("dataObject must be uint8 or uint16").toLatin1().data());
             break;
         }
     }
@@ -744,7 +759,7 @@ This file format allows displaying volume data from the given 3D data object for
 
     if (filename.isEmpty())
     {
-        retval += ito::RetVal(ito::retError, 0, "filename is empty");
+        retval += ito::RetVal(ito::retError, 0, tr("filename is empty").toLatin1().data());
     }
     else
     {
@@ -872,11 +887,11 @@ This file format allows displaying volume data from the given 3D data object for
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::savePolygonMeshDOC = "\n\
+const QString PclTools::savePolygonMeshDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::savePolygonMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -967,11 +982,11 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::loadPolygonMeshDOC = "\n\
+const QString PclTools::loadPolygonMeshDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::loadPolygonMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -985,7 +1000,7 @@ ito::RetVal PclTools::loadPolygonMeshParams(QVector<ito::Param> *paramsMand, QVe
     }
 
     paramsMand->append(ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("loaded polygon mesh").toLatin1().data()));
-    paramsMand->append(ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", "complete filename (type is read by suffix"));
+    paramsMand->append(ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, "", tr("complete filename (type is read by suffix").toLatin1().data()));
     
     paramsOpt->append(ito::Param("type", ito::ParamBase::String, "", tr("type ('obj','vtk','stl','ply', 'auto' [default, check suffix of filename])").toLatin1().data()));
     
@@ -1087,11 +1102,11 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::transformAffineDOC = "\n\
+const QString PclTools::transformAffineDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::transformAffineParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -1218,11 +1233,11 @@ const char* PclTools::transformAffineDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclEstimateNormalsDOC = "\n\
+const QString PclTools::pclEstimateNormalsDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclEstimateNormalsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -1242,6 +1257,7 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
     paramsOpt->clear();
     paramsOpt->append(ito::Param("kSearch", ito::ParamBase::Int | ito::ParamBase::In, 3, 10000, 50, tr("the number of k nearest neighbors to use for the feature estimation [default: 50]").toLatin1().data()));
     paramsOpt->append(ito::Param("viewPoint", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("optional camera view point (if given it must have three entries [x,y,z], [default: not used])").toLatin1().data()));
+
     return retval;
 }
 
@@ -1405,14 +1421,12 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
     return retval;
 }
 
-
-
 ////------------------------------------------------------------------------------------------------------------------------------
-//const char* PclTools::pclEstimateMaxCurvatureDOC = "estimates the curvature of a given point cloud with normal vectors based on nearest neighbours. \n\
+//const QString PclTools::pclEstimateMaxCurvatureDOC = tr("estimates the curvature of a given point cloud with normal vectors based on nearest neighbours. \n\
 //\n\
 //The nearest neighbours are determined by a flann based kd-tree search that can be parametrized by the number of nearest neighbours (kSearch) \n\
 //and / or the maximum distance to nearest neighbours (searchRadius). Both values can be considered, too. The maximum curvature is set to the\n\
-//curvature value of the input 'pointCloudNormalIn'.";
+//curvature value of the input 'pointCloudNormalIn'.");
 //
 ////----------------------------------------------------------------------------------------------------------------------------------
 ///*static*/ ito::RetVal PclTools::pclEstimateMaxCurvatureParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -1515,11 +1529,11 @@ const char* PclTools::pclEstimateNormalsDOC = "\n\
 //}
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclRemoveNaNDOC = "\n\
+const QString PclTools::pclRemoveNaNDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclRemoveNaNParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -1634,11 +1648,11 @@ const char* PclTools::pclRemoveNaNDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclPassThroughDOC = "\n\
+const QString PclTools::pclPassThroughDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclPassThroughParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -1800,10 +1814,10 @@ const char* PclTools::pclPassThroughDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclCropBoxDOC = "pclCropBox is a filter that allows the user to filter all the data inside of a given box.\n\
+const QString PclTools::pclCropBoxDOC = tr("pclCropBox is a filter that allows the user to filter all the data inside of a given box.\n\
 \n\
 Indicate the minimum and maximum values in x,y and z direction for the box and optionally tranlate and rotate the box to \n\
-adjust its position and orientation. The rotation vector are the euler angles rx, ry and rz.";
+adjust its position and orientation. The rotation vector are the euler angles rx, ry and rz.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclCropBoxParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -2020,11 +2034,11 @@ adjust its position and orientation. The rotation vector are the euler angles rx
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclVoxelGridDOC = "\n\
+const QString PclTools::pclVoxelGridDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclVoxelGridParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -2211,11 +2225,11 @@ const char* PclTools::pclVoxelGridDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclStatisticalOutlierRemovalDOC = "\n\
+const QString PclTools::pclStatisticalOutlierRemovalDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclStatisticalOutlierRemovalParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -2363,11 +2377,11 @@ const char* PclTools::pclStatisticalOutlierRemovalDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclRandomSampleDOC = "\n\
+const QString PclTools::pclRandomSampleDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclRandomSampleParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -2496,11 +2510,11 @@ const char* PclTools::pclRandomSampleDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclGetMinMax3DDOC = "\n\
+const QString PclTools::pclGetMinMax3DDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclGetMinMax3DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -2631,11 +2645,11 @@ const char* PclTools::pclGetMinMax3DDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclGetPercentageThresholdDOC = "\n\
+const QString PclTools::pclGetPercentageThresholdDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclGetPercentageThresholdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -2829,11 +2843,11 @@ const char* PclTools::pclGetPercentageThresholdDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclGetHistogramDOC = "\n\
+const QString PclTools::pclGetHistogramDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclGetHistogramParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -2852,7 +2866,6 @@ const char* PclTools::pclGetHistogramDOC = "\n\
     paramsMand->append(ito::Param("minValue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<float>::max(), 4095.0, tr("lower boundary of the uniformly distributed histogram").toLatin1().data()));
     paramsMand->append(ito::Param("maxValue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<float>::max(), 4095.0, tr("upper boundary of the uniformly distributed histogram").toLatin1().data()));
     paramsMand->append(ito::Param("steps", ito::ParamBase::Int | ito::ParamBase::In, 1, std::numeric_limits<int>::max(), 4096, tr("number of discrete fields in the histogram").toLatin1().data()));
-    
     paramsMand->append(ito::Param("histogram", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("The histogram is a int32 data object with size [1 x steps].").toLatin1().data()));
     
     paramsOpt->append(ito::Param("uniformDistribution", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("provide a dataObject if you want to access the uniform percentage distribution. The resulting data object is of type float32 and has the size [1 x 100]. The value at index j gives the histogram value, where j% of the values lies below that value.").toLatin1().data()));
@@ -3075,11 +3088,11 @@ const char* PclTools::pclGetHistogramDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclCylinderClipper3DDOC = "\n\
+const QString PclTools::pclCylinderClipper3DDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclCylinderClipper3DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -3204,11 +3217,11 @@ const char* PclTools::pclCylinderClipper3DDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclPCADOC = "\n\
+const QString PclTools::pclPCADOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclPCAParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -3333,11 +3346,11 @@ const char* PclTools::pclPCADOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclPolygonMeshFromIndicesDOC = "\n\
+const QString PclTools::pclPolygonMeshFromIndicesDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclPolygonMeshFromIndicesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -3467,11 +3480,11 @@ const char* PclTools::pclPolygonMeshFromIndicesDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclMeshTriangulationDOC = "\n\
+const QString PclTools::pclMeshTriangulationDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclMeshTriangulationParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -3518,11 +3531,11 @@ const char* PclTools::pclMeshTriangulationDOC = "\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclSampleToDataObjectDOC = "\n\
+const QString PclTools::pclSampleToDataObjectDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclSampleToDataObject(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
@@ -3616,10 +3629,10 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
     switch(pointCloud->getType())
     {
     default:
-        retval += ito::RetVal(ito::retError, 0, "point cloud type not supported be given");
+        retval += ito::RetVal(ito::retError, 0, tr("point cloud type not supported be given").toLatin1().data());
         break;
     case ito::pclInvalid:
-        retval += ito::RetVal(ito::retError, 0, "a valid organized point cloud must be given");
+        retval += ito::RetVal(ito::retError, 0, tr("a valid organized point cloud must be given").toLatin1().data());
         break;
     case ito::pclXYZ: //pcl::PointXYZ, toPointXYZ
         {
@@ -3780,7 +3793,6 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
             }
             else
             {
-
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
                 #endif
@@ -3825,15 +3837,16 @@ const char* PclTools::pclSampleToDataObjectDOC = "\n\
     paramsMand->append(ito::Param("height", ito::ParamBase::Int | ito::ParamBase::In , 1, std::numeric_limits<int>::max(), 1024, tr("Output dataObject with z-Values").toLatin1().data()));
     paramsOpt->append(ito::Param("intensityMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output dataObject with intensity-Values").toLatin1().data()));
     paramsOpt->append(ito::Param("curvatureMap", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output dataObject with curvature-Values").toLatin1().data()));
+
     return retval;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclOrganizedFastMeshDOC = "\n\
+const QString PclTools::pclOrganizedFastMeshDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::pclOrganizedFastMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -3883,7 +3896,7 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
     if (psRows != 1 || psCols != 1)
     {
-        return ito::RetVal(ito::retError, 0, "with a PCL < 1.7.0 trianglePixelSizeRows and trianglePixelSizeColumns must be 1");
+        return ito::RetVal(ito::retError, 0, tr("with a PCL < 1.7.0 trianglePixelSizeRows and trianglePixelSizeColumns must be 1").toLatin1().data());
     }
 #endif
 
@@ -3907,7 +3920,7 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, "wrong triangulationType parameter.");
+        return ito::RetVal(ito::retError, 0, tr("wrong triangulationType parameter.").toLatin1().data());
     }
 
     if (polygonMesh->valid() == false)
@@ -3919,18 +3932,18 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
 
     if (pointCloud == NULL || polygonMesh == NULL)
     {
-        return ito::RetVal(ito::retError, 0, "the parameters organizedCloud and meshOut must not be NULL");
+        return ito::RetVal(ito::retError, 0, tr("the parameters organizedCloud and meshOut must not be NULL").toLatin1().data());
     }
 
     if (pointCloud->getType() != ito::pclInvalid && pointCloud->isOrganized() == false)
     {
-        return ito::RetVal(ito::retError, 0, "the given point cloud must be organized. The height property of an organized point cloud is bigger than one.");
+        return ito::RetVal(ito::retError, 0, tr("the given point cloud must be organized. The height property of an organized point cloud is bigger than one.").toLatin1().data());
     }
 
     switch(pointCloud->getType())
     {
     case ito::pclInvalid:
-        retval += ito::RetVal(ito::retError, 0, "a valid organized point cloud must be given");
+        retval += ito::RetVal(ito::retError, 0, tr("a valid organized point cloud must be given").toLatin1().data());
         break;
     case ito::pclXYZ: //pcl::PointXYZ, toPointXYZ
         {
@@ -4023,11 +4036,11 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclSimplifyMeshDOC = "\n\
+const QString PclTools::pclSimplifyMeshDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::pclSimplifyMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -4056,19 +4069,19 @@ ito::RetVal PclTools::pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVect
     ito::RetVal retval = ito::retOk;
 
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
-    retval += ito::RetVal(ito::retError, 0, "Only tested / implemented for version 1.7.0");
+    retval += ito::RetVal(ito::retError, 0, tr("Only tested / implemented for version 1.7.0").toLatin1().data());
 #else
     ito::PCLPolygonMesh *meshIn = (ito::PCLPolygonMesh*)(*paramsMand)[0].getVal<void*>();
     ito::PCLPolygonMesh *meshOut = (ito::PCLPolygonMesh*)(*paramsMand)[1].getVal<void*>();
 
     if (meshIn == NULL || meshOut == NULL)
     {
-        return ito::RetVal(ito::retError, 0, "the parameters meshIn and meshOut must not be NULL.");
+        return ito::RetVal(ito::retError, 0, tr("the parameters meshIn and meshOut must not be NULL.").toLatin1().data());
     }
 
     if (meshIn->valid() == false)
     {
-        return ito::RetVal(ito::retError, 0, "the input mesh must be valid.");
+        return ito::RetVal(ito::retError, 0, tr("the input mesh must be valid.").toLatin1().data());
     }
 
     if (meshOut->valid() == false)
@@ -4087,11 +4100,11 @@ ito::RetVal PclTools::pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclPoissonDOC = "\n\
+const QString PclTools::pclPoissonDOC = tr("\n\
 \n\
 \n\
 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PclTools::pclPoissonParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -4121,7 +4134,7 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
     ito::RetVal retval = ito::retOk;
 
 #if PCL_VERSION_COMPARE(<, 1, 7, 0)
-    retval += ito::RetVal(ito::retError, 0, "Only tested / implemented for version 1.7.0");
+    retval += ito::RetVal(ito::retError, 0, tr("Only tested / implemented for version 1.7.0").toLatin1().data());
     
 #else
     ito::PCLPointCloud *cloudIn = (ito::PCLPointCloud*)(*paramsMand)[0].getVal<void*>();
@@ -4132,12 +4145,12 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
 
     if (cloudIn == NULL || meshOut == NULL)
     {
-        return ito::RetVal(ito::retError, 0, "the parameters meshIn and meshOut must not be NULL.");
+        return ito::RetVal(ito::retError, 0, tr("the parameters meshIn and meshOut must not be NULL.").toLatin1().data());
     }
 
     if (cloudIn->empty())
     {
-        return ito::RetVal(ito::retError, 0, "the input point cloud must be valid.");
+        return ito::RetVal(ito::retError, 0, tr("the input point cloud must be valid.").toLatin1().data());
     }
 
     *meshOut = ito::PCLPolygonMesh(pcl::PolygonMesh::Ptr(new pcl::PolygonMesh()));
@@ -4179,8 +4192,11 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
     return retval;
 }
 
-/*static*/ const char *PclTools::pclGetNormalsAtCogFromMeshDOC = "calculates a point cloud with normal information which contains the normal at each triangle of the given \n\
-polygonal mesh centered at the center of gravity of the triangle. Use indices to filter only certain triangles.";
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const QString PclTools::pclGetNormalsAtCogFromMeshDOC = tr("calculates a point cloud with normal information which contains the normal at each triangle of the given \n\
+polygonal mesh centered at the center of gravity of the triangle. Use indices to filter only certain triangles.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclGetNormalsAtCogFromMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -4201,6 +4217,7 @@ polygonal mesh centered at the center of gravity of the triangle. Use indices to
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclGetNormalsAtCogFromMesh(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     const ito::PCLPolygonMesh *mesh = paramsMand->at(0).getVal<const ito::PCLPolygonMesh*>();
@@ -4220,7 +4237,6 @@ polygonal mesh centered at the center of gravity of the triangle. Use indices to
         return ito::pclHelper::normalsAtCogFromPolygonMesh(*mesh, *cloud);
     }
 }
-
 
 // ---------------------------------------------------------------------- DO NOT ADD FILTER BELOW THIS!!! -----------------------------------------------------------
 /** initialize filter functions within this addIn
@@ -4262,37 +4278,37 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::transformAffine, PclTools::transformAffineParams, tr("transforms a point cloud with a given homogeneous transformation matrix (4x4 data object)"));
     m_filterList.insert("pclTransformAffine", filter);
 
-    filter = new FilterDef(PclTools::pclFitModel, PclTools::pclFitModelParams, tr(pclFitModelDOC));
+    filter = new FilterDef(PclTools::pclFitModel, PclTools::pclFitModelParams, pclFitModelDOC);
     m_filterList.insert("pclFitModel", filter);
 
-    filter = new FilterDef(PclTools::pclFitModelDObj, PclTools::pclFitModelDObjParams, tr(pclFitModelDObjDOC)); 
+    filter = new FilterDef(PclTools::pclFitModelDObj, PclTools::pclFitModelDObjParams, pclFitModelDObjDOC); 
     m_filterList.insert("pclFitModelDObj", filter);
 
-    filter = new FilterDef(PclTools::pclFitCylinder, PclTools::pclFitCylinderParams, tr(pclFitCylinderDOC));
+    filter = new FilterDef(PclTools::pclFitCylinder, PclTools::pclFitCylinderParams, pclFitCylinderDOC);
     m_filterList.insert("pclFitCylinder", filter);
 
-    filter = new FilterDef(PclTools::pclFitSphere, PclTools::pclFitSphereParams, tr(pclFitSphereDOC));
+    filter = new FilterDef(PclTools::pclFitSphere, PclTools::pclFitSphereParams, pclFitSphereDOC);
     m_filterList.insert("pclFitSphere", filter);
 
-    filter = new FilterDef(PclTools::pclFitCircle2D, PclTools::pclFitCircle2DParams, tr(pclFitCircle2DDOC));
+    filter = new FilterDef(PclTools::pclFitCircle2D, PclTools::pclFitCircle2DParams, pclFitCircle2DDOC);
     m_filterList.insert("pclFitCircle2D", filter);
 
-    filter = new FilterDef(PclTools::pclFitCircle3D, PclTools::pclFitCircle3DParams, tr(pclFitCircle3DDOC));
+    filter = new FilterDef(PclTools::pclFitCircle3D, PclTools::pclFitCircle3DParams, pclFitCircle3DDOC);
     m_filterList.insert("pclFitCircle3D", filter);
 
-    filter = new FilterDef(PclTools::pclFitLine, PclTools::pclFitLineParams, tr(pclFitLineDOC));
+    filter = new FilterDef(PclTools::pclFitLine, PclTools::pclFitLineParams, pclFitLineDOC);
     m_filterList.insert("pclFitLine", filter);
 
-    filter = new FilterDef(PclTools::pclFitPlane, PclTools::pclFitPlaneParams, tr(pclFitPlaneDOC));
+    filter = new FilterDef(PclTools::pclFitPlane, PclTools::pclFitPlaneParams, pclFitPlaneDOC);
     m_filterList.insert("pclFitPlane", filter);
 
-    filter = new FilterDef(PclTools::pclFitCone, PclTools::pclFitConeParams, tr(pclFitConeDOC));
+    filter = new FilterDef(PclTools::pclFitCone, PclTools::pclFitConeParams, pclFitConeDOC);
     m_filterList.insert("pclFitCone", filter);
 
-    filter = new FilterDef(PclTools::pclDistanceToModel, PclTools::pclDistanceToModelParams, tr(pclDistanceToModelDOC));
+    filter = new FilterDef(PclTools::pclDistanceToModel, PclTools::pclDistanceToModelParams, pclDistanceToModelDOC);
     m_filterList.insert("pclDistanceToModel", filter);
 
-    filter = new FilterDef(PclTools::pclDistanceToModelDObj, PclTools::pclDistanceToModelDObjParams, tr(pclDistanceToModelDObjDOC));
+    filter = new FilterDef(PclTools::pclDistanceToModelDObj, PclTools::pclDistanceToModelDObjParams, pclDistanceToModelDObjDOC);
     m_filterList.insert("pclDistanceToModelDObj", filter);
 
     filter = new FilterDef(PclTools::pclProjectOnModel, PclTools::pclProjectOnModelParams, tr("Projects points onto a given model."));
@@ -4310,7 +4326,7 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::pclPassThrough, PclTools::pclPassThroughParams, tr("filters a point cloud by giving boundary values to a specific dimension (outside or inside of this field)."));
     m_filterList.insert("pclPassThrough", filter);
     
-    filter = new FilterDef(PclTools::pclCropBox, PclTools::pclCropBoxParams, tr(pclCropBoxDOC));
+    filter = new FilterDef(PclTools::pclCropBox, PclTools::pclCropBoxParams, pclCropBoxDOC);
     m_filterList.insert("pclCropBox", filter);
 
     filter = new FilterDef(PclTools::pclVoxelGrid, PclTools::pclVoxelGridParams, tr("downsamples a point cloud using a voxelized gripd approach."));

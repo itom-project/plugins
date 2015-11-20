@@ -43,7 +43,7 @@ BasicFiltersInterface::BasicFiltersInterface()
     setObjectName("BasicFilters");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin provides several basic filter calculations for itom::dataObject. These are for instance: \n\
 \n\
 * merging of planes\n\
@@ -52,9 +52,19 @@ BasicFiltersInterface::BasicFiltersInterface()
 * mean value filter along axis \n\
 \n\
 This plugin does not have any unusual dependencies.";
-
+*/
     m_description = QObject::tr("ITO developed filter-functions for data objects");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(
+"This plugin provides several basic filter calculations for itom::dataObject. These are for instance: \n\
+\n\
+* merging of planes\n\
+* swap byte order of objects \n\
+* resample slices from dataObjects \n\
+* mean value filter along axis \n\
+\n\
+This plugin does not have any unusual dependencies.");
+
     m_author = "W. Lyda, T. Boettcher, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -109,43 +119,51 @@ BasicFilters::~BasicFilters()
     m_filterList.clear();
 }
 
-const char* BasicFilters::replaceInfAndNaNDoc= "replaces infinite and/or nan-values by values of second matrix. \n\
-\n";
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* BasicFilters::flaten3Dto2DDoc = "Flattens a z-Stack of Mx1xN or MxNx1 matrixes to NxM or MxN. \n\
-\n";
+const QString BasicFilters::replaceInfAndNaNDoc= QObject::tr("replaces infinite and/or nan-values by values of second matrix. \n\
+\n");
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* BasicFilters::swapByteOrderDoc= "Swap byte order for input image. \n\
-\n";
+const QString BasicFilters::flaten3Dto2DDoc = QObject::tr("Flattens a z-Stack of Mx1xN or MxNx1 matrixes to NxM or MxN. \n\
+\n");
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* BasicFilters::mergeColorPlaneDoc= "Merge 3 or 4 color planes to a single tRGBA32 or tInt32-plane. \n\
+const QString BasicFilters::swapByteOrderDoc= QObject::tr("Swap byte order for input image. \n\
+\n");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString BasicFilters::mergeColorPlaneDoc= QObject::tr("Merge 3 or 4 color planes to a single tRGBA32 or tInt32-plane. \n\
 \n\
 If second object is tInt32 and of right size in x and y, the stack object will be convertet to tInt32. In all other cases the object will be tRGBA32 \n\
-\n";
+\n");
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* BasicFilters::calcMeanOverZDoc= "Calculate mean value (and optional standard deviation) of a 3D data object in z-direction. \n\
-\n";
+const QString BasicFilters::calcMeanOverZDoc= QObject::tr("Calculate mean value (and optional standard deviation) of a 3D data object in z-direction. \n\
+\n");
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* BasicFilters::calcObjSliceDoc= "Interpolate 1D-slice from along the defined line from a 2D-Object. \n\
-\n";
+const QString BasicFilters::calcObjSliceDoc= QObject::tr("Interpolate 1D-slice from along the defined line from a 2D-Object. \n\
+\n");
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* BasicFilters::clipValueDoc = "clip values outside or inside of minValue and maxValue to newValue (default = 0) \n\
+const QString BasicFilters::clipValueDoc = QObject::tr("clip values outside or inside of minValue and maxValue to newValue (default = 0) \n\
 \n\
 Depending on the parameter 'insideFlag', this filter sets all values within (1) or outside (0) of the range (minValue, maxValue) to \
 the value given by 'newValue'. In both cases the range boundaries are not clipped and replaced. If clipping is executed outside of range, \
-NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.";
+NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.");
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* BasicFilters::clipAbyBDoc = "clip values of image A to newValue (default = 0) outside or inside of minValue and maxValue in image B \n\
+const QString BasicFilters::clipAbyBDoc = QObject::tr("clip values of image A to newValue (default = 0) outside or inside of minValue and maxValue in image B \n\
 \n\
 Depending on the parameter 'insideFlag', this filter sets all values in image A depending on image B within (1) or outside (0) of the range (minValue, maxValue) to \
 the value given by 'newValue'. In both cases the range boundaries are not clipped and replaced. If clipping is executed outside of range, \
-NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.";
+NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char *BasicFilters::fillGeometricDoc = "fills a ROI, which defined by a geometric primitive, of the given dataObject with a defined value\n\
+const QString BasicFilters::fillGeometricDoc = QObject::tr("fills a ROI, which defined by a geometric primitive, of the given dataObject with a defined value\n\
 \n\
 Depending on the parameter 'insideFlag', this filter sets all values of the dataObject depending on the geometric primitiv within (1) or outside (2) or both (3) to \
-the value given by 'newValueInside' and 'newValueOutside'. The 'edgeFlag' is currently not used but shall manage the edge handling of primitive.";
+the value given by 'newValueInside' and 'newValueOutside'. The 'edgeFlag' is currently not used but shall manage the edge handling of primitive.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
@@ -153,34 +171,34 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
 
-    filter = new FilterDef(BasicFilters::replaceInfAndNaN, BasicFilters::replaceInfAndNaNParams, tr(replaceInfAndNaNDoc));
+    filter = new FilterDef(BasicFilters::replaceInfAndNaN, BasicFilters::replaceInfAndNaNParams, replaceInfAndNaNDoc);
     m_filterList.insert("replaceInfAndNaN", filter);
 
-    filter = new FilterDef(BasicFilters::flaten3Dto2D, BasicFilters::stdParams2Objects, tr(flaten3Dto2DDoc));
+    filter = new FilterDef(BasicFilters::flaten3Dto2D, BasicFilters::stdParams2Objects, flaten3Dto2DDoc);
     m_filterList.insert("flatten3Dto2D", filter);
 
-    filter = new FilterDef(BasicFilters::swapByteOrder, BasicFilters::stdParams2Objects, tr(swapByteOrderDoc));
+    filter = new FilterDef(BasicFilters::swapByteOrder, BasicFilters::stdParams2Objects, swapByteOrderDoc);
     m_filterList.insert("swapByteOrder", filter);
 
-    filter = new FilterDef(BasicFilters::mergeColorPlane, BasicFilters::mergeColorPlanesParams, tr(mergeColorPlaneDoc));
+    filter = new FilterDef(BasicFilters::mergeColorPlane, BasicFilters::mergeColorPlanesParams, mergeColorPlaneDoc);
     m_filterList.insert("mergeColorPlane", filter);
 
-    filter = new FilterDef(BasicFilters::calcMeanOverZ, BasicFilters::calcMeanOverZParams, tr(calcMeanOverZDoc));
+    filter = new FilterDef(BasicFilters::calcMeanOverZ, BasicFilters::calcMeanOverZParams, calcMeanOverZDoc);
     m_filterList.insert("calcMeanZ", filter);
 
-    filter = new FilterDef(BasicFilters::calcObjSlice, BasicFilters::calcObjSliceParams, tr(calcObjSliceDoc));
+    filter = new FilterDef(BasicFilters::calcObjSlice, BasicFilters::calcObjSliceParams, calcObjSliceDoc);
     m_filterList.insert("calcObjSlice", filter);
 
-    filter = new FilterDef(BasicFilters::calcHistFilter, BasicFilters::calcHistParams, tr(calcHistDoc));
+    filter = new FilterDef(BasicFilters::calcHistFilter, BasicFilters::calcHistParams, calcHistDoc);
     m_filterList.insert("calcHist", filter);
 
-    filter = new FilterDef(BasicFilters::calcRadialMeanFilter, BasicFilters::calcRadialMeanFilterParams, tr(calcRadialMeanFilterDoc));
+    filter = new FilterDef(BasicFilters::calcRadialMeanFilter, BasicFilters::calcRadialMeanFilterParams, calcRadialMeanFilterDoc);
     m_filterList.insert("calcRadialMean", filter);
 
-    filter = new FilterDef(BasicFilters::clipValueFilter, BasicFilters::clipValueFilterParams, tr(clipValueDoc));
+    filter = new FilterDef(BasicFilters::clipValueFilter, BasicFilters::clipValueFilterParams, clipValueDoc);
     m_filterList.insert("clipValues", filter);
 
-    filter = new FilterDef(BasicFilters::clipAbyBFilter, BasicFilters::clipAbyBFilterParams, tr(clipAbyBDoc));
+    filter = new FilterDef(BasicFilters::clipAbyBFilter, BasicFilters::clipAbyBFilterParams, clipAbyBDoc);
     m_filterList.insert("clipAbyB", filter);
 
     filter = new FilterDef(BasicFilters::genericLowValueFilter, BasicFilters::genericStdParams, tr("Set each pixel to the lowest value within the kernel (x ,y) using the generic mcpp filter engine"));
@@ -207,7 +225,7 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(BasicFilters::spikeMeanFilter, BasicFilters::spikeCompFilterStdParams, tr("Performs a low pass filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value."));
     m_filterList.insert("spikeMeanFilter", filter);
 
-    filter = new FilterDef(BasicFilters::fillGeometricPrimitiv, BasicFilters::fillGeometricParams, tr(fillGeometricDoc));
+    filter = new FilterDef(BasicFilters::fillGeometricPrimitiv, BasicFilters::fillGeometricParams, fillGeometricDoc);
     m_filterList.insert("fillObject", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)

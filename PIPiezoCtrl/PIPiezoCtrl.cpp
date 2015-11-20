@@ -515,13 +515,13 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, "deviceName could not be parsed to a valid COM-port number");
+                retval += ito::RetVal(ito::retError, 0, tr("deviceName could not be parsed to a valid COM-port number").toLatin1().data());
             }
 #endif
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, "for RS232 connections, you need to indiciate a valid baudrate");
+            retval += ito::RetVal(ito::retError, 0, tr("for RS232 connections, you need to indiciate a valid baudrate").toLatin1().data());
         }
     }
     else if (connectionType == "TCPIP")
@@ -532,7 +532,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             buffer[1023] = '\0';
             PI_EnumerateTCPIPDevices(buffer, 1024, "");
             std::cout << "Connected PI-TCP/IP devices\n------------------------------\n" << buffer << std::endl;
-            retval += ito::RetVal(ito::retError, 0, "initialization breaked since list of TCP/IP devices has been printed");
+            retval += ito::RetVal(ito::retError, 0, tr("initialization breaked since list of TCP/IP devices has been printed").toLatin1().data());
         }
         else
         {
@@ -544,7 +544,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                 buffer[1023] = '\0';
                 PI_EnumerateTCPIPDevices(buffer, 1024, deviceName.data());
                 std::cout << "Connected PI-TCP/IP devices\n------------------------------\n" << buffer << std::endl;
-                retval += ito::RetVal(ito::retError, 0, "no device with your name could be detected, similar devices are printed in the command line.");
+                retval += ito::RetVal(ito::retError, 0, tr("no device with your name could be detected, similar devices are printed in the command line.").toLatin1().data());
             }
         }
     }
@@ -556,7 +556,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             buffer[1023] = '\0';
             PI_EnumerateUSB(buffer, 1024, "");
             std::cout << "Connected PI-USB devices\n------------------------------\n" << buffer << std::endl;
-            retval += ito::RetVal(ito::retError, 0, "initialization breaked since list of USB devices has been printed");
+            retval += ito::RetVal(ito::retError, 0, tr("initialization breaked since list of USB devices has been printed").toLatin1().data());
         }
         else if (baudrate > 0)
         {
@@ -569,7 +569,7 @@ ito::RetVal PIPiezoCtrl::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     }
     else
     {
-        retval += ito::RetVal::format(ito::retError, 0, "unknown connectionType '%s'", connectionType.data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("unknown connectionType '%s'").toLatin1().data(), connectionType.data());
     }
 
     if (!retval.containsError() && m_deviceID == -1)
@@ -643,6 +643,7 @@ ito::RetVal PIPiezoCtrl::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -676,6 +677,7 @@ ito::RetVal PIPiezoCtrl::calib(const QVector<int> /*axis*/, ItomSharedSemaphore 
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -709,6 +711,7 @@ ito::RetVal PIPiezoCtrl::setOrigin(QVector<int> /*axis*/, ItomSharedSemaphore *w
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -731,6 +734,7 @@ ito::RetVal PIPiezoCtrl::getStatus(QSharedPointer<QVector<int> > status, ItomSha
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -773,6 +777,7 @@ ito::RetVal PIPiezoCtrl::getPos(const int axis, QSharedPointer<double> pos, Itom
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -806,6 +811,7 @@ ito::RetVal PIPiezoCtrl::getPos(const QVector<int> axis, QSharedPointer<QVector<
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -874,9 +880,7 @@ ito::RetVal PIPiezoCtrl::setPosAbs(const QVector<int> axis, QVector<double> pos,
 ito::RetVal PIPiezoCtrl::setPosRel(const int axis, const double pos, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retval = ito::retOk;
-
     retval = PISetPos(axis, pos, true, waitCond);
-
     return retval;
 }
 
@@ -952,7 +956,6 @@ ito::RetVal PIPiezoCtrl::requestStatusAndPosition(bool sendCurrentPos, bool send
     }
 
     return retval;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1043,8 +1046,6 @@ ito::RetVal PIPiezoCtrl::PICheckStatus(void)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-// 
-
 /*!
     \detail Clear serial port before writing without any delay
     \return retOk
@@ -1206,12 +1207,11 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
             }
             else
             {
-                lastErrors.append(QPair<int,QByteArray>(-1000,"unknown error"));
+                lastErrors.append(QPair<int,QByteArray>(-1000, tr("unknown error").toLatin1().data()));
             }
         }
     }
 #else
-
     QByteArray buffer;
     QByteArray errorText;
     int readSigns;
@@ -1257,26 +1257,26 @@ ito::RetVal PIPiezoCtrl::PIGetLastErrors(QVector<QPair<int,QByteArray> > &lastEr
                     {
                         switch(errorNo)
                         {
-                        case 1: errorText = tr("Parameter syntax error").toLatin1(); break;
-                        case 2: errorText = tr("Unknown command").toLatin1(); break;
-                        case 3: errorText = tr("Command length out of limits or command buffer overrun").toLatin1(); break;
-                        case 5: errorText = tr("Unallowable move attempted on unreferenced axis, or move attempted with servo off").toLatin1(); break;
-                        case 10: errorText = tr("Controller was stopped by command").toLatin1(); break;
-                        case 15: errorText = tr("Invalid axis identifier").toLatin1(); break;
-                        case 17: errorText = tr("Parameter out of range").toLatin1(); break;
-                        case 20: errorText = tr("Macro not found").toLatin1(); break;
-                        case 54: errorText = tr("Unknown parameter").toLatin1(); break;
-                        case 56: errorText = tr("Password invalid").toLatin1(); break;
-                        case 60: errorText = tr("Protected Param: current Command Level (CCL) too low").toLatin1(); break;
-                        case 73: errorText = tr("Motion commands are not allowed when wave generator is active").toLatin1(); break;
-                        case 79: errorText = tr("Open-loop commands (SVA, SVR) are not allowed when servo is on").toLatin1(); break;
-                        case 89: errorText = tr("Command not allowed in current motion mode").toLatin1(); break;
-                        case 210: errorText = tr("Illegal file name (must be 8-0 format)").toLatin1(); break;
-                        case 232: errorText = tr("Save system configuration failed").toLatin1(); break;
-                        case 233: errorText = tr("Load system configuration failed").toLatin1(); break;
-                        case 306: errorText = tr("Error on I2C bus").toLatin1(); break;
-                        case 309: errorText = tr("Insufficient space to store macro").toLatin1(); break;
-                        case 405: errorText = tr("Wave parameter out of range").toLatin1(); break;
+                            case 1: errorText = tr("Parameter syntax error").toLatin1(); break;
+                            case 2: errorText = tr("Unknown command").toLatin1(); break;
+                            case 3: errorText = tr("Command length out of limits or command buffer overrun").toLatin1(); break;
+                            case 5: errorText = tr("Unallowable move attempted on unreferenced axis, or move attempted with servo off").toLatin1(); break;
+                            case 10: errorText = tr("Controller was stopped by command").toLatin1(); break;
+                            case 15: errorText = tr("Invalid axis identifier").toLatin1(); break;
+                            case 17: errorText = tr("Parameter out of range").toLatin1(); break;
+                            case 20: errorText = tr("Macro not found").toLatin1(); break;
+                            case 54: errorText = tr("Unknown parameter").toLatin1(); break;
+                            case 56: errorText = tr("Password invalid").toLatin1(); break;
+                            case 60: errorText = tr("Protected Param: current Command Level (CCL) too low").toLatin1(); break;
+                            case 73: errorText = tr("Motion commands are not allowed when wave generator is active").toLatin1(); break;
+                            case 79: errorText = tr("Open-loop commands (SVA, SVR) are not allowed when servo is on").toLatin1(); break;
+                            case 89: errorText = tr("Command not allowed in current motion mode").toLatin1(); break;
+                            case 210: errorText = tr("Illegal file name (must be 8-0 format)").toLatin1(); break;
+                            case 232: errorText = tr("Save system configuration failed").toLatin1(); break;
+                            case 233: errorText = tr("Load system configuration failed").toLatin1(); break;
+                            case 306: errorText = tr("Error on I2C bus").toLatin1(); break;
+                            case 309: errorText = tr("Insufficient space to store macro").toLatin1(); break;
+                            case 405: errorText = tr("Wave parameter out of range").toLatin1(); break;
                         }
 
                         lastErrors.append(QPair<int,QByteArray>(errorNo, errorText));
@@ -1330,6 +1330,7 @@ ito::RetVal PIPiezoCtrl::PISendCommand(const QByteArray &command)
         waitCondition.wait(&mutex,m_delayAfterSendCommandMS);
         mutex.unlock();
     }
+
     return retVal;
 }
 
@@ -1457,6 +1458,7 @@ ito::RetVal PIPiezoCtrl::convertPIErrorsToRetVal(QVector<QPair<int,QByteArray> >
 
         return ito::RetVal(ito::retError,0,errorString.data());
     }
+
     return ito::retOk;
 }
 
@@ -1474,13 +1476,13 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
     //set serial settings
     if (keepSerialConfig == 0)
     {
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud",ito::ParamBase::Int,9600)),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits",ito::ParamBase::Int,8)),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity",ito::ParamBase::Double,0.0)),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",ito::ParamBase::Int,1)),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,108)),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\n")),NULL);
-        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("debugIgnoreEmpty",ito::ParamBase::Int,1)),NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 9600)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 108)), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, "\n")), NULL);
+        retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("debugIgnoreEmpty", ito::ParamBase::Int, 1)), NULL);
     }
 #endif
 
@@ -1558,25 +1560,27 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
         retval += PISendCommand("SOUR:POS:LIM:STATE ON"); //activate limits
         retval += PISendQuestionWithAnswerDouble("SOUR:POS:LIM:LOW?", tempDbl, 200);
+
         if (!retval.containsError())
         {
             m_posLimitLow = tempDbl;
             m_params["posLimitLow"].setVal<double>(m_posLimitLow / 1000.0);
         }
         retval += PISendQuestionWithAnswerDouble("SOUR:POS:LIM:HIGH?", tempDbl, 200);
+
         if (!retval.containsError())
         {
             m_posLimitHigh = tempDbl;
             m_params["posLimitHigh"].setVal<double>(m_posLimitHigh / 1000.0);
         }
-
         retval += PISendQuestionWithAnswerString("SYST:DEV?", answer, 200);
+
         if (!retval.containsError())
         {
             m_params["ctrlName"].setVal<char*>(answer.data(),answer.length());
         }
-
         retval += PISendQuestionWithAnswerString("SYST:PZT?", answer, 200);
+
         if (!retval.containsError())
         {
             m_params["piezoName"].setVal<char*>(answer.data(),answer.length());
@@ -1620,7 +1624,6 @@ ito::RetVal PIPiezoCtrl::PIIdentifyAndInitializeSystem(int keepSerialConfig)
 
         retval += PIGetLastErrors(lastErrors);
         retval += convertPIErrorsToRetVal(lastErrors);
-
     }
     else if (answer.contains("E-753"))
     {
@@ -1753,7 +1756,11 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
                     outOfRange = true;
                 }
             }
-            if (outOfRange == false) m_targetPos[0] = posMM;
+
+            if (outOfRange == false)
+            {
+                m_targetPos[0] = posMM;
+            }
         }
 
         if (outOfRange == false)
@@ -1816,6 +1823,7 @@ ito::RetVal PIPiezoCtrl::PISetPos(const int axis, const double posMM, bool relNo
             }
         }
     }
+
     return retval;
 }
 

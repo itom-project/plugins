@@ -209,12 +209,8 @@
 *   YUV9     Intel - YUV9
 *   YUYV     Canopus - YUYV compressor
 *   ZPEG     Metheus - Video Zipper
-
 * 
 */
-
-
-
 
 //TODO: '' is reserved for single characters and must not be used to initialize a char array fix this!
 enum codecDbl {
@@ -252,7 +248,7 @@ OpenCVGrabberInterface::OpenCVGrabberInterface()
     m_description = QObject::tr("OpenCV Video Capture (USB-Cams, Firewire CMU1394...)");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin wraps the video capture framework of OpenCV. Therefore it requires further libraries of OpenCV (core, highgui, improc and partially tbb). \n\
 \n\
 Usually all ordinary USB cameras are supported. If you compiled OpenCV with the CMU1384 flag, these firewire cameras are supported as well. Currently, a queuing \
@@ -267,7 +263,21 @@ the plugin, especially set the manual / auto flag of parameters (not directly av
 \n\
 For some devices, an acquisition might deliver an older image. In order to get an actual image, use the parameter 'dump_grabs' to set a number of images \
 that is obtained before the real image is delivered to the getVal / copyVal command (default: 0, DirectShow: recommended: 5).";
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr("This plugin wraps the video capture framework of OpenCV. Therefore it requires further libraries of OpenCV (core, highgui, improc and partially tbb). \n\
+\n\
+Usually all ordinary USB cameras are supported. If you compiled OpenCV with the CMU1384 flag, these firewire cameras are supported as well. Currently, a queuing \
+problem in the Windows version for USB cameras exists. Therefore the plugin requests multiple images per frame in order to finally get the newest one. \
+Therefore this implementation is not the fastest connection to any USB cameras. \n\
+\n\
+Some supported cameras are only available if OpenCV is compiled with their support, e.g. CMU1394 (not included per default in pre-compiled binaries of OpenCV. \n\
+\n\
+The parameters of this plugin are double values that are directly redirected to the OpenCV drivers and might have different units / interpretations \
+for various device types. Especially for DirectShow cameras, also use the native settings dialog (accessible via the configuration dialog) to further parameterize \
+the plugin, especially set the manual / auto flag of parameters (not directly available via source code of OpenCV). \n\
+\n\
+For some devices, an acquisition might deliver an older image. In order to get an actual image, use the parameter 'dump_grabs' to set a number of images \
+that is obtained before the real image is delivered to the getVal / copyVal command (default: 0, DirectShow: recommended: 5).");
 
     m_author = "M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -319,9 +329,8 @@ const ito::RetVal OpenCVGrabber::showConfDialog(void)
 #else
     return apiShowConfigurationDialog(this, new DialogOpenCVGrabber(this, (m_imgChannels == 3), false));
 #endif
-    
-    
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 OpenCVGrabber::OpenCVGrabber() : AddInGrabber(), m_isgrabbing(false), m_pCam(NULL), m_CCD_ID(0), m_camStatusChecked(false)
 {
@@ -458,6 +467,7 @@ ito::RetVal OpenCVGrabber::checkCameraAbilities()
 
     return retValue;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \details This method copies the complete tparam of the corresponding parameter to val
@@ -951,6 +961,7 @@ ito::RetVal OpenCVGrabber::startDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
          
@@ -973,6 +984,7 @@ ito::RetVal OpenCVGrabber::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return ito::retOk;
 }
          
@@ -1271,7 +1283,6 @@ ito::RetVal OpenCVGrabber::checkData(ito::DataObject *externalDataObject)
                 const int relations[] = {0,3};
                 cv::mixChannels( &m_alphaChannel, 1, m_data.get_mdata()[0], 1, relations, 1);
             }
-
         }
     }
     else

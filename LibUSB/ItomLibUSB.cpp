@@ -46,7 +46,6 @@
 /*static*/ QVector<USBDevice> ItomUSBDevice::openedDevices;
 /*static*/ QMutex ItomUSBDevice::openedDevicesReadWriteMutex;
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ItomUSBDeviceInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -70,15 +69,22 @@ ItomUSBDeviceInterface::ItomUSBDeviceInterface()
     m_description = tr("itom-plugin for a usb port communication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.\nIt can be used by plugins for communication analog to the serial port.\n\
 The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.\n\
 \n\
 To connect to a device you need the vendor id and the product id.\n\
 \n\
 The setVal and getVal functions will write and read on the specified endpoint.";
+    m_detaildescription = tr(docstring);*/
+    m_detaildescription = tr(
+"LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.\nIt can be used by plugins for communication analog to the serial port.\n\
+The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.\n\
+\n\
+To connect to a device you need the vendor id and the product id.\n\
+\n\
+The setVal and getVal functions will write and read on the specified endpoint.");
 
-    m_detaildescription = tr(docstring);
     m_author = "W. Lyda, twip optical solutions GmbH Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -319,8 +325,6 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ItomUSBDevice::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
-
-
     ItomSharedSemaphoreLocker locker(waitCond);
 
     ito::RetVal retval(ito::retOk);
@@ -650,6 +654,7 @@ ito::RetVal ItomUSBDevice::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -664,6 +669,7 @@ ito::RetVal ItomUSBDevice::startDevice(ItomSharedSemaphore *waitCond)
         waitCond->release();
         waitCond->deleteSemaphore();
     }
+
     return retval;
 }
 
@@ -692,6 +698,7 @@ ito::RetVal ItomUSBDevice::acquire(const int /*trigger*/, ItomSharedSemaphore *w
         waitCond->release();
         waitCond->deleteSemaphore();
     }
+
     return retval;
 }
 
@@ -752,6 +759,7 @@ ito::RetVal ItomUSBDevice::setVal(const char *data, const int datalength, ItomSh
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -789,7 +797,6 @@ void ItomUSBDevice::dockWidgetVisibilityChanged(bool visible)
             disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
             disconnect(this, SIGNAL(serialLog(QByteArray, const char)), dw, SLOT(serialLog(QByteArray, const char)));
         }
-
     }
 }
 

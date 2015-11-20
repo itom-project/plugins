@@ -37,12 +37,10 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/distances.h>
 
-
-
 #include <qstring.h>
 #include <qvariant.h>
 
-
+//------------------------------------------------------------------------------------------------------------------------------
 bool PclTools::checkFitWithOutNormals(const int &fitObj)
 {
     switch(fitObj)
@@ -62,6 +60,7 @@ bool PclTools::checkFitWithOutNormals(const int &fitObj)
     }
 }
 
+//------------------------------------------------------------------------------------------------------------------------------
 bool PclTools::checkFitNormals(const int &fitObj)
 {
     switch(fitObj)
@@ -83,9 +82,8 @@ bool PclTools::checkFitNormals(const int &fitObj)
     }
 }
 
-
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitModelDOC = "fits a geometric model to the given input point cloud using a RANSAC based approach. \n\
+const QString PclTools::pclFitModelDOC = tr("fits a geometric model to the given input point cloud using a RANSAC based approach. \n\
 \n\
 The method used for this fit is from the sample consensus module of point cloud library. \n\
 (See http://docs.pointclouds.org/1.7.0/group__sample__consensus.html). \n\
@@ -151,7 +149,8 @@ Cone (6)*. Output is the orientation vector (v), the tip point (p) and the openi
 * v_z \n\
 * angle \n\
 \n\
-Models with * need an input cloud where normal vectors are defined.";
+Models with * need an input cloud where normal vectors are defined.");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitModelParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -185,6 +184,7 @@ Models with * need an input cloud where normal vectors are defined.";
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitModel(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -192,7 +192,7 @@ Models with * need an input cloud where normal vectors are defined.";
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitModelDObjDOC = "fits a geometric model to the given input data object using a RANSAC based approach. \n\
+const QString PclTools::pclFitModelDObjDOC = tr("fits a geometric model to the given input data object using a RANSAC based approach. \n\
 \n\
 The input data object is transformed to a point cloud where the values are the Z coordinates, the X and Y coordinates are \n\
 calculated using a meshgrid based on the axis scales and offsets. \n\
@@ -259,7 +259,8 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
 * v_x \n\
 * v_y \n\
 * v_z \n\
-* angle";
+* angle");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitModelDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -281,7 +282,7 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitModelDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
-    if(ito::ITOM_API_FUNCS == NULL || apiFilterCall == NULL || apiFilterParam == NULL || apiFilterParamBase == NULL)
+    if (ito::ITOM_API_FUNCS == NULL || apiFilterCall == NULL || apiFilterParam == NULL || apiFilterParamBase == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("The api-functions are not defined. Init of filter failed").toLatin1().data());
     }
@@ -292,7 +293,7 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
     ito::RetVal retval = ito::retOk;
 
     ito::DataObject *inputObjct = (ito::DataObject*)((*paramsMand)[0].getVal<void*>());
-    if(inputObjct == NULL)
+    if (inputObjct == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Input DataObject must not be NULL").toLatin1().data());
     }
@@ -312,14 +313,14 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
         return ito::RetVal(ito::retError, 0, tr("Could not allocated new pointcloud").toLatin1().data());
     }
 
-    if((*paramsMand)[1].getVal<int>() != pcl::SACMODEL_SPHERE)
+    if ((*paramsMand)[1].getVal<int>() != pcl::SACMODEL_SPHERE)
     {
         QVector<ito::ParamBase> estNormMand;
         QVector<ito::ParamBase> estNormOpt;
         QVector<ito::ParamBase> estNormOut;
 
         retval += apiFilterParamBase("pclEstimateNormals", &estNormMand, &estNormOpt, &estNormOut);
-        if(!retval.containsError())
+        if (!retval.containsError())
         {
             estNormMand[0].setVal<void*>(&tmpCloud);
             estNormMand[1].setVal<void*>(&tmpCloud);
@@ -329,10 +330,9 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
 
     int nrOfPoints = (*paramsMand)[2].getVal<int>();
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-
-        if(nrOfPoints < 65356)
+        if (nrOfPoints < 65356)
         {
             tmpCloudFilter = new ito::PCLPointCloud();
 
@@ -341,7 +341,7 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
             QVector<ito::ParamBase> estRndOut;
 
             retval += apiFilterParamBase("pclRandomSample", &estRndMand, &estRndOpt, &estRndOut);
-            if(!retval.containsError())
+            if (!retval.containsError())
             {
                 estRndMand[0].setVal<void*>(&tmpCloud);
                 estRndMand[1].setVal<void*>(tmpCloudFilter);
@@ -357,7 +357,7 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
         }
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         tmpParamsMand.append(ito::ParamBase("pointCloudIn", ito::ParamBase::PointCloudPtr));
         tmpParamsMand[0].setVal<void*>(tmpCloudFilter);
@@ -365,13 +365,13 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
         retval += pclFitModelGeneric(&tmpParamsMand, paramsOpt, paramsOut, -1);
     }
 
-    if(tmpCloudFilter && deleteOnClose) delete tmpCloudFilter;
+    if (tmpCloudFilter && deleteOnClose) delete tmpCloudFilter;
 
     return retval;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitCylinderDOC = "fits a cylindrical model to the given input point cloud using a RANSAC based approach (must have normals defined).";
+const QString PclTools::pclFitCylinderDOC = tr("fits a cylindrical model to the given input point cloud using a RANSAC based approach (must have normals defined).");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitCylinderParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -410,7 +410,7 @@ const char* PclTools::pclFitCylinderDOC = "fits a cylindrical model to the given
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitSphereDOC = "fits a spherical model to the given input point cloud using a RANSAC based approach";
+const QString PclTools::pclFitSphereDOC = tr("fits a spherical model to the given input point cloud using a RANSAC based approach");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitSphereParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -448,7 +448,7 @@ const char* PclTools::pclFitSphereDOC = "fits a spherical model to the given inp
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitCircle2DDOC = "fits a planar circle model to the given input point cloud using a RANSAC based approach";
+const QString PclTools::pclFitCircle2DDOC = tr("fits a planar circle model to the given input point cloud using a RANSAC based approach");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitCircle2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -486,7 +486,7 @@ const char* PclTools::pclFitCircle2DDOC = "fits a planar circle model to the giv
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitCircle3DDOC = "fits a 3D-circle model to the given input point cloud using a RANSAC based approach";
+const QString PclTools::pclFitCircle3DDOC = tr("fits a 3D-circle model to the given input point cloud using a RANSAC based approach");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitCircle3DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -519,6 +519,7 @@ const char* PclTools::pclFitCircle3DDOC = "fits a 3D-circle model to the given i
     paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting normal vector").toLatin1().data()));
     paramsOut->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting fitted radius of the circle").toLatin1().data()));
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+
     return retval;
 }
 
@@ -529,7 +530,7 @@ const char* PclTools::pclFitCircle3DDOC = "fits a 3D-circle model to the given i
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitPlaneDOC = "fits a plane model to the given input point cloud using a RANSAC based approach";
+const QString PclTools::pclFitPlaneDOC = tr("fits a plane model to the given input point cloud using a RANSAC based approach");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -560,6 +561,7 @@ const char* PclTools::pclFitPlaneDOC = "fits a plane model to the given input po
     paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting normal vector").toLatin1().data()));
     paramsOut->append(ito::Param("value", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting last value of Hesse Form").toLatin1().data()));
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+
     return retval;
 }
 
@@ -570,7 +572,7 @@ const char* PclTools::pclFitPlaneDOC = "fits a plane model to the given input po
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitLineDOC = "fits a line model to the given input point cloud using a RANSAC based approach";
+const QString PclTools::pclFitLineDOC = tr("fits a line model to the given input point cloud using a RANSAC based approach");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitLineParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -601,6 +603,7 @@ const char* PclTools::pclFitLineDOC = "fits a line model to the given input poin
     paramsOut->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting point on the line").toLatin1().data()));
     paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data())); 
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+
     return retval;
 }
 
@@ -611,7 +614,7 @@ const char* PclTools::pclFitLineDOC = "fits a line model to the given input poin
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclFitConeDOC = "fits a conical model to the given input point cloud using a RANSAC based approach (must have normals defined)";
+const QString PclTools::pclFitConeDOC = tr("fits a conical model to the given input point cloud using a RANSAC based approach (must have normals defined)");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitConeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -644,10 +647,9 @@ const char* PclTools::pclFitConeDOC = "fits a conical model to the given input p
     paramsOut->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::Out, NULL, tr("resulting oriantation vector").toLatin1().data())); 
     paramsOut->append(ito::Param("openingAgle", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("resulting opening angle in radiant").toLatin1().data())); 
     paramsOut->append(ito::Param("inliers", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("number of points considered after filtering outliers (due to RANSAC principle)").toLatin1().data()));
+
     return retval;
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitCone(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
@@ -656,7 +658,7 @@ const char* PclTools::pclFitConeDOC = "fits a conical model to the given input p
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclDistanceToModelDOC = "Calculates the distances of points of a point cloud to a given model. \n\
+const QString PclTools::pclDistanceToModelDOC = tr("Calculates the distances of points of a point cloud to a given model. \n\
 \n\
 Possible types are: \n\
 --------------------\n\
@@ -681,7 +683,7 @@ SACMODEL_REGISTRATION_2D = 14, \n\
 SACMODEL_PARALLEL_PLANE = 15, \n\
 SACMODEL_NORMAL_PARALLEL_PLANE = 16, \n\
 SACMODEL_STICK = 17 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclDistanceToModelParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -700,7 +702,6 @@ SACMODEL_STICK = 17 \n\
     paramsMand->append(ito::Param("modelType", ito::ParamBase::Int | ito::ParamBase::In, 0, 10, 0, tr("Model type according to enum pcl::SacModel (sphere: 4, cylinder: 5)").toLatin1().data()));
 
     paramsOpt->clear();
-
     paramsOpt->append(ito::Param("point", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("point on cylinder symmetrie axis").toLatin1().data()));
     paramsOpt->append(ito::Param("orientationVector", ito::ParamBase::DoubleArray | ito::ParamBase::In, NULL, tr("symmetrie axis of cylinder").toLatin1().data()));
     paramsOpt->append(ito::Param("radius", ito::ParamBase::Double | ito::ParamBase::In, 0.0, (double)(std::numeric_limits<float>::max()), 0.0, tr("cylinder radius").toLatin1().data()));
@@ -716,6 +717,7 @@ SACMODEL_STICK = 17 \n\
     Eigen::Vector4f linePt  (modelCoefficients[0], modelCoefficients[1], modelCoefficients[2], 0);
     Eigen::Vector4f lineDir (modelCoefficients[3], modelCoefficients[4], modelCoefficients[5], 0);
     Eigen::Vector4f pt (inPt[0], inPt[1], inPt[2], 0);
+
     return sqrt(pcl::sqrPointToLineDistance (pt, linePt, lineDir));
 }
 
@@ -770,7 +772,7 @@ SACMODEL_STICK = 17 \n\
             distanceType = 3;
             double* value = NULL;
 
-            if(opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
+            if (opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
             {
                 return ito::RetVal(ito::retError, 0, (tr("Spherical model must have [x,y,z] and r. [x,y,z] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
             }
@@ -780,7 +782,6 @@ SACMODEL_STICK = 17 \n\
                 linePt[1] = cv::saturate_cast<float>(value[1]);
                 linePt[2] = cv::saturate_cast<float>(value[2]);
             }
-
         }
         break;
         case pcl::SACMODEL_CYLINDER:
@@ -788,7 +789,7 @@ SACMODEL_STICK = 17 \n\
             distanceType = 1;
             double* value = NULL;
 
-            if(opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
+            if (opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
             {
                 return ito::RetVal(ito::retError, 0, (tr("Cylinder model must have 7 parameters, [x,y,z], [dx, dy, dz] and r. [x,y,z] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
             }
@@ -799,7 +800,7 @@ SACMODEL_STICK = 17 \n\
                 linePt[2] = cv::saturate_cast<float>(value[2]);
             }
 
-            if(opts[1].getLen() < 3 || (value = (double*)(opts[1].getVal<void*>())) == NULL)
+            if (opts[1].getLen() < 3 || (value = (double*)(opts[1].getVal<void*>())) == NULL)
             {
                 return ito::RetVal(ito::retError, 0, (tr("Cylinder model must have [x,y,z], [dx, dy, dz] and r. [dx,dy,dz] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
             }
@@ -826,8 +827,6 @@ SACMODEL_STICK = 17 \n\
         {
             return ito::RetVal(ito::retError, 0, (tr("Fit of model type %1 not supported").arg(QString::number(modelType))).toLatin1().data());
         }
-
-
     }
 
     float floatNAN = std::numeric_limits<float>::quiet_NaN();
@@ -921,7 +920,7 @@ SACMODEL_STICK = 17 \n\
             pcl::PointCloud<pcl::PointXYZ>::Ptr pclSrc = pclIn->toPointXYZ();
             pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
 
-            if(distanceType == 0)
+            if (distanceType == 0)
             {
 
                 #if (USEOMP)
@@ -933,7 +932,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -943,7 +942,7 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                
             }
-            else if(distanceType == 1)
+            else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -954,7 +953,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -964,7 +963,7 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                     
             }
-            else if(distanceType == 2)
+            else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -973,7 +972,7 @@ SACMODEL_STICK = 17 \n\
                 {
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -983,7 +982,7 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                     
             }
-            else if(distanceType == 3)
+            else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -993,7 +992,7 @@ SACMODEL_STICK = 17 \n\
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1010,7 +1009,7 @@ SACMODEL_STICK = 17 \n\
             pcl::PointCloud<pcl::PointNormal>::Ptr pclSrc = pclIn->toPointXYZNormal();
             pcl::PointCloud<pcl::PointNormal>::Ptr pclDists = pclOut->toPointXYZNormal();
 
-            if(distanceType == 0)
+            if (distanceType == 0)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1018,7 +1017,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {                       
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -1028,7 +1027,7 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                
             }
-            else if(distanceType == 1)
+            else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1036,7 +1035,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -1046,14 +1045,14 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                     
             }
-            else if(distanceType == 2)
+            else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
                 #endif     
                 for (int np = 0; np < pclOut->size(); np++)
                 {   
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -1063,14 +1062,14 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                     
             }
-            else if(distanceType == 3)
+            else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
                 #endif     
                 for (int np = 0; np < pclOut->size(); np++)
                 {    
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1087,7 +1086,7 @@ SACMODEL_STICK = 17 \n\
             pcl::PointCloud<pcl::PointXYZI>::Ptr pclSrc = pclIn->toPointXYZI();
             pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
 
-            if(distanceType == 0)
+            if (distanceType == 0)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1098,7 +1097,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -1109,7 +1108,7 @@ SACMODEL_STICK = 17 \n\
                     pclDists->at(np).intensity = pclSrc->at(np).intensity;
                 }                
             }
-            else if(distanceType == 1)
+            else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1120,7 +1119,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -1131,7 +1130,7 @@ SACMODEL_STICK = 17 \n\
                     pclDists->at(np).intensity = pclSrc->at(np).intensity;
                 }                     
             }
-            else if(distanceType == 2)
+            else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1141,7 +1140,7 @@ SACMODEL_STICK = 17 \n\
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -1152,7 +1151,7 @@ SACMODEL_STICK = 17 \n\
                     pclDists->at(np).intensity = pclSrc->at(np).intensity;
                 }                     
             }
-            else if(distanceType == 3)
+            else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1162,7 +1161,7 @@ SACMODEL_STICK = 17 \n\
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1180,7 +1179,7 @@ SACMODEL_STICK = 17 \n\
             pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pclSrc = pclIn->toPointXYZRGBA();
             pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
 
-            if(distanceType == 0)
+            if (distanceType == 0)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1191,7 +1190,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -1202,7 +1201,7 @@ SACMODEL_STICK = 17 \n\
                     pclDists->at(np).rgba = pclSrc->at(np).rgba;
                 }                
             }
-            else if(distanceType == 1)
+            else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1213,7 +1212,7 @@ SACMODEL_STICK = 17 \n\
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -1224,7 +1223,7 @@ SACMODEL_STICK = 17 \n\
                     pclDists->at(np).rgba = pclSrc->at(np).rgba;
                 }                     
             }
-            else if(distanceType == 2)
+            else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1234,7 +1233,7 @@ SACMODEL_STICK = 17 \n\
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -1245,7 +1244,7 @@ SACMODEL_STICK = 17 \n\
                     pclDists->at(np).rgba = pclSrc->at(np).rgba;
                 }                     
             }
-            else if(distanceType == 3)
+            else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1255,7 +1254,7 @@ SACMODEL_STICK = 17 \n\
                     memcpy(pclDists->at(np).data, pclSrc->at(np).data, sizeof(float) * 4);
                     memset(pclDists->at(np).normal, 0, sizeof(float) * 4);
 
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1273,7 +1272,7 @@ SACMODEL_STICK = 17 \n\
             pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclSrc = pclIn->toPointXYZINormal();
             pcl::PointCloud<pcl::PointXYZINormal>::Ptr pclDists = pclOut->toPointXYZINormal();
 
-            if(distanceType == 0)
+            if (distanceType == 0)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1281,7 +1280,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -1291,7 +1290,7 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                
             }
-            else if(distanceType == 1)
+            else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1299,7 +1298,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -1309,14 +1308,14 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                     
             }
-            else if(distanceType == 2)
+            else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
                 #endif     
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -1326,7 +1325,7 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                     
             }
-            else if(distanceType == 3)
+            else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1334,7 +1333,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                         
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1351,7 +1350,7 @@ SACMODEL_STICK = 17 \n\
             pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclSrc = pclIn->toPointXYZRGBNormal();
             pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr pclDists = pclOut->toPointXYZRGBNormal();
                 
-            if(distanceType == 0)
+            if (distanceType == 0)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1359,7 +1358,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir));
                     }
@@ -1369,7 +1368,7 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                
             }
-            else if(distanceType == 1)
+            else if (distanceType == 1)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
@@ -1377,7 +1376,7 @@ SACMODEL_STICK = 17 \n\
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
                     curPt = Eigen::Vector4f(pclSrc->at(np).data[0], pclSrc->at(np).data[1], pclSrc->at(np).data[2], 0);
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = sqrt(pcl::sqrPointToLineDistance (curPt, linePt, lineDir)) - radius;
                     }
@@ -1387,14 +1386,14 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                     
             }
-            else if(distanceType == 2)
+            else if (distanceType == 2)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
                 #endif     
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center);
                     }
@@ -1404,14 +1403,14 @@ SACMODEL_STICK = 17 \n\
                     }
                 }                     
             }
-            else if(distanceType == 3)
+            else if (distanceType == 3)
             {
                 #if (USEOMP)
                 #pragma omp for schedule(guided)
                 #endif     
                 for (int np = 0; np < pclOut->size(); np++)
                 {     
-                    if(ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
+                    if (ito::dObjHelper::isFinite<float>(pclDists->at(np).z))
                     {
                         pclDists->at(np).curvature = pcl::euclideanDistance(pclSrc->at(np), center) - radius;
                     }
@@ -1439,10 +1438,10 @@ SACMODEL_STICK = 17 \n\
 #endif  
 }
 
-
+//--------------------------------------------------------------------------------------------------------
+/*static*/ const QString PclTools::pclDistanceToModelDObjDOC = tr("calculates the distance from points in a given data object to a model.");
 
 //--------------------------------------------------------------------------------------------------------
-/*static*/ const char *PclTools::pclDistanceToModelDObjDOC = "calculates the distance from points in a given data object to a model.";
 /*static*/ ito::RetVal PclTools::pclDistanceToModelDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
@@ -1464,6 +1463,7 @@ SACMODEL_STICK = 17 \n\
     return retval;
 }
 
+//--------------------------------------------------------------------------------------------------------
 template<typename _Tp> ito::RetVal distanceToModelDObjHelper(const ito::DataObject *in, ito::DataObject *out, const int modelType, const double *coefficients)
 {
     ito::RetVal retval;
@@ -1486,7 +1486,6 @@ template<typename _Tp> ito::RetVal distanceToModelDObjHelper(const ito::DataObje
         line_dir_norm = line_dir.squaredNorm();
         break;
     }
-
 
     for (int p = 0; p < in->calcNumMats(); ++p)
     {
@@ -1522,6 +1521,7 @@ template<typename _Tp> ito::RetVal distanceToModelDObjHelper(const ito::DataObje
     return retval;
 }
 
+//--------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclDistanceToModelDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -1539,17 +1539,17 @@ template<typename _Tp> ito::RetVal distanceToModelDObjHelper(const ito::DataObje
     case pcl::SACMODEL_SPHERE:
         if (coeffsLen != 4)
         {
-            retval += ito::RetVal(ito::retError, 0, "four coefficients are required for a sphere model (p_x, p_y, p_z, r)");
+            retval += ito::RetVal(ito::retError, 0, tr("four coefficients are required for a sphere model (p_x, p_y, p_z, r)").toLatin1().data());
         }
         break;
     case pcl::SACMODEL_CYLINDER:
         if (coeffsLen != 7)
         {
-            retval += ito::RetVal(ito::retError, 0, "seven coefficients are required for a sphere model (p_x, p_y, p_z, v_x, v_y, v_z, r)");
+            retval += ito::RetVal(ito::retError, 0, tr("seven coefficients are required for a sphere model (p_x, p_y, p_z, v_x, v_y, v_z, r)").toLatin1().data());
         }
         break;
     default:
-        retval += ito::RetVal::format(ito::retError, 0, "modelType %i not supported.", modelType);
+        retval += ito::RetVal::format(ito::retError, 0, tr("modelType %i not supported.").toLatin1().data(), modelType);
         break;
     }
 

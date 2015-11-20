@@ -103,17 +103,16 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal stdParams2Objects(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                     /**< Get the standard IO-Parameters for filters with two objects */
                   
         // Defined in BasicSpecialFilters.cpp
-        static const char* replaceInfAndNaNDoc;
-        static const char* flaten3Dto2DDoc;
-        static const char* swapByteOrderDoc;
-        static const char* mergeColorPlaneDoc;
-        static const char* calcMeanOverZDoc;
-        static const char* calcObjSliceDoc;
-        static const char* clipValueDoc;
-        static const char* calcHistDoc;
-        static const char* clipAbyBDoc;
-        static const char* fillGeometricDoc;
-        
+        static const QString replaceInfAndNaNDoc;
+        static const QString flaten3Dto2DDoc;
+        static const QString swapByteOrderDoc;
+        static const QString mergeColorPlaneDoc;
+        static const QString calcMeanOverZDoc;
+        static const QString calcObjSliceDoc;
+        static const QString clipValueDoc;
+        static const QString calcHistDoc;
+        static const QString clipAbyBDoc;
+        static const QString fillGeometricDoc;
 
         static ito::RetVal replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal replaceInfAndNaNParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
@@ -163,13 +162,12 @@ class BasicFilters : public ito::AddInAlgo
         static ito::RetVal fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut);
         static ito::RetVal fillGeometricParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
-        static const char* calcRadialMeanFilterDoc;
+        static const QString calcRadialMeanFilterDoc;
         static ito::RetVal calcRadialMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/);
         static ito::RetVal calcRadialMeanFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut);
 
     private:
         static ito::RetVal spikeGenericFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, const tFilterType filter);
-
 
         template<typename _Tp> static void fillGeoCircle(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radius, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal);
         template<typename _Tp> static void fillGeoEllipse(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radiusX, const ito::float64 radiusY, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal);

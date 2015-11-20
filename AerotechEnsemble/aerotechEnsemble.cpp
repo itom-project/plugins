@@ -55,7 +55,7 @@ AerotechEnsembleInterface::AerotechEnsembleInterface(QObject *parent)
     setObjectName("AerotechEnsemble");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+/*    char* docstring = \
 "This plugin allows communicating with controllers of type Ensemble (4.xx Version) of company Aerotech. \n\
 \n\
 If no parameters are given, the plugin connects to all available axes of the controller. Else you can provide \
@@ -68,9 +68,23 @@ allows redistributing the Ensemble libraries without having the end-user install
 license information of Aerotech see their documentation. \n\
 \n\
 For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributable Package provided by Microsoft (see Ensemble Programming Help).";
-
+*/
     m_description = QObject::tr("Plugin for the Ensemble-controller of Aerotech");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(
+"This plugin allows communicating with controllers of type Ensemble (4.xx Version) of company Aerotech. \n\
+\n\
+If no parameters are given, the plugin connects to all available axes of the controller. Else you can provide \
+a list of axis numbers (0..9) that should be connected. The first axis of this list then gets the axis ID 0, the \
+second the axis ID 1 and so on. \n\
+For running this plugin you need an installed Ensemble driver and a connected device. \n\
+\n\
+This plugin comes with version 4.06 of the Ensemble driver. You can change them by newer libraries (Version 4.XX). The manual of Ensemble \
+allows redistributing the Ensemble libraries without having the end-user install the Ensemble software. For further information about \
+license information of Aerotech see their documentation. \n\
+\n\
+For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributable Package provided by Microsoft (see Ensemble Programming Help).");
+
     m_author = "A. Bielke, M. Gronle, ITO, University Stuttgart, Juergen Ortmann, Ortmann Digitaltechnik";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;

@@ -47,7 +47,6 @@
 
 //#define SMC_READTIMEOUT 256
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 //! 
@@ -235,8 +234,6 @@ ito::RetVal ST8SMC4USB::synchronizeMotorSettings(double newAccel /*= -1.0*/, dou
     }
     else
     {
-        
-
         ito::DoubleMeta *dm = (ito::DoubleMeta*)m_params["speed"].getMeta();
         dm->setMin(0.0);
         dm->setMax(stepsToUnit(1000000, 0, microsteps));
@@ -553,6 +550,7 @@ ito::RetVal ST8SMC4USB::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -708,6 +706,7 @@ ito::RetVal ST8SMC4USB::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
 
@@ -741,6 +740,7 @@ ito::RetVal ST8SMC4USB::calib(const QVector<int> axis, ItomSharedSemaphore *wait
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -762,6 +762,7 @@ ito::RetVal ST8SMC4USB::getStatus(QSharedPointer<QVector<int> > status, ItomShar
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -786,7 +787,6 @@ ito::RetVal ST8SMC4USB::getPos(const int axis, QSharedPointer<double> pos, ItomS
     }
 
     return retval;
-    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -830,6 +830,7 @@ ito::RetVal ST8SMC4USB::getPos(const QVector<int> axis, QSharedPointer<QVector<d
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -971,6 +972,7 @@ ito::RetVal ST8SMC4USB::setOrigin(QVector<int> axis, ItomSharedSemaphore *waitCo
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -1128,6 +1130,7 @@ ito::RetVal ST8SMC4USB::waitForDone(const int timeoutMS, const QVector<int> axis
             }
         }
     }
+
     return retval;
 }
 

@@ -40,7 +40,6 @@ using namespace ito;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmeticInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -63,15 +62,20 @@ DataObjectArithmeticInterface::DataObjectArithmeticInterface()
     setObjectName("DataObjectArithmetic");
     
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
 - min- or maximum value\n\
 - centroid along dimensions or inplane \n\
 \n\
 This plugin does not have any unusual dependencies.";
-
+*/
     m_description = QObject::tr("Operations and arithmetic calculations of dataObject.");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr("This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
+- min- or maximum value\n\
+- centroid along dimensions or inplane \n\
+\n\
+This plugin does not have any unusual dependencies.");
 
     m_author            = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_license           = QObject::tr("LGPL");
@@ -104,11 +108,11 @@ DataObjectArithmetic::DataObjectArithmetic() : AddInAlgo()
 RetVal DataObjectArithmetic::singleDObjInputParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object for operation").toLatin1().data());
         paramsMand->append(param);
-        paramsOut->append( Param("result", ParamBase::Double | ParamBase::Out, 0.0, NULL, tr("result of calculation. This param can be int or double").toLatin1().data()));
+        paramsOut->append(Param("result", ParamBase::Double | ParamBase::Out, 0.0, NULL, tr("result of calculation. This param can be int or double").toLatin1().data()));
     }
     return retval;
 }
@@ -116,7 +120,8 @@ RetVal DataObjectArithmetic::singleDObjInputParams(QVector<ito::Param> *paramsMa
 RetVal DataObjectArithmetic::singleDObjInputInfParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+
+    if (!retval.containsError())
     {
         ito::Param param = Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object for operation").toLatin1().data());
         paramsMand->append(param);
@@ -124,61 +129,70 @@ RetVal DataObjectArithmetic::singleDObjInputInfParams(QVector<ito::Param> *param
         param = ito::Param("ignoreInf", ParamBase::Int | ParamBase::In, 0, 1, 0, tr("source image data object for operation").toLatin1().data());
         paramsOpt->append(param);
 
-        paramsOut->append( Param("result", ParamBase::Double | ParamBase::Out, 0.0, NULL, tr("result of calculation. This param can be int or double").toLatin1().data()));
+        paramsOut->append(Param("result", ParamBase::Double | ParamBase::Out, 0.0, NULL, tr("result of calculation. This param can be int or double").toLatin1().data()));
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObjectArithmetic::singleDObjInputValueAndPositionOutParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+
+    if (!retval.containsError())
     {
         ito::Param param = Param("sourceImage", ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object for operation").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("ignoreInf", ParamBase::Int | ParamBase::In, 0, 1, 0, tr("Ignore invalid-Values for floating point").toLatin1().data());
         paramsOpt->append(param);
-        paramsOut->append( Param("result", ParamBase::Double | ParamBase::Out, 0.0, NULL, tr("result of calculation. This param can be int or double").toLatin1().data()));
-        paramsOut->append( Param("plane", ParamBase::Int | ParamBase::Out, 0, NULL, tr("Index of the plane, which contains the result.").toLatin1().data()));
-        paramsOut->append( Param("y", ParamBase::Int | ParamBase::Out, 0, NULL, tr("Pixelindex in y-direction.").toLatin1().data()));
-        paramsOut->append( Param("x", ParamBase::Int | ParamBase::Out, 0, NULL, tr("Pixelindex in x-direction.").toLatin1().data()));
+        paramsOut->append(Param("result", ParamBase::Double | ParamBase::Out, 0.0, NULL, tr("result of calculation. This param can be int or double").toLatin1().data()));
+        paramsOut->append(Param("plane", ParamBase::Int | ParamBase::Out, 0, NULL, tr("Index of the plane, which contains the result.").toLatin1().data()));
+        paramsOut->append(Param("y", ParamBase::Int | ParamBase::Out, 0, NULL, tr("Pixelindex in y-direction.").toLatin1().data()));
+        paramsOut->append(Param("x", ParamBase::Int | ParamBase::Out, 0, NULL, tr("Pixelindex in x-direction.").toLatin1().data()));
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObjectArithmetic::doubleDObjInputParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+
+    if (!retval.containsError())
     {
         ito::Param param = Param("sourceImage1", ParamBase::DObjPtr | ParamBase::In, NULL, tr("1. source image data object for operation").toLatin1().data());
         paramsMand->append(param);
         param = Param("sourceImage2", ParamBase::DObjPtr | ParamBase::In, NULL, tr("2. source image data object for operation").toLatin1().data());
         paramsMand->append(param);
 
-        paramsOut->append( Param("result", ParamBase::Int | ParamBase::Out, 0, tr("0 if both data objects are not equal, else 1").toLatin1().data()));
+        paramsOut->append(Param("result", ParamBase::Int | ParamBase::Out, 0, tr("0 if both data objects are not equal, else 1").toLatin1().data()));
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* DataObjectArithmetic::minValueDoc = "This filter calculated the minimal value and its first location within the dataObject. \n\
+const QString DataObjectArithmetic::minValueDoc = tr("This filter calculated the minimal value and its first location within the dataObject. \n\
 \n\
 The result value will be Integer vor all integer types or Double for all floating point types\n\
 \n\
 The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types\n\
-\n";
+\n");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::minValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>( (*paramsMand)[0].getVal<void*>() );
+    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
 
-    if(dObj == NULL)
+    if (dObj == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toLatin1().data());
     }
 
-    if(dObj->getDims() < 2)
+    if (dObj->getDims() < 2)
     {
         return ito::RetVal(ito::retError, 0, tr("Error, object dimensions must be unequal zero").toLatin1().data());
     }
@@ -190,7 +204,7 @@ ito::RetVal DataObjectArithmetic::minValue(QVector<ito::ParamBase> *paramsMand, 
 
     retval += ito::dObjHelper::minValue(dObj, result, location, ignoreInf);
 
-    switch( dObj->getType() )
+    switch(dObj->getType())
     {
     case tUInt8:
     case tInt8:
@@ -216,28 +230,29 @@ ito::RetVal DataObjectArithmetic::minValue(QVector<ito::ParamBase> *paramsMand, 
     (*paramsOut)[2] = ParamBase("y",ParamBase::Int | ParamBase::Out, static_cast<int>(location[1]));
     (*paramsOut)[3] = ParamBase("x",ParamBase::Int | ParamBase::Out, static_cast<int>(location[2]));
 
-
     return retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* DataObjectArithmetic::maxValueDoc = "This filter calculated the maximal value and its first location within the dataObject. \n\
+const QString DataObjectArithmetic::maxValueDoc = tr("This filter calculated the maximal value and its first location within the dataObject. \n\
 \n\
 The result value will be Integer vor all integer types or Double for all floating point types\n\
 \n\
 The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types\n\
-\n";
+\n");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::maxValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>( (*paramsMand)[0].getVal<void*>() );
+    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
 
-    if(dObj == NULL)
+    if (dObj == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: source image is NUL").toLatin1().data());
     }
 
-    if(dObj->getDims() < 2)
+    if (dObj->getDims() < 2)
     {
         return ito::RetVal(ito::retError, 0, tr("Error, object dimensions must be unequal zero").toLatin1().data());
     }
@@ -250,7 +265,7 @@ ito::RetVal DataObjectArithmetic::maxValue(QVector<ito::ParamBase> *paramsMand, 
 
     retval += ito::dObjHelper::maxValue(dObj, result, location, ignoreInf);
 
-    switch( dObj->getType() )
+    switch(dObj->getType())
     {
     case tUInt8:
     case tInt8:
@@ -278,18 +293,20 @@ ito::RetVal DataObjectArithmetic::maxValue(QVector<ito::ParamBase> *paramsMand, 
 
     return retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* DataObjectArithmetic::minMaxValueDoc = "This filter calculated the minimal and maximal value and its first location within the dataObject. \n\
+const QString DataObjectArithmetic::minMaxValueDoc = tr("This filter calculated the minimal and maximal value and its first location within the dataObject. \n\
 \n\
 The result value will be Integer vor all integer types or Double for all floating point types\n\
 \n\
 The filter do not work with RGBA32 but with all other data-types\n\
-\n";
+\n");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObjectArithmetic::minMaxValueParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object for operation").toLatin1().data());
         paramsMand->append(param);
@@ -297,30 +314,31 @@ RetVal DataObjectArithmetic::minMaxValueParams(QVector<ito::Param> *paramsMand, 
         paramsOpt->append(param);
         param = ito::Param("complexHandling", ParamBase::Int | ParamBase::In, 0, 3, 0, tr("Switch complex handling, 0:abs-Value, 1:imaginary-Value, 2:real-Value, 3: argument-Value").toLatin1().data());
         paramsOpt->append(param);
-        paramsOut->append( Param("minimum", ParamBase::Double | ParamBase::Out, 0.0, NULL, tr("Minimal value, this parameter be int or double").toLatin1().data()));
-        paramsOut->append( Param("planeMin", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Index of the plane, which contains the result.").toLatin1().data()));
-        paramsOut->append( Param("yMin", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Pixelindex in y-direction.").toLatin1().data()));
-        paramsOut->append( Param("xMin", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Pixelindex in x-direction.").toLatin1().data()));
-        paramsOut->append( Param("maximum", ParamBase::Double | ParamBase::Out, 0.0, NULL, tr("Maximum value, this parameter. This param can be int or double").toLatin1().data()));
-        paramsOut->append( Param("planeMax", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Index of the plane, which contains the result.").toLatin1().data()));
-        paramsOut->append( Param("yMax", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Pixelindex in y-direction.").toLatin1().data()));
-        paramsOut->append( Param("xMax", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Pixelindex in x-direction.").toLatin1().data()));
+        paramsOut->append(Param("minimum", ParamBase::Double | ParamBase::Out, 0.0, NULL, tr("Minimal value, this parameter be int or double").toLatin1().data()));
+        paramsOut->append(Param("planeMin", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Index of the plane, which contains the result.").toLatin1().data()));
+        paramsOut->append(Param("yMin", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Pixelindex in y-direction.").toLatin1().data()));
+        paramsOut->append(Param("xMin", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Pixelindex in x-direction.").toLatin1().data()));
+        paramsOut->append(Param("maximum", ParamBase::Double | ParamBase::Out, 0.0, NULL, tr("Maximum value, this parameter. This param can be int or double").toLatin1().data()));
+        paramsOut->append(Param("planeMax", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Index of the plane, which contains the result.").toLatin1().data()));
+        paramsOut->append(Param("yMax", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Pixelindex in y-direction.").toLatin1().data()));
+        paramsOut->append(Param("xMax", ParamBase::Int | ParamBase::Out, 0.0, NULL, tr("Pixelindex in x-direction.").toLatin1().data()));
     }
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::minMaxValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>( (*paramsMand)[0].getVal<void*>() );
+    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
 
-    if(dObj == NULL)
+    if (dObj == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: source image is NUL").toLatin1().data());
     }
 
-    if(dObj->getDims() < 2)
+    if (dObj->getDims() < 2)
     {
         return ito::RetVal(ito::retError, 0, tr("Error, object dimensions must be unequal zero").toLatin1().data());
     }
@@ -335,7 +353,7 @@ ito::RetVal DataObjectArithmetic::minMaxValue(QVector<ito::ParamBase> *paramsMan
 
     retval += ito::dObjHelper::minMaxValue(dObj, minVal, locationMin, maxVal, locationMax, ignoreInf, cmplxState);
 
-    switch( dObj->getType() )
+    switch(dObj->getType())
     {
     case tUInt8:
     case tInt8:
@@ -367,38 +385,36 @@ ito::RetVal DataObjectArithmetic::minMaxValue(QVector<ito::ParamBase> *paramsMan
     (*paramsOut)[6] = ParamBase("yMax",ParamBase::Int | ParamBase::Out, static_cast<int>(locationMax[1]));
     (*paramsOut)[7] = ParamBase("xMax",ParamBase::Int | ParamBase::Out, static_cast<int>(locationMax[2]));
 
-
     return retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* DataObjectArithmetic::meanValueDoc = "This filter calculated the mean value within the dataObject. \n\
+const QString DataObjectArithmetic::meanValueDoc = tr("This filter calculated the mean value within the dataObject. \n\
 \n\
 The return value containing the mean value of the dataObject.\n\
 \n\
 The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types\n\
-\n";
+\n");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::meanValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>( (*paramsMand)[0].getVal<void*>() );
+    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
 
-    if(dObj == NULL)
+    if (dObj == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: source image is NUL").toLatin1().data());
     }
 
-    if(dObj->getDims() < 2)
+    if (dObj->getDims() < 2)
     {
         return ito::RetVal(ito::retError, 0, tr("Error, object dimensions must be unequal zero").toLatin1().data());
     }
 
 // new Version using the SDK-minValueHelper
-
-
     ito::float64 result = 0.0;
     bool toggleInf = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
-    
 
     retval += ito::dObjHelper::meanValue(dObj, result, toggleInf);
 
@@ -406,11 +422,12 @@ ito::RetVal DataObjectArithmetic::meanValue(QVector<ito::ParamBase> *paramsMand,
 
     return retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObjectArithmetic::devValueParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ParamBase::In, NULL, tr("source image data object for operation").toLatin1().data());
         paramsMand->append(param);
@@ -419,28 +436,29 @@ RetVal DataObjectArithmetic::devValueParams(QVector<ito::Param> *paramsMand, QVe
         param = Param("ignoreInf", ParamBase::Int | ParamBase::In, 0, 1, 1, tr("Ignore invalid-Values for floating point").toLatin1().data());
         paramsOpt->append(param);
 
-        paramsOut->append( ito::Param("mean", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, NULL, tr("mean result").toLatin1().data()));
-        paramsOut->append( ito::Param("dev", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, NULL, tr("deviation result").toLatin1().data()));
+        paramsOut->append(ito::Param("mean", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, NULL, tr("mean result").toLatin1().data()));
+        paramsOut->append(ito::Param("dev", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, NULL, tr("deviation result").toLatin1().data()));
     }
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* DataObjectArithmetic::devValueDoc = "The filter returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.\nThe optinal flag to toggles if (flag==0) the deviation is calculated by 1/(n-1)*sqrt(sum(x-xm)^2)\nor (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)\n\
+const QString DataObjectArithmetic::devValueDoc = tr("The filter returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.\nThe optinal flag to toggles if (flag==0) the deviation is calculated by 1/(n-1)*sqrt(sum(x-xm)^2)\nor (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)\n\
 \n\
 The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types\n\
-\n";
+\n");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::devValue(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>( (*paramsMand)[0].getVal<void*>() );
+    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
 
-    if(dObj == NULL)
+    if (dObj == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toLatin1().data());
     }
-
 
     ito::float64 meanResult = 0.0;
     ito::float64 devResult = 0.0;
@@ -448,7 +466,7 @@ ito::RetVal DataObjectArithmetic::devValue(QVector<ito::ParamBase> *paramsMand, 
     int flag = (*paramsOpt)[0].getVal<int>();
     bool toggleInf = (*paramsOpt)[1].getVal<int>() > 0 ? true : false;
 
-    if(dObj->getDims() < 2)
+    if (dObj->getDims() < 2)
     {
         return ito::RetVal(ito::retError, 0, tr("Error, object dimensions must be unequal zero").toLatin1().data());
     }
@@ -464,75 +482,78 @@ ito::RetVal DataObjectArithmetic::devValue(QVector<ito::ParamBase> *paramsMand, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* DataObjectArithmetic::areEqualDoc = "Check pixel-wise wether two dataObjects are equal. \n\
+const QString DataObjectArithmetic::areEqualDoc = tr("Check pixel-wise wether two dataObjects are equal. \n\
 The filter returns 1 if both objects are pixel-wise equal, else returns 0.\n\
 \n\
 The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types\n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Type> bool areEqualHelper(_Type* first, int xStep0, int yStep0, _Type* second, int xstep1, int ystep1, int rows, int cols)
 {
     _Type* curSecond;
     _Type* curFirst;
-    if(std::numeric_limits<_Type>::is_exact)
+    if (std::numeric_limits<_Type>::is_exact)
     {
-        for(int y = 0; y < rows; y++)
+        for (int y = 0; y < rows; y++)
         {
             curFirst = (_Type*)(((char*)first) + y * yStep0);
             curSecond =(_Type*)(((char*)second) + y * yStep0);
-            for(int x = 0; x < cols - 1; x++)
+            for (int x = 0; x < cols - 1; x++)
             {
-                if(first[x] != second[x]) return true;
+                if (first[x] != second[x]) return true;
             }
-            if(*first != *second) return true;
+            if (*first != *second) return true;
         }
     }
     else
     {
-        for(int y = 0; y < rows; y++)
+        for (int y = 0; y < rows; y++)
         {
             curFirst = (_Type*)(((char*)first) + y * yStep0);
             curSecond =(_Type*)(((char*)second) + y * yStep0);
-            for(int x = 0; x < cols - 1; x++)
+            for (int x = 0; x < cols - 1; x++)
             {
-                if(ito::dObjHelper::isNotZero<_Type>(first[x] != second[x])) return true;
+                if (ito::dObjHelper::isNotZero<_Type>(first[x] != second[x])) return true;
             }
         }
     }
     return false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template<> bool areEqualHelper<complex64>(complex64* first, int xStep0, int yStep0, complex64* second, int xstep1, int ystep1, int rows, int cols)
 {
     complex64* curSecond;
     complex64* curFirst;
-    for(int y = 0; y < rows; y++)
+    for (int y = 0; y < rows; y++)
     {
         curFirst = (complex64*)(((char*)first) + y * yStep0);
         curSecond =(complex64*)(((char*)second) + y * yStep0);
-        for(int x = 0; x < cols - 1; x++)
+        for (int x = 0; x < cols - 1; x++)
         {
-            if(ito::dObjHelper::isNotZero(first[x].real() - second[x].real())) return true;
-            if(ito::dObjHelper::isNotZero(first[x].imag() - second[x].imag())) return true;
+            if (ito::dObjHelper::isNotZero(first[x].real() - second[x].real())) return true;
+            if (ito::dObjHelper::isNotZero(first[x].imag() - second[x].imag())) return true;
         }
     }
 
     return false;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 template<> bool areEqualHelper<complex128>(complex128* first, int xStep0, int yStep0, complex128* second, int xstep1, int ystep1, int rows, int cols)
 {
 
     complex128* curSecond;
     complex128* curFirst;
-    for(int y = 0; y < rows; y++)
+    for (int y = 0; y < rows; y++)
     {
         curFirst = (complex128*)(((char*)first) + y * yStep0);
         curSecond =(complex128*)(((char*)second) + y * yStep0);
-        for(int x = 0; x < cols - 1; x++)
+        for (int x = 0; x < cols - 1; x++)
         {
-            if(ito::dObjHelper::isNotZero(first[x].real() - second[x].real())) return true;
-            if(ito::dObjHelper::isNotZero(first[x].imag() - second[x].imag())) return true;
+            if (ito::dObjHelper::isNotZero(first[x].real() - second[x].real())) return true;
+            if (ito::dObjHelper::isNotZero(first[x].imag() - second[x].imag())) return true;
         }
     }
 
@@ -543,15 +564,15 @@ template<> bool areEqualHelper<complex128>(complex128* first, int xStep0, int yS
 ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj1 = static_cast<ito::DataObject*>( (*paramsMand)[0].getVal<void*>() );
-    if(dObj1 == NULL)
+    ito::DataObject *dObj1 = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
+    if (dObj1 == NULL)
     {
         (*paramsOut)[0].setVal<int>(0);
         return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toLatin1().data());
     }
 
-    ito::DataObject *dObj2 = static_cast<ito::DataObject*>( (*paramsMand)[1].getVal<void*>() );
-    if(dObj2 == NULL)
+    ito::DataObject *dObj2 = static_cast<ito::DataObject*>((*paramsMand)[1].getVal<void*>());
+    if (dObj2 == NULL)
     {
         (*paramsOut)[0].setVal<int>(0);
         return ito::RetVal(ito::retError, 0, tr("Error: source image is NULL").toLatin1().data());
@@ -561,7 +582,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
     bool dimsFlag;
     bool last2DimsFlag;
 
-    if(!ito::dObjHelper::dObjareEqualDetail(dObj1, dObj2, typeFlag, dimsFlag, last2DimsFlag))
+    if (!ito::dObjHelper::dObjareEqualDetail(dObj1, dObj2, typeFlag, dimsFlag, last2DimsFlag))
     {
         //outVals->append(static_cast<bool>(false));
         (*paramsOut)[0].setVal<int>(0);
@@ -579,12 +600,12 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
     {
         cv::Mat_<unsigned char> * curMat = ((cv::Mat_<unsigned char> *)test.get_mdata()[test.seekMat(z)]);
         unsigned char* dataptr = NULL;
-        for(y = 0; y < ySize; y++)
+        for (y = 0; y < ySize; y++)
         {
             dataptr = curMat->ptr<unsigned char>(y);
-            for(x = 0; x < xSize; x++)
+            for (x = 0; x < xSize; x++)
             {
-                if(!dataptr[x])
+                if (!dataptr[x])
                 {
                     (*paramsOut)[0].setVal<int>(0);
                     return retOk;
@@ -610,7 +631,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
             int8* first = mat1->ptr<int8>();
             int8* second = mat2->ptr<int8>();
 
-            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            if (areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
             {
                 (*paramsOut)[0].setVal<int>(0);
                 return retOk;
@@ -631,7 +652,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
             uint8* first = mat1->ptr<uint8>();
             uint8* second = mat2->ptr<uint8>();
 
-            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            if (areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
             {
                 (*paramsOut)[0].setVal<int>(0);
                 return retOk;
@@ -652,7 +673,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
             int16* first = mat1->ptr<int16>();
             int16* second = mat2->ptr<int16>();
 
-            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            if (areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
             {
                 (*paramsOut)[0].setVal<int>(0);
                 return retOk;
@@ -673,7 +694,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
             uint16* first = mat1->ptr<uint16>();
             uint16* second = mat2->ptr<uint16>();
 
-            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            if (areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
             {
                 (*paramsOut)[0].setVal<int>(0);
                 return retOk;
@@ -694,7 +715,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
             int32* first = mat1->ptr<int32>();
             int32* second = mat2->ptr<int32>();
 
-            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            if (areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
             {
                 (*paramsOut)[0].setVal<int>(0);
                 return retOk;
@@ -715,7 +736,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
             float32* first = mat1->ptr<float32>();
             float32* second = mat2->ptr<float32>();
 
-            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            if (areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
             {
                 (*paramsOut)[0].setVal<int>(0);
                 return retOk;
@@ -736,7 +757,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
             float64* first = mat1->ptr<float64>();
             float64* second = mat2->ptr<float64>();
 
-            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            if (areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
             {
                 (*paramsOut)[0].setVal<int>(0);
                 return retOk;
@@ -757,7 +778,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
             complex64* first = mat1->ptr<complex64>();
             complex64* second = mat2->ptr<complex64>();
 
-            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            if (areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
             {
                 (*paramsOut)[0].setVal<int>(0);
                 return retOk;
@@ -778,7 +799,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
             complex128* first = mat1->ptr<complex128>();
             complex128* second = mat2->ptr<complex128>();
 
-            if(areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
+            if (areEqualHelper(first, stepX0, stepY0, second, stepX1, stepY1, mat1->rows, mat1->cols))
             {
                 (*paramsOut)[0].setVal<int>(0);
                 return retOk;
@@ -787,7 +808,6 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
         break;
         default:
             return ito::RetVal(ito::retError, 0, tr("type not supported").toLatin1().data());
-    
     }
     
     (*paramsOut)[0].setVal<int>(1);
@@ -796,7 +816,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* DataObjectArithmetic::centerOfGravityDoc = "This filter calculates the center of gravity of a 2D real image. \n\
+const QString DataObjectArithmetic::centerOfGravityDoc = tr("This filter calculates the center of gravity of a 2D real image. \n\
 \n\
 The return value contains the column and row position in pixel and physical coordinates.\n\
 \n\
@@ -807,12 +827,13 @@ valid intensity value before calculating the COG with the following equations: \
 cXI = \\frac{\\sum{idx_x * (I - lowThreshold)}}{\\sum{(I - lowThreshold)} \n\
 cYI = \\frac{\\sum{idx_y * (I - lowThreshold)}}{\\sum{(I - lowThreshold)} \n\
 \n\
-The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types.";
+The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types.");
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObjectArithmetic::centerOfGravityParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("2D source image data object (u)int8, (u)int16, int32, float32 or float64 only.").toLatin1().data());
         paramsMand->append(param);
@@ -821,26 +842,25 @@ RetVal DataObjectArithmetic::centerOfGravityParams(QVector<ito::Param> *paramsMa
         param = Param("highThreshold", ito::ParamBase::Double, -1*std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), tr("values > highThreshold are ignored.").toLatin1().data());
         paramsOpt->append(param);
 
-        paramsOut->append( ito::Param("cYI", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("y-Coordinate of COG (index)").toLatin1().data()));
-        paramsOut->append( ito::Param("cXI", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("x-Coordinate of COG (index)").toLatin1().data()));
-        paramsOut->append( ito::Param("cY", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("y-Coordinate of COG (physical unit)").toLatin1().data()));
-        paramsOut->append( ito::Param("cX", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("x-Coordinate of COG (physical unit)").toLatin1().data()));
+        paramsOut->append(ito::Param("cYI", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("y-Coordinate of COG (index)").toLatin1().data()));
+        paramsOut->append(ito::Param("cXI", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("x-Coordinate of COG (index)").toLatin1().data()));
+        paramsOut->append(ito::Param("cY", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("y-Coordinate of COG (physical unit)").toLatin1().data()));
+        paramsOut->append(ito::Param("cX", ito::ParamBase::Double | ito::ParamBase::Out, std::numeric_limits<ito::float64>::quiet_NaN(), NULL, tr("x-Coordinate of COG (physical unit)").toLatin1().data()));
     }
 
     return retval;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::centerOfGravity(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObj = static_cast<ito::DataObject*>( (*paramsMand)[0].getVal<void*>() );
-    if(dObj == NULL)
+    ito::DataObject *dObj = static_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());
+    if (dObj == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is NULL").toLatin1().data());
     }
-    if(dObj->getDims() < 1)
+    if (dObj->getDims() < 1)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is not initialized").toLatin1().data());    
     }
@@ -854,19 +874,18 @@ ito::RetVal DataObjectArithmetic::centerOfGravity(QVector<ito::ParamBase> *param
     ito::float64 highThreshold = (*paramsOpt)[1].getVal<ito::float64>();
 
     retval += ito::dObjHelper::verifyDataObjectType(dObj, "sourceImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(dObj->getDims() > 2)
+    if (dObj->getDims() > 2)
     {
-        for(int i = 0; i < dObj->getDims() - 2; i++)
+        for (int i = 0; i < dObj->getDims() - 2; i++)
         {
-            if(dObj->getSize(i) > 1)
+            if (dObj->getSize(i) > 1)
             {
                 return ito::RetVal(ito::retError, 0, tr("Error: source image must not have multiple planes").toLatin1().data());  
             }
         }    
     }    
 
-
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         const cv::Mat *plane = dObj->getCvPlaneMat(0);
 
@@ -898,11 +917,10 @@ ito::RetVal DataObjectArithmetic::centerOfGravity(QVector<ito::ParamBase> *param
         }
     }
 
-
     (*paramsOut)[0].setVal<ito::float64>(cy);
     (*paramsOut)[1].setVal<ito::float64>(cx);
 
-    if(!retval.containsError() && ito::dObjHelper::isFinite<ito::float64>(cy))
+    if (!retval.containsError() && ito::dObjHelper::isFinite<ito::float64>(cy))
     {
         bool test;
         cxPhys = dObj->getPixToPhys(dObj->getDims()-1, cx, test);
@@ -922,15 +940,15 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv
     ito::float64 val = 0.0, sumva = 0.0, sumXv = 0.0, sumYv = 0.0;
     const _Tp *pValue = NULL;
     
-    if(std::numeric_limits<_Tp>::is_exact)
+    if (std::numeric_limits<_Tp>::is_exact)
     {
         const _Tp lowThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(std::numeric_limits<_Tp>::min()), lowThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
         const _Tp highThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(std::numeric_limits<_Tp>::min()), highThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
 
-        for(y = 0; y < mat->rows; ++y)
+        for (y = 0; y < mat->rows; ++y)
         {
             pValue = mat->ptr<_Tp>(y);
-            for(x = 0; x < mat->cols; ++x)
+            for (x = 0; x < mat->cols; ++x)
             {
                 if (pValue[x] >= lowThres && pValue[x] <= highThres)
                 {
@@ -947,12 +965,12 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv
         const _Tp lowThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(-std::numeric_limits<_Tp>::max()), lowThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
         const _Tp highThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(-std::numeric_limits<_Tp>::max()), highThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
 
-        for(y = 0; y < mat->rows; ++y)
+        for (y = 0; y < mat->rows; ++y)
         {
             pValue = mat->ptr<_Tp>(y);
-            for(x = 0; x < mat->cols; ++x)
+            for (x = 0; x < mat->cols; ++x)
             {
-                if(ito::dObjHelper::isFinite<_Tp>(pValue[x]) && pValue[x] >= lowThres && pValue[x] <= highThres)
+                if (ito::dObjHelper::isFinite<_Tp>(pValue[x]) && pValue[x] >= lowThres && pValue[x] <= highThres)
                 {
                     val = (ito::float64) (pValue[x] - lowThres);
                     sumva += val;
@@ -963,7 +981,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv
         }    
     }
 
-    if(ito::dObjHelper::isNotZero<ito::float64>(sumva))
+    if (ito::dObjHelper::isNotZero<ito::float64>(sumva))
     {
         xCOG = sumXv / sumva;
         yCOG = sumYv / sumva;    
@@ -975,12 +993,10 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv
     }
 
     return ito::retOk;
-
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* DataObjectArithmetic::centerOfGravity1DimDoc = "Calculate center of gravity for each plane along the x- or y-direction. \n\
+const QString DataObjectArithmetic::centerOfGravity1DimDoc = tr("Calculate center of gravity for each plane along the x- or y-direction. \n\
 \n\
 This methods creates the two given data objects 'destCOG' and 'destIntensity' in the following way: \n\
 \n\
@@ -1002,12 +1018,13 @@ The value 'lowerBoundary' is set to the corresponding maximum of 'lowerThreshold
 all drop to zero at the edge of each search range; for a valid cog determination, it is necessary to assume that all values that are far away from the cog position have values around zero; \n\
 if this is not the case consider to set an appropriate value 'lowerThreshold' and / or 'dynamicThreshold'. \n\
 \n\
-The filter is not implemented for complex data types and the type rgba32.";
+The filter is not implemented for complex data types and the type rgba32.");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObjectArithmetic::centerOfGravity1DimParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("source image data (2D or 3D) object for operation (u)int8, (u)int16, int32, float32 or float64").toLatin1().data());
         paramsMand->append(param);
@@ -1045,26 +1062,26 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
     ito::DataObject *dObjCogOut = paramsMand->at(1).getVal<ito::DataObject*>();
     ito::DataObject *dObjIntOut = paramsMand->at(2).getVal<ito::DataObject*>();
 
-    if(dObjIN == NULL)
+    if (dObjIN == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is NULL").toLatin1().data());
     }
-    if(dObjIN->getDims() < 1)
+    if (dObjIN->getDims() < 1)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is not initialized").toLatin1().data());    
     }
     
-    if(dObjCogOut == NULL)
+    if (dObjCogOut == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: destCOG image is NULL").toLatin1().data());
     }
     
-    if(dObjIntOut == NULL)
+    if (dObjIntOut == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: destIntensity image is NULL").toLatin1().data());
     }
 
-    if(dObjCogOut == dObjIntOut)
+    if (dObjCogOut == dObjIntOut)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: destCOG and destIntensity must not be the same data objects.").toLatin1().data());
     }
@@ -1082,7 +1099,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
     int dObjINDims = dObjIN->getDims();
 
     retval += ito::dObjHelper::verify3DDataObject(dObjIN, "sourceImage", 1, 100000, 1, 100000, 1, 100000, 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         sizeZ =  dObjIN->getSize(0);
         sizeY =  dObjIN->getSize(1);
@@ -1104,7 +1121,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
 
     ito::RetVal retvalTemp = ito::retOk;
     
-    if(columnWise)
+    if (columnWise)
     {
         retvalTemp = ito::dObjHelper::verify2DDataObject(dObjCogOut, "destCOG", sizeZ, sizeZ, sizeX, sizeX, 1, ito::tFloat64);
 
@@ -1129,7 +1146,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
         offsetVert = dObjIN->getAxisOffset(dObjIN->getDims()-1);
     }
 
-    if(columnWise)
+    if (columnWise)
     {
         retvalTemp = ito::dObjHelper::verify2DDataObject(dObjIntOut, "destIntensity", sizeZ, sizeZ, sizeX, sizeX, 1, dObjIN->getType());
     }
@@ -1138,9 +1155,9 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
         retvalTemp = ito::dObjHelper::verify2DDataObject(dObjIntOut, "destIntensity", sizeZ, sizeZ, sizeY, sizeY, 1, dObjIN->getType());
     }
 
-    if(retvalTemp.containsError())
+    if (retvalTemp.containsError())
     {
-        if(columnWise)
+        if (columnWise)
         {
             *dObjIntOut = ito::DataObject(sizeZ, sizeX, dObjIN->getType());
         }
@@ -1150,7 +1167,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
         }
     }
  
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         cv::Mat sliceCOG;
         cv::Mat sliceInt;
@@ -1161,49 +1178,49 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
         switch(dObjIN->getType())
         {
             case ito::tInt8:
-                for(ito::uint32 i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
+                for (ito::uint32 i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = dObjIN->getCvPlaneMat(i);
                     centroidHelperFor1D<ito::int8>(planeIn, planeCogOut->ptr<ito::float64>(i), planeIntOut->ptr<ito::int8>(i), cv::saturate_cast<ito::int8>(pvThreshold), cv::saturate_cast<ito::int8>(lowerThreshold), dynThreshold, scaleVert, offsetVert, columnWise);
                 }
             break;
             case ito::tUInt8:
-                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
+                for (ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = dObjIN->getCvPlaneMat(i);
                     centroidHelperFor1D<ito::uint8>(planeIn, planeCogOut->ptr<ito::float64>(i), planeIntOut->ptr<ito::uint8>(i), cv::saturate_cast<ito::uint8>(pvThreshold), cv::saturate_cast<ito::uint8>(lowerThreshold), dynThreshold, scaleVert, offsetVert, columnWise);
                 }
             break;
             case ito::tInt16:
-                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
+                for (ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = dObjIN->getCvPlaneMat(i);
                     centroidHelperFor1D<ito::int16>(planeIn, planeCogOut->ptr<ito::float64>(i), planeIntOut->ptr<ito::int16>(i), cv::saturate_cast<ito::int16>(pvThreshold), cv::saturate_cast<ito::int16>(lowerThreshold), dynThreshold, scaleVert, offsetVert, columnWise);
                 }
             break;
             case ito::tUInt16:
-                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
+                for (ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = dObjIN->getCvPlaneMat(i);
                     centroidHelperFor1D<ito::uint16>(planeIn, planeCogOut->ptr<ito::float64>(i), planeIntOut->ptr<ito::uint16>(i), cv::saturate_cast<ito::uint16>(pvThreshold), cv::saturate_cast<ito::uint16>(lowerThreshold), dynThreshold, scaleVert, offsetVert, columnWise);
                 }
             break;
             case ito::tInt32:
-                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
+                for (ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = dObjIN->getCvPlaneMat(i);
                     centroidHelperFor1D<ito::int32>(planeIn, planeCogOut->ptr<ito::float64>(i), planeIntOut->ptr<ito::int32>(i), cv::saturate_cast<ito::int32>(pvThreshold), cv::saturate_cast<ito::int32>(lowerThreshold), dynThreshold, scaleVert, offsetVert, columnWise);
                 }
             break;
             case ito::tFloat32:
-                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
+                for (ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = dObjIN->getCvPlaneMat(i);
                     centroidHelperFor1D<ito::float32>(planeIn, planeCogOut->ptr<ito::float64>(i), planeIntOut->ptr<ito::float32>(i), cv::saturate_cast<ito::float32>(pvThreshold), cv::saturate_cast<ito::float32>(lowerThreshold), dynThreshold, scaleVert, offsetVert, columnWise);
                 }
             break;
             case ito::tFloat64:
-                for(ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
+                for (ito::uint32  i = 0; i < (ito::uint32)dObjIN->calcNumMats(); i++)
                 {
                     planeIn = dObjIN->getCvPlaneMat(i);
                     centroidHelperFor1D<ito::float64>(planeIn, planeCogOut->ptr<ito::float64>(i), planeIntOut->ptr<ito::float64>(i), cv::saturate_cast<ito::float64>(pvThreshold), cv::saturate_cast<ito::float64>(lowerThreshold), dynThreshold, scaleVert, offsetVert, columnWise);
@@ -1214,24 +1231,22 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
         }
     }
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         bool test;
-        if(columnWise)
+        if (columnWise)
         {
-            
             dObjCogOut->setAxisScale(1, dObjIN->getAxisScale(dObjINDims-1));
             dObjCogOut->setAxisOffset(1, dObjIN->getAxisOffset(dObjINDims-1));
             dObjCogOut->setAxisUnit(1, dObjIN->getAxisUnit(dObjINDims-1, test));
             dObjCogOut->setAxisDescription(1, dObjIN->getAxisDescription(dObjINDims-1, test));
 
-            dObjCogOut->setValueUnit( dObjIN->getAxisDescription(dObjINDims - 2, test) );
+            dObjCogOut->setValueUnit(dObjIN->getAxisDescription(dObjINDims - 2, test));
 
             dObjIntOut->setAxisScale(1, dObjIN->getAxisScale(dObjINDims - 1));
             dObjIntOut->setAxisOffset(1, dObjIN->getAxisOffset(dObjINDims - 1));
             dObjIntOut->setAxisUnit(1, dObjIN->getAxisUnit(dObjINDims - 1, test));
             dObjIntOut->setAxisDescription(1, dObjIN->getAxisDescription(dObjINDims - 1, test));
-
         }
         else
         {
@@ -1240,7 +1255,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
             dObjCogOut->setAxisUnit(1,          dObjIN->getAxisUnit(dObjINDims - 2, test));
             dObjCogOut->setAxisDescription(1,   dObjIN->getAxisDescription(dObjINDims - 2, test));
 
-            dObjCogOut->setValueUnit( dObjIN->getAxisDescription(dObjINDims - 1, test) );
+            dObjCogOut->setValueUnit(dObjIN->getAxisDescription(dObjINDims - 1, test));
 
             dObjIntOut->setAxisScale(1,         dObjIN->getAxisScale(dObjINDims - 2));
             dObjIntOut->setAxisOffset(1,        dObjIN->getAxisOffset(dObjINDims - 2));
@@ -1269,7 +1284,7 @@ ito::RetVal DataObjectArithmetic::centerOfGravity1Dim(QVector<ito::ParamBase> *p
         dObjIN->copyTagMapTo(*dObjCogOut);
         dObjIN->copyTagMapTo(*dObjIntOut);
 
-        if(columnWise)
+        if (columnWise)
         {
             QString protocol("Center of gravity evaluated columnwise from intensity stack, ");
             protocol.append("pvThreshold: ");
@@ -1312,7 +1327,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
     const _Tp *pInValue = NULL;
     _Tp sw;
 
-    if(alongCols)
+    if (alongCols)
     {
         cogsToCalc = inMat->rows;
         pixelToEval =  inMat->cols;  
@@ -1332,7 +1347,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
     bool runDynamic = dynamicThreshold > std::numeric_limits<ito::float64>::epsilon() ? true : false;
     bool runLower = false;
 
-    if(std::numeric_limits<_Tp>::is_exact)
+    if (std::numeric_limits<_Tp>::is_exact)
     {
         typeMax = std::numeric_limits<_Tp>::max();
         typeMin = std::numeric_limits<_Tp>::min();   
@@ -1353,7 +1368,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
         }
     }
     
-    for(ito::uint32 pixelCnt = 0; pixelCnt < pixelToEval; pixelCnt++)
+    for (ito::uint32 pixelCnt = 0; pixelCnt < pixelToEval; pixelCnt++)
     {
         sumI = 0.0; 
         sumPxI = 0.0;
@@ -1365,14 +1380,14 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
         //determine the min/max value along the search direction (along each column or each row)
         pInValue  = inMatPtrFirst + stepAddrInMat * pixelCnt;
 
-        for(cogCnt = 0; cogCnt < cogsToCalc; cogCnt++)
+        for (cogCnt = 0; cogCnt < cogsToCalc; cogCnt++)
         {
-            if(maxVal < *pInValue)
+            if (maxVal < *pInValue)
             {
                 maxVal = *pInValue;
             }
 
-            if(minVal > *pInValue)
+            if (minVal > *pInValue)
             {
                 minVal = *pInValue;
             }
@@ -1391,9 +1406,9 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
         */
         pInValue = inMatPtrFirst + stepAddrInMat * pixelCnt;
 
-        if((maxVal - minVal) > pvThreshold)
+        if ((maxVal - minVal) > pvThreshold)
         {
-            if(runDynamic || runLower)
+            if (runDynamic || runLower)
             {
                 if (runLower && runDynamic)
                 {
@@ -1408,9 +1423,9 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
                     sw = ((ito::float64)maxVal + (ito::float64)minVal) * dynamicThreshold; 
                 }
 
-                for(cogCnt = 0; cogCnt < cogsToCalc; ++cogCnt)
+                for (cogCnt = 0; cogCnt < cogsToCalc; ++cogCnt)
                 {
-                    if(*pInValue > sw)
+                    if (*pInValue > sw)
                     {
                         val = *pInValue - sw;
                         sumI += val;
@@ -1418,12 +1433,11 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
                     }
                     pInValue = pInValue + stepEvalInMat;
                 }
-
             }
             else
             {
                 //this version is only valid, if the minimum value converges towards zero, else the minimum value must be subtracted from each value first (consider to set a lowerThreshold)
-                for(cogCnt = 0; cogCnt < cogsToCalc; ++cogCnt)
+                for (cogCnt = 0; cogCnt < cogsToCalc; ++cogCnt)
                  {
                     val = *pInValue;
                     sumI += val;
@@ -1437,7 +1451,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
         outINT[pixelCnt] = maxVal;
 
         //calculate and save current cog position
-        if(ito::dObjHelper::isNotZero<ito::float64>(sumI))
+        if (ito::dObjHelper::isNotZero<ito::float64>(sumI))
         {
             outCOG[pixelCnt] = ((sumPxI / sumI) - offset) * scale; //sumPxI / sumI is in pixel-coordinates, outCOG is in physical coordinates: (px - offset) * scaling = phys
         }
@@ -1448,27 +1462,28 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
     }
 
     return ito::retOk;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char *DataObjectArithmetic::getPercentageThresholdDoc = "analyzes all values in the given data object and returns the value, which is at a given percentage in the sorted value list.";
+const QString DataObjectArithmetic::getPercentageThresholdDoc = tr("analyzes all values in the given data object and returns the value, which is at a given percentage in the sorted value list.");
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal DataObjectArithmetic::getPercentageThresholdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(retval.containsError()) return retval;
+    if (retval.containsError()) return retval;
 
     paramsMand->clear();
-    paramsMand->append( ito::Param("data", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "valid non-complex data object") );
-    paramsMand->append( ito::Param("percentage", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100.0, 50.0, "percentage value [0.0,100.0]") );
+    paramsMand->append(ito::Param("data", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("valid non-complex data object").toLatin1().data()));
+    paramsMand->append(ito::Param("percentage", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100.0, 50.0, tr("percentage value [0.0, 100.0]").toLatin1().data()));
     
-    paramsOut->append( ito::Param("threshold", ito::ParamBase::Double | ito::ParamBase::Out, NULL, "threshold value (NaN if data object was empty or only contained invalid values)") );
+    paramsOut->append(ito::Param("threshold", ito::ParamBase::Double | ito::ParamBase::Out, NULL, tr("threshold value (NaN if data object was empty or only contained invalid values)").toLatin1().data()));
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal DataObjectArithmetic::getPercentageThreshold(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
@@ -1479,7 +1494,7 @@ const char *DataObjectArithmetic::getPercentageThresholdDoc = "analyzes all valu
 
     if (!data)
     {
-        retval += ito::RetVal(ito::retError,0,"input data is NULL");
+        retval += ito::RetVal(ito::retError, 0, tr("input data is NULL").toLatin1().data());
     }
     else
     {
@@ -1510,13 +1525,14 @@ const char *DataObjectArithmetic::getPercentageThresholdDoc = "analyzes all valu
             retval += getPercentageThresholdHelper<ito::float64>(data, percentage, threshold);
             break;
         default:
-            retval += ito::RetVal(ito::retError,0,"not implemented for complex64 or complex128");
+            retval += ito::RetVal(ito::retError, 0, tr("not implemented for complex64 or complex128").toLatin1().data());
         }
     }
 
     (*paramsOut)[0].setVal<double>(threshold);
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentageThresholdHelper(const ito::DataObject *dObj, double percentage, double &value)
 {
@@ -1559,7 +1575,7 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
                 {
                     if (ito::dObjHelper::isFinite(rowPtr[ni]))
                     {
-                        values.push_back( rowPtr[ni] );
+                        values.push_back(rowPtr[ni]);
                         numValues++;
                     }
                 }
@@ -1567,12 +1583,12 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
         }
     }
 
-    if(numValues == 0 && (planes*m*n) > 0)
+    if (numValues == 0 && (planes*m*n) > 0)
     {
         value = std::numeric_limits<double>::quiet_NaN();
         return ito::RetVal(ito::retWarning,0,"no valid values encountered");
     }
-    else if(numValues == 0)
+    else if (numValues == 0)
     {
         value = std::numeric_limits<double>::quiet_NaN();
         return ito::retOk;
@@ -1580,7 +1596,7 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
         
     if (percentage <= 50.0)
     {
-        int selValue = floor( percentage * (double)numValues / 100.0 );
+        int selValue = floor(percentage * (double)numValues / 100.0);
         selValue = std::max(0, selValue);
         selValue = std::min(numValues-1, selValue);
         std::nth_element (values.begin(), values.begin() + selValue, values.end(), DataObjectArithmetic::cmpLT<_Tp>);
@@ -1588,7 +1604,7 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
     }
     else
     {
-        int selValue = floor( (100.0-percentage) * (double)numValues / 100.0 );
+        int selValue = floor((100.0-percentage) * (double)numValues / 100.0);
         selValue = std::max(0, selValue);
         selValue = std::min(numValues-1, selValue);
         std::nth_element (values.begin(), values.begin() + selValue, values.end(), DataObjectArithmetic::cmpGT<_Tp>);
@@ -1599,7 +1615,7 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* DataObjectArithmetic::boundingBoxDoc = "This filter calculates the minimum ROI that contains all values within a lower and optional upper threshold. \n\
+const QString DataObjectArithmetic::boundingBoxDoc = tr("This filter calculates the minimum ROI that contains all values within a lower and optional upper threshold. \n\
 \n\
 The return value contains the [x0,y0,width,height] of the minimum ROI.\n\
 \n\
@@ -1607,12 +1623,13 @@ Values of the data object belong to the ROI if they are >= lowThreshold and <= h
 The highThreshold is only checked, if it is different than the default value (maximum value of double). \n\
 \n\
 The filter does not work with RGBA32, Complex64 and Complex128, but with all other data-types. This filter has got a fast \n\
-implementation for fixed-point data types without an higher threshold (since version 0.0.3).";
+implementation for fixed-point data types without an higher threshold (since version 0.0.3).");
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObjectArithmetic::boundingBoxParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("2D source image data object (u)int8, (u)int16, int32, float32 or float64 only.").toLatin1().data());
         paramsMand->append(param);
@@ -1621,23 +1638,23 @@ RetVal DataObjectArithmetic::boundingBoxParams(QVector<ito::Param> *paramsMand, 
         param = Param("highThreshold", ito::ParamBase::Double, -1*std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), tr("if given, only values <= highThreshold are considered for the ROI").toLatin1().data());
         paramsOpt->append(param);
 
-        paramsOut->append( ito::Param("roi", ito::ParamBase::IntArray | ito::ParamBase::Out, NULL, tr("ROI of bounding box [x0,y0,width,height]").toLatin1().data()));
+        paramsOut->append(ito::Param("roi", ito::ParamBase::IntArray | ito::ParamBase::Out, NULL, tr("ROI of bounding box [x0,y0,width,height]").toLatin1().data()));
     }
 
     return retval;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectArithmetic::boundingBox(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
     const ito::DataObject *dObj = (*paramsMand)[0].getVal<ito::DataObject*>();
-    if(dObj == NULL)
+    if (dObj == NULL)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is NULL").toLatin1().data());
     }
-    if(dObj->getDims() < 1)
+
+    if (dObj->getDims() < 1)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: sourceImage is not initialized").toLatin1().data());    
     }
@@ -1646,14 +1663,14 @@ ito::RetVal DataObjectArithmetic::boundingBox(QVector<ito::ParamBase> *paramsMan
     ito::float64 highThreshold = (*paramsOpt)[0].getVal<ito::float64>();
 
     retval += ito::dObjHelper::verifyDataObjectType(dObj, "sourceImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
-    if(dObj->getNumPlanes() != 1)
+    if (dObj->getNumPlanes() != 1)
     {
         return ito::RetVal(ito::retError, 0, tr("Error: source image must have one plane").toLatin1().data());    
     }    
 
-	int roi[] = {0,0,0,0};
+	int roi[] = {0, 0, 0, 0};
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         const cv::Mat *plane = dObj->getCvPlaneMat(0);
 
@@ -1701,17 +1718,17 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::boundingBoxHelper(const
     
 	const _Tp *pValue = NULL;
     
-    if(std::numeric_limits<_Tp>::is_exact)
+    if (std::numeric_limits<_Tp>::is_exact)
     {
         const _Tp lowThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(std::numeric_limits<_Tp>::min()), lowThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
         const _Tp highThres = cv::saturate_cast<_Tp>(qBound((ito::float64)(std::numeric_limits<_Tp>::min()), highThreshold, (ito::float64)(std::numeric_limits<_Tp>::max())));
 
 		if (highThreshold < std::numeric_limits<ito::float64>::max())
 		{
-			for(y = 0; y < (unsigned int)mat->rows; ++y)
+			for (y = 0; y < (unsigned int)mat->rows; ++y)
 			{
 				pValue = mat->ptr<_Tp>(y);
-				for(x = 0; x < (unsigned int)mat->cols; ++x)
+				for (x = 0; x < (unsigned int)mat->cols; ++x)
 				{
 					if (pValue[x] >= lowThres && pValue[x] <= highThres)
 					{
@@ -1730,10 +1747,10 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::boundingBoxHelper(const
             //then the last valid line beginning from the last line,
             //and finally it detects the x0 and x1 boundary from left and right only in between
             //the valid line range.
-            for(y = 0; y < (unsigned int)mat->rows; ++y)
+            for (y = 0; y < (unsigned int)mat->rows; ++y)
 			{
 				pValue = mat->ptr<_Tp>(y);
-                for(x = 0; x < (unsigned int)mat->cols; ++x)
+                for (x = 0; x < (unsigned int)mat->cols; ++x)
 				{
                     if (pValue[x] >= lowThres)
 					{
@@ -1743,7 +1760,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::boundingBoxHelper(const
                         x1 = x;
 
                         //search for last valid x-value in this row
-                        for(x = (unsigned int)mat->cols - 1; x > x0; --x)
+                        for (x = (unsigned int)mat->cols - 1; x > x0; --x)
                         {
                             if (pValue[x] >= lowThres)
                             {
@@ -1759,10 +1776,10 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::boundingBoxHelper(const
 
 step2: 
             //search for last line with at least one valid value
-            for(y = (unsigned int)mat->rows - 1; y > y0; --y)
+            for (y = (unsigned int)mat->rows - 1; y > y0; --y)
 			{
 				pValue = mat->ptr<_Tp>(y);
-                for(x = 0; x < (unsigned int)mat->cols; ++x)
+                for (x = 0; x < (unsigned int)mat->cols; ++x)
 				{
                     if (pValue[x] >= lowThres)
 					{
@@ -1771,7 +1788,7 @@ step2:
                         x1 = std::max(x, x1);
 
                         //search for last valid x-value in this row
-                        for(x = (unsigned int)mat->cols - 1; x > x0; --x)
+                        for (x = (unsigned int)mat->cols - 1; x > x0; --x)
                         {
                             if (pValue[x] >= lowThres)
                             {
@@ -1791,7 +1808,7 @@ step3:
             for (y = y0 + 1; y < y1; ++y)
             {
                 pValue = mat->ptr<_Tp>(y);
-                for(x = 0; x < (unsigned int)mat->cols; ++x)
+                for (x = 0; x < (unsigned int)mat->cols; ++x)
 				{
                     if (pValue[x] >= lowThres)
 					{
@@ -1801,7 +1818,7 @@ step3:
                     }
                 }
 
-                for(x = (unsigned int)mat->cols - 1; x > x0; --x)
+                for (x = (unsigned int)mat->cols - 1; x > x0; --x)
 				{
                     if (pValue[x] >= lowThres)
 					{
@@ -1819,10 +1836,10 @@ step3:
 
         if (highThreshold < std::numeric_limits<ito::float64>::max())
 		{
-			for(y = 0; y < (unsigned int)mat->rows; ++y)
+			for (y = 0; y < (unsigned int)mat->rows; ++y)
 			{
 				pValue = mat->ptr<_Tp>(y);
-				for(x = 0; x < (unsigned int)mat->cols; ++x)
+				for (x = 0; x < (unsigned int)mat->cols; ++x)
 				{
 					if (pValue[x] >= lowThres && pValue[x] <= highThres)
 					{
@@ -1836,10 +1853,10 @@ step3:
 		}
 		else
 		{
-			for(y = 0; y < (unsigned int)mat->rows; ++y)
+			for (y = 0; y < (unsigned int)mat->rows; ++y)
 			{
 				pValue = mat->ptr<_Tp>(y);
-				for(x = 0; x < (unsigned int)mat->cols; ++x)
+				for (x = 0; x < (unsigned int)mat->cols; ++x)
 				{
 					if (pValue[x] >= lowThres)
 					{
@@ -1859,7 +1876,6 @@ step3:
 	roi[3] = 1+y1-y0;
 
     return ito::retOk;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1870,6 +1886,7 @@ DataObjectArithmetic::~DataObjectArithmetic()
     {
         delete filter;
     }
+
     m_filterList.clear();
 }
 
@@ -1879,34 +1896,34 @@ RetVal DataObjectArithmetic::init(QVector<ito::ParamBase> * /*paramsMand*/, QVec
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
 
-    filter = new FilterDef(DataObjectArithmetic::maxValue, DataObjectArithmetic::singleDObjInputValueAndPositionOutParams, tr(maxValueDoc));
+    filter = new FilterDef(DataObjectArithmetic::maxValue, DataObjectArithmetic::singleDObjInputValueAndPositionOutParams, maxValueDoc);
     m_filterList.insert("maxValue", filter);
 
-    filter = new FilterDef(DataObjectArithmetic::minValue, DataObjectArithmetic::singleDObjInputValueAndPositionOutParams, tr(minValueDoc));
+    filter = new FilterDef(DataObjectArithmetic::minValue, DataObjectArithmetic::singleDObjInputValueAndPositionOutParams, minValueDoc);
     m_filterList.insert("minValue", filter);
 
-    filter = new FilterDef(DataObjectArithmetic::minMaxValue, DataObjectArithmetic::minMaxValueParams, tr(minMaxValueDoc));
+    filter = new FilterDef(DataObjectArithmetic::minMaxValue, DataObjectArithmetic::minMaxValueParams, minMaxValueDoc);
     m_filterList.insert("minMaxValue", filter);
 
-    filter = new FilterDef(DataObjectArithmetic::meanValue, DataObjectArithmetic::singleDObjInputInfParams, tr(meanValueDoc));
+    filter = new FilterDef(DataObjectArithmetic::meanValue, DataObjectArithmetic::singleDObjInputInfParams, meanValueDoc);
     m_filterList.insert("meanValue", filter);
 
-    filter = new FilterDef(DataObjectArithmetic::centerOfGravity, DataObjectArithmetic::centerOfGravityParams, tr(centerOfGravityDoc));
+    filter = new FilterDef(DataObjectArithmetic::centerOfGravity, DataObjectArithmetic::centerOfGravityParams, centerOfGravityDoc);
     m_filterList.insert("centroidXY", filter);
 
-	filter = new FilterDef(DataObjectArithmetic::boundingBox, DataObjectArithmetic::boundingBoxParams, tr(boundingBoxDoc));
+	filter = new FilterDef(DataObjectArithmetic::boundingBox, DataObjectArithmetic::boundingBoxParams, boundingBoxDoc);
     m_filterList.insert("boundingBox", filter);
 
-    filter = new FilterDef(DataObjectArithmetic::centerOfGravity1Dim, DataObjectArithmetic::centerOfGravity1DimParams, tr(centerOfGravity1DimDoc));
+    filter = new FilterDef(DataObjectArithmetic::centerOfGravity1Dim, DataObjectArithmetic::centerOfGravity1DimParams, centerOfGravity1DimDoc);
     m_filterList.insert("centroid1D", filter);
 
-    filter = new FilterDef(DataObjectArithmetic::devValue, DataObjectArithmetic::devValueParams, tr(devValueDoc));
+    filter = new FilterDef(DataObjectArithmetic::devValue, DataObjectArithmetic::devValueParams, devValueDoc);
     m_filterList.insert("deviationValue", filter);
 
-    filter = new FilterDef(DataObjectArithmetic::areEqual, DataObjectArithmetic::doubleDObjInputParams, tr(areEqualDoc));
+    filter = new FilterDef(DataObjectArithmetic::areEqual, DataObjectArithmetic::doubleDObjInputParams, areEqualDoc);
     m_filterList.insert("areEqual", filter);
 
-    filter = new FilterDef(getPercentageThreshold, getPercentageThresholdParams, tr(getPercentageThresholdDoc));
+    filter = new FilterDef(getPercentageThreshold, getPercentageThresholdParams, getPercentageThresholdDoc);
     m_filterList.insert("getPercentageThreshold", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
@@ -1917,7 +1934,7 @@ RetVal DataObjectArithmetic::init(QVector<ito::ParamBase> * /*paramsMand*/, QVec
 RetVal DataObjectArithmetic::close(ItomSharedSemaphore * /*waitCond*/)
 {
     ito::RetVal retval = ito::retOk;
-
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------

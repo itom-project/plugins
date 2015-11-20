@@ -579,6 +579,7 @@ const ito::RetVal SerialPort::setparams(const SerialPort::serParams &params)
 
     return ito::retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail This function sets the parameters of this serial port
@@ -742,7 +743,6 @@ const ito::RetVal SerialPort::sclose(void)
     }
     m_dev = 0;
 #endif
-
     return ito::retOk;
 }
 
@@ -1055,7 +1055,6 @@ const ito::RetVal SerialPort::sclearbuffer(int BufferType)
         return ito::RetVal(ito::retError, 0, QObject::tr("Unable to clear buffer").toLatin1().data());
     }
 #endif
-
     return ito::retOk;
 }
 
@@ -1090,7 +1089,7 @@ SerialIOInterface::SerialIOInterface()
     m_description = tr("itom-plugin for a serial port communication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "SerialIO is a itom-Plugin which gives direct access to serial ports.\nIt is used by different plugins for communication, (e.g. 'PIPiezoCtrl', 'UhlActuator', 'LeicaMotorFocus').\n\
 The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system. \n\
 \n\
@@ -1122,9 +1121,39 @@ Example \n\
     #get result \n\
     answer = bytearray(9) #supposed length is 9 characters \n\
     num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns ";
+    m_detaildescription = tr(docstring);*/
+    m_detaildescription = tr("SerialIO is a itom-Plugin which gives direct access to serial ports.\nIt is used by different plugins for communication, (e.g. 'PIPiezoCtrl', 'UhlActuator', 'LeicaMotorFocus').\n\
+The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system. \n\
+\n\
+flow bitmask \n\
+-------------- \n\
+\n\
+The flow bitmask is an OR combination of the following possible values: \n\
+Xon/Xoff - default: Xoff, Xon=1 (1. bit) \n\
+rts control - default: disabled, enabled=2, handshake=4 or (4+2) (2. and 3. bit) \n\
+cts control - default: disabled, enabled=8 (4. bit) \n\
+dtr control - default: disabled, enabled = 16, handshake = 32 or (32+16) (5. and 6. bit) \n\
+dsr control - default: disabled, enabled = 64 \n\
+\n\
+If an endline character is given, this is automatically appended to each sequence that is send using the setVal-command. \n\
+On the other side, any obtained value from the serial port is scanned for this endline character and automatically split. \n\
+Use an empty endline character if you want to organize all this by yourself. \n\
+\n\
+Example \n\
+-------- \n\
+\n\
+.. \n\
+    \n\
+    s = dataIO(\"SerialIO\",port=1,baud=9600,endline=\"\",bits=8,stopbits=1,parity=0,flow=16) \n\
+    \n\
+    #send command \n\
+    sendString = bytearray(b\"POS?\") #or bytearray([80,79,83,63]); \n\
+    s.setVal(sendString) \n\
+    \n\
+    #get result \n\
+    answer = bytearray(9) #supposed length is 9 characters \n\
+    num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns ");
 
-
-    m_detaildescription = tr(docstring);
     m_author = "H. Bieger, C. Kohler, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -1159,8 +1188,6 @@ Example \n\
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("debugIgnoreEmpty", ito::ParamBase::Int, 0, 1, 1, tr("If debug-param is true, all out and inputs are written to dockingWidget. If debugIgnoreEmpty is true, empty messages will be ignored").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-
-    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1419,7 +1446,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     // mandatory parameters
     if (paramsMand == NULL)
     {
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("Mandatory paramers are NULL").toLatin1().data());
+        retval = ito::RetVal(ito::retError, 0, tr("Mandatory paramers are NULL").toLatin1().data());
         goto end;
     }
 
@@ -1437,7 +1464,7 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     // optional parameters
     if (paramsOpt == NULL)
     {
-        retval = ito::RetVal(ito::retError, 0, QObject::tr("Optinal paramers are NULL").toLatin1().data());
+        retval = ito::RetVal(ito::retError, 0, tr("Optinal paramers are NULL").toLatin1().data());
         goto end;
     }
 
@@ -1517,6 +1544,7 @@ ito::RetVal SerialIO::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -1531,6 +1559,7 @@ ito::RetVal SerialIO::startDevice(ItomSharedSemaphore *waitCond)
         waitCond->release();
         waitCond->deleteSemaphore();
     }
+
     return retval;
 }
 
@@ -1545,6 +1574,7 @@ ito::RetVal SerialIO::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->release();
         waitCond->deleteSemaphore();
     }
+
     return retval;
 }
 
@@ -1559,6 +1589,7 @@ ito::RetVal SerialIO::acquire(const int /*trigger*/, ItomSharedSemaphore *waitCo
         waitCond->release();
         waitCond->deleteSemaphore();
     }
+
     return retval;
 }
 
@@ -1604,6 +1635,7 @@ ito::RetVal SerialIO::setVal(const char *data, const int datalength, ItomSharedS
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 

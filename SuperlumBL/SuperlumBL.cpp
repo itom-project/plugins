@@ -69,7 +69,7 @@ SuperlumBLInterface::SuperlumBLInterface()
 
     m_description = QObject::tr("Plugin for Superlum S-series BroadLighter SLDs.");
 
-    char docstring[] = \
+/*    char docstring[] = \
 "The SuperlumBL is an itom-plugin (loosely based on SuperlumBS-plugin), which can be used to communicate with a BroadLighter.\n\
 Only S-840-B-I-20 is tested by now.\n\
 The company website can be found under http://www.superlumdiodes.com \n\
@@ -77,8 +77,14 @@ This system needs a serial port, which differs depending on the controller type.
 The parameters of the serial port (besides port number) are set automatically during initialization. \n\
 \n\
 It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).";
-
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr("The SuperlumBL is an itom-plugin (loosely based on SuperlumBS-plugin), which can be used to communicate with a BroadLighter.\n\
+Only S-840-B-I-20 is tested by now.\n\
+The company website can be found under http://www.superlumdiodes.com \n\
+This system needs a serial port, which differs depending on the controller type. \
+The parameters of the serial port (besides port number) are set automatically during initialization. \n\
+\n\
+It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).");
 
     m_author = "T.Boettcher, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -94,7 +100,7 @@ It is initialized by dataIO(\"SuperlumBL\", SerialIO, deviceName).";
 	paramVal = ito::Param("deviceName", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Device name of the Superlum BroadLighter. Only S-840-B-I-20 is implemented and tested.").toLatin1().data());
 	ito::StringMeta *deviceMeta = new ito::StringMeta(ito::StringMeta::String);
 	deviceMeta->addItem("S-840-B-I-20");
-    paramVal.setMeta( deviceMeta, true);
+    paramVal.setMeta(deviceMeta, true);
     m_initParamsMand.append(paramVal);
 }
 
@@ -112,17 +118,17 @@ const ito::RetVal SuperlumBL::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 SuperlumBL::SuperlumBL() : AddInDataIO(), m_pSer(NULL), m_delayAfterSendCommandMS(0), m_dockWidget(NULL)
 {
-	ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Superlum BroadLighter", "Name of plugin.");
+	ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Superlum BroadLighter", tr("Name of plugin.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("comPort", ito::ParamBase::Int | ito::ParamBase::Readonly, 0, 65355, 0, tr("The current com-port ID of this specific device. -1 means undefined.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
 	paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, "unknown", tr("Serial number of device.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("local", ito::ParamBase::Int, 0, 1, 1, tr("( 0 ) local or ( 1 ) remote mode.").toLatin1().data());
+	paramVal = ito::Param("local", ito::ParamBase::Int, 0, 1, 1, tr("(0) local or (1) remote mode.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);	
-	paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("( 0 ) optical output is disabeld, ( 1 ) optical output is enabled.").toLatin1().data());
+	paramVal = ito::Param("optical_output", ito::ParamBase::Int, 0, 1, 0, tr("(0) optical output is disabeld, (1) optical output is enabled.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
-	paramVal = ito::Param("power_mode", ito::ParamBase::Int, 0, 1, 0, tr("( 0 ) LOW Power mode, ( 1 ) HIGH Power mode.").toLatin1().data());
+	paramVal = ito::Param("power_mode", ito::ParamBase::Int, 0, 1, 0, tr("(0) LOW Power mode, (1) HIGH Power mode.").toLatin1().data());
 	m_params.insert(paramVal.getName(), paramVal);
     
     //now create dock widget for this plugin
@@ -139,7 +145,7 @@ ito::RetVal SuperlumBL::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
     ito::RetVal retValue(ito::retOk);
     QString key = val->getName();
 
-    if(key == "")
+    if (key == "")
     {
         retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
     }
@@ -185,12 +191,12 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
     retValue += apiParseParamName(key, paramName, hasIndex, index, additionalTag);
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION < 0x010300
         //old style api, round the incoming double value to the allowed step size.
@@ -257,29 +263,29 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                         retValue += SendQuestionWithAnswerString(request, answer, 500);  
                         if (answer.contains("A11") && !retValue.containsError())
                         {
-                            m_params["local"].setVal<int>( 0 ); // local mode
+                            m_params["local"].setVal<int>(0); // local mode
                         }
                         else
                         {
-                            retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                            retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
                         }
                     }
                     else if (val->getVal<int>() == 1)
                     {
                         request = QByteArray("S12");
                         retValue += SendQuestionWithAnswerString(request, answer, 500);
-                        if(answer.contains("A12") && !retValue.containsError())
+                        if (answer.contains("A12") && !retValue.containsError())
                         {
-                            m_params["local"].setVal<int>( 1 ); // remote mode
+                            m_params["local"].setVal<int>(1); // remote mode
                         }
                         else
                         {
-                            retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                            retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
                         }
                     }
                     else
                     {
-                        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+                        retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
                     }
                 }
                 
@@ -288,7 +294,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                 {
                     request = QByteArray("S20");
                     retValue += SendQuestionWithAnswerString(request, answer, 500);  //get optical output status
-                    if(answer.contains("A2") && !retValue.containsError())
+                    if (answer.contains("A2") && !retValue.containsError())
 					{
 						QRegExp regExp("^A2(\\d{2,2})");
 						if (regExp.indexIn(answer) >= 0 && !retValue.containsError())
@@ -304,7 +310,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 						}
 						else
 						{
-							retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+							retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
 						}
 							
 						if (!retValue.containsError() && outputOpt && (val->getVal<int>() == 0)) //disable optical output
@@ -322,18 +328,18 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 									{
 										if (((regExp.cap(1).toInt()) & 2) == 2) // still on!
 										{
-											m_params["optical_output"].setVal<int>( 1 );
-											retValue += ito::RetVal::format(ito::retError,0,"Could not disable optical output. Answer was '%s'.", answer.data());
+											m_params["optical_output"].setVal<int>(1);
+											retValue += ito::RetVal::format(ito::retError, 0, tr("Could not disable optical output. Answer was '%s'.").toLatin1().data(), answer.data());
 										}
 										else 
 										{
-											m_params["optical_output"].setVal<int>( 0 ); // 2nd try worked
+											m_params["optical_output"].setVal<int>(0); // 2nd try worked
 										}
 									}
 								}	
 								else 
 								{
-									m_params["optical_output"].setVal<int>( 0 ); // 1st try worked
+									m_params["optical_output"].setVal<int>(0); // 1st try worked
 								}
 							}
 							else
@@ -350,7 +356,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 							{                        
 								if (((regExp.cap(1).toInt()) & 2) == 2)
 								{
-									m_params["optical_output"].setVal<int>( 1 ); // 1st try worked
+									m_params["optical_output"].setVal<int>(1); // 1st try worked
 								}	
 								else 
 								{
@@ -360,19 +366,19 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 									{
 										if (((regExp.cap(1).toInt()) & 2) == 2) // on!
 										{
-											m_params["optical_output"].setVal<int>( 1 ); // 2nd try worked
+											m_params["optical_output"].setVal<int>(1); // 2nd try worked
 										}
 										else 
 										{
-											m_params["optical_output"].setVal<int>( 0 );
-											retValue += ito::RetVal::format(ito::retError,0,"Could not enable optical output. Answer was '%s'.", answer.data());
+											m_params["optical_output"].setVal<int>(0);
+											retValue += ito::RetVal::format(ito::retError, 0, tr("Could not enable optical output. Answer was '%s'.").toLatin1().data(), answer.data());
 										}
 									}
 								}
 							}
 							else
 							{
-								retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+								retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
 							}    
 						}
 						else if (!retValue.containsError() && !outputOpt && (val->getVal<int>() == 0)) //already disabled
@@ -385,12 +391,12 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 						}
 						else
 						{
-							retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s'.", answer.data());
+							retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s'.").toLatin1().data(), answer.data());
 						}
 					}
 					else
 					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+						retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
 					}
 				}
 
@@ -421,7 +427,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 					}
 					else 
 					{
-						retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+						retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
 					}
 					if (!powermod && (val->getVal<int>() == 1)) 
 					{
@@ -441,7 +447,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 							request = QByteArray("S41");	
 							retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
 						}
-						m_params["power_mode"].setVal<int>( 1 );
+						m_params["power_mode"].setVal<int>(1);
 					}
 					if (powermod && (val->getVal<int>() == 0)) 
 					{
@@ -461,7 +467,7 @@ ito::RetVal SuperlumBL::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 							request = QByteArray("S41");	
 							retValue += SendQuestionWithAnswerString(request, answer, 500); // not safe
 						}
-						m_params["power_mode"].setVal<int>( 0 );
+						m_params["power_mode"].setVal<int>(0);
 					}			
 				}  
 			}
@@ -508,7 +514,7 @@ ito::RetVal SuperlumBL::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::P
 	}
 	else
     {
-        retval += ito::RetVal::format(ito::retError,0,"Device name '%s' not supported", deviceName.toLatin1().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("Device name '%s' not supported").toLatin1().data(), deviceName.toLatin1().data());
     }
 
     if (reinterpret_cast<ito::AddInBase *>((*paramsMand)[0].getVal<void *>())->getBasePlugin()->getType() & (ito::typeDataIO | ito::typeRawIO))
@@ -552,14 +558,14 @@ ito::RetVal SuperlumBL::close(ItomSharedSemaphore *waitCond)
 	}
 	else
 	{
-		retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+		retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
 	}
 
     request = QByteArray("S11");
     retValue += SendQuestionWithAnswerString(request, answer, 500); //set local mode
     if (retValue.containsError())
     {
-        retValue += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+        retValue += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
     }
 
     if (waitCond)
@@ -567,11 +573,12 @@ ito::RetVal SuperlumBL::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------- 
-void SuperlumBL::dockWidgetVisibilityChanged( bool visible )
+void SuperlumBL::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
@@ -632,7 +639,7 @@ ito::RetVal SuperlumBL::readString(QByteArray &questionCommand, QByteArray &resu
         if (param->getType() == (ito::ParamBase::String & ito::paramTypeMask))
         {
             char* temp = param->getVal<char*>(); //borrowed reference
-            int len = temp[0] == 0 ? 0 : (temp[1] == 0 ? 1 : ( temp[2] == 0 ? 2 : 3));
+            int len = temp[0] == 0 ? 0 : (temp[1] == 0 ? 1 : (temp[2] == 0 ? 2 : 3));
             endline = QByteArray::fromRawData(temp,len);
         }
         else
@@ -654,7 +661,7 @@ ito::RetVal SuperlumBL::readString(QByteArray &questionCommand, QByteArray &resu
             if (!retValue.containsError())
             {
                 result += QByteArray(curBuf.data(), *curBufLen);
-                pos = result.indexOf( endline, curFrom );
+                pos = result.indexOf(endline, curFrom);
                 curFrom = qMax(0, result.length() - 3);
 
                 if (pos >= 0) //found
@@ -678,7 +685,7 @@ ito::RetVal SuperlumBL::readString(QByteArray &questionCommand, QByteArray &resu
     
     if (!retValue.containsError() && result.contains("AE"))// general error!)
     {
-		retValue += ito::RetVal(ito::retError,0, tr(m_params["serial_number"].getVal<char*>(), "general error!").toLatin1().data());
+		retValue += ito::RetVal(ito::retError, 0, tr(m_params["serial_number"].getVal<char*>(), "general error!").toLatin1().data());
         return retValue;
     }
     
@@ -697,6 +704,7 @@ ito::RetVal SuperlumBL::SerialSendCommand(QByteArray command)
         waitCondition.wait(&mutex,m_delayAfterSendCommandMS);
         mutex.unlock();
     }
+
     return retVal;
 }
 
@@ -708,17 +716,16 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
     QByteArray request;
 
     //default serial settings ... still valid for Broadlighter
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud",ito::ParamBase::Int,57600)),NULL);
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits",ito::ParamBase::Int,8)),NULL);
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity",ito::ParamBase::Double,0.0)),NULL);
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",ito::ParamBase::Int,1)),NULL);
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,0)),NULL);
-    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\r\n")),NULL);
-    
+    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("baud", ito::ParamBase::Int, 57600)), NULL);
+    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("bits", ito::ParamBase::Int, 8)), NULL);
+    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("parity", ito::ParamBase::Double, 0.0)), NULL);
+    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits", ito::ParamBase::Int, 1)), NULL);
+    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow", ito::ParamBase::Int, 0)), NULL);
+    retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, "\r\n")), NULL);
 
     if (!retval.containsError())
     {
-        QSharedPointer<QVector<ito::ParamBase> > emptyParamVec(new QVector<ito::ParamBase>() );
+        QSharedPointer<QVector<ito::ParamBase> > emptyParamVec(new QVector<ito::ParamBase>());
         m_pSer->execFunc("clearInputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
         m_pSer->execFunc("clearOutputBuffer", emptyParamVec, emptyParamVec, emptyParamVec);
         
@@ -735,7 +742,7 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
     }
     
     //__________________________________________________________________________________________________________ Set serial number 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         request = QByteArray("S0");
         retval += SendQuestionWithAnswerString(request, answer, 500);
@@ -759,7 +766,7 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
         }
         else
         {            
-            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+            retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
         }
     }
 
@@ -770,18 +777,17 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
         retval += SendQuestionWithAnswerString(request, answer, 500);    
         if (!retval.containsError() && answer.contains("A11"))
         {            
-            m_params["local"].setVal<int>( 0 ); // local mode
+            m_params["local"].setVal<int>(0); // local mode
         }
         else if (!retval.containsError() && answer.contains("A12"))
         {
-            m_params["local"].setVal<int>( 1 ); // remote mode
+            m_params["local"].setVal<int>(1); // remote mode
         }    
         else 
         {
-            retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+            retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
         }
     }
-
 	
 	//__________________________________________________________________________________________________________ check optical output, power mode and SLD error (regulary at startup of device)
 	if (!retval.containsError())
@@ -794,32 +800,32 @@ ito::RetVal SuperlumBL::IdentifyAndInitializeSystem()
 		{                        
 			if (((regExp.cap(1).toInt()) & 2) == 2)
 			{
-				m_params["optical_output"].setVal<int>( 1 );
+				m_params["optical_output"].setVal<int>(1);
 			}	
 			else 
 			{
-				m_params["optical_output"].setVal<int>( 0 );
+				m_params["optical_output"].setVal<int>(0);
 			}
 			if (((regExp.cap(1).toInt()) & 16) == 16)
 			{	
-				m_params["power_mode"].setVal<int>( 1 );
+				m_params["power_mode"].setVal<int>(1);
 			}
 			else
 			{
-				m_params["power_mode"].setVal<int>( 0 );
+				m_params["power_mode"].setVal<int>(0);
 			}	
 			/*if (((regExp.cap(1).toInt()) & 8) == 8)
 			{	
-				m_params["sld_error"].setVal<int>( 1 );
+				m_params["sld_error"].setVal<int>(1);
 			}
 			else
 			{
-				m_params["sld_error"].setVal<int>( 0 );
+				m_params["sld_error"].setVal<int>(0);
 			}	*/
 		}
 		else 
 		{
-			retval += ito::RetVal::format(ito::retError,0,"invalid answer '%s' for sending  '%s'", answer.data(), request.data());
+			retval += ito::RetVal::format(ito::retError, 0, tr("invalid answer '%s' for sending  '%s'").toLatin1().data(), answer.data(), request.data());
 		}
 	} 
     return retval;

@@ -65,7 +65,7 @@ FFTWFiltersInterface::FFTWFiltersInterface()
     m_type = ito::typeAlgo;
     setObjectName("FFTW-Filter");
 
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin provides several wrapper for several fftw-functions for itom::dataObject. These are for instance: \n\
 - linewise FFT\n\
 - linewise inverse FFT \n\
@@ -77,9 +77,22 @@ The FFTW package was developed at MIT by Matteo Frigo and Steven G. Johnson.\
 It was published unter GNU General Public License and can be downloaded unter http://www.fftw.org/ .\n\
 \n\
 To build this plugin you will need the libs from the fftw.";
-
+*/
     m_description = QObject::tr("Wrapper for the FFTW");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(
+"This plugin provides several wrapper for several fftw-functions for itom::dataObject. These are for instance: \n\
+- linewise FFT\n\
+- linewise inverse FFT \n\
+- 2D-fft \n\
+- inverse2d-FFT \n\
+- gaussian-filtering according to DIN EN ISO 16610-21 \n\
+\n\
+The FFTW package was developed at MIT by Matteo Frigo and Steven G. Johnson.\
+It was published unter GNU General Public License and can be downloaded unter http://www.fftw.org/ .\n\
+\n\
+To build this plugin you will need the libs from the fftw.");
+
     m_author = "W. Lyda, twip optical solutions GmbH, T. Boettcher, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -120,6 +133,7 @@ FFTWFilters::~FFTWFilters()
     }
     m_filterList.clear();
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Parameters for fftw filter
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -142,8 +156,10 @@ ito::RetVal FFTWFilters::ParamsFFTW(QVector<ito::Param> *paramsMand, QVector<ito
         paramsOpt->append(param);
     
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Performs forward dft by means of fftw row by row (# rows >=1) complex to complex
    \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
@@ -153,7 +169,7 @@ ito::RetVal FFTWFilters::ParamsFFTW(QVector<ito::Param> *paramsMand, QVector<ito
    \author ITO, Boettcher
    \date 2012.03.06
 */
-const char* FFTWFilters::fftw1dDOC = "Perfom an unscaled 1D-fft for the given object. \n\
+const QString FFTWFilters::fftw1dDOC = QObject::tr("Perfom an unscaled 1D-fft for the given object. \n\
 \n\
 This filter uses the fft function provided by the fftw-library to perfom a row-wise fft on the input object. \n\
 \n\
@@ -163,11 +179,13 @@ The filter works in-place and out-of-place. If the input object is not complex12
 If the filter is used with input- as output-object and the type is not complex128, the input-object will be overwritten with the output-type.\n\
 \n\
 If the object has a ROI a ROI-less object correponding to the ROI is created. \n\
-If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n";
+If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n");
+
 ito::RetVal FFTWFilters::fftw1d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     return doFFTW(paramsMand, paramsOpt, true, true);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Performs backward dft by means of fftw row by row (# rows >=1) complex to complex
    \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
@@ -177,7 +195,7 @@ ito::RetVal FFTWFilters::fftw1d(QVector<ito::ParamBase> *paramsMand, QVector<ito
    \author ITO, Boettcher
    \date 2012.03.06
 */
-const char* FFTWFilters::ifftw1dDOC = "Perfom an unscaled inverse 1D-fft for the given object. \n\
+const QString FFTWFilters::ifftw1dDOC = QObject::tr("Perfom an unscaled inverse 1D-fft for the given object. \n\
 \n\
 This filter uses the fft function provided by the fftw-library to perfom a inverse row-wise fft on the input object. \n\
 \n\
@@ -187,11 +205,13 @@ The filter works in-place and out-of-place. If the input object is not complex12
 If the filter is used with input- as output-object and the type is not complex128, the input-object will be overwritten with the output-type.\n\
 \n\
 If the object has a ROI a ROI-less object correponding to the ROI is created. \n\
-If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n";
+If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n");
+
 ito::RetVal FFTWFilters::ifftw1d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     return doFFTW(paramsMand, paramsOpt, false, true);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Performs forward dft of 2D objects complex to complex by means of fftw 
    \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
@@ -201,7 +221,7 @@ ito::RetVal FFTWFilters::ifftw1d(QVector<ito::ParamBase> *paramsMand, QVector<it
    \author ITO, Boettcher
    \date 2012.03.06
 */
-const char* FFTWFilters::fftw2dDOC = "Perfom an unscaled 2D-fft for the given object. \n\
+const QString FFTWFilters::fftw2dDOC = QObject::tr("Perfom an unscaled 2D-fft for the given object. \n\
 \n\
 This filter uses the fft function provided by the fftw-library to perfom a fft on the input object.\n\
 \n\
@@ -209,11 +229,13 @@ The filter works in-place and out-of-place. If the input object is not complex12
 If the filter is used with input- as output-object and the type is not complex128, the input-object will be overwritten with the output-type.\n\
 \n\
 If the object has a ROI a ROI-less object correponding to the ROI is created. \n\
-If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n";
+If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n");
+
 ito::RetVal FFTWFilters::fftw2d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     return doFFTW(paramsMand, paramsOpt, true, false);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Performs backward dft of 2D objects complex to complex by means of fftw 
    \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
@@ -223,7 +245,7 @@ ito::RetVal FFTWFilters::fftw2d(QVector<ito::ParamBase> *paramsMand, QVector<ito
    \author ITO, Boettcher
    \date 2012.03.06
 */
-const char* FFTWFilters::ifftw2dDOC = "Perfom an unscaled inverse 2D-fft for the given object. \n\
+const QString FFTWFilters::ifftw2dDOC = QObject::tr("Perfom an unscaled inverse 2D-fft for the given object. \n\
 \n\
 This filter uses the fft function provided by the fftw-library to perfom a inverse fft on the input object.\n\
 \n\
@@ -231,11 +253,13 @@ The filter works in-place and out-of-place. If the input object is not complex12
 If the filter is used with input- as output-object and the type is not complex128, the input-object will be overwritten with the output-type.\n\
 \n\
 If the object has a ROI a ROI-less object correponding to the ROI is created. \n\
-If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n";
+If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n");
+
 ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     return doFFTW(paramsMand, paramsOpt, false, false);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Performs 1D and 2D ffts forward and backwards according to bool flags by means of fftw 
    \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
@@ -273,6 +297,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
                                                                          ito::tInt32, 
                                                                          ito::tFloat32, ito::tFloat64, 
                                                                          ito::tComplex64, ito::tComplex128);
+
     if (retval.containsError())
     {
         return retval;
@@ -448,13 +473,11 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
         if (neededNewInput)
         {
-            
             dObjIn->copyAxisTagsTo(outputObject);
             dObjIn->copyTagMapTo(outputObject);
             
             doItInplace = true;
             neededNewOutput = true;
-
         }
         else
         {
@@ -465,7 +488,6 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
     }
     else
     {
-
         int *sizes = new int[dObjOut->getDims()];
         int *offsets = new int[dObjOut->getDims()];
 
@@ -547,7 +569,6 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
             }    
 
             fftw_destroy_plan(plan);    
-
         }
     }
     else
@@ -620,6 +641,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     return retval;
 }
+
 #if 0   // these filteres are not included in the public release
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Performs forward dft by means of fftw row by row (# rows >=1) real to complex or complex to real
@@ -958,7 +980,6 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
                 break;
                 }
 
-
                 fftw_execute(plan);
                 fftw_destroy_plan(plan);
                 for (int i=0; i<((n1-1)*2); i++)
@@ -1004,7 +1025,6 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
                 break;
                 }
                 
-
                 fftw_execute(plan);
                 
                 for (int i=0; i<n0; i++)
@@ -1020,7 +1040,6 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
             }  // end of 2D row by row
                     
             fftw_free(in);
-                
         }                            // end of all 1D and 2D
             
         else
@@ -1039,12 +1058,10 @@ ito::RetVal FFTWFilters::realFFTW(QVector<ito::ParamBase> *paramsMand, QVector<i
         }
     }
     
-
     dObj_in->copyTagMapTo(*dObj_out);
 
-return retval;
+    return retval;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail    Performs 2D dft real to complex or complex to real by means of fftw 
@@ -1078,7 +1095,6 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
     {
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
-    
 
     int size;
     if (ito::dObjHelper::isCplxType(dObj_in->getType(), &size))
@@ -1116,11 +1132,9 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
     free(plan_select_char);
     plan_select_char = NULL;
     
-
     dimensions = (*dObj_in).getDims();
     ito::int32 n0= static_cast<ito::int32>(dObj_in->getSize(0));
     ito::int32 n1= static_cast<ito::int32>(dObj_in->getSize(1));
-
 
     //real to complex
     //########################
@@ -1236,7 +1250,6 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
             fftw_free(out);
             fftw_free(in);
         }        //end of 2D complete
-
         else
         {
             retval = ito::RetVal(ito::retError, 0, tr("Error: this filter is designed for 2D data. As the name says.....").toLatin1().data());
@@ -1328,7 +1341,7 @@ ito::RetVal FFTWFilters::realFFTW2D(QVector<ito::ParamBase> *paramsMand, QVector
     
     dObj_in->copyTagMapTo(*dObj_out);    
 
-return retval;
+    return retval;
 }
 
 //##############################################################################################################################
@@ -1461,7 +1474,6 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
             wavin_out = ito::DataObject(sizeY, sizeX, ito::tFloat64);        
         }
     }
-   
 
     // Check if filterborders or R_z are set
     ito::float64 R_z = static_cast<ito::float64>((*paramsOpt)[0].getVal<ito::float64>());
@@ -1607,13 +1619,11 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
         }    
     }
 
-
     for (ito::int32 i = 0; i < sizeXFD; i++)
     {
         filtRough[i][0] = fourDomain[i][0] * filterFuncRoughPtr[i];
         filtRough[i][1] = fourDomain[i][1] * filterFuncRoughPtr[i];
     }    
-
 
     //Waviness Filterung
     if (calcWaveObj)
@@ -1639,7 +1649,6 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
             }    
         }
 
-
         for (ito::int32 i = 0; i < sizeXFD; i++)
         {
             filtWavi[i][0] = fourDomain[i][0] * filterFuncWavePtr[i];
@@ -1659,7 +1668,6 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     {
         dstPtr[i] = srcInput[i] / sizeX;
     }
-
 
     ito::DataObject *fourierOut = reinterpret_cast<ito::DataObject*>((*paramsOpt)[6].getVal<void*>());  //Output object
     if (filterOut != NULL && filterOut != dObj_wavOut && filterOut != dObj_out && filterOut != dObj_in)    // same here for output object
@@ -1728,7 +1736,6 @@ ito::RetVal FFTWFilters::calcGaussianFilterRough1D (QVector<ito::ParamBase> *par
     return retval;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail Get the mandatory parameters "DataObject",
    \param[out]   paramsMand  Mandatory parameters for the filter function
@@ -1785,22 +1792,19 @@ ito::RetVal FFTWFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<
 
     if (sizeof(fftw_complex) == sizeof(ito::complex128))
     {
-        filter = new FilterDef(FFTWFilters::fftw1d, FFTWFilters::ParamsFFTW, tr(fftw1dDOC));
+        filter = new FilterDef(FFTWFilters::fftw1d, FFTWFilters::ParamsFFTW, fftw1dDOC);
         m_filterList.insert("fftw", filter);
-        filter = new FilterDef(FFTWFilters::ifftw1d, FFTWFilters::ParamsFFTW, tr(ifftw1dDOC));
+        filter = new FilterDef(FFTWFilters::ifftw1d, FFTWFilters::ParamsFFTW, ifftw1dDOC);
         m_filterList.insert("ifftw", filter);
-        filter = new FilterDef(FFTWFilters::fftw2d, FFTWFilters::ParamsFFTW, tr(fftw2dDOC));
+        filter = new FilterDef(FFTWFilters::fftw2d, FFTWFilters::ParamsFFTW, fftw2dDOC);
         m_filterList.insert("fftw2D", filter);
-        filter = new FilterDef(FFTWFilters::ifftw2d, FFTWFilters::ParamsFFTW, tr(ifftw2dDOC));
+        filter = new FilterDef(FFTWFilters::ifftw2d, FFTWFilters::ParamsFFTW, ifftw2dDOC);
         m_filterList.insert("ifftw2D", filter);
-
     }
     else
     {
         retval += ito::RetVal(ito::retWarning, 0, tr("Warning: compatibility error between fftw_complex and ito::complex128").toLatin1().data());
     }
-
-
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;

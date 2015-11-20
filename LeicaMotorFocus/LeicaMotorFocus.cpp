@@ -61,7 +61,6 @@ enum lmfUnit {
        TOGGLE_BEEP_ENABLE =     94
 };
 
-
 enum lmfManCMD {
       CLEAR_POS_1        = 20,
       CLEAR_POS_2        = 21,
@@ -94,7 +93,6 @@ enum lmfStatus {
     STATUS_LOWER_REF_SWITCH = 0x0080 //bit 8: lower reference switch is reached
 };
 
-
 #define FULLSPEED    (140/6.0)    /* 140mm in 6s */
 #define LMFDELAY 10
 
@@ -109,7 +107,7 @@ ito::RetVal LeicaMotorFocusInterface::getAddInInst(ito::AddInBase **addInInst)
 ito::RetVal LeicaMotorFocusInterface::closeThisInst(ito::AddInBase **addInInst)
 {
     REMOVE_PLUGININSTANCE(LeicaMotorFocus)
-   return ito::retOk;
+    return ito::retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -119,15 +117,22 @@ LeicaMotorFocusInterface::LeicaMotorFocusInterface()
     setObjectName("LeicaMotorFocus");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "The LeiceMotorFocus is an itom-plugin, which can be used to control the z-stage of Leica MZ12 or MZ12.5 stereo-microscopes.\n\
 \n\
 For the initialization of this plugin you already need an opened serial IO port (using the plugin 'SerialIO'). Give the handle of \
 the opened serial port to the constructor of this plugin. This plugin will keep a reference of the serial port until the actuator \
 is closed again.";
-
+*/
     m_description = QObject::tr("Plugin for Leica MZ12.X focus actuator");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(
+"The LeiceMotorFocus is an itom-plugin, which can be used to control the z-stage of Leica MZ12 or MZ12.5 stereo-microscopes.\n\
+\n\
+For the initialization of this plugin you already need an opened serial IO port (using the plugin 'SerialIO'). Give the handle of \
+the opened serial port to the constructor of this plugin. This plugin will keep a reference of the serial port until the actuator \
+is closed again.");
+
     m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -233,6 +238,7 @@ const ito::RetVal LeicaMotorFocus::LMFReadString(char *buf, const int bufsize, i
 
     return retval;
 }
+
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal LeicaMotorFocus::LMFWriteCmd(int id, int cmd)
 {    
@@ -301,7 +307,6 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
         else
         {
             copy = _strdup(answer);
-
         }
     }
     else
@@ -360,6 +365,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryL(int id, int cmd, long *plval)
     {
         *plval = atol(answer);
     }
+
     return retval;
 }
 
@@ -404,6 +410,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryL(int id, int cmd, long *plval)
 //    return retval;
 //}
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int> axis, const int /*flags*/)
 {
     ito::RetVal retVal(ito::retOk);
@@ -559,6 +566,7 @@ const ito::RetVal LeicaMotorFocus::LMFStatus(int &status)
     }
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 LeicaMotorFocus::LeicaMotorFocus() : AddInActuator(), m_async(0), m_direction(1)/*, m_posrequestlisteners(0)*/
 {
@@ -597,8 +605,6 @@ LeicaMotorFocus::LeicaMotorFocus() : AddInActuator(), m_async(0), m_direction(1)
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, LMFWid);
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -640,6 +646,7 @@ ito::RetVal LeicaMotorFocus::getParam(QSharedPointer<ito::Param> val, ItomShared
 
    return retValue;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
@@ -733,7 +740,6 @@ ito::RetVal LeicaMotorFocus::setParam(QSharedPointer<ito::ParamBase> val, ItomSh
     return retValue;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore *waitCond)
 {   
@@ -762,8 +768,6 @@ ito::RetVal LeicaMotorFocus::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         retval += m_pSer->setParam("stopbits", 1, 0);
         retval += m_pSer->setParam("flow", 1, 0);
         retval += m_pSer->setParam("endline", "\r\n", 0);*/
-
-
         retval += this->LMFDummyRead();
     }
     else
@@ -869,7 +873,6 @@ ito::RetVal LeicaMotorFocus::calib(const int /*axis*/, ItomSharedSemaphore *wait
             {
                 retval += LMFWriteCmd(70, MOVE_DOWN);
             }
-                
         }
         if (retval != ito::retError)
         {
@@ -899,6 +902,7 @@ ito::RetVal LeicaMotorFocus::calib(const int /*axis*/, ItomSharedSemaphore *wait
         {
             retval += LMFWriteCmd(70, SET_REFERENCE);
         }
+
         if (retval != ito::retError)
         {
             retval += LMFWriteCmdArg(70, SET_VELOCITY, oldspeed);
@@ -962,6 +966,7 @@ ito::RetVal LeicaMotorFocus::setOrigin(const int /*axis*/, ItomSharedSemaphore *
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -998,6 +1003,7 @@ ito::RetVal LeicaMotorFocus::getStatus(QSharedPointer<QVector<int> > status, Ito
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -1025,11 +1031,13 @@ ito::RetVal LeicaMotorFocus::getPos(const int axis, QSharedPointer<double> pos, 
         }
 
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -1049,13 +1057,16 @@ ito::RetVal LeicaMotorFocus::getPos(const QVector<int> axis, QSharedPointer<QVec
     {
         retval +=ito::RetVal(ito::retError, 0, tr("Error. Too many Axis / wrong Axis").toLatin1().data());
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 const ito::RetVal LeicaMotorFocus::LMFSetPos(QVector<int> axis, const double dpos, const int absrelflag, ItomSharedSemaphore *waitCond)
 {
@@ -1096,7 +1107,6 @@ const ito::RetVal LeicaMotorFocus::LMFSetPos(QVector<int> axis, const double dpo
         }
         retValue += LMFWriteCmdArg(70, absrelflag, lpos);
 
-
         if (m_async && waitCond && !released)
         {
             waitCond->returnValue = retValue;
@@ -1112,15 +1122,7 @@ const ito::RetVal LeicaMotorFocus::LMFSetPos(QVector<int> axis, const double dpo
             waitCond->release();
             released = true;
         }
-
-
 /*
-
-
-
-
-
-
         if (!m_async && retval == ito::retOk)
         {
             retval += LMFWaitForAnswer(10000);
@@ -1234,9 +1236,11 @@ ito::RetVal LeicaMotorFocus::setPosRel(const QVector<int> axis, QVector<double> 
             waitCond->returnValue = retval;
             waitCond->release();
         }
+
         return retval;
     }
 }
+
 //---------------------------------------------------------------------------------------------------------------------------------- 
 ito::RetVal LeicaMotorFocus::requestStatusAndPosition(bool sendCurrentPos, bool sendTargetPos)
 {

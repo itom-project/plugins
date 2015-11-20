@@ -81,11 +81,16 @@ GWInstekPSPInterface::GWInstekPSPInterface()
     m_description = QObject::tr("Controller for power supplies PSP-405, PSP-603 and PSP-2010 of GWInstek");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This itom-plugin allows communicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. \
 Therefore an opened connected via the serial port (using the plugin 'SerialIO') is required. You need to give a valid handle to this \
 instance when initializing this plugin.";
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr(
+"This itom-plugin allows communicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. \
+Therefore an opened connected via the serial port (using the plugin 'SerialIO') is required. You need to give a valid handle to this \
+instance when initializing this plugin.");
+
     m_author = "H. Bieger, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -101,6 +106,7 @@ instance when initializing this plugin.";
     m_initParamsOpt.append(paramVal);
     return;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     clears both vectors m_initParamsMand and m_initParamsOpt.
@@ -108,6 +114,7 @@ instance when initializing this plugin.";
 GWInstekPSPInterface::~GWInstekPSPInterface()
 {
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // this makro registers the class GWInstekPSPInterface with the name GWInstekPSPInterface as plugin for the Qt-System (see Qt-DOC)
 #if QT_VERSION < 0x050000
@@ -326,6 +333,7 @@ GWInstekPSP::GWInstekPSP() : AddInDataIO(), m_pSer(NULL)
     QVector<ito::Param> pOut;
     registerExecFunc("startRamp", pMand, pOpt, pOut, tr("todo"));
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail Class destructo which deletes the thread and clear the m_params
@@ -536,6 +544,7 @@ ito::RetVal GWInstekPSP::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     setInitialized(true); //init method has been finished (independent on retval)
     return retValue;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*! \detail close method which is called before that this instance is deleted by the GWInstekPSPInterface
     notice that this method is called in the actual thread of this instance.
@@ -668,7 +677,7 @@ ito::RetVal GWInstekPSP::execFunc(const QString funcName, QSharedPointer<QVector
             //else
             //{
             //    qDebug() << "muss warten";
-            //Ô}
+            //}
         }
 
         retValue += WriteToSerial("L", true); //get current values after the end of the ramp operation

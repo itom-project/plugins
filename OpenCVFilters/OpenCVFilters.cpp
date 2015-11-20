@@ -45,7 +45,6 @@
 
 int NTHREADS = 1;
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -68,7 +67,7 @@ OpenCVFiltersInterface::OpenCVFiltersInterface()
     setObjectName("OpenCV-Filters");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin provides wrappers for various OpenCV algorithms. These are for instance: \n\
 \n\
 * morphological filters (dilation, erosion) \n\
@@ -79,9 +78,21 @@ OpenCVFiltersInterface::OpenCVFiltersInterface()
 \n\
 This plugin not only requires access to the core library of OpenCV but also to further libraries like \
 imgproc and calib3d.";
-
+*/
     m_description = QObject::tr("Wrapped algorithms from OpenCV");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(
+"This plugin provides wrappers for various OpenCV algorithms. These are for instance: \n\
+\n\
+* morphological filters (dilation, erosion) \n\
+* image filtering (blur, median blur...) \n\
+* 1d and 2d fft and ifft \n\
+* histogram determination \n\
+* feature detections (circles, chessboard corners...) \n\
+\n\
+This plugin not only requires access to the core library of OpenCV but also to further libraries like \
+imgproc and calib3d.");
+
     m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -147,6 +158,7 @@ ito::RetVal OpenCVFilters::stdParams2Objects(QVector<ito::Param> *paramsMand, QV
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 
 ito::RetVal OpenCVFilters::checkInputOutputEqual(ito::DataObject * p_input, ito::DataObject * p_output, bool * unequal)
@@ -187,6 +199,7 @@ ito::RetVal OpenCVFilters::checkInputOutputEqual(ito::DataObject * p_input, ito:
 
     return ito::retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::makeInputOutputEqual(ito::DataObject * p_input, ito::DataObject * p_output)
 {
@@ -216,9 +229,10 @@ ito::RetVal OpenCVFilters::makeInputOutputEqual(ito::DataObject * p_input, ito::
         else
             return ito::RetVal(ito::retError, 0, tr("Error: the check command is currently not implemented for more than 3 dims").toLatin1().data());
     }
-    return ret;
 
+    return ret;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvDilateErodeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -239,6 +253,7 @@ ito::RetVal OpenCVFilters::cvDilateErodeParams(QVector<ito::Param> *paramsMand, 
         param = ito::Param("borderType", ito::ParamBase::String | ito::ParamBase::In, "CONSTANT", tr("This string defines how the filter should hande pixels at the border of the matrix. Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
 
@@ -308,7 +323,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
     }
     else
     {
-        retval += ito::RetVal::format(ito::retError,0,"border type %s is unknown", borderTypeStr.toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("border type %1 is unknown").arg(borderTypeStr.toLatin1().data()).toLatin1().data());
         return retval;
     }
 
@@ -325,7 +340,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
 
         if (anchor.x < 0 || anchor.x >= n || anchor.y < 0 || anchor.y >= m)
         {
-            retval += ito::RetVal::format(ito::retError,0,"anchor must be in range [0,%i];[0,%i]", m-1, n-1);
+            retval += ito::RetVal(ito::retError, 0, tr("anchor must be in range [0,%1];[0,%2]").arg(m-1).arg(n-1).toLatin1().data());
             return retval;
         }
     }
@@ -335,7 +350,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
     }
     else
     {
-        retval += ito::RetVal(ito::retError,0,"anchor must have either 2 values or none");
+        retval += ito::RetVal(ito::retError, 0, tr("anchor must have either 2 values or none").toLatin1().data());
         return retval;
     }
 
@@ -426,7 +441,7 @@ ito::RetVal OpenCVFilters::cvDilateErode(QVector<ito::ParamBase> *paramsMand, QV
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvDilateDoc = "Dilates every plane of a data object by using a specific structuring element. \n\
+const QString OpenCVFilters::cvDilateDoc = QObject::tr("Dilates every plane of a data object by using a specific structuring element. \n\
 \n\
 This filter applies the dialation method cvDilate of OpenCV to every plane in the source data object. The \
 result is contained in the destination object. It can handle data objects of type uint8, uint16, int16, float32 and float64 only. \n\
@@ -440,14 +455,15 @@ the shape of a pixel neighborhood over which the maximum is taken: \n\
 \n\
 dst(x,y) = max_{(x',y'):element(x',y')!=0} src(x+x',y+y') \n\
 \n\
-Dilation can be applied several times (parameter 'iterations').";
+Dilation can be applied several times (parameter 'iterations').");
+
 ito::RetVal OpenCVFilters::cvDilate(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     return cvDilateErode(paramsMand, paramsOpt, paramsOut, false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvErodeDoc = "Erodes every plane of a data object by using a specific structuring element. \n\
+const QString OpenCVFilters::cvErodeDoc = QObject::tr("Erodes every plane of a data object by using a specific structuring element. \n\
 \n\
 This filter applies the erosion method cvErode of OpenCV to every plane in the source data object. The \
 result is contained in the destination object. It can handle data objects of type uint8, uint16, int16, float32 and float64 only. \n\
@@ -461,13 +477,12 @@ the shape of a pixel neighborhood over which the maximum is taken: \n\
 \n\
 dst(x,y) = min_{(x',y'):element(x',y')!=0} src(x+x',y+y') \n\
 \n\
-Erosion can be applied several times (parameter 'iterations').";
+Erosion can be applied several times (parameter 'iterations').");
+
 ito::RetVal OpenCVFilters::cvErode(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     return cvDilateErode(paramsMand, paramsOpt, paramsOut, true);
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvBlurParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -488,11 +503,12 @@ ito::RetVal OpenCVFilters::cvBlurParams(QVector<ito::Param> *paramsMand, QVector
         param = ito::Param("borderType", ito::ParamBase::String | ito::ParamBase::In, "CONSTANT", tr("border mode used to extrapolate pixels outside of the image").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvBlurDoc = "Planewise median blur filter.\n\
+const QString OpenCVFilters::cvBlurDoc = QObject::tr("Planewise median blur filter.\n\
 \n\
 This filter applies the method cv::blur to every plane in the source data object. The function smoothes the images by a simple mean-filter. The\
 result is contained in the destination object. It can handle data objects of type uint8, uint16, int16, ito::tInt32, float32 and float64 only. \n\
@@ -504,7 +520,8 @@ The itom-wrapping does not work inplace currently. A new dataObject is allocated
 borderType: This string defines how the filter should hande pixels at the border of the matrix.\
 Allowed is CONSTANT [default], REPLICATE, REFLECT, WRAP, REFLECT_101. In case of a constant border, only pixels inside of the element mask are considered (morphologyDefaultBorderValue)\
 \n\
-Warning: NaN-handling for floats not verified.";
+Warning: NaN-handling for floats not verified.");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
@@ -538,7 +555,9 @@ ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<i
     // Check if input type is allowed or not
     retval = ito::dObjHelper::verifyDataObjectType(dObjImages, "sourceImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
     if (retval.containsError())
+    {
         return retval;
+    }
 
     kernelsizes.width = (*paramsOpt)[0].getVal<int>();
     kernelsizes.height = (*paramsOpt)[1].getVal<int>();
@@ -609,6 +628,7 @@ ito::RetVal OpenCVFilters::cvBlur(QVector<ito::ParamBase> *paramsMand, QVector<i
             goto end;
         }
     }
+
     // Warning: if you copy this, this could cause a problem
     itomtype = ito::dObjHelper::cvType2itomType(cvMatOut[0].type());
     if (itomtype > 0)
@@ -640,37 +660,41 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvFFT2DDoc = "2D-dimentional fourier-transformation using cv::DFT.\n\
+const QString OpenCVFilters::cvFFT2DDoc = QObject::tr("2D-dimentional fourier-transformation using cv::DFT.\n\
 \n\
 This filter tries to perform an inplace FFT for a given 2D-dataObject. The FFT is calculated planewise.\
 The result is a complex-dataObject. The axis-scales and units are invertes and modified.\n\
 \n\
 This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, false, false, false)-function.\n\
-";
+");
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvIFFT2DDoc = "2D-dimentional inverse fourier-transformation using cv::DFT.\n\
+const QString OpenCVFilters::cvIFFT2DDoc = QObject::tr("2D-dimentional inverse fourier-transformation using cv::DFT.\n\
 \n\
 This filter tries to perform an inplace FFT for a given 2D-dataObject. The FFT is calculated planewise.\
 The result is a real-dataObject. The axis-scales and units are invertes and modified.\n\
 \n\
 This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, true, true, false)-function.\n\
-";
+");
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvFFT1DDoc = "1D-dimentional fourier-transformation using cv::DFT.\n\
+const QString OpenCVFilters::cvFFT1DDoc = QObject::tr("1D-dimentional fourier-transformation using cv::DFT.\n\
 \n\
 This filter tries to perform an inplace FFT for a given line or 2D-dataObject. The FFT is calculated linewise.\
 The result is a complex-dataObject. The axis-scales and units are invertes and modified.\n\
 \n\
 This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, false, false, true)-function.\n\
-";
+");
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvIFFT1DDoc = "1D-dimentional inverse fourier-transformation using cv::DFT.\n\
+const QString OpenCVFilters::cvIFFT1DDoc = QObject::tr("1D-dimentional inverse fourier-transformation using cv::DFT.\n\
 \n\
 This filter tries to perform an inplace FFT for a given line or 2D-dataObject. The FFT is calculated linewise.\
 The result is a real-dataObject. The axis-scales and units are invertes and modified.\n\
 \n\
 This filter internally calls the ito::dObjHelper::calcCVDFT(dObjImages, true, true, true)-function.\n\
-";
+");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvFFTParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -682,6 +706,7 @@ ito::RetVal OpenCVFilters::cvFFTParams(QVector<ito::Param> *paramsMand, QVector<
         //param = ito::Param("destinationImage", ito::ParamBase::DObjPtr, NULL, tr("Output Object handle. Will be come complex-type").toLatin1().data());
         //paramsMand->append(param);
     }
+
     return retval;
 }
 
@@ -704,7 +729,6 @@ ito::RetVal OpenCVFilters::cvFFT2D(QVector<ito::ParamBase> *paramsMand, QVector<
     double duration = (double)testend / cv::getTickFrequency();
     std::cout << "Time: " << duration << "ms\n";
 #endif
-
 
     return retval;
 }
@@ -779,14 +803,15 @@ ito::RetVal OpenCVFilters::cvIFFT1D(QVector<ito::ParamBase> *paramsMand, QVector
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvMedianBlurDoc = "Planewise median blur filter.\n\
+const QString OpenCVFilters::cvMedianBlurDoc = QObject::tr("Planewise median blur filter.\n\
 \n\
 The function smoothes an image using the median filter with the kernel-size x kernel-size aperture. Each channel of a multi-channel image is processed independently. \
 It can handle data objects of type uint8, uint16, int16, ito::tInt32, float32 and float64 only. \n\
 \n\
 The itom-wrapping does not work inplace currently. A new dataObject is allocated.\n\
 \n\
-Warning: NaN-handling for floats not verified.";
+Warning: NaN-handling for floats not verified.");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvMedianBlurParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -800,6 +825,7 @@ ito::RetVal OpenCVFilters::cvMedianBlurParams(QVector<ito::Param> *paramsMand, Q
         param = ito::Param("kernelSize", ito::ParamBase::Int | ito::ParamBase::In, 3, 255, 3, tr("Kernelsize in x/y").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
 
@@ -888,6 +914,7 @@ end:
     delete[] cvMatOut;
     return retval;
 }
+
 ////----------------------------------------------------------------------------------------------------------------------------------
 //static const char * cvCalcHistDoc = "Planewise histogram calculation";
 ////----------------------------------------------------------------------------------------------------------------------------------
@@ -1026,36 +1053,39 @@ end:
 //    delete[] cvMatOut;
 //    return retval;
 //}
-//----------------------------------------------------------------------------------------------------------------------------------
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvFlipLeftRightDoc = "This filter flips the image left to right. \n\
+const QString OpenCVFilters::cvFlipLeftRightDoc = QObject::tr("This filter flips the image left to right. \n\
 \n\
 This filter applies the flip method cvFlip of OpenCV with the flipCode > 0 to a 2D source data object. The \
 result is contained in the destination object\n\
 \n\
 It is allowed to let the filter work inplace if you give the same input than destination data object, else the output data object is verified \
 if it fits to the size and type of the source data object and if not a new one is allocated\n\
-.";
-const char* OpenCVFilters::cvFlipUpDownDoc = "This filter flips the image upside down. \n\
+.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString OpenCVFilters::cvFlipUpDownDoc = QObject::tr("This filter flips the image upside down. \n\
 \n\
 This filter applies the flip method cvFlip of OpenCV with the flipCode = 0 to a 2D source data object. The \
 result is contained in the destination object.\n\
 \n\
 It is allowed to let the filter work inplace if you give the same input than destination data object, else the output data object is verified \
 if it fits to the size and type of the source data object and if not a new one is allocated\n\
-.";
+.");
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvFlipLeftRight(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * paramsOut)
 {
     return cvFlip(paramsMand, paramsOpt, paramsOut, true);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvFlipUpDown(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * paramsOut)
 {
     return cvFlip(paramsMand, paramsOpt, paramsOut, false);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/, bool colsIfTrue)
 {
@@ -1111,30 +1141,30 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
         {
             if (planes > 0)
             {
-                    ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjDst, "destImage", planes, planes, ysize, ysize, xsize, xsize,  1, dObjImages->getType());
-                    if (tRetval.containsError())
-                    {
-                        int sizes[3] = {planes, ysize, xsize};
-                        destTemp = ito::DataObject(3, sizes, dObjImages->getType());
-                    }
-                    else
-                    {
-                        destTemp = *dObjDst;
-                        overWrite = false;
-                    }
+                ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjDst, "destImage", planes, planes, ysize, ysize, xsize, xsize,  1, dObjImages->getType());
+                if (tRetval.containsError())
+                {
+                    int sizes[3] = {planes, ysize, xsize};
+                    destTemp = ito::DataObject(3, sizes, dObjImages->getType());
+                }
+                else
+                {
+                    destTemp = *dObjDst;
+                    overWrite = false;
+                }
             }
             else
             {
-                    ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjDst, "destImage", ysize, ysize, xsize, xsize,  1, dObjImages->getType());
-                    if (tRetval.containsError())
-                    {
-                        destTemp = ito::DataObject(ysize, xsize, dObjImages->getType());
-                    }
-                    else
-                    {
-                        destTemp = *dObjDst;
-                        overWrite = false;
-                    }            
+                ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjDst, "destImage", ysize, ysize, xsize, xsize,  1, dObjImages->getType());
+                if (tRetval.containsError())
+                {
+                    destTemp = ito::DataObject(ysize, xsize, dObjImages->getType());
+                }
+                else
+                {
+                    destTemp = *dObjDst;
+                    overWrite = false;
+                }            
             }
         }
         else
@@ -1189,30 +1219,36 @@ ito::RetVal OpenCVFilters::cvFlip(QVector<ito::ParamBase> *paramsMand, QVector<i
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvRotP90Doc = "This filter rotates the image by 90° count clock wise. \n\
+const QString OpenCVFilters::cvRotP90Doc = QObject::tr("This filter rotates the image by 90° count clock wise. \n\
 \n\
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The \
 result is contained in the destination object\n\
 \n\
 It is allowed to let the filter work pseudo inplace if you give the same input than destination data object, else the output data object is verified \
-if it fits to the size and type of the source data object and if not a new one is allocated.\n";
-const char* OpenCVFilters::cvRotM90Doc = "This filter rotates the image by 90° clock wise. \n\
+if it fits to the size and type of the source data object and if not a new one is allocated.\n");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString OpenCVFilters::cvRotM90Doc = QObject::tr("This filter rotates the image by 90° clock wise. \n\
 \n\
 This filter applies the flip method cvFlip and the transpose method cvTranspose of OpenCV to rotate the object. The \
 result is contained in the destination object\n\
 \n\
 It is allowed to let the filter work pseudo inplace if you give the same input than destination data object, else the output data object is verified \
-if it fits to the size and type of the source data object and if not a new one is allocated.\n";
+if it fits to the size and type of the source data object and if not a new one is allocated.\n");
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvRotP90(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * paramsOut)
 {
     return cvRotate(paramsMand, paramsOpt, paramsOut, false);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvRotM90(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * paramsOut)
 {
     return cvRotate(paramsMand, paramsOpt, paramsOut, true);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/, bool rotClw)
 {
@@ -1352,14 +1388,15 @@ ito::RetVal OpenCVFilters::cvRotate(QVector<ito::ParamBase> *paramsMand, QVector
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvRot180Doc = "This filter rotates the image by 180°. \n\
+const QString OpenCVFilters::cvRot180Doc = QObject::tr("This filter rotates the image by 180°. \n\
 \n\
 This filter applies the flip method cvFlip from OpenCV horizontally and vertically to rotate the object. The \
 result is contained in the destination object\n\
 \n\
 It is allowed to let the filter work inplace if you give the same input than destination data object, else the output data object is verified \
-if it fits to the size and type of the source data object and if not a new one is allocated.\n";
+if it fits to the size and type of the source data object and if not a new one is allocated.\n");
 
 ito::RetVal OpenCVFilters::cvRot180(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
 {
@@ -1485,7 +1522,7 @@ ito::RetVal OpenCVFilters::cvRot180(QVector<ito::ParamBase> *paramsMand, QVector
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvRemoveSpikesDoc = "Set single spikes at measurement edges to a new value. \n\
+const QString OpenCVFilters::cvRemoveSpikesDoc = QObject::tr("Set single spikes at measurement edges to a new value. \n\
 \n\
 This filter creates a binary mask for the input object. The value of mask(y,x) will be 1 if value of input(y,x) is within the specified range and is finite.\
 The mask is eroded and than dilated by kernel size using openCV cv::erode and cv::dilate with a single iteration. \
@@ -1493,7 +1530,8 @@ In the last step the value of output(y,x) is set to newValue if mask(y,x) is 0.\
 \n\
 It is allowed to let the filter work inplace if you give the same source and destination data object, else the destination data object is verified \
 if it fits to the size and type of the source data object and if not a new one is allocated and the input data is copied to the new object. \n\
-";
+");
+
 ito::RetVal OpenCVFilters::cvRemoveSpikesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -1511,6 +1549,7 @@ ito::RetVal OpenCVFilters::cvRemoveSpikesParams(QVector<ito::Param> *paramsMand,
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
@@ -1733,11 +1772,13 @@ ito::RetVal OpenCVFilters::cvRemoveSpikes(QVector<ito::ParamBase> *paramsMand, Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char * OpenCVFilters::cvSplitChannelsDoc = "Converts a rgba32 data object (with four channels blue, green, red, alpha) into \n\
+const QString OpenCVFilters::cvSplitChannelsDoc = QObject::tr("Converts a rgba32 data object (with four channels blue, green, red, alpha) into \n\
 an output data object of type 'uint8' and a shape that has one dimension more than the input object and the first dimension is equal to 4. \n\
 The four color components are then distributed into the 4 planes of the first dimension. \n\
 \n\
-For instance a 4x5x3, rgba32 data objects leads to a 4x4x5x3 uint8 data object.";
+For instance a 4x5x3, rgba32 data objects leads to a 4x4x5x3 uint8 data object.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvSplitChannelsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -1750,6 +1791,7 @@ ito::RetVal OpenCVFilters::cvSplitChannelsParams(QVector<ito::Param> *paramsMand
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvSplitChannels(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retVal;
@@ -1796,22 +1838,26 @@ ito::RetVal OpenCVFilters::cvSplitChannels(QVector<ito::ParamBase> *paramsMand, 
         {
             *(paramsMand->at(1).getVal<ito::DataObject*>()) = ito::DataObject();
         }
-
     }
 
     return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char * OpenCVFilters::cvMergeChannelsDoc = "Reduces a [4x...xMxN] or [3x...xMxN] uint8 data object to a [...xMxN] rgba32 data object where the \n\
+const QString OpenCVFilters::cvMergeChannelsDoc = QObject::tr("Reduces a [4x...xMxN] or [3x...xMxN] uint8 data object to a [...xMxN] rgba32 data object where the \n\
 first dimension is merged into the color type. If the first dimension is equal to 4, the planes are used for the blue, green, red and alpha \n\
-component, in case of three, the alpha component is set to the optional alpha value.";
+component, in case of three, the alpha component is set to the optional alpha value.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvMergeChannelsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if (retval.containsError()) return retval;
+    if (retval.containsError())
+    {
+        return retval;
+    }
 
     paramsMand->append( ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "uint8 data object with any shape and at least three dimensions") );
     paramsMand->append( ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "rgba32 data object") );
@@ -1820,6 +1866,7 @@ ito::RetVal OpenCVFilters::cvMergeChannelsParams(QVector<ito::Param> *paramsMand
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvMergeChannels(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retVal;
@@ -1880,22 +1927,21 @@ ito::RetVal OpenCVFilters::cvMergeChannels(QVector<ito::ParamBase> *paramsMand, 
             delete[] newMats;
             delete[] newShape;
         }
-
     }
 
     return retVal;
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
-const char *OpenCVFilters::cvResizeDoc = "Resizes an image \n\
+const QString OpenCVFilters::cvResizeDoc = QObject::tr("Resizes an image \n\
 \n\
 The function resize resizes the image 'inputObject' down to or up by the specific factors. \n\
 \n\
 To shrink an image, it will generally look best with CV_INTER_AREA interpolation, whereas to enlarge an image, \n\
 it will generally look best with CV_INTER_CUBIC (slow) or CV_INTER_LINEAR (faster but still looks OK). \n\
-The axisScale properties of the x- and y-axes of the outputObject are divided by fx and fy respectively, while the offset values are multiplied with fx and fy.";
+The axisScale properties of the x- and y-axes of the outputObject are divided by fx and fy respectively, while the offset values are multiplied with fx and fy.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvResizeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -1919,6 +1965,7 @@ ito::RetVal OpenCVFilters::cvResizeParams(QVector<ito::Param> *paramsMand, QVect
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvResize(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -1964,123 +2011,119 @@ ito::RetVal OpenCVFilters::cvResize(QVector<ito::ParamBase> *paramsMand, QVector
     return retval;
 }
         
-
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
 {
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
 
-    filter = new FilterDef(OpenCVFilters::cvDilate, OpenCVFilters::cvDilateErodeParams, tr(cvDilateDoc));
+    filter = new FilterDef(OpenCVFilters::cvDilate, OpenCVFilters::cvDilateErodeParams, cvDilateDoc);
     m_filterList.insert("cvDilate", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvErode, OpenCVFilters::cvDilateErodeParams, tr(cvErodeDoc));
+    filter = new FilterDef(OpenCVFilters::cvErode, OpenCVFilters::cvDilateErodeParams, cvErodeDoc);
     m_filterList.insert("cvErode", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvMedianBlur, OpenCVFilters::cvMedianBlurParams, tr(cvMedianBlurDoc));
+    filter = new FilterDef(OpenCVFilters::cvMedianBlur, OpenCVFilters::cvMedianBlurParams, cvMedianBlurDoc);
     m_filterList.insert("cvMedianBlur", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvBlur, OpenCVFilters::cvBlurParams, tr(cvBlurDoc));
+    filter = new FilterDef(OpenCVFilters::cvBlur, OpenCVFilters::cvBlurParams, cvBlurDoc);
     m_filterList.insert("cvBlur", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFFT2D, OpenCVFilters::cvFFTParams, tr(cvFFT2DDoc));
+    filter = new FilterDef(OpenCVFilters::cvFFT2D, OpenCVFilters::cvFFTParams, cvFFT2DDoc);
     m_filterList.insert("cvFFT2D", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvIFFT2D, OpenCVFilters::cvFFTParams, tr(cvIFFT2DDoc));
+    filter = new FilterDef(OpenCVFilters::cvIFFT2D, OpenCVFilters::cvFFTParams, cvIFFT2DDoc);
     m_filterList.insert("cvIFFT2D", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFFT1D, OpenCVFilters::cvFFTParams, tr(cvFFT1DDoc));
+    filter = new FilterDef(OpenCVFilters::cvFFT1D, OpenCVFilters::cvFFTParams, cvFFT1DDoc);
     m_filterList.insert("cvFFT1D", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvIFFT1D, OpenCVFilters::cvFFTParams, tr(cvIFFT1DDoc));
+    filter = new FilterDef(OpenCVFilters::cvIFFT1D, OpenCVFilters::cvFFTParams, cvIFFT1DDoc);
     m_filterList.insert("cvIFFT1D", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvRemoveSpikes, OpenCVFilters::cvRemoveSpikesParams, tr(cvRemoveSpikesDoc));
+    filter = new FilterDef(OpenCVFilters::cvRemoveSpikes, OpenCVFilters::cvRemoveSpikesParams, cvRemoveSpikesDoc);
     m_filterList.insert("cvRemoveSpikes", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvSplitChannels, OpenCVFilters::cvSplitChannelsParams, tr(cvSplitChannelsDoc));
+    filter = new FilterDef(OpenCVFilters::cvSplitChannels, OpenCVFilters::cvSplitChannelsParams, cvSplitChannelsDoc);
     m_filterList.insert("cvSplitChannels", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvMergeChannels, OpenCVFilters::cvMergeChannelsParams, tr(cvMergeChannelsDoc));
+    filter = new FilterDef(OpenCVFilters::cvMergeChannels, OpenCVFilters::cvMergeChannelsParams, cvMergeChannelsDoc);
     m_filterList.insert("cvMergeChannels", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvResize, OpenCVFilters::cvResizeParams, tr(cvResizeDoc));
+    filter = new FilterDef(OpenCVFilters::cvResize, OpenCVFilters::cvResizeParams, cvResizeDoc);
     m_filterList.insert("cvResize", filter);
 
-
-    /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, tr(cvCalcHistDoc));
+    /*filter = new FilterDef(OpenCVFilters::cvCalcHist, OpenCVFilters::cvCalcHistParams, cvCalcHistDoc);
     m_filterList.insert("cvCalcHistogram", filter);*/
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
-    filter = new FilterDef(OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, tr(cvFindCirclesDoc));
+    filter = new FilterDef(OpenCVFilters::cvFindCircles, OpenCVFilters::cvFindCirclesParams, cvFindCirclesDoc);
     m_filterList.insert("cvFindCircles", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFindChessboardCorners, OpenCVFilters::cvFindChessboardCornersParams, tr(cvFindChessboardCornersDoc));
+    filter = new FilterDef(OpenCVFilters::cvFindChessboardCorners, OpenCVFilters::cvFindChessboardCornersParams, cvFindChessboardCornersDoc);
     m_filterList.insert("cvFindChessboardCorners", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvCornerSubPix, OpenCVFilters::cvCornerSubPixParams, tr(cvCornerSubPixDoc));
+    filter = new FilterDef(OpenCVFilters::cvCornerSubPix, OpenCVFilters::cvCornerSubPixParams, cvCornerSubPixDoc);
     m_filterList.insert("cvCornerSubPix", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvCalibrateCamera, OpenCVFilters::cvCalibrateCameraParams, tr(cvCalibrateCameraDoc));
+    filter = new FilterDef(OpenCVFilters::cvCalibrateCamera, OpenCVFilters::cvCalibrateCameraParams, cvCalibrateCameraDoc);
     m_filterList.insert("cvCalibrateCamera", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvDrawChessboardCorners, OpenCVFilters::cvDrawChessboardCornersParams, tr(cvDrawChessboardCornersDoc));
+    filter = new FilterDef(OpenCVFilters::cvDrawChessboardCorners, OpenCVFilters::cvDrawChessboardCornersParams, cvDrawChessboardCornersDoc);
     m_filterList.insert("cvDrawChessboardCorners", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvEstimateAffine3D, OpenCVFilters::cvEstimateAffine3DParams, tr(cvEstimateAffine3DDoc));
+    filter = new FilterDef(OpenCVFilters::cvEstimateAffine3D, OpenCVFilters::cvEstimateAffine3DParams, cvEstimateAffine3DDoc);
     m_filterList.insert("cvEstimateAffine3DParams", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvUndistort, OpenCVFilters::cvUndistortParams, tr(cvUndistortDoc));
+    filter = new FilterDef(OpenCVFilters::cvUndistort, OpenCVFilters::cvUndistortParams, cvUndistortDoc);
     m_filterList.insert("cvUndistort", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvUndistortPoints, OpenCVFilters::cvUndistortPointsParams, tr(cvUndistortPointsDoc));
+    filter = new FilterDef(OpenCVFilters::cvUndistortPoints, OpenCVFilters::cvUndistortPointsParams, cvUndistortPointsDoc);
     m_filterList.insert("cvUndistortPoints", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvInitUndistortRectifyMap, OpenCVFilters::cvInitUndistortRectifyMapParams, tr(cvInitUndistortRectifyMapDoc));
+    filter = new FilterDef(OpenCVFilters::cvInitUndistortRectifyMap, OpenCVFilters::cvInitUndistortRectifyMapParams, cvInitUndistortRectifyMapDoc);
     m_filterList.insert("cvInitUndistortRectifyMap", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvRemap, OpenCVFilters::cvRemapParams, tr(cvRemapDoc));
+    filter = new FilterDef(OpenCVFilters::cvRemap, OpenCVFilters::cvRemapParams, cvRemapDoc);
     m_filterList.insert("cvRemapParams", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFindHomography, OpenCVFilters::cvFindHomographyParams, tr(cvFindHomographyDoc));
+    filter = new FilterDef(OpenCVFilters::cvFindHomography, OpenCVFilters::cvFindHomographyParams, cvFindHomographyDoc);
     m_filterList.insert("cvFindHomography", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFindFundamentalMat, OpenCVFilters::cvFindFundamentalMatParams, tr(cvFindFundamentalMatDoc));
+    filter = new FilterDef(OpenCVFilters::cvFindFundamentalMat, OpenCVFilters::cvFindFundamentalMatParams, cvFindFundamentalMatDoc);
     m_filterList.insert("cvFindFundamentalMat", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvComputeCorrespondEpilines, OpenCVFilters::cvComputeCorrespondEpilinesParams, tr(cvComputeCorrespondEpilinesDoc));
+    filter = new FilterDef(OpenCVFilters::cvComputeCorrespondEpilines, OpenCVFilters::cvComputeCorrespondEpilinesParams, cvComputeCorrespondEpilinesDoc);
     m_filterList.insert("cvComputeCorrespondEpilines", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFlannBasedMatcher, OpenCVFilters::cvFlannBasedMatcherParams, tr(cvFlannBasedMatcherDoc));
+    filter = new FilterDef(OpenCVFilters::cvFlannBasedMatcher, OpenCVFilters::cvFlannBasedMatcherParams, cvFlannBasedMatcherDoc);
     m_filterList.insert("cvFlannBasedMatcher", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvDrawKeypoints, OpenCVFilters::cvDrawKeypointsParams, tr(cvDrawKeypointsDoc));
+    filter = new FilterDef(OpenCVFilters::cvDrawKeypoints, OpenCVFilters::cvDrawKeypointsParams, cvDrawKeypointsDoc);
     m_filterList.insert("cvDrawKeypoints", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvDrawMatcher, OpenCVFilters::cvDrawMatcherParams, tr(cvDrawMatcherDoc));
+    filter = new FilterDef(OpenCVFilters::cvDrawMatcher, OpenCVFilters::cvDrawMatcherParams, cvDrawMatcherDoc);
     m_filterList.insert("cvDrawMatcher", filter);
     
-    filter = new FilterDef(OpenCVFilters::cvWarpPerspective, OpenCVFilters::cvWarpPerspectiveParams, tr(cvWarpPerspectiveDoc));
+    filter = new FilterDef(OpenCVFilters::cvWarpPerspective, OpenCVFilters::cvWarpPerspectiveParams, cvWarpPerspectiveDoc);
     m_filterList.insert("cvWarpPerspective", filter);
 
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
-    filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, tr(cvFlipUpDownDoc));
+    filter = new FilterDef(OpenCVFilters::cvFlipUpDown, OpenCVFilters::stdParams2Objects, cvFlipUpDownDoc);
     m_filterList.insert("cvFlipUpDown", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvFlipLeftRight, OpenCVFilters::stdParams2Objects, tr(cvFlipLeftRightDoc));
+    filter = new FilterDef(OpenCVFilters::cvFlipLeftRight, OpenCVFilters::stdParams2Objects, cvFlipLeftRightDoc);
     m_filterList.insert("cvFlipLeftRight", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvRotP90, OpenCVFilters::stdParams2Objects, tr(cvRotP90Doc));
+    filter = new FilterDef(OpenCVFilters::cvRotP90, OpenCVFilters::stdParams2Objects, cvRotP90Doc);
     m_filterList.insert("cvRotateP90", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvRotM90, OpenCVFilters::stdParams2Objects, tr(cvRotM90Doc));
+    filter = new FilterDef(OpenCVFilters::cvRotM90, OpenCVFilters::stdParams2Objects, cvRotM90Doc);
     m_filterList.insert("cvRotateM90", filter);
 
-    filter = new FilterDef(OpenCVFilters::cvRot180, OpenCVFilters::stdParams2Objects, tr(cvRot180Doc));
+    filter = new FilterDef(OpenCVFilters::cvRot180, OpenCVFilters::stdParams2Objects, cvRot180Doc);
     m_filterList.insert("cvRotate180", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
@@ -2091,6 +2134,5 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
 ito::RetVal OpenCVFilters::close(ItomSharedSemaphore * /*waitCond*/)
 {
     ito::RetVal retval = ito::retOk;
-
     return retval;
 }

@@ -32,8 +32,6 @@
    \date 04.2014
 */
 
-
-
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
@@ -50,15 +48,22 @@ BasicGPLFiltersInterface::BasicGPLFiltersInterface()
     setObjectName("BasicGPLFilters");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin provides several basic filter calculations for itom::dataObject. These filteres are derived from other open-source projects under GPL and hence this plugin is also GPL. These are for instance: \n\
 \n\
 * despeckle via histogramm and median derived from the GIMP 2.8 despeckle-filter by Michael Sweet\n\
 \n\
 This plugin does not have any unusual dependencies.";
-
+*/
     m_description = QObject::tr("filter-functions for dateObjects");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(
+"This plugin provides several basic filter calculations for itom::dataObject. These filteres are derived from other open-source projects under GPL and hence this plugin is also GPL. These are for instance: \n\
+\n\
+* despeckle via histogramm and median derived from the GIMP 2.8 despeckle-filter by Michael Sweet\n\
+\n\
+This plugin does not have any unusual dependencies.");
+
     m_author = "W. Lyda, twip optical solutions GmbH (plugin)";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -143,7 +148,6 @@ BasicGPLFilters::~BasicGPLFilters()
     m_filterList.clear();
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
 \brief Variable for filter help string
@@ -217,6 +221,8 @@ ito::RetVal BasicGPLFilters::despeckleAdaptedParams(QVector<ito::Param> *paramsM
 
     return retval;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail The filter block realizing the despeckle-Algorithm 
    \param[in]       filterSettings  The filter settings of type DespeckleSettings
    \param[in]       cvMatIn         The input matrix which shall not be equal to the output matrix
@@ -244,7 +250,6 @@ template<typename _Tp> void BasicGPLFilters::despeckleAdaptedFilterBlock(Despeck
     // iterate through all rows
     for (y = 0; y < cvMatIn->rows; y++)
     {
-
         x = 0;
         ymin = std::max<int>(0, y - curRadius);
         ymax = std::min<int>(cvMatIn->rows - 1, y + curRadius);
@@ -302,6 +307,7 @@ template<typename _Tp> void BasicGPLFilters::despeckleAdaptedFilterBlock(Despeck
         }
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail Filter function wrapper for the despeckle algorithm
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -363,7 +369,6 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
         dObjIn->copyTagMapTo(dObjOut);
     }
 
-
     if ( (*paramsOpt)[0].getVal<double>() > (*paramsOpt)[1].getVal<double>())
     {
         return ito::RetVal(ito::retError, 0, tr("Error: minValue must be smaller than maxValue").toLatin1().data());
@@ -371,7 +376,6 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
     
     DespeckleSettings filterSettings;
     memset(&filterSettings, 0, sizeof(DespeckleSettings));
-    
 
     // The additional filter params are copied to the settings struct
     filterSettings.radiusMax    = (*paramsOpt)[2].getVal<int>();
@@ -419,6 +423,5 @@ ito::RetVal BasicGPLFilters::despeckleAdapted(QVector<ito::ParamBase> *paramsMan
 
     return retval;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------

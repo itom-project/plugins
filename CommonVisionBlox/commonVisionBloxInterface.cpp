@@ -51,7 +51,7 @@ CVBInterface::CVBInterface(QObject *parent)
     m_description = QObject::tr("GenICam cameras via Common Vision Blox from Stemmer");
     
 
-    char docstring[] = \
+/*    char docstring[] = \
  "This plugin can connect to various cameras via the GenICam interface of the commercial tool Common Vision Blox from company Stemmer. \n\
  \n\
  Until now, the plugin is only implemented for monochrome pixel formats mono8, mono10, mono12, mono14 and mono16. Besides the ROI and \n\
@@ -62,7 +62,18 @@ CVBInterface::CVBInterface(QObject *parent)
  In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections. \n\
  \n\
  This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE."; 
-    m_detaildescription = tr(docstring);
+    m_detaildescription = tr(docstring);*/
+    m_detaildescription = tr(
+ "This plugin can connect to various cameras via the GenICam interface of the commercial tool Common Vision Blox from company Stemmer. \n\
+ \n\
+ Until now, the plugin is only implemented for monochrome pixel formats mono8, mono10, mono12, mono14 and mono16. Besides the ROI and \n\
+ exposure time, all parameters need to be read and set using the parameter raw:suffix where suffix is the real GenICam parameter, obtained \n\
+ via the Stemmer configuration tool. If a bitdepth > 8 bit is chosen, an error might occur during acquisition. Then check the indicated ini file \n\
+ from Stemmer GenICam and don't set the pixelFormat property to auto but Mono16. \n\
+ \n\
+ In case of a slow connection, check the communication center of Stemmer for hints or bugs in the connection, e.g. use the filter driver for GigE connections. \n\
+ \n\
+ This plugin has been tested with DALSA Genie HM1400 and Xenics Bobcat 640 GigE."); 
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;

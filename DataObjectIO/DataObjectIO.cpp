@@ -65,7 +65,7 @@ DataObjectIOInterface::DataObjectIOInterface()
     m_description = QObject::tr("import or export dataObject from/to several file formats.");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This filter contains two different export- / import-functionalities for dataObjects, image or raw.\n\
 \n\
 Image-export functions converts dataObjects to image data and saves them as common image-formats.\n\
@@ -81,7 +81,23 @@ Basic import-filter definition: destination object, filename, channel-specificat
 \n\
 Raw-export functions write/read the data to/from txt-based or binary file formats.";
 
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr(
+"This filter contains two different export- / import-functionalities for dataObjects, image or raw.\n\
+\n\
+Image-export functions converts dataObjects to image data and saves them as common image-formats.\n\
+\n\
+* uint8 or uint16 are saved as gray-values (8bit or if supported as 16bit) or if the image format allows color are saved according to the defined color palette.\n\
+* float32 or float64 are saved as gray-values (8bit or if suppored as 16bit) or according to the defined color palette. Therefore the values must be between 0.0 and 1.0.\n\
+  Values outside these borders are clipped. If the image format supports RGBA, invalid values are saved as transparent values (alpha=zero) else as black values.\n\
+* rgba32 can be saved as 'rgb' (full opacity), 'rgba' (alpha channel is considered, not supported by all formats) or gray formats, where the color image is transformed to gray. \n\
+  if a format from a color palette is indicated, the color image is transformed to gray first and then interpreted using the indicated color palette. \n\
+\n\
+Basic export-filter definition: source object, filename, palette, ...\n\
+Basic import-filter definition: destination object, filename, channel-specification, ...\n\
+\n\
+Raw-export functions write/read the data to/from txt-based or binary file formats.");
+
     m_author            = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_license           = QObject::tr("Licensed under LPGL.");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -114,55 +130,55 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     ito::RetVal retval = ito::retOk;
     FilterDef *filter = NULL;
 
-    filter = new FilterDef(DataObjectIO::saveDataObject, DataObjectIO::saveDataObjectParams, tr(saveDataObjectDoc));
+    filter = new FilterDef(DataObjectIO::saveDataObject, DataObjectIO::saveDataObjectParams, saveDataObjectDoc);
     m_filterList.insert("saveDataObject", filter);
 
-    filter = new FilterDef(DataObjectIO::loadDataObject, DataObjectIO::loadDataObjectParams, tr(loadDataObjectDoc));
+    filter = new FilterDef(DataObjectIO::loadDataObject, DataObjectIO::loadDataObjectParams, loadDataObjectDoc);
     m_filterList.insert("loadDataObject", filter);
 
-    filter = new FilterDef(DataObjectIO::loadImage, DataObjectIO::loadImageParams, tr(loadImageDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Images (*.pgm *.pbm *.ppm *.sr *.ras *.bmp *.dib *.png *.tif *.tiff *.jpg *.jpeg *.jp2 *.gif *.xbm *.xpm)"));
+    filter = new FilterDef(DataObjectIO::loadImage, DataObjectIO::loadImageParams, loadImageDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Images (*.pgm *.pbm *.ppm *.sr *.ras *.bmp *.dib *.png *.tif *.tiff *.jpg *.jpeg *.jp2 *.gif *.xbm *.xpm)"));
     m_filterList.insert("loadAnyImage", filter);
 
-    filter = new FilterDef(DataObjectIO::saveNistSDF, DataObjectIO::saveNistSDFParams, tr(saveNistSDFDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("ASCII Surface Data File (*.sdf)"));
+    filter = new FilterDef(DataObjectIO::saveNistSDF, DataObjectIO::saveNistSDFParams, saveNistSDFDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("ASCII Surface Data File (*.sdf)"));
     m_filterList.insert("saveSDF", filter);
 
-    filter = new FilterDef(DataObjectIO::loadNistSDF, DataObjectIO::loadNistSDFParams, tr(loadNistSDFDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("ASCII Surface Data File (*.sdf)"));
+    filter = new FilterDef(DataObjectIO::loadNistSDF, DataObjectIO::loadNistSDFParams, loadNistSDFDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("ASCII Surface Data File (*.sdf)"));
     m_filterList.insert("loadSDF", filter);
 
-    filter = new FilterDef(DataObjectIO::saveTiff, DataObjectIO::saveTiffParams, tr(saveTiffDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.tif *.tiff)"));
+    filter = new FilterDef(DataObjectIO::saveTiff, DataObjectIO::saveTiffParams, saveTiffDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.tif *.tiff)"));
     m_filterList.insert("saveTiff", filter);
 
-    filter = new FilterDef(DataObjectIO::saveJPG, DataObjectIO::saveJPGParams, tr(saveJPGDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.jpg *.jpeg *.jp2)"));
+    filter = new FilterDef(DataObjectIO::saveJPG, DataObjectIO::saveJPGParams, saveJPGDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.jpg *.jpeg *.jp2)"));
     m_filterList.insert("saveJPG", filter);
 
-    filter = new FilterDef(DataObjectIO::savePNG, DataObjectIO::savePNGParams, tr(savePNGDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.png)"));
+    filter = new FilterDef(DataObjectIO::savePNG, DataObjectIO::savePNGParams, savePNGDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.png)"));
     m_filterList.insert("savePNG", filter);
 
-    filter = new FilterDef(DataObjectIO::saveXPM, DataObjectIO::saveXPMParams, tr(saveXPMDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.xpm *.xbm)"));
+    filter = new FilterDef(DataObjectIO::saveXPM, DataObjectIO::saveXPMParams, saveXPMDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.xpm *.xbm)"));
     m_filterList.insert("saveXPM", filter);
 
-    filter = new FilterDef(DataObjectIO::saveBMP, DataObjectIO::saveBMPParams, tr(saveBMPDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.bmp *.dib)"));
+    filter = new FilterDef(DataObjectIO::saveBMP, DataObjectIO::saveBMPParams, saveBMPDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.bmp *.dib)"));
     m_filterList.insert("saveBMP", filter);
 
-    filter = new FilterDef(DataObjectIO::saveRAS, DataObjectIO::saveRASParams, tr(saveRASDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.sr *.ras)"));
+    filter = new FilterDef(DataObjectIO::saveRAS, DataObjectIO::saveRASParams, saveRASDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.sr *.ras)"));
     m_filterList.insert("saveRAS", filter);
 
-    filter = new FilterDef(DataObjectIO::savePPM, DataObjectIO::savePPMParams, tr(savePPMDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.ppm)"));
+    filter = new FilterDef(DataObjectIO::savePPM, DataObjectIO::savePPMParams, savePPMDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.ppm)"));
     m_filterList.insert("savePPM", filter);
 
-    filter = new FilterDef(DataObjectIO::savePGM, DataObjectIO::savePGMParams, tr(savePGMDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.pgm *.pbm)"));
+    filter = new FilterDef(DataObjectIO::savePGM, DataObjectIO::savePGMParams, savePGMDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Images (*.pgm *.pbm)"));
     m_filterList.insert("savePGM", filter);
 
-    filter = new FilterDef(DataObjectIO::saveItomIDO, DataObjectIO::saveItomIDOParams, tr(saveItomIDODoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Raw-XML (*.ido *.idh)"));
+    filter = new FilterDef(DataObjectIO::saveItomIDO, DataObjectIO::saveItomIDOParams, saveItomIDODoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("Raw-XML (*.ido *.idh)"));
     m_filterList.insert("saveIDO", filter);
 
-    filter = new FilterDef(DataObjectIO::loadItomIDO, DataObjectIO::loadItomIDOParams, tr(loadItomIDODoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Raw-XML (*.ido *.idh)"));
+    filter = new FilterDef(DataObjectIO::loadItomIDO, DataObjectIO::loadItomIDOParams, loadItomIDODoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("Raw-XML (*.ido *.idh)"));
     m_filterList.insert("loadIDO", filter);
 
-    filter = new FilterDef(DataObjectIO::loadDataFromTxt, DataObjectIO::loadDataFromTxtParams, tr(loadDataFromTxtDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("ASCII Data (*.txt *.csv *.tsv)"));
+    filter = new FilterDef(DataObjectIO::loadDataFromTxt, DataObjectIO::loadDataFromTxtParams, loadDataFromTxtDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("ASCII Data (*.txt *.csv *.tsv)"));
     m_filterList.insert("loadTXT", filter);
 
-    filter = new FilterDef(DataObjectIO::savePtbPR, DataObjectIO::savePtbPRParams, tr(savePtbPRDoc), ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("PR Line Profile (*.pr)"));
+    filter = new FilterDef(DataObjectIO::savePtbPR, DataObjectIO::savePtbPRParams, savePtbPRDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("PR Line Profile (*.pr)"));
     m_filterList.insert("savePtbPR", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
@@ -180,8 +196,7 @@ ito::RetVal DataObjectIO::close(ItomSharedSemaphore * /*waitCond*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveDataObjectParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::saveDataObjectDoc = \
-"saves 1D and 2D dataObject to image formats via QImage (for saving images it is recommended to use the specific saveABC (savePNG, saveGIF, saveBMP...) commands).";
+/*static*/ const QString DataObjectIO::saveDataObjectDoc = QObject::tr("saves 1D and 2D dataObject to image formats via QImage (for saving images it is recommended to use the specific saveABC (savePNG, saveGIF, saveBMP...) commands).");
 
 /** saveDataObjectParams method, specifies the parameter list for saveDataObject method.
 *   @param [in] paramsMand  mandatory argument parameters
@@ -559,7 +574,6 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
                 default:
                     ret += ito::RetVal(ito::retError, 0, tr("Save to image failed: DataObjectType is not supported").toLatin1().data());
             }
-            
         }
         else
         {
@@ -592,7 +606,6 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
             }
 
             scaling = 255.0 / (highLimit - lowLimit);
-
 
             ito::ItomPalette newPalette;
             apiPaletteGetColorBarName("gray", newPalette);
@@ -839,13 +852,12 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
     return ret;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! loadDataObjectParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::loadDataObjectDoc = \
+/*static*/ const QString DataObjectIO::loadDataObjectDoc = QObject::tr(
 "loads a 2D data object from image formats via QImage (*.gif *.xbm *.xpm). \n\
-This filter is deprecated and can also be directly used via the filter 'loadAnyImage'";
+This filter is deprecated and can also be directly used via the filter 'loadAnyImage'");
 
 /** loadDataObjectParams method, specifies the parameter list for loadDataObject method.
 *   @param [in] paramsMand  mandatory argument parameters
@@ -902,7 +914,7 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
     }    
-    else if ( !image.load(filename) )
+    else if (!image.load(filename))
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable image file.").toLatin1().data(), filename);
     }
@@ -999,12 +1011,11 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
     }
     return ret;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveNistSDFParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::saveNistSDFDoc = \
-"saves 1D and 2D dataObject to the ascii surface data file format (sdf), version aNIST-1.0 (no official standard) or aISO-1.0 (in compliance with ISO 25178-71).";
-
+/*static*/ const QString DataObjectIO::saveNistSDFDoc = QObject::tr("saves 1D and 2D dataObject to the ascii surface data file format (sdf), version aNIST-1.0 (no official standard) or aISO-1.0 (in compliance with ISO 25178-71).");
 
 /** saveNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
 *   @param [in] paramsMand  mandatory argument parameters
@@ -1037,8 +1048,8 @@ ito::RetVal DataObjectIO::saveNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         sm.addItem("aISO-1.0");
         param.setMeta(&sm, false);
         paramsOpt->append(param);
-
     }
+
     return retval;
 }
 
@@ -1095,7 +1106,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     {
     
     }
-    else if ( !dataOut.open(QIODevice::WriteOnly) )
+    else if (!dataOut.open(QIODevice::WriteOnly))
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no writeable file.").toLatin1().data(), filename);
     }
@@ -1353,7 +1364,6 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 
         outLine = "*\n";
         dataOut.write(outLine);
-
     }
 
     if (dataOut.isOpen())
@@ -1363,6 +1373,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 
     return ret;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! writeDataBlock
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1389,7 +1400,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
     {
         if (std::numeric_limits<_Tp>::is_exact)
         {
-            for(y = 0; y < ysize; y ++)
+            for (y = 0; y < ysize; y ++)
             {
                 p_Dst = dstMat->ptr<_Tp>(y);
                 curLine = QByteArray::number(p_Dst[0]);
@@ -1399,7 +1410,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
         }
         else
         {
-            for(y = 0; y < ysize; y ++)
+            for (y = 0; y < ysize; y ++)
             {
                 p_Dst = dstMat->ptr<_Tp>(y);
                 curLine = QByteArray::number(p_Dst[0]*zScale, 'f', decimals);
@@ -1413,7 +1424,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
         p_Dst = dstMat->ptr<_Tp>(0);
         if (std::numeric_limits<_Tp>::is_exact)
         {
-            for(x = 0; x < xsize; x ++)
+            for (x = 0; x < xsize; x ++)
             {
                 curLine = QByteArray::number(p_Dst[x]);
                 curLine.append('\n');
@@ -1422,7 +1433,7 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
         }
         else
         {
-            for(x = 0; x < xsize; x ++)
+            for (x = 0; x < xsize; x ++)
             {
                 curLine = QByteArray::number(p_Dst[x]*zScale, 'f', decimals);
                 curLine.append('\n');
@@ -1435,11 +1446,11 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
         
         if (std::numeric_limits<_Tp>::is_exact)
         {
-            for(y = 0; y < ysize; y ++)
+            for (y = 0; y < ysize; y ++)
             {
                 p_Dst = dstMat->ptr<_Tp>(y);
                 curLine.clear();
-                for(x = 0; x < xsize - 1; x ++)
+                for (x = 0; x < xsize - 1; x ++)
                 {
                     curLine.append(QByteArray::number(p_Dst[x]));
                     curLine.append(seperator);
@@ -1454,11 +1465,11 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
             switch((flags & invHandlingMask))
             {
                 default:
-                for(y = 0; y < ysize; y ++)
+                for (y = 0; y < ysize; y ++)
                 {
                     p_Dst = dstMat->ptr<_Tp>(y);
                     curLine.clear();
-                    for(x = 0; x < xsize - 1; x ++)
+                    for (x = 0; x < xsize - 1; x ++)
                     {
                         curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
                         curLine.append(seperator);
@@ -1469,11 +1480,11 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                 } 
                 break;
                 case DataObjectIO::invIgnor:
-                for(y = 0; y < ysize; y ++)
+                for (y = 0; y < ysize; y ++)
                 {
                     p_Dst = dstMat->ptr<_Tp>(y);
                     curLine.clear();
-                    for(x = 0; x < xsize - 1; x ++)
+                    for (x = 0; x < xsize - 1; x ++)
                     {
                         if (ito::dObjHelper::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
                         curLine.append(seperator);
@@ -1484,11 +1495,11 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                 } 
                 break;
                 case DataObjectIO::invChange:
-                for(y = 0; y < ysize; y ++)
+                for (y = 0; y < ysize; y ++)
                 {
                     p_Dst = dstMat->ptr<_Tp>(y);
                     curLine.clear();
-                    for(x = 0; x < xsize - 1; x ++)
+                    for (x = 0; x < xsize - 1; x ++)
                     {
                         if (ito::dObjHelper::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
                         else curLine.append(QByteArray::number(nanValue, 'f', decimals));
@@ -1501,11 +1512,11 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
                 } 
                 break;
                 case DataObjectIO::invBAD:
-                for(y = 0; y < ysize; y ++)
+                for (y = 0; y < ysize; y ++)
                 {
                     p_Dst = dstMat->ptr<_Tp>(y);
                     curLine.clear();
-                    for(x = 0; x < xsize - 1; x ++)
+                    for (x = 0; x < xsize - 1; x ++)
                     {
                         if (ito::dObjHelper::isFinite<_Tp>(p_Dst[x])) curLine.append(QByteArray::number(p_Dst[x]*zScale, 'f', decimals));
                         else curLine.append("BAD");
@@ -1523,11 +1534,11 @@ template<typename _Tp> ito::RetVal DataObjectIO::writeDataBlock(QFile &outFile, 
 
     return ret;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! loadNistSDFParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::loadNistSDFDoc = \
-"loads an ascii-based surface data file to a 1D or 2D data object (sdf), versions aNIST-1.0, aISO-1.0 (ISO 25178-71) or aBCR-1.0 (e.g. Zygo export format) are supported.";
+/*static*/ const QString DataObjectIO::loadNistSDFDoc = QObject::tr("loads an ascii-based surface data file to a 1D or 2D data object (sdf), versions aNIST-1.0, aISO-1.0 (ISO 25178-71) or aBCR-1.0 (e.g. Zygo export format) are supported.");
 
 /** loadNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
 *   @param [in] paramsMand  mandatory argument parameters
@@ -1569,6 +1580,7 @@ ito::RetVal DataObjectIO::loadNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         param = ito::Param("nanValue", ito::ParamBase::String | ito::ParamBase::In, "BAD", tr("If this string occurs in the data block, the value will be replaced by NaN if float32 or float64 as output format. If '<minrange>' or <maxrange> the minimum or maximum value of the data type in the data block is assumed (e.g. <maxrange> is used by Zygo to describe NaN values). MountainsMap writes 'BAD' as invalid value (following ISO25178-71).").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
 
@@ -1607,7 +1619,7 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
     }    
-    else if ( !dataIn.open(QIODevice::ReadOnly) )
+    else if (!dataIn.open(QIODevice::ReadOnly))
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable file.").toLatin1().data(), filename);
     }
@@ -1648,7 +1660,6 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
                 return ito::RetVal(ito::retError, 0, "DataType not supported");
                 break;
             }
-            
         }
     }
 
@@ -1659,6 +1670,7 @@ ito::RetVal DataObjectIO::loadNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
 
     return ret;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! readNistHeader
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2011,6 +2023,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
 
     return retValue;
 };
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! readDataBlock
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2103,17 +2116,16 @@ template<typename _Tp> ito::RetVal DataObjectIO::readDataBlock(QFile &inFile, it
 
     if (c != total)
     {
-        ret += ito::RetVal(ito::retWarning, 0, "number of values in data block does not correspond to NumPoints * NumProfiles of header block");
+        ret += ito::RetVal(ito::retWarning, 0, tr("number of values in data block does not correspond to NumPoints * NumProfiles of header block").toLatin1().data());
     }
 
     return ret;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveTifParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::saveTiffDoc = \
+/*static*/ const QString DataObjectIO::saveTiffDoc = QObject::tr(
 "Saves a real, 2D dataObject as tiff-file (tagged image format, 8bit and 16bit supported). \n\
 \n\
 The following conventions hold for saving the image: \n\
@@ -2141,7 +2153,7 @@ The following base color palettes exist (further, user-defined palettes can be u
 * green: [0,255], from black to green, 8bit \n\
 * blue: [0,255], from black to blue, 8bit \n\
 \n\
-This filters uses OpenCV to save the image.";
+This filters uses OpenCV to save the image.");
 
 /** saveTiffParams method, specifies the parameter list for saveDataObjectOpenCV as .Tiff images method.
 *   @param [in] paramsMand  mandatory argument parameters
@@ -2163,6 +2175,7 @@ ito::RetVal DataObjectIO::saveTiffParams(QVector<ito::Param> *paramsMand, QVecto
         param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "gray16" , tr("Color palette name [gray, gray16, ...]").toLatin1().data());
         paramsMand->append(param);
     }
+
     return retval;
 }
 
@@ -2186,7 +2199,7 @@ ito::RetVal DataObjectIO::saveTiff(QVector<ito::ParamBase> *paramsMand, QVector<
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveJPGParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::saveJPGDoc = \
+/*static*/ const QString DataObjectIO::saveJPGDoc = QObject::tr(
 "Saves a real, 2D dataObject as jpg-file or jp2-file (only jp2 supports 16bit but is not much known). \n\
 \n\
 The following conventions hold for saving the image: \n\
@@ -2213,7 +2226,7 @@ The following base color palettes exist (further, user-defined palettes can be u
 * green: [0,255], from black to green, 8bit \n\
 * blue: [0,255], from black to blue, 8bit \n\
 \n\
-This filters uses OpenCV to save the image.";
+This filters uses OpenCV to save the image.");
 
 /** saveJPGParams method, specifies the parameter list for saveDataObjectOpenCV as .jpg and .jpg2000 images method.
 *   @param [in] paramsMand  mandatory argument parameters
@@ -2238,8 +2251,10 @@ ito::RetVal DataObjectIO::saveJPGParams(QVector<ito::Param> *paramsMand, QVector
         param = ito::Param("compression",ito::ParamBase::Int | ito::ParamBase::In, 0, 100, 90, tr("Compression rate, 0: high, 100: low").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveJPG
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2255,10 +2270,11 @@ ito::RetVal DataObjectIO::saveJPG(QVector<ito::ParamBase> *paramsMand, QVector<i
 {
     return saveDataObjectOpenCV(paramsMand, paramsOpt, paramsOut, DataObjectIO::jpgFormat);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! savePNGParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::savePNGDoc = \
+/*static*/ const QString DataObjectIO::savePNGDoc = QObject::tr(
 "Saves a real, 2D dataObject as png-file (portable network graphic). \n\
 \n\
 The following conventions hold for saving the image: \n\
@@ -2286,7 +2302,8 @@ The following base color palettes exist (further, user-defined palettes can be u
 * green: [0,255], from black to green, 8bit \n\
 * blue: [0,255], from black to blue, 8bit \n\
 \n\
-This filters uses OpenCV to save the image.";
+This filters uses OpenCV to save the image.");
+
 /** savePNGParams method, specifies the parameter list for saveDataObjectOpenCV as .png images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -2312,8 +2329,10 @@ ito::RetVal DataObjectIO::savePNGParams(QVector<ito::Param> *paramsMand, QVector
         param = ito::Param("addAlphaChannel",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("If enabled and in case of floating point values, invalid values will we transparent (alpha=0), else full opacity.").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! savePNG
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2333,7 +2352,7 @@ ito::RetVal DataObjectIO::savePNG(QVector<ito::ParamBase> *paramsMand, QVector<i
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveXPMParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::saveXPMDoc = \
+/*static*/ const QString DataObjectIO::saveXPMDoc = QObject::tr(
 "Saves a real, 2D dataObject as xpm-file (X PixMap) or xbm (X BitMap, black-white only). \n\
 \n\
 The following conventions hold for saving the image: \n\
@@ -2360,7 +2379,8 @@ The following base color palettes exist (further, user-defined palettes can be u
 * green: [0,255], from black to green, 8bit \n\
 * blue: [0,255], from black to blue, 8bit \n\
 \n\
-This filters uses Qt to save the image. In the format xbm, a threshold at 128 is applied to separate black and white.";
+This filters uses Qt to save the image. In the format xbm, a threshold at 128 is applied to separate black and white.");
+
 /** savePNGParams method, specifies the parameter list for saveDataObjectOpenCV as .png images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -2381,8 +2401,10 @@ ito::RetVal DataObjectIO::saveXPMParams(QVector<ito::Param> *paramsMand, QVector
         param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In, "gray", tr("Color palette name [gray, rgba, rgb, <any-name-of-a-color-palette>].").toLatin1().data());
         paramsMand->append(param);
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveXPM
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2398,10 +2420,11 @@ ito::RetVal DataObjectIO::saveXPM(QVector<ito::ParamBase> *paramsMand, QVector<i
 {
     return saveDataObjectQt(paramsMand, paramsOpt, paramsOut, DataObjectIO::xpmFormat);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveBMPParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::saveBMPDoc = \
+/*static*/ const QString DataObjectIO::saveBMPDoc = QObject::tr(
 "Saves a real, 2D dataObject as bmp-file or dip-file (bitmap, 8bit only). \n\
 \n\
 The following conventions hold for saving the image: \n\
@@ -2428,7 +2451,8 @@ The following base color palettes exist (further, user-defined palettes can be u
 * green: [0,255], from black to green, 8bit \n\
 * blue: [0,255], from black to blue, 8bit \n\
 \n\
-This filters uses OpenCV to save the image.";
+This filters uses OpenCV to save the image.");
+
 /** saveBMPParams method, specifies the parameter list for saveDataObjectOpenCV as .bmp images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -2449,8 +2473,10 @@ ito::RetVal DataObjectIO::saveBMPParams(QVector<ito::Param> *paramsMand, QVector
         param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, rgb, <any-name-of-a-color-palette>, ...]").toLatin1().data());
         paramsMand->append(param);
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveBMP
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2470,7 +2496,7 @@ ito::RetVal DataObjectIO::saveBMP(QVector<ito::ParamBase> *paramsMand, QVector<i
 //----------------------------------------------------------------------------------------------------------------------------------
 //! savePPMParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::savePPMDoc = \
+/*static*/ const QString DataObjectIO::savePPMDoc = QObject::tr(
 "Saves a real, 2D dataObject as ppm-file (portable pixel map, 8bit only). \n\
 \n\
 The following conventions hold for saving the image: \n\
@@ -2497,7 +2523,8 @@ The following base color palettes exist (further, user-defined palettes can be u
 * green: [0,255], from black to green, 8bit \n\
 * blue: [0,255], from black to blue, 8bit \n\
 \n\
-This filters uses OpenCV to save the image.";
+This filters uses OpenCV to save the image.");
+
 /** savePPMParams method, specifies the parameter list for saveDataObjectOpenCV as .ppm, .pgm, .pbm images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -2520,6 +2547,7 @@ ito::RetVal DataObjectIO::savePPMParams(QVector<ito::Param> *paramsMand, QVector
         param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
 
@@ -2539,11 +2567,10 @@ ito::RetVal DataObjectIO::savePPM(QVector<ito::ParamBase> *paramsMand, QVector<i
     return saveDataObjectOpenCV(paramsMand, paramsOpt, paramsOut, DataObjectIO::ppmFormat);
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! savePGMParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::savePGMDoc = \
+/*static*/ const QString DataObjectIO::savePGMDoc = QObject::tr(
 "Saves a real, 2D dataObject as pgm-file or pbm-file (portable gray map or portable bit map, 16bit only for pgm-format). \n\
 \n\
 The following conventions hold for saving the image: \n\
@@ -2561,7 +2588,8 @@ The following base color palettes are supported: \n\
 * gray: [0,255] gray-values, 8bit \n\
 * gray16: [0,65535] gray-values, 16bit \n\
 \n\
-This filters uses OpenCV to save the image.";
+This filters uses OpenCV to save the image.");
+
 /** savePGMParams method, specifies the parameter list for saveDataObjectOpenCV as .ppm, .pgm, .pbm images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -2584,8 +2612,10 @@ ito::RetVal DataObjectIO::savePGMParams(QVector<ito::Param> *paramsMand, QVector
         param = ito::Param("binaryOut",ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Enable binary coding").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! savePGM
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2605,7 +2635,7 @@ ito::RetVal DataObjectIO::savePGM(QVector<ito::ParamBase> *paramsMand, QVector<i
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveRASParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::saveRASDoc = \
+/*static*/ const QString DataObjectIO::saveRASDoc = QObject::tr(
 "Saves a real, 2D dataObject as sr-file or ras-file (Sun Raster, 8bit only). \n\
 \n\
 The following conventions hold for saving the image: \n\
@@ -2632,7 +2662,8 @@ The following base color palettes exist (further, user-defined palettes can be u
 * green: [0,255], from black to green, 8bit \n\
 * blue: [0,255], from black to blue, 8bit \n\
 \n\
-This filters uses OpenCV to save the image.";
+This filters uses OpenCV to save the image.");
+
 /** savePPMParams method, specifies the parameter list for saveDataObjectOpenCV as .ras, .su images method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -2653,8 +2684,10 @@ ito::RetVal DataObjectIO::saveRASParams(QVector<ito::Param> *paramsMand, QVector
         param = ito::Param("palette",ito::ParamBase::String | ito::ParamBase::In,"falseColor", tr("Color palette name [gray, ...]").toLatin1().data());
         paramsMand->append(param);
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveRAS
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2886,7 +2919,7 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
                 return ito::RetVal(ito::retError, 0, tr("DataObject-Type could not be converted to unsigned int 8-bit.").toLatin1().data());
         }
     }
-    else if (imgPalette.compare("gray16") == 0 )
+    else if (imgPalette.compare("gray16") == 0)
     {
         if (gray16Supported)
         {
@@ -2966,7 +2999,6 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
         {
             return ito::RetVal(ito::retError, 0, tr("Image format does not support color values.").toLatin1().data());
         }
-        
     }
     else if (imgPalette.compare("rgb", Qt::CaseInsensitive) == 0)
     {
@@ -2992,7 +3024,6 @@ ito::RetVal DataObjectIO::saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMa
         {
             return ito::RetVal(ito::retError, 0, tr("Image format does not support color values.").toLatin1().data());
         }
-        
     }
     else if (!imgPalette.isEmpty())
     {
@@ -3468,7 +3499,7 @@ ito::RetVal DataObjectIO::saveDataObjectQt(QVector<ito::ParamBase> *paramsMand, 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! loadImageParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::loadImageDoc = \
+/*static*/ const QString DataObjectIO::loadImageDoc = QObject::tr(
 "load the following image formats from a file to a 2D data object: \n\
 \n\
 * png: 8bit/16bit, color available, transparency available \n\
@@ -3493,7 +3524,8 @@ colored file formats are loaded as rgba32 data object. The color elements `alpha
 or a rgba32 data object (rgb and rgba only). `GRAY` converts a colored file format to grayscale before loading it \n\
 to an uint8 or uint16 data object. \n\
 \n\
-All file formats are loaded using OpenCV, besides gif, xbm, xpm which are loaded via Qt.";
+All file formats are loaded using OpenCV, besides gif, xbm, xpm which are loaded via Qt.");
+
 /** loadImageParams method, specifies the parameter list for loadImage method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -3524,6 +3556,7 @@ ito::RetVal DataObjectIO::loadImageParams(QVector<ito::Param> *paramsMand, QVect
         param.setMeta(m,true); //takes ownership of m
         paramsOpt->append(param);
     }
+
     return retval;
 }
 
@@ -3599,7 +3632,6 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
         }
 
         cv::Mat image;
-    
 
         if (!fileinfo.exists())
         {
@@ -3677,17 +3709,16 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
 
             if (!reduceChannel)
             {
-
                 if (image.type() == CV_8UC3)
                 {
                     ito::Rgba32* dst = NULL;
                     const cv::Vec3b* scr = NULL;
 
-                    for(int y = 0; y < image.rows; y++)
+                    for (int y = 0; y < image.rows; y++)
                     {
                         dst = ((cv::Mat*)(tempObject.get_mdata()[0]))->ptr<ito::Rgba32>(y);
                         scr = image.ptr<const cv::Vec3b>(y);
-                        for(int x = 0; x < image.cols; x++)
+                        for (int x = 0; x < image.cols; x++)
                         {
                             dst[x].alpha() = 255;
                             dst[x].red()   = scr[x][2];
@@ -3707,11 +3738,11 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
 
                     if (colorFormat.compare("rgb", Qt::CaseInsensitive) == 0)
                     {
-                        for(int y = 0; y < image.rows; y++)
+                        for (int y = 0; y < image.rows; y++)
                         {
                             dst = tempObject_->ptr<ito::Rgba32>(y);
                             scr = image.ptr<const cv::Vec4b>(y);
-                            for(int x = 0; x < image.cols; x++)
+                            for (int x = 0; x < image.cols; x++)
                             {
                                 dst[x].alpha() = 255;
                                 dst[x].red()   = scr[x][2];
@@ -3722,11 +3753,11 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                     }
                     else
                     {
-                        for(int y = 0; y < image.rows; y++)
+                        for (int y = 0; y < image.rows; y++)
                         {
                             dst = tempObject_->ptr<ito::Rgba32>(y);
                             scr = image.ptr<const cv::Vec4b>(y);
-                            for(int x = 0; x < image.cols; x++)
+                            for (int x = 0; x < image.cols; x++)
                             {
                                 dst[x].alpha() = scr[x][3];
                                 dst[x].red()   = scr[x][2];
@@ -3744,7 +3775,6 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                 {
                     image.copyTo(*tempObject_);
                 }
-            
             }
             else
             {
@@ -3784,11 +3814,11 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                             ito::uint8* dst = NULL;
                             const cv::Vec3b* scr = NULL;
 
-                            for(int y = 0; y < image.rows; y++)
+                            for (int y = 0; y < image.rows; y++)
                             {
                                 dst = tempObject_->ptr<ito::uint8>(y);
                                 scr = image.ptr<const cv::Vec3b>(y);
-                                for(int x = 0; x < image.cols; x++)
+                                for (int x = 0; x < image.cols; x++)
                                 {
                                     dst[x] = scr[x][colIndex];
                                 }
@@ -3800,11 +3830,11 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                         ito::uint8* dst = NULL;
                         const cv::Vec4b* scr = NULL;
 
-                        for(int y = 0; y < image.rows; y++)
+                        for (int y = 0; y < image.rows; y++)
                         {
                             dst = tempObject_->ptr<ito::uint8>(y);
                             scr = image.ptr<const cv::Vec4b>(y);
-                            for(int x = 0; x < image.cols; x++)
+                            for (int x = 0; x < image.cols; x++)
                             {
                                 dst[x] = scr[x][colIndex];
                             }
@@ -3821,11 +3851,11 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                             ito::uint16* dst = NULL;
                             const cv::Vec3w* scr = NULL;
 
-                            for(int y = 0; y < image.rows; y++)
+                            for (int y = 0; y < image.rows; y++)
                             {
                                 dst = tempObject_->ptr<ito::uint16>(y);
                                 scr = image.ptr<const cv::Vec3w>(y);
-                                for(int x = 0; x < image.cols; x++)
+                                for (int x = 0; x < image.cols; x++)
                                 {
                                     dst[x] = scr[x][colIndex];
                                 }
@@ -3837,11 +3867,11 @@ ito::RetVal DataObjectIO::loadImage(QVector<ito::ParamBase> *paramsMand, QVector
                         ito::uint16* dst = NULL;
                         const cv::Vec4w* scr = NULL;
 
-                        for(int y = 0; y < image.rows; y++)
+                        for (int y = 0; y < image.rows; y++)
                         {
                             dst = tempObject_->ptr<ito::uint16>(y);
                             scr = image.ptr<const cv::Vec4w>(y);
-                            for(int x = 0; x < image.cols; x++)
+                            for (int x = 0; x < image.cols; x++)
                             {
                                 dst[x] = scr[x][colIndex];
                             }
@@ -3902,10 +3932,11 @@ ito::RetVal DataObjectIO::loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
 //----------------------------------------------------------------------------------------------------------------------------------
 //! loadItomIDOParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::loadItomIDODoc = \
+/*static*/ const QString DataObjectIO::loadItomIDODoc = QObject::tr(
 "Tries to load the given ido or idh-file as itom dataObject. Data in the given file \n\
 must have been saved using `saveIDO` in a xml-compatible file format, whereas *.idh only \n\
-contains meta information of a data object and *.ido contains the full object.";
+contains meta information of a data object and *.ido contains the full object.");
+
 /** loadItomIDOParams method, specifies the parameter list for loadItomIDO method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -3927,18 +3958,17 @@ ito::RetVal DataObjectIO::loadItomIDOParams(QVector<ito::Param> *paramsMand, QVe
     return retval;
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveItomIDOParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::saveItomIDODoc = \
+/*static*/ const QString DataObjectIO::saveItomIDODoc = QObject::tr(
 "The given dataObject of any size and data format is saved in an itom-specific xml-file (suffix: ido, idh). \n\
 \n\
 It is possible to define if only meta information (tags, scaling, offset...) should be saved in the xml-file (suffix: idh, itom data header) \n\
 or if the array and meta information should be saved (suffix: ido, itom data object). Data is always saved in a base64-encoded format while the header text \n\
 is mostly written in plain, ascii text. Using this filter, the data object including all its meta information is saved and \n\
-can be reload using `loadIDO`.";
+can be reload using `loadIDO`.");
+
 /** saveItomIDOParams method, specifies the parameter list for saveItomIDO method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -3962,6 +3992,7 @@ ito::RetVal DataObjectIO::saveItomIDOParams(QVector<ito::Param> *paramsMand, QVe
         param = ito::Param("tags2Binary", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 0 meta information are saved as clear text, else double tags are saved as binary").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
 
@@ -4005,8 +4036,8 @@ ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
 //----------------------------------------------------------------------------------------------------------------------------------
 //! loadDataFromTxtParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::loadDataFromTxtDoc = \
-"loads an ascii-based data file like csv, tsv or space separated values.";
+/*static*/ const QString DataObjectIO::loadDataFromTxtDoc = QObject::tr("loads an ascii-based data file like csv, tsv or space separated values.");
+
 /** loadNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
 *   @param [in] paramsMand  mandatory argument parameters
 *   @param [in] paramsOpt   optional argument parameters
@@ -4036,8 +4067,8 @@ ito::RetVal DataObjectIO::loadDataFromTxtParams(QVector<ito::Param> *paramsMand,
 
         param = ito::Param("decimalSign", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Uses this as the sign for decimal numbers. If NULL, try to guess.").toLatin1().data());
         paramsOpt->append(param);
-
     }
+
     return retval;
 }
 
@@ -4069,7 +4100,7 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
     }    
-    else if ( !dataIn.open(QIODevice::ReadOnly) )
+    else if (!dataIn.open(QIODevice::ReadOnly))
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable file.").toLatin1().data(), filename);
     }
@@ -4106,6 +4137,7 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
     return ret;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObject, QChar &sperator, QChar &decimalSign, const int flags, const int ignoreLines)
 {
     ito::RetVal ret(ito::retOk);
@@ -4125,7 +4157,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
     QString strIgnoredLines("");
     QString curLine("");
     QStringList elem;
-    for(int i = 0; i < ignoreLines; i++)
+    for (int i = 0; i < ignoreLines; i++)
     {
         strIgnoredLines.append(inFile.readLine());
         if (inFile.atEnd())
@@ -4134,7 +4166,6 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
             break;
         }
     }
-
 
     if (!ret.containsError())
     {
@@ -4341,10 +4372,11 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
             newObject.setTag("ignoredLines", ignoreTag);
         }
     }
+
     return ret;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newObject, const QChar &sperator, const QChar &decimalSign, const int flags, const int ignoreLines)
 {
     ito::RetVal ret(ito::retOk);
@@ -4361,11 +4393,9 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
     {
         inFile.close();
         inFile.open(QIODevice::ReadOnly);
-    
     }
 
-
-    for(int i = 0; i < ignoreLines; i++)
+    for (int i = 0; i < ignoreLines; i++)
     {
         inFile.readLine();
     }
@@ -4376,7 +4406,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
         bool change = sepTmp == '.';
         QByteArray curline;
         curline.reserve(xsize*10);
-        for(int y = 0; y < ysize; y++)
+        for (int y = 0; y < ysize; y++)
         {
             if (inFile.atEnd())
             {
@@ -4402,7 +4432,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
             
             xsizetmp = std::min(xsize, curLineData.size());
 
-            for(int x = 0; x < xsizetmp; x++)
+            for (int x = 0; x < xsizetmp; x++)
             {
                 rowPtr[x] = curLineData[x].toFloat(&check);
                 if (!check) 
@@ -4416,7 +4446,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
     else
     {
         const char sep = sperator.toLatin1();
-        for(int y = 0; y < ysize; y++)
+        for (int y = 0; y < ysize; y++)
         {
             if (inFile.atEnd())
             {
@@ -4428,7 +4458,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
             rowPtr = myMat->ptr<ito::float32>(y);
             xsizetmp = std::min(xsize, curLineData.size());
 
-            for(int x = 0; x < xsizetmp; x++)
+            for (int x = 0; x < xsizetmp; x++)
             {
                 rowPtr[x] = curLineData[x].toFloat(&check);
                 if (!check) 
@@ -4436,14 +4466,12 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
                     rowPtr[x] = std::numeric_limits<ito::float32>::quiet_NaN();
                 }
             }    
-    
         }
     }
 
     if (flags & 0x01)
     {
         // resort to funny matrix
-
 
         QVector<ito::float32> yCords;
         QVector<ito::float32> xCords;
@@ -4453,7 +4481,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
         ito::float32 lastY = rowPtr[1];
         yCords.append(rowPtr[1]);
 
-        for(int y = 0; y < ysize; y++)
+        for (int y = 0; y < ysize; y++)
         {
             rowPtr = myMat->ptr<ito::float32>(y);
             
@@ -4491,7 +4519,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
         int xt = -1;
         int ytDst = 0;
 
-        for(int y = 0; y < ysize; y++)
+        for (int y = 0; y < ysize; y++)
         {
             rowPtr = myMat->ptr<ito::float32>(y);
 
@@ -4504,7 +4532,6 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
                 xt = -1;
             }
 
-
             xt++;
             if (xt >= newXSize)
             {
@@ -4515,18 +4542,16 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
                 xt = xCords.indexOf(rowPtr[0], xt);
                 if (xt < 0) xt = xCords.indexOf(rowPtr[0]);
             }
-            
 
             //dstPtr[yt + xt] = rowPtr[2];
             dstPtr[xt] = rowPtr[2];
-
         }
 
         newObject.copyTagMapTo(tmpObj);
         newObject = tmpObj;
 
         double meanStepY = 0.0;
-        for(int i = 1; i < newYSize; i++)
+        for (int i = 1; i < newYSize; i++)
         {
             meanStepY += yCords[i] - yCords[i - 1];
         }
@@ -4541,7 +4566,7 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
         }
 
         double meanStepX = 0;
-        for(int i = 1; i < newXSize; i++)
+        for (int i = 1; i < newXSize; i++)
         {
             meanStepX += xCords[i] - xCords[i - 1];
         }
@@ -4563,19 +4588,19 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
 
     return ret;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveNistSDFParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* DataObjectIO::savePtbPRDoc = \
+/*static*/ const QString DataObjectIO::savePtbPRDoc = QObject::tr(
 "saves a 1D data object to the PR format used for the reference software for roughness metrology (https://www.ptb.de/rptb) of PTB (Physikalisch Technische Bundesanstalt).\n\
 \n\
 The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, µm, nm) is given in the axis unit tag, an automatic conversion is applied. Else a \n\
 warning is returned. The same holds for the values (ordinate). You can choose if the .pr format should contain the ordinate values in nm or µm. An auto-conversion is implemented, too. \n\
 \n\
-This filter uses the hex-code DF for the german Umlaut 'oe' and F6 for 'sz' like required by the input file format description of the RPTB tool (since RPTB Version 2.01).";
-
+This filter uses the hex-code DF for the german Umlaut 'oe' and F6 for 'sz' like required by the input file format description of the RPTB tool (since RPTB Version 2.01).");
 
 /** saveNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
 *   @param [in] paramsMand  mandatory argument parameters
@@ -4599,6 +4624,7 @@ ito::RetVal DataObjectIO::savePtbPRParams(QVector<ito::Param> *paramsMand, QVect
         param = ito::Param("ordinateUnit", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("unit of ordinate (0: nm [default], 1: µm)").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
 
@@ -4616,15 +4642,13 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
 
     int decimals = (*paramsOpt)[0].getVal<int>();
     int ordinateUnit = paramsOpt->at(1).getVal<int>(); //0: nm, 1: µm
-    
     int flags = DataObjectIO::invWrite;
-
 
     if (ret.containsError())
     {
     
     }
-    else if ( !dataOut.open(QIODevice::WriteOnly) )
+    else if (!dataOut.open(QIODevice::WriteOnly))
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no writeable file.").toLatin1().data(), filename);
     }
@@ -4720,7 +4744,6 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
 
         unsigned char key1[] = { 'X', '-', 'M', 'a', 0xDF, ' ', '=', ' ', '\0' };
         unsigned char key2[] = { ' ', 'X', '-', 'A', 'u', 'f', 'l', 0xF6, 's', 'u', 'n', 'g', ' ', '\0' };
-
 
         //write header
         dataOut.write("Profil ");

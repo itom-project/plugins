@@ -38,26 +38,31 @@
 
 extern int NTHREADS;
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> inline _Tp swapByte(const _Tp val)
 {
     return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template<> inline ito::uint16 swapByte<ito::uint16>(const ito::uint16 val)
 {
     return ((val & 0xFF00) >> 8) | ((val & 0x00FF) << 8);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template<> inline ito::int16 swapByte<ito::int16>(const ito::int16 val)
 {
     return ((val & 0xFF00) >> 8) | ((val & 0x00FF) << 8);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template<> inline ito::uint32 swapByte<ito::uint32>(const ito::uint32 val)
 {
     return ((val & 0xFF000000) >> 24) | ((val & 0x00FF0000) >> 8) | ((val & 0x0000FF00) << 8) | ((val & 0x000000FF) << 24);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template<> inline ito::int32 swapByte<ito::int32>(const ito::int32 val)
 {
     return ((val & 0xFF000000) >> 24) | ((val & 0x00FF0000) >> 8) | ((val & 0x0000FF00) << 8) | ((val & 0x000000FF) << 24);
@@ -84,7 +89,7 @@ template<typename _Tp> ito::RetVal copyRows(ito::DataObject* dObjSrc, ito::DataO
 //    unsigned long ysize = dObjDst->getSize(0);
     unsigned long xsize = dObjDst->getSize(1);
 
-    for(unsigned long z = 0; z < zsize; z++)
+    for (unsigned long z = 0; z < zsize; z++)
     {
         cv::Mat *matIn =  ((cv::Mat *)dObjSrc->get_mdata()[dObjSrc->seekMat(z)]);
         rowPtrIn = (_Tp*)matIn->ptr(0);
@@ -103,7 +108,6 @@ template<typename _Tp> ito::RetVal copyRows(ito::DataObject* dObjSrc, ito::DataO
 */
 template<typename _Tp> ito::RetVal copyCols(ito::DataObject* dObjSrc, ito::DataObject* dObjDst)
 {
-   
 //    unsigned long x, y;
 
     
@@ -113,11 +117,11 @@ template<typename _Tp> ito::RetVal copyCols(ito::DataObject* dObjSrc, ito::DataO
     unsigned long ysize = dObjDst->getSize(0);
 //    unsigned long xsize = dObjDst->getSize(1);
 
-    for(unsigned long z = 0; z < zsize; z++)
+    for (unsigned long z = 0; z < zsize; z++)
     {
         cv::Mat *matIn =  ((cv::Mat *)dObjSrc->get_mdata()[dObjSrc->seekMat(z)]);
         
-        for(unsigned long y = 0; y < ysize; y++)
+        for (unsigned long y = 0; y < ysize; y++)
         {
             matOut->at<_Tp>(y,z) = matIn->at<_Tp>(y,0);
         }
@@ -135,7 +139,6 @@ template<typename _Tp> ito::RetVal copyCols(ito::DataObject* dObjSrc, ito::DataO
 */
 template<typename _Tp> ito::RetVal swapBits(ito::DataObject* dObjSrc, ito::DataObject* dObjDst)
 {
-
     cv::Mat_<_Tp> *matOut =  NULL;
     cv::Mat_<_Tp> *matIn  =  NULL;
 
@@ -146,17 +149,17 @@ template<typename _Tp> ito::RetVal swapBits(ito::DataObject* dObjSrc, ito::DataO
     unsigned long ysize = dObjSrc->getSize(0);
     unsigned long xsize = dObjSrc->getSize(1);
 
-    for(unsigned long z = 0; z < 1; z++)
+    for (unsigned long z = 0; z < 1; z++)
     {
         matIn =  ((cv::Mat_<_Tp> *)dObjSrc->get_mdata()[dObjSrc->seekMat(z)]);
         matOut =  ((cv::Mat_<_Tp> *)dObjDst->get_mdata()[dObjSrc->seekMat(z)]);
         
-        for(unsigned long y = 0; y < ysize; y++)
+        for (unsigned long y = 0; y < ysize; y++)
         {
             rowPtrIn = (_Tp*)matIn->ptr(y);
             rowPtrOut = (_Tp*)matOut->ptr(y);
 
-            for(unsigned long x = 0; x < xsize; x++)
+            for (unsigned long x = 0; x < xsize; x++)
             {
                 rowPtrOut[x] = swapByte(rowPtrIn[x]);
             }
@@ -196,7 +199,7 @@ ito::RetVal BasicFilters::flaten3Dto2D(QVector<ito::ParamBase> *paramsMand, QVec
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
 
-    if (dObjSrc->getDims()  != 3 )
+    if (dObjSrc->getDims()  != 3)
     { 
         return ito::RetVal(ito::retError, 0, tr("Error: Input image must be 3D").toLatin1().data());
     }
@@ -210,7 +213,7 @@ ito::RetVal BasicFilters::flaten3Dto2D(QVector<ito::ParamBase> *paramsMand, QVec
         keepX = false;
     }
 
-    if (dObjSrc->getDims()  != 2 )
+    if (dObjSrc->getDims()  != 2)
     {
         needNewObj = true;
         if (keepX)
@@ -302,8 +305,6 @@ ito::RetVal BasicFilters::flaten3Dto2D(QVector<ito::ParamBase> *paramsMand, QVec
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }
 
-
-
     return retval;
 }
 
@@ -337,7 +338,7 @@ ito::RetVal BasicFilters::swapByteOrder(QVector<ito::ParamBase> *paramsMand, QVe
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
 
-    if (dObjSrc->getDims()  != 2 )
+    if (dObjSrc->getDims()  != 2)
     { 
         return ito::RetVal(ito::retError, 0, tr("Error: Input image must be 2D").toLatin1().data());
     }
@@ -452,7 +453,7 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
     ito::float64 *doubleLinePtr3;
     int nrOfReplacements = 0;
 
-    for(int z = 0; z < numMats; z++)
+    for (int z = 0; z < numMats; z++)
     {
         srcMat = dObjSrc->getCvPlaneMat(z);
         replaceMat = dObjReplace->getCvPlaneMat(z);
@@ -460,7 +461,7 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
 
         if (dObjSrc->getType() == ito::tFloat32)
         {
-            for(int row = 0 ; row < srcMat->rows ; row++)
+            for (int row = 0 ; row < srcMat->rows ; row++)
             {
                 floatLinePtr1 = srcMat->ptr<ito::float32>(row);
                 floatLinePtr2 = replaceMat->ptr<ito::float32>(row);
@@ -471,7 +472,7 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
                     memcpy(floatLinePtr3, floatLinePtr1, sizeof(ito::float32) * srcMat->cols);
                 }
 
-                for(int col = 0 ; col < srcMat->cols ; col++)
+                for (int col = 0 ; col < srcMat->cols ; col++)
                 {
                     if (!ito::dObjHelper::isFinite(floatLinePtr1[col]))
                     {
@@ -483,7 +484,7 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
         }
         else //double
         {
-            for(int row = 0 ; row < srcMat->rows ; row++)
+            for (int row = 0 ; row < srcMat->rows ; row++)
             {
                 doubleLinePtr1 = srcMat->ptr<ito::float64>(row);
                 doubleLinePtr2 = replaceMat->ptr<ito::float64>(row);
@@ -494,7 +495,7 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
                     memcpy(doubleLinePtr3, doubleLinePtr1, sizeof(ito::float64) * srcMat->cols);
                 }
 
-                for(int col = 0 ; col < srcMat->cols ; col++)
+                for (int col = 0 ; col < srcMat->cols ; col++)
                 {
                     if (!ito::dObjHelper::isFinite(doubleLinePtr1[col]))
                     {
@@ -517,8 +518,8 @@ ito::RetVal BasicFilters::replaceInfAndNaN(QVector<ito::ParamBase> *paramsMand, 
     (*paramsOut)[0].setVal<int>(nrOfReplacements);
 
     return retval;
-
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::replaceInfAndNaNParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -532,11 +533,12 @@ ito::RetVal BasicFilters::replaceInfAndNaNParams(QVector<ito::Param> *paramsMand
         param = ito::Param("destImg", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output object of same type and shape than srcImg (inplace possible).").toLatin1().data());
         paramsMand->append(param);
 
-        paramsOut->append( ito::Param("nrOfReplacements", ito::ParamBase::Int | ito::ParamBase::Out, 0, NULL, tr("number of values that have been replaced.").toLatin1().data()));
+        paramsOut->append(ito::Param("nrOfReplacements", ito::ParamBase::Int | ito::ParamBase::Out, 0, NULL, tr("number of values that have been replaced.").toLatin1().data()));
     }
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::mergeColorPlanesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -598,7 +600,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         (dObjDst->getType() != ito::tUInt32 && dObjDst->getType() != ito::tRGBA32)|| 
         dObjDst->getDims() != 2 || 
         planeSize[0] != dObjDst->getSize(0) || 
-        planeSize[1] != dObjDst->getSize(1) ) // Check if dimensions of new object are okay
+        planeSize[1] != dObjDst->getSize(1)) // Check if dimensions of new object are okay
     {
         tempDest = ito::DataObject(2, planeSize, ito::tRGBA32);
     }
@@ -662,14 +664,14 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         const ito::uint8* rowPtrA;
         ito::int32* rowPtrDst;
 
-        for( int y = 0; y < planeSize[0]; y++)
+        for (int y = 0; y < planeSize[0]; y++)
         {
             rowPtrR = matR->ptr<ito::uint8>(y);
             rowPtrG = matG->ptr<ito::uint8>(y);
             rowPtrB = matB->ptr<ito::uint8>(y);
             rowPtrA = matA->ptr<ito::uint8>(y);
             rowPtrDst = matRes->ptr<ito::int32>(y);
-            for( int x = 0; x < planeSize[1]; x++)
+            for (int x = 0; x < planeSize[1]; x++)
             {
                 rowPtrDst[x] =  (ito::int32)rowPtrR[x];
                 rowPtrDst[x] += ((ito::int32)rowPtrG[x]) << 8;
@@ -685,14 +687,14 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         const ito::uint8* rowPtrB;
         ito::int32* rowPtrDst;
 
-        for( int y = 0; y < planeSize[0]; y++)
+        for (int y = 0; y < planeSize[0]; y++)
         {
             rowPtrR = matR->ptr<ito::uint8>(y);
             rowPtrG = matG->ptr<ito::uint8>(y);
             rowPtrB = matB->ptr<ito::uint8>(y);
             rowPtrDst = matRes->ptr<ito::int32>(y);
 
-            for( int x = 0; x < planeSize[1]; x++)
+            for (int x = 0; x < planeSize[1]; x++)
             {
                 rowPtrDst[x] =  (ito::int32)rowPtrR[x];
                 rowPtrDst[x] += ((ito::int32)rowPtrG[x]) << 8;
@@ -708,7 +710,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         const ito::uint8* rowPtrA;
         ito::RgbaBase32* rowPtrDst;
 
-        for( int y = 0; y < planeSize[0]; y++)
+        for (int y = 0; y < planeSize[0]; y++)
         {
             rowPtrR = matR->ptr<ito::uint8>(y);
             rowPtrG = matG->ptr<ito::uint8>(y);
@@ -716,7 +718,7 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
             rowPtrA = matA->ptr<ito::uint8>(y);
             rowPtrDst = matRes->ptr<ito::Rgba32>(y);
 
-            for( int x = 0; x < planeSize[1]; x++)
+            for (int x = 0; x < planeSize[1]; x++)
             {
                 rowPtrDst[x].a =  (ito::int32)rowPtrA[x];
                 rowPtrDst[x].b =  (ito::int32)rowPtrB[x];
@@ -732,14 +734,14 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
         const ito::uint8* rowPtrB;
         ito::RgbaBase32* rowPtrDst;
 
-        for( int y = 0; y < planeSize[0]; y++)
+        for (int y = 0; y < planeSize[0]; y++)
         {
             rowPtrR = matR->ptr<ito::uint8>(y);
             rowPtrG = matG->ptr<ito::uint8>(y);
             rowPtrB = matB->ptr<ito::uint8>(y);
             rowPtrDst = matRes->ptr<ito::Rgba32>(y);
 
-            for( int x = 0; x < planeSize[1]; x++)
+            for (int x = 0; x < planeSize[1]; x++)
             {
                 rowPtrDst[x].b =  (ito::int32)rowPtrB[x];
                 rowPtrDst[x].g =  (ito::int32)rowPtrG[x];
@@ -759,7 +761,6 @@ ito::RetVal BasicFilters::mergeColorPlane(QVector<ito::ParamBase> *paramsMand, Q
     }
 
     return retval;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -791,14 +792,14 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***srcP
     ito::float64 cnts = 0;
     if (std::numeric_limits<_Type>::is_exact)
     {
-        for(int y = 0; y < sizes[1]; y++)
+        for (int y = 0; y < sizes[1]; y++)
         {
             linePtr = dstMat->ptr<_TypeDst>(y);
-            for(int x = 0; x < sizes[2]; x++)
+            for (int x = 0; x < sizes[2]; x++)
             {
                 value = 0.0;
                 cnts = 0.0;
-                for(int z = 0; z < sizes[0]; z ++)
+                for (int z = 0; z < sizes[0]; z ++)
                 {
                     value += (ito::float64)(srcPtr[z][y][x]);
                     cnts++;
@@ -811,15 +812,15 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***srcP
     {
         if (toggleInf)
         {
-            for(int y = 0; y < sizes[1]; y++)
+            for (int y = 0; y < sizes[1]; y++)
             {
                 linePtr = dstMat->ptr<_TypeDst>(y);
-                for(int x = 0; x < sizes[2]; x++)
+                for (int x = 0; x < sizes[2]; x++)
                 {
                     value = 0.0;
                     cnts = 0.0;
 
-                    for(int z = 0; z < sizes[0]; z ++)
+                    for (int z = 0; z < sizes[0]; z ++)
                     {
                         if (ito::dObjHelper::isFinite<_Type>(srcPtr[z][y][x]))
                         {
@@ -841,15 +842,15 @@ template<typename _Type, typename _TypeDst> void calcMeanOverZHelp(_Type ***srcP
         }
         else
         {
-            for(int y = 0; y < sizes[1]; y++)
+            for (int y = 0; y < sizes[1]; y++)
             {
                 linePtr = dstMat->ptr<_TypeDst>(y);
-                for(int x = 0; x < sizes[2]; x++)
+                for (int x = 0; x < sizes[2]; x++)
                 {
                     value = 0.0;
                     cnts = 0.0;
 
-                    for(int z = 0; z < sizes[0]; z ++)
+                    for (int z = 0; z < sizes[0]; z ++)
                     {
                         value += (ito::float64)(srcPtr[z][y][x]);
                         cnts++;                    
@@ -879,15 +880,15 @@ template<typename _Type, typename _TypeDst> void calcDeviationOverZHelp(_Type **
     ito::float64 cnts = 0;
     if (std::numeric_limits<_Type>::is_exact)
     {
-        for(int y = 0; y < sizes[1]; y++)
+        for (int y = 0; y < sizes[1]; y++)
         {
             linePtr = dstMat->ptr<_TypeDst>(y);
             meanlinePtr = meanMat->ptr<_TypeDst>(y);
-            for(int x = 0; x < sizes[2]; x++)
+            for (int x = 0; x < sizes[2]; x++)
             {
                 value = 0.0;
                 cnts = 0.0;
-                for(int z = 0; z < sizes[0]; z ++)
+                for (int z = 0; z < sizes[0]; z ++)
                 {
                     value += pow((ito::float64)(srcPtr[z][y][x]) - (ito::float64)(meanlinePtr[x]), 2);
                     cnts++;
@@ -900,16 +901,16 @@ template<typename _Type, typename _TypeDst> void calcDeviationOverZHelp(_Type **
     {
         if (toggleInf)
         {
-            for(int y = 0; y < sizes[1]; y++)
+            for (int y = 0; y < sizes[1]; y++)
             {
                 linePtr = dstMat->ptr<_TypeDst>(y);
                 meanlinePtr = meanMat->ptr<_TypeDst>(y);
-                for(int x = 0; x < sizes[2]; x++)
+                for (int x = 0; x < sizes[2]; x++)
                 {
                     value = 0.0;
                     cnts = 0.0;
 
-                    for(int z = 0; z < sizes[0]; z ++)
+                    for (int z = 0; z < sizes[0]; z ++)
                     {
                         if (ito::dObjHelper::isFinite<_Type>(srcPtr[z][y][x]))
                         {
@@ -925,22 +926,21 @@ template<typename _Type, typename _TypeDst> void calcDeviationOverZHelp(_Type **
                     {
                         linePtr[x] = std::numeric_limits<_TypeDst>::quiet_NaN();
                     }
-                
                 }
             } 
         }
         else
         {
-            for(int y = 0; y < sizes[1]; y++)
+            for (int y = 0; y < sizes[1]; y++)
             {
                 linePtr = dstMat->ptr<_TypeDst>(y);
                 meanlinePtr = meanMat->ptr<_TypeDst>(y);
-                for(int x = 0; x < sizes[2]; x++)
+                for (int x = 0; x < sizes[2]; x++)
                 {
                     value = 0.0;
                     cnts = 0.0;
 
-                    for(int z = 0; z < sizes[0]; z ++)
+                    for (int z = 0; z < sizes[0]; z ++)
                     {
                         value += pow((ito::float64)(srcPtr[z][y][x]) - (ito::float64)(meanlinePtr[x]), 2);
                         cnts++;                    
@@ -953,13 +953,13 @@ template<typename _Type, typename _TypeDst> void calcDeviationOverZHelp(_Type **
                     {
                         linePtr[x] = std::numeric_limits<_TypeDst>::quiet_NaN();
                     }
-                
                 }
             }
         }    
     }
     return;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -1019,7 +1019,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
         }
         else
         {
-            destPlane = ito::DataObject( ysize, xsize, dObjSrc->getType());
+            destPlane = ito::DataObject(ysize, xsize, dObjSrc->getType());
         }
     }
 
@@ -1113,6 +1113,7 @@ ito::RetVal BasicFilters::calcMeanOverZ(QVector<ito::ParamBase> *paramsMand, QVe
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail Filter parameters for calcObjSlice
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -1184,7 +1185,6 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
         return ito::RetVal(ito::retError, 0, tr("Error: sourceImage must not have more than 1 plane").toLatin1().data());
     }
   
-
     ito::float64 physX0 = (*paramsMand)[2].getVal<double>();
     ito::float64 physY0 = (*paramsMand)[3].getVal<double>();
     ito::float64 physX1 = (*paramsMand)[4].getVal<double>();
@@ -1193,7 +1193,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
     ito::int32 sliceXSize = 0;
     //ito::int32 sliceXSize = (*paramsOpt)[1].getVal<int>();
 /*
-    if ( sliceXSize < 1 )
+    if (sliceXSize < 1)
     {
         
     }
@@ -1235,7 +1235,6 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
     std::string valueDescription = "";
     std::string valueUnit = "";
 
-
     ito::int32 matOffset = 0;
     QVector<ito::int32> matStepSize;
     matStepSize.clear();
@@ -1243,7 +1242,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
     valueDescription = dObjSrc->getValueDescription();
     valueUnit = dObjSrc->getValueUnit();
 
-    if ( pxX0 == pxX1 ) //pure line in y-direction
+    if (pxX0 == pxX1) //pure line in y-direction
     {
         sampleDir = 1;
 
@@ -1282,7 +1281,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
         //valueDescription = dObjSrc->getAxisDescription(dims - 2, _unused);
         //valueUnit = dObjSrc->getAxisUnit(dims - 2, _unused);
     }
-    else if ( pxY0 == pxY1 ) //pure line in x-direction
+    else if (pxY0 == pxY1) //pure line in x-direction
     {
         sampleDir = 0;
 
@@ -1319,7 +1318,6 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
   
         //valueDescription = dObjSrc->getValueDescription();
         //valueUnit = dObjSrc->getValueUnit();
-
     }
     else
     {
@@ -1330,9 +1328,9 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
             // simple line points calculation using Bresenham
             // http://de.wikipedia.org/wiki/Bresenham-Algorithmus#C-Implementierung
             
-            int dx = abs( pxX1 - pxX0 );
+            int dx = abs(pxX1 - pxX0);
             int incx = pxX0 <= pxX1 ? 1 : -1;
-            int dy = abs( pxY1 - pxY0 );
+            int dy = abs(pxY1 - pxY0);
             int incy = pxY0 <= pxY1 ? 1 : -1;
 
             sliceXSize = 1 + std::max(dx,dy);
@@ -1378,7 +1376,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
             matStepSize.resize(sliceXSize);
 
-            for(unsigned int n = 0; n < (unsigned int)sliceXSize; n++)
+            for (unsigned int n = 0; n < (unsigned int)sliceXSize; n++)
             {  /* loop */
                 //setPixel(x,y)
                 matStepSize[n] = (int)srcMat->step[0] * y + (int)srcMat->step[1] * x;
@@ -1397,11 +1395,10 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 }
             }
 
-            for(unsigned int n = sliceXSize - 1; n > 0; n--)
+            for (unsigned int n = sliceXSize - 1; n > 0; n--)
             {
                 matStepSize[n] -= matStepSize[n-1];
             }
-
         }
         else
         {
@@ -1415,7 +1412,6 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
         //valueDescription = dObjSrc->getValueDescription();
         //valueUnit = dObjSrc->getValueUnit();
-
     }
 
     if (sliceXSize < 1 && !retval.containsError())
@@ -1427,7 +1423,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
     if (!retval.containsError())
     {
-        if (dObjDst->getDims()  != 2 )
+        if (dObjDst->getDims()  != 2)
         {
             needNewObj = true;
         }
@@ -1462,7 +1458,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 ito::int8 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::int8>(0);
                 uchar *srcPtr = srcMat->data + matOffset;
 
-                for(int x = 0; x < sliceXSize; x++)
+                for (int x = 0; x < sliceXSize; x++)
                 {
                     dstPtr[x] = *(reinterpret_cast<ito::int8*>(srcPtr));
                     srcPtr += matStepSize[x];
@@ -1474,7 +1470,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 ito::int16 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::int16>(0);
                 uchar *srcPtr = srcMat->data + matOffset;
 
-                for(int x = 0; x < sliceXSize; x++)
+                for (int x = 0; x < sliceXSize; x++)
                 {
                     dstPtr[x] = *(reinterpret_cast<ito::int16*>(srcPtr));
                     srcPtr += matStepSize[x];
@@ -1486,7 +1482,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 ito::int32 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::int32>(0);
                 uchar *srcPtr = srcMat->data + matOffset;
 
-                for(int x = 0; x < sliceXSize; x++)
+                for (int x = 0; x < sliceXSize; x++)
                 {
                     dstPtr[x] = *(reinterpret_cast<ito::int32*>(srcPtr));
                     srcPtr += matStepSize[x];
@@ -1498,7 +1494,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 ito::uint8 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::uint8>(0);
                 uchar *srcPtr = srcMat->data + matOffset;
 
-                for(int x = 0; x < sliceXSize; x++)
+                for (int x = 0; x < sliceXSize; x++)
                 {
                     dstPtr[x] = *(reinterpret_cast<ito::uint8*>(srcPtr));
                     srcPtr += matStepSize[x];
@@ -1510,7 +1506,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 ito::uint16 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::uint16>(0);
                 uchar *srcPtr = srcMat->data + matOffset;
 
-                for(int x = 0; x < sliceXSize; x++)
+                for (int x = 0; x < sliceXSize; x++)
                 {
                     dstPtr[x] = *(reinterpret_cast<ito::uint16*>(srcPtr));
                     srcPtr += matStepSize[x];
@@ -1522,7 +1518,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 ito::float32 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::float32>(0);
                 uchar *srcPtr = srcMat->data + matOffset;
 
-                for(int x = 0; x < sliceXSize; x++)
+                for (int x = 0; x < sliceXSize; x++)
                 {
                     dstPtr[x] = *(reinterpret_cast<ito::float32*>(srcPtr));
                     srcPtr += matStepSize[x];
@@ -1534,7 +1530,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 ito::float64 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::float64>(0);
                 uchar *srcPtr = srcMat->data + matOffset;
 
-                for(int x = 0; x < sliceXSize; x++)
+                for (int x = 0; x < sliceXSize; x++)
                 {
                     dstPtr[x] = *(reinterpret_cast<ito::float64*>(srcPtr));
                     srcPtr += matStepSize[x];
@@ -1546,7 +1542,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 ito::complex64 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::complex64>(0);
                 uchar *srcPtr = srcMat->data + matOffset;
 
-                for(int x = 0; x < sliceXSize; x++)
+                for (int x = 0; x < sliceXSize; x++)
                 {
                     dstPtr[x] = *(reinterpret_cast<ito::complex64*>(srcPtr));
                     srcPtr += matStepSize[x];
@@ -1558,7 +1554,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 ito::complex128 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::complex128>(0);
                 uchar *srcPtr = srcMat->data + matOffset;
 
-                for(int x = 0; x < sliceXSize; x++)
+                for (int x = 0; x < sliceXSize; x++)
                 {
                     dstPtr[x] = *(reinterpret_cast<ito::complex128*>(srcPtr));
                     srcPtr += matStepSize[x];
@@ -1570,7 +1566,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
                 ito::RgbaBase32 *dstPtr = ((cv::Mat*)(tempObj.get_mdata()[0]))->ptr<ito::Rgba32>(0);
                 uchar *srcPtr = srcMat->data + matOffset;
 
-                for(int x = 0; x < sliceXSize; x++)
+                for (int x = 0; x < sliceXSize; x++)
                 {
                     dstPtr[x].rgba = (reinterpret_cast<ito::RgbaBase32*>(srcPtr))->rgba;
                     srcPtr += matStepSize[x];
@@ -1610,6 +1606,7 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\brief This function sets values below minVal and above maxVal to newValue
    \detail
@@ -1624,7 +1621,6 @@ ito::RetVal BasicFilters::calcObjSlice(QVector<ito::ParamBase> *paramsMand, QVec
 */
 template<typename _Tp> ito::RetVal clipValuesHelper(cv::Mat *planeInOut, _Tp minVal, _Tp maxVal, _Tp newValue, bool outside)
 {
-
     #if (USEOMP)
     #pragma omp parallel num_threads(NTHREADS)
     {
@@ -1641,12 +1637,12 @@ template<typename _Tp> ito::RetVal clipValuesHelper(cv::Mat *planeInOut, _Tp min
             #if (USEOMP)
             #pragma omp for schedule(guided)
             #endif 
-            for(y = 0; y < planeInOut->rows; y++)
+            for (y = 0; y < planeInOut->rows; y++)
             {
                 rowPtr = (_Tp*)planeInOut->ptr(y);
-                for(x = 0; x < planeInOut->cols; x++)
+                for (x = 0; x < planeInOut->cols; x++)
                 {
-                    if ( (rowPtr[x] < minVal) )
+                    if ((rowPtr[x] < minVal))
                     {
                         rowPtr[x] = newValue;
                     }
@@ -1662,16 +1658,16 @@ template<typename _Tp> ito::RetVal clipValuesHelper(cv::Mat *planeInOut, _Tp min
             #if (USEOMP)
             #pragma omp for schedule(guided)
             #endif 
-            for(y = 0; y < planeInOut->rows; y++)
+            for (y = 0; y < planeInOut->rows; y++)
             {
                 rowPtr = (_Tp*)planeInOut->ptr(y);
-                for(x = 0; x < planeInOut->cols; x++)
+                for (x = 0; x < planeInOut->cols; x++)
                 {
-                    if ( !ito::dObjHelper::isFinite<_Tp>(rowPtr[x]))
+                    if (!ito::dObjHelper::isFinite<_Tp>(rowPtr[x]))
                     {
                         rowPtr[x] = newValue;
                     }
-                    else if ( (rowPtr[x] < minVal) )
+                    else if ((rowPtr[x] < minVal))
                     {
                         rowPtr[x] = newValue;
                     }
@@ -1688,12 +1684,12 @@ template<typename _Tp> ito::RetVal clipValuesHelper(cv::Mat *planeInOut, _Tp min
         #if (USEOMP)
         #pragma omp for schedule(guided)
         #endif 
-        for(y = 0; y < planeInOut->rows; y++)
+        for (y = 0; y < planeInOut->rows; y++)
         {
             rowPtr = (_Tp*)planeInOut->ptr(y);
-            for(x = 0; x < planeInOut->cols; x++)
+            for (x = 0; x < planeInOut->cols; x++)
             {
-                /*if ( !ito::dObjHelper::isFinite<_Tp>(rowPtr[x]))
+                /*if (!ito::dObjHelper::isFinite<_Tp>(rowPtr[x]))
                 {
                     rowPtr[x] = newValue;
                 }
@@ -1703,13 +1699,14 @@ template<typename _Tp> ito::RetVal clipValuesHelper(cv::Mat *planeInOut, _Tp min
                 }
             }
         }  
-
     }
     #if (USEOMP)
     }
     #endif
+
     return ito::retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::clipValueFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
@@ -1734,6 +1731,7 @@ ito::RetVal BasicFilters::clipValueFilterParams(QVector<ito::Param> *paramsMand,
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail  
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -1765,7 +1763,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
         return ito::RetVal(ito::retError, 0, tr("Error: source is not a matrix or image stack").toLatin1().data());
     }
 
-    if ( (*paramsMand)[2].getVal<double>() > (*paramsMand)[3].getVal<double>())
+    if ((*paramsMand)[2].getVal<double>() > (*paramsMand)[3].getVal<double>())
     {
         return ito::RetVal(ito::retError, 0, tr("Error: minValue must be smaller than maxValue").toLatin1().data());
     }
@@ -1791,7 +1789,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
             ito::int8 maxVal = cv::saturate_cast<ito::int8>((*paramsMand)[3].getVal<double>());
             ito::int8 newValue = cv::saturate_cast<ito::int8>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipValuesHelper<ito::int8>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
@@ -1807,7 +1805,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
             ito::uint8 maxVal = cv::saturate_cast<ito::uint8>((*paramsMand)[3].getVal<double>());
             ito::uint8 newValue = cv::saturate_cast<ito::uint8>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipValuesHelper<ito::uint8>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
@@ -1824,7 +1822,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
             ito::uint16 maxVal = cv::saturate_cast<ito::uint16>((*paramsMand)[3].getVal<double>());
             ito::uint16 newValue = cv::saturate_cast<ito::uint16>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipValuesHelper<ito::uint16>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
@@ -1841,7 +1839,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
             ito::int16 maxVal = cv::saturate_cast<ito::int16>((*paramsMand)[3].getVal<double>());
             ito::int16 newValue = cv::saturate_cast<ito::int16>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipValuesHelper<ito::int16>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
@@ -1858,7 +1856,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
             ito::int32 maxVal = cv::saturate_cast<ito::int32>((*paramsMand)[3].getVal<double>());
             ito::int32 newValue = cv::saturate_cast<ito::int32>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipValuesHelper<ito::int32>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
@@ -1889,7 +1887,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
                 valProt = newValue;
             }
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipValuesHelper<ito::float32>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
@@ -1905,7 +1903,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
             ito::float64 maxVal = (*paramsMand)[3].getVal<double>();
             ito::float64 newValue = (*paramsOpt)[0].getVal<double>();
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipValuesHelper<ito::float64>(cvMatOut, minVal, maxVal, newValue, outsideFlag);
@@ -1919,7 +1917,6 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
         default:
             return ito::RetVal(ito::retError, 0, tr("unknown type or type not implemented (e.g. complex)").toLatin1().data());
     }
-
 
     if (!retval.containsError())
     {
@@ -1937,6 +1934,7 @@ ito::RetVal BasicFilters::clipValueFilter(QVector<ito::ParamBase> *paramsMand, Q
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\brief This function sets values below minVal and above maxVal to newValue
    \detail
@@ -1968,13 +1966,13 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
             #if (USEOMP)
             #pragma omp for schedule(guided)
             #endif 
-            for(y = 0; y < planeBinary.rows; y++)
+            for (y = 0; y < planeBinary.rows; y++)
             {
                 rowPtrInOut = (ito::uint8*)planeBinary.ptr(y);
                 rowPtrComp = (_Tp*)planeComp->ptr(y);
-                for(x = 0; x < planeBinary.cols; x++)
+                for (x = 0; x < planeBinary.cols; x++)
                 {
-                    if ( (rowPtrComp[x] < minVal) )
+                    if ((rowPtrComp[x] < minVal))
                     {
                         rowPtrInOut[x] = 0;
                     }
@@ -1994,13 +1992,13 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
             #if (USEOMP)
             #pragma omp for schedule(guided)
             #endif 
-            for(y = 0; y < planeBinary.rows; y++)
+            for (y = 0; y < planeBinary.rows; y++)
             {
                 rowPtrInOut = (ito::uint8*)planeBinary.ptr(y);
                 rowPtrComp = (_Tp*)planeComp->ptr(y);
-                for(x = 0; x < planeBinary.cols; x++)
+                for (x = 0; x < planeBinary.cols; x++)
                 {
-                    if ( !ito::dObjHelper::isFinite<_Tp>(rowPtrComp[x]))
+                    if (!ito::dObjHelper::isFinite<_Tp>(rowPtrComp[x]))
                     {
                         rowPtrInOut[x] = 0;
                     }
@@ -2025,13 +2023,13 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
         #if (USEOMP)
         #pragma omp for schedule(guided)
         #endif 
-        for(y = 0; y < planeBinary.rows; y++)
+        for (y = 0; y < planeBinary.rows; y++)
         {
             rowPtrInOut = (ito::uint8*)planeBinary.ptr(y);
             rowPtrComp = (_Tp*)planeComp->ptr(y);
-            for(x = 0; x < planeBinary.cols; x++)
+            for (x = 0; x < planeBinary.cols; x++)
             {
-                /* if ( !ito::dObjHelper::isFinite<_Tp>(rowPtrComp[x]))
+                /* if (!ito::dObjHelper::isFinite<_Tp>(rowPtrComp[x]))
                 {
                     rowPtr[x] = newValue;
                 }
@@ -2045,7 +2043,6 @@ template<typename _Tp> ito::RetVal clipAbyBFirstHelper(const cv::Mat *planeComp,
                 }
             }
         }  
-
     }
     #if (USEOMP)
     }
@@ -2067,11 +2064,11 @@ template<typename _Tp> ito::RetVal clipAbyBSecondHelper(const cv::Mat &planeBina
     #if (USEOMP)
     #pragma omp for schedule(guided)
     #endif 
-    for(y = 0; y < planeBinary.rows; y++)
+    for (y = 0; y < planeBinary.rows; y++)
     {
         rowPtrInOut = (_Tp*)planeInOut->ptr(y);
         rowPtrComp = (const ito::uint8*)planeBinary.ptr(y);
-        for(x = 0; x < planeBinary.cols; x++)
+        for (x = 0; x < planeBinary.cols; x++)
         {
             if (rowPtrComp[x] == 0)
             {
@@ -2083,8 +2080,10 @@ template<typename _Tp> ito::RetVal clipAbyBSecondHelper(const cv::Mat &planeBina
     #if (USEOMP)
     }
     #endif
+
     return ito::retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::clipAbyBFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
@@ -2111,6 +2110,7 @@ ito::RetVal BasicFilters::clipAbyBFilterParams(QVector<ito::Param> *paramsMand, 
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail  
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -2157,7 +2157,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
                                 dObjImages->getSize(dObjImages->getDims() - 1), 
                                 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64); 
 
-    if ( (*paramsMand)[3].getVal<double>() > (*paramsMand)[4].getVal<double>())
+    if ((*paramsMand)[3].getVal<double>() > (*paramsMand)[4].getVal<double>())
     {
         return ito::RetVal(ito::retError, 0, tr("Error: minValue must be smaller than maxValue").toLatin1().data());
     }
@@ -2259,7 +2259,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
         {
             ito::int8 newValue = cv::saturate_cast<ito::int8>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipAbyBSecondHelper(combBin, cvMatOut, newValue);
@@ -2271,7 +2271,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
         {
             ito::uint8 newValue = cv::saturate_cast<ito::uint8>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipAbyBSecondHelper(combBin, cvMatOut, newValue);
@@ -2283,7 +2283,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
         {
             ito::int16 newValue = cv::saturate_cast<ito::int16>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipAbyBSecondHelper(combBin, cvMatOut, newValue);
@@ -2295,7 +2295,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
         {
             ito::uint16 newValue = cv::saturate_cast<ito::uint16>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipAbyBSecondHelper(combBin, cvMatOut, newValue);
@@ -2307,7 +2307,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
         {
             ito::int32 newValue = cv::saturate_cast<ito::int32>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipAbyBSecondHelper(combBin, cvMatOut, newValue);
@@ -2333,7 +2333,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
                 valProt = newValue;
             }
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipAbyBSecondHelper(combBin, cvMatOut, newValue);
@@ -2345,7 +2345,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
         {
             ito::float64 newValue = cv::saturate_cast<ito::float64>((*paramsOpt)[0].getVal<double>());
 
-            for(int z = 0; z < z_length; z++)
+            for (int z = 0; z < z_length; z++)
             {
                 cvMatOut = ((cv::Mat *)dObjDst->get_mdata()[dObjDst->seekMat(z)]);
                 clipAbyBSecondHelper(combBin, cvMatOut, newValue);
@@ -2373,6 +2373,7 @@ ito::RetVal BasicFilters::clipAbyBFilter(QVector<ito::ParamBase> *paramsMand, QV
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function calculates a the histogram for a plane
    \param[in]   planeIn  Inputplane
@@ -2419,6 +2420,7 @@ template<typename _Tp> ito::RetVal HistogramBlock(const cv::Mat *planeIn, cv::Ma
     }
     return ito::retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail This function calculates a the histogram for a plane
    \param[in]   planeIn  Inputplane
@@ -2496,9 +2498,11 @@ template<> ito::RetVal HistogramBlock<ito::Rgba32>(const cv::Mat *planeIn, cv::M
     }
     return ito::retOk;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-const char *BasicFilters::calcHistDoc = "calculates histgram of real input data object.";
 
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString BasicFilters::calcHistDoc = QObject::tr("calculates histgram of real input data object.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::calcHistParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
     ito::Param param;
@@ -2521,6 +2525,7 @@ ito::RetVal BasicFilters::calcHistParams(QVector<ito::Param> *paramsMand, QVecto
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -2600,7 +2605,7 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
         case ito::tInt32:
         case ito::tFloat32:
         case ito::tFloat64:
-            if ( hbins < 1 )
+            if (hbins < 1)
             {
                 hbins = 1024;
             }
@@ -2619,13 +2624,11 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
             return ito::RetVal(ito::retError, 0, tr("Histogram can only be calculated for (u)int8, (u)int16, (u)int32, float32, float64 or rgba32").toLatin1().data());
     }
 
-
-
     int z_length = dObjImages->calcNumMats();
 
     int *sizesVector = new int[dObjImages->getDims()];
 
-    for(int i = 0; i < dObjImages->getDims()-2; i++)
+    for (int i = 0; i < dObjImages->getDims()-2; i++)
     {
         sizesVector[i] = dObjImages->getSize(i);
     }
@@ -2682,7 +2685,7 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
         }
     }
 
-    for(int z = 0; z < z_length; z++)
+    for (int z = 0; z < z_length; z++)
     {
         cvMatIn = dObjImages->getCvPlaneMat(z);
         cvMatOut = dObjDestination->getCvPlaneMat(z);
@@ -2724,7 +2727,7 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
     {
 
         // Add scale and offset for all z + (y and x)
-        for(int planes = 0; planes < dObjImages->getDims()-2; planes++)
+        for (int planes = 0; planes < dObjImages->getDims()-2; planes++)
         {
             dObjDestination->setAxisOffset(planes, dObjImages->getAxisOffset(planes));
             dObjDestination->setAxisScale(planes, dObjImages->getAxisScale(planes));
@@ -2755,7 +2758,6 @@ ito::RetVal BasicFilters::calcHistFilter(QVector<ito::ParamBase> *paramsMand, QV
         }
     }
 
-
     return retval;
 }
 
@@ -2779,8 +2781,10 @@ ito::RetVal BasicFilters::fillGeometricParams(QVector<ito::Param> *paramsMand, Q
     paramsOpt->append(param);
     param = ito::Param("newValueOutside", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("New value for pixels outside the geometric element").toLatin1().data());
     paramsOpt->append(param);
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void BasicFilters::fillGeoCircle(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radius, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal)
 {
@@ -2824,14 +2828,13 @@ template<typename _Tp> void BasicFilters::fillGeoCircle(cv::Mat *dst, const ito:
                     rowPtr[x] = outsideVal;
                 }            
             }
-
         }
-
     }
     #if (USEOMP)
     }
     #endif
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void BasicFilters::fillGeoEllipse(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 radiusX, const ito::float64 radiusY, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal)
 {
@@ -2852,7 +2855,6 @@ template<typename _Tp> void BasicFilters::fillGeoEllipse(cv::Mat *dst, const ito
     #endif
     for (y = 0; y < dst->rows; y++)
     {
-        
         rowPtr = (_Tp*)dst->ptr(y);
 
         evalY = pow(((ito::float64)y - y0) / radiusY, 2);
@@ -2874,14 +2876,13 @@ template<typename _Tp> void BasicFilters::fillGeoEllipse(cv::Mat *dst, const ito
                     rowPtr[x] = outsideVal;
                 }            
             }
-
         }
-
     }
     #if (USEOMP)
     }
     #endif
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void BasicFilters::fillGeoRectangle(cv::Mat *dst, const ito::float64 x0, const ito::float64 y0, const ito::float64 x1, const ito::float64 y1, const bool inside, const bool outside, const _Tp insideVal, const _Tp outsideVal)
 {
@@ -2922,14 +2923,13 @@ template<typename _Tp> void BasicFilters::fillGeoRectangle(cv::Mat *dst, const i
                     rowPtr[x] = outsideVal;
                 }            
             }
-
         }
-
     }
     #if (USEOMP)
     }
     #endif
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!\detail
    \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -3071,7 +3071,6 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
                 }
                 break;
         }
-
     }
     else if (dObjPrimitiv->getSize(0) > 6 && dObjPrimitiv->getSize(1) == 1)
     {
@@ -3122,7 +3121,6 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
     {
         return ito::RetVal(ito::retError, 0, tr("Error: geometricElement must be either marker-style (8x1) or primitiv-style (1x11)").toLatin1().data());
     }
-
 
     switch(type & 0x000000FF)
     {
@@ -3323,12 +3321,12 @@ ito::RetVal BasicFilters::fillGeometricPrimitiv(QVector<ito::ParamBase> *paramsM
     return retval;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString BasicFilters::calcRadialMeanFilterDoc= QObject::tr("Calculates the mean value for radial circles with a given center point an a radius step size \n\
+\n\
+The radiuses are the distances from the given center point to the physical coordinates of each pixel.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* BasicFilters::calcRadialMeanFilterDoc= "Calculates the mean value for radial circles with a given center point an a radius step size \n\
-\n\
-The radiuses are the distances from the given center point to the physical coordinates of each pixel.";
 ito::RetVal BasicFilters::calcRadialMeanFilterParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
@@ -3349,6 +3347,7 @@ ito::RetVal BasicFilters::calcRadialMeanFilterParams(QVector<ito::Param> *params
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template<typename _T1, typename _T2> void calcRadialMeanHelper(const ito::DataObject &input, cv::Mat *bucket, double &cx, double &cy, double &rStep, int &usedBuckets)
 {
     cv::Mat counts = cv::Mat::zeros(1, bucket->cols, CV_32SC1);
@@ -3392,6 +3391,7 @@ template<typename _T1, typename _T2> void calcRadialMeanHelper(const ito::DataOb
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal BasicFilters::calcRadialMeanFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal retval;
@@ -3515,9 +3515,7 @@ ito::RetVal BasicFilters::calcRadialMeanFilter(QVector<ito::ParamBase> *paramsMa
             output->setValueUnit(input.getValueUnit());
             output->setValueDescription(input.getValueDescription());
         }
-
     }
-
 
     return retval;
 }

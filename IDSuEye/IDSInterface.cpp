@@ -68,7 +68,6 @@ namespace
     }
 }
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 IDSInterface::IDSInterface(QObject *parent)
@@ -87,7 +86,7 @@ IDSInterface::IDSInterface(QObject *parent)
     int minor = get<16,8>(libVersion);
     
 
-    char docstring[] = \
+/*    char docstring[] = \
  "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
 - UI145xSE-C (colored, USB2) \n\
 - UI124xSE-M (monochrome, USB2). \n\
@@ -99,7 +98,19 @@ The plugin has been compiled using the IDS library version %1.%2. \n\
 In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. \n\
 \n\
 The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart."; 
-    m_detaildescription = tr(docstring).arg(major).arg(minor);
+    m_detaildescription = tr(docstring).arg(major).arg(minor);*/
+    m_detaildescription = tr(
+ "This plugin supports IDS uEye cameras and has currently been tested with the following models: \n\
+- UI145xSE-C (colored, USB2) \n\
+- UI124xSE-M (monochrome, USB2). \n\
+- UI224xSE-M (monochrome, USB2). \n\
+- UI337xCP-C (colored, USB3) \n\
+\n\
+The plugin has been compiled using the IDS library version %1.%2. \n\
+\n\
+In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. \n\
+\n\
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.").arg(major).arg(minor);
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
