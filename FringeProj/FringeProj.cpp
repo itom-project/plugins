@@ -259,6 +259,7 @@ template<typename _Tp> int CalcCIMap(struct tvArray3D **images, const float cont
     return ret;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template int CalcCIMap<ito::uint8>(struct tvArray3D **images, const float contThreas, const float brightUpperLimit, const float darkLowerLimit, const float safetyFactor, struct tShortArray2D **CiMap);
 template int CalcCIMap<ito::uint16>(struct tvArray3D **images, const float contThreas, const float brightUpperLimit, const float darkLowerLimit, const float safetyFactor, struct tShortArray2D **CiMap);
 
@@ -348,6 +349,7 @@ template<typename _Tp> int CalcPhaseMap4(struct tvArray3D **images, const float 
     return ret;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template int CalcPhaseMap4<ito::uint8>(struct tvArray3D **images, const float contThreas, const ito::uint8 overExp, struct tFloatArray2D **PhaseMap, struct tFloatArray2D **ModulationMap);
 template int CalcPhaseMap4<ito::uint16>(struct tvArray3D **images, const float contThreas, const ito::uint16 overExp, struct tFloatArray2D **PhaseMap, struct tFloatArray2D **ModulationMap);
 
@@ -422,6 +424,7 @@ template<typename _Tp> int CalcPhaseMapN(struct tvArray3D **images, const float 
     return ret;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 template int CalcPhaseMapN<unsigned char>(struct tvArray3D **images, const float contThreas, const unsigned char overExp, struct tFloatArray2D **PhaseMap, struct tFloatArray2D **ModulationMap);
 template int CalcPhaseMapN<unsigned short>(struct tvArray3D **images, const float contThreas, const unsigned short overExp, struct tFloatArray2D **PhaseMap, struct tFloatArray2D **ModulationMap);
 
@@ -608,7 +611,6 @@ FringeProj::~FringeProj()
     }
     m_filterList.clear();
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** initialize filter functions within this addIn
@@ -1004,6 +1006,7 @@ ito::RetVal FringeProj::calcPhaseMapN(QVector<ito::ParamBase> *paramsMand, QVect
     {
         delete modulationMap;
     }
+
     return retval;
 }
 
@@ -1169,6 +1172,7 @@ ito::RetVal FringeProj::unwrapPhaseGray(QVector<ito::ParamBase> *paramsMand, QVe
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FringeProj::createXYMaps(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -1255,10 +1259,12 @@ template<typename _Tp> _Tp binaryToGray(_Tp num)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *FringeProj::gray2DecLookupDoc = "creates a 1xN lookup table to convert a gray-code value into its corresponding decimal value. \n\
+/*static*/ const QString FringeProj::gray2DecLookupDoc = QObject::tr(
+"creates a 1xN lookup table to convert a gray-code value into its corresponding decimal value. \n\
 \n\
 The gray-code has a maximal width of graycodeBitWidth. Hence, N corresponds 1 << (graycodeBitWidth+1) \n\
-To apply this lookup table to a dataObject or numpy array, consider using the numpy method take(lut,array) that returns (lut[array[i]] for i in array).";
+To apply this lookup table to a dataObject or numpy array, consider using the numpy method take(lut,array) that returns (lut[array[i]] for i in array).");
+
 /*static*/ ito::RetVal FringeProj::gray2DecLookupParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -1273,6 +1279,7 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FringeProj::gray2DecLookup(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retVal;
@@ -1286,7 +1293,6 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
     }
     else
     {
-
         ito::uint32 maxValue = 1 << (bitWidth+1); //this is the maximum graycode-value - 1 that can occur with bitWidth bits.
 
         ito::DataObject lut;
@@ -1366,8 +1372,9 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *FringeProj::genGraycodePatternDoc = "generates the graycode pattern that fills up the given data object of type uint8, uint16 or uint32";
+/*static*/ const QString FringeProj::genGraycodePatternDoc = QObject::tr("generates the graycode pattern that fills up the given data object of type uint8, uint16 or uint32");
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FringeProj::genGraycodePatternParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -1384,11 +1391,11 @@ To apply this lookup table to a dataObject or numpy array, consider using the nu
 
     paramsOut->append( ito::Param("usedOffset", ito::ParamBase::Int | ito::ParamBase::Out, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, "applied offset to each pixel number, that is the gray-code is determined from [(row or col) + offset]") );
     paramsOut->append( ito::Param("bitWidth", ito::ParamBase::Int | ito::ParamBase::Out, 0, std::numeric_limits<int>::max(), 1, "bit width for the requested pattern") );
-    
 
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal FringeProj::genGraycodePattern(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retVal;

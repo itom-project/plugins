@@ -66,7 +66,7 @@ GLDisplayInterface::GLDisplayInterface()
     setObjectName("GLDisplay");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin displays a frameless window that displays one or multiple arrays using OpenGL technology. \n\
 Each array is then created as texture, where the horizontal and vertical wrap property can be chosen individually. \n\
 OpenGL allows a fast switch between all created textures. \n\
@@ -85,9 +85,28 @@ Allowed values for these tags are: \n\
 * 'MinFilter' (interpolation used when the texture is bigger than the window size): 'GL_NEAREST' (default), 'GL_LINEAR', 'GL_LINEAR_MIPMAP_NEAREST', 'GL_NEAREST_MIPMAP_NEAREST', 'GL_LINEAR_MIPMAP_LINEAR' \n\
 * 'wrapT' (vertical scaling mode): 'GL_REPEAT' (default), 'SCALED', 'GL_MIRRORED_REPEAT, 'GL_CLAMP_TO_EDGE' \n\
 * 'wrapS' (horizontal scaling mode): 'GL_REPEAT' (default), 'SCALED', 'GL_MIRRORED_REPEAT', 'GL_CLAMP_TO_EDGE'";
-
+*/
     m_description = tr("Frameless window to display images using OpenGL");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr("This plugin displays a frameless window that displays one or multiple arrays using OpenGL technology. \n\
+Each array is then created as texture, where the horizontal and vertical wrap property can be chosen individually. \n\
+OpenGL allows a fast switch between all created textures. \n\
+\n\
+Per default, the window is either displayed in a second screen (fullscreen) or if only one screen is available - \n\
+placed as small window in the top left corner of the main screen. Otherwise chose an appropriate x0, y0, xsize and ysize \n\
+parameter at initialization. \n\
+\n\
+In order to assign textures, use the exec-function 'addTextures' and pass a 2d or 3d dataObject, where in the latter case \n\
+every plane of the 3d dataObject is registered as single texture. Create the tags 'wrapT', 'wrapS', 'MinFilter' or 'MagFilter' \n\
+to control the repeatability of every texture or its interpolation method. \n\
+\n\
+Allowed values for these tags are: \n\
+\n\
+* 'MagFilter' (interpolation used when the texture is smaller than the window size): 'GL_NEAREST' (default) or 'GL_LINEAR' \n\
+* 'MinFilter' (interpolation used when the texture is bigger than the window size): 'GL_NEAREST' (default), 'GL_LINEAR', 'GL_LINEAR_MIPMAP_NEAREST', 'GL_NEAREST_MIPMAP_NEAREST', 'GL_LINEAR_MIPMAP_LINEAR' \n\
+* 'wrapT' (vertical scaling mode): 'GL_REPEAT' (default), 'SCALED', 'GL_MIRRORED_REPEAT, 'GL_CLAMP_TO_EDGE' \n\
+* 'wrapS' (horizontal scaling mode): 'GL_REPEAT' (default), 'SCALED', 'GL_MIRRORED_REPEAT', 'GL_CLAMP_TO_EDGE'");
+
     m_author = "M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -133,22 +152,36 @@ GLDisplay::GLDisplay() :
     int maxwidth = 0, maxheight = 0, maxx0 = -4096, minx0 = 4096, maxy0 = -4096, miny0 = 4096;
     int defx0 = 0, defy0 = 0, defwidth = 3, defheight = 3;
     QRect geometry;
+
     for (int num = 0; num < scount; num++)
     {
         geometry = qdesk->screenGeometry(num);
         if (geometry.width() > maxwidth)
+        {
             maxwidth = geometry.width();
+        }
         if (geometry.height() > maxheight)
+        {
             maxheight = geometry.height();
+        }
         if (geometry.x() + geometry.width() > maxx0)
+        {
             maxx0 = geometry.x() + geometry.width();
+        }
         if (geometry.y() + geometry.height() > maxy0)
+        {
             maxy0 = geometry.y() + geometry.height();
+        }
         if (geometry.x() < minx0)
+        {
             minx0 = geometry.x();
+        }
         if (geometry.y() < miny0)
+        {
             miny0 = geometry.y();
+        }
     }
+
     if (scount > 1)
     {
         int prjscreen = 0;
@@ -188,14 +221,13 @@ GLDisplay::GLDisplay() :
     pMand << ito::Param("firstTextureIndex", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("first index (zero-based) of given texture that is replaced. If a 3D data object is given, the following textures are replaced, too.").toLatin1().data());
     registerExecFunc("editTextures", pMand, pOpt, pOut, tr("method to edit existing textures and replace them by a new data object"));
 
-
     pMand.clear();
     pOpt.clear();
     pOut.clear();
 
     //register exec functions done
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "GLDisplay", "name of the plugin");
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "GLDisplay", tr("name of the plugin").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("color", ito::ParamBase::Int, 0, 3, 3, tr("0: Red, 1: Green, 2: Blue, 3: White").toLatin1().data());
@@ -294,7 +326,6 @@ GLDisplay::GLDisplay() :
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -364,7 +395,6 @@ ito::RetVal GLDisplay::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
             //finally, save the desired value in the argument val (this is a shared pointer!)
             *val = it.value();
         }
-        
     }
 
     if (waitCond)
@@ -598,6 +628,7 @@ ito::RetVal GLDisplay::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
@@ -619,7 +650,6 @@ ito::RetVal GLDisplay::close(ItomSharedSemaphore *waitCond)
     }
     return retval;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void GLDisplay::numberOfImagesChanged(int numImg, int numGray, int numCos)
@@ -687,7 +717,6 @@ ito::RetVal GLDisplay::interpolateLUT(QVector<double> &grayvalues, QVector<unsig
     lut[255] = 255;
 
     return retval;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

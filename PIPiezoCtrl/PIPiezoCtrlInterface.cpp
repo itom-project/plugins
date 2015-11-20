@@ -63,7 +63,7 @@ PIPiezoCtrlInterface::PIPiezoCtrlInterface()
     m_description = QObject::tr("PI Piezos E662, E-816, E-621, E-625, E665");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "The PIPiezoCtrl is an itom-plugin, which can be used to communicate with PI piezo-controllers.\
 Different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662) are implemented.\n\
 \n\
@@ -72,7 +72,15 @@ The parameters of the serial port (besides port number) are set automatically du
 \n\
 WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding \
 PI controller. Therefore don't mix stages and controllers but only use the original, calibrated combination.";
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr("The PIPiezoCtrl is an itom-plugin, which can be used to communicate with PI piezo-controllers.\
+Different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662) are implemented.\n\
+\n\
+It has been tested with different Piefocs and Piezo-stages. This system needs a serial port, which differs depending on the controller type. \
+The parameters of the serial port (besides port number) are set automatically during initialization. \n\
+\n\
+WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding \
+PI controller. Therefore don't mix stages and controllers but only use the original, calibrated combination.");
 
     m_author = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;

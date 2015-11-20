@@ -490,8 +490,6 @@ ito::RetVal AvantesAvaSpec::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
             retValue += it->copyValueFrom( &(*val) );
         }
     }
-    
-    
 
     if(!retValue.containsError())
     {
@@ -506,8 +504,6 @@ ito::RetVal AvantesAvaSpec::setParam(QSharedPointer<ito::ParamBase> val, ItomSha
 
     return retValue;
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AvantesAvaSpec::startDevice(ItomSharedSemaphore *waitCond)
@@ -688,7 +684,6 @@ ito::RetVal AvantesAvaSpec::acquire(const int trigger, ItomSharedSemaphore *wait
             //int j = 0;
         }
     }
-
     
     return retValue + m_acquisitionRetVal;
 }

@@ -50,7 +50,6 @@ class OpenCVFiltersNonFreeInterface : public ito::AddInInterfaceBase
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);  /*! <Destroy the loaded instance of OpenCVFilter-Class */
 
-
     signals:
 
     public slots:
@@ -70,11 +69,10 @@ class OpenCVFiltersNonFree : public ito::AddInAlgo
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
-        static const char *cvSiftDetectorDescriptorExtractorDoc;
+        static const QString cvSiftDetectorDescriptorExtractorDoc;
         static ito::RetVal cvSiftDetectorDescriptorExtractor(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal cvSiftDetectorDescriptorExtractorParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-
         
     private:
 

@@ -72,7 +72,7 @@ DispWindowInterface::DispWindowInterface()
     setObjectName("DispWindow");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including \
 various graycode fringes (for unwrapping). The visualization is done with the help of OpenGL and the open source library GLEW. \n\
 \n\
@@ -80,9 +80,17 @@ For building this plugin, download (the binaries) of glew from http://glew.sourc
 to the corresponding folder. The necessary library will finally be copied to the lib-folder of itom such that an entry in the \
 environment variable path is not necessary. Please make sure, that you use always the same version of glew for all plugins that \
 require this library.";
-
+*/
     m_description = tr("Window for SLM/LCD-Applications");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr("This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including \
+various graycode fringes (for unwrapping). The visualization is done with the help of OpenGL and the open source library GLEW. \n\
+\n\
+For building this plugin, download (the binaries) of glew from http://glew.sourceforge.net/ and set the variable GLEW_DIR in CMake \
+to the corresponding folder. The necessary library will finally be copied to the lib-folder of itom such that an entry in the \
+environment variable path is not necessary. Please make sure, that you use always the same version of glew for all plugins that \
+require this library.");
+
     m_author = "C. Kohler, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -169,7 +177,6 @@ DispWindow::DispWindow() :
         defy0 = geometry.y();
     }
 
-
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");    // To enable the programm to transmit parameters via signals - slot connections
     qRegisterMetaType<QVector<unsigned char> >("QVector<unsigned char>&");
 
@@ -185,14 +192,13 @@ DispWindow::DispWindow() :
     pMand = QVector<ito::Param>() << ito::Param("grayValue", ito::ParamBase::Int | ito::ParamBase::In, 0, 255, 0, tr("unique gray value. Depending on the projected color, all color channels are reduced by this value [0..255]").toLatin1().data());
     registerExecFunc("projectGrayValue", pMand, pOpt, pOut, tr("projects an image where all pixels have the same gray-level. This is used for the determination of the gamma correction").toLatin1().data());
 
-
     pMand.clear();
     pOpt.clear();
     pOut.clear();
 
     //register exec functions done
 
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DispWindow", "name of the plugin");
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DispWindow", tr("name of the plugin").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("period", ito::ParamBase::Int, 12, NULL, tr("Cosine period").toLatin1().data());
@@ -286,7 +292,7 @@ DispWindow::DispWindow() :
     }
     else
     {
-        constructionResult += ito::RetVal(ito::retError,0,"Supported OpenGL Version is lower than 2.0 and therefore not supported");
+        constructionResult += ito::RetVal(ito::retError, 0, tr("Supported OpenGL Version is lower than 2.0 and therefore not supported").toLatin1().data());
     }
 
     qDebug() << fmt.majorVersion();
@@ -294,8 +300,6 @@ DispWindow::DispWindow() :
 
     if (!constructionResult.containsError())
     {
-
-
         fmt.setDepth(0);
 
         m_pWindow = new PrjWindow(m_params, fmt, NULL, NULL, Qt::Window|Qt::MSWindowsOwnDC|Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);//0, 0, Qt::Window|Qt::MSWindowsOwnDC); //Qt::Window|Qt::MSWindowsOwnDC|Qt::ScrollBarAlwaysOff
@@ -319,7 +323,6 @@ DispWindow::DispWindow() :
         QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
         createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, DispWinWid);
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -329,6 +332,7 @@ DispWindow::~DispWindow()
     {
         delete(m_pWindow);
     }
+
     m_params.clear();
 }
 
@@ -346,13 +350,13 @@ ito::RetVal DispWindow::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (QString::compare(key, "orientation", Qt::CaseInsensitive) == 0)
         {
@@ -400,7 +404,6 @@ ito::RetVal DispWindow::getParam(QSharedPointer<ito::Param> val, ItomSharedSemap
             //finally, save the desired value in the argument val (this is a shared pointer!)
             *val = it.value();
         }
-        
     }
 
     if (waitCond)
@@ -424,9 +427,9 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
     QMap<QString, ito::Param>::iterator it;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
@@ -434,7 +437,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         //readonly are 'name', 'numgraybits', 
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //here the new parameter is checked whether its type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
@@ -442,7 +445,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         retValue += apiValidateParam(*it, *val, false, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (QString::compare(key, "lut", Qt::CaseInsensitive) == 0)
         {
@@ -466,7 +469,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
                 if (index < 0 || index >= lutLen)
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, "Currently the lut only has %i values, therefore the index must be in the range [0,%i]", lutLen, lutLen-1);
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("Currently the lut only has %i values, therefore the index must be in the range [0,%i]").toLatin1().data(), lutLen, lutLen-1);
                 }
                 else
                 {
@@ -474,7 +477,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
                     QVector<unsigned char> lutVals(lutLen);
                     unsigned char *gwptr = (unsigned char*)it->getVal<char*>(); //stored values in m_params
                     gwptr[index] = (unsigned char)val->getVal<char>();
-                    memcpy( lutVals.data(), gwptr, sizeof(unsigned char) * lutLen );
+                    memcpy(lutVals.data(), gwptr, sizeof(unsigned char) * lutLen);
                     QMetaObject::invokeMethod(m_pWindow, "setLUT", Qt::BlockingQueuedConnection, Q_ARG(QVector<unsigned char>&, lutVals));
                 }
             }
@@ -482,7 +485,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
         {
             QMetaObject::invokeMethod(m_pWindow, "enableGammaCorrection", Qt::BlockingQueuedConnection, Q_ARG(bool, val->getVal<int>() > 0));
-            it->copyValueFrom( &(*val) );
+            it->copyValueFrom(&(*val));
         }
         else if (QString::compare(key, "color", Qt::CaseInsensitive) == 0)
         {
@@ -536,7 +539,6 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         }
         else if (QString::compare(key, "phaseshift", Qt::CaseInsensitive) == 0)
         {
-                
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
             QMetaObject::invokeMethod(m_pWindow, "configProjection", 
                                     Qt::BlockingQueuedConnection,  
@@ -557,7 +559,6 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         }
         else if (QString::compare(key, "period", Qt::CaseInsensitive) == 0)
         {
-                
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
             QMetaObject::invokeMethod(m_pWindow, "configProjection", 
                                     Qt::BlockingQueuedConnection, 
@@ -580,12 +581,12 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
         //one last thing, if the value of numimg is now greater than its maximum, reset the value to the maximum and set the value
         if (m_params["numimg"].getVal<int>() > m_params["numimg"].getMax())
         {
-            m_params["numimg"].setVal<int>( m_params["numimg"].getMax() );
+            m_params["numimg"].setVal<int>(m_params["numimg"].getMax());
             QMetaObject::invokeMethod(m_pWindow, "showImageNum", Qt::BlockingQueuedConnection, Q_ARG(int, m_params["numimg"].getVal<int>()));
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
     }
@@ -707,12 +708,12 @@ ito::RetVal DispWindow::close(ItomSharedSemaphore *waitCond)
 
     QMetaObject::invokeMethod(m_pWindow, "shutDown");
 
-
     if (waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -736,16 +737,19 @@ ito::RetVal DispWindow::getVal(void *data, ItomSharedSemaphore *waitCond)
         retval = ito::RetVal(ito::retError, 0, tr("wrong z-size").toLatin1().data());
         goto end;
     }
+
     if ((width = m_params["xsize"].getVal<int>()) != (int)dObj->getSize(dObj->getDims() - 1))
     {
         retval = ito::RetVal(ito::retError, 0, tr("wrong x-size").toLatin1().data());
         goto end;
     }
+
     if ((height = m_params["ysize"].getVal<int>()) != (int)dObj->getSize(dObj->getDims() - 2))
     {
         retval = ito::RetVal(ito::retError, 0, tr("wrong y-size").toLatin1().data());
         goto end;
     }
+
     if (dObj->getType() != ito::tUInt8)
     {
         retval = ito::RetVal(ito::retError, 0, tr("wrong data type (uint8) required").toLatin1().data());
@@ -881,8 +885,10 @@ ito::RetVal DispWindow::setVal(const void * /*data*/, ItomSharedSemaphore *waitC
         waitCond->returnValue = ito::retOk;
         waitCond->release();
     }
+
     return ito::retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void DispWindow::numberOfImagesChanged(int numImg, int numGray, int numCos)
 {
@@ -949,7 +955,6 @@ ito::RetVal DispWindow::interpolateLUT(QVector<double> &grayvalues, QVector<unsi
     lut[255] = 255;
 
     return retval;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -992,13 +997,13 @@ ito::RetVal DispWindow::execFunc(const QString funcName, QSharedPointer<QVector<
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(m_pWindow, "grabFramebuffer", Q_ARG(QString, filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-        if(locker.getSemaphore()->wait(5000))
+        if (locker.getSemaphore()->wait(5000))
         {
             retValue += locker.getSemaphore()->returnValue;
         }
         else
         {
-            retValue += ito::RetVal(ito::retError,0,"timeout while grabbing current OpenGL frame");
+            retValue += ito::RetVal(ito::retError, 0, tr("timeout while grabbing current OpenGL frame").toLatin1().data());
         }
     }
     else if (funcName == "projectGrayValue")
@@ -1009,13 +1014,13 @@ ito::RetVal DispWindow::execFunc(const QString funcName, QSharedPointer<QVector<
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         QMetaObject::invokeMethod(m_pWindow, "setGammaPrj", Q_ARG(int, grayValue), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-        if(locker.getSemaphore()->wait(5000))
+        if (locker.getSemaphore()->wait(5000))
         {
             retValue += locker.getSemaphore()->returnValue;
         }
         else
         {
-            retValue += ito::RetVal(ito::retError,0,"timeout while projecting a single-color image.");
+            retValue += ito::RetVal(ito::retError, 0, tr("timeout while projecting a single-color image.").toLatin1().data());
         }
     }
     else

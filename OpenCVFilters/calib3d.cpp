@@ -35,13 +35,15 @@
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char* OpenCVFilters::cvFindCirclesDoc = "Finds circles in a grayscale image using the Hough transform.\n\
+const QString OpenCVFilters::cvFindCirclesDoc = tr("Finds circles in a grayscale image using the Hough transform.\n\
 \n\
 This filter is a wrapper for the openCV-function cv::HoughCircles.\
 he function finds circles in a grayscale image using a modification of the Hough transform.\
 Based on this filter, circles are identified and located.\
 The result is dataObject with rows = (n-Circles) and cols = (x,y,r).\n\
-";
+");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvFindCirclesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
@@ -67,6 +69,7 @@ ito::RetVal OpenCVFilters::cvFindCirclesParams(QVector<ito::Param> *paramsMand, 
         param = ito::Param("Max Radius [px]", ito::ParamBase::Int | ito::ParamBase::In, 1, 2048, 0, tr("Max Radius in x/y").toLatin1().data());
         paramsOpt->append(param);
     }
+
     return retval;
 }
 
@@ -119,7 +122,7 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
     cv::vector<cv::Vec3f> circles;
 #endif
 
-    /*    void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0 )
+    /*    void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0)
         dp – Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
         param1 – First method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).
         param2 – Second method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.*/
@@ -133,12 +136,12 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
         *dObjDst = ito::DataObject(2, sizes, ito::tFloat32);
         ito::float32 *rowPtr = NULL;
 
-        for( size_t i = 0; i < circles.size(); i++ )
+        for(size_t i = 0; i < circles.size(); i++)
         {
             //    This can be used to draw the circles directly into the input image
             /*    cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
                 int radius = cvRound(circles[i][2]);
-                circle( *cvplaneIn, center, radius, 70, 3, 8, 0 );*/
+                circle(*cvplaneIn, center, radius, 70, 3, 8, 0);*/
 
             rowPtr = (ito::float32*)dObjDst->rowPtr(0, i);
             rowPtr[0] = circles[i][0];
@@ -157,7 +160,7 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char* OpenCVFilters::cvFindChessboardCornersDoc = "Finds the positions of internal corners of the chessboard.\n\
+/*static*/ const QString OpenCVFilters::cvFindChessboardCornersDoc = tr("Finds the positions of internal corners of the chessboard.\n\
 \n\
 This filter is a wrapper for the cv::method cv::findChessboardCorners. \
 \n\
@@ -174,8 +177,9 @@ This function is wrapped to itom by the filter 'cvCornerSubPix'.\n\
 Remark 2: The outer frame of the dataObject / the image should not be white but have approximately the same gray value than the bright field.\n\
 \n\
 Remark 3: The bright fields should be free of darker dirt or dust and you should apply a corse shading correction to improve the results. \n\
-";
+");
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvFindChessboardCornersParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -183,28 +187,25 @@ ito::RetVal OpenCVFilters::cvFindChessboardCornersParams(QVector<ito::Param> *pa
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("dataObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "8bit grayscale input image") );
-    paramsMand->append( ito::Param("patternSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "Number of inner corners per chessboard row and column (points_per_row, points_per_column)") );
-    paramsMand->append( ito::Param("corners", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output: float32-dataObject, [n x 2] with the coordinates of n detected corner points") );
+    paramsMand->append(ito::Param("dataObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "8bit grayscale input image"));
+    paramsMand->append(ito::Param("patternSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "Number of inner corners per chessboard row and column (points_per_row, points_per_column)"));
+    paramsMand->append(ito::Param("corners", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output: float32-dataObject, [n x 2] with the coordinates of n detected corner points"));
 
     int allflags = cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_FILTER_QUADS | cv::CALIB_CB_FAST_CHECK;
-    paramsOpt->append( ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE, new ito::IntMeta(0, allflags), "additional flags (OR-combination), see openCV-docu") );
+    paramsOpt->append(ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE, new ito::IntMeta(0, allflags), "additional flags (OR-combination), see openCV-docu"));
 
-    paramsOut->append( ito::Param("result", ito::ParamBase::Int | ito::ParamBase::Out, 0, new ito::IntMeta(0,1), "0: detection failed, 1: detection has been successful") );
+    paramsOut->append(ito::Param("result", ito::ParamBase::Int | ito::ParamBase::Out, 0, new ito::IntMeta(0,1), "0: detection failed, 1: detection has been successful"));
 
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
-
     const ito::DataObject *input = (const ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-
     cv::Size patternSize = itomcv::getCVSizeFromParam(paramsMand->at(1), false, &retval);
-
     int flags = (*paramsOpt)[0].getVal<int>();
-
     int result = 0;
 
     if ((*paramsMand)[2].getVal<ito::DataObject*>() == NULL || input == NULL)
@@ -223,7 +224,7 @@ ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *para
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
             result = 0;
         }
 
@@ -239,9 +240,11 @@ ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *para
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvDrawChessboardCornersDoc = "Renders the detected chessboard corners.\n\
+/*static*/ const QString OpenCVFilters::cvDrawChessboardCornersDoc = tr("Renders the detected chessboard corners.\n\
 \n\
-The function draws individual chessboard corners detected either as red circles if the board was not found, or as colored corners connected with lines if the board was found.";
+The function draws individual chessboard corners detected either as red circles if the board was not found, or as colored corners connected with lines if the board was found.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvDrawChessboardCornersParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -249,14 +252,15 @@ The function draws individual chessboard corners detected either as red circles 
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "rgba32 input and destination image (must be of type ito::rgba32).") );
-    paramsMand->append( ito::Param("patternSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "Number of inner corners per chessboard row and column (points_per_row, points_per_column)") );
-    paramsMand->append( ito::Param("corners", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "array of detected corners (n x 2), the output of cvFindChessboardCorners or cvCornerSubPix") );
-    paramsMand->append( ito::Param("patternWasFound", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, "Parameter indicating whether the complete board was found or not.") );
+    paramsMand->append(ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("rgba32 input and destination image (must be of type ito::rgba32).").toLatin1().data()));
+    paramsMand->append(ito::Param("patternSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("Number of inner corners per chessboard row and column (points_per_row, points_per_column)").toLatin1().data()));
+    paramsMand->append(ito::Param("corners", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("array of detected corners (n x 2), the output of cvFindChessboardCorners or cvCornerSubPix").toLatin1().data()));
+    paramsMand->append(ito::Param("patternWasFound", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("Parameter indicating whether the complete board was found or not.").toLatin1().data()));
 
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvDrawChessboardCorners(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -293,7 +297,7 @@ The function draws individual chessboard corners detected either as red circles 
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
         
     }
@@ -303,13 +307,13 @@ The function draws individual chessboard corners detected either as red circles 
     return retval;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvCornerSubPixDoc = "Refines the corner locations e.g. from cvFindChessboardCorners.\n\
+/*static*/ const QString OpenCVFilters::cvCornerSubPixDoc = tr("Refines the corner locations e.g. from cvFindChessboardCorners.\n\
 \n\
 This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-doku for more details\n\
-";
+");
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvCornerSubPixParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -317,21 +321,22 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "8bit grayscale input image") );
-    paramsMand->append( ito::Param("corners", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "initial coordinates of the input corners and refined coordinates provided for output") );
-    paramsMand->append( ito::Param("winSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "Half of the side length of the search window. Example: (5,5) leads to a (11x11) search window") );
+    paramsMand->append(ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("8bit grayscale input image").toLatin1().data()));
+    paramsMand->append(ito::Param("corners", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("initial coordinates of the input corners and refined coordinates provided for output").toLatin1().data()));
+    paramsMand->append(ito::Param("winSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("Half of the side length of the search window. Example: (5,5) leads to a (11x11) search window").toLatin1().data()));
 
     int zeroZone[] = {-1,-1};
-    param = ito::Param("zeroZone", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "Half of the size of the dead region in the middle of the search zone over which the summation is not done. (-1,-1) indicates that there is no such a size");
+    param = ito::Param("zeroZone", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("Half of the size of the dead region in the middle of the search zone over which the summation is not done. (-1,-1) indicates that there is no such a size").toLatin1().data());
     param.setVal<int*>(zeroZone, 2);
     paramsOpt->append (param);
 
-    paramsOpt->append( ito::Param("maxCount", ito::ParamBase::Int | ito::ParamBase::In, 200, new ito::IntMeta(1,100000), "position refinement stops after this maximum number of iterations") );
-    paramsOpt->append( ito::Param("epsilon", ito::ParamBase::Double | ito::ParamBase::In, 0.05, new ito::DoubleMeta(0.0, 10.0), "position refinement stops when the corner position moves by less than this value") );
+    paramsOpt->append(ito::Param("maxCount", ito::ParamBase::Int | ito::ParamBase::In, 200, new ito::IntMeta(1,100000), tr("position refinement stops after this maximum number of iterations").toLatin1().data()));
+    paramsOpt->append(ito::Param("epsilon", ito::ParamBase::Double | ito::ParamBase::In, 0.05, new ito::DoubleMeta(0.0, 10.0), tr("position refinement stops when the corner position moves by less than this value").toLatin1().data()));
 
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvCornerSubPix(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -341,11 +346,11 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
 
     if (image == NULL || rawCorners == NULL)
     {
-        retval += ito::RetVal(ito::retError,0, "Parameters 'image' and 'corners' may not be NULL");
+        retval += ito::RetVal(ito::retError, 0, tr("Parameters 'image' and 'corners' may not be NULL").toLatin1().data());
     }
 
-    int limits[] = {0,std::numeric_limits<int>::max(),2,2};
-    ito::DataObject *corners = apiCreateFromNamedDataObject(rawCorners,2,ito::tFloat32,"corners",limits,&retval);
+    int limits[] = {0, std::numeric_limits<int>::max(), 2, 2};
+    ito::DataObject *corners = apiCreateFromNamedDataObject(rawCorners, 2, ito::tFloat32, "corners", limits, &retval);
 
     cv::Size winSize = itomcv::getCVSizeFromParam(paramsMand->at(2), true, &retval);
     
@@ -360,7 +365,7 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
 
         if (corners_->isContinuous() == false)
         {
-            retval += ito::RetVal(ito::retError, 0, "corners must be a continuous data object. If you passed a subset of columns of a data object, get a region-only copy before calling this function");
+            retval += ito::RetVal(ito::retError, 0, tr("corners must be a continuous data object. If you passed a subset of columns of a data object, get a region-only copy before calling this function").toLatin1().data());
         }
         else
         {
@@ -372,25 +377,23 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
             }
             catch (cv::Exception exc)
             {
-                retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+                retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
             }
         }
-
     }
 
     delete corners;
     corners = NULL;
 
     return retval;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvCalibrateCameraDoc = "Finds the camera intrinsic and extrinsic parameters from several views of a calibration pattern. \n\
+/*static*/ const QString OpenCVFilters::cvCalibrateCameraDoc = tr("Finds the camera intrinsic and extrinsic parameters from several views of a calibration pattern. \n\
 \n\
 The function estimates the intrinsic camera parameters and extrinsic parameters for each of the views. The coordinates of 3D object points and their corresponding 2D projections in each view must be specified. \n\
 That may be achieved by using an object with a known geometry and easily detectable feature points. Such an object is called a calibration rig or calibration pattern, and OpenCV has built-in support for \n\
-a chessboard as a calibration rig (see cvFindChessboardCorners() ). Currently, initialization of intrinsic parameters (when CV_CALIB_USE_INTRINSIC_GUESS is not set) is only implemented for planar \n\
+a chessboard as a calibration rig (see cvFindChessboardCorners()). Currently, initialization of intrinsic parameters (when CV_CALIB_USE_INTRINSIC_GUESS is not set) is only implemented for planar \n\
 calibration patterns (where Z-coordinates of the object points must be all zeros). 3D calibration rigs can also be used as long as initial cameraMatrix is provided.\n\
 \n\
 The algorithm performs the following steps: \n\
@@ -400,7 +403,9 @@ The algorithm performs the following steps: \n\
 3. Run the global Levenberg-Marquardt optimization algorithm to minimize the reprojection error, that is, the total sum of squared distances between the observed feature points imagePoints and the projected (using the current estimates for camera parameters and the poses) object points objectPoints. See projectPoints() for details. \n\
 \n\
 If the reprojectionError is NaN, one or both of the matrices objectPoints or imagePoints probabily contains any NaN-value after truncation. Remember that this algorithm truncates objectPoints and imagePoints \n\
-before using it in the way that for each view, the last rows are cut where either the value in the first column of objectPoints or imagePoints is non-finite.";
+before using it in the way that for each view, the last rows are cut where either the value in the first column of objectPoints or imagePoints is non-finite.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvCalibrateCameraParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -408,16 +413,16 @@ before using it in the way that for each view, the last rows are cut where eithe
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("objectPoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "[NrOfViews x NrOfPoints x 3] float32 matrix with the coordinates of all points in object space (coordinate system of calibration pattern).. Non-finite rows at the end of each matrix-plane will be truncated.") );
-    paramsMand->append( ito::Param("imagePoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "[NrOfViews x NrOfPoints x 2] float32 matrix with the pixel coordinates (u,v) of the corresponding plane in each view. Non-finite rows at the end of each matrix-plane will be truncated.") );
-    paramsMand->append( ito::Param("imageSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "[width,height] of the camera image (in pixels)") );
+    paramsMand->append(ito::Param("objectPoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("[NrOfViews x NrOfPoints x 3] float32 matrix with the coordinates of all points in object space (coordinate system of calibration pattern).. Non-finite rows at the end of each matrix-plane will be truncated.").toLatin1().data()));
+    paramsMand->append(ito::Param("imagePoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("[NrOfViews x NrOfPoints x 2] float32 matrix with the pixel coordinates (u,v) of the corresponding plane in each view. Non-finite rows at the end of each matrix-plane will be truncated.").toLatin1().data()));
+    paramsMand->append(ito::Param("imageSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("[width,height] of the camera image (in pixels)").toLatin1().data()));
 
-    paramsMand->append( ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output 3x3 float64 camera patrix. If flags CV_CALIB_USE_INTRINSIC_GUESS and/or CV_CALIB_FIX_ASPECT_RATIO are specified, this matrix must be initialized with right values and is unchanged") );
-    paramsMand->append( ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output 1x4, 1x5 or 1x8 distortion values (float64). (k1, k2, p1, p2 [,k3 [,k4 ,k5 ,k6]])") );
-    paramsMand->append( ito::Param("rvecs", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "3 x NrOfViews float64 output vector, where each column is the rotation vector estimated for each pattern view (Rodrigues coordinates)") );
-    paramsMand->append( ito::Param("tvecs", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "3 x NrOfViews float64 output vector, where each column is the translation vector estimated for each pattern view") );
+    paramsMand->append(ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output 3x3 float64 camera patrix. If flags CV_CALIB_USE_INTRINSIC_GUESS and/or CV_CALIB_FIX_ASPECT_RATIO are specified, this matrix must be initialized with right values and is unchanged").toLatin1().data()));
+    paramsMand->append(ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output 1x4, 1x5 or 1x8 distortion values (float64). (k1, k2, p1, p2 [,k3 [,k4 ,k5 ,k6]])").toLatin1().data()));
+    paramsMand->append(ito::Param("rvecs", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("3 x NrOfViews float64 output vector, where each column is the rotation vector estimated for each pattern view (Rodrigues coordinates)").toLatin1().data()));
+    paramsMand->append(ito::Param("tvecs", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("3 x NrOfViews float64 output vector, where each column is the translation vector estimated for each pattern view").toLatin1().data()));
 
-    QString description = "Different flags that may be a combination of the following values: ";
+    QString description = tr("Different flags that may be a combination of the following values: ");
     description += QString("CV_CALIB_USE_INTRINSIC_GUESS (%1)").arg(CV_CALIB_USE_INTRINSIC_GUESS);
     description += QString(", CV_CALIB_FIX_PRINCIPAL_POINT (%1)").arg(CV_CALIB_FIX_PRINCIPAL_POINT);
     description += QString(", CV_CALIB_FIX_ASPECT_RATIO (%1)").arg(CV_CALIB_FIX_ASPECT_RATIO);
@@ -430,15 +435,16 @@ before using it in the way that for each view, the last rows are cut where eithe
     description += QString(", CV_CALIB_FIX_K6 (%1)").arg(CV_CALIB_FIX_K6);
     description += QString(", CV_CALIB_RATIONAL_MODEL (%1)").arg(CV_CALIB_RATIONAL_MODEL);
     int maxFlag = CV_CALIB_USE_INTRINSIC_GUESS | CV_CALIB_FIX_PRINCIPAL_POINT | CV_CALIB_FIX_ASPECT_RATIO | CV_CALIB_ZERO_TANGENT_DIST | CV_CALIB_FIX_K1 | CV_CALIB_FIX_K2 | CV_CALIB_FIX_K3 | CV_CALIB_FIX_K4 | CV_CALIB_FIX_K5 | CV_CALIB_FIX_K6 | CV_CALIB_RATIONAL_MODEL;
-    paramsOpt->append( ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0,maxFlag), description.toLatin1().data()));
-    paramsOpt->append( ito::Param("maxCounts", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 30, "if > 0, maximum number of counts, 0: unlimited number of counts allowed [default: 30]"));
-    paramsOpt->append( ito::Param("epsilonAccuracy", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::epsilon(), "if > 0.0, desired accuracy at which the iterative algorithm stops, 0.0: no epsilon criteria [default: DBL_EPSILON]"));
+    paramsOpt->append(ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, new ito::IntMeta(0,maxFlag), description.toLatin1().data()));
+    paramsOpt->append(ito::Param("maxCounts", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 30, tr("if > 0, maximum number of counts, 0: unlimited number of counts allowed [default: 30]").toLatin1().data()));
+    paramsOpt->append(ito::Param("epsilonAccuracy", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::epsilon(), tr("if > 0.0, desired accuracy at which the iterative algorithm stops, 0.0: no epsilon criteria [default: DBL_EPSILON]").toLatin1().data()));
     
-    paramsOut->append( ito::Param("reprojectionError", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, std::numeric_limits<double>::max(), 0.0, "resulting re-projection error"));
+    paramsOut->append(ito::Param("reprojectionError", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, std::numeric_limits<double>::max(), 0.0, tr("resulting re-projection error").toLatin1().data()));
 
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvCalibrateCamera(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -581,10 +587,12 @@ before using it in the way that for each view, the last rows are cut where eithe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvEstimateAffine3DDoc = "Computes an optimal affine transformation between two 3D point sets \n\
+/*static*/ const QString OpenCVFilters::cvEstimateAffine3DDoc = tr("Computes an optimal affine transformation between two 3D point sets \n\
 \n\
 The function estimates an optimal 3D affine transformation between two 3D point sets using the RANSAC algorithm. The transformation describes then \n\
-[destination;1] = output * [source;1] for each point in sources and destinations 3D point set.";
+[destination;1] = output * [source;1] for each point in sources and destinations 3D point set.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvEstimateAffine3DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -592,17 +600,18 @@ The function estimates an optimal 3D affine transformation between two 3D point 
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("sources", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "[n x 3] array of source points (will be converted to float64).") );
-    paramsMand->append( ito::Param("destinations", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "[n x 3] array of destination points (must have the same size than sources, will be converted to float64).") );
-    paramsMand->append( ito::Param("output", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output 3D affine transformation matrix 3x4 (float64)") );
-    paramsOpt->append( ito::Param("inliers", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output vector indicating which points are inliers (uint8)") );
-    paramsOpt->append( ito::Param("ransacThreshold", ito::ParamBase::Double | ito::ParamBase::In, 3.0, new ito::DoubleMeta(0.0, std::numeric_limits<double>::max()), "Maximum reprojection error in the RANSAC algorithm to consider a point as an inlier (default: 3.0)") );
-    paramsOpt->append( ito::Param("confidence", ito::ParamBase::Double | ito::ParamBase::In, 0.99, new ito::DoubleMeta(0.0, 1.0), "Confidence level, between 0 and 1, for the estimated transformation. Anything between 0.95 and 0.99 is usually good enough. Values too close to 1 can slow down the estimation significantly. Values lower than 0.8-0.9 can result in an incorrectly estimated transformation.") );
-    paramsOut->append( ito::Param("ret", ito::ParamBase::Int | ito::ParamBase::Out, 0, 1, 0, "return value"));
+    paramsMand->append(ito::Param("sources", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("[n x 3] array of source points (will be converted to float64).").toLatin1().data()));
+    paramsMand->append(ito::Param("destinations", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("[n x 3] array of destination points (must have the same size than sources, will be converted to float64).").toLatin1().data()));
+    paramsMand->append(ito::Param("output", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output 3D affine transformation matrix 3x4 (float64)").toLatin1().data()));
+    paramsOpt->append(ito::Param("inliers", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output vector indicating which points are inliers (uint8)").toLatin1().data()));
+    paramsOpt->append(ito::Param("ransacThreshold", ito::ParamBase::Double | ito::ParamBase::In, 3.0, new ito::DoubleMeta(0.0, std::numeric_limits<double>::max()), tr("Maximum reprojection error in the RANSAC algorithm to consider a point as an inlier (default: 3.0)").toLatin1().data()));
+    paramsOpt->append(ito::Param("confidence", ito::ParamBase::Double | ito::ParamBase::In, 0.99, new ito::DoubleMeta(0.0, 1.0), tr("Confidence level, between 0 and 1, for the estimated transformation. Anything between 0.95 and 0.99 is usually good enough. Values too close to 1 can slow down the estimation significantly. Values lower than 0.8-0.9 can result in an incorrectly estimated transformation.").toLatin1().data()));
+    paramsOut->append(ito::Param("ret", ito::ParamBase::Int | ito::ParamBase::Out, 0, 1, 0, tr("return value").toLatin1().data()));
 
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvEstimateAffine3D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -643,23 +652,23 @@ The function estimates an optimal 3D affine transformation between two 3D point 
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
-        
     }
 
     return retval;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvUndistortDoc = "Transforms an image to compensate for lens distortion. \n\
+/*static*/ const QString OpenCVFilters::cvUndistortDoc = tr("Transforms an image to compensate for lens distortion. \n\
 \n\
 The function transforms an image to compensate radial and tangential lens distortion. \n\
-The function is simply a combination of cvInitUndistortRectifyMap() (with unity R ) and cvRemap() (with bilinear interpolation). \n\
+The function is simply a combination of cvInitUndistortRectifyMap() (with unity R) and cvRemap() (with bilinear interpolation). \n\
 See the former function for details of the transformation being performed. \n\
 \n\
-Those pixels in the destination image, for which there is no correspondent pixels in the source image, are filled with zeros (black color). ";
+Those pixels in the destination image, for which there is no correspondent pixels in the source image, are filled with zeros (black color).");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvUndistortParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -667,14 +676,15 @@ Those pixels in the destination image, for which there is no correspondent pixel
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input (distorted) image (all datatypes)") );
-    paramsMand->append( ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output (corrected) image that has the same size and type as source") );
-    paramsMand->append( ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]") );
-    paramsMand->append( ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements.") );
-    paramsOpt->append( ito::Param("newCameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Camera matrix of the distorted image. By default (if not given), it is the same as cameraMatrix but you may additionally scale and shift the result by using a different matrix.") );
+    paramsMand->append(ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input (distorted) image (all datatypes)").toLatin1().data()));
+    paramsMand->append(ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output (corrected) image that has the same size and type as source").toLatin1().data()));
+    paramsMand->append(ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]").toLatin1().data()));
+    paramsMand->append(ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements.").toLatin1().data()));
+    paramsOpt->append(ito::Param("newCameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Camera matrix of the distorted image. By default (if not given), it is the same as cameraMatrix but you may additionally scale and shift the result by using a different matrix.").toLatin1().data()));
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvUndistort(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -687,7 +697,7 @@ Those pixels in the destination image, for which there is no correspondent pixel
     ito::DataObject *destination = paramsMand->at(1).getVal<ito::DataObject*>();
     if (!destination)
     {
-        retval += ito::RetVal(ito::retError, 0, "'destination' must not be NULL");
+        retval += ito::RetVal(ito::retError, 0, tr("'destination' must not be NULL").toLatin1().data());
     }
 
     const ito::DataObject *source = paramsMand->at(0).getVal<const ito::DataObject*>();
@@ -695,7 +705,7 @@ Those pixels in the destination image, for which there is no correspondent pixel
 
     if (sourceSqueezed.getDims() != 2)
     {
-        retval += ito::RetVal(ito::retError, 0, "source data object must be two dimensional");
+        retval += ito::RetVal(ito::retError, 0, tr("source data object must be two dimensional").toLatin1().data());
     }
         
     if (!retval.containsError())
@@ -709,7 +719,7 @@ Those pixels in the destination image, for which there is no correspondent pixel
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
 
         if (!retval.containsError())
@@ -722,10 +732,12 @@ Those pixels in the destination image, for which there is no correspondent pixel
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvUndistortPointsDoc = "Computes the ideal point coordinates from the observed point coordinates. \n\
+/*static*/ const QString OpenCVFilters::cvUndistortPointsDoc = tr("Computes the ideal point coordinates from the observed point coordinates. \n\
 \n\
 The function is similar to cvUndistort() and cvInitUndistortRectifyMap() but it operates on a sparse set of points instead of a raster image. Also the function performs a reverse transformation to cvProjectPoints() . \n\
-In case of a 3D object, it does not reconstruct its 3D coordinates, but for a planar object, it does, up to a translation vector, if the proper R is specified.";
+In case of a 3D object, it does not reconstruct its 3D coordinates, but for a planar object, it does, up to a translation vector, if the proper R is specified.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvUndistortPointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -733,15 +745,16 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Observed point coordinates (Nx2) float32") );
-    paramsMand->append( ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output (corrected) image that has the same size and type as source") );
-    paramsMand->append( ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]") );
-    paramsMand->append( ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements.") );
-    paramsOpt->append( ito::Param("R", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Rectification transformation in the object space (3x3 matrix). If not given, the identity transformation is used.") );
-    paramsOpt->append( ito::Param("P", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "New camera matrix (3x3) or new projection matrix (3x4). If not given, the identity new camera matrix is used.") );
+    paramsMand->append(ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Observed point coordinates (Nx2) float32").toLatin1().data()));
+    paramsMand->append(ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output (corrected) image that has the same size and type as source").toLatin1().data()));
+    paramsMand->append(ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]").toLatin1().data()));
+    paramsMand->append(ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements.").toLatin1().data()));
+    paramsOpt->append(ito::Param("R", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Rectification transformation in the object space (3x3 matrix). If not given, the identity transformation is used.").toLatin1().data()));
+    paramsOpt->append(ito::Param("P", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("New camera matrix (3x3) or new projection matrix (3x4). If not given, the identity new camera matrix is used.").toLatin1().data()));
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvUndistortPoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -749,7 +762,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {
-        retval += ito::RetVal(ito::retError, 0, "destination is empty");
+        retval += ito::RetVal(ito::retError, 0, tr("destination is empty").toLatin1().data());
     }
 
     ito::DataObject cameraMatrix = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<const ito::DataObject*>(), "cameraMatrix", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
@@ -787,7 +800,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
 
         if (!retval.containsError())
@@ -800,7 +813,9 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvInitUndistortRectifyMapDoc = "Computes the undistortion and rectification transformation map.";
+/*static*/ const QString OpenCVFilters::cvInitUndistortRectifyMapDoc = tr("Computes the undistortion and rectification transformation map.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvInitUndistortRectifyMapParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -808,18 +823,20 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]") );
-    paramsMand->append( ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements.") );
+    paramsMand->append(ito::Param("cameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]").toLatin1().data()));
+    paramsMand->append(ito::Param("distCoeffs", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements.").toLatin1().data()));
 
-    paramsMand->append( ito::Param("size", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "undistorted image size") );
-    paramsMand->append( ito::Param("map1", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "The first output map, type is float32.") );
-    paramsMand->append( ito::Param("map2", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "The second output map, type is float32.") );
+    paramsMand->append(ito::Param("size", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, tr("undistorted image size").toLatin1().data()));
+    paramsMand->append(ito::Param("map1", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("The first output map, type is float32.").toLatin1().data()));
+    paramsMand->append(ito::Param("map2", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("The second output map, type is float32.").toLatin1().data()));
 
-    paramsOpt->append( ito::Param("R", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Rectification transformation in the object space (3x3 matrix). If not given, the identity transformation is used.") );
-    paramsOpt->append( ito::Param("newCameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "New camera matrix A'. If not given, the camera matrix is used.") );
+    paramsOpt->append(ito::Param("R", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Rectification transformation in the object space (3x3 matrix). If not given, the identity transformation is used.").toLatin1().data()));
+    paramsOpt->append(ito::Param("newCameraMatrix", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("New camera matrix A'. If not given, the camera matrix is used.").toLatin1().data()));
     
     return retval;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvInitUndistortRectifyMap(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -830,14 +847,13 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 
     if (paramsMand->at(3).getVal<void*>() == NULL || paramsMand->at(4).getVal<void*>() == NULL)
     {
-        retval += ito::RetVal(ito::retError, 0, "map1 or map2 are NULL");
+        retval += ito::RetVal(ito::retError, 0, tr("map1 or map2 are NULL").toLatin1().data());
     }
 
     ito::DataObject R = paramsOpt->at(0).getVal<void*>() ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(0).getVal<const ito::DataObject*>(), "R", ito::Range(3,3), \
         ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64) : ito::DataObject();
 
     ito::DataObject cameraMatrixNew = (paramsOpt->at(1).getVal<void*>()) ? ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsOpt->at(1).getVal<const ito::DataObject*>(), "cameraMatrixNew", ito::Range(3,3), ito::Range(3,3), retval, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64) : cameraMatrix;
-
     
     if (!retval.containsError())
     {
@@ -856,7 +872,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
 
         if (!retval.containsError())
@@ -870,7 +886,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvRemapDoc = "Applies a generic geometrical transformation to an image. \n\
+/*static*/ const QString OpenCVFilters::cvRemapDoc = tr("Applies a generic geometrical transformation to an image. \n\
 \n\
 The function remap transforms the source image using the specified map: \n\
 \n\
@@ -880,7 +896,9 @@ where values of pixels with non-integer coordinates are computed using one of av
 separate floating-point maps in map_1 and map_2 respectively, or interleaved floating-point maps of (x,y) in map_1 , \n\
 or fixed-point maps created by using convertMaps() . The reason you might want to convert from floating to fixed-point representations of a map is \n\
 that they can yield much faster (~2x) remapping operations. In the converted case, map_1 contains pairs (cvFloor(x), cvFloor(y)) and map_2 contains \n\
-indices in a table of interpolation coefficients.";
+indices in a table of interpolation coefficients.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvRemapParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -888,33 +906,35 @@ indices in a table of interpolation coefficients.";
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "source image") );
-    paramsMand->append( ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "destination image. It hast the same size as map1 and the same type as src.") );
-    paramsMand->append( ito::Param("map1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "The first map of x values") );
-    paramsMand->append( ito::Param("map2", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "The second map of y values") );
+    paramsMand->append(ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("source image").toLatin1().data()));
+    paramsMand->append(ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination image. It hast the same size as map1 and the same type as src.").toLatin1().data()));
+    paramsMand->append(ito::Param("map1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("The first map of x values").toLatin1().data()));
+    paramsMand->append(ito::Param("map2", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("The second map of y values").toLatin1().data()));
 
-    QString description = "Interpolation method. The following values are possible: ";
+    QString description = tr("Interpolation method. The following values are possible: ");
     description += QString("INTER_NEAREST (%1)").arg(cv::INTER_NEAREST);
     description += QString(", INTER_LINEAR (%1)").arg(cv::INTER_LINEAR);
     description += QString(", INTER_CUBIC (%1)").arg(cv::INTER_CUBIC);
-    description += QString(", INTER_LANCZOS4  (%1)").arg(cv::INTER_LANCZOS4 );
-    paramsOpt->append( ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, cv::INTER_LANCZOS4, cv::INTER_LINEAR, description.toLatin1().data()));
+    description += QString(", INTER_LANCZOS4  (%1)").arg(cv::INTER_LANCZOS4);
+    paramsOpt->append(ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, cv::INTER_LANCZOS4, cv::INTER_LINEAR, description.toLatin1().data()));
 
-    description = "Pixel extrapolation method. When boderMode == BORDER_TRANSPARENT, it means that the pixels in the destination image that corresponds to the outliers in the source image are not modified by the function. The following values are possible: ";
+    description = tr("Pixel extrapolation method. When boderMode == BORDER_TRANSPARENT, it means that the pixels in the destination image that corresponds to the outliers in the source image are not modified by the function. The following values are possible: ");
     description += QString("BORDER_CONSTANT (%1)").arg(cv::BORDER_CONSTANT);
     description += QString("BORDER_REPLICATE (%1)").arg(cv::BORDER_REPLICATE);
-    description += QString("BORDER_REFLECT (%1)").arg( cv::BORDER_REFLECT);
+    description += QString("BORDER_REFLECT (%1)").arg(cv::BORDER_REFLECT);
     description += QString("BORDER_WRAP (%1)").arg(cv::BORDER_WRAP);
     description += QString("BORDER_REFLECT101 (%1)").arg(cv::BORDER_REFLECT101);
     description += QString("BORDER_TRANSPARENT (%1)").arg(cv::BORDER_TRANSPARENT);
     description += QString("BORDER_DEFAULT (%1)").arg(cv::BORDER_DEFAULT);
     description += QString("BORDER_ISOLATED (%1)").arg(cv::BORDER_ISOLATED);
-    paramsOpt->append( ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, cv::BORDER_CONSTANT, cv::BORDER_ISOLATED, cv::BORDER_CONSTANT, description.toLatin1().data()));
+    paramsOpt->append(ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, cv::BORDER_CONSTANT, cv::BORDER_ISOLATED, cv::BORDER_CONSTANT, description.toLatin1().data()));
     
-    paramsOpt->append( ito::Param("borderValue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, "value used in case of a constant border. By default, it is 0"));
+    paramsOpt->append(ito::Param("borderValue", ito::ParamBase::Double | ito::ParamBase::In, 0.0, NULL, tr("value used in case of a constant border. By default, it is 0").toLatin1().data()));
 
     return retval;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvRemap(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -922,7 +942,7 @@ indices in a table of interpolation coefficients.";
 
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {
-        retval += ito::RetVal(ito::retError, 0, "destination is empty");
+        retval += ito::RetVal(ito::retError, 0, tr("destination is empty").toLatin1().data());
     }
 
     ito::DataObject map1 = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(2).getVal<ito::DataObject*>(),"map1", ito::Range(1,INT_MAX), ito::Range(1,INT_MAX), retval, -1, 2, ito::tUInt16, ito::tFloat32);
@@ -942,7 +962,7 @@ indices in a table of interpolation coefficients.";
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
 
         if (!retval.containsError())
@@ -955,17 +975,19 @@ indices in a table of interpolation coefficients.";
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvFindHomographyDoc = "Finds a perspective transformation between two planes. \n\
+/*static*/ const QString OpenCVFilters::cvFindHomographyDoc = tr("Finds a perspective transformation between two planes. \n\
 \n\
 The functions find and return the perspective transformation H between the source and the destination planes: \n\
 \n\
 s_i \\vecthree{x'_i}{y'_i}{1} \\sim H \\vecthree{x_i}{y_i}{1} \n\
 \n\
 so that the back-projection error \n\
-\\sum _i \\left ( x'_i- \\frac{h_{11} x_i + h_{12} y_i + h_{13}}{h_{31} x_i + h_{32} y_i + h_{33}} \\right )^2+ \\left ( y'_i- \\frac{h_{21} x_i + h_{22} y_i + h_{23}}{h_{31} x_i + h_{32} y_i + h_{33}} \\right )^2 \n\
+\\sum _i \\left (x'_i- \\frac{h_{11} x_i + h_{12} y_i + h_{13}}{h_{31} x_i + h_{32} y_i + h_{33}} \\right)^2+ \\left (y'_i- \\frac{h_{21} x_i + h_{22} y_i + h_{23}}{h_{31} x_i + h_{32} y_i + h_{33}} \\right)^2 \n\
 is minimized. \n\
 \n\
-The function is used to find initial intrinsic and extrinsic matrices. Homography matrix is determined up to a scale. Thus, it is normalized so that h_{33}=1.";
+The function is used to find initial intrinsic and extrinsic matrices. Homography matrix is determined up to a scale. Thus, it is normalized so that h_{33}=1.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvFindHomographyParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -973,21 +995,22 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("srcPoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "coordinates of the points in the original plane, a matrix of type [Nx2], float32") );
-    paramsMand->append( ito::Param("dstPoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "coordinates of the points in the target plane, a matrix of type [Nx2], float32") );
-    paramsMand->append( ito::Param("homography", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "3x3 homography matrix (output)") );
+    paramsMand->append(ito::Param("srcPoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("coordinates of the points in the original plane, a matrix of type [Nx2], float32").toLatin1().data()));
+    paramsMand->append(ito::Param("dstPoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("coordinates of the points in the target plane, a matrix of type [Nx2], float32").toLatin1().data()));
+    paramsMand->append(ito::Param("homography", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("3x3 homography matrix (output)").toLatin1().data()));
 
-    QString description = "Method. The following values are possible: ";
+    QString description = tr("Method. The following values are possible: ");
     description += QString("regular method using all points (%1) [default]").arg(0);
     description += QString(", CV_RANSAC (%1)").arg(CV_RANSAC);
     description += QString(", CV_LMEDS (%1)").arg(CV_LMEDS);
-    paramsOpt->append( ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, CV_LMEDS, 0, description.toLatin1().data()));
+    paramsOpt->append(ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, 0, CV_LMEDS, 0, description.toLatin1().data()));
     
-    paramsOpt->append( ito::Param("ransacReprojThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 3.0, "maximum allowed reprojection error to treat a point pair as an inlier (used for RANSAC only)"));
+    paramsOpt->append(ito::Param("ransacReprojThreshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 3.0, tr("maximum allowed reprojection error to treat a point pair as an inlier (used for RANSAC only)").toLatin1().data()));
 
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvFindHomography(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -996,7 +1019,7 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
 
     if (!paramsMand->at(2).getVal<ito::DataObject*>())
     {
-        retval += ito::RetVal(ito::retError, 0, "homography matrix is empty");
+        retval += ito::RetVal(ito::retError, 0, tr("homography matrix is empty").toLatin1().data());
     }
 
     int method = paramsOpt->at(0).getVal<int>();
@@ -1012,7 +1035,7 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
 
         if (!retval.containsError())
@@ -1022,13 +1045,10 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
     }
 
     return retval;
-
-
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvFindFundamentalMatDoc = "Calculates a fundamental matrix from the corresponding points in two images. \n\
+/*static*/ const QString OpenCVFilters::cvFindFundamentalMatDoc = tr("Calculates a fundamental matrix from the corresponding points in two images. \n\
 \n\
 The epipolar geometry is described by the following equation: \n\
 \n\
@@ -1037,7 +1057,9 @@ The epipolar geometry is described by the following equation: \n\
 where F is a fundamental matrix, p_1 and p_2 are corresponding points in the first and the second images, respectively. \n\
 \n\
 The function calculates the fundamental matrix using one of four methods listed above and returns the found fundamental matrix. \n\
-Normally just one matrix is found. But in case of the 7-point algorithm, the function may return up to 3 solutions ( 9 \times 3 matrix that stores all 3 matrices sequentially).";
+Normally just one matrix is found. But in case of the 7-point algorithm, the function may return up to 3 solutions (9 \times 3 matrix that stores all 3 matrices sequentially).");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvFindFundamentalMatParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -1045,22 +1067,23 @@ Normally just one matrix is found. But in case of the 7-point algorithm, the fun
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("points1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "coordinates of the points in the first image, a matrix of type [Nx2], float32 or float64") );
-    paramsMand->append( ito::Param("points2", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "coordinates of the points in the second image, a matrix of type [Nx2], float32 or float64") );
-    paramsMand->append( ito::Param("F", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output, fundamental matrix [3x3], float64") );
+    paramsMand->append(ito::Param("points1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("coordinates of the points in the first image, a matrix of type [Nx2], float32 or float64").toLatin1().data()));
+    paramsMand->append(ito::Param("points2", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("coordinates of the points in the second image, a matrix of type [Nx2], float32 or float64").toLatin1().data()));
+    paramsMand->append(ito::Param("F", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output, fundamental matrix [3x3], float64").toLatin1().data()));
 
-    QString description = "Method for computing a fundamental matrix. The following values are possible: ";
+    QString description = tr("Method for computing a fundamental matrix. The following values are possible: ");
     description += QString(", CV_FM_7POINT (%1)").arg(CV_FM_7POINT);
-    description += QString(", CV_FM_8POINT (%1) [default]").arg(CV_FM_8POINT );
-    description += QString(", CV_FM_RANSAC (%1)").arg(CV_FM_RANSAC );
-    description += QString(", CV_FM_LMEDS (%1)").arg(CV_FM_LMEDS );
-    paramsOpt->append( ito::Param("method", ito::ParamBase::Int | ito::ParamBase::In, CV_FM_7POINT, std::max(CV_FM_RANSAC, CV_FM_LMEDS), CV_FM_8POINT, description.toLatin1().data()));
-    paramsOpt->append( ito::Param("param1", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 3.0, "Parameter used for RANSAC. It is the maximum distance from a point to an epipolar line in pixels, beyond which the point is considered an outlier and is not used for computing the final fundamental matrix. It can be set to something like 1-3, depending on the accuracy of the point localization, image resolution, and the image noise."));
-    paramsOpt->append( ito::Param("param2", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, "Parameter used for the RANSAC or LMedS methods only. It specifies a desirable level of confidence (probability) that the estimated matrix is correct."));
-    paramsOpt->append( ito::Param("status", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output array of N elements, every element of which is set to 0 for outliers and to 1 for the other points. The array is computed only in the RANSAC and LMedS methods. For other methods, it is set to all 1’s. If not given, no status information is returned.") );
+    description += QString(", CV_FM_8POINT (%1) [default]").arg(CV_FM_8POINT);
+    description += QString(", CV_FM_RANSAC (%1)").arg(CV_FM_RANSAC);
+    description += QString(", CV_FM_LMEDS (%1)").arg(CV_FM_LMEDS);
+    paramsOpt->append(ito::Param("method", ito::ParamBase::Int | ito::ParamBase::In, CV_FM_7POINT, std::max(CV_FM_RANSAC, CV_FM_LMEDS), CV_FM_8POINT, description.toLatin1().data()));
+    paramsOpt->append(ito::Param("param1", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 3.0, tr("Parameter used for RANSAC. It is the maximum distance from a point to an epipolar line in pixels, beyond which the point is considered an outlier and is not used for computing the final fundamental matrix. It can be set to something like 1-3, depending on the accuracy of the point localization, image resolution, and the image noise.").toLatin1().data()));
+    paramsOpt->append(ito::Param("param2", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.99, tr("Parameter used for the RANSAC or LMedS methods only. It specifies a desirable level of confidence (probability) that the estimated matrix is correct.").toLatin1().data()));
+    paramsOpt->append(ito::Param("status", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output array of N elements, every element of which is set to 0 for outliers and to 1 for the other points. The array is computed only in the RANSAC and LMedS methods. For other methods, it is set to all 1’s. If not given, no status information is returned.").toLatin1().data()));
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvFindFundamentalMat(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -1074,7 +1097,7 @@ Normally just one matrix is found. But in case of the 7-point algorithm, the fun
 
     if (method != CV_FM_7POINT && method != CV_FM_8POINT && method != CV_FM_RANSAC && method != CV_FM_LMEDS)
     {
-        retval += ito::RetVal::format(ito::retError, 0, "method must be either CV_FM_7POINT (%i), CV_FM_8POINT (%i), CV_FM_RANSAC (%i) or CV_FM_LMEDS (%i)", CV_FM_7POINT, CV_FM_8POINT, CV_FM_RANSAC, CV_FM_LMEDS);
+        retval += ito::RetVal::format(ito::retError, 0, tr("method must be either CV_FM_7POINT (%i), CV_FM_8POINT (%i), CV_FM_RANSAC (%i) or CV_FM_LMEDS (%i)").toLatin1().data(), CV_FM_7POINT, CV_FM_8POINT, CV_FM_RANSAC, CV_FM_LMEDS);
     }
 
     if (!retval.containsError())
@@ -1095,7 +1118,7 @@ Normally just one matrix is found. But in case of the 7-point algorithm, the fun
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
 
         if (!retval.containsError())
@@ -1113,11 +1136,11 @@ Normally just one matrix is found. But in case of the 7-point algorithm, the fun
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvComputeCorrespondEpilinesDoc = "For points in an image of a stereo pair, computes the corresponding epilines in the other image. \n\
+/*static*/ const QString OpenCVFilters::cvComputeCorrespondEpilinesDoc = tr("For points in an image of a stereo pair, computes the corresponding epilines in the other image. \n\
 \n\
 For every point in one of the two images of a stereo pair, the function finds the equation of the corresponding epipolar line in the other image. \n\
 \n\
-From the fundamental matrix definition (see findFundamentalMat() ), line l^{(2)}_i in the second image for the point p^{(1)}_i in the first image (when whichImage=1 ) is computed as: \n\
+From the fundamental matrix definition (see findFundamentalMat()), line l^{(2)}_i in the second image for the point p^{(1)}_i in the first image (when whichImage=1) is computed as: \n\
 \n\
 l^{(2)}_i = F p^{(1)}_i \n\
 \n\
@@ -1125,7 +1148,9 @@ And vice versa, when whichImage=2, l^{(1)}_i is computed from p^{(2)}_i as: \n\
 \n\
 l^{(1)}_i = F^T p^{(2)}_i \n\
 \n\
-Line coefficients are defined up to a scale. They are normalized so that a_i^2+b_i^2=1 .";
+Line coefficients are defined up to a scale. They are normalized so that a_i^2+b_i^2=1.");
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvComputeCorrespondEpilinesParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -1133,13 +1158,14 @@ Line coefficients are defined up to a scale. They are normalized so that a_i^2+b
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("points", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "coordinates of the image points in the one image, a matrix of type [Nx2], float32") );
-    paramsMand->append( ito::Param("whichImage", ito::ParamBase::Int | ito::ParamBase::In, 1, 2, 1, "Index of the image (1 or 2) that contains the points.") );
-    paramsMand->append( ito::Param("F", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Fundamental matrix that can be estimated using cvFindFundamentalMat() or cvStereoRectify()") );
-    paramsMand->append( ito::Param("lines", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output vector of the epipolar lines corresponding to the points in the other image. Each line ax + by + c=0 is encoded by 3 numbers (a, b, c)") );
+    paramsMand->append(ito::Param("points", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("coordinates of the image points in the one image, a matrix of type [Nx2], float32").toLatin1().data()));
+    paramsMand->append(ito::Param("whichImage", ito::ParamBase::Int | ito::ParamBase::In, 1, 2, 1, tr("Index of the image (1 or 2) that contains the points.").toLatin1().data()));
+    paramsMand->append(ito::Param("F", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Fundamental matrix that can be estimated using cvFindFundamentalMat() or cvStereoRectify()").toLatin1().data()));
+    paramsMand->append(ito::Param("lines", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output vector of the epipolar lines corresponding to the points in the other image. Each line ax + by + c=0 is encoded by 3 numbers (a, b, c)").toLatin1().data()));
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvComputeCorrespondEpilines(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -1158,7 +1184,7 @@ Line coefficients are defined up to a scale. They are normalized so that a_i^2+b
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
 
         if (!retval.containsError())
@@ -1170,32 +1196,34 @@ Line coefficients are defined up to a scale. They are normalized so that a_i^2+b
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString OpenCVFilters::cvWarpPerspectiveDoc = tr("Applies a perspective transformation to an image \n\
+\n\
+The function warpPerspective transforms the source image using the specified matrix H");
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const char *OpenCVFilters::cvWarpPerspectiveDoc = "Applies a perspective transformation to an image \n\
-\n\
-The function warpPerspective transforms the source image using the specified matrix H";
-
-
 ito::RetVal OpenCVFilters::cvWarpPerspectiveParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
     ito::RetVal retval = ito::retOk;
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if (retval.containsError()) return retval;
+    if (retval.containsError())
+    {
+        return retval;
+    }
 
-    paramsMand->append( ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "input image"));
-    paramsMand->append( ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output image that has the size dsize and the same type as input image") );
-    paramsMand->append( ito::Param("M", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "3x3 transformation matrix"));
-    
+    paramsMand->append(ito::Param("inputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input image").toLatin1().data()));
+    paramsMand->append(ito::Param("outputObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("output image that has the size dsize and the same type as input image").toLatin1().data()));
+    paramsMand->append(ito::Param("M", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("3x3 transformation matrix").toLatin1().data()));
 
-    QString description = "Interpolation method. The following values are possible: ";
+    QString description = tr("Interpolation method. The following values are possible: ");
     description += QString("INTER_LINEAR (%1)").arg(cv::INTER_LINEAR);
     description += QString(", INTER_NEAREST (%1)").arg(cv::INTER_NEAREST);
-    paramsOpt->append( ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, cv::INTER_NEAREST, cv::INTER_LINEAR, cv::INTER_LINEAR, description.toLatin1().data()));
+    paramsOpt->append(ito::Param("interpolation", ito::ParamBase::Int | ito::ParamBase::In, cv::INTER_NEAREST, cv::INTER_LINEAR, cv::INTER_LINEAR, description.toLatin1().data()));
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFilters::cvWarpPerspective(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -1204,7 +1232,7 @@ ito::RetVal OpenCVFilters::cvWarpPerspective(QVector<ito::ParamBase> *paramsMand
 
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {
-        retval += ito::RetVal(ito::retError, 0, "destination is empty");
+        retval += ito::RetVal(ito::retError, 0, tr("destination is empty").toLatin1().data());
     }
 
     int interpolation = paramsOpt->at(0).getVal<int>();
@@ -1219,7 +1247,7 @@ ito::RetVal OpenCVFilters::cvWarpPerspective(QVector<ito::ParamBase> *paramsMand
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
 
         if (!retval.containsError())
@@ -1236,7 +1264,6 @@ ito::RetVal OpenCVFilters::cvWarpPerspective(QVector<ito::ParamBase> *paramsMand
     return retval;
 }
 
-
 ////----------------------------------------------------------------------------------------------------------------------------------
 ///*static*/ const char *OpenCVFilters::cvStereoRectifyDoc = "Computes rectification transforms for each head of a calibrated stereo camera. \n\
 //\n\
@@ -1251,15 +1278,15 @@ ito::RetVal OpenCVFilters::cvWarpPerspective(QVector<ito::ParamBase> *paramsMand
 //    retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
 //    if (retval.containsError()) return retval;
 //
-//    paramsMand->append( ito::Param("cameraMatrix1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "First camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]") );
-//    paramsMand->append( ito::Param("cameraMatrix2", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Second camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]") );
-//    paramsMand->append( ito::Param("distCoeffs1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements.") );
-//    paramsMand->append( ito::Param("distCoeffs2", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements.") );
-//    paramsMand->append( ito::Param("imageSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "[width,height] of the camera image (in pixels)") );
+//    paramsMand->append(ito::Param("cameraMatrix1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "First camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]"));
+//    paramsMand->append(ito::Param("cameraMatrix2", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Second camera matrix A = [[fx 0 cx];[0 fy cy];[0 0 1]]"));
+//    paramsMand->append(ito::Param("distCoeffs1", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements."));
+//    paramsMand->append(ito::Param("distCoeffs2", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input vector of distortion coefficients [1 x 4,5,8] (k1, k2, p1, p2 [, k3[, k4, k5, k6]]) of 4, 5 or 8 elements."));
+//    paramsMand->append(ito::Param("imageSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "[width,height] of the camera image (in pixels)"));
 //
-//    paramsOpt->append( ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, CV_CALIB_ZERO_DISPARITY, CV_CALIB_ZERO_DISPARITY, "Operation flags that may be zero or CV_CALIB_ZERO_DISPARITY (default). If the flag is set, the function makes the principal points of each camera have the same pixel coordinates in the rectified views. And if the flag is not set, the function may still shift the images in the horizontal or vertical direction (depending on the orientation of epipolar lines) to maximize the useful image area.") );
-//    paramsOpt->append( ito::Param("alpha", ito::ParamBase::Double | ito::ParamBase::In, -1.0, 1.0, -1.0, "Free scaling parameter. If it is -1 or absent, the function performs the default scaling. Otherwise, the parameter should be between 0 and 1. alpha=0 means that the rectified images are zoomed and shifted so that only valid pixels are visible (no black areas after rectification). alpha=1 means that the rectified image is decimated and shifted so that all the pixels from the original images from the cameras are retained in the rectified images (no source image pixels are lost). Obviously, any intermediate value yields an intermediate result between those two extreme cases.") );
-//    paramsOpt->append( ito::Param("newImageSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "New image resolution after rectification. The same size should be passed to cvInitUndistortRectifyMap(). When (0,0) is passed (default), it is set to the original imageSize . Setting it to larger value can help you preserve details in the original image, especially when there is a big radial distortion.") );
+//    paramsOpt->append(ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, CV_CALIB_ZERO_DISPARITY, CV_CALIB_ZERO_DISPARITY, "Operation flags that may be zero or CV_CALIB_ZERO_DISPARITY (default). If the flag is set, the function makes the principal points of each camera have the same pixel coordinates in the rectified views. And if the flag is not set, the function may still shift the images in the horizontal or vertical direction (depending on the orientation of epipolar lines) to maximize the useful image area."));
+//    paramsOpt->append(ito::Param("alpha", ito::ParamBase::Double | ito::ParamBase::In, -1.0, 1.0, -1.0, "Free scaling parameter. If it is -1 or absent, the function performs the default scaling. Otherwise, the parameter should be between 0 and 1. alpha=0 means that the rectified images are zoomed and shifted so that only valid pixels are visible (no black areas after rectification). alpha=1 means that the rectified image is decimated and shifted so that all the pixels from the original images from the cameras are retained in the rectified images (no source image pixels are lost). Obviously, any intermediate value yields an intermediate result between those two extreme cases."));
+//    paramsOpt->append(ito::Param("newImageSize", ito::ParamBase::IntArray | ito::ParamBase::In, NULL, "New image resolution after rectification. The same size should be passed to cvInitUndistortRectifyMap(). When (0,0) is passed (default), it is set to the original imageSize . Setting it to larger value can help you preserve details in the original image, especially when there is a big radial distortion."));
 //
 //    return retval;
 //}
@@ -1299,7 +1326,7 @@ ito::RetVal OpenCVFilters::cvWarpPerspective(QVector<ito::ParamBase> *paramsMand
 //        }
 //        catch (cv::Exception exc)
 //        {
-//            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+//            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
 //        }
 //
 //        if (!retval.containsError())

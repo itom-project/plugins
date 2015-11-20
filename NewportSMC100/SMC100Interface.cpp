@@ -63,12 +63,17 @@ SMC100Interface::SMC100Interface()
     m_description = QObject::tr("Newport SMC100CC/PP");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "NewportSMC100 is an itom-plugin, which can be used to communicate with the Newport controllers SMC100CC and SMC100PP.\
 \n\
 It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. \
 The parameters of the serial port (besides port number) are set automatically during initialization.";
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr(
+"NewportSMC100 is an itom-plugin, which can be used to communicate with the Newport controllers SMC100CC and SMC100PP.\
+\n\
+It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. \
+The parameters of the serial port (besides port number) are set automatically during initialization.");
 
     m_author = "M. Hoppe, M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;

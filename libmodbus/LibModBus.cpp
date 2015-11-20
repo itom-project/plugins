@@ -38,8 +38,6 @@
 
 //#include "dockWidgetLibModBus.h"
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LibModBusInterface::getAddInInst(ito::AddInBase **addInInst)
@@ -64,15 +62,22 @@ LibModBusInterface::LibModBusInterface()
     m_description = tr("itom-plugin for a modbus communication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.\n\
 The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.\n\
 Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions. \n\
 The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. \n\
 The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
 If no MetaTag is set, values of m_params['registers'] is tried to be used for addressing.";
+    m_detaildescription = tr(docstring);*/
+    m_detaildescription = tr(
+"LibModBus is a itom-Plugin which provides modbusTCP and modbusRTU communication.\n\
+The plugin is based on libmodbus v3.1.1 library and tested under Windows only atm.\n\
+Registers are addressed using the modbus_read_registers (0x03) and modbus_write_registers (0x10) functions of libmodbus, coils are addressed using the modbus_read_bits (0x01) and modbus_write_bits (0x0F) functions. \n\
+The plugin-functions used are getVal(dObj) and setVal(dObj) with a data object of the size 1xN with N the number of registers to be read/written. \n\
+The content of the registers is expected as data in the uint16 data object for registers or uint8 data object for coils, the addressing of the registers is performed by a dObj-MetaTag 'registers' containing a string with address and number of consecutive registers seperated by ',' and different registers seperated by ';' i.e.: '10,2;34,1;77,4' to address registers 10,11;34;77..80. Number 1 of consecutive registers can be left out i.e.:'10,2;34;77,4' \n\
+If no MetaTag is set, values of m_params['registers'] is tried to be used for addressing.");
 
-    m_detaildescription = tr(docstring);
     m_author = "J.Nitsche, IPROM, TU Braunschweig";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -97,8 +102,6 @@ If no MetaTag is set, values of m_params['registers'] is tried to be used for ad
     m_initParamsOpt.append(paramVal);
     paramVal = ito::Param("output_mode", ito::ParamBase::Int, 0, 1, 0, tr("Enables command-line output of different readouts (e.g. register values of getVal)").toLatin1().data());
     m_initParamsOpt.append(paramVal);
-
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -313,7 +316,6 @@ ito::RetVal LibModBus::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
     if (!retval.containsError())
     {
-
         if (rx_ip.exactMatch(target_))
         {
             //std::cout << "IP found \n" << std::endl;
@@ -390,6 +392,7 @@ ito::RetVal LibModBus::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 
@@ -404,6 +407,7 @@ ito::RetVal LibModBus::startDevice(ItomSharedSemaphore *waitCond)
         waitCond->release();
         waitCond->deleteSemaphore();
     }
+
     return retval;
 }
 
@@ -418,6 +422,7 @@ ito::RetVal LibModBus::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->release();
         waitCond->deleteSemaphore();
     }
+
     return retval;
 }
 
@@ -432,6 +437,7 @@ ito::RetVal LibModBus::acquire(const int /*trigger*/, ItomSharedSemaphore *waitC
         waitCond->release();
         waitCond->deleteSemaphore();
     }
+
     return retval;
 }
 
@@ -454,10 +460,12 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ito::RetVal retval(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
     int inputDataType= dObj->getType();
+
     if (inputDataType!=3 && inputDataType!=1)
     {
             retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16 for registers or uint8 for coils").toLatin1().data());
     }
+
     if (!retval.containsError())
     {
         if (dObj->getSize(0)>0)
@@ -491,6 +499,7 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
                 regNb.push_back(tmpInt);
                 regNumbers += tmpInt;
             }
+
             if (regNumbers == dObj->getSize(1))
             {
                 for (i=0;i<regAddr.size();i++)
@@ -527,7 +536,6 @@ ito::RetVal LibModBus::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
                         dObjPos++;
                     }
                 }
-            
             }
             else
             {
@@ -552,7 +560,6 @@ ito::RetVal LibModBus::getVal(QSharedPointer<char> data, QSharedPointer<int> len
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     //retval = m_serport.sread(data.data(), length.data(), 0);
-
 
     if (waitCond)
     {
@@ -583,11 +590,13 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
     //const char *buf = data;
     char endline[3] = {0, 0, 0};
     ito::RetVal retval(ito::retOk);
-    int inputDataType=dObj->getType(); 
+    int inputDataType=dObj->getType();
+
     if (inputDataType!=3 && inputDataType!=1)
     {
             retval += ito::RetVal(ito::retError,0,QObject::tr("Data type of input object must be uint16 for registers or uint8 for coils").toLatin1().data());
     }
+
     if (!retval.containsError())
     {
         if (dObj->getSize(0)>0)
@@ -621,6 +630,7 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
                 regNb.push_back(tmpInt);
                 regNumbers += tmpInt;
             }
+
             if (regNumbers == dObj->getSize(1))
             {
                 for (i=0;i<regNumbers;i++)
@@ -666,7 +676,6 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
                         dObjPos++;
                     }*/
                 }
-            
             }
             else
             {
@@ -674,11 +683,13 @@ ito::RetVal LibModBus::setVal(const char *data, const int datalength, ItomShared
             }
         }
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();
     }
+
     return retval;
 }
 

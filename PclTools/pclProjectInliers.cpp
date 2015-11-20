@@ -47,7 +47,7 @@
 #include <pcl/sample_consensus/impl/sac_model_normal_sphere.hpp>
 
 //------------------------------------------------------------------------------------------------------------------------------
-const char* PclTools::pclProjectOnModelDOC = "\n\
+const QString PclTools::pclProjectOnModelDOC = tr("\n\
 \n\
 \n\
 Possible types are: \n\
@@ -70,7 +70,7 @@ SACMODEL_REGISTRATION_2D = 14, \n\
 SACMODEL_PARALLEL_PLANE = 15, \n\
 SACMODEL_NORMAL_PARALLEL_PLANE = 16, \n\
 SACMODEL_STICK = 17 \n\
-\n";
+\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclProjectOnModel(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
@@ -124,7 +124,7 @@ SACMODEL_STICK = 17 \n\
             double* value = NULL;
             coefficients->values.resize (4);
 
-            if(opts[1].getLen() < 3 || (value = (double*)(opts[1].getVal<void*>())) == NULL)
+            if (opts[1].getLen() < 3 || (value = (double*)(opts[1].getVal<void*>())) == NULL)
             {
                 return ito::RetVal(ito::retError, 0, (tr("Plane model must have [nx,ny,nz] and d. [nx,ny,nz] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
             }
@@ -143,7 +143,7 @@ SACMODEL_STICK = 17 \n\
             double* value = NULL;
             coefficients->values.resize (4);
 
-            if(opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
+            if (opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
             {
                 return ito::RetVal(ito::retError, 0, (tr("Spherical model must have [x,y,z] and r. [x,y,z] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
             }
@@ -162,7 +162,7 @@ SACMODEL_STICK = 17 \n\
             double* value = NULL;
             coefficients->values.resize (7);
 
-            if(opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
+            if (opts[0].getLen() < 3 || (value = (double*)(opts[0].getVal<void*>())) == NULL)
             {
                 return ito::RetVal(ito::retError, 0, (tr("Cylinder model must have 7 parameters, [x,y,z], [dx, dy, dz] and r. [x,y,z] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
             }
@@ -173,7 +173,7 @@ SACMODEL_STICK = 17 \n\
                 coefficients->values[2] = cv::saturate_cast<float>(value[2]);
             }
 
-            if(opts[1].getLen() < 3 || (value = (double*)(opts[1].getVal<void*>())) == NULL)
+            if (opts[1].getLen() < 3 || (value = (double*)(opts[1].getVal<void*>())) == NULL)
             {
                 return ito::RetVal(ito::retError, 0, (tr("Cylinder model must have [x,y,z], [dx, dy, dz] and r. [dx,dy,dz] was not defined correctly.").arg(QString::number(modelType))).toLatin1().data());
             }

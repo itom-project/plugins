@@ -32,7 +32,7 @@ ThorlabsCCSInterface::ThorlabsCCSInterface()
     m_description = QObject::tr("Thorlabs CCS Series Spectrometer");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin can operate spectrometers from the Thorlabs CCS Series. \n\
 \n\
 If you start the plugin without further parameters (device=''), the first connected device is opened. \n\
@@ -44,7 +44,18 @@ This plugin has been tested with CCS175. \n\
 For compiling this plugin, you need to install the Thorlabs OSASW Instrumentation software, shipped with the spectrometer. \n\
 Then set the CMake variable THORLABS_IVI_VISA_SDK to the 32/64 IVI_VISA directory (e.g. C:/Program Files/IVI Foundation/...) where \n\
 subdirectories like include or bin are contained.";
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr("This plugin can operate spectrometers from the Thorlabs CCS Series. \n\
+\n\
+If you start the plugin without further parameters (device=''), the first connected device is opened. \n\
+Set device = '<scan>' in order to get a printed list of detected devices. Use the device string or the desired \n\
+device in order to open this specific one. \n\
+\n\
+This plugin has been tested with CCS175. \n\
+\n\
+For compiling this plugin, you need to install the Thorlabs OSASW Instrumentation software, shipped with the spectrometer. \n\
+Then set the CMake variable THORLABS_IVI_VISA_SDK to the 32/64 IVI_VISA directory (e.g. C:/Program Files/IVI Foundation/...) where \n\
+subdirectories like include or bin are contained.");
 
     m_author = "M. Gronle, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -55,7 +66,7 @@ subdirectories like include or bin are contained.";
 
     //add mandatory and optional parameters for the initialization here.
     //append them to m_initParamsMand or m_initParamsOpt.
-    m_initParamsMand.append( ito::Param("device", ito::ParamBase::String, "", "device name that should be opened, an empty string opens the first device that is found. Pass '<scan>' for displaying all devices"));
+    m_initParamsMand.append(ito::Param("device", ito::ParamBase::String, "", "device name that should be opened, an empty string opens the first device that is found. Pass '<scan>' for displaying all devices"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -86,9 +97,6 @@ ito::RetVal ThorlabsCCSInterface::closeThisInst(ito::AddInBase **addInInst)
     Q_EXPORT_PLUGIN2(thorlabsccsinterface, ThorlabsCCSInterface) //the second parameter must correspond to the class-name of the interface class, the first parameter is arbitrary (usually the same with small letters only)
 #endif
 
-
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of plugin.
 /*!
@@ -118,21 +126,19 @@ ThorlabsCCS::ThorlabsCCS() : AddInGrabber(), m_isgrabbing(false),
     paramVal = ito::Param("integration_time", ito::ParamBase::Double | ito::ParamBase::In, TLCCS_MIN_INT_TIME, TLCCS_MAX_INT_TIME, TLCCS_DEF_INT_TIME, tr("integration time of ccd in sec").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("manufacturer_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", "manufacturer name");
+    paramVal = ito::Param("manufacturer_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("manufacturer name").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("device_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", "device name");
+    paramVal = ito::Param("device_name", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("device name").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, "", "serial number");
+    paramVal = ito::Param("serial_number", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("serial number").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("firmware_revision", ito::ParamBase::String | ito::ParamBase::Readonly, "", "firmware revision");
+    paramVal = ito::Param("firmware_revision", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("firmware revision").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("instrument_driver_revision", ito::ParamBase::String | ito::ParamBase::Readonly, "", "instrument driver revision");
+    paramVal = ito::Param("instrument_driver_revision", ito::ParamBase::String | ito::ParamBase::Readonly, "", tr("instrument driver revision").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("wavelength_data", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, "wavelength in nm (air) for each pixel");
+    paramVal = ito::Param("wavelength_data", ito::ParamBase::DoubleArray | ito::ParamBase::Readonly, NULL, tr("wavelength in nm (air) for each pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    
-
     
     //the following lines create and register the plugin's dock widget. Delete these lines if the plugin does not have a dock widget.
     DockWidgetThorlabsCCS *dw = new DockWidgetThorlabsCCS(this);
@@ -146,7 +152,6 @@ ThorlabsCCS::ThorlabsCCS() : AddInGrabber(), m_isgrabbing(false),
 ThorlabsCCS::~ThorlabsCCS()
 {
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! initialization of plugin
@@ -191,13 +196,13 @@ ito::RetVal ThorlabsCCS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     std::cout << "Dev. " << i << ": " << foundDevices[i].data() << std::endl;
                 }
 
-                retValue += ito::RetVal(ito::retError, 0, "The initialization is terminated since only a list of found devices has been requested ('<scan>')");
+                retValue += ito::RetVal(ito::retError, 0, tr("The initialization is terminated since only a list of found devices has been requested ('<scan>')").toLatin1().data());
             }
             else if (deviceName == "")
             {
                 if (foundDevices.size() == 0)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, "no devices found");
+                    retValue += ito::RetVal(ito::retError, 0, tr("no devices found").toLatin1().data());
                 }
                 else
                 {
@@ -207,7 +212,7 @@ ito::RetVal ThorlabsCCS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             else
             {
                 bool found = false;
-                foreach( const QByteArray &ba, foundDevices)
+                foreach(const QByteArray &ba, foundDevices)
                 {
                     if (QString::compare(deviceName, ba, Qt::CaseInsensitive) == 0)
                     {
@@ -219,7 +224,7 @@ ito::RetVal ThorlabsCCS::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
                 if (!found)
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, "Device %s could not be found", deviceName.toLatin1().data());
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("Device %s could not be found").toLatin1().data(), deviceName.toLatin1().data());
                 }
             }
         }
@@ -330,6 +335,7 @@ ito::RetVal ThorlabsCCS::checkError(ViStatus err)
 
         return ito::RetVal(ito::retError, 0, msg);
     }
+
     return ito::retOk;
 }
 
@@ -379,7 +385,7 @@ ito::RetVal ThorlabsCCS::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     QMap<QString, ito::Param>::iterator it;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
     if (!retValue.containsError())
     {
@@ -411,7 +417,7 @@ ito::RetVal ThorlabsCCS::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             if (!hasIndex)
             {
-                retValue += it->copyValueFrom( &(*val) );
+                retValue += it->copyValueFrom(&(*val));
             }
             else
             {
@@ -429,7 +435,7 @@ ito::RetVal ThorlabsCCS::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         {
             //all parameters that don't need further checks can simply be assigned
             //to the value in m_params (the rest is already checked above)
-            retValue += it->copyValueFrom( &(*val) );
+            retValue += it->copyValueFrom(&(*val));
         }
     }
 
@@ -480,6 +486,7 @@ ito::RetVal ThorlabsCCS::startDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
          
@@ -506,6 +513,7 @@ ito::RetVal ThorlabsCCS::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return ito::retOk;
 }
          
@@ -556,7 +564,7 @@ ito::RetVal ThorlabsCCS::acquire(const int trigger, ItomSharedSemaphore *waitCon
 
             if (!done && (status & TLCCS_STATUS_SCAN_IDLE) == 0)
             {
-                retValue += ito::RetVal(ito::retError,0,"device can not be triggered since it is not in an idle state");
+                retValue += ito::RetVal(ito::retError, 0, tr("device can not be triggered since it is not in an idle state").toLatin1().data());
             }
         }
     }
@@ -607,7 +615,7 @@ ito::RetVal ThorlabsCCS::acquire(const int trigger, ItomSharedSemaphore *waitCon
 
         if (!done)
         {
-            m_grabbingRetVal += ito::RetVal(ito::retError, 0, "timeout while getting image from device");
+            m_grabbingRetVal += ito::RetVal(ito::retError, 0, tr("timeout while getting image from device").toLatin1().data());
         }
     }
 

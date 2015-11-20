@@ -32,15 +32,14 @@
 
 #include "opencv2/features2d/features2d.hpp"
 
-
-////----------------------------------------------------------------------------------------------------------------------------------
-
-/*static*/ const char *OpenCVFilters::cvFlannBasedMatcherDoc = "This function uses the nearest search methods to find the best matching points. Matching methods by means of Flann matcher. \n\
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const QString OpenCVFilters::cvFlannBasedMatcherDoc = QObject::tr("This function uses the nearest search methods to find the best matching points. Matching methods by means of Flann matcher. \n\
 This includes some nearest neighbour algorithms to calculate the distance between two points. \n\
 \n\
 If desired, this function can also return a filtered list of matches and keypoints (keypoints1 and keypoints2) that only contain matches and keypoints whose matched distances \n\
-are bounded by max_distance. You only need to indicate parameters belonging to the best-matching process if this max_distance parameter is > 0.0.";
+are bounded by max_distance. You only need to indicate parameters belonging to the best-matching process if this max_distance parameter is > 0.0.");
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvFlannBasedMatcherParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -48,28 +47,28 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError())
     {
-        printf("error while executing some methods");
+        printf(tr("error while executing some methods").toLatin1().data());
         return retval;
     }
     
-    param = ito::Param("first_descriptors", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input parameter - (n x 128) float32 data object of descriptors from first image (queryDescriptors). These descriptors can be computed from sift/surf algorithms.");
+    param = ito::Param("first_descriptors", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input parameter - (n x 128) float32 data object of descriptors from first image (queryDescriptors). These descriptors can be computed from sift/surf algorithms.").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("second_descriptors", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input parameter - (n x 128) float32 data object of descriptors from second image (trainDescriptors). These descriptors can be computed from sift/surf algorithms.");
+    param = ito::Param("second_descriptors", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input parameter - (n x 128) float32 data object of descriptors from second image (trainDescriptors). These descriptors can be computed from sift/surf algorithms.").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("Matching_descriptor", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output parameter - (n x 4) float32 data object of Matching descriptor vectors using FLANN matcher. Every row contains the values (queryIdx,trainIdx,imgIdx,distance)");    
+    param = ito::Param("Matching_descriptor", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output parameter - (n x 4) float32 data object of Matching descriptor vectors using FLANN matcher. Every row contains the values (queryIdx,trainIdx,imgIdx,distance)").toLatin1().data());
     paramsMand->append(param);
 
     // Optional Parameters
-    paramsOpt->append( ito::Param("max_distance", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 0.0, "Maximum distance between two pair of points to calculate the best matching.") );
-    paramsOpt->append( ito::Param("first_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Optional input parameter - corresponding key points of the first image (n x 7) float32 data object, must have the same number of rows than first_descriptors.") );
-    paramsOpt->append( ito::Param("second_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Optional input parameter - corresponding key points of the second image (n x 7) float32 data object, must have the same number of rows than second_descriptors.") );
-    paramsOpt->append( ito::Param("first_best_matches_points", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional output parameter - (m x 2) float32 data object of best matching points from first image. each row includes (x and y coordinates), and m is the number of best matching points ") );
-    paramsOpt->append( ito::Param("second_best_matches_points", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional output parameter - (m x 2) float32 data object of best matching points from second image. each row includes (x and y coordinates), and m is the number of best matching points") );
-    paramsOpt->append( ito::Param("good_matches", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional output parameter - (m x 4) float32 data object of good matching descriptor vectors using FLANN matcher. Every row contains the values (queryIdx,trainIdx,imgIdx,distance)") );
-        return retval;
+    paramsOpt->append( ito::Param("max_distance", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 0.0, tr("Maximum distance between two pair of points to calculate the best matching.").toLatin1().data()));
+    paramsOpt->append( ito::Param("first_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Optional input parameter - corresponding key points of the first image (n x 7) float32 data object, must have the same number of rows than first_descriptors.").toLatin1().data()));
+    paramsOpt->append( ito::Param("second_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Optional input parameter - corresponding key points of the second image (n x 7) float32 data object, must have the same number of rows than second_descriptors.").toLatin1().data()));
+    paramsOpt->append( ito::Param("first_best_matches_points", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Optional output parameter - (m x 2) float32 data object of best matching points from first image. each row includes (x and y coordinates), and m is the number of best matching points ").toLatin1().data()));
+    paramsOpt->append( ito::Param("second_best_matches_points", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Optional output parameter - (m x 2) float32 data object of best matching points from second image. each row includes (x and y coordinates), and m is the number of best matching points").toLatin1().data()));
+    paramsOpt->append( ito::Param("good_matches", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Optional output parameter - (m x 4) float32 data object of good matching descriptor vectors using FLANN matcher. Every row contains the values (queryIdx,trainIdx,imgIdx,distance)").toLatin1().data()));
+    return retval;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvFlannBasedMatcher(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -82,12 +81,12 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
 
     if (!paramsMand->at(0).getVal<ito::DataObject*>())
     {
-        retval += ito::RetVal(ito::retError, 0, "The descriptors of the first image is empty");
+        retval += ito::RetVal(ito::retError, 0, tr("The descriptors of the first image is empty").toLatin1().data());
     }
     
     if (!paramsMand->at(1).getVal<ito::DataObject*>())
     {
-        retval += ito::RetVal(ito::retError, 0, "The descriptors of the second image is empty");
+        retval += ito::RetVal(ito::retError, 0, tr("The descriptors of the second image is empty").toLatin1().data());
     }
 
     if (!retval.containsError())
@@ -172,16 +171,16 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
                 *((*paramsOpt)[4].getVal<ito::DataObject*>()) = bestKeypoints2;
                 *((*paramsOpt)[5].getVal<ito::DataObject*>()) = bestMatches;
             }
-                
         }
     }
 
     return retval;
 }
 
+//------------------------------------------------------------------------------------------------------------------
+/*static*/ const QString OpenCVFilters::cvDrawKeypointsDoc = QObject::tr("Draws keypoints.");
 
 //------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvDrawKeypointsDoc = "Draws keypoints.";
 /*static*/ ito::RetVal OpenCVFilters::cvDrawKeypointsParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -189,32 +188,33 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError())
     {
-        printf("error while executing some methods");
+        printf(tr("error while executing some methods").toLatin1().data());
         return retval;
     }
     
-    param = ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Source image (uint8 or rgba32).");
+    param = ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Source image (uint8 or rgba32).").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "keypoints of the source image (n x 7) float32 data object");
+    param = ito::Param("keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("keypoints of the source image (n x 7) float32 data object").toLatin1().data());
     paramsMand->append(param);
-    param = ito::Param("outImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output image. Its content depends on the flags value defining what is drawn in the output image. See possible flags bit values below.");    
+    param = ito::Param("outImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output image. Its content depends on the flags value defining what is drawn in the output image. See possible flags bit values below.").toLatin1().data());
     paramsMand->append(param);
 
     // Optional Parameters
-    param = ito::Param("color", ito::ParamBase::Int | ito::ParamBase::In, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, "color of keypoints (pass a rgba32 value). If 0 or omitted, random colors will be used.");
+    param = ito::Param("color", ito::ParamBase::Int | ito::ParamBase::In, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("color of keypoints (pass a rgba32 value). If 0 or omitted, random colors will be used.").toLatin1().data());
     paramsOpt->append(param);
     int flags_max = cv::DrawMatchesFlags::DEFAULT | cv::DrawMatchesFlags::DRAW_OVER_OUTIMG | cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS;
-    QString flags_descr = "flags for drawing features (bit-combination): \n\
+    QString flags_descr = tr("flags for drawing features (bit-combination): \n\
 - 0: DEFAULT (Output image matrix will be created (Mat::create), i.e. existing memory of output image may be reused. \
      Two source images, matches, and single keypoints will be drawn. For each keypoint, only the center point will be \
      drawn (without a circle around the keypoint with the keypoint size and orientation). \n\
 - 1: DRAW_OVER_OUTIMG: Output image matrix will not be created (using Mat::create). Matches will be drawn \
      on existing content of output image. \n\
-- 4: DRAW_RICH_KEYPOINTS: For each keypoint, the circle around keypoint with keypoint size and orientation will be drawn.";
+- 4: DRAW_RICH_KEYPOINTS: For each keypoint, the circle around keypoint with keypoint size and orientation will be drawn.");
     paramsOpt->append( ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, flags_max, cv::DrawMatchesFlags::DEFAULT, flags_descr.toLatin1().data()) );
     return retval;
 }
 
+//------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvDrawKeypoints(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -285,11 +285,11 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const QString OpenCVFilters::cvDrawMatcherDoc = tr("Draw the obtained matches points between two images. \n\
+This function draws matches of keypoints from two images in the output image. Match is a line connecting two keypoints (circles).");
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFilters::cvDrawMatcherDoc = "Draw the obtained matches points between two images. \n\
-This function draws matches of keypoints from two images in the output image. Match is a line connecting two keypoints (circles).";
-
 /*static*/ ito::RetVal OpenCVFilters::cvDrawMatcherParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -297,36 +297,35 @@ This function draws matches of keypoints from two images in the output image. Ma
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
+    paramsMand->append( ito::Param("first_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input parameter - first image to draw the matching points").toLatin1().data()));
+    paramsMand->append( ito::Param("second_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input parameter - second image to draw the matchibg points").toLatin1().data()));
+    paramsMand->append( ito::Param("first_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("keypoints of the first image (n x 7) float32 data object").toLatin1().data()));
+    paramsMand->append( ito::Param("second_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("keypoints of the second image (n x 7) float32 data object").toLatin1().data()));
+    paramsMand->append( ito::Param("matches", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input parameter -  Matches from the first image to the second one, which means that keypoints1[i] has a corresponding point in keypoints2[matches[i]]").toLatin1().data()));
+    paramsMand->append( ito::Param("out_img", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output parameter - Output image").toLatin1().data()));
 
-
-    paramsMand->append( ito::Param("first_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input parameter - first image to draw the matching points") );
-    paramsMand->append( ito::Param("second_image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input parameter - second image to draw the matchibg points") );
-    paramsMand->append( ito::Param("first_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "keypoints of the first image (n x 7) float32 data object") );
-    paramsMand->append( ito::Param("second_keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "keypoints of the second image (n x 7) float32 data object") );
-    paramsMand->append( ito::Param("matches", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input parameter -  Matches from the first image to the second one, which means that keypoints1[i] has a corresponding point in keypoints2[matches[i]]") );
-    paramsMand->append( ito::Param("out_img", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output parameter - Output image") );
-
-    param = ito::Param("match_color", ito::ParamBase::Int | ito::ParamBase::In, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, "color of matches (pass a rgba32 value). If 0 or omitted, random colors will be used.");
+    param = ito::Param("match_color", ito::ParamBase::Int | ito::ParamBase::In, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("color of matches (pass a rgba32 value). If 0 or omitted, random colors will be used.").toLatin1().data());
     paramsOpt->append(param);
 
-    param = ito::Param("single_point_color", ito::ParamBase::Int | ito::ParamBase::In, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, "color of single keypoints (pass a rgba32 value). If 0 or omitted, random colors will be used.");
+    param = ito::Param("single_point_color", ito::ParamBase::Int | ito::ParamBase::In, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, tr("color of single keypoints (pass a rgba32 value). If 0 or omitted, random colors will be used.").toLatin1().data());
     paramsOpt->append(param);
 
     int flags_max = cv::DrawMatchesFlags::DEFAULT | cv::DrawMatchesFlags::DRAW_OVER_OUTIMG | cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS | cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS;
-    QString flags_descr = "flags for drawing features (bit-combination): \n\
+    QString flags_descr = tr("flags for drawing features (bit-combination): \n\
 - 0: DEFAULT: Output image matrix will be created (Mat::create), i.e. existing memory of output image may be reused. \
      Two source images, matches, and single keypoints will be drawn. For each keypoint, only the center point will be \
      drawn (without a circle around the keypoint with the keypoint size and orientation). \n\
 - 1: DRAW_OVER_OUTIMG: Output image matrix will not be created (using Mat::create). Matches will be drawn \
      on existing content of output image. \n\
 - 2: NOT_DRAW_SINGLE_POINTS: Single keypoints will not be drawn. \n\
-- 4: DRAW_RICH_KEYPOINTS: For each keypoint, the circle around keypoint with keypoint size and orientation will be drawn.";
+- 4: DRAW_RICH_KEYPOINTS: For each keypoint, the circle around keypoint with keypoint size and orientation will be drawn.");
     paramsOpt->append( ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, 0, flags_max, cv::DrawMatchesFlags::DEFAULT, flags_descr.toLatin1().data()) );
 
-    paramsOpt->append( ito::Param("max_match_distance", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 0.0, "max match distance that should be drawn. If 0, every match is drawn [default]"));
+    paramsOpt->append( ito::Param("max_match_distance", ito::ParamBase::Double | ito::ParamBase::In, 0.0, std::numeric_limits<double>::max(), 0.0, tr("max match distance that should be drawn. If 0, every match is drawn [default]").toLatin1().data()));
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvDrawMatcher(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -363,7 +362,6 @@ This function draws matches of keypoints from two images in the output image. Ma
     std::vector<cv::KeyPoint> first_keypoints = itomcv::getKeypointsFromParam(paramsMand->at(2), "first_keypoints", &retval);
     std::vector<cv::KeyPoint> second_keypoints = itomcv::getKeypointsFromParam(paramsMand->at(3), "second_keypoints", &retval);
     std::vector<cv::DMatch> dmatches = itomcv::getDMatchesFromParam(paramsMand->at(4), "matches", &retval);
-
 
     if (!retval.containsError())
     {
@@ -433,9 +431,5 @@ This function draws matches of keypoints from two images in the output image. Ma
 
     return retval;
 }
-
-
-
-
 
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)

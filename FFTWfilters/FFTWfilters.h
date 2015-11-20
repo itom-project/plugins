@@ -90,10 +90,10 @@ class FFTWFilters : public ito::AddInAlgo
         static ito::RetVal ParamsFFTW(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                                    /**< Get the standard IO-Parameters for fftw filter */
         static ito::RetVal doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, const bool forward, const bool lineWise);              /**< Calculate DFT by means of FFTW */
         
-        static const char * fftw1dDOC;
-        static const char * ifftw1dDOC;
-        static const char * fftw2dDOC;
-        static const char * ifftw2dDOC;
+        static const QString fftw1dDOC;
+        static const QString ifftw1dDOC;
+        static const QString fftw2dDOC;
+        static const QString ifftw2dDOC;
         static ito::RetVal fftw1d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< Calculate DFT by means of FFTW */
         static ito::RetVal ifftw1d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< Calculate DFT by means of FFTW */
         static ito::RetVal fftw2d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< Calculate DFT by means of FFTW */

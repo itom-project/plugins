@@ -238,16 +238,23 @@ X3pIOInterface::X3pIOInterface()
     m_type = ito::typeAlgo;
     setObjectName("x3pio");
 
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin provides methods to save and load dataObjects in/from the file format 'x3p'. \
 This format is specified in ISO 25178 - Geometrical product specification (GPS). \n\
 \n\
 The library ISO 5436-2 XML, that is necessary for this plugin and included in the sources, \n\
 is licensed under the LGPL license and uses further libraries. For more information about the license \n\
 of the library itself see www.opengps.eu";
-
+*/
     m_description = QObject::tr("x3p Import/Export");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr("This plugin provides methods to save and load dataObjects in/from the file format 'x3p'. \
+This format is specified in ISO 25178 - Geometrical product specification (GPS). \n\
+\n\
+The library ISO 5436-2 XML, that is necessary for this plugin and included in the sources, \n\
+is licensed under the LGPL license and uses further libraries. For more information about the license \n\
+of the library itself see www.opengps.eu");
+
     m_author = "C. Kohler, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -284,7 +291,6 @@ X3pIO::~X3pIO()
     }
     m_filterList.clear();
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal X3pIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
@@ -324,7 +330,7 @@ ito::RetVal parseLastOpenGpsError(const QString &prefix)
         }
         else
         {
-            message = "no error details";
+            message = QObject::tr("no error details");
         }
 
         switch (ogps_GetErrorId())
@@ -406,7 +412,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                                 if (retval.containsError())
                                 {
                                     return retval;
@@ -427,7 +433,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                                 if (retval.containsError())
                                 {
                                     return retval;
@@ -452,7 +458,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                                 if (retval.containsError())
                                 {
                                     return retval;
@@ -473,7 +479,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                                 if (retval.containsError())
                                 {
                                     return retval;
@@ -498,7 +504,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                         if(ogps_HasError())
                         {
-                            retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                            retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                             if (retval.containsError())
                             {
                                 return retval;
@@ -519,7 +525,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                                 if (retval.containsError())
                                 {
                                     return retval;
@@ -550,7 +556,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                                 if (retval.containsError())
                                 {
                                     return retval;
@@ -578,7 +584,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                                 if (retval.containsError())
                                 {
                                     return retval;
@@ -609,7 +615,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                                 if (retval.containsError())
                                 {
                                     return retval;
@@ -637,7 +643,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                             if(ogps_HasError())
                             {
-                                retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                                retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                                 if (retval.containsError())
                                 {
                                     return retval;
@@ -669,7 +675,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                         if(ogps_HasError())
                         {
-                            retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                            retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                             if (retval.containsError())
                             {
                                 return retval;
@@ -700,7 +706,7 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
 
                         if(ogps_HasError())
                         {
-                            retval += parseLastOpenGpsError("error writing is5436_2 file: ");
+                            retval += parseLastOpenGpsError(QObject::tr("error writing is5436_2 file: "));
                             if (retval.containsError())
                             {
                                 return retval;
@@ -734,7 +740,6 @@ ito::RetVal fillDataMatrix(OGPS_ISO5436_2Handle &handle, const ito::DataObject *
    */
     return retval;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, OGPS_DataPointType &pointType, ito::DataObject *dObj, int xSize, int ySize, double zscale, double zoffset)
@@ -825,7 +830,6 @@ ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, OGPS_DataPointType &po
                                 rowPtr[x] =  std::numeric_limits<ito::float32>::quiet_NaN();
                             }
 
-
                             iterator->MoveNext();
                         }
                     }
@@ -871,7 +875,7 @@ ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, OGPS_DataPointType &po
 
         if(ogps_HasError())
         {
-            retval += parseLastOpenGpsError("error reading is5436_2 file: ");
+            retval += parseLastOpenGpsError(QObject::tr("error reading is5436_2 file: "));
         }
 
     }
@@ -888,7 +892,6 @@ ito::RetVal loadDataMatrix(OpenGPS::ISO5436_2 &iso5436_2, OGPS_DataPointType &po
             return retval;
         }
     }
-
 
     // Free iterator/buffer
     iterator.release();
@@ -920,9 +923,8 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     }
     if (dObj->getDims() < 2)
     {
-        return ito::RetVal(ito::retError, 0, "data object must have at least two dimensions");
+        return ito::RetVal(ito::retError, 0, tr("data object must have at least two dimensions").toLatin1().data());
     }
-
 
     switch (dObj->getType())
     {
@@ -994,16 +996,23 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     double valueUnitScale = 1.0;
     bool valid;
     std::string unitString = dObj->getAxisUnit(dObj->getDims() - 1, valid);
+
     if (valid)
+    {
         retval += parseUnit(unitString, xUnitScale);
+    }
 
     unitString = dObj->getAxisUnit(dObj->getDims() - 2, valid);
     if (valid)
+    {
         retval += parseUnit(unitString, yUnitScale);
+    }
 
     unitString = dObj->getValueUnit();
     if (valid)
+    {
         retval += parseUnit(unitString, valueUnitScale);
+    }
 
     // for simplicity we will store always as 2D data, even for vetor type data. X- and y-axis will
     // always be stored as incremental axes
@@ -1031,7 +1040,7 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     {
         if (zdatat != Record1Type::Axes_type::CX_type::DataType_type::F && zdatat != Record1Type::Axes_type::CX_type::DataType_type::D)
         {
-            retval += ito::RetVal(ito::retWarning, 0, "x3p stores its data in meter, therefore a scaling factor has to be applied. The format of the stored data is changed to double");
+            retval += ito::RetVal(ito::retWarning, 0, tr("x3p stores its data in meter, therefore a scaling factor has to be applied. The format of the stored data is changed to double").toLatin1().data());
             zdatat = Record1Type::Axes_type::CX_type::DataType_type::D;
         }
         zaxis.DataType(zdatat);
@@ -1046,9 +1055,6 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         zaxis.Offset(zoffset); // offset must be in meter/pixel
         zScalingNecessary = false;
     }
-
-    
-
 
     Record1Type::Axes_type axis(xaxis, yaxis, zaxis);
 
@@ -1116,14 +1122,18 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     tmpStr.FromChar(dObj->getTag(std::string("probingSystemID"), foundTag).getVal_ToString().data());
     Record2Type::ProbingSystem_type::Identification_type id(_T("unknown"));
     if (tmpStr.length() && foundTag)
+    {
         id = tmpStr;
+    }
 
     Record2Type::ProbingSystem_type probingSystem(type, id);
 
     tmpStr.FromChar(dObj->getTag(std::string("comment"), foundTag).getVal_ToString().data());
     Record2Type::Comment_type comment(_T(""));
     if (tmpStr.length() && foundTag)
+    {
         comment = tmpStr;
+    }
 
     Record2Type record2(date, instrument, calibrationDate, probingSystem);
     record2.Comment(comment);
@@ -1154,7 +1164,7 @@ ito::RetVal X3pIO::saveDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     bool ismatrix=ogps_IsMatrix(handle);
     if (ogps_HasError())
     {
-       retval += parseLastOpenGpsError("data set is no matrix: ");
+       retval += parseLastOpenGpsError(QObject::tr("data set is no matrix: "));
        if (retval.containsError())
        {
            return retval;
@@ -1203,7 +1213,7 @@ ito::RetVal X3pIO::parseUnit(const std::string &unitString, double &unitScale)
     else
     {
         unitScale = 1.0;
-        retval += ito::RetVal::format(ito::retWarning, 0, "unit '%s' cannot be interpreted. Meter as default unit is assumed", unitString.data());
+        retval += ito::RetVal::format(ito::retWarning, 0, tr("unit '%s' cannot be interpreted. Meter as default unit is assumed").toLatin1().data(), unitString.data());
     }
     return retval;
 }
@@ -1214,9 +1224,9 @@ ito::RetVal X3pIO::loadDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(!retval.containsError())
     {
-        ito::Param param = ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, QObject::tr("Empty dataObject").toLatin1().data());
+        ito::Param param = ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty dataObject").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, QObject::tr("source file name").toLatin1().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("source file name").toLatin1().data());
         paramsMand->append(param);
 
         param = ito::Param("xyUnit", ito::ParamBase::String | ito::ParamBase::In, "m", tr("Unit of x and y axes. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than 'm' lead to a multiplication of all values that might exceed the data type limit.)").toLatin1().data());
@@ -1237,6 +1247,7 @@ ito::RetVal X3pIO::loadDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::
         param.setMeta(&sm2, false);
         paramsOpt->append(param);
     }
+
     return retval;
 }
 
@@ -1251,11 +1262,12 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
    if (!dObjIn)
    {
-      return ito::RetVal(ito::retError, 0, QObject::tr("empty data object").toLatin1().data());
+      return ito::RetVal(ito::retError, 0, tr("empty data object").toLatin1().data());
    }
+
    if (!filename)
    {
-      return ito::RetVal(ito::retError, 0, QObject::tr("no filename specified").toLatin1().data());
+      return ito::RetVal(ito::retError, 0, tr("no filename specified").toLatin1().data());
    }
 
    ito::DataObject dObj;
@@ -1306,7 +1318,6 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
        valueScaleFactor = 1.0e9;
    }
 
-
     // Open the file, hopefully everything went well...
     OpenGPS::String fname;
     fname.FromChar(filename);
@@ -1315,7 +1326,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
     // Check for error opening
     if(ogps_HasError())
     {
-        retval += parseLastOpenGpsError("error opening file: ");
+        retval += parseLastOpenGpsError(tr("error opening file: "));
         if (retval.containsError())
         {
             return retval;
@@ -1365,7 +1376,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
         if (record1.FeatureType() != Record1Type::FeatureType_type::SUR &&
             record1.FeatureType() != Record1Type::FeatureType_type::PRF)
         {
-            retval += ito::RetVal(ito::retError, 0, "only feature types SUR (surface) or PRF (profile) are supported.");
+            retval += ito::RetVal(ito::retError, 0, tr("only feature types SUR (surface) or PRF (profile) are supported.").toLatin1().data());
         }
         else
         {
@@ -1379,7 +1390,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
 
                 if (x_size * y_size * z_size == 0)
                 {
-                    retval += ito::RetVal(ito::retError, 0, "x3p file does not contain any data");
+                    retval += ito::RetVal(ito::retError, 0, tr("x3p file does not contain any data").toLatin1().data());
                 }
                 else
                 {
@@ -1403,7 +1414,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, "x3p file does not contain organized matrix or list data. Unordered list data is not supported.");
+                retval += ito::RetVal(ito::retError, 0, tr("x3p file does not contain organized matrix or list data. Unordered list data is not supported.").toLatin1().data());
             }
         }
 
@@ -1468,14 +1479,14 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
                 if (record1.Axes().CX().AxisType() != AxisType::I ||
                     record1.Axes().CY().AxisType() != AxisType::I)
                 {
-                    retval += ito::RetVal(ito::retError, 0, "x- and y-axes must have an incremental axis type. absolute x- and y-axes not supported.");
+                    retval += ito::RetVal(ito::retError, 0, tr("x- and y-axes must have an incremental axis type. absolute x- and y-axes not supported.").toLatin1().data());
                 }
             }
             else if (y_size == 1) //list, x- axis must be incremental
             {
                 if (record1.Axes().CX().AxisType() != AxisType::I)
                 {
-                    retval += ito::RetVal(ito::retError, 0, "x-axis must have an incremental axis type.");
+                    retval += ito::RetVal(ito::retError, 0, tr("x-axis must have an incremental axis type.").toLatin1().data());
                 }
             }
         }
@@ -1501,6 +1512,7 @@ ito::RetVal X3pIO::loadDObj(QVector<ito::ParamBase> *paramsMand, QVector<ito::Pa
             {
                 yscale = record1.Axes().CY().Increment().get();          // the lateral unit of x3p is m/px
             }
+
             if (record1.Axes().CY().Offset().present())
             {
                 yoffset = record1.Axes().CY().Offset().get() / yscale;   // in itom, the offset is in pixel, x3p returns the offset in m/px

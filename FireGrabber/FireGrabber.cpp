@@ -68,19 +68,25 @@ FireGrabberInterface::FireGrabberInterface()
     setObjectName("FireGrabber"); 
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+/*    char* docstring = \
 "Camera plugin that uses the FireGrab driver from the AVT FirePackage in order to communicate with corresponding cameras. The cameras are connected to the computer via \
 firewire. \n\
 \n\
 This plugin can only be loaded and used once the AVT FirePackage driver has been correctly installed on your computer. For more information about AVT FirePackage and their \
 license browse to http://www.alliedvisiontec.com. This plugin was mainly tested with the cameras AVT Malin, Guppy and Pike. Not all parameters are supported by this plugin.";
-
+*/
 #ifndef WIN32
     m_description = QObject::tr("FireForLinux (Firewire)");
 #else
     m_description = QObject::tr("Fire Package Capture (Firewire)");
 #endif
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(
+"Camera plugin that uses the FireGrab driver from the AVT FirePackage in order to communicate with corresponding cameras. The cameras are connected to the computer via \
+firewire. \n\
+\n\
+This plugin can only be loaded and used once the AVT FirePackage driver has been correctly installed on your computer. For more information about AVT FirePackage and their \
+license browse to http://www.alliedvisiontec.com. This plugin was mainly tested with the cameras AVT Malin, Guppy and Pike. Not all parameters are supported by this plugin.");
 #ifndef WIN32
     m_author = "G. Baer, M. Gronle, ITO, University Stuttgart";
 #else
@@ -204,13 +210,13 @@ FireGrabber::FireGrabber() :
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 FireGrabber::~FireGrabber()
 {
    m_params.clear();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::AlliedChkError(int errornumber)
 {
     ito::RetVal retValue = ito::retOk;
@@ -345,7 +351,6 @@ ito::RetVal FireGrabber::AlliedChkError(int errornumber)
         
     return retValue;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Funktion to set and update data imformations
@@ -535,8 +540,8 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     }
     return retValue;
 }
-#else
 
+#else
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
@@ -653,7 +658,6 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
                 retValue += it->copyValueFrom( &(*val) );
             }
         }
-
     }
 
     emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
@@ -667,11 +671,11 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     }
     return retValue;
 }
-#endif
-//----------------------------------------------------------------------------------------------------------------------------------
 
+#endif
 
 #ifndef WIN32
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
 {
     ito::RetVal retval;
@@ -690,7 +694,6 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
     retval += AlliedChkError( dc1394_format7_get_unit_position(camera,video_mode,&hUnitPos,&vUnitPos));
     xPosMax=xSizeMax;
     yPosMax=ySizeMax;
-
 
     if (!retval.containsError())
     {
@@ -850,16 +853,14 @@ ito::RetVal FireGrabber::adjustROI(int x0, int x1, int y0, int y1)
                 double ftime = 1.0 / fps;
                 m_params["frame_time"].setVal<double>(ftime);
             }
-
         }
     }
     return retval;
 }
 #endif
 
-
-//----------------------------------------------------------------------------------------------------------------------------------
 #ifndef WIN32
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1045,13 +1046,13 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu s
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
                         m_exposureParams.timebaseMs = 20.0 / 1000.0;
                     }
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu s
+                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
                     m_exposureParams.timebaseMs = 20.0 / 1000.0;
                 }
 
@@ -1304,11 +1305,11 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     setInitialized(true); //init method has been finished (independent on retval)
 
-
     return retValue;
 }
 
 #else
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1468,13 +1469,13 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     }
                     else
                     {
-                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu m
+                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
                         m_exposureParams.timebaseMs = 20.0 / 1000.0;
                     }
                 }
                 else
                 {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 \u00B5s per default").toLatin1().data());  // mu m
+                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
                     m_exposureParams.timebaseMs = 20.0 / 1000.0;
                 }
 
@@ -1646,7 +1647,6 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         double fps = packsize.IsValue * 8000.0 / static_cast<double>(xInfo.IsValue * yInfo.IsValue);
         double ftime = 1.0 / fps;
         m_params["frame_time"].setVal<double>(ftime);
-
     }
 
     if (Result != 0)
@@ -1670,14 +1670,12 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     setInitialized(true); //init method has been finished (independent on retval)
 
-
     return retValue;
 }
 #endif
 
-
-//----------------------------------------------------------------------------------------------------------------------------------
 #ifndef WIN32
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1730,7 +1728,9 @@ ito::RetVal FireGrabber::close(ItomSharedSemaphore *waitCond)
 
     return retValue;
 }
+
 #endif
+
 //----------------------------------------------------------------------------------------------------------------------------------
 double FireGrabber::shutterToExposureSec(int shutter)
 {
@@ -1757,8 +1757,8 @@ int FireGrabber::exposureSecToShutter(double exposure)
     }
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
 #ifndef WIN32
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1814,7 +1814,7 @@ ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
 }
 
 #else
-
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1857,7 +1857,6 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
 
     decGrabberStarted();
-
     
 #ifndef WIN32
     if (grabberStartedCount() == 0 && camera!=0)
@@ -1874,7 +1873,6 @@ ito::RetVal FireGrabber::stopDevice(ItomSharedSemaphore *waitCond)
         retValue += AlliedChkError(Camera.CloseCapture());
     }
 #endif
-
 
     else if (grabberStartedCount() < 0)
     {
@@ -2014,7 +2012,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
                             //rowPtr8[n*2] = framePtr[frameIdx++];
                         }
                     }
-                 }
+                }
             }
         }
         m_acquireReady = false;
@@ -2029,6 +2027,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 }
 
 #else
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue(ito::retOk);
@@ -2137,7 +2136,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
                         //rowPtr8[n*2] = framePtr[frameIdx++];
                     }
                 }
-             }
+            }
         }
     }
 
@@ -2146,6 +2145,7 @@ ito::RetVal FireGrabber::retrieveData(ito::DataObject *externalDataObject)
     retValue += AlliedChkError(Camera.PutFrame(&frame));
     return retValue;
 }
+
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2273,6 +2273,7 @@ void FireGrabber::dockWidgetVisibilityChanged(bool visible)
         }
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 // FIRE GRABBER
 

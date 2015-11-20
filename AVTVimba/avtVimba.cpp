@@ -35,7 +35,7 @@ AvtVimbaInterface::AvtVimbaInterface()
     m_description = QObject::tr("AVT GigE and firewire cameras using Vimba interface");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin supports Allied Vision GigE and firewire cameras and has currently been tested with the following models: \n\
 \n\
 - Marlin, F033 (monochrome, Firewire) \n\
@@ -45,7 +45,17 @@ The plugin has been compiled using the AVT Vimba version 1.3.0. \n\
 \n\
 In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. \n\
 Color formats are not supported.";
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr(
+"This plugin supports Allied Vision GigE and firewire cameras and has currently been tested with the following models: \n\
+\n\
+- Marlin, F033 (monochrome, Firewire) \n\
+- Manta G-917B and G-146B (monochrome, GigE) \n\
+\n\
+The plugin has been compiled using the AVT Vimba version 1.3.0. \n\
+\n\
+In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. \n\
+Color formats are not supported.");
 
     m_author = "J. Nitsche (IPROM Uni Braunschweig), M. Gronle (ITO Uni Stuttgart)";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;

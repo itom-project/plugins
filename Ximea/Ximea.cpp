@@ -52,8 +52,6 @@ static char Initnum = 0;    /*!< Number of successfull initialized cameras */
     #define XI_PRMM_DIRECT_UPDATE ""
 #endif
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal XimeaInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -92,8 +90,6 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
 
     paramVal = ito::Param("bandwidthLimit", ito::ParamBase::Int | ito::ParamBase::In, 0, 100000, 0, "bandwidth limit in Mb/sec. If 0 the maximum bandwidth of the USB3 controller is used [default]. The allowed value range depends on the device and will be checked at startup.");
     m_initParamsOpt.append(paramVal);
-
-    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -160,7 +156,7 @@ Ximea::Ximea() :
     */
     //end register exec functions
 
-   ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Ximea", "name of the camera");
+   ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Ximea", tr("name of the camera").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.00000, 0.000, 0.0000, tr("Exposure time (in seconds).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
@@ -293,7 +289,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
         m_params["cam_number"].getVal<int>(icam_number);
         Initnum++;  // so we have a new running instance of this grabber (or not)
 
-        if( ++InitList[icam_number] > 1)    // It does not matter if the rest works or not. The close command will fix this anyway
+        if (++InitList[icam_number] > 1)    // It does not matter if the rest works or not. The close command will fix this anyway
         {
             retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized. Try another camera number.").toLatin1().data());
         }
@@ -312,7 +308,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 float testGain = 0.0;
                 if (pxiSetParam(m_handle, XI_PRM_GAIN, &testGain, sizeof(float), xiTypeFloat) == XI_RESOURCE_OR_FUNCTION_LOCKED)
                 {
-                    retValue += ito::RetVal(ito::retError, 0, "this camera cannot be configured and used since it is propably used by another process");
+                    retValue += ito::RetVal(ito::retError, 0, tr("this camera cannot be configured and used since it is propably used by another process").toLatin1().data());
                 }
             }
 
@@ -428,7 +424,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
             }
 
             // Load parameterlist from XML-file
-            if(loadPrev && !retValue.containsError())
+            if (loadPrev && !retValue.containsError())
             {
                 QMap<QString, ito::Param> paramListXML;
                 if (!retValue.containsError())
@@ -601,7 +597,7 @@ ito::RetVal Ximea::close(ItomSharedSemaphore *waitCond)
     InitList[nr] = 0;
     Initnum--; // so we closed a further instance of this grabber
 
-    if(!Initnum)
+    if (!Initnum)
     {
         if (ximeaLib)
         {
@@ -650,210 +646,210 @@ ito::RetVal Ximea::checkError(const XI_RETURN &error, const QString &command, co
         break;
         //errors from m3Api.h
         case 1:
-            msg = "Invalid handle during sending";
+            msg = tr("Invalid handle during sending").toLatin1().data();
         break;
         case 2:
-            msg = "Register read error";
+            msg = tr("Register read error").toLatin1().data();
         break;
         case 3:
-            msg = "Register write error";
+            msg = tr("Register write error").toLatin1().data();
         break;
         case 4:
-            msg = "Freeing resources error";
+            msg = tr("Freeing resources error").toLatin1().data();
         break;
         case 5:
-            msg = "Freeing channel error";
+            msg = tr("Freeing channel error").toLatin1().data();
         break;
         case 6:
-            msg = "Freeing bandwith error";
+            msg = tr("Freeing bandwith error").toLatin1().data();
         break;
         case 7:
-            msg = "Read block error";
+            msg = tr("Read block error").toLatin1().data();
         break;
         case 8:
-            msg = "Write block error";
+            msg = tr("Write block error").toLatin1().data();
         break;
         case 9:
-            msg = "No image";
+            msg = tr("No image").toLatin1().data();
         break;
         case 10:
-            msg = "Timeout";
+            msg = tr("Timeout").toLatin1().data();
         break;
         case 11:
-            msg = "Invalid arguments supplied";
+            msg = tr("Invalid arguments supplied").toLatin1().data();
         break;
         case 12:
-            msg = "Not supported";
+            msg = tr("Not supported").toLatin1().data();
         break;
         case 13:
-            msg = "Attach buffers error";
+            msg = tr("Attach buffers error").toLatin1().data();
         break;
         case 14:
-            msg = "Overlapped result";
+            msg = tr("Overlapped result").toLatin1().data();
         break;
         case 15:
-            msg = "Memory allocation error";
+            msg = tr("Memory allocation error").toLatin1().data();
         break;
         case 16:
-            msg = "DLL context is NULL";
+            msg = tr("DLL context is NULL").toLatin1().data();
         break;
         case 17:
-            msg = "DLL context is non zero";
+            msg = tr("DLL context is non zero").toLatin1().data();
         break;
         case 18:
-            msg = "DLL context exists";
+            msg = tr("DLL context exists").toLatin1().data();
         break;
         case 19:
-            msg = "Too many devices connected";
+            msg = tr("Too many devices connected").toLatin1().data();
         break;
         case 20:
-            msg = "Camera context error";
+            msg = tr("Camera context error").toLatin1().data();
         break;
         case 21:
-            msg = "Unknown hardware";
+            msg = tr("Unknown hardware").toLatin1().data();
         break;
         case 22:
-            msg = "Invalid TM file";
+            msg = tr("Invalid TM file").toLatin1().data();
         break;
         case 23:
-            msg = "Invalid TM tag";
+            msg = tr("Invalid TM tag").toLatin1().data();
         break;
         case 24:
-            msg = "Incomplete TM";
+            msg = tr("Incomplete TM").toLatin1().data();
         break;
         case 25:
-            msg = "Bus reset error";
+            msg = tr("Bus reset error").toLatin1().data();
         break;
         case 26:
-            msg = "Not implemented";
+            msg = tr("Not implemented").toLatin1().data();
         break;
         case 27:
-            msg = "Shading too bright";
+            msg = tr("Shading too bright").toLatin1().data();
         break;
         case 28:
-            msg = "Shading too dark";
+            msg = tr("Shading too dark").toLatin1().data();
         break;
         case 29:
-            msg = "Gain is too low";
+            msg = tr("Gain is too low").toLatin1().data();
         break;
         case 30:
-            msg = "Invalid bad pixel list";
+            msg = tr("Invalid bad pixel list").toLatin1().data();
         break;
         case 31:
-            msg = "Bad pixel list realloc error";
+            msg = tr("Bad pixel list realloc error").toLatin1().data();
         break;
         case 32:
-            msg = "Invalid pixel list";
+            msg = tr("Invalid pixel list").toLatin1().data();
         break;
         case 33:
-            msg = "Invalid Flash File System";
+            msg = tr("Invalid Flash File System").toLatin1().data();
         break;
         case 34:
-            msg = "Invalid profile";
+            msg = tr("Invalid profile").toLatin1().data();
         break;
         case 35:
-            msg = "Invalid bad pixel list";
+            msg = tr("Invalid bad pixel list").toLatin1().data();
         break;
         case 36:
-            msg = "Invalid buffer";
+            msg = tr("Invalid buffer").toLatin1().data();
         break;
         case 38:
-            msg = "Invalid data";
+            msg = tr("Invalid data").toLatin1().data();
         break;
         case 39:
-            msg = "Timing generator is busy";
+            msg = tr("Timing generator is busy").toLatin1().data();
         break;
         case 40:
-            msg = "Wrong operation open/write/read/close";
+            msg = tr("Wrong operation open/write/read/close").toLatin1().data();
         break;
         case 41:
-            msg = "Acquisition already started";
+            msg = tr("Acquisition already started").toLatin1().data();
         break;
         case 42:
-            msg = "Old version of device driver installed to the system";
+            msg = tr("Old version of device driver installed to the system").toLatin1().data();
         break;
         case 43:
-            msg = "To get error code please call GetLastError function";
+            msg = tr("To get error code please call GetLastError function").toLatin1().data();
         break;
         case 44:
-            msg = "Data can't be processed";
+            msg = tr("Data can't be processed").toLatin1().data();
         break;
         case 45:
-            msg = "Error occured and acquisition has been stoped or didn't start";
+            msg = tr("Error occured and acquisition has been stoped or didn't start").toLatin1().data();
         break;
         case 46:
-            msg = "Acquisition has been stoped with error";
+            msg = tr("Acquisition has been stoped with error").toLatin1().data();
         break;
         case 47:
-            msg = "Input ICC profile missed or corrupted";
+            msg = tr("Input ICC profile missed or corrupted").toLatin1().data();
         break;
         case 48:
-            msg = "Output ICC profile missed or corrupted";
+            msg = tr("Output ICC profile missed or corrupted").toLatin1().data();
         break;
         case 49:
-            msg = "Device not ready to operate";
+            msg = tr("Device not ready to operate").toLatin1().data();
         break;
         case 50:
-            msg = "Shading too contrast";
+            msg = tr("Shading too contrast").toLatin1().data();
         break;
         case 51:
-            msg = "Module already initialized";
+            msg = tr("Module already initialized").toLatin1().data();
         break;
         case 52:
-            msg = "Application doesn't enough privileges(one or more applications opened)";
+            msg = tr("Application doesn't enough privileges(one or more applications opened)").toLatin1().data();
         break;
         case 53:
-            msg = "installed driver incompatible with current software";
+            msg = tr("installed driver incompatible with current software").toLatin1().data();
         break;
         case 54:
-            msg = "TM file was not loaded successfully from resources";
+            msg = tr("TM file was not loaded successfully from resources").toLatin1().data();
         break;
         case 55:
-            msg = "Device has been reseted, abnormal initial state";
+            msg = tr("Device has been reseted, abnormal initial state").toLatin1().data();
         break;
         case 56:
-            msg = "No Devices found";
+            msg = tr("No Devices found").toLatin1().data();
         break;
         case 57:
-            msg = "Resource (device) or function  locked by mutex";
+            msg = tr("Resource (device) or function  locked by mutex").toLatin1().data();
         break;
 
         //errors from xiApi.h
         case 100:
-            msg = "unknown parameter";
+            msg = tr("unknown parameter").toLatin1().data();
         break;
         case 101:
-            msg = "wrong parameter value";
+            msg = tr("wrong parameter value").toLatin1().data();
         break;
         case 103:
-            msg = "wrong parameter type";
+            msg = tr("wrong parameter type").toLatin1().data();
         break;
         case 104:
-            msg = "wrong parameter size";
+            msg = tr("wrong parameter size").toLatin1().data();
         break;
         case 105:
-            msg = "input buffer too small";
+            msg = tr("input buffer too small").toLatin1().data();
         break;
         case 106:
-            msg = "parameter not supported";
+            msg = tr("parameter not supported").toLatin1().data();
         break;
         case 107:
-            msg = "parameter info not supported";
+            msg = tr("parameter info not supported").toLatin1().data();
         break;
         case 108:
-            msg = "data format not supported";
+            msg = tr("data format not supported").toLatin1().data();
         break;
         case 109:
-            msg = "read only parameter";
+            msg = tr("read only parameter").toLatin1().data();
         break;
         case 110:
-            msg = "no devices found";
+            msg = tr("no devices found").toLatin1().data();
         break;
         case 111:
-            msg = "this camera does not support currently available bandwidth";
+            msg = tr("this camera does not support currently available bandwidth").toLatin1().data();
         break;
         default:
-            msg = "unknown error code";
+            msg = tr("unknown error code").toLatin1().data();
         break;
     }
 
@@ -861,11 +857,11 @@ ito::RetVal Ximea::checkError(const XI_RETURN &error, const QString &command, co
     
     if (value != "")
     {
-        msg_final = QString("ximea m3api error '%1' (%2). Value: %3").arg(msg, command, value);
+        msg_final = tr("ximea m3api error '%1' (%2). Value: %3").arg(msg, command, value);
     }
     else
     {
-        msg_final = QString("ximea m3api error '%1' (%2)").arg(msg, command);
+        msg_final = tr("ximea m3api error '%1' (%2)").arg(msg, command);
     }
 
     return ito::RetVal(ito::retError, error, msg_final.toLatin1().data());
@@ -945,7 +941,7 @@ ito::RetVal Ximea::LoadLib(void)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShading").toLatin1().data());*/
         
 
-        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) dlsym(ximeaLib, "mmInitializeShading")) == NULL)
+        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD)) dlsym(ximeaLib, "mmInitializeShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 
         /*if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) dlsym(ximeaLib, "mmSetShadingRaw")) == NULL)
@@ -988,7 +984,7 @@ ito::RetVal Ximea::LoadLib(void)
         /*if ((pCalculateShadingRaw = (MM40_RETURN(*)(LPMMSHADING, DWORD, DWORD, LPWORD, LPWORD)) GetProcAddress(ximeaLib, "mmCalculateShadingRaw")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmCalculateShadingRaw").toLatin1().data());*/
 
-        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD )) GetProcAddress(ximeaLib, "mmInitializeShading")) == NULL)
+        if ((pInitializeShading  = (MM40_RETURN(*)(HANDLE, LPMMSHADING,  DWORD , DWORD , WORD , WORD)) GetProcAddress(ximeaLib, "mmInitializeShading")) == NULL)
             retValue += ito::RetVal(ito::retError, 0, tr("Cannot get function mmInitializeShading").toLatin1().data());
 
         /*if ((pSetShadingRaw = (MM40_RETURN(*)(LPMMSHADING)) GetProcAddress(ximeaLib, "mmSetShadingRaw")) == NULL)
@@ -1002,7 +998,7 @@ ito::RetVal Ximea::LoadLib(void)
 
     if ((retValue != ito::retOk))
     {
-        if(!Initnum)
+        if (!Initnum)
         {
 #if linux
             dlclose(ximeaLib);
@@ -1043,13 +1039,13 @@ ito::RetVal Ximea::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (key == "gpi_level")
         {
@@ -1097,20 +1093,20 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
     //int trigger_mode = XI_TRG_OUT;    //in new api trg_out does not exist anymore, so we just use free run
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (grabberStartedCount() && key != "integration_time" && key != "gain") //gain and integration_time does not need to stop the camera
         {
@@ -1148,7 +1144,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         else if (QString::compare(key, "binning", Qt::CaseInsensitive) == 0)
         {
             int bin = val->getVal<int>(); //requested binning value from user
-            if(bin != 101 && bin != 202 && bin != 404)
+            if (bin != 101 && bin != 202 && bin != 404)
             {
                 retValue = ito::RetVal(ito::retError, 0, tr("Binning value must be 101 (1x1), 202 (2x2) or 404 (4x4) (depending on supported binning values)").toLatin1().data());
             }
@@ -1206,7 +1202,6 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
             retValue += synchronizeCameraSettings(sGpiGpo);
         }
-
         else if (QString::compare(key, "hdr_enable", Qt::CaseInsensitive) == 0)
         {
             int enable = val->getVal<int>() > 0 ? 1 : 0;
@@ -1215,7 +1210,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             int knee1 = (int)m_params["hdr_knee1"].getVal<int>();
             int knee2 = (int)m_params["hdr_knee2"].getVal<int>();
 #ifdef USE_OLD_API
-            if(enable)
+            if (enable)
             {
                 integration_time += integration_time / 4;
                 //if ((ret = pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), intType)))
@@ -1235,7 +1230,6 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 retValue += getErrStr(pxiSetParam(m_handle, "hdr" , &enable, sizeof(int), intType), "XI_PRM_HDR", QString::number(enable));
                 retValue += getErrStr(pxiSetParam(m_handle, XI_PRM_EXPOSURE, &integration_time, sizeof(int), intType), "XI_PRM_EXPOSURE", QString::number(integration_time));
             }
-
 #else  
             retValue += checkError(pxiSetParam(m_handle, XI_PRM_HDR , &enable, sizeof(int), intType), XI_PRM_HDR, QString::number(enable));
             if (!retValue.containsError())
@@ -1276,7 +1270,6 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             retValue += checkError(pxiSetParam(m_handle, XI_PRM_EXPOSURE XI_PRMM_DIRECT_UPDATE, &integration_time, sizeof(int), xiTypeInteger), "set XI_PRM_EXPOSURE", QString("%1 ms").arg(integration_time));
 
             retValue += synchronizeCameraSettings(sExposure | sFrameRate | sGain);
-
         }
         else if (QString::compare(key, "sharpness", Qt::CaseInsensitive) == 0)
         {
@@ -1298,7 +1291,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
             if (count == 1)
             {
-                int numBuffers = std::max( (int)(m_params["buffers_queue_size"].getMin()), 2);
+                int numBuffers = std::max((int)(m_params["buffers_queue_size"].getMin()), 2);
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_ACQ_FRAME_BURST_COUNT, &count, sizeof(int), intType), "set:" XI_PRM_ACQ_FRAME_BURST_COUNT, "1");
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_BUFFERS_QUEUE_SIZE, &numBuffers, sizeof(int), intType), "set:" XI_PRM_BUFFERS_QUEUE_SIZE, "2");
             }
@@ -1306,11 +1299,11 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             {
                 if (trigger_mode == XI_TRG_OFF || trigger_selector != XI_TRG_SEL_FRAME_BURST_START)
                 {
-                    retValue += ito::RetVal::format(ito::retError, 0, "frame_burst_count != 1 can only be applied if trigger_selector = frame_burst_start (%i) and trigger_mode != off (0)", XI_TRG_SEL_FRAME_BURST_START);
+                    retValue += ito::RetVal::format(ito::retError, 0, tr("frame_burst_count != 1 can only be applied if trigger_selector = frame_burst_start (%i) and trigger_mode != off (0)").toLatin1().data(), XI_TRG_SEL_FRAME_BURST_START);
                 }
                 else if (count > m_params["buffers_queue_size"].getMax() || count == 0)
                 {
-                    retValue += ito::RetVal::format(ito::retWarning, 0, "frame_burst_count > %i or infinite frame_burst_count (0) is not recommended since the maximum number of buffers in this plugin is %i", m_params["buffers_queue_size"].getMax(), m_params["buffers_queue_size"].getMax());
+                    retValue += ito::RetVal::format(ito::retWarning, 0, tr("frame_burst_count > %i or infinite frame_burst_count (0) is not recommended since the maximum number of buffers in this plugin is %i").toLatin1().data(), m_params["buffers_queue_size"].getMax(), m_params["buffers_queue_size"].getMax());
                 }
 
                 if (!retValue.containsError())
@@ -1385,7 +1378,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             retValue += setParam(val, NULL);
         }
 
-        else if(QString::compare(key, "roi", Qt::CaseInsensitive) == 0)
+        else if (QString::compare(key, "roi", Qt::CaseInsensitive) == 0)
         {
             if (!hasIndex)
             {
@@ -1439,7 +1432,6 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                     retValue += synchronizeCameraSettings(sExposure | sRoi | sFrameRate);
                 }            
             }
-
         }
         else
         {
@@ -1447,7 +1439,7 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
         retValue += checkData();
@@ -1496,12 +1488,12 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
         //check incoming parameter
         if (newValue < min || newValue > max)
         {
-            retval += ito::RetVal::format(ito::retError,0, "xiApi-Parameter '%s' is out of allowed range [%i,%i]", paramName, min, max);
+            retval += ito::RetVal::format(ito::retError, 0, tr("xiApi-Parameter '%s' is out of allowed range [%i,%i]").toLatin1().data(), paramName, min, max);
         }
 #ifndef USE_OLD_API
-        else if ( (newValue - min) % inc != 0)
+        else if ((newValue - min) % inc != 0)
         {
-            retval += ito::RetVal::format(ito::retError,0, "xiApi-Parameter '%s' must have an increment of %i (minimum value %i)", paramName, inc, min);
+            retval += ito::RetVal::format(ito::retError,0, tr("xiApi-Parameter '%s' must have an increment of %i (minimum value %i)").toLatin1().data(), paramName, inc, min);
         }
 #endif
 
@@ -1513,8 +1505,6 @@ ito::RetVal Ximea::setXimeaParam(const char *paramName, int newValue)
 
     return retval;
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Ximea::readCameraIntParam(const char *ximeaParamName, const QString &paramName, bool mandatory /*= false*/)
@@ -1831,15 +1821,13 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
     return retValue;
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Ximea::startDevice(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    if(grabberStartedCount() < 1)
+    if (grabberStartedCount() < 1)
     {
         setGrabberStarted(0);
         retValue += checkError(pxiStartAcquisition(m_handle), "pxiStartAcquisition");
@@ -1855,6 +1843,7 @@ ito::RetVal Ximea::startDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
 
@@ -1866,12 +1855,12 @@ ito::RetVal Ximea::stopDevice(ItomSharedSemaphore *waitCond)
 
     decGrabberStarted();
 
-    if(grabberStartedCount() < 1)
+    if (grabberStartedCount() < 1)
     {
         retValue += checkError(pxiStopAcquisition(m_handle), "pxiStopAquisition");
     }
 
-    if(grabberStartedCount() < 0)
+    if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("stopDevice ignored since camera was not started.").toLatin1().data());
         setGrabberStarted(0);
@@ -1882,6 +1871,7 @@ ito::RetVal Ximea::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return ito::retOk;
 }
 
@@ -1892,7 +1882,6 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     int triggermode = m_params["trigger_mode"].getVal<int>();
     
-
     if (grabberStartedCount() <= 0)
     {
         retValue = ito::RetVal(ito::retError, 0, tr("Tried to acquire without starting device").toLatin1().data());
@@ -1974,19 +1963,18 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 #endif
                     }
 
-                    if(m_shading.active)
+                    if (m_shading.active)
                     {
                         ito::uint16* ptrSub = m_shading.sub;
                         ito::uint16* ptrMul = m_shading.mul;
                         ito::uint16* ptrDst = (ito::uint16*)m_data.rowPtr(i, m_shading.y0);
                         ptrDst += m_shading.x0;
                         ito::int32 stepY = img.width - m_shading.xsize;
-                        for(int y = 0; y < m_shading.ysize; y++)
+                        for (int y = 0; y < m_shading.ysize; y++)
                         {
-                
-                            for(int x = 0; x < m_shading.xsize; x++)
+                            for (int x = 0; x < m_shading.xsize; x++)
                             {
-                                if(*ptrSub > *ptrDst)
+                                if (*ptrSub > *ptrDst)
                                 {
                                     *ptrDst = 0;
                                 }
@@ -2038,7 +2026,7 @@ ito::RetVal Ximea::retrieveData(ito::DataObject *externalDataObject)
 
     if (!retValue.containsError())
     {
-        if(copyExternal)
+        if (copyExternal)
         {
             //here we wait until the Event is set to signaled state
             //or the timeout runs out
@@ -2098,7 +2086,6 @@ ito::RetVal Ximea::retrieveData(ito::DataObject *externalDataObject)
     return retValue;
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal Ximea::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 {
@@ -2108,11 +2095,11 @@ ito::RetVal Ximea::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     retValue += retrieveData();
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
 
-        if(dObj)
+        if (dObj)
         {
             (*dObj) = this->m_data;
         }
@@ -2144,7 +2131,7 @@ ito::RetVal Ximea::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
-    if(!dObj)
+    if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
@@ -2153,12 +2140,12 @@ ito::RetVal Ximea::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         retValue += checkData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += retrieveData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
@@ -2191,13 +2178,13 @@ void Ximea::updateParameters(QMap<QString, ito::Param> params)
     {
         memset(name,0,sizeof(name));
         sprintf(name,"%s", param1.getName());
-        if(!strlen(name))
+        if (!strlen(name))
             continue;
         QMap<QString, ito::Param>::iterator paramIt = m_params.find(name);
         if (paramIt != m_params.end() && paramIt->isNumeric())
         {
             value = param1.getVal<double>();
-            if((value <= paramIt->getMax()) || (value >= paramIt->getMin()))
+            if ((value <= paramIt->getMax()) || (value >= paramIt->getMin()))
             {
                 paramIt.value().setVal<double>(value);
             }
@@ -2231,7 +2218,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
     ito::ParamBase *param3 = NULL;
     ito::ParamBase *param4 = NULL;
     /*
-    if(m_pvShadingSettings == NULL)
+    if (m_pvShadingSettings == NULL)
     {
         m_pvShadingSettings = (void*) new MMSHADING();
         ((LPMMSHADING)m_pvShadingSettings)->shCX = 0;
@@ -2263,7 +2250,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
         if (!retValue.containsError())
         {
             intTime = (int)(param1->getVal<double>() * 1000);
-            if(param2->getLen() < 20)
+            if (param2->getLen() < 20)
             {
                 retValue += ito::RetVal(ito::retError, 1, tr("Fill shading correction factor failed").toLatin1().data());
             }
@@ -2276,19 +2263,16 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
             QVector<QPointF> newVals(10);
             double* dptr = param2->getVal<double*>();
             newVals[0] = QPointF(0.0, 1.0);
-            for(int i = 1; i < 10; i ++)
+            for (int i = 1; i < 10; i ++)
             {
                 newVals[i].setX(dptr[i*2]);
                 newVals[i].setY(dptr[i*2+1]);
             }
             m_shading.m_correction.insert(intTime, newVals);
         }
-
-        
     }
     else if (funcName == "initialize_shading")
     {
-
         param1 = ito::getParamByName(&(*paramsMand), "dark_image", &retValue);
         param2 = ito::getParamByName(&(*paramsMand), "white_image", &retValue);              
 
@@ -2305,22 +2289,22 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
 
             ito::DataObject* darkObj = (ito::DataObject*)(param1->getVal<void*>());
             ito::DataObject* whiteObj = (ito::DataObject*)(param2->getVal<void*>());
-            if(darkObj == NULL || whiteObj == NULL )
+            if (darkObj == NULL || whiteObj == NULL)
             {
                 m_shading.valid = false;
                 m_shading.active = false;
             }
-            else if(darkObj->getType() != ito::tUInt16 || darkObj->getDims() != 2 || (darkObj->getSize(0) + y0) > ysize || (darkObj->getSize(1) + x0) > xsize)
+            else if (darkObj->getType() != ito::tUInt16 || darkObj->getDims() != 2 || (darkObj->getSize(0) + y0) > ysize || (darkObj->getSize(1) + x0) > xsize)
             {
                 m_shading.valid = false;
                 m_shading.active = false;
             }
-            else if(whiteObj->getType() != ito::tUInt16 || whiteObj->getDims() != 2 || (whiteObj->getSize(0) + y0)> ysize || (whiteObj->getSize(1) + x0) > xsize)
+            else if (whiteObj->getType() != ito::tUInt16 || whiteObj->getDims() != 2 || (whiteObj->getSize(0) + y0)> ysize || (whiteObj->getSize(1) + x0) > xsize)
             {
                 m_shading.valid = false;
                 m_shading.active = false;
             }
-            else if(whiteObj->getSize(0) != darkObj->getSize(0) || whiteObj->getSize(1) != darkObj->getSize(1))
+            else if (whiteObj->getSize(0) != darkObj->getSize(0) || whiteObj->getSize(1) != darkObj->getSize(1))
             {
                 m_shading.valid = false;
                 m_shading.active = false;
@@ -2329,10 +2313,10 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
             {
                 m_shading.valid = true;
                 m_shading.active = true;
-                if(m_shading.mul != NULL) delete m_shading.mul;
-                if(m_shading.sub != NULL) delete m_shading.sub;
-                if(m_shading.subBase != NULL) delete m_shading.subBase;
-                if(m_shading.mulBase != NULL) delete m_shading.mulBase;
+                if (m_shading.mul != NULL) delete m_shading.mul;
+                if (m_shading.sub != NULL) delete m_shading.sub;
+                if (m_shading.subBase != NULL) delete m_shading.subBase;
+                if (m_shading.mulBase != NULL) delete m_shading.mulBase;
 
                 m_shading.mul = new ito::uint16[whiteObj->getSize(0)*whiteObj->getSize(1)];
                 m_shading.sub = new ito::uint16[whiteObj->getSize(0)*whiteObj->getSize(1)];
@@ -2342,11 +2326,11 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
                 m_shading.y0 = y0;
                 m_shading.xsize = whiteObj->getSize(1);
                 m_shading.ysize = whiteObj->getSize(0);
-                for(int y = 0; y < m_shading.ysize; y++)
+                for (int y = 0; y < m_shading.ysize; y++)
                 {
                     ito::uint16* darkPtr = (ito::uint16*)(darkObj->rowPtr(0, y));
                     ito::uint16* whitePtr = (ito::uint16*)(whiteObj->rowPtr(0, y));
-                    for(int x = 0; x < m_shading.xsize; x++)
+                    for (int x = 0; x < m_shading.xsize; x++)
                     {
                         
                         m_shading.subBase[y*m_shading.xsize + x] = whitePtr[x];
@@ -2360,7 +2344,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
         if (!retValue.containsError())
         {
             int ret = pinitialize_shading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), param1->getVal<int>(), param2->getVal<int>());
-            if(ret != MM40_OK)
+            if (ret != MM40_OK)
             {
                 retValue += ito::RetVal(ito::retError, ret, tr("mmInitializeShading failed").toLatin1().data());
             }
@@ -2368,7 +2352,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
             {
             
                 //ret = pSetShadingRaw(shading);
-                //if(ret != MM40_OK)
+                //if (ret != MM40_OK)
                 //{
                 //    retValue += ito::RetVal(ito::retError, ret, tr("mmSetShadingRaw failed").toLatin1().data());
                 //}
@@ -2386,7 +2370,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
         if (!retValue.containsError())
         {
             int ret = pUpdateFrameShading(m_handle, NULL, shading);
-            if(ret != MM40_OK)
+            if (ret != MM40_OK)
             {
                 retValue += ito::RetVal(ito::retError, ret, tr("pUpdateFrameShading failed").toLatin1().data());
             }
@@ -2404,16 +2388,16 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
         ito::DataObject* darkObj = (ito::DataObject*)(param1->getVal<void*>());
         ito::DataObject* whiteObj = (ito::DataObject*)(param2->getVal<void*>());
 
-        if(darkObj && darkObj->getType() == ito::tUInt16 && darkObj->getDims() == 2 && darkObj->getSize(0) == darkMat.rows && darkObj->getSize(1) == darkMat.cols)
+        if (darkObj && darkObj->getType() == ito::tUInt16 && darkObj->getDims() == 2 && darkObj->getSize(0) == darkMat.rows && darkObj->getSize(1) == darkMat.cols)
         {
-            for(int y = 0; y < darkMat.rows; y++)
+            for (int y = 0; y < darkMat.rows; y++)
             {
                 memcpy(darkMat.ptr(y), darkObj->rowPtr(0,y), 2 * darkMat.cols);
             }
         }
-        if(whiteObj && whiteObj->getType() == ito::tUInt16 && whiteObj->getDims() == 2 && whiteObj->getSize(0) == whiteMat.rows && whiteObj->getSize(1) == whiteMat.cols)
+        if (whiteObj && whiteObj->getType() == ito::tUInt16 && whiteObj->getDims() == 2 && whiteObj->getSize(0) == whiteMat.rows && whiteObj->getSize(1) == whiteMat.cols)
         {
-            for(int y = 0; y < darkMat.rows; y++)
+            for (int y = 0; y < darkMat.rows; y++)
             {
                 memcpy(whiteMat.ptr(y), whiteObj->rowPtr(0,y), 2 * whiteMat.cols);
             }
@@ -2426,7 +2410,7 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
         {
             int ret = pCalculateShading(m_handle, shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), pBlack, pWhite); 
             //int ret = pCalculateShadingRaw(shading, this->m_params["sizex"].getVal<int>(), this->m_params["sizey"].getVal<int>(), pBlack, pWhite); 
-            if(ret != MM40_OK)
+            if (ret != MM40_OK)
             {
                 retValue += ito::RetVal(ito::retError, ret, tr("pCalculateShading failed").toLatin1().data());
             }
@@ -2451,38 +2435,38 @@ ito::RetVal Ximea::execFunc(const QString funcName, QSharedPointer<QVector<ito::
 
     return retValue;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void Ximea::updateShadingCorrection(int value)
 {
-
     QPointF correction(0.0, 1.0);
 
-    if(!m_shading.valid)
+    if (!m_shading.valid)
         return;
     value = value < 0 ? 0 : value > 9 ? 9 : value;
     int intTime = (int)(m_params["integration_time"].getVal<double>() * 1000);
-    if(m_shading.m_correction.contains(intTime) && m_shading.m_correction[intTime].size() > value)
+    if (m_shading.m_correction.contains(intTime) && m_shading.m_correction[intTime].size() > value)
         correction = m_shading.m_correction[intTime][value];
 
     float x = correction.x();
     float y = correction.y();
-    for(int px = 0; px < m_shading.ysize * m_shading.xsize; px++)
+    for (int px = 0; px < m_shading.ysize * m_shading.xsize; px++)
     {
         m_shading.sub[px] = m_shading.subBase[px] * x;
         m_shading.mul[px] = 1.0;
     }
-
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void Ximea::activateShadingCorrection(bool enable)
 {
-    if(!m_shading.valid)
+    if (!m_shading.valid)
     {
         m_shading.active = false;
         return;
     }
+
     m_shading.active = enable;
-    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

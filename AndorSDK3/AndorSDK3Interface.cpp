@@ -52,7 +52,7 @@ AndorSDK3Interface::AndorSDK3Interface(QObject *parent)
     m_description = QObject::tr("Andor cameras via its SDK3 (Neo, Zyla).");
     
 
-    char docstring[] = \
+/*    char docstring[] = \
 "This plugin supports Andor cameras that can be run using the SDK3 from Andor (e.g. Neo and Zyla series). It has been tested with the following models: \n\
 \n\
 - Zyla 5.5 (Dual Camera Link) \n\
@@ -61,7 +61,16 @@ The plugin has been compiled using the Andor SDK 3.8 \n\
 \n\
 In order to run your camera, please purchase and install the Andor SDK 3.8 or higher and make sure that the necessary libraries are accessible \n\
 by the Windows path environment variable (e.g. append \"C:/Program Files/Andor SDK3\" to the path variable).";
-    m_detaildescription = tr(docstring);
+    m_detaildescription = tr(docstring);*/
+    m_detaildescription = tr(
+"This plugin supports Andor cameras that can be run using the SDK3 from Andor (e.g. Neo and Zyla series). It has been tested with the following models: \n\
+\n\
+- Zyla 5.5 (Dual Camera Link) \n\
+\n\
+The plugin has been compiled using the Andor SDK 3.8 \n\
+\n\
+In order to run your camera, please purchase and install the Andor SDK 3.8 or higher and make sure that the necessary libraries are accessible \n\
+by the Windows path environment variable (e.g. append \"C:/Program Files/Andor SDK3\" to the path variable).");
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;

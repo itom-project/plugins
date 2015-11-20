@@ -84,11 +84,11 @@ class FringeProj : public ito::AddInAlgo
     public:
         friend class FringeProjInterface;
 
-        static const char *gray2DecLookupDoc;
+        static const QString gray2DecLookupDoc;
         static ito::RetVal gray2DecLookup(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal gray2DecLookupParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
-        static const char *genGraycodePatternDoc;
+        static const QString genGraycodePatternDoc;
         static ito::RetVal genGraycodePattern(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal genGraycodePatternParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 

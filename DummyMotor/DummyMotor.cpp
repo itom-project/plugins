@@ -80,16 +80,24 @@ DummyMotorInterface::DummyMotorInterface(QObject * /*parent*/)
     setObjectName("DummyMotor");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes. \n\
 \n\
 The real number of simulated axes is given by the initialization parameter 'numAxis'. Use this plugin \
 to simulate or develop your measurement system at another computer. Whenever a position command is executed, \
 this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) \
-expired.";
+expired.";*/
 
     m_description = QObject::tr("A virtual motor to test real actuators.");
-    m_detaildescription = QObject::tr(docstring);
+//    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(
+"The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes. \n\
+\n\
+The real number of simulated axes is given by the initialization parameter 'numAxis'. Use this plugin \
+to simulate or develop your measurement system at another computer. Whenever a position command is executed, \
+this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) \
+expired.");
+
     m_author = "W. Lyda, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -630,7 +638,6 @@ ito::RetVal DummyMotor::setPosAbs(const QVector<int> axis, QVector<double> pos, 
                 }
                 else
                 {
-
                     // REMOVE THIS IF COPIED! THIS IS JUST NEEDED FOR THE WAIT-FUNCTION
                     if (abs(m_currentPos[axis[naxis]] - pos[naxis])  > m_distance)
                     {
@@ -860,6 +867,7 @@ ito::RetVal DummyMotor::waitForDone(const int timeoutMS, const QVector<int> axis
 
     return retVal;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DummyMotor::startJoyStickMovement(QVector<int> axis, QVector<double> vel)
 {
@@ -887,4 +895,5 @@ ito::RetVal DummyMotor::startJoyStickMovement(QVector<int> axis, QVector<double>
 
     return ito::retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------

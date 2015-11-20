@@ -40,7 +40,6 @@
 
 //#include "dockWidgetniDAQmx.h"
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! Constructor of Interface Class.
 /*!
@@ -54,10 +53,13 @@ niDAQmxInterface::niDAQmxInterface()
     m_description = QObject::tr("niDAQmx");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
+/*    char docstring[] = \
 "The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. \n\
 The installation needs the NI-DAQmx Library that can be downloaded from the NI website (http://www.ni.com/download/ni-daqmx-14.2/5046/en/)";
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr(
+"The plugin implements the DAQmx functions for analog-digital-converters from National Instruments. \n\
+The installation needs the NI-DAQmx Library that can be downloaded from the NI website (http://www.ni.com/download/ni-daqmx-14.2/5046/en/)");
 
     m_author = "Martin Hoppe, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -95,8 +97,6 @@ ito::RetVal niDAQmxInterface::closeThisInst(ito::AddInBase **addInInst)
    REMOVE_PLUGININSTANCE(niDAQmx) //the argument of the macro is the classname of the plugin
    return ito::retOk;
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ ito::RetVal niDAQmx::close(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
-    //
+    
     return retValue;
 }
 
@@ -368,11 +368,13 @@ ito::RetVal niDAQmx::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
             *val = it.value();
         }
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
 
@@ -652,6 +654,7 @@ ito::RetVal niDAQmx::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return ito::retOk;
 }
          
@@ -700,6 +703,7 @@ ito::RetVal niDAQmx::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retval;
         waitCond->release();  
     }
+
     return retval;
 }
 
@@ -1035,6 +1039,7 @@ ito::RetVal niDAQmx::setVal(const char *data, const int length, ItomSharedSemaph
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
 

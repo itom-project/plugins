@@ -43,7 +43,6 @@ IF (WIN32)
     endif (PLUGIN_AVTVimba)
 ENDIF (WIN32)
 
-
 # cmu1394
 IF (WIN32)
     OPTION(PLUGIN_cmu1394 "Build with this plugin." ON)

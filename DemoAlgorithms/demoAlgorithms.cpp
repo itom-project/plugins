@@ -32,14 +32,13 @@
 #include "pluginVersion.h"
 #include <QtCore/QtPlugin>
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 DemoAlgorithmsInterface::DemoAlgorithmsInterface()
 {
     m_type = ito::typeAlgo;
     setObjectName("DemoAlgorithms");
 
-    m_description = QObject::tr("DemoAlgorithms to show a plugin developer how to write plugins in c++");
+    m_description       = QObject::tr("DemoAlgorithms to show a plugin developer how to write plugins in c++");
     m_detaildescription = QObject::tr("The DemoAlgorithms-DLL contains some basic filter function to show a plugin developer how to use a motor or programm an own plugin widget");
     m_author            = "Wolfram Lyda, ITO, University Stuttgart";
     m_license           = QObject::tr("LGPL");
@@ -47,7 +46,6 @@ DemoAlgorithmsInterface::DemoAlgorithmsInterface()
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
     m_aboutThis         = tr("Fill in about dialog content");        
-    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -77,13 +75,11 @@ ito::RetVal DemoAlgorithmsInterface::closeThisInst(ito::AddInBase **addInInst)
     Q_EXPORT_PLUGIN2(demoalgorithmsinterface, DemoAlgorithmsInterface)
 #endif
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 DemoAlgorithms::DemoAlgorithms() : AddInAlgo()
 {
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** initialize filter functions within this addIn
@@ -108,13 +104,13 @@ ito::RetVal DemoAlgorithms::init(QVector<ito::ParamBase> * /*paramsMand*/, QVect
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------------User-Defined-Content-----------------------------------------------------
-    filter = new FilterDef(DemoAlgorithms::demoMoveActuator, DemoAlgorithms::demoMoveActuatorParams, "Demo algorithm (I) for plugin-developers - actuator communication. Moves selected axes of an actuator.", ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
+    filter = new FilterDef(DemoAlgorithms::demoMoveActuator, DemoAlgorithms::demoMoveActuatorParams, tr("Demo algorithm (I) for plugin-developers - actuator communication. Moves selected axes of an actuator."), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
     m_filterList.insert("demoMoveActuator", filter);
-    filter = new FilterDef(DemoAlgorithms::demoSnapImage, DemoAlgorithms::demoSnapImageParams, "Demo algorithm (II) for plugin-developers - camera communication. Snaps a single image.", ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
+    filter = new FilterDef(DemoAlgorithms::demoSnapImage, DemoAlgorithms::demoSnapImageParams, tr("Demo algorithm (II) for plugin-developers - camera communication. Snaps a single image."), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
     m_filterList.insert("demoSnapImage", filter);
-    filter = new FilterDef(DemoAlgorithms::demoSnapMovie, DemoAlgorithms::demoSnapMovieParams, "Demo algorithm (III) for plugin-developers - camera communication. Snaps a number of images to a stack.", ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
+    filter = new FilterDef(DemoAlgorithms::demoSnapMovie, DemoAlgorithms::demoSnapMovieParams, tr("Demo algorithm (III) for plugin-developers - camera communication. Snaps a number of images to a stack."), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
     m_filterList.insert("demoSnapMovie", filter);
-    filter = new FilterDef(DemoAlgorithms::demoTestActuator, DemoAlgorithms::demoTestActuatorParams, "Demo algorithm (IV) for plugin-developers - actuator communication. Moves first axis of an actuator several time to test the actuator performance.", ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
+    filter = new FilterDef(DemoAlgorithms::demoTestActuator, DemoAlgorithms::demoTestActuatorParams, tr("Demo algorithm (IV) for plugin-developers - actuator communication. Moves first axis of an actuator several time to test the actuator performance."), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
     m_filterList.insert("demoTestActuator", filter);
 
     //---------------------------------------------------------End-User-Defined-Content-------------------------------------------------
@@ -244,7 +240,7 @@ QWidget* DemoAlgorithms::dialog(QVector<ito::Param> * /*paramsMand*/, QVector<it
 ito::RetVal DemoAlgorithms::dialogParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         //mandatory
         /*param = ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, "description");
@@ -280,24 +276,25 @@ ito::RetVal DemoAlgorithms::dialogParams(QVector<ito::Param> *paramsMand, QVecto
 ito::RetVal DemoAlgorithms::demoMoveActuatorParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-        ito::Param param = ito::Param("Motor", ito::ParamBase::HWRef, NULL, "Handle to the Motorstage");
+        ito::Param param = ito::Param("Motor", ito::ParamBase::HWRef, NULL, tr("Handle to the Motorstage").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("axis1", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, "Number of the first axis to move");
+        param = ito::Param("axis1", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("Number of the first axis to move").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("pos1", ito::ParamBase::Double, std::numeric_limits<double>::max() * -1, std::numeric_limits<double>::max(), 0.0, "New position of the 1. axis");
+        param = ito::Param("pos1", ito::ParamBase::Double, std::numeric_limits<double>::max() * -1, std::numeric_limits<double>::max(), 0.0, tr("New position of the 1. axis").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("axis2", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, "Number of the second axis to move");
+        param = ito::Param("axis2", ito::ParamBase::Int, 0, std::numeric_limits<int>::max(), 0, tr("Number of the second axis to move").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("pos2", ito::ParamBase::Double, std::numeric_limits<double>::max() * -1, std::numeric_limits<double>::max(), 0.0, "New Position of axis 2");
+        param = ito::Param("pos2", ito::ParamBase::Double, std::numeric_limits<double>::max() * -1, std::numeric_limits<double>::max(), 0.0, tr("New Position of axis 2").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("speed", ito::ParamBase::Double,std::numeric_limits<double>::max() * -1, std::numeric_limits<double>::max(),  1.0, "Algorithm will change speed to this value");
+        param = ito::Param("speed", ito::ParamBase::Double,std::numeric_limits<double>::max() * -1, std::numeric_limits<double>::max(),  1.0, tr("Algorithm will change speed to this value").toLatin1().data());
         paramsOpt->append(param);
     }
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** Demo-filter to show how to move an actuator in an algorithm
 *    @param [in]    paramsMand    mandatory parameters
@@ -336,6 +333,7 @@ ito::RetVal DemoAlgorithms::demoMoveActuator(QVector<ito::ParamBase> *paramsMand
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** parameters for calling demoSnapImage copied form the template "filterParams" and modified
 *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
@@ -351,11 +349,11 @@ ito::RetVal DemoAlgorithms::demoMoveActuator(QVector<ito::ParamBase> *paramsMand
 ito::RetVal DemoAlgorithms::demoSnapImageParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-        ito::Param param = ito::Param("camera", ito::ParamBase::HWRef, NULL, "Handle to the Camera");
+        ito::Param param = ito::Param("camera", ito::ParamBase::HWRef, NULL, tr("Handle to the Camera").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Empty object, will contain 2D image later");
+        param = ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty object, will contain 2D image later").toLatin1().data());
         paramsMand->append(param);
 
         paramsOpt->clear();
@@ -363,6 +361,7 @@ ito::RetVal DemoAlgorithms::demoSnapImageParams(QVector<ito::Param> *paramsMand,
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** Demo-filter to show how to capture a single image from a camera with an algorithm
 *    @param [in]    paramsMand    mandatory parameters
@@ -380,24 +379,24 @@ ito::RetVal DemoAlgorithms::demoSnapImage(QVector<ito::ParamBase> *paramsMand, Q
 
     ito::threadCamera myCamera(paramsMand, 0);
 
-    ito::DataObject *image = static_cast<ito::DataObject*>( (*paramsMand)[1].getVal<void*>());
-    if(image == NULL)
+    ito::DataObject *image = static_cast<ito::DataObject*>((*paramsMand)[1].getVal<void*>());
+    if (image == NULL)
     {
-        return ito::RetVal(ito::retError, 0, "Iamge handle empty");
+        return ito::RetVal(ito::retError, 0, tr("Iamge handle empty").toLatin1().data());
     }
 
     ito::DataObject dObj;   // create an mepty object
 
     // Now get a shallow copy for a single frame
     retval += myCamera.startDevice();
-    if(retval.containsError())
+    if (retval.containsError())
     {
         return retval;  // end and return error of failed
     }
 
     retval += myCamera.acquire(0);
 
-    if(!retval.containsError())     // Only try to getVal if retval is retOK ir retWarning
+    if (!retval.containsError())     // Only try to getVal if retval is retOK ir retWarning
     {
         retval += myCamera.getVal(dObj);
         dObj.copyTo(*image);    // Make a deepcopy of the data, otherwise the content of image will be overwritten during the next snap
@@ -405,7 +404,7 @@ ito::RetVal DemoAlgorithms::demoSnapImage(QVector<ito::ParamBase> *paramsMand, Q
 
     retval += myCamera.stopDevice();
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         QString msg = tr("Recorded via demoSnapImage-filter");
         image->addToProtocol(std::string(msg.toLatin1().data()));
@@ -430,18 +429,21 @@ ito::RetVal DemoAlgorithms::demoSnapImage(QVector<ito::ParamBase> *paramsMand, Q
 ito::RetVal DemoAlgorithms::demoSnapMovieParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+
+    if (!retval.containsError())
     {
-        ito::Param param = ito::Param("camera", ito::ParamBase::HWRef, NULL, "Handle to the Camera");
+        ito::Param param = ito::Param("camera", ito::ParamBase::HWRef, NULL, tr("Handle to the Camera").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("Movie", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Empty resulting data object. Contains 3d data object with acquired data after call.");
+        param = ito::Param("Movie", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Empty resulting data object. Contains 3d data object with acquired data after call.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("images", ito::ParamBase::Int, 0, 1000000 , 1, "Number of images to aquire");
+        param = ito::Param("images", ito::ParamBase::Int, 0, 1000000 , 1, tr("Number of images to aquire").toLatin1().data());
         paramsMand->append(param);
         paramsOpt->clear();
     }
+
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** Demo-filter to show how to capture a set of images from a camera with an algorithm
 *    @param [in]    paramsMand    mandatory parameters
@@ -460,10 +462,10 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(QVector<ito::ParamBase> *paramsMand, Q
 
     ito::threadCamera myCamera(paramsMand, 0);
 
-    ito::DataObject *movie = static_cast<ito::DataObject*>( (*paramsMand)[1].getVal<void*>());
-    if(movie == NULL)
+    ito::DataObject *movie = static_cast<ito::DataObject*>((*paramsMand)[1].getVal<void*>());
+    if (movie == NULL)
     {
-        return ito::RetVal(ito::retError, 0, "Movie handle empty");
+        return ito::RetVal(ito::retError, 0, tr("Movie handle empty").toLatin1().data());
     }
 
     // This is for benchmarking the camera speed
@@ -476,7 +478,7 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(QVector<ito::ParamBase> *paramsMand, Q
     ito::DataObject dObj;
 
     retval += myCamera.getImageParams(bpp, sizeX, sizeY);
-    if(retval.containsError())
+    if (retval.containsError())
     {
         return retval;
     }
@@ -497,26 +499,26 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(QVector<ito::ParamBase> *paramsMand, Q
             *movie = ito::DataObject(images, sizes[0], sizes[1], ito::tFloat64);
             break;
         default:
-            retval += ito::RetVal(ito::retError, 0, "Grabber bit depth not supported");
+            retval += ito::RetVal(ito::retError, 0, tr("Grabber bit depth not supported").toLatin1().data());
         break;
     }
 
     retval += myCamera.startDevice();
     middletime = (double)(cv::getTickCount())/cv::getTickFrequency();
-    if(!retval.containsError()) // If no error after startDevice -> start capturing
+    if (!retval.containsError()) // If no error after startDevice -> start capturing
     {
-        for(int i = 0; i < images; i++)
+        for (int i = 0; i < images; i++)
         {
             dObj = ito::DataObject(2, sizes, (*movie).getType(), (cv::Mat*)((*movie).get_mdata())[i], 1);   // set a ROI of movie handled by dObj
 
             retval += myCamera.acquire(0);
-            if(retval.containsError())  // Stop of error occures no
+            if (retval.containsError())  // Stop of error occures no
             {
                 break;
             }
 
             retval += myCamera.copyVal(dObj);    // Direct DeepCopy the image from grabber to the roi of movie (dObj)
-            if(retval.containsError())  // Stop of error occures no
+            if (retval.containsError())  // Stop of error occures no
             {
                 break;
             }
@@ -528,7 +530,7 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(QVector<ito::ParamBase> *paramsMand, Q
     retval += myCamera.stopDevice(); // Stop of error occures no
     std::cout << "\nAcquire: overall\t" << endtime-middletime << "\n";
 
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         QString msg = tr("Recorded via demoSnapMovie-filter in [s]: ");
         msg.append(QString::number(endtime-middletime));
@@ -537,6 +539,7 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(QVector<ito::ParamBase> *paramsMand, Q
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** parameters for calling demoTestActuator copied form the template "filterParams" and modified
 *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
@@ -555,21 +558,22 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(QVector<ito::ParamBase> *paramsMand, Q
 ito::RetVal DemoAlgorithms::demoTestActuatorParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
-        ito::Param param = ito::Param("Motor", ito::ParamBase::HWRef, NULL, "Handle to the Motorstage");
+        ito::Param param = ito::Param("Motor", ito::ParamBase::HWRef, NULL, tr("Handle to the Motorstage").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("deltaX", ito::ParamBase::Double, std::numeric_limits<double>::max() * -1, std::numeric_limits<double>::max(), 0.0, "Delta for the current axis.");
+        param = ito::Param("deltaX", ito::ParamBase::Double, std::numeric_limits<double>::max() * -1, std::numeric_limits<double>::max(), 0.0, tr("Delta for the current axis.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("iterations", ito::ParamBase::Int, 1, std::numeric_limits<int>::max(), 1000, "Number of iterations to move.");
+        param = ito::Param("iterations", ito::ParamBase::Int, 1, std::numeric_limits<int>::max(), 1000, tr("Number of iterations to move.").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("absRelFlag", ito::ParamBase::Int, 0, 1, 0, "Toggle between abs (0) and relative (1) movements");
+        param = ito::Param("absRelFlag", ito::ParamBase::Int, 0, 1, 0, tr("Toggle between abs (0) and relative (1) movements").toLatin1().data());
         paramsOpt->append(param);
     }
 
     return retval;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** Demo-filter to show how to move an actuator in an algorithm
 *    @param [in]    paramsMand    mandatory parameters
@@ -595,27 +599,22 @@ ito::RetVal DemoAlgorithms::demoTestActuator(QVector<ito::ParamBase> *paramsMand
 
     retval += myStage.getPos(0, startPos);
 
-
-
-    if(!retval.containsError())
+    if (!retval.containsError())
     {
         // Get current time
         starttime = (double)(cv::getTickCount())/cv::getTickFrequency();
         int i = 0;
-        for(i = 0; i < iter; i ++)
+        for (i = 0; i < iter; i ++)
         {
-            if(mode) retval += myStage.setPosRel(0, deltaX);
-            else retval += myStage.setPosAbs(0, deltaX * i + startPos );
-            if(retval.containsError()) break;
+            if (mode) retval += myStage.setPosRel(0, deltaX);
+            else retval += myStage.setPosAbs(0, deltaX * i + startPos);
+            if (retval.containsError()) break;
         }
         // Get current time
         endtime = (double)(cv::getTickCount())/cv::getTickFrequency();
 
         std::cout << "\nMovement: Duration\t" << endtime-starttime << "s, Frequency " << i / (endtime-starttime) << "hz\n";
     }
-    
-    
-
 
     return retval;
 }

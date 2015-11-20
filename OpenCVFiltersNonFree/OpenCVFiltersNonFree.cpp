@@ -38,7 +38,6 @@
 #include "opencv2/nonfree/nonfree.hpp"
 #endif
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFiltersNonFreeInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -61,11 +60,8 @@ OpenCVFiltersNonFreeInterface::OpenCVFiltersNonFreeInterface()
     setObjectName("OpenCV-Filters-Nonfree");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char docstring[] = \
-"This plugin provides wrappers for various OpenCV algorithms from its section non-free.";
-
     m_description = QObject::tr("Wrapped algorithms from OpenCV");
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr("This plugin provides wrappers for various OpenCV algorithms from its section non-free.");
     m_author = "M. Gronle, P. Bahar, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
@@ -105,15 +101,14 @@ OpenCVFiltersNonFree::~OpenCVFiltersNonFree()
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const char *OpenCVFiltersNonFree::cvSiftDetectorDescriptorExtractorDoc = "Implements the sift algorithm and extracts the corresponding descriptors. \n\
+/*static*/ const QString OpenCVFiltersNonFree::cvSiftDetectorDescriptorExtractorDoc = tr("Implements the sift algorithm and extracts the corresponding descriptors. \n\
 The sift algorithm is a scale invariant feature transform in which image content is transformed into local feature coordinates. \n\
 In each octave, the initial image is repeatedly convolved with Gaussians to produce a set of scale space images. Adjacent Gaussians are subtracted to produce the DOG. \n\
 After each octave, the Gaussian image is down-sampled by a factor of 2. \n\
 Detect maxima and minima of difference-of-Gaussian in scale space. Each point is compared to its 8 neighbours in the current image and 9 neighbours in the scales above and below. \n\
-reference: David G. Lowe, \"Distinctive image features from scale-invariant key points,\" International Journal of Computer Vision, 60, 2 (2004), pp. 91-110.";
+reference: David G. Lowe, \"Distinctive image features from scale-invariant key points,\" International Journal of Computer Vision, 60, 2 (2004), pp. 91-110.");
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFiltersNonFree::cvSiftDetectorDescriptorExtractorParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::Param param;
@@ -121,15 +116,14 @@ reference: David G. Lowe, \"Distinctive image features from scale-invariant key 
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if(retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "Input parameter - Desired image to extract its descriptor and keypoints by means of SIFT algorithm.") );
-    paramsMand->append( ito::Param("descriptor", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Output parameter - (n x 128) float32 data object with n descriptors") );
-    paramsOpt->append( ito::Param("keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "Optional Output parameter -(n x 7) float32 data object with n keypoints. Every row contains the values (pt_x,pt_y,size,angle,response,octave,id)") );
+    paramsMand->append(ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input parameter - Desired image to extract its descriptor and keypoints by means of SIFT algorithm.").toLatin1().data()));
+    paramsMand->append(ito::Param("descriptor", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output parameter - (n x 128) float32 data object with n descriptors").toLatin1().data()));
+    paramsOpt->append(ito::Param("keypoints", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Optional Output parameter -(n x 7) float32 data object with n keypoints. Every row contains the values (pt_x,pt_y,size,angle,response,octave,id)").toLatin1().data()));
 
     return retval;
 }
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFiltersNonFree::cvSiftDetectorDescriptorExtractor(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -160,7 +154,7 @@ reference: David G. Lowe, \"Distinctive image features from scale-invariant key 
         }
         catch (cv::Exception exc)
         {
-            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str() );
+            retval += ito::RetVal::format(ito::retError, 0, "%s", exc.err.c_str());
         }
 
         if (!retval.containsError())
@@ -186,17 +180,12 @@ reference: David G. Lowe, \"Distinctive image features from scale-invariant key 
 
                 *keypointsOut = keypts;
             }
-
         }
     }
 
     return retval;
 }
-
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal OpenCVFiltersNonFree::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito::ParamBase> * /*paramsOpt*/, ItomSharedSemaphore * /*waitCond*/)
@@ -206,7 +195,7 @@ ito::RetVal OpenCVFiltersNonFree::init(QVector<ito::ParamBase> * /*paramsMand*/,
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 
-    filter = new FilterDef(OpenCVFiltersNonFree::cvSiftDetectorDescriptorExtractor, OpenCVFiltersNonFree::cvSiftDetectorDescriptorExtractorParams, tr(cvSiftDetectorDescriptorExtractorDoc));
+    filter = new FilterDef(OpenCVFiltersNonFree::cvSiftDetectorDescriptorExtractor, OpenCVFiltersNonFree::cvSiftDetectorDescriptorExtractorParams, cvSiftDetectorDescriptorExtractorDoc);
     m_filterList.insert("cvSiftDetectorDescriptorExtractor", filter);
 
 #endif //(CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
@@ -219,6 +208,5 @@ ito::RetVal OpenCVFiltersNonFree::init(QVector<ito::ParamBase> * /*paramsMand*/,
 ito::RetVal OpenCVFiltersNonFree::close(ItomSharedSemaphore * /*waitCond*/)
 {
     ito::RetVal retval = ito::retOk;
-
     return retval;
 }

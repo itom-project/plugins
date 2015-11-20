@@ -80,7 +80,7 @@ CMU1394Interface::CMU1394Interface() : AddInInterfaceBase()
     m_description = QObject::tr("Firewire via generic CMU-Driver");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-    char* docstring = \
+/*    char* docstring = \
 "This plugins provides generic firewire camera support based on CMU-Driver version 6.4.6. CMU 6.4.6 works for firewire specifications <= v1.30.\
 This library is currently developed and tested under Windows only. Tested with PointGrayResearch Firefly and AVT Marlin.\n\
 \n\
@@ -88,7 +88,15 @@ In order to run this plugin you also need to install the CMU1394 drivers that ca
 Together with this plugin parts of the drivers (some header files and static libraries for 32 and 64bit) in version 6.4.6 are shipped and linked to this plugin \
 at comile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder \
 of this plugin.";
-    m_detaildescription = QObject::tr(docstring);
+    m_detaildescription = QObject::tr(docstring);*/
+    m_detaildescription = QObject::tr("This plugins provides generic firewire camera support based on CMU-Driver version 6.4.6. CMU 6.4.6 works for firewire specifications <= v1.30.\
+This library is currently developed and tested under Windows only. Tested with PointGrayResearch Firefly and AVT Marlin.\n\
+\n\
+In order to run this plugin you also need to install the CMU1394 drivers that can be obtained as installer from http://www.cs.cmu.edu/~iwan/1394/. \
+Together with this plugin parts of the drivers (some header files and static libraries for 32 and 64bit) in version 6.4.6 are shipped and linked to this plugin \
+at comile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder \
+of this plugin.");
+
     m_author            = "W. Lyda, M. Gronle, ITO, University Stuttgart";
     m_license           = QObject::tr("itom-plugin under LGPL / CMU1394 driver under LGPL");
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -110,8 +118,6 @@ of this plugin.";
 
    paramVal = ito::Param("swapByteOrder", ito::ParamBase::Int, 0, 1, 0, tr("swap byte order for 16bit data").toLatin1().data());
    m_initParamsOpt.append(paramVal);
-
-   return;
 
    /**\brief width, height and color code for the core formats (0-2) */
     //static VIDEO_MODE_DESCRIPTOR tableModeDesc[3][8] = 
@@ -168,7 +174,7 @@ ito::RetVal CMU1394::copyObjBytesSwapped(ito::DataObject *extDObj, uchar *src, i
 
     if ((extDObj->calcNumMats() != 1) || (extDObj->getSize(extDObj->getDims() - 1) != sizeX) || (extDObj->getSize(extDObj->getDims() - 2) != sizeY))
     {
-        retval = ito::RetVal(ito::retError,0,"Error in copyFromData2D. Size of Buffer unequal size of DataObject");
+        retval = ito::RetVal(ito::retError, 0, tr("Error in copyFromData2D. Size of Buffer unequal size of DataObject").toLatin1().data());
         return retval;
     }
     
@@ -212,7 +218,7 @@ ito::RetVal CMU1394::copyObjBytesSwapped(ito::DataObject *extDObj, uchar *src, i
 
     if ((extDObj->calcNumMats() != 1) || (extDObj->getSize(extDObj->getDims() - 1) != sizeX) || (extDObj->getSize(extDObj->getDims() - 2) != sizeY))
     {
-        retval = ito::RetVal(ito::retError,0,"Error in copyFromData2D. Size of Buffer unequal size of DataObject");
+        retval = ito::RetVal(ito::retError, 0, tr("Error in copyFromData2D. Size of Buffer unequal size of DataObject").toLatin1().data());
         return retval;
     }
     
@@ -262,8 +268,10 @@ const ito::RetVal CMU1394::showConfDialog(void)
 
     dialogCMU1394 *confDialog = new dialogCMU1394();
 
-    if(grabberStartedCount() > 0)
+    if (grabberStartedCount() > 0)
+    {
         return ito::RetVal(ito::retWarning, 0, tr("Please run stopDevice() and shut down live data before configuration").toLatin1().data());
+    }
 
     connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), confDialog, SLOT(valuesChanged(QMap<QString, ito::Param>)));
     connect(confDialog, SIGNAL(changeParameters(QMap<QString, ito::ParamBase>)), this , SLOT(updateParameters(QMap<QString, ito::ParamBase>)));
@@ -278,6 +286,7 @@ const ito::RetVal CMU1394::showConfDialog(void)
             retValue += setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase(param1)), NULL);
         }
     }
+
     delete confDialog;
 
     return retValue;
@@ -301,7 +310,6 @@ CMU1394::CMU1394() :  AddInGrabber(), m_saveParamsOnClose(false),
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("offset", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Offset").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-
 
     paramVal = ito::Param("x0", ito::ParamBase::Int, 0, 1391, 0, tr("Startvalue for ROI").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -343,7 +351,6 @@ CMU1394::CMU1394() :  AddInGrabber(), m_saveParamsOnClose(false),
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, cmuwdg);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -367,7 +374,7 @@ ito::RetVal CMU1394::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
     ito::RetVal retValue(ito::retOk);
     QString key = val->getName();
 
-    if(key == "")
+    if (key == "")
     {
         retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
     }
@@ -376,7 +383,7 @@ ito::RetVal CMU1394::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
         QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
         if (paramIt != m_params.end())
         {
-            if(!key.compare("gain"))
+            if (!key.compare("gain"))
             {
                 unsigned short gainMin, gainMax, gainVal, dummy;
                 m_pC1394gain->GetRange(&gainMin, &gainMax);
@@ -385,7 +392,7 @@ ito::RetVal CMU1394::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
                 paramIt.value().setVal<double>(gain);
                 *val = paramIt.value();
             }
-            else if(!key.compare("offset"))
+            else if (!key.compare("offset"))
             {
                 unsigned short offsMin, offsVal, offsMax, dummy;
                 m_pC1394offset->GetRange(&offsMin, &offsMax);
@@ -443,7 +450,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
     
     QString key = val->getName();
 
-    if(key == "")    // Check if the key is valied
+    if (key == "")    // Check if the key is valied
     {
         retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
     }
@@ -454,20 +461,20 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         if (paramIt != m_params.end()) // Okay the camera has this parameter so go on
         {
     
-            if(paramIt->getFlags() & ito::ParamBase::Readonly)
+            if (paramIt->getFlags() & ito::ParamBase::Readonly)
             {
                 retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
                 goto end;
             }
-            else if(val->isNumeric() && paramIt->isNumeric())
+            else if (val->isNumeric() && paramIt->isNumeric())
             {
                 double curval = val->getVal<double>();
-                if( curval > paramIt->getMax())
+                if (curval > paramIt->getMax())
                 {
                     retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
                     goto end;
                 }
-                else if(curval < paramIt->getMin())
+                else if (curval < paramIt->getMin())
                 {
                     retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
                     goto end;
@@ -479,7 +486,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             }
             else if (paramIt->getType() == val->getType())
             {
-                retValue += paramIt.value().copyValueFrom( &(*val) );
+                retValue += paramIt.value().copyValueFrom(&(*val));
             }
             else
             {
@@ -497,13 +504,13 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
             //vbin = m_params["binning"].getVal<int>();
             //hbin = m_params["binning"].getVal<int>();
 
-            if(!key.compare("gain"))
+            if (!key.compare("gain"))
             {
                 unsigned short  gainMin = 0, gainMax = 0;
                 m_pC1394gain->GetRange(&gainMin, &gainMax);
                 m_pC1394gain->SetValue((unsigned short)((gainMax-gainMin)*gain)+gainMin, 0);
             }
-            else if(!key.compare("offset"))
+            else if (!key.compare("offset"))
             {
                 unsigned short offsMin, offsMax, offsoldVal, dummy;
                 m_pC1394offset->GetRange(&offsMin, &offsMax);
@@ -516,7 +523,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                     m_pC1394offset->SetValue(offsoldVal, 0);
                 }
             }
-            else if(!key.compare("swapByteOrder"))
+            else if (!key.compare("swapByteOrder"))
             {
                 m_swapBO = val->getVal<int>() > 0 ? 1: 0;
             }
@@ -528,7 +535,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                     setGrabberStarted(1);
                     retValue += this->stopDevice(0);
                 }
-                if(!key.compare("trigger_mode"))
+                if (!key.compare("trigger_mode"))
                 {
                     if (m_ptheCamera->HasFeature(FEATURE_TRIGGER_MODE))
                     {
@@ -537,14 +544,14 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                     else
                         retValue = ito::RetVal(ito::retError, 0, tr("Camera has no trigger feature").toLatin1().data());
                 }
-                else if(!key.compare("trigger_enable"))
+                else if (!key.compare("trigger_enable"))
                 {
                     if (m_ptheCamera->HasFeature(FEATURE_TRIGGER_MODE))
                     {
-                        if(trigger_on > 0)
+                        if (trigger_on > 0)
                         {
                             m_pC1394trigger->SetOnOff(true);
-                            if ( (ret = m_ptheCamera->StartImageAcquisitionEx( 6, timeout_ms, ACQ_START_VIDEO_STREAM)))  
+                            if ((ret = m_ptheCamera->StartImageAcquisitionEx(6, timeout_ms, ACQ_START_VIDEO_STREAM)))  
                             {
                                 if (ret == -14)
                                     retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toLatin1().data()); 
@@ -559,7 +566,7 @@ ito::RetVal CMU1394::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
                         else
                         {
                             m_pC1394trigger->SetOnOff(false);
-                            if ( (ret = m_ptheCamera->StartImageAcquisition() ) )  
+                            if ((ret = m_ptheCamera->StartImageAcquisition()))  
                             {
                                 if (ret == -14)
                                     retValue = ito::RetVal(ito::retError, 0, tr("FireWire: StartDataCapture failed,\nmaybe video rate too high!").toLatin1().data()); 
@@ -640,24 +647,24 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
 
     Initnum++;  // So count up the init-number
 
-    if(Initnum > MAX1394)
+    if (Initnum > MAX1394)
     {
         retValue = ito::RetVal(ito::retError, 0, tr("Maximal number of CMU1394 grabber already running").toLatin1().data());
     }
-    else if(m_iCamNumber > 127)
+    else if (m_iCamNumber > 127)
     {
         retValue = ito::RetVal(ito::retError, 0, tr("Invalid input for camera number").toLatin1().data());
     }
     else
     {
         //Get the Initnumber / check if camera is already running  
-        if(m_iCamNumber < 0) // find next free camera automatically
+        if (m_iCamNumber < 0) // find next free camera automatically
         {
             int freeplace = MAX1394;
             m_iCamNumber = 0;
-            for(i = 0; i < MAX1394; i++)
+            for (i = 0; i < MAX1394; i++)
             {
-                if(InitList[i] == m_iCamNumber + 1)
+                if (InitList[i] == m_iCamNumber + 1)
                 {
                     m_iCamNumber++;
                     i = 0;
@@ -668,9 +675,9 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
         }
         else    // Set the next camera by user input
         {
-            for(i = 0; i < MAX1394; i++)
+            for (i = 0; i < MAX1394; i++)
             {
-                if(InitList[i] == m_iCamNumber + 1)
+                if (InitList[i] == m_iCamNumber + 1)
                 {
                     retValue = ito::RetVal(ito::retError, 0, tr("Camera already initialized").toLatin1().data());
                     m_iCamNumber = -1;
@@ -693,19 +700,25 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     if (!retValue.containsError())
     {
         if (!(m_ptheCamera->RefreshCameraList()))
+        {
             retValue = ito::RetVal(ito::retError, 0, tr("Refresh camera list failed").toLatin1().data());
+        }
     }
 
     if (!retValue.containsError())
     {
         if ((numcameras = m_ptheCamera->GetNumberCameras())==0)
+        {
             retValue = ito::RetVal(ito::retError, 0, tr("Get number of cameras failed").toLatin1().data());
+        }
     }
 
     if (!retValue.containsError())
     {
         if (m_ptheCamera->SelectCamera(m_iCamNumber))
+        {
             retValue = ito::RetVal(ito::retError, 0, tr("Select camera failed").toLatin1().data());
+        }
     }
 
     m_identifier = QString("CamNum: %1").arg(m_iCamNumber);
@@ -714,7 +727,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     {
         m_ptheCamera->InitCamera(1);
         m_ptheCamera->GetNode();
-        if(m_ptheCamera->Has1394b())
+        if (m_ptheCamera->Has1394b())
             m_ptheCamera->Set1394b(1);
         m_ptheCamera->GetNode();
     }
@@ -897,12 +910,12 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     {
         m_ptheCamera->GetVideoFrameDimensions(&maxxsize, &maxysize);
         
-        static_cast<ito::IntMeta*>( m_params["sizex"].getMeta() )->setMax(maxxsize);
-        static_cast<ito::IntMeta*>( m_params["sizey"].getMeta() )->setMax(maxysize);
+        static_cast<ito::IntMeta*>(m_params["sizex"].getMeta())->setMax(maxxsize);
+        static_cast<ito::IntMeta*>(m_params["sizey"].getMeta())->setMax(maxysize);
         m_params["sizex"].setVal<int>(maxxsize);
         m_params["sizey"].setVal<int>(maxysize);
-        static_cast<ito::IntMeta*>( m_params["x0"].getMeta() )->setMax(maxxsize-1);
-        static_cast<ito::IntMeta*>( m_params["y0"].getMeta() )->setMax(maxysize-1);
+        static_cast<ito::IntMeta*>(m_params["x0"].getMeta())->setMax(maxxsize-1);
+        static_cast<ito::IntMeta*>(m_params["y0"].getMeta())->setMax(maxysize-1);
         m_params["x0"].setVal<int>(0);
         m_params["y0"].setVal<int>(0);
     }
@@ -938,7 +951,7 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     }
     if (!retValue.containsError())
     {
-        if ( (ret = m_ptheCamera->StartImageAcquisition() ) )  
+        if ((ret = m_ptheCamera->StartImageAcquisition()))  
         {
             if (ret == -14)
             {
@@ -978,7 +991,6 @@ ito::RetVal CMU1394::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
     }
 
 //end:
-    
     if (!retValue.containsError())
     {
         retValue += checkData();
@@ -1043,7 +1055,7 @@ ito::RetVal CMU1394::close(ItomSharedSemaphore *waitCond)
                 break;
             }
         }
-        for(; n < MAX1394; n++)
+        for (; n < MAX1394; n++)
         {
             InitList[n] = InitList[n+1]; 
         }
@@ -1069,7 +1081,7 @@ ito::RetVal CMU1394::startDevice(ItomSharedSemaphore *waitCond)
     if (num == 0)
     {
         int camnum = m_ptheCamera->GetNode();
-        if(grabberStartedCount() < 1)
+        if (grabberStartedCount() < 1)
             ret = m_ptheCamera->StartImageAcquisition();
         if (ret != 0)
         {
@@ -1088,11 +1100,13 @@ ito::RetVal CMU1394::startDevice(ItomSharedSemaphore *waitCond)
     {
         retValue = ito::retError;
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return retValue;
 }
          
@@ -1106,7 +1120,7 @@ ito::RetVal CMU1394::stopDevice(ItomSharedSemaphore *waitCond)
     int ret = 0;
     decGrabberStarted();
 
-    if(grabberStartedCount() < 1)
+    if (grabberStartedCount() < 1)
     {
         if (num == 0)
         {
@@ -1122,7 +1136,8 @@ ito::RetVal CMU1394::stopDevice(ItomSharedSemaphore *waitCond)
             retValue = ito::retError;
         }
     }
-    if(grabberStartedCount() < 0)
+
+    if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("Cameraflag was < 0").toLatin1().data());
         setGrabberStarted(0);
@@ -1133,6 +1148,7 @@ ito::RetVal CMU1394::stopDevice(ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();
     }
+
     return ito::retOk;
 }
          
@@ -1151,7 +1167,7 @@ ito::RetVal CMU1394::acquire(const int trigger, ItomSharedSemaphore *waitCond)
     {
         this->m_isgrabbing = true;
         
-        if ( m_ptheCamera->AcquireImage() )  
+        if (m_ptheCamera->AcquireImage())  
         {
             retValue = ito::RetVal(ito::retError, 0, tr("FireWireDll: CaptureImage failed!").toLatin1().data());
         }
@@ -1162,6 +1178,7 @@ ito::RetVal CMU1394::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         waitCond->returnValue = retValue;
         waitCond->release();  
     }
+
     return retValue;
 }
 
@@ -1184,12 +1201,12 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
     bool hasListeners = false;
     bool copyExternal = false;
 
-    if(m_autoGrabbingListeners.size() > 0)
+    if (m_autoGrabbingListeners.size() > 0)
     {
         hasListeners = true;
     }
 
-    if(externalDataObject != NULL)
+    if (externalDataObject != NULL)
     {
         copyExternal = true;
     }
@@ -1214,13 +1231,25 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
                     if (curxsize == maxxsize)
                     {
                         lsrcstrpos = y0 * maxxsize;
-                        if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)cbuf+lsrcstrpos, maxxsize, curysize);
-                        if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)cbuf+lsrcstrpos, maxxsize, curysize);
+                        if (copyExternal)
+                        {
+                            retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)cbuf+lsrcstrpos, maxxsize, curysize);
+                        }
+                        if (!copyExternal || hasListeners)
+                        {
+                            retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)cbuf+lsrcstrpos, maxxsize, curysize);
+                        }
                     }
                     else
                     {
-                        if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
-                        if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
+                        if (copyExternal)
+                        {
+                            retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
+                        }
+                        if (!copyExternal || hasListeners)
+                        {
+                            retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
+                        }
                     }
                     break;
                 }
@@ -1234,15 +1263,25 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
                         cbuf += lsrcstrpos;
                         if (m_swapBO)
                         {
-                            if(copyExternal)
+                            if (copyExternal)
+                            {
                                 retValue += copyObjBytesSwapped(externalDataObject, (uchar*)cbuf, maxxsize, curysize);
-                            if(!copyExternal || hasListeners)
+                            }
+                            if (!copyExternal || hasListeners)
+                            {
                                 retValue += copyObjBytesSwapped(&m_data, (uchar*)cbuf, maxxsize, curysize);
+                            }
                         }
                         else
                         {
-                            if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, curysize);
-                            if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, curysize);
+                            if (copyExternal)
+                            {
+                                retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, curysize);
+                            }
+                            if (!copyExternal || hasListeners)
+                            {
+                                retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf+lsrcstrpos, maxxsize, curysize);
+                            }
                         }
                     }
                     else
@@ -1250,15 +1289,25 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
                         if (m_swapBO)
                         {
                             lsrcstrpos = y0 * maxxsize;
-                            if(copyExternal)
+                            if (copyExternal)
+                            {
                                 retValue += copyObjBytesSwapped(externalDataObject, (uchar*)cbuf, curxsize, curysize, maxxsize, x0, y0);
-                            if(!copyExternal || hasListeners)
+                            }
+                            if (!copyExternal || hasListeners)
+                            {
                                 retValue += copyObjBytesSwapped(&m_data, (uchar*)cbuf, curxsize, curysize, maxxsize, x0, y0);
+                            }
                         }
                         else
                         {
-                            if(copyExternal) retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
-                            if(!copyExternal || hasListeners) retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
+                            if (copyExternal)
+                            {
+                                retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
+                            }
+                            if (!copyExternal || hasListeners)
+                            {
+                                retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*)cbuf, maxxsize, maxysize, x0, y0, curxsize, curysize);
+                            }
                         }
                     }
                     break;
@@ -1267,14 +1316,12 @@ ito::RetVal CMU1394::retrieveData(ito::DataObject *externalDataObject)
                     retValue += ito::RetVal(ito::retError, 0, tr("F Wrong picture Type").toLatin1().data());
                     break;
             }
-        
         }
         this->m_isgrabbing = false;
     }
 
     return retValue;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal CMU1394::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
@@ -1285,11 +1332,11 @@ ito::RetVal CMU1394::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     retValue += retrieveData();
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
 
-        if(dObj)
+        if (dObj)
         {
             (*dObj) = this->m_data;
         }
@@ -1311,7 +1358,7 @@ ito::RetVal CMU1394::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
-    if(!dObj)
+    if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
@@ -1320,12 +1367,12 @@ ito::RetVal CMU1394::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         retValue += checkData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += retrieveData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }
