@@ -174,7 +174,7 @@ RetVal DataObjectArithmetic::doubleDObjInputParams(QVector<ito::Param> *paramsMa
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::minValueDoc = tr("This filter calculated the minimal value and its first location within the dataObject. \n\
+const QString DataObjectArithmetic::minValueDoc = QObject::tr("This filter calculated the minimal value and its first location within the dataObject. \n\
 \n\
 The result value will be Integer vor all integer types or Double for all floating point types\n\
 \n\
@@ -234,7 +234,7 @@ ito::RetVal DataObjectArithmetic::minValue(QVector<ito::ParamBase> *paramsMand, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::maxValueDoc = tr("This filter calculated the maximal value and its first location within the dataObject. \n\
+const QString DataObjectArithmetic::maxValueDoc = QObject::tr("This filter calculated the maximal value and its first location within the dataObject. \n\
 \n\
 The result value will be Integer vor all integer types or Double for all floating point types\n\
 \n\
@@ -295,7 +295,7 @@ ito::RetVal DataObjectArithmetic::maxValue(QVector<ito::ParamBase> *paramsMand, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::minMaxValueDoc = tr("This filter calculated the minimal and maximal value and its first location within the dataObject. \n\
+const QString DataObjectArithmetic::minMaxValueDoc = QObject::tr("This filter calculated the minimal and maximal value and its first location within the dataObject. \n\
 \n\
 The result value will be Integer vor all integer types or Double for all floating point types\n\
 \n\
@@ -389,7 +389,7 @@ ito::RetVal DataObjectArithmetic::minMaxValue(QVector<ito::ParamBase> *paramsMan
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::meanValueDoc = tr("This filter calculated the mean value within the dataObject. \n\
+const QString DataObjectArithmetic::meanValueDoc = QObject::tr("This filter calculated the mean value within the dataObject. \n\
 \n\
 The return value containing the mean value of the dataObject.\n\
 \n\
@@ -444,7 +444,7 @@ RetVal DataObjectArithmetic::devValueParams(QVector<ito::Param> *paramsMand, QVe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::devValueDoc = tr("The filter returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.\nThe optinal flag to toggles if (flag==0) the deviation is calculated by 1/(n-1)*sqrt(sum(x-xm)^2)\nor (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)\n\
+const QString DataObjectArithmetic::devValueDoc = QObject::tr("The filter returns the arithmetic mean and the standard deviation of the given dataObject within its ROI.\nThe optinal flag to toggles if (flag==0) the deviation is calculated by 1/(n-1)*sqrt(sum(x-xm)^2)\nor (flag ==1) by 1/(n)*sqrt(sum(x-xm)^2)\n\
 \n\
 The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types\n\
 \n");
@@ -482,7 +482,7 @@ ito::RetVal DataObjectArithmetic::devValue(QVector<ito::ParamBase> *paramsMand, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::areEqualDoc = tr("Check pixel-wise wether two dataObjects are equal. \n\
+const QString DataObjectArithmetic::areEqualDoc = QObject::tr("Check pixel-wise wether two dataObjects are equal. \n\
 The filter returns 1 if both objects are pixel-wise equal, else returns 0.\n\
 \n\
 The filter do not work with RGBA32, Complex64 and Complex128, but with all other data-types\n\
@@ -816,7 +816,7 @@ ito::RetVal DataObjectArithmetic::areEqual(QVector<ito::ParamBase> *paramsMand, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::centerOfGravityDoc = tr("This filter calculates the center of gravity of a 2D real image. \n\
+const QString DataObjectArithmetic::centerOfGravityDoc = QObject::tr("This filter calculates the center of gravity of a 2D real image. \n\
 \n\
 The return value contains the column and row position in pixel and physical coordinates.\n\
 \n\
@@ -996,7 +996,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::centerOfGravity1DimDoc = tr("Calculate center of gravity for each plane along the x- or y-direction. \n\
+const QString DataObjectArithmetic::centerOfGravity1DimDoc = QObject::tr("Calculate center of gravity for each plane along the x- or y-direction. \n\
 \n\
 This methods creates the two given data objects 'destCOG' and 'destIntensity' in the following way: \n\
 \n\
@@ -1465,7 +1465,7 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelperFor1D(con
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::getPercentageThresholdDoc = tr("analyzes all values in the given data object and returns the value, which is at a given percentage in the sorted value list.");
+const QString DataObjectArithmetic::getPercentageThresholdDoc = QObject::tr("analyzes all values in the given data object and returns the value, which is at a given percentage in the sorted value list.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal DataObjectArithmetic::getPercentageThresholdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -1615,7 +1615,7 @@ template<typename _Tp> /*static*/ ito::RetVal DataObjectArithmetic::getPercentag
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString DataObjectArithmetic::boundingBoxDoc = tr("This filter calculates the minimum ROI that contains all values within a lower and optional upper threshold. \n\
+const QString DataObjectArithmetic::boundingBoxDoc = QObject::tr("This filter calculates the minimum ROI that contains all values within a lower and optional upper threshold. \n\
 \n\
 The return value contains the [x0,y0,width,height] of the minimum ROI.\n\
 \n\
