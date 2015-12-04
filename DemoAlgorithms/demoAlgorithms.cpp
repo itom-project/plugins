@@ -25,8 +25,7 @@
 
 #include "demoAlgorithms.h"
 
-#include "common/helperActuator.h"    //! This include is for the actuator-helper class used in demoMoveActuator
-#include "common/helperGrabber.h"     //! This include is for the camera-helper class used in demoSnapImage & demoSnapMovie
+#include "common/pluginThreadCtrl.h"  //! This include is for the actuator-helper class used in demoMoveActuator, demoSnapImage and demoSnapMovie
 
 #include "DataObject/dataobj.h"
 #include "pluginVersion.h"
@@ -310,14 +309,14 @@ ito::RetVal DemoAlgorithms::demoMoveActuator(QVector<ito::ParamBase> *paramsMand
 {
     ito::RetVal retval = ito::retOk;
 
-    ito::threadActuator myStage(paramsMand, 0);
+    ito::ActuatorThreadCtrl myStage(paramsMand->at(0), NULL);
 
-    int axis1 = (int)(*paramsMand)[1].getVal<int>();
-    double pos1 = (double)(*paramsMand)[2].getVal<double>();
-    int axis2 = (int)(*paramsMand)[3].getVal<int>();
-    double pos2 = (double)(*paramsMand)[4].getVal<double>();
+    int axis1 = paramsMand->at(1).getVal<int>();
+    double pos1 = paramsMand->at(2).getVal<double>();
+    int axis2 = paramsMand->at(3).getVal<int>();
+    double pos2 = paramsMand->at(4).getVal<double>();
 
-    double speed = (double)(*paramsOpt)[0].getVal<double>();
+    double speed = paramsOpt->at(0).getVal<double>();
 
     retval += myStage.setPosAbs(axis1, pos1);
     retval += myStage.getPos(axis1, pos1);
@@ -328,7 +327,6 @@ ito::RetVal DemoAlgorithms::demoMoveActuator(QVector<ito::ParamBase> *paramsMand
     retval += myStage.getParam(speedParam);
 
     retval += myStage.setPosAbs(axis2, pos2, 0);
-    retval += myStage.waitForSemaphore();
     retval += myStage.getPos(axis2, pos2);
 
     return retval;
@@ -377,7 +375,7 @@ ito::RetVal DemoAlgorithms::demoSnapImage(QVector<ito::ParamBase> *paramsMand, Q
 {
     ito::RetVal retval = ito::retOk;
 
-    ito::threadCamera myCamera(paramsMand, 0);
+    ito::DataIOThreadCtrl myCamera(paramsMand->at(0), NULL);
 
     ito::DataObject *image = static_cast<ito::DataObject*>((*paramsMand)[1].getVal<void*>());
     if (image == NULL)
@@ -460,7 +458,7 @@ ito::RetVal DemoAlgorithms::demoSnapMovie(QVector<ito::ParamBase> *paramsMand, Q
 {
     ito::RetVal retval = ito::retOk;
 
-    ito::threadCamera myCamera(paramsMand, 0);
+    ito::DataIOThreadCtrl myCamera(paramsMand->at(0), NULL);
 
     ito::DataObject *movie = static_cast<ito::DataObject*>((*paramsMand)[1].getVal<void*>());
     if (movie == NULL)
@@ -589,7 +587,7 @@ ito::RetVal DemoAlgorithms::demoTestActuator(QVector<ito::ParamBase> *paramsMand
 {
     ito::RetVal retval = ito::retOk;
 
-    ito::threadActuator myStage(paramsMand, 0);
+    ito::ActuatorThreadCtrl myStage(paramsMand->at(0), NULL);
     double deltaX = (double)(*paramsMand)[1].getVal<double>();
     int iter = (int)(*paramsMand)[2].getVal<int>();
     int mode = (int)(*paramsOpt)[0].getVal<int>();
