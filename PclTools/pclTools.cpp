@@ -392,7 +392,8 @@ ito::RetVal PclTools::savePointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
     }
     catch(pcl::IOException exc)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("pointCloud could not be saved: %s").toLatin1().data(), exc.detailedMessage());
+        std::string tmp = exc.detailedMessage(); //detailedMessage() is const char* in newer versions of PCL and std::string in older. Therefore this hack...
+        retval += ito::RetVal::format(ito::retError, 0, tr("pointCloud could not be saved: %s").toLatin1().data(), tmp.data());
         ret = 1;
     }
 
