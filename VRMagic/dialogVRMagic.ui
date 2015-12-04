@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>459</width>
+    <width>460</width>
     <height>454</height>
    </rect>
   </property>
@@ -43,7 +43,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Sensor type:</string>
+           <string>Name:</string>
           </property>
          </widget>
         </item>
@@ -63,7 +63,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Serial Nr.: </string>
+           <string>Serial No.: </string>
           </property>
          </widget>
         </item>
@@ -188,20 +188,20 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="SliderWidget" name="sliderWidget_brightness">
+             <widget class="SliderWidget" name="sliderWidget_brightness" native="true">
               <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="decimals">
+              <property name="decimals" stdset="0">
                <number>3</number>
               </property>
-              <property name="maximum">
+              <property name="maximum" stdset="0">
                <double>100.000000000000000</double>
               </property>
-              <property name="suffix">
+              <property name="suffix" stdset="0">
                <string/>
               </property>
-              <property name="tracking">
+              <property name="tracking" stdset="0">
                <bool>false</bool>
               </property>
              </widget>
@@ -214,20 +214,20 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="SliderWidget" name="sliderWidget_contrast">
+             <widget class="SliderWidget" name="sliderWidget_contrast" native="true">
               <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="decimals">
+              <property name="decimals" stdset="0">
                <number>3</number>
               </property>
-              <property name="maximum">
+              <property name="maximum" stdset="0">
                <double>999999999.000000000000000</double>
               </property>
-              <property name="suffix">
+              <property name="suffix" stdset="0">
                <string/>
               </property>
-              <property name="tracking">
+              <property name="tracking" stdset="0">
                <bool>false</bool>
               </property>
              </widget>
@@ -268,35 +268,35 @@
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="RangeWidget" name="rangeY">
+               <widget class="RangeWidget" name="rangeY" native="true">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="singleStep">
+                <property name="singleStep" stdset="0">
                  <number>2</number>
                 </property>
-                <property name="maximum">
+                <property name="maximum" stdset="0">
                  <number>999999999</number>
                 </property>
-                <property name="maximumValue">
+                <property name="maximumValue" stdset="0">
                  <number>99</number>
                 </property>
-                <property name="maximumRange">
+                <property name="maximumRange" stdset="0">
                  <UInt>999999999</UInt>
                 </property>
-                <property name="prefix">
+                <property name="prefix" stdset="0">
                  <string/>
                 </property>
-                <property name="suffix">
+                <property name="suffix" stdset="0">
                  <string/>
                 </property>
-                <property name="tickInterval">
+                <property name="tickInterval" stdset="0">
                  <number>5</number>
                 </property>
-                <property name="autoSpinBoxWidth">
+                <property name="autoSpinBoxWidth" stdset="0">
                  <bool>true</bool>
                 </property>
-                <property name="tracking">
+                <property name="tracking" stdset="0">
                  <bool>false</bool>
                 </property>
                 <property name="decimals" stdset="0">
@@ -312,32 +312,32 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="RangeWidget" name="rangeX">
+               <widget class="RangeWidget" name="rangeX" native="true">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
-                <property name="maximum">
+                <property name="maximum" stdset="0">
                  <number>999999999</number>
                 </property>
-                <property name="maximumValue">
+                <property name="maximumValue" stdset="0">
                  <number>99</number>
                 </property>
-                <property name="maximumRange">
+                <property name="maximumRange" stdset="0">
                  <UInt>999999999</UInt>
                 </property>
-                <property name="prefix">
+                <property name="prefix" stdset="0">
                  <string/>
                 </property>
-                <property name="suffix">
+                <property name="suffix" stdset="0">
                  <string/>
                 </property>
-                <property name="tickInterval">
+                <property name="tickInterval" stdset="0">
                  <number>5</number>
                 </property>
-                <property name="autoSpinBoxWidth">
+                <property name="autoSpinBoxWidth" stdset="0">
                  <bool>true</bool>
                 </property>
-                <property name="tracking">
+                <property name="tracking" stdset="0">
                  <bool>false</bool>
                 </property>
                 <property name="decimals" stdset="0">
@@ -523,14 +523,14 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="SliderWidget" name="sliderFrameBurst">
+            <widget class="SliderWidget" name="sliderFrameBurst" native="true">
              <property name="toolTip">
               <string>trigger must be different than off and selector must be frame burst start</string>
              </property>
-             <property name="decimals">
+             <property name="decimals" stdset="0">
               <number>0</number>
              </property>
-             <property name="minimum">
+             <property name="minimum" stdset="0">
               <double>1.000000000000000</double>
              </property>
             </widget>

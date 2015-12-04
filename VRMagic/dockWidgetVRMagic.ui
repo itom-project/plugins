@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>231</width>
-    <height>240</height>
+    <width>189</width>
+    <height>201</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
-    <height>240</height>
+    <height>201</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -26,12 +26,36 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
+    <number>3</number>
+   </property>
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>General information</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>8</number>
+      </property>
+      <property name="topMargin">
+       <number>1</number>
+      </property>
+      <property name="rightMargin">
+       <number>8</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
@@ -49,7 +73,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>sensor type:</string>
+         <string>Name:</string>
         </property>
        </widget>
       </item>
@@ -63,7 +87,7 @@
       <item row="2" column="0">
        <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>serial number:</string>
+         <string>Serial number:</string>
         </property>
        </widget>
       </item>
@@ -152,18 +176,30 @@
       <string>Integration</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>8</number>
+      </property>
+      <property name="topMargin">
+       <number>1</number>
+      </property>
+      <property name="rightMargin">
+       <number>8</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
       <item row="1" column="1">
-       <widget class="SliderWidget" name="sliderWidget_contrast">
+       <widget class="SliderWidget" name="sliderWidget_contrast" native="true">
         <property name="enabled">
          <bool>false</bool>
         </property>
-        <property name="decimals">
+        <property name="decimals" stdset="0">
          <number>3</number>
         </property>
-        <property name="suffix">
+        <property name="suffix" stdset="0">
          <string/>
         </property>
-        <property name="tracking">
+        <property name="tracking" stdset="0">
          <bool>false</bool>
         </property>
        </widget>
@@ -176,20 +212,20 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="SliderWidget" name="sliderWidget_brightness">
+       <widget class="SliderWidget" name="sliderWidget_brightness" native="true">
         <property name="enabled">
          <bool>false</bool>
         </property>
-        <property name="decimals">
+        <property name="decimals" stdset="0">
          <number>3</number>
         </property>
-        <property name="maximum">
+        <property name="maximum" stdset="0">
          <double>100.000000000000000</double>
         </property>
-        <property name="suffix">
+        <property name="suffix" stdset="0">
          <string/>
         </property>
-        <property name="tracking">
+        <property name="tracking" stdset="0">
          <bool>false</bool>
         </property>
        </widget>
