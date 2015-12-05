@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -26,8 +26,8 @@
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 DockWidgetVRMagic::DockWidgetVRMagic(int uniqueID, ito::AddInDataIO *grabber) :
-    AbstractAddInDockWidget(grabber),  
-	m_inEditing(false),  
+    AbstractAddInDockWidget(grabber),
+	m_inEditing(false),
 	m_firstRun(true)
 {
      ui.setupUi(this); 
@@ -38,10 +38,11 @@ DockWidgetVRMagic::DockWidgetVRMagic(int uniqueID, ito::AddInDataIO *grabber) :
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 {
-    ui.sliderWidget_brightness->setDisabled( params["brightness"].getFlags() & ito::ParamBase::Readonly );
-    ui.sliderWidget_brightness->setVisible( !(params["brightness"].getFlags() & ito::ParamBase::Readonly ));
-    ui.sliderWidget_contrast->setDisabled( params["contrast"].getFlags() & ito::ParamBase::Readonly );
-    ui.sliderWidget_contrast->setVisible( !(params["contrast"].getFlags() & ito::ParamBase::Readonly ));
+    ui.sliderWidget_brightness->setDisabled(params["brightness"].getFlags() & ito::ParamBase::Readonly);
+    ui.sliderWidget_brightness->setVisible(!(params["brightness"].getFlags() & ito::ParamBase::Readonly));
+    ui.sliderWidget_contrast->setDisabled(params["contrast"].getFlags() & ito::ParamBase::Readonly);
+    ui.sliderWidget_contrast->setVisible(!(params["contrast"].getFlags() & ito::ParamBase::Readonly));
+
     if (m_firstRun)
     {
 		ui.label_sensor->setText(params["name"].getVal<char*>());
@@ -74,22 +75,10 @@ void DockWidgetVRMagic::parametersChanged(QMap<QString, ito::Param> params)
             ui.sliderWidget_contrast->setMaximum(dm->getMax());
             ui.sliderWidget_contrast->setValue(params["contrast"].getVal<int>());
         }
-    }    
+    }
     m_inEditing = false;
 
     m_currentParams = params;
-}
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-void DockWidgetVRMagic::on_sliderWidget_offset_valueChanged(double value)
-{
-    if (!m_inEditing)
-    {
-        m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("offset",ito::ParamBase::Double,value));
-        setPluginParameter(p, msgLevelWarningAndError);
-        m_inEditing = false;
-    }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

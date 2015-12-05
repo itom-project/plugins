@@ -47,7 +47,7 @@
 #include <pcl/sample_consensus/impl/sac_model_normal_sphere.hpp>
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclProjectOnModelDOC = tr("\n\
+const QString PclTools::pclProjectOnModelDOC = QObject::tr("\n\
 \n\
 \n\
 Possible types are: \n\

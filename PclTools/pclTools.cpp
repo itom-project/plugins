@@ -178,7 +178,7 @@ PclTools::PclTools() : AddInAlgo()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //ItomDoc_STRVAR(savePointCloud_doc, "saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii)");
-const QString PclTools::savePointCloudDOC = tr("\n\
+    const QString PclTools::savePointCloudDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -392,7 +392,8 @@ ito::RetVal PclTools::savePointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
     }
     catch(pcl::IOException exc)
     {
-        retval += ito::RetVal::format(ito::retError, 0, tr("pointCloud could not be saved: %s").toLatin1().data(), exc.detailedMessage());
+        std::string tmp = exc.detailedMessage(); //detailedMessage() is const char* in newer versions of PCL and std::string in older. Therefore this hack...
+        retval += ito::RetVal::format(ito::retError, 0, tr("pointCloud could not be saved: %s").toLatin1().data(), tmp.data());
         ret = 1;
     }
 
@@ -405,7 +406,7 @@ ito::RetVal PclTools::savePointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::loadPointCloudDOC = tr("\n\
+const QString PclTools::loadPointCloudDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -683,7 +684,7 @@ ito::RetVal PclTools::loadPointCloud(QVector<ito::ParamBase> *paramsMand, QVecto
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString PclTools::saveVTKImageDataDOC = tr("saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image\n\
+/*static*/ const QString PclTools::saveVTKImageDataDOC = QObject::tr("saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image\n\
 \n\
 This file format allows displaying volume data from the given 3D data object for instance using ParaView.");
 
@@ -887,7 +888,7 @@ This file format allows displaying volume data from the given 3D data object for
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::savePolygonMeshDOC = tr("\n\
+const QString PclTools::savePolygonMeshDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -982,7 +983,7 @@ ito::RetVal PclTools::savePolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::loadPolygonMeshDOC = tr("\n\
+const QString PclTools::loadPolygonMeshDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -1102,7 +1103,7 @@ ito::RetVal PclTools::loadPolygonMesh(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::transformAffineDOC = tr("\n\
+const QString PclTools::transformAffineDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -1233,7 +1234,7 @@ const QString PclTools::transformAffineDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclEstimateNormalsDOC = tr("\n\
+const QString PclTools::pclEstimateNormalsDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -1422,7 +1423,7 @@ const QString PclTools::pclEstimateNormalsDOC = tr("\n\
 }
 
 ////------------------------------------------------------------------------------------------------------------------------------
-//const QString PclTools::pclEstimateMaxCurvatureDOC = tr("estimates the curvature of a given point cloud with normal vectors based on nearest neighbours. \n\
+//const QString PclTools::pclEstimateMaxCurvatureDOC = QObject::tr("estimates the curvature of a given point cloud with normal vectors based on nearest neighbours. \n\
 //\n\
 //The nearest neighbours are determined by a flann based kd-tree search that can be parametrized by the number of nearest neighbours (kSearch) \n\
 //and / or the maximum distance to nearest neighbours (searchRadius). Both values can be considered, too. The maximum curvature is set to the\n\
@@ -1529,7 +1530,7 @@ const QString PclTools::pclEstimateNormalsDOC = tr("\n\
 //}
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclRemoveNaNDOC = tr("\n\
+const QString PclTools::pclRemoveNaNDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -1648,7 +1649,7 @@ const QString PclTools::pclRemoveNaNDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclPassThroughDOC = tr("\n\
+const QString PclTools::pclPassThroughDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -1814,7 +1815,7 @@ const QString PclTools::pclPassThroughDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclCropBoxDOC = tr("pclCropBox is a filter that allows the user to filter all the data inside of a given box.\n\
+const QString PclTools::pclCropBoxDOC = QObject::tr("pclCropBox is a filter that allows the user to filter all the data inside of a given box.\n\
 \n\
 Indicate the minimum and maximum values in x,y and z direction for the box and optionally tranlate and rotate the box to \n\
 adjust its position and orientation. The rotation vector are the euler angles rx, ry and rz.");
@@ -2034,7 +2035,7 @@ adjust its position and orientation. The rotation vector are the euler angles rx
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclVoxelGridDOC = tr("\n\
+const QString PclTools::pclVoxelGridDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -2225,7 +2226,7 @@ const QString PclTools::pclVoxelGridDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclStatisticalOutlierRemovalDOC = tr("\n\
+const QString PclTools::pclStatisticalOutlierRemovalDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -2377,7 +2378,7 @@ const QString PclTools::pclStatisticalOutlierRemovalDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclRandomSampleDOC = tr("\n\
+const QString PclTools::pclRandomSampleDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -2510,7 +2511,7 @@ const QString PclTools::pclRandomSampleDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclGetMinMax3DDOC = tr("\n\
+const QString PclTools::pclGetMinMax3DDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -2645,7 +2646,7 @@ const QString PclTools::pclGetMinMax3DDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclGetPercentageThresholdDOC = tr("\n\
+const QString PclTools::pclGetPercentageThresholdDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -2843,7 +2844,7 @@ const QString PclTools::pclGetPercentageThresholdDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclGetHistogramDOC = tr("\n\
+const QString PclTools::pclGetHistogramDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -3088,7 +3089,7 @@ const QString PclTools::pclGetHistogramDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclCylinderClipper3DDOC = tr("\n\
+const QString PclTools::pclCylinderClipper3DDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -3217,7 +3218,7 @@ const QString PclTools::pclCylinderClipper3DDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclPCADOC = tr("\n\
+const QString PclTools::pclPCADOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -3346,7 +3347,7 @@ const QString PclTools::pclPCADOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclPolygonMeshFromIndicesDOC = tr("\n\
+const QString PclTools::pclPolygonMeshFromIndicesDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -3480,7 +3481,7 @@ const QString PclTools::pclPolygonMeshFromIndicesDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclMeshTriangulationDOC = tr("\n\
+const QString PclTools::pclMeshTriangulationDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -3531,7 +3532,7 @@ const QString PclTools::pclMeshTriangulationDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclSampleToDataObjectDOC = tr("\n\
+const QString PclTools::pclSampleToDataObjectDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -3842,7 +3843,7 @@ const QString PclTools::pclSampleToDataObjectDOC = tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclOrganizedFastMeshDOC = tr("\n\
+const QString PclTools::pclOrganizedFastMeshDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -4036,7 +4037,7 @@ ito::RetVal PclTools::pclOrganizedFastMesh(QVector<ito::ParamBase> *paramsMand, 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclSimplifyMeshDOC = tr("\n\
+const QString PclTools::pclSimplifyMeshDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -4100,7 +4101,7 @@ ito::RetVal PclTools::pclSimplifyMesh(QVector<ito::ParamBase> *paramsMand, QVect
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclPoissonDOC = tr("\n\
+const QString PclTools::pclPoissonDOC = QObject::tr("\n\
 \n\
 \n\
 \n\
@@ -4193,7 +4194,7 @@ ito::RetVal PclTools::pclPoisson(QVector<ito::ParamBase> *paramsMand, QVector<it
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString PclTools::pclGetNormalsAtCogFromMeshDOC = tr("calculates a point cloud with normal information which contains the normal at each triangle of the given \n\
+/*static*/ const QString PclTools::pclGetNormalsAtCogFromMeshDOC = QObject::tr("calculates a point cloud with normal information which contains the normal at each triangle of the given \n\
 polygonal mesh centered at the center of gravity of the triangle. Use indices to filter only certain triangles.");
 
 //----------------------------------------------------------------------------------------------------------------------------------

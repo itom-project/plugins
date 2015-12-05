@@ -83,7 +83,7 @@ bool PclTools::checkFitNormals(const int &fitObj)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclFitModelDOC = tr("fits a geometric model to the given input point cloud using a RANSAC based approach. \n\
+const QString PclTools::pclFitModelDOC = QObject::tr("fits a geometric model to the given input point cloud using a RANSAC based approach. \n\
 \n\
 The method used for this fit is from the sample consensus module of point cloud library. \n\
 (See http://docs.pointclouds.org/1.7.0/group__sample__consensus.html). \n\
@@ -192,7 +192,7 @@ Models with * need an input cloud where normal vectors are defined.");
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclFitModelDObjDOC = tr("fits a geometric model to the given input data object using a RANSAC based approach. \n\
+const QString PclTools::pclFitModelDObjDOC = QObject::tr("fits a geometric model to the given input data object using a RANSAC based approach. \n\
 \n\
 The input data object is transformed to a point cloud where the values are the Z coordinates, the X and Y coordinates are \n\
 calculated using a meshgrid based on the axis scales and offsets. \n\
@@ -371,7 +371,7 @@ Cone (6). Output is the orientation vector (v), the tip point (p) and the openin
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclFitCylinderDOC = tr("fits a cylindrical model to the given input point cloud using a RANSAC based approach (must have normals defined).");
+const QString PclTools::pclFitCylinderDOC = QObject::tr("fits a cylindrical model to the given input point cloud using a RANSAC based approach (must have normals defined).");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitCylinderParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -410,7 +410,7 @@ const QString PclTools::pclFitCylinderDOC = tr("fits a cylindrical model to the 
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclFitSphereDOC = tr("fits a spherical model to the given input point cloud using a RANSAC based approach");
+const QString PclTools::pclFitSphereDOC = QObject::tr("fits a spherical model to the given input point cloud using a RANSAC based approach");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitSphereParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -448,7 +448,7 @@ const QString PclTools::pclFitSphereDOC = tr("fits a spherical model to the give
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclFitCircle2DDOC = tr("fits a planar circle model to the given input point cloud using a RANSAC based approach");
+const QString PclTools::pclFitCircle2DDOC = QObject::tr("fits a planar circle model to the given input point cloud using a RANSAC based approach");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitCircle2DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -486,7 +486,7 @@ const QString PclTools::pclFitCircle2DDOC = tr("fits a planar circle model to th
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclFitCircle3DDOC = tr("fits a 3D-circle model to the given input point cloud using a RANSAC based approach");
+const QString PclTools::pclFitCircle3DDOC = QObject::tr("fits a 3D-circle model to the given input point cloud using a RANSAC based approach");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitCircle3DParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -530,7 +530,7 @@ const QString PclTools::pclFitCircle3DDOC = tr("fits a 3D-circle model to the gi
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclFitPlaneDOC = tr("fits a plane model to the given input point cloud using a RANSAC based approach");
+const QString PclTools::pclFitPlaneDOC = QObject::tr("fits a plane model to the given input point cloud using a RANSAC based approach");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitPlaneParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -572,7 +572,7 @@ const QString PclTools::pclFitPlaneDOC = tr("fits a plane model to the given inp
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclFitLineDOC = tr("fits a line model to the given input point cloud using a RANSAC based approach");
+const QString PclTools::pclFitLineDOC = QObject::tr("fits a line model to the given input point cloud using a RANSAC based approach");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitLineParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -614,7 +614,7 @@ const QString PclTools::pclFitLineDOC = tr("fits a line model to the given input
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclFitConeDOC = tr("fits a conical model to the given input point cloud using a RANSAC based approach (must have normals defined)");
+const QString PclTools::pclFitConeDOC = QObject::tr("fits a conical model to the given input point cloud using a RANSAC based approach (must have normals defined)");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclFitConeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -658,7 +658,7 @@ const QString PclTools::pclFitConeDOC = tr("fits a conical model to the given in
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-const QString PclTools::pclDistanceToModelDOC = tr("Calculates the distances of points of a point cloud to a given model. \n\
+const QString PclTools::pclDistanceToModelDOC = QObject::tr("Calculates the distances of points of a point cloud to a given model. \n\
 \n\
 Possible types are: \n\
 --------------------\n\
@@ -1439,7 +1439,7 @@ SACMODEL_STICK = 17 \n\
 }
 
 //--------------------------------------------------------------------------------------------------------
-/*static*/ const QString PclTools::pclDistanceToModelDObjDOC = tr("calculates the distance from points in a given data object to a model.");
+/*static*/ const QString PclTools::pclDistanceToModelDObjDOC = QObject::tr("calculates the distance from points in a given data object to a model.");
 
 //--------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal PclTools::pclDistanceToModelDObjParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)

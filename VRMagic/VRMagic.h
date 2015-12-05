@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -100,7 +100,6 @@ class VRMagic : public ito::AddInGrabber
         ito::RetVal copyVal(void *vpdObj, ItomSharedSemaphore *waitCond);
 
     private slots:
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -123,7 +122,6 @@ class VRMagicInterface : public ito::AddInInterfaceBase
 
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);
-
 
     signals:
 

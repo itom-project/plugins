@@ -35,7 +35,7 @@
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString OpenCVFilters::cvFindCirclesDoc = tr("Finds circles in a grayscale image using the Hough transform.\n\
+const QString OpenCVFilters::cvFindCirclesDoc = QObject::tr("Finds circles in a grayscale image using the Hough transform.\n\
 \n\
 This filter is a wrapper for the openCV-function cv::HoughCircles.\
 he function finds circles in a grayscale image using a modification of the Hough transform.\
@@ -160,7 +160,7 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvFindChessboardCornersDoc = tr("Finds the positions of internal corners of the chessboard.\n\
+/*static*/ const QString OpenCVFilters::cvFindChessboardCornersDoc = QObject::tr("Finds the positions of internal corners of the chessboard.\n\
 \n\
 This filter is a wrapper for the cv::method cv::findChessboardCorners. \
 \n\
@@ -240,7 +240,7 @@ ito::RetVal OpenCVFilters::cvFindChessboardCorners(QVector<ito::ParamBase> *para
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvDrawChessboardCornersDoc = tr("Renders the detected chessboard corners.\n\
+/*static*/ const QString OpenCVFilters::cvDrawChessboardCornersDoc = QObject::tr("Renders the detected chessboard corners.\n\
 \n\
 The function draws individual chessboard corners detected either as red circles if the board was not found, or as colored corners connected with lines if the board was found.");
 
@@ -308,7 +308,7 @@ The function draws individual chessboard corners detected either as red circles 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvCornerSubPixDoc = tr("Refines the corner locations e.g. from cvFindChessboardCorners.\n\
+/*static*/ const QString OpenCVFilters::cvCornerSubPixDoc = QObject::tr("Refines the corner locations e.g. from cvFindChessboardCorners.\n\
 \n\
 This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-doku for more details\n\
 ");
@@ -389,7 +389,7 @@ This filter is a wrapper for the cv::method cv::cornerSubPix. Check the openCV-d
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvCalibrateCameraDoc = tr("Finds the camera intrinsic and extrinsic parameters from several views of a calibration pattern. \n\
+/*static*/ const QString OpenCVFilters::cvCalibrateCameraDoc = QObject::tr("Finds the camera intrinsic and extrinsic parameters from several views of a calibration pattern. \n\
 \n\
 The function estimates the intrinsic camera parameters and extrinsic parameters for each of the views. The coordinates of 3D object points and their corresponding 2D projections in each view must be specified. \n\
 That may be achieved by using an object with a known geometry and easily detectable feature points. Such an object is called a calibration rig or calibration pattern, and OpenCV has built-in support for \n\
@@ -587,7 +587,7 @@ before using it in the way that for each view, the last rows are cut where eithe
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvEstimateAffine3DDoc = tr("Computes an optimal affine transformation between two 3D point sets \n\
+/*static*/ const QString OpenCVFilters::cvEstimateAffine3DDoc = QObject::tr("Computes an optimal affine transformation between two 3D point sets \n\
 \n\
 The function estimates an optimal 3D affine transformation between two 3D point sets using the RANSAC algorithm. The transformation describes then \n\
 [destination;1] = output * [source;1] for each point in sources and destinations 3D point set.");
@@ -660,7 +660,7 @@ The function estimates an optimal 3D affine transformation between two 3D point 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvUndistortDoc = tr("Transforms an image to compensate for lens distortion. \n\
+/*static*/ const QString OpenCVFilters::cvUndistortDoc = QObject::tr("Transforms an image to compensate for lens distortion. \n\
 \n\
 The function transforms an image to compensate radial and tangential lens distortion. \n\
 The function is simply a combination of cvInitUndistortRectifyMap() (with unity R) and cvRemap() (with bilinear interpolation). \n\
@@ -732,7 +732,7 @@ Those pixels in the destination image, for which there is no correspondent pixel
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvUndistortPointsDoc = tr("Computes the ideal point coordinates from the observed point coordinates. \n\
+/*static*/ const QString OpenCVFilters::cvUndistortPointsDoc = QObject::tr("Computes the ideal point coordinates from the observed point coordinates. \n\
 \n\
 The function is similar to cvUndistort() and cvInitUndistortRectifyMap() but it operates on a sparse set of points instead of a raster image. Also the function performs a reverse transformation to cvProjectPoints() . \n\
 In case of a 3D object, it does not reconstruct its 3D coordinates, but for a planar object, it does, up to a translation vector, if the proper R is specified.");
@@ -813,7 +813,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvInitUndistortRectifyMapDoc = tr("Computes the undistortion and rectification transformation map.");
+/*static*/ const QString OpenCVFilters::cvInitUndistortRectifyMapDoc = QObject::tr("Computes the undistortion and rectification transformation map.");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ ito::RetVal OpenCVFilters::cvInitUndistortRectifyMapParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
@@ -886,7 +886,7 @@ In case of a 3D object, it does not reconstruct its 3D coordinates, but for a pl
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvRemapDoc = tr("Applies a generic geometrical transformation to an image. \n\
+/*static*/ const QString OpenCVFilters::cvRemapDoc = QObject::tr("Applies a generic geometrical transformation to an image. \n\
 \n\
 The function remap transforms the source image using the specified map: \n\
 \n\
@@ -975,7 +975,7 @@ indices in a table of interpolation coefficients.");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvFindHomographyDoc = tr("Finds a perspective transformation between two planes. \n\
+/*static*/ const QString OpenCVFilters::cvFindHomographyDoc = QObject::tr("Finds a perspective transformation between two planes. \n\
 \n\
 The functions find and return the perspective transformation H between the source and the destination planes: \n\
 \n\
@@ -1048,7 +1048,7 @@ The function is used to find initial intrinsic and extrinsic matrices. Homograph
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvFindFundamentalMatDoc = tr("Calculates a fundamental matrix from the corresponding points in two images. \n\
+/*static*/ const QString OpenCVFilters::cvFindFundamentalMatDoc = QObject::tr("Calculates a fundamental matrix from the corresponding points in two images. \n\
 \n\
 The epipolar geometry is described by the following equation: \n\
 \n\
@@ -1136,7 +1136,7 @@ Normally just one matrix is found. But in case of the 7-point algorithm, the fun
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvComputeCorrespondEpilinesDoc = tr("For points in an image of a stereo pair, computes the corresponding epilines in the other image. \n\
+/*static*/ const QString OpenCVFilters::cvComputeCorrespondEpilinesDoc = QObject::tr("For points in an image of a stereo pair, computes the corresponding epilines in the other image. \n\
 \n\
 For every point in one of the two images of a stereo pair, the function finds the equation of the corresponding epipolar line in the other image. \n\
 \n\
@@ -1197,7 +1197,7 @@ Line coefficients are defined up to a scale. They are normalized so that a_i^2+b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-const QString OpenCVFilters::cvWarpPerspectiveDoc = tr("Applies a perspective transformation to an image \n\
+const QString OpenCVFilters::cvWarpPerspectiveDoc = QObject::tr("Applies a perspective transformation to an image \n\
 \n\
 The function warpPerspective transforms the source image using the specified matrix H");
 

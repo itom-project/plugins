@@ -286,7 +286,7 @@ are bounded by max_distance. You only need to indicate parameters belonging to t
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFilters::cvDrawMatcherDoc = tr("Draw the obtained matches points between two images. \n\
+/*static*/ const QString OpenCVFilters::cvDrawMatcherDoc = QObject::tr("Draw the obtained matches points between two images. \n\
 This function draws matches of keypoints from two images in the output image. Match is a line connecting two keypoints (circles).");
 
 //----------------------------------------------------------------------------------------------------------------------------------

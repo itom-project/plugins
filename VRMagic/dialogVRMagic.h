@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -48,7 +48,6 @@ class DialogVRMagic : public ito::AbstractAddInConfigDialog
 		ito::RetVal applyParameters();
 
     private:
-
         Ui::dialogVRMagic ui;
         QMap<QString, ito::Param> m_paramsVals;
 		bool m_firstRun;
@@ -63,7 +62,6 @@ class DialogVRMagic : public ito::AbstractAddInConfigDialog
 		void parametersChanged(QMap<QString, ito::Param> params);
 
     private slots:
-		
 		void on_buttonBox_clicked(QAbstractButton* btn);
 		void on_rangeX_valuesChanged(int minValue, int maxValue);
         void on_rangeY_valuesChanged(int minValue, int maxValue);
@@ -71,7 +69,6 @@ class DialogVRMagic : public ito::AbstractAddInConfigDialog
         void on_btnFullROI_clicked();
         void on_comboTriggerSelector_currentIndexChanged(int index);
         void on_comboTriggerMode_currentIndexChanged(int index);
-		
 };
 
 #endif

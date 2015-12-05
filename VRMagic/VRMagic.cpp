@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -105,7 +105,7 @@ VRMagic::VRMagic() :
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "VRMagic", tr("name of the camera").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("serial_number", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Serial number of device.").toLatin1().data());
+    paramVal = ito::Param("serial_number", ito::ParamBase::String |ito::ParamBase::Readonly, tr("unknown").toLatin1().data(), tr("Serial number of device.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("vendor_ID", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, tr("Vendor ID of device (vid).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -113,7 +113,7 @@ VRMagic::VRMagic() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("group_ID", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, tr("Group ID of device (gid).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("format", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Format of the image. See documentation of SDK for explanation.").toLatin1().data());
+    paramVal = ito::Param("format", ito::ParamBase::String |ito::ParamBase::Readonly, tr("unknown").toLatin1().data(), tr("Format of the image. See documentation of SDK for explanation.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("brightness", ito::ParamBase::Int, 0, 255, 128, tr("Brightness of camera / framegrabber (0 to 255)").toLatin1().data());
@@ -130,11 +130,11 @@ VRMagic::VRMagic() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 8, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth).").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("signal_source", ito::ParamBase::String, "svideo", tr("Signal source of the grabber [svideo, composite, yc].").toLatin1().data());
+    paramVal = ito::Param("signal_source", ito::ParamBase::String, tr("svideo").toLatin1().data(), tr("Signal source of the grabber [svideo, composite, yc].").toLatin1().data());
     ito::StringMeta sm(ito::StringMeta::String);
-    sm.addItem("svideo");
-    sm.addItem("composite");
-    sm.addItem("yc");
+    sm.addItem(tr("svideo").toLatin1().data());
+    sm.addItem(tr("composite").toLatin1().data());
+    sm.addItem(tr("yc").toLatin1().data());
     paramVal.setMeta(&sm, false);
     m_params.insert(paramVal.getName(), paramVal);
     
@@ -186,7 +186,7 @@ ito::RetVal VRMagic::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Para
             retValue += checkError(VRmUsbCamGetDeviceKeyListEntry(device_num, &m_device_key), tr("Get device key of chosen device").toLatin1().data());
         }
                 
-        if(!retValue.containsError() && !m_device_key->m_busy)
+        if (!retValue.containsError() && !m_device_key->m_busy)
         {
             // read device information
             VRmWORD vendor_id;
@@ -382,7 +382,7 @@ ito::RetVal VRMagic::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphor
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(retValue == ito::retOk)
+    if (retValue == ito::retOk)
     {
         //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
         retValue += apiGetParamFromMapByKey(m_params, key, it, false);
@@ -426,20 +426,20 @@ ito::RetVal VRMagic::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
     int running = 0;
 
     //parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
         retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         if (grabberStartedCount()) 
         {
@@ -509,7 +509,7 @@ ito::RetVal VRMagic::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSema
         }
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
         retValue += checkData();
@@ -582,17 +582,17 @@ ito::RetVal VRMagic::synchronizeCameraSettings(int what /*= sAll */)
         VRmPropId signalsource;
         retValue += checkError(VRmUsbCamGetPropertyValueE(m_handle, VRM_PROPID_CAM_SIGNAL_SOURCE_E, &signalsource), tr("Get signal source").toLatin1().data());
 
-        if(!retValue.containsError())
+        if (!retValue.containsError())
         {
-            if(signalsource == VRM_PROPID_CAM_SIGNAL_SOURCE_SVIDEO)
+            if (signalsource == VRM_PROPID_CAM_SIGNAL_SOURCE_SVIDEO)
             {
                 it->setVal<char*>("svideo");
             }
-            else if(signalsource == VRM_PROPID_CAM_SIGNAL_SOURCE_COMPOSITE)
+            else if (signalsource == VRM_PROPID_CAM_SIGNAL_SOURCE_COMPOSITE)
             {
                 it->setVal<char*>("composite");
             }
-            else if(signalsource == VRM_PROPID_CAM_SIGNAL_SOURCE_YC)
+            else if (signalsource == VRM_PROPID_CAM_SIGNAL_SOURCE_YC)
             {
                 it->setVal<char*>("yc");
             }
@@ -612,7 +612,7 @@ ito::RetVal VRMagic::startDevice(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    if(grabberStartedCount() < 1)
+    if (grabberStartedCount() < 1)
     {
         setGrabberStarted(0);
         retValue += checkError(VRmUsbCamStart(m_handle), tr("Start Camera").toLatin1().data());
@@ -640,12 +640,12 @@ ito::RetVal VRMagic::stopDevice(ItomSharedSemaphore *waitCond)
 
     decGrabberStarted();
 
-    if(grabberStartedCount() < 1)
+    if (grabberStartedCount() < 1)
     {
         retValue += checkError(VRmUsbCamStop(m_handle), tr("Stop Camera").toLatin1().data());
     }
 
-    if(grabberStartedCount() < 0)
+    if (grabberStartedCount() < 0)
     {
         retValue += ito::RetVal(ito::retWarning, 0, tr("stopDevice ignored since camera was not started.").toLatin1().data());
         setGrabberStarted(0);
@@ -767,7 +767,7 @@ ito::RetVal VRMagic::retrieveData(ito::DataObject *externalDataObject)
 
     if (!retValue.containsError())
     {
-        if(copyExternal)
+        if (copyExternal)
         {
             const cv::Mat* internalMat = m_data.getCvPlaneMat(0);
             cv::Mat* externalMat = externalDataObject->getCvPlaneMat(0);
@@ -798,11 +798,11 @@ ito::RetVal VRMagic::getVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 
     retValue += retrieveData();
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
 
-        if(dObj)
+        if (dObj)
         {
             (*dObj) = this->m_data;
         }
@@ -835,7 +835,7 @@ ito::RetVal VRMagic::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
     ito::RetVal retValue(ito::retOk);
     ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
 
-    if(!dObj)
+    if (!dObj)
     {
         retValue += ito::RetVal(ito::retError, 0, tr("Empty object handle retrieved from caller").toLatin1().data());
     }
@@ -844,12 +844,12 @@ ito::RetVal VRMagic::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
         retValue += checkData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         retValue += retrieveData(dObj);  
     }
 
-    if(!retValue.containsError())
+    if (!retValue.containsError())
     {
         sendDataToListeners(0); //don't wait for live data, since user should get the data as fast as possible.
     }

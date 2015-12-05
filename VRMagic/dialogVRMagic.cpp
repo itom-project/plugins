@@ -1,7 +1,7 @@
 ﻿/* ********************************************************************
     Plugin "VRMagic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut für Technische Optik, Universität Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -49,6 +49,7 @@ void DialogVRMagic::enableDialog(bool enabled)
     ui.groupBoxIntegration->setEnabled(enabled);
     ui.groupBoxSize->setEnabled(enabled);
 }
+
 //---------------------------------------------------------------------------------------------------------------------
 void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 {
@@ -65,7 +66,7 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 		int binning = params["binning"].getVal<int>();
 		ito::IntMeta *binningMeta = static_cast<ito::IntMeta*>(params["binning"].getMeta());
 		ui.combo_bin->clear();
-		for(int i = binningMeta->getMin(); i <= binningMeta->getMax(); i += 101)
+		for (int i = binningMeta->getMin(); i <= binningMeta->getMax(); i += 101)
 		{
             if (i != 303)
             {
@@ -77,7 +78,7 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 		int bpp = params["bpp"].getVal<int>();
 		ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
 		ui.combo_bpp->clear();
-		for(int i = bppMeta->getMin(); i <= bppMeta->getMax(); i+=2)
+		for (int i = bppMeta->getMin(); i <= bppMeta->getMax(); i+=2)
 		{
 			ui.combo_bpp->addItem(QString("%1").arg(i), i);
 		}
@@ -105,6 +106,7 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 		*/
         m_firstRun = false;
     }
+
     if (!m_inEditing)
     {
         m_inEditing = true;
@@ -147,9 +149,9 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 		ui.spinSizeY->setValue(params["sizey"].getVal<int>());
         
 		int bin = params["binning"].getVal<int>();
-		for(int i = 0; i < ui.combo_bin->count(); ++i)
+		for (int i = 0; i < ui.combo_bin->count(); ++i)
 		{
-			if(ui.combo_bin->itemData(i, Qt::UserRole).toInt() == bin)
+			if (ui.combo_bin->itemData(i, Qt::UserRole).toInt() == bin)
 			{
 				ui.combo_bin->setCurrentIndex(i);
 				break;
@@ -157,9 +159,9 @@ void DialogVRMagic::parametersChanged(QMap<QString, ito::Param> params)
 		}
 		
 		int bpp = params["bpp"].getVal<int>();
-		for(int i = 0; i < ui.combo_bpp->count(); ++i)
+		for (int i = 0; i < ui.combo_bpp->count(); ++i)
 		{
-			if(ui.combo_bpp->itemData(i, 32).toInt() == bpp)
+			if (ui.combo_bpp->itemData(i, 32).toInt() == bpp)
 			{
 				ui.combo_bpp->setCurrentIndex(i);
 				break;
@@ -206,7 +208,7 @@ ito::RetVal DialogVRMagic::applyParameters()
     QVector<QSharedPointer<ito::ParamBase> > values;
 
  //   //only send parameters which are changed
-	//if(ui.rangeX->isEnabled() || ui.rangeY->isEnabled())
+	//if (ui.rangeX->isEnabled() || ui.rangeY->isEnabled())
  //   {
  //       int x0, x1, y0, y1;
  //       ui.rangeX->values(x0,x1);
@@ -310,16 +312,16 @@ ito::RetVal DialogVRMagic::applyParameters()
 	//    }
  //   }
 
-	if(ui.sliderWidget_brightness->isEnabled())
+	if (ui.sliderWidget_brightness->isEnabled())
     {
         int brightness = ui.sliderWidget_brightness->value();
-        if(qAbs(m_currentParameters["brightness"].getVal<int>() - brightness) > std::numeric_limits<int>::epsilon())
+        if (qAbs(m_currentParameters["brightness"].getVal<int>() - brightness) > std::numeric_limits<int>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("brightness", ito::ParamBase::Int, brightness)));
         }
     }
 
-	if(ui.sliderWidget_contrast->isEnabled())
+	if (ui.sliderWidget_contrast->isEnabled())
 	{
 		int contrast = ui.sliderWidget_contrast->value();
         if (qAbs(m_currentParameters["contrast"].getVal<int>() - contrast) > std::numeric_limits<int>::epsilon())
@@ -334,7 +336,6 @@ ito::RetVal DialogVRMagic::applyParameters()
 
     return retValue;
 }
-
 
 //------------------------------------------------------------------------------
 void DialogVRMagic::on_btnFullROI_clicked()
@@ -372,7 +373,6 @@ void DialogVRMagic::on_buttonBox_clicked(QAbstractButton* btn)
         applyParameters(); //ApplyRole
     }
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogVRMagic::on_rangeX_valuesChanged(int minValue, int maxValue)
