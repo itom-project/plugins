@@ -192,7 +192,12 @@ ito::RetVal OpenCVFilters::cvFindChessboardCornersParams(QVector<ito::Param> *pa
     paramsMand->append(ito::Param("corners", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "output: float32-dataObject, [n x 2] with the coordinates of n detected corner points"));
 
     int allflags = cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE | cv::CALIB_CB_FILTER_QUADS | cv::CALIB_CB_FAST_CHECK;
-    paramsOpt->append(ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE, new ito::IntMeta(0, allflags), "additional flags (OR-combination), see openCV-docu"));
+    QString flagsdocs = tr("OR Combination of various flags: \n\n");
+    flagsdocs += QString("* CV_CALIB_CB_ADAPTIVE_THRESH (%1) - Use adaptive thresholding to convert the image to black and white, rather than a fixed threshold level (computed from the average image brightness) [default], \n").arg(CV_CALIB_CB_ADAPTIVE_THRESH);
+    flagsdocs += QString("* CV_CALIB_CB_NORMALIZE_IMAGE (%1) - Normalize the image gamma with equalizeHist() before applying fixed or adaptive thresholding [default], \n").arg(CV_CALIB_CB_NORMALIZE_IMAGE);
+    flagsdocs += QString("* CV_CALIB_CB_FILTER_QUADS (%1) - Use additional criteria (like contour area, perimeter, square-like shape) to filter out false quads extracted at the contour retrieval stage, \n").arg(CV_CALIB_CB_FILTER_QUADS);
+    flagsdocs += QString("* CALIB_CB_FAST_CHECK (%1) - Run a fast check on the image that looks for chessboard corners, and shortcut the call if none is found. This can drastically speed up the call in the degenerate condition when no chessboard is observed (recommended to pre-check image).").arg(CV_CALIB_CB_FAST_CHECK);
+    paramsOpt->append(ito::Param("flags", ito::ParamBase::Int | ito::ParamBase::In, cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE, new ito::IntMeta(0, allflags), flagsdocs.toLatin1().data()));
 
     paramsOut->append(ito::Param("result", ito::ParamBase::Int | ito::ParamBase::Out, 0, new ito::IntMeta(0,1), "0: detection failed, 1: detection has been successful"));
 
