@@ -5,26 +5,16 @@
 #include "pluginVersion.h"
 #define _USE_MATH_DEFINES  // needs to be defined to enable standard declartions of PI constant
 
-//#include <QString.h>
-//#include <qbytearray.h>
-//#include <qstringlist.h>
 #include <QtCore/QtPlugin>
+#include <qset.h>
 
-//#include "NIDAQmx.h"        // include NI-DAQmx Library functions
 
 #include "cbw.h"            // include cbw 
-//#include <qregexp.h>
 #include "common/helperCommon.h"
 #include "DataObject/dataobj.h"
 #include "common/typeDefs.h"
 
-//#include <qdebug.h>
-//#include <qmessagebox.h>
-//#include "../../common/helperCommon.h"
-//#include "dockWidgetMeasurementComputing.h"
-
-static char InitList[5] = {0, 0, 0, 0, 0};  /*!<A map with successfull initialized boards (max = 5) */
-static char Initnum = 0;    /*!< Number of successfull initialized boards */
+static QSet<int> InitializedBoards = QSet<int>(); /*!< a list with all board numbers that are currently initialized. */
 
 //----------------------------------------------------------------------------------------------------------------------------------
 MeasurementComputingInterface::MeasurementComputingInterface() :
@@ -359,16 +349,13 @@ ito::RetVal MeasurementComputing::init(QVector<ito::ParamBase> *paramsMand, QVec
 
     m_boardNum = paramsMand->at(0).getVal<int>();
 
-    if (!retValue.containsError())
+    if (InitializedBoards.contains(m_boardNum))
     {
-        if (++InitList[m_boardNum] > 1)
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("Instance with board number already initialized").toLatin1().data());
-        }
-        else
-        {
-            Initnum++; // nes running instance of this board number
-        }
+        retValue += ito::RetVal::format(ito::retError, 0, tr("Instance with board number %i already initialized").toLatin1().data(), m_boardNum);
+    }
+    else
+    {
+        InitializedBoards.insert(m_boardNum);
     }
 	
 	if (!retValue.containsError())
@@ -587,7 +574,7 @@ ito::RetVal MeasurementComputing::close(ItomSharedSemaphore *waitCond)
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
 
-    InitList[m_boardNum]--;
+    InitializedBoards.remove(m_boardNum);
 
     if (waitCond)
     {
@@ -790,7 +777,6 @@ ito::RetVal MeasurementComputing::startDevice(ItomSharedSemaphore *waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-        //ItomSharedSemaphore::deleteSemaphore(waitCond);
     }
 
     return retValue;
@@ -806,7 +792,6 @@ ito::RetVal MeasurementComputing::stopDevice(ItomSharedSemaphore *waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-        //ItomSharedSemaphore::deleteSemaphore(waitCond);
     }
 
     return retValue;
@@ -1159,7 +1144,7 @@ ito::RetVal MeasurementComputing::setVal(const char *dObj, const int length, Ito
     return retValue;
 }
 
-
+//--------------------------------------------------------------------------------------------------------------------------
 ito::RetVal MeasurementComputing::execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond)
 {
     ito::RetVal retValue = ito::retOk;
@@ -1358,7 +1343,7 @@ ito::RetVal MeasurementComputing::getTIn(ito::ParamBase &channel, ito::ParamBase
 {
     ito::RetVal retValue(ito::retOk);
 
-	int Options = FILTER; //a smoothing function is applied to temeprature readings. When selected 10 samples are read from the specified channel and averaged. 
+	int Options = FILTER; //a smoothing function is applied to temprature readings. When selected 10 samples are read from the specified channel and averaged. 
 	float val = -1;
 	int chan = channel.getVal<int>();	
 

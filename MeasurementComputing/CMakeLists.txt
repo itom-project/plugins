@@ -45,10 +45,10 @@ IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
 ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-FIND_PATH(MC_DAQ_SDK_DIR cbw.h PATHS "C:/Users/Public/Documents/Measurement Computing/DAQ/C" DOC "Directory of the DAQ C library, must contain the file cbw.h (e.g. C:/Users/Public/Documents/Measurement Computing/DAQ/C)")
-FIND_FILE(MC_DAQ_BINARY ${dll_name} PATHS "C:/Program Files/InstaCal" "D:/Programme/InstaCal" DOC "Library cbw32.dll or cbw64.dll that is found in the directory of the InstaCal application.")
+FIND_PATH(MeasurementComputing_DAQ_SDK_DIR cbw.h PATHS "C:/Users/Public/Documents/Measurement Computing/DAQ/C" DOC "Directory of the DAQ C library, must contain the file cbw.h (e.g. C:/Users/Public/Documents/Measurement Computing/DAQ/C)")
+FIND_FILE(MeasurementComputing_DAQ_BINARY ${dll_name} PATHS "C:/Program Files/InstaCal" "D:/Programme/InstaCal" "C:/Program Files (x86)/Measurement Computing/DAQ" DOC "Library cbw32.dll or cbw64.dll that is found in the directory of the InstaCal application.")
 
-IF(MC_DAQ_SDK_DIR AND MC_DAQ_BINARY)
+IF(MeasurementComputing_DAQ_SDK_DIR AND MeasurementComputing_DAQ_BINARY)
 
 	# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 	IF (DEFINED CMAKE_BUILD_TYPE)
@@ -66,12 +66,12 @@ IF(MC_DAQ_SDK_DIR AND MC_DAQ_BINARY)
 		${CMAKE_CURRENT_SOURCE_DIR}
 		${ITOM_SDK_INCLUDE_DIRS}
 		${VISUALLEAKDETECTOR_INCLUDE_DIR}
-		${MC_DAQ_SDK_DIR}
+		${MeasurementComputing_DAQ_SDK_DIR}
 	)
 
 	LINK_DIRECTORIES(
 		${USBADDA_LIB_DIR}
-		${MC_DAQ_SDK_DIR}
+		${MeasurementComputing_DAQ_SDK_DIR}
 	)
 
 	set(plugin_HEADERS
@@ -137,7 +137,7 @@ IF(MC_DAQ_SDK_DIR AND MC_DAQ_BINARY)
 	POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
 	# copy libs to itoms lib folder
-	POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} MC_DAQ_BINARY)
+	POST_BUILD_COPY_FILE_TO_LIB_FOLDER(${target_name} MeasurementComputing_DAQ_BINARY)
 
 ELSE()
 	message(WARNING "C-SDK directory of Measurement Computing DAQ or install directory of InstaCal application could not be found. ${target_name} will not be build")    

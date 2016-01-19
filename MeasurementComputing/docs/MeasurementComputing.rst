@@ -144,8 +144,8 @@ The table below shows the range codes for the **input_range_code** and **output_
 	|BIPPT078VOLTS   |-0.078 to +0.078   |                                 |
 	+----------------+-------------------+----------------+----------------+
 
-ExecFunction
-============
+Additional functions (exec functions)
+=======================================
 
 The plugin execFunctions are:
 
@@ -339,3 +339,17 @@ The counter input is used by the execFunction **getCIn**. With the optional para
 	# reset the counter
 	resetvalue = 0 
 	instance.exec("getCIn", channel, resetvalue)
+    
+Installation
+=============
+
+You have to install the MCC Daq Software, namely the tool "InstaCal and Universal Library for Windows". Then, indicate the following variables in CMake to
+properly configure the build of this plugin:
+
+* MeasurementComputing_DAQ_BINARY: e.g. C:/Program Files (x86)/Measurement Computing/DAQ/cbw64.dll (or cbw32.dll for 32bit itom)
+* MeasurementComputing_DAQ_SDK_DIR: e.g. C:/Users/Public/Documents/Measurement Computing/DAQ/C
+
+Changelog
+==========
+
+* 2016-01-18: This plugin was added to the public repository and will be part of setups > itom 2.0.0
