@@ -1099,7 +1099,7 @@ ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutM
     {
         char* temp = param->getVal<char*>(); //borrowed reference
         int len = temp[0] == 0 ? 0 : (temp[1] == 0 ? 1 : (temp[2] == 0 ? 2 : 3));
-        endline = QByteArray::fromRawData(temp,len);
+        endline = QByteArray::fromRawData(temp, len);
         //
         //endline[0] = temp[0];
         //endline[1] = temp[1];
@@ -1154,7 +1154,7 @@ ito::RetVal PIPiezoCtrl::PIReadString(QByteArray &result, int &len, int timeoutM
                 if (pos >= 0) //found
                 {
                     done = true;
-                    result = result.left(pos);   
+                    result = result.left(pos);
                 }
             }
 #endif
