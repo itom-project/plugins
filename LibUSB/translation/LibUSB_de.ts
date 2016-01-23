@@ -126,12 +126,12 @@
     <message>
         <location line="+2"/>
         <source>Endpoint index for reading operations. The used index is LIBUSB_ENDPOINT_IN + endpoint_read, with LIBUSB_ENDPOINT_IN = %1 (default: initialization parameter &apos;endpoint&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Endpoint-Index für Leseoperationen. Der benutzte Index entspricht LIBUSB_ENDPOINT_IN + endpoint_read, mit LIBUSB_ENDPOINT_IN = %1(Standard: Inizialisierungsparameter &apos;endpoint&apos;)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Endpoint index for writing operations. The used index is LIBUSB_ENDPOINT_OUT + endpoint_write, with LIBUSB_ENDPOINT_OUT = %1  (default: initialization parameter &apos;endpoint&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Endpoint-Index für Schreiboperationen. Der benutzte Index entspricht LIBUSB_ENDPOINT_OUT + endpoint_write, mit LIBUSB_ENDPOINT_OUT = %1(Standard: Inizialisierungsparameter &apos;endpoint&apos;)</translation>
     </message>
     <message>
         <location line="+304"/>
@@ -146,7 +146,7 @@
     <message>
         <location line="+8"/>
         <source>no device found to open</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Kein Gerät zum Öffnen vorhanden</translation>
     </message>
     <message>
         <location line="+178"/>
@@ -166,7 +166,7 @@
     <message>
         <location line="+60"/>
         <source>Number of written characters differ from designated size</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Anzahl der übergebenen Zeichen entspricht nicht der Vorgabe</translation>
     </message>
 </context>
 <context>
@@ -199,12 +199,12 @@
     <message>
         <location line="+2"/>
         <source>Debug level: 0 (LIBUSB_LOG_LEVEL_NONE): no messages ever printed by the library. 1 (ERROR): error messages are printed to stderr, 2 (WARNING): warning and error messages are printed to stderr, 3 (INFO): informational messages are printed to stdout, warning and error messages are printed to stderr, 4 (DEBUG): like 3 but debug messages are also printed to stdout.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Debug-Level: 0 (LIBUSB_LOG_LEVEL_NONE): Keine Meldungen der Library. 1 (ERROR): Fehlermeldung wird an &apos;stderr&apos; übergeben, 2 (WARNING): Warnungen und Fehlermeldung werden an &apos;stderr&apos; übergeben, 3 (INFO): Informationen werden an &apos;stdout&apos;, Warnungen und Fehlermeldung an &apos;stderr&apos; übergeben, 4 (DEBUG): Wie 3, nur dass Debug-Meldungen ebenfalls an &apos;stdout&apos; übergeben werden.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>If true, all information about connected devices is print to the console.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Wenn aktiviert, werden alle Informationen über das verbundene Gerät über die Konsole ausgegeben.</translation>
     </message>
     <message>
         <source>Initialised &apos;debug&apos;-parameter with given value. If debug-param is true, all out and inputs are written to dockingWidget</source>

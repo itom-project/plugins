@@ -181,8 +181,16 @@ if (PLUGIN_LIBUSB)
     ADD_SUBDIRECTORY(LibUSB)
 endif (PLUGIN_LIBUSB)
 
+# MeasurementComputing
 IF(WIN32)
+OPTION(PLUGIN_MeasurementComputing "Build with this plugin." ON)
+if (PLUGIN_MeasurementComputing)
+	ADD_SUBDIRECTORY(MeasurementComputing)
+endif (PLUGIN_MeasurementComputing)
+ENDIF(WIN32)
+
 # MSMediaFoundation
+IF(WIN32)
 OPTION(PLUGIN_MSMediaFoundation "Build with this plugin." ON)
 if (PLUGIN_MSMediaFoundation)
     ADD_SUBDIRECTORY(MSMediaFoundation)

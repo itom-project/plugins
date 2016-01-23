@@ -112,6 +112,7 @@ class SerialIO : public ito::AddInDataIO //, public DummyGrabberInterface
         bool m_debugMode;   /*! Enables / Disables live connection to dockingwidge-protocol */
         bool m_debugIgnoreEmpty;   /*! Enables / Disables to ignore empty messages */
         static int m_instCounter;
+        QByteArray m_preBuf;
 
     signals:
         void serialLog(QByteArray data, QByteArray endline, const char InOutChar);

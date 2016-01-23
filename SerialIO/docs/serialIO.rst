@@ -111,6 +111,17 @@ parameters can be changed using *setParam*.
         "\n","\n\r","\r" or ""
     
     Use the empty endline character string ("") if you want to have full control.
+**endlineRead**: {str}
+    Same behaviour like **endline**, however it determines the delimiter for incoming strings and is only
+    used or evaluated in **readline** is 1. The user is referred to **readline**.
+**readline**: {int}
+    Per default, *readline* is set to 0. This means that the *getVal* command returns the values that are currently
+    available at the input buffer of the computer. If you call *getVal* too fast, it might be, that the full answer
+    is not available yet. Then you need to recall *getVal* again. If you set *readline* to 1, *getVal* repeatedly
+    collects values from the input buffer and checks if *endlineRead* is contained in the string. If so, *getVal* returns
+    all characters until the first appearance of *endlineRead* (without the endline character itself). Remaining characters
+    are recognized at the next call to *getVal*. If no endline characters is detected within *timeout* seconds, a timeout (error code: 256)
+    is raised.
 **sendDelay**: {str}
     This value represents a delay (in ms) after each character that is send and received
 **timeout**: {double}
@@ -155,6 +166,31 @@ the size of the allocated buffer *ba*. If the serial port does not respond at al
 *getVal* does not wait until the entire buffer is filled or the timeout occurs but returns immediately with the content of the buffer that
 has been filled until this time. In order to get the full answer, it is also possible to repeatedly call *getVal*.
 
+Configure the serialIO plugin to wait for full answers
+========================================================
+
+Per default, the user will send a request to a device. The device will then probably answer to this request using a specified string pattern.
+If the parameter **readline** is set to 0 (default), a call to *getVal* (see usage above), will only return all characters that fit into the
+buffer size and are currently available at the input buffer of the serial port. If the device need more time for the entire answer, the remaining
+part of the answer can only be obtained by continuously calling *getVal* until the entire answer is obtained.
+
+Usually, an answer always ends by a certain endline character sequence. If this sequence contains 1 or 2 characters, you can also configure
+the serialIO plugin such that *getVal* will continuously check the input buffer of the serial port and collect all characters until the endline
+sequence (parameter **endlineRead**) is detected or a timeout occurred. If the endline sequence was found, the characters until but without the
+first endline sequence are returned by the passed buffer. Remaining characters are put onto an internal buffer and considered at the next call
+to *getVal*. By this configuration you will automatically wait for the full answer without further programming work and without idle delay times.
+
+An example for this alternative approach is:
+
+.. code-block:: python
+    
+    serial.setParam("readline", 1)
+    serial.setParam("endlineRead", "\n")
+    buffer = bytearray(20)
+    serial.setVal("POS?")
+    num = serial.getVal(buffer)
+    print("full answer from device", buffer[0:num])
+
 Clear input or output buffer
 ============================
 
@@ -182,3 +218,9 @@ your user to the **dialout** group, logout once and login again.
     sudo adduser USERNAME dialout
 
 where USERNAME ist the username under which you are running **itom**
+
+Changelog
+===========
+
+* itom 1.2.0 is shipped with version 0.0.2 of serialIO
+* parameters 'readline' and 'endlineRead' are available in serialIO version >= 1.0.0

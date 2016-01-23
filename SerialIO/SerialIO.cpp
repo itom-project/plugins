@@ -1129,31 +1129,31 @@ The plugin is implemented for Windows or Linux; the possible baudrates depend on
 flow bitmask \n\
 -------------- \n\
 \n\
-The flow bitmask is an OR combination of the following possible values: \n\
-Xon/Xoff - default: Xoff, Xon=1 (1. bit) \n\
-rts control - default: disabled, enabled=2, handshake=4 or (4+2) (2. and 3. bit) \n\
-cts control - default: disabled, enabled=8 (4. bit) \n\
+The flow bitmask is an OR combination of the following possible values:\n\
+Xon/Xoff - default: Xoff, Xon=1 (1. bit)\n\
+rts control - default: disabled, enabled=2, handshake=4 or (4+2) (2. and 3. bit)\n\
+cts control - default: disabled, enabled=8 (4. bit)\n\
 dtr control - default: disabled, enabled = 16, handshake = 32 or (32+16) (5. and 6. bit) \n\
 dsr control - default: disabled, enabled = 64 \n\
 \n\
-If an endline character is given, this is automatically appended to each sequence that is send using the setVal-command. \n\
-On the other side, any obtained value from the serial port is scanned for this endline character and automatically split. \n\
-Use an empty endline character if you want to organize all this by yourself. \n\
+If an endline character is given, this is automatically appended to each sequence that is send using the setVal-command.\n\
+On the other side, any obtained value from the serial port is scanned for 'endlineRead' character and automatically split.\n\
+Use an empty endline character if you want to organize all this by yourself.\n\
 \n\
-Example \n\
--------- \n\
+Example\n\
+--------\n\
 \n\
-.. \n\
+..\n\
     \n\
-    s = dataIO(\"SerialIO\",port=1,baud=9600,endline=\"\",bits=8,stopbits=1,parity=0,flow=16) \n\
+    s = dataIO(\"SerialIO\",port=1,baud=9600,endline=\"\",bits=8,stopbits=1,parity=0,flow=16)\n\
     \n\
-    #send command \n\
-    sendString = bytearray(b\"POS?\") #or bytearray([80,79,83,63]); \n\
-    s.setVal(sendString) \n\
+    #send command\n\
+    sendString = bytearray(b\"POS?\") #or bytearray([80,79,83,63]);\n\
+    s.setVal(sendString)\n\
     \n\
-    #get result \n\
-    answer = bytearray(9) #supposed length is 9 characters \n\
-    num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns ");
+    #get result\n\
+    answer = bytearray(9) #supposed length is 9 characters\n\
+    num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns");
 
     m_author = "H. Bieger, C. Kohler, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -1221,6 +1221,8 @@ const ito::RetVal SerialIO::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(false)
 {
+    m_preBuf[0] = '\0';
+
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "SerialIO", NULL);
     m_params.insert(paramVal.getName(), paramVal);
 
@@ -1242,6 +1244,13 @@ SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(fal
     paramVal = ito::Param("flow", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 127, 0, tr("Bitmask for flow control as integer").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("endline", ito::ParamBase::String | ito::ParamBase::NoAutosave, "\n", tr("Endline character, will be added automatically during setVal").toLatin1().data());
+    ito::StringMeta stringMeta(ito::StringMeta::RegExp, "^.{0,2}$");
+    paramVal.setMeta(&stringMeta, false);
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("endlineRead", ito::ParamBase::String | ito::ParamBase::NoAutosave, "\n", tr("Endline character, will be looking for during getVal by using readline").toLatin1().data());
+    paramVal.setMeta(&stringMeta, false);
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("readline", ito::ParamBase::Int, 0, 1, 0, tr("If true, reading next line terminated by endlineRead.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("sendDelay", ito::ParamBase::Int | ito::ParamBase::NoAutosave, 0, 65000, 0, tr("0: write output buffer as block, else: single characters with delay (1..65000 ms)").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -1298,33 +1307,46 @@ SerialIO::~SerialIO()
 ito::RetVal SerialIO::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    ito::RetVal retValue;
+    QString key;
+    bool hasIndex = false;
+    int index;
+    QString suffix;
+    ParamMapIterator it;
 
-    if (key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
+
+    if(retValue == ito::retOk)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of requested parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, false);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::const_iterator paramIt = m_params.constFind(key);
-        if (paramIt != m_params.constEnd())
+        //put your switch-case.. for getting the right value here
+
+        //finally, save the desired value in the argument val (this is a shared pointer!)
+        //if the requested parameter name has an index, e.g. roi[0], then the sub-value of the
+        //array is split and returned using the api-function apiGetParam
+        if (hasIndex)
         {
-            *val = paramIt.value();
+            *val = apiGetParam(*it, hasIndex, index, retValue);
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("parameter not found in m_params.").toLatin1().data());
+            *val = *it;
         }
     }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
         waitCond->release();
-
     }
 
-   return retValue;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1332,79 +1354,53 @@ ito::RetVal SerialIO::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retValue(ito::retOk);
-    QString key = val->getName();
+    QString key;
+    bool hasIndex;
+    int index;
+    QString suffix;
+    ParamMapIterator it;
 
-    if (key == "")
+    //parse the given parameter-name (if you support indexed or suffix-based parameters)
+    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
+
+    if(!retValue.containsError())
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("name of given parameter is empty.").toLatin1().data());
+        //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
+        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
     }
-    else
+
+    if(!retValue.containsError())
     {
-        QMap<QString, ito::Param>::iterator paramIt = m_params.find(key);
-        if (paramIt != m_params.end())
-        {
-            int baud = 0;
-            int bits = 0;
-            int stopbits = 0;
-            int parity = 0;
-            int flow = 0;
-            char *endline = NULL;
-            int sendDelay = 0;
-            int timeout = 0;
-
-            if (paramIt->getFlags() & ito::ParamBase::Readonly)    //check read-only
-            {
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Parameter is read only, input ignored").toLatin1().data());
-                goto end;
-            }
-            else if (val->isNumeric() && paramIt->isNumeric())
-            {
-                double curval = val->getVal<double>();
-                if (curval > paramIt->getMax())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is larger than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else if (curval < paramIt->getMin())
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("New value is smaller than parameter range, input ignored").toLatin1().data());
-                    goto end;
-                }
-                else
-                {
-                    paramIt.value().setVal<double>(curval);
-                }
-            }
-            else if (paramIt->getType() == val->getType())
-            {
-                retValue += paramIt.value().copyValueFrom(&(*val));
-            }
-            else
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("Parameter type conflict").toLatin1().data());
-                goto end;
-            }
-
-            baud = m_params["baud"].getVal<int>();
-            bits = m_params["bits"].getVal<int>();
-            stopbits = m_params["stopbits"].getVal<int>();
-            parity = m_params["parity"].getVal<int>();
-            flow = m_params["flow"].getVal<int>();
-            endline = m_params["endline"].getVal<char*>(); //borrowed reference
-            sendDelay = m_params["sendDelay"].getVal<int>();
-            timeout = (int)(m_params["timeout"].getVal<double>() * 1000.0 + 0.5);
-            m_debugMode = (bool)(m_params["debug"].getVal<int>());
-            m_debugIgnoreEmpty = (bool)(m_params["debugIgnoreEmpty"].getVal<int>());
-            retValue += m_serport.setparams(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
-        }
-        else
-        {
-            retValue += ito::RetVal(ito::retError, 0, tr("Parameter not found").toLatin1().data());
-        }
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
-    emit parametersChanged(m_params);
 
-end:
+    if(!retValue.containsError())
+    {
+        //all parameters that don't need further checks can simply be assigned
+        //to the value in m_params (the rest is already checked above)
+        retValue += it->copyValueFrom( &(*val) );
+    }
+
+    if (!retValue.containsError())
+    {
+        int baud = m_params["baud"].getVal<int>();
+        int bits = m_params["bits"].getVal<int>();
+        int stopbits = m_params["stopbits"].getVal<int>();
+        int parity = m_params["parity"].getVal<int>();
+        int flow = m_params["flow"].getVal<int>();
+        char *endline = m_params["endline"].getVal<char*>(); //borrowed reference
+        int sendDelay = m_params["sendDelay"].getVal<int>();
+        int timeout = (int)(m_params["timeout"].getVal<double>() * 1000.0 + 0.5);
+        m_debugMode = (bool)(m_params["debug"].getVal<int>());
+        m_debugIgnoreEmpty = (bool)(m_params["debugIgnoreEmpty"].getVal<int>());
+        retValue += m_serport.setparams(baud, endline, bits, stopbits, parity, flow, sendDelay, timeout);
+    }
+
+    if(!retValue.containsError())
+    {
+        emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -1458,6 +1454,8 @@ ito::RetVal SerialIO::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::Par
     baud = m_params["baud"].getVal<int>();
 
     retval += m_params["endline"].copyValueFrom(&((*paramsMand)[2]));
+    retval += m_params["endlineRead"].copyValueFrom(&((*paramsMand)[2]));
+    
     tendline = m_params["endline"].getVal<char *>(); //borrowed reference
     strncpy(endline, tendline, 3);
 //    sprintf(endline, "%s", tendline);
@@ -1599,8 +1597,108 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
 {
 //    ito::DataObject *dObj = reinterpret_cast<ito::DataObject *>(vpdObj);
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval;
-    retval = m_serport.sread(data.data(), length.data(), 0);
+    ito::RetVal retValue;
+
+    if (m_params["readline"].getVal<int>() == 0)
+    {
+        if (m_preBuf.isEmpty())
+        {
+            retValue = m_serport.sread(data.data(), length.data(), 0);
+        }
+        else
+        {
+            //prepend prebuf to data
+            int numCharactersForPrebuf = std::min(m_preBuf.size(), *length);
+            int remainingCharactersInData = *length - numCharactersForPrebuf;
+            memcpy(data.data(), m_preBuf.data(), sizeof(char) * numCharactersForPrebuf);
+            m_preBuf.remove(0, numCharactersForPrebuf); //shorten prebuf after copying
+
+            if (remainingCharactersInData > 0)
+            {
+                retValue = m_serport.sread(&(data.data()[numCharactersForPrebuf]), &remainingCharactersInData, 0);
+                *length = remainingCharactersInData + numCharactersForPrebuf;
+            }
+        }
+    }
+    else
+    {
+        char *endlineChar = m_params["endlineRead"].getVal<char *>();
+        int endlineLen = endlineChar[0] == 0 ? 0 : (endlineChar[1] == 0 ? 1 : (endlineChar[2] == 0 ? 2 : 3));
+        QByteArray endlineRead = QByteArray::fromRawData(endlineChar, endlineLen);
+        int numCharactersForPrebuf = 0;
+
+        if (!m_preBuf.isEmpty())
+        {
+            //prepend prebuf to data
+            numCharactersForPrebuf = std::min(m_preBuf.size(), *length);
+            memcpy(data.data(), m_preBuf.data(), sizeof(char) * numCharactersForPrebuf);
+            m_preBuf.remove(0, numCharactersForPrebuf); //shorten prebuf after copying
+        }
+
+        if (*length == numCharactersForPrebuf)
+        {
+            // prebuf data longer than *length
+            QByteArray temp = QByteArray(data.data(), *length);
+            int endlinePos = temp.indexOf(endlineRead);
+
+            if (endlinePos >= 0) //endlineRead found
+            {
+                m_preBuf = temp.mid(endlinePos + endlineLen);
+                *length = endlinePos;
+            }
+        }
+        else
+        {
+            // prebuf data shorter than *length
+            QTime timer;
+            int timeoutMS = (int)(m_params["timeout"].getVal<double>() * 1000);
+            bool done = false;
+            int pos = numCharactersForPrebuf; 
+            int len = 0;
+
+            timer.start();
+
+            while (!done && !retValue.containsError())
+            {
+                len = *length - pos;
+                retValue = m_serport.sread(&(data.data()[pos]), &len, 0);
+
+                if (!retValue.containsError())
+                {
+                    QByteArray temp = QByteArray(data.data(), pos + len);
+                    int endlinePos = temp.indexOf(endlineRead);
+
+                    if (endlinePos >= 0) //endlineRead found
+                    {
+                        m_preBuf = temp.mid(endlinePos + endlineLen);
+                        *length = endlinePos;
+                        done = true;
+                    }
+                    else
+                    {
+                        pos += len;
+                        done = (pos == *length);
+                    }
+                }
+                else
+                {
+                    len = 0;
+                }
+
+                if (!done && timer.elapsed() > timeoutMS && timeoutMS >= 0)
+                {
+                    *length = pos + len;
+                    retValue += ito::RetVal(ito::retError, 256, tr("timeout").toLatin1().data());
+                }
+                else
+                {
+                    setAlive();
+                }
+            }
+        }
+    }
+
+    qDebug() << *length;
 
     if (m_debugMode)
     {
@@ -1609,11 +1707,11 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
 
     if (waitCond)
     {
-        waitCond->returnValue = retval;
+        waitCond->returnValue = retValue;
         waitCond->release();
     }
 
-    return retval;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1649,6 +1747,7 @@ ito::RetVal SerialIO::execFunc(const QString funcName, QSharedPointer<QVector<it
     if (funcName == "clearInputBuffer")
     {
         retval = m_serport.sclearbuffer(0);
+        m_preBuf = "";
     }
     else if (funcName == "clearOutputBuffer")
     {
@@ -1656,11 +1755,11 @@ ito::RetVal SerialIO::execFunc(const QString funcName, QSharedPointer<QVector<it
     }
     else if (funcName == "clearBuffer")
     {
-        ito::ParamBase *bufferType = NULL;
-        bufferType = &((*paramsMand)[0]);
-        if (!retval.containsError())
+        int bufferType = paramsMand->at(0).getVal<int>();
+        retval = m_serport.sclearbuffer(bufferType);
+        if (bufferType == 0)
         {
-            retval = m_serport.sclearbuffer(static_cast<bool>(bufferType->getVal<int>()));
+            m_preBuf = "";
         }
     }
 

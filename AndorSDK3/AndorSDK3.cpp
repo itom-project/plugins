@@ -80,7 +80,7 @@ AndorSDK3::AndorSDK3() :
     paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 16, 16, tr("Bitdepth of each pixel").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
-    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 1.0, tr("acquisition timeout in secs").toLatin1().data());
+    paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 4.0, tr("acquisition timeout in secs").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("frame_rate", ito::ParamBase::Double, 0.0, std::numeric_limits<double>::max(), 1.0, tr("frame rate in Hz").toLatin1().data());
@@ -356,11 +356,13 @@ ito::RetVal AndorSDK3::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
         if (key == "readout_time")
         {
             AT_BOOL implemented;
+			AT_BOOL writable = false;
             retValue = checkError(AT_IsImplemented(m_handle, L"ReadoutTime", &implemented));
             if (!retValue.containsError() && implemented)
             {
+				checkError(AT_IsWritable(m_handle, L"ReadoutTime", &writable));
                 double dval;
-                it->setFlags(0);
+                it->setFlags(writable ? 0 : ito::ParamBase::Readonly);
                 retValue += checkError(AT_GetFloat(m_handle, L"ReadoutTime", &dval));
                 it->setVal<double>(dval);
             }
@@ -372,11 +374,13 @@ ito::RetVal AndorSDK3::getParam(QSharedPointer<ito::Param> val, ItomSharedSemaph
         else if (key == "sensor_temperature")
         {
             AT_BOOL implemented;
+			AT_BOOL writable = false;
             retValue = checkError(AT_IsImplemented(m_handle, L"SensorTemperature", &implemented));
             if (!retValue.containsError() && implemented)
             {
+				checkError(AT_IsWritable(m_handle, L"SensorTemperature", &writable));
                 double dval;
-                it->setFlags(0);
+                it->setFlags(writable ? 0 : ito::ParamBase::Readonly);
                 retValue += checkError(AT_GetFloat(m_handle, L"SensorTemperature", &dval));
                 it->setVal<double>(dval);
             }
@@ -458,6 +462,9 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
 #endif
     }
 
+	int grabberStartedCounter = grabberStartedCount();
+	bool restartCamera = false;
+
     if (!retValue.containsError())
     {
         if (key == "roi")
@@ -511,6 +518,13 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         }
         else if (key == "integration_time")
         {
+			if (grabberStartedCounter > 0)
+			{
+				setGrabberStarted(1);
+				stopDevice(NULL);
+				restartCamera = true;
+			}
+
             double timeSec = val->getVal<double>();
             retValue += checkError(AT_SetFloat(m_handle, L"ExposureTime", timeSec));
             retValue += synchronizeCameraSettings(sExposure | sFrameRate);
@@ -653,6 +667,13 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
         }
         else if (key == "pixel_readout_rate")
         {
+			if (grabberStartedCounter > 0)
+			{
+				setGrabberStarted(1);
+				stopDevice(NULL);
+				restartCamera = true;
+			}
+
             QString speed = val->getVal<char*>();
             AT_WC speed_[100];
             AT_WC wstring[100];
@@ -706,6 +727,12 @@ ito::RetVal AndorSDK3::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSe
             //e.g. timeout
             it->copyValueFrom(val.data());
         }
+
+		if (restartCamera)
+		{
+			retValue += startDevice(NULL);
+			setGrabberStarted(grabberStartedCounter);
+		}
     }
 
     if (!retValue.containsError())
@@ -1385,11 +1412,11 @@ ito::RetVal AndorSDK3::synchronizeCameraSettings(int what /*= sAll*/)
 
         //offset values are in pixel coordinates
         offsetMin.x = std::max(1, (int)(offsetMin.x / m_hBin));
-        offsetMin.y = std::max(1, (int)(offsetMin.x / m_vBin));
+        offsetMin.y = std::max(1, (int)(offsetMin.y / m_vBin));
         offsetMax.x = std::max(1, (int)(offsetMax.x / m_hBin));
-        offsetMax.y = std::max(1, (int)(offsetMax.x / m_vBin));
+        offsetMax.y = std::max(1, (int)(offsetMax.y / m_vBin));
         offset.x = std::max(1, (int)(offset.x / m_hBin));
-        offset.y = std::max(1, (int)(offset.x / m_vBin));
+        offset.y = std::max(1, (int)(offset.y / m_vBin));
 
         //size values are in super-pixels (considering binning)
 
