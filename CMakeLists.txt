@@ -287,6 +287,12 @@ IF (WIN32)
     endif (PLUGIN_QCam)
 ENDIF (WIN32)
 
+# rawImport
+OPTION(PLUGIN_rawImport "Build with this plugin." ON)
+if (PLUGIN_rawImport)
+    ADD_SUBDIRECTORY(rawImport)
+endif (PLUGIN_rawImport)
+
 # SerialIO
 OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
 if (PLUGIN_SerialIO)
