@@ -105,7 +105,7 @@
         <translation>Ungültiges Terminierungszeichen</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+77"/>
         <location line="+25"/>
         <location line="+15"/>
         <location line="+20"/>
@@ -118,7 +118,7 @@
         <translation>Unbekannter Fehler beim Öffnen des COM-Ports</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+67"/>
         <location line="+36"/>
         <location line="+61"/>
         <location line="+10"/>
@@ -161,7 +161,7 @@
         <translation>Puffer löschen war nicht erfolgreich</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+106"/>
         <source>licensed under LGPL</source>
         <translation></translation>
     </message>
@@ -171,17 +171,15 @@
         <translation>K.A.</translation>
     </message>
     <message>
-        <location line="+289"/>
         <source>Mandatory paramers are NULL</source>
-        <translation>Pflichtparameter ist NULL</translation>
+        <translation type="vanished">Pflichtparameter ist NULL</translation>
     </message>
     <message>
-        <location line="+18"/>
         <source>Optinal paramers are NULL</source>
-        <translation>Optionaler Parameter ist NULL</translation>
+        <translation type="vanished">Optionaler Parameter ist NULL</translation>
     </message>
     <message>
-        <location filename="../dialogSerialIO.cpp" line="+436"/>
+        <location filename="../dialogSerialIO.cpp" line="+515"/>
         <source>Char token not closed correctly or number to big.</source>
         <translation>Das Char-Token wurde nicht korrekt geschlossen oder die Anzahl der Zeichen ist zu groß.</translation>
     </message>
@@ -194,7 +192,7 @@
 <context>
     <name>SerialIO</name>
     <message>
-        <location filename="../SerialIO.cpp" line="-240"/>
+        <location filename="../SerialIO.cpp" line="+67"/>
         <source>The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</source>
         <translation>Portnummer der seriellen Schnittstelle, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</translation>
     </message>
@@ -232,7 +230,7 @@
         <translation type="vanished">0 -&gt; Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000) schreiben</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Timeout for reading commands in [s]</source>
         <translation>Timeout für Lesebefehle in [s]</translation>
     </message>
@@ -245,12 +243,22 @@
         <translation type="vanished">Wenn das Protokoll aktiviert wurde, können mit diesem Parameter leer Nachrichten ignoriert werden</translation>
     </message>
     <message>
-        <location line="-8"/>
+        <location line="-15"/>
         <source>Parity: 0 -&gt; none, 1 -&gt; odd parity, 2 -&gt; even parity, 3 -&gt; mark, 4 -&gt; space</source>
         <translation>Paritätsbit: 0 -&gt; keines, 1 -&gt; Paritätssumme ungerade (odd), 2 -&gt; Paritätssumme gerade (even), 3 -&gt; Mark-Parität, 4 -&gt; Space-Parität</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+8"/>
+        <source>Endline character, will be looking for during getVal by using readline</source>
+        <translation type="unfinished">Terminierung für Leseoperationen, nach der bei aktivierter &apos;readline&apos;-Funktion in getVal() gesucht wird</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If true, reading next line terminated by endlineRead.</source>
+        <translation type="unfinished">Wenn aktiviert, wird beim Lesen nach der unter &apos;endlineRead&apos; angegebene Terminierung gesucht.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>0: write output buffer as block, else: single characters with delay (1..65000 ms)</source>
         <translation>0 -&gt; Schreibt den Ausgabepuffer als ganzen Block oder die Zeichen einzeln mit einer Verzögerung (1..65000)</translation>
     </message>
@@ -285,62 +293,69 @@
         <translation>Löscht den Eingabe- oder Ausgabepuffer der seriellen Schnittstelle</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+174"/>
+        <source>Mandatory paramers are NULL</source>
+        <translation type="unfinished">Pflichtparameter ist NULL</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Optinal paramers are NULL</source>
+        <translation type="unfinished">Optionaler Parameter ist NULL</translation>
+    </message>
+    <message>
+        <location line="+225"/>
+        <source>timeout</source>
+        <translation type="unfinished">Zeitüberschreitung</translation>
+    </message>
+    <message>
         <source>name of requested parameter is empty.</source>
-        <translation>Name des angeforderten Parameters ist leer.</translation>
+        <translation type="vanished">Name des angeforderten Parameters ist leer.</translation>
     </message>
     <message>
-        <location line="+11"/>
         <source>parameter not found in m_params.</source>
-        <translation>Parameter nicht in m_params gefunden.</translation>
+        <translation type="vanished">Parameter nicht in m_params gefunden.</translation>
     </message>
     <message>
-        <location line="+22"/>
         <source>name of given parameter is empty.</source>
-        <translation>Name des Parameters ist leer.</translation>
+        <translation type="vanished">Name des Parameters ist leer.</translation>
     </message>
     <message>
-        <location line="+18"/>
         <source>Parameter is read only, input ignored</source>
-        <translation>Parameter ist schreibgeschützt, Eingabe wurde ignoriert</translation>
+        <translation type="vanished">Parameter ist schreibgeschützt, Eingabe wurde ignoriert</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>New value is larger than parameter range, input ignored</source>
-        <translation>Wert ist größer als der zugelassene Bereich, Eingabe wurde ignoriert</translation>
+        <translation type="vanished">Wert ist größer als der zugelassene Bereich, Eingabe wurde ignoriert</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>New value is smaller than parameter range, input ignored</source>
-        <translation>Wert ist kleiner als der zugelassene Bereich, Eingabe wurde ignoriert</translation>
+        <translation type="vanished">Wert ist kleiner als der zugelassene Bereich, Eingabe wurde ignoriert</translation>
     </message>
     <message>
-        <location line="+14"/>
         <source>Parameter type conflict</source>
-        <translation>Konflikt mit Parametertyp</translation>
+        <translation type="vanished">Konflikt mit Parametertyp</translation>
     </message>
     <message>
-        <location line="+18"/>
         <source>Parameter not found</source>
-        <translation>Parameter wurde nicht gefunden</translation>
+        <translation type="vanished">Parameter wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="-138"/>
         <source>StartDevice not necessary</source>
         <translation>&quot;StartDevice&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>StopDevice not necessary</source>
         <translation>&quot;StopDevice&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>Acquire not necessary</source>
         <translation>&quot;Acquire&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="-348"/>
+        <location line="-347"/>
         <source>Current baudrate in bits/s</source>
         <translation>Aktuelle Baudrate ist bits/s</translation>
     </message>
@@ -348,12 +363,79 @@
 <context>
     <name>SerialIOInterface</name>
     <message>
-        <location line="-116"/>
+        <location line="-146"/>
         <source>itom-plugin for a serial port communication</source>
         <translation>Itom-Plugin zur Kommunikation über die Serielle Schnittstelle</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+36"/>
+        <source>SerialIO is a itom-Plugin which gives direct access to serial ports.
+It is used by different plugins for communication, (e.g. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;).
+The plugin is implemented for Windows or Linux; the possible baudrates depend on the possibilites of the operating system. 
+
+flow bitmask 
+-------------- 
+
+The flow bitmask is an OR combination of the following possible values:
+Xon/Xoff - default: Xoff, Xon=1 (1. bit)
+rts control - default: disabled, enabled=2, handshake=4 or (4+2) (2. and 3. bit)
+cts control - default: disabled, enabled=8 (4. bit)
+dtr control - default: disabled, enabled = 16, handshake = 32 or (32+16) (5. and 6. bit) 
+dsr control - default: disabled, enabled = 64 
+
+If an endline character is given, this is automatically appended to each sequence that is send using the setVal-command.
+On the other side, any obtained value from the serial port is scanned for &apos;endlineRead&apos; character and automatically split.
+Use an empty endline character if you want to organize all this by yourself.
+
+Example
+--------
+
+..
+    
+    s = dataIO(&quot;SerialIO&quot;,port=1,baud=9600,endline=&quot;&quot;,bits=8,stopbits=1,parity=0,flow=16)
+    
+    #send command
+    sendString = bytearray(b&quot;POS?&quot;) #or bytearray([80,79,83,63]);
+    s.setVal(sendString)
+    
+    #get result
+    answer = bytearray(9) #supposed length is 9 characters
+    num = s.getVal(answer) #if ok, num contains the number of received characters(max: length of answer), immediately returns</source>
+        <translation type="unfinished">SerialIO ist ein itom-Plugin, welches direkten Zugriff auf den Seriellen Port ermöglicht.
+Es wird zur Kommunikation mit unterschiedlichen Plugins (z. B. &apos;PIPiezoCtrl&apos;, &apos;UhlActuator&apos;, &apos;LeicaMotorFocus&apos;) verwendet.
+Das Plugin wurde für Linux und Windows implementiert, die möglichen Baudraten sind Betriebssystemabhängig.
+
+Flusskontrolle
+--------------
+
+Die Flusskontrolle ist eine &apos;OR&apos;-Verknüpfung mit folgenden möglichen Werten:
+Xon/Xoff - Standard: Xoff, Xon=1 (1. bit) 
+rts control - Standard: disabled, enabled=2, handshake=4 or (4+2) (2. und 3. bit) 
+cts control - Standard: disabled, enabled=8 (4. bit) 
+dtr control - Standard: disabled, enabled = 16, handshake = 32 or (32+16) (5. und 6. bit) 
+dsr control - Standard: disabled, enabled = 64 
+
+Wurde eine Terminierung (Endline) mit angegeben, wird diese automatisch bei jeder Nachricht an das Gerät angehängt.
+Beim Lesen hingegen wird die Antwort nach der &apos;endlineRead&apos;-Terminierung gescannt.
+Um die Terminierung selbst zu organisieren, dürfen diese Terminierungen keine Zeichen enthalten.
+
+Beispiel
+--------
+
+..
+    
+    s = dataIO(&quot;SerialIO&quot;,port=1,baud=9600,endline=&quot;&quot;,bits=8,stopbits=1,parity=0,flow=16)
+    
+    #Kommando senden
+    sendString = bytearray(b&quot;POS?&quot;) #Oder bytearray([80,79,83,63]);
+    s.setVal(sendString)
+    
+    #Antwort
+    answer = bytearray(9) #angenommene Antwortlänge ist 9 Zeichen
+    num = s.getVal(answer) #Wenn ok, dann enthält num die Anzahl der empfangenen Zeichen (max: Länge der Antwort)</translation>
+    </message>
+    <message>
+        <location line="+39"/>
         <source>The number of the serial port, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</source>
         <translation>Portnummer der seriellen Schnittstelle, [0 999] = ttyS, [1000 1999] = ttyUSB, [2000 2999] = ttyACM</translation>
     </message>
@@ -449,27 +531,28 @@
         <translation>Grundeinstellungen</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+42"/>
         <source>Baud</source>
         <translation>Baudrate</translation>
     </message>
     <message>
-        <location line="+184"/>
+        <location line="-15"/>
         <source>Endline</source>
         <translation>Terminierung</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+206"/>
+        <location line="+117"/>
         <source>&lt;none&gt;</source>
         <translation>&lt;nichts&gt;</translation>
     </message>
     <message>
-        <location line="-191"/>
+        <location line="-280"/>
         <source>Parity</source>
         <translation>Paritätsbit</translation>
     </message>
     <message>
-        <location line="+339"/>
+        <location line="+384"/>
         <location line="+72"/>
         <location line="+32"/>
         <location line="+56"/>
@@ -487,17 +570,17 @@
         <translation>einschalten</translation>
     </message>
     <message>
-        <location line="-406"/>
+        <location line="-451"/>
         <source>Time out</source>
         <translation>Timeout</translation>
     </message>
     <message>
-        <location line="+155"/>
+        <location line="+178"/>
         <source>Debug Mode</source>
         <translation>Protokollierung</translation>
     </message>
     <message>
-        <location line="+479"/>
+        <location line="+501"/>
         <source>Read delay</source>
         <translation>Leseverzögerung</translation>
     </message>
@@ -542,22 +625,22 @@
         <translation>Lesen</translation>
     </message>
     <message>
-        <location line="+76"/>
+        <location line="+79"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-216"/>
+        <location line="-219"/>
         <source>Use input below to send characters to the serial port. Characters will be send as their ASCII code from the character written. To directly write ASCII codes use the format $(code) or select Decimal, Hexadecimal or Binary separated by space.</source>
         <translation>Um Nachrichten an die serielle Schnittstelle zu senden, die Eingabezeile benutzen. Zeichen werden als ASCII-Zeichen übermittelt. Um direkt ASCII-Code zu schreiben, das Format $(Code) oder Dezimal, Hexadezimal oder Binär mit Leerzeichen getrennt benutzen.</translation>
     </message>
     <message>
-        <location line="+226"/>
+        <location line="+229"/>
         <source>Apply</source>
         <translation>Übernehmen</translation>
     </message>
     <message>
-        <location line="-283"/>
+        <location line="-286"/>
         <source>Python Command</source>
         <translation>Python-Befehl</translation>
     </message>
@@ -567,12 +650,12 @@
         <translation>Erzeugen</translation>
     </message>
     <message>
-        <location line="+226"/>
+        <location line="+229"/>
         <source>Clear</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-565"/>
+        <location line="-641"/>
         <source>Send Delay</source>
         <translation>Verzögerung</translation>
     </message>
@@ -582,7 +665,7 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+115"/>
         <source>none</source>
         <translation>keine</translation>
     </message>
@@ -633,28 +716,31 @@
     </message>
     <message>
         <location line="+40"/>
-        <location line="+89"/>
-        <location line="+539"/>
+        <location line="+61"/>
+        <location line="+612"/>
         <source>ms</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-580"/>
+        <location line="-653"/>
+        <location line="+117"/>
         <source>\r</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-112"/>
+        <location line="+117"/>
         <source>\n</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-112"/>
+        <location line="+117"/>
         <source>\r\n</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="-71"/>
         <source>Stopbits</source>
         <translation></translation>
     </message>
@@ -669,7 +755,17 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+13"/>
+        <source>Endline Read</source>
+        <translation type="unfinished">Leseterminierung</translation>
+    </message>
+    <message>
+        <location line="+73"/>
+        <source>Readline</source>
+        <translation type="unfinished">Zeilenlesen</translation>
+    </message>
+    <message>
+        <location line="+46"/>
         <source>Xon/Xoff</source>
         <translation></translation>
     </message>
@@ -705,7 +801,7 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+126"/>
+        <location line="+129"/>
         <source>OK</source>
         <translation></translation>
     </message>

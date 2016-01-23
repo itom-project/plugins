@@ -58,9 +58,9 @@ QString dialogSerialIO::interpretAnswer(const char* temp, const int templen)
                 }
                 else if (((uchar)temp[n] < 32) || ((uchar)temp[n] > 127))
                 {
-                    ret.append("$(");
-                    ret.append((uchar)temp[n]);
-                    ret.append(")");
+                    QString s;
+                    s.setNum((uchar)temp[n]);
+                    ret.append("$(" + s + ")");
                 }
                 else
                 {
@@ -203,7 +203,48 @@ void dialogSerialIO::parametersChanged(QMap<QString, ito::Param> params)
     }
     else
     {
-        ui.combo_endline->setCurrentIndex(3);
+        QByteArray ba = endline;
+        QByteArray ba1 = ba.toHex();
+        QString text = ba1;
+        if (text.size() > 0)
+        {
+            text = "0x" + text;
+        }
+
+        ui.combo_endline->addItem(text, ba);
+        ui.combo_endline->setCurrentIndex(4);
+    }
+
+    endline = (params)["endlineRead"].getVal<char *>(); //borrowed reference
+    if (strcmp(endline, "\r") == 0)
+    {
+        ui.combo_endlineRead->setCurrentIndex(0);
+    }
+    else if (strcmp(endline, "\n") == 0)
+    {
+        ui.combo_endlineRead->setCurrentIndex(1);
+    }
+    else if (strcmp(endline, "\r\n") == 0)
+    {
+        ui.combo_endlineRead->setCurrentIndex(2);
+    }
+    else
+    {
+        QByteArray ba = endline;
+        QByteArray ba1 = ba.toHex();
+        QString text = ba1;
+        if (text.size() > 0)
+        {
+            text = "0x" + text;
+        }
+
+        ui.combo_endlineRead->addItem(text, ba);
+        ui.combo_endlineRead->setCurrentIndex(4);
+    }
+
+    if ((params).keys().contains("readline"))
+    {
+        ui.checkBox_readline->setChecked((params)["readline"].getVal<int>());
     }
 
     ui.combo_bits->setCurrentIndex((params)["bits"].getVal<int>() - 5);
@@ -249,6 +290,12 @@ ito::RetVal dialogSerialIO::applyParameters()
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("debug", ito::ParamBase::Int, i)));
     }
 
+    i = ui.checkBox_readline->isChecked() ? 1 : 0;
+    if (m_currentParameters["readline"].getVal<int>() != i)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("readline", ito::ParamBase::Int, i)));
+    }
+
     char endline[3] = {0, 0, 0};
     switch (ui.combo_endline->currentIndex())
     {
@@ -265,10 +312,42 @@ ito::RetVal dialogSerialIO::applyParameters()
         case 3:
             endline[0] = 0;
         break;
+        case 4:
+            QByteArray var = ui.combo_endline->currentData().toByteArray();
+            memcpy(endline, var.data(), std::min(3, var.size()) * sizeof(char));
+        break;
     }
     if (strcmp(m_currentParameters["endline"].getVal<char*>(), endline) != 0)
     {
         values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline", ito::ParamBase::String, endline)));
+    }
+
+    endline[0] = 0;
+    endline[1] = 0;
+    endline[2] = 0;
+    switch (ui.combo_endlineRead->currentIndex())
+    {
+        case 0:
+            endline[0] = '\r';
+        break;
+        case 1:
+            endline[0] = '\n';
+        break;
+        case 2:
+            endline[0] = '\r';
+            endline[1] = '\n';
+        break;
+        case 3:
+            endline[0] = 0;
+        break;
+        case 4:
+            QByteArray var = ui.combo_endlineRead->currentData().toByteArray();
+            memcpy(endline, var.data(), std::min(3, var.size()) * sizeof(char));
+        break;
+    }
+    if (strcmp(m_currentParameters["endlineRead"].getVal<char*>(), endline) != 0)
+    {
+        values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endlineRead", ito::ParamBase::String, endline)));
     }
 
     i = ui.combo_bits->currentIndex() + 5;
