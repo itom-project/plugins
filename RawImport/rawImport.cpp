@@ -47,7 +47,7 @@ RawImportInterface::RawImportInterface()
     m_version           = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
-    m_aboutThis         = tr("Fill in about dialog content");        
+    m_aboutThis         = tr("");        
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -133,55 +133,6 @@ ito::RetVal RawImport::close(ItomSharedSemaphore *waitCond)
     {
         waitCond->returnValue = retval;
         waitCond->release();
-    }
-
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/** short description for this widget
-*    @param [in]    paramsMand    mandatory parameters
-*    @param [in]    paramsOpt    optional parameters
-*
-*    longer description for this widget
-*/
-QWidget* RawImport::dialog(QVector<ito::Param> * /*paramsMand*/, QVector<ito::Param> * /*paramsOpt*/, ito::RetVal &retValue)
-{
-    retValue += ito::retOk;
-
-    //example:
-    //DialogRawImport *dialog = new DialogRawImport(NULL);
-    //return qobject_cast<QWidget*>(dialog);
-
-    //please delete the following line if you really want to provide the widget
-    return NULL;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/** parameters for calling dialog
-*    @param [in]    paramsMand    mandatory parameters for calling dialog
-*    @param [in]    paramsOpt    optional parameters for calling dialog
-*
-*    mand. Params:
-*        - describe the mandatory parameters here (list)
-*
-*   opt. Params:
-*       - describe the optional parameter here (list)
-*/
-ito::RetVal RawImport::dialogParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> * paramsOut)
-{
-    ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
-    if (!retval.containsError())
-    {
-        //mandatory
-        /*param = ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, "description");
-        paramsMand->append(param);
-        param = ito::Param("doubleValue", ito::ParamBase::Double, 0.0, 65535.0, 10.0, "double value between 0.0 and 65535.0, default: 10.0");
-        paramsMand->append(param);*/
-
-        //optional
-        /*param = ito::Param("integerValue", ito::ParamBase::Int, 0, 65535, 65535, "integer value beween 0 and 65535, default: 65535");
-        paramsOpt->append(param);*/
     }
 
     return retval;

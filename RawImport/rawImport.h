@@ -77,9 +77,6 @@ class RawImport : public ito::AddInAlgo
 
     public:
         friend class RawImportInterface;
-        
-        static QWidget* dialog(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, ito::RetVal &retValue);
-        static ito::RetVal dialogParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------------User-Defined-Content-----------------------------------------------------
