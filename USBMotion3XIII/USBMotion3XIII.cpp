@@ -751,7 +751,11 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 
                 //if (initparamfromeep(DWTIMEOUT)) // load values from EEPROM or default values
                 //{
+				ito::RetVal retValue2 = errorCheck(initparamtodefault(DWTIMEOUT));
+				if (retValue2.containsError())
+				{
                     retValue += errorCheck(initparamtodefault(DWTIMEOUT));
+				}
                 //}
 
                 unsigned char mcStatus;

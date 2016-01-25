@@ -62,20 +62,20 @@ void DockWidgetUSBMotion3XIII::basicInformationChanged(const QString &axis, cons
 
     if ((axisUnits[0] != axisUnits[1]) || (axisUnits[0] != axisUnits[2]))
     {
-        ui.spinStepSize->setSuffix("°/mm");
+        ui.spinStepSize->setSuffix(QLatin1String("\u00b0/mm")); //degree-sign/mm
     }
     else
     {
-        ui.spinStepSize->setSuffix(axisUnits[0] == 0 ? "°" : "mm");
+        ui.spinStepSize->setSuffix(axisUnits[0] == 0 ? QLatin1String("\u00b0").latin1() : "mm"); /*degree-sign*/
     }
 
-    ui.doubleSpinBox_actpos_x->setSuffix(axisUnits[0] == 0 ? "°" : "mm");
-    ui.doubleSpinBox_actpos_y->setSuffix(axisUnits[1] == 0 ? "°" : "mm");
-    ui.doubleSpinBox_actpos_z->setSuffix(axisUnits[2] == 0 ? "°" : "mm");
+    ui.doubleSpinBox_actpos_x->setSuffix(axisUnits[0] == 0 ? QLatin1String("\u00b0").latin1() : "mm"); /*degree-sign*/
+    ui.doubleSpinBox_actpos_y->setSuffix(axisUnits[1] == 0 ? QLatin1String("\u00b0").latin1() : "mm"); /*degree-sign*/
+    ui.doubleSpinBox_actpos_z->setSuffix(axisUnits[2] == 0 ? QLatin1String("\u00b0").latin1() : "mm"); /*degree-sign*/
 
-    ui.doubleSpinBox_tarpos_x->setSuffix(axisUnits[0] == 0 ? "°" : "mm");
-    ui.doubleSpinBox_tarpos_y->setSuffix(axisUnits[1] == 0 ? "°" : "mm");
-    ui.doubleSpinBox_tarpos_z->setSuffix(axisUnits[2] == 0 ? "°" : "mm");
+    ui.doubleSpinBox_tarpos_x->setSuffix(axisUnits[0] == 0 ? QLatin1String("\u00b0").latin1() : "mm"); /*degree-sign*/
+    ui.doubleSpinBox_tarpos_y->setSuffix(axisUnits[1] == 0 ? QLatin1String("\u00b0").latin1() : "mm"); /*degree-sign*/
+    ui.doubleSpinBox_tarpos_z->setSuffix(axisUnits[2] == 0 ? QLatin1String("\u00b0").latin1() : "mm"); /*degree-sign*/
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
