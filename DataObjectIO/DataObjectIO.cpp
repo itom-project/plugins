@@ -4594,13 +4594,13 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
 //----------------------------------------------------------------------------------------------------------------------------------
 //! saveNistSDFParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString DataObjectIO::savePtbPRDoc = QObject::tr(
+/*static*/ const QString DataObjectIO::savePtbPRDoc = QObject::tr( \
 "saves a 1D data object to the PR format used for the reference software for roughness metrology (https://www.ptb.de/rptb) of PTB (Physikalisch Technische Bundesanstalt).\n\
 \n\
-The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, µm, nm) is given in the axis unit tag, an automatic conversion is applied. Else a \n\
-warning is returned. The same holds for the values (ordinate). You can choose if the .pr format should contain the ordinate values in nm or µm. An auto-conversion is implemented, too. \n\
+The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, _m, nm) is given in the axis unit tag, an automatic conversion is applied. Else a \n\
+warning is returned. The same holds for the values (ordinate). You can choose if the .pr format should contain the ordinate values in nm or _m. An auto-conversion is implemented, too. \n\
 \n\
-This filter uses the hex-code DF for the german Umlaut 'oe' and F6 for 'sz' like required by the input file format description of the RPTB tool (since RPTB Version 2.01).");
+This filter uses the hex-code DF for the german Umlaut 'oe' and F6 for 'sz' like required by the input file format description of the RPTB tool (since RPTB Version 2.01).").replace("_", QLatin1String("\u00B5"));
 
 /** saveNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
 *   @param [in] paramsMand  mandatory argument parameters
