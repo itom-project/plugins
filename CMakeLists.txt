@@ -77,6 +77,12 @@ if (PLUGIN_dispWindow)
     ADD_SUBDIRECTORY(dispWindow)
 endif (PLUGIN_dispWindow)
 
+# dslrRemote
+OPTION(PLUGIN_DslrRemote "Build with this plugin." ON)
+if (PLUGIN_DslrRemote)
+    ADD_SUBDIRECTORY(DslrRemote)
+endif (PLUGIN_DslrRemote)
+
 # DummyGrabber
 OPTION(PLUGIN_DummyGrabber "Build with this plugin." ON)
 if (PLUGIN_DummyGrabber)
@@ -298,7 +304,7 @@ ENDIF (WIN32)
 # rawImport
 OPTION(PLUGIN_rawImport "Build with this plugin." ON)
 if (PLUGIN_rawImport)
-    ADD_SUBDIRECTORY(rawImport)
+    ADD_SUBDIRECTORY(RawImport)
 endif (PLUGIN_rawImport)
 
 # SerialIO
