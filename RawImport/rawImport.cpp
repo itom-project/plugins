@@ -32,7 +32,7 @@
 #include <qmenu.h>
 #include <qcoreapplication.h>
 #include <qtemporarydir.h>
-#include "common\apiFunctionsInc.h"
+#include "common/apiFunctionsInc.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RawImportInterface::RawImportInterface()
@@ -244,7 +244,11 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
 
     QProcess *readProc = new QProcess(NULL);
     QString command(QCoreApplication::applicationDirPath());
+#ifdef WIN32
     command += QString("/lib/dcraw.exe ") + arguments + " " + filename;
+#else
+        command += QString("/lib/dcraw ") + arguments + " " + filename;
+#endif
     readProc->start(command);
 
 //    readProc->setReadChannel(QProcess::StandardOutput);
