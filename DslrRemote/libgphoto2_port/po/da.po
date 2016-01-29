@@ -1,0 +1,543 @@
+# Danish translation for libgphoto2_port.
+# This file is distributed under the same license as the libgphoto2 package.
+# Copyright (C) 2005, 2007 Free Software Foundation, Inc.
+# Mogens Jaeger <mogensjaeger@gmail.com>, 2005, 2007, 2012, 2013, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: libgphoto2_port 2.5.3\n"
+"Report-Msgid-Bugs-To: gphoto-devel@lists.sourceforge.net\n"
+"POT-Creation-Date: 2015-11-18 21:16+0100\n"
+"PO-Revision-Date: 2014-02-04 15:15+0100\n"
+"Last-Translator: Mogens Jaeger <mogensjaeger@gmail.com>\n"
+"Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 1.5\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: Danish\n"
+"X-Poedit-Country: DENMARK\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: libgphoto2_port/gphoto2-port-info-list.c:409
+msgid "Generic Port"
+msgstr "Almindelig port"
+
+#: libgphoto2_port/gphoto2-port-result.c:58
+msgid "No error"
+msgstr "Ingen fejl"
+
+#: libgphoto2_port/gphoto2-port-result.c:60
+msgid "Unspecified error"
+msgstr "Ikke-specificeret fejl"
+
+#: libgphoto2_port/gphoto2-port-result.c:62
+msgid "I/O problem"
+msgstr "I/O problem"
+
+#: libgphoto2_port/gphoto2-port-result.c:64
+msgid "Bad parameters"
+msgstr "Forkerte parametre"
+
+#: libgphoto2_port/gphoto2-port-result.c:66
+msgid "Unsupported operation"
+msgstr "Ikke understøttet proces"
+
+#: libgphoto2_port/gphoto2-port-result.c:68
+msgid "Fixed limit exceeded"
+msgstr "Fast grænseværdi overskredet"
+
+#: libgphoto2_port/gphoto2-port-result.c:70
+msgid "Timeout reading from or writing to the port"
+msgstr "Tidsudløb ved læsning/skrivning til porten"
+
+#: libgphoto2_port/gphoto2-port-result.c:72
+msgid "Serial port not supported"
+msgstr "Seriel-port ikke understøttet"
+
+#: libgphoto2_port/gphoto2-port-result.c:74
+msgid "USB port not supported"
+msgstr "USB-port ikke understøttet"
+
+#: libgphoto2_port/gphoto2-port-result.c:76
+msgid "Unknown port"
+msgstr "Ukendt port"
+
+#: libgphoto2_port/gphoto2-port-result.c:78
+msgid "Out of memory"
+msgstr "Ikke mere hukommelse"
+
+#: libgphoto2_port/gphoto2-port-result.c:80
+msgid "Error loading a library"
+msgstr "Fejl ved indlæsning af bibliotek"
+
+#: libgphoto2_port/gphoto2-port-result.c:82
+msgid "Error initializing the port"
+msgstr "Fejl ved initialisering af porten"
+
+#: libgphoto2_port/gphoto2-port-result.c:84
+msgid "Error reading from the port"
+msgstr "Fejl ved læsning fra porten"
+
+#: libgphoto2_port/gphoto2-port-result.c:86
+msgid "Error writing to the port"
+msgstr "Fejl ved skrivning til porten"
+
+#: libgphoto2_port/gphoto2-port-result.c:88
+msgid "Error updating the port settings"
+msgstr "Fejl ved opdatering af portindstillinger"
+
+#: libgphoto2_port/gphoto2-port-result.c:90
+msgid "Error setting the serial port speed"
+msgstr "Fejl ved indstilling af den serielle porthastighed"
+
+#: libgphoto2_port/gphoto2-port-result.c:92
+msgid "Error clearing a halt condition on the USB port"
+msgstr "Fejl ved nulstilling af en stop-tilstand på USB-porten"
+
+#: libgphoto2_port/gphoto2-port-result.c:94
+msgid "Could not find the requested device on the USB port"
+msgstr "Kunne ikke finde den efterspurgte enhed på USB-porten"
+
+#: libgphoto2_port/gphoto2-port-result.c:96
+msgid "Could not claim the USB device"
+msgstr "Kunne ikke kræve USB enheden"
+
+#: libgphoto2_port/gphoto2-port-result.c:98
+msgid "Could not lock the device"
+msgstr "Kunne ikke låse enheden"
+
+#: libgphoto2_port/gphoto2-port-result.c:100
+msgid "libhal error"
+msgstr "libhal fejl"
+
+#: libgphoto2_port/gphoto2-port-result.c:102
+msgid "Unknown error"
+msgstr "Ukendt fejl"
+
+#: libgphoto2_port/gphoto2-port.c:59
+#, c-format
+msgid "The operation '%s' is not supported by this device"
+msgstr "Processen '%s' er ikke understøttet af denne enhed"
+
+#: libgphoto2_port/gphoto2-port.c:60
+msgid "The port has not yet been initialized"
+msgstr "Porten er endnu ikke blevet initialiseret"
+
+#: libgphoto2_port/gphoto2-port.c:682
+msgid "low"
+msgstr "lav"
+
+#: libgphoto2_port/gphoto2-port.c:683
+msgid "high"
+msgstr "høj"
+
+#: libgphoto2_port/gphoto2-port.c:1211
+msgid "No error description available"
+msgstr "Ingen fejlbeskrivelse tilgængelig"
+
+#: disk/disk.c:147 disk/disk.c:148 disk/disk.c:219 disk/disk.c:220
+#: disk/disk.c:260 disk/disk.c:283
+#, c-format
+msgid "Media '%s'"
+msgstr "Medie '%s'"
+
+#: serial/unix.c:226
+#, c-format
+msgid "Could not lock device '%s'"
+msgstr "Kunne ikke låse enhed '%s'"
+
+#: serial/unix.c:236 usbdiskdirect/linux.c:96
+#, c-format
+msgid "Device '%s' is locked by pid %d"
+msgstr "Enheden '%s' er låst af pid %d"
+
+#: serial/unix.c:239 usbdiskdirect/linux.c:99
+#, c-format
+msgid "Device '%s' could not be locked (dev_lock returned %d)"
+msgstr "Enheden '%s' kunne ikke låses (dev_lock returnerede %d)"
+
+#: serial/unix.c:268
+#, c-format
+msgid "Device '%s' could not be unlocked."
+msgstr "Enheden '%s' kunne ikke låses op."
+
+#: serial/unix.c:280 usbdiskdirect/linux.c:128
+#, c-format
+msgid "Device '%s' could not be unlocked as it is locked by pid %d."
+msgstr "Enheden '%s' kunne ikke låses op da den er låst af pid %d."
+
+#: serial/unix.c:284 usbdiskdirect/linux.c:132
+#, c-format
+msgid "Device '%s' could not be unlocked (dev_unlock returned %d)"
+msgstr "Enheden '%s' kunne ikke låses op (dev_unlock returnerede %d)"
+
+#: serial/unix.c:342
+#, c-format
+msgid "Serial Port %i"
+msgstr "Seriel-port %i"
+
+#: serial/unix.c:430
+#, c-format
+msgid "Failed to open '%s' (%s)."
+msgstr "Åbning af '%s' (%s) fejlede."
+
+#: serial/unix.c:450
+#, c-format
+msgid "Could not close '%s' (%s)."
+msgstr "Kunne ikke lukke '%s' (%s)."
+
+#: serial/unix.c:506
+#, c-format
+msgid "Could not write to port (%s)"
+msgstr "Kunne ikke skrive til port (%s)"
+
+#: serial/unix.c:583
+msgid "Parity error."
+msgstr "Paritetsfejl."
+
+#: serial/unix.c:587
+#, c-format
+msgid "Unexpected parity response sequence 0xff 0x%02x."
+msgstr "Uventet paritetssvar-sekvens 0xff 0x%02x."
+
+#: serial/unix.c:630
+#, c-format
+msgid "Unknown pin %i."
+msgstr "Ukendt pin %i."
+
+#: serial/unix.c:652
+#, c-format
+msgid "Could not get level of pin %i (%s)."
+msgstr "Kunne ikke hente niveau af pin %i (%s)."
+
+#: serial/unix.c:688
+#, c-format
+msgid "Could not set level of pin %i to %i (%s)."
+msgstr "Kunne ikke sætte niveau af pin %i til %i (%s)."
+
+#: serial/unix.c:715
+#, c-format
+msgid "Could not flush '%s' (%s)."
+msgstr "Kunne ikke tømme '%s' (%s)."
+
+#: serial/unix.c:827
+#, c-format
+msgid "Could not set the baudrate to %d"
+msgstr "Kunne ikke sætte baudrate til %d"
+
+#: usbdiskdirect/linux.c:235
+msgid "USB Mass Storage direct IO"
+msgstr "USB masselagerenhed direkte IO"
+
+#: usbdiskdirect/linux.c:286 usbscsi/linux.c:270
+#, c-format
+msgid "Failed to open '%s' (%m)."
+msgstr "Åbning af '%s' (%m) fejlede."
+
+#: usbdiskdirect/linux.c:300 usbscsi/linux.c:298
+#, c-format
+msgid "Could not close '%s' (%m)."
+msgstr "Kunne ikke lukke '%s' (%m)."
+
+#: usbdiskdirect/linux.c:324
+#, c-format
+msgid "Could not seek to offset: %x on '%s' (%m)."
+msgstr "Kunne ikke søge efter offset: %x på '%s' (%m)."
+
+#: usbdiskdirect/linux.c:346
+#, c-format
+msgid "Could not write to '%s' (%m)."
+msgstr "Kunne ikke skrive til '%s' (%m)."
+
+#: usbdiskdirect/linux.c:367
+#, c-format
+msgid "Could not read from '%s' (%m)."
+msgstr "Kunne ikke læse fra '%s' (%m)."
+
+#: usb/libusb.c:261 libusb1/libusb1.c:378
+#, c-format
+msgid "Could not open USB device (%s)."
+msgstr "Kunne ikke åbne USB enheden (%s)."
+
+#: usb/libusb.c:274 libusb1/libusb1.c:387
+msgid "Camera is already in use."
+msgstr "Kameraet er allerede i brug."
+
+#: usb/libusb.c:282
+#, c-format
+msgid "Could not detach kernel driver '%s' of camera device."
+msgstr "Kunne ikke frigøre kernedriver '%s' fra kameraenheden."
+
+#: usb/libusb.c:287 libusb1/libusb1.c:402
+msgid "Could not query kernel driver of device."
+msgstr "Kunne ikke forespørge kernedriver fra enheden."
+
+#: usb/libusb.c:296 libusb1/libusb1.c:409
+#, c-format
+msgid ""
+"Could not claim interface %d (%s). Make sure no other program (%s) or kernel "
+"module (such as %s) is using the device and you have read/write access to "
+"the device."
+msgstr ""
+"Kunne ikke kræve grænseflade %d (%s). Sikr dig at ingen andre programmer "
+"(%s) eller kernemoduler (som f.eks. %s) bruger enheden, og at du har læse/"
+"skrive adgang til enheden."
+
+#: usb/libusb.c:308 libusb1/libusb1.c:420
+msgid "MacOS PTPCamera service"
+msgstr "MacOS PTPCamera-tjeneste"
+
+#: usb/libusb.c:310 libusb1/libusb1.c:422
+msgid "unknown libgphoto2 using program"
+msgstr "andet ukendt program bruger enheden"
+
+#: usb/libusb.c:327 libusb1/libusb1.c:486
+#, c-format
+msgid "Could not release interface %d (%s)."
+msgstr "Kunne ikke frigøre grænseflade %d (%s)."
+
+#: usb/libusb.c:342 libusb1/libusb1.c:500
+#, c-format
+msgid "Could not reset USB port (%s)."
+msgstr "Kunne ikke nulstille USB-port (%s)."
+
+#: usb/libusb.c:372
+#, c-format
+msgid "Could not close USB port (%s)."
+msgstr "Kunne ikke lukke USB-port (%s)."
+
+#: usb/libusb.c:633 libusb1/libusb1.c:838
+#, c-format
+msgid "Could not set config %d/%d (%s)"
+msgstr "Kunne ikke sætte konfiguration %d/%d (%s)"
+
+#: usb/libusb.c:664 libusb1/libusb1.c:867
+#, c-format
+msgid "Could not set altsetting from %d to %d (%s)"
+msgstr "Kunne ikke sætte alt-indstillinger %d til /%d (%s)"
+
+#: usb/libusb.c:753 libusb1/libusb1.c:1032
+#, c-format
+msgid "The supplied vendor or product id (0x%x,0x%x) is not valid."
+msgstr ""
+"Det leverede fremstiller- eller produkt-id (0x%x,0x%x) er ikke gyldigt."
+
+#: usb/libusb.c:824 usb/libusb.c:910 libusb1/libusb1.c:1001
+#: libusb1/libusb1.c:1093
+#, c-format
+msgid ""
+"Could not find USB device (vendor 0x%x, product 0x%x). Make sure this device "
+"is connected to the computer."
+msgstr ""
+"Kunne ikke finde USB-enheden (fremstiller 0x%x, produkt 0x%x). Sikr dig at "
+"enheden er tilsluttet computeren."
+
+#: usb/libusb.c:1203 libusb1/libusb1.c:1382
+#, c-format
+msgid ""
+"Could not find USB device (class 0x%x, subclass 0x%x, protocol 0x%x). Make "
+"sure this device is connected to the computer."
+msgstr ""
+"Kunne ikke finde USB-enheden (class 0x%x, subclass 0x%x, protokol0x%x). Sikr "
+"dig at enheden er tilsluttet computeren."
+
+#: libusb1/libusb1.c:396
+msgid "Could not detach kernel driver of camera device."
+msgstr "Kunne ikke frigøre kernedriver fra kameraenheden."
+
+#: libusb1/libusb1.c:509
+msgid "Could not reattach kernel driver of camera device."
+msgstr "Kunne ikke frigøre kernedriver fra kameraenheden."
+
+#: usbscsi/linux.c:109
+#, c-format
+msgid "Device '%s' is locked by another app."
+msgstr "Enheden '%s' er låst af en anden app."
+
+#: usbscsi/linux.c:114
+#, c-format
+msgid "Failed to lock '%s' (%m)."
+msgstr "Låsning af '%s' (%m) fejlede."
+
+#: usbscsi/linux.c:130
+#, c-format
+msgid "Failed to unlock '%s' (%m)."
+msgstr "Oplåsning af '%s' (%m) fejlede."
+
+#: usbscsi/linux.c:231
+msgid "USB Mass Storage raw SCSI"
+msgstr "USB masselagerenhed rå SCSI"
+
+#: usbscsi/linux.c:342
+#, c-format
+msgid "Could not send scsi command to: '%s' (%m)."
+msgstr "Kunne ikke sende SCSI kommando til: '%s' (%m)."
+
+#~ msgid "Called for filename '%s'."
+#~ msgstr "Kaldte filnavnet '%s'."
+
+#~ msgid "Could not load '%s': '%s'."
+#~ msgstr "Kunne ikke indlæse '%s': '%s'."
+
+#~ msgid "Could not find some functions in '%s': '%s'."
+#~ msgstr "Kunne ikke finde visse funktioner i '%s': '%s'."
+
+#~ msgid "'%s' already loaded"
+#~ msgstr "'%s' allerede indlæst"
+
+#~ msgid "Could not load port driver list: '%s'."
+#~ msgstr "Kunne ikke indlæse portdriverliste: '%s'."
+
+#~ msgid "Loaded '%s' ('%s') from '%s'."
+#~ msgstr "Indlæste '%s' ('%s') fra '%s'."
+
+#~ msgid "Using ltdl to load io-drivers from '%s'..."
+#~ msgstr "Bruger ltdl til at indlæse io-drivere fra '%s'..."
+
+#~ msgid "Counting entries (%i available)..."
+#~ msgid_plural "Counting entries (%i available)..."
+#~ msgstr[0] "Tæller indgang (%i til rådighed)..."
+#~ msgstr[1] "Tæller indgange (%i til rådighed)..."
+
+#~ msgid "%i regular entry available."
+#~ msgid_plural "%i regular entries available."
+#~ msgstr[0] "%i regulær indgang til rådighed."
+#~ msgstr[1] "%i regulære indgange til rådighed."
+
+#~ msgid "Looking for path '%s' (%i entry available)..."
+#~ msgid_plural "Looking for path '%s' (%i entries available)..."
+#~ msgstr[0] "Ser efter sti '%s' (%i indgang til rådighed)..."
+#~ msgstr[1] "Ser efter sti '%s' (%i indgange til rådighed)..."
+
+#~ msgid "Starting regex search for '%s'..."
+#~ msgstr "Starter regex-søgning efter '%s'..."
+
+#~ msgid "Trying '%s'..."
+#~ msgstr "Prøver '%s'..."
+
+#~ msgid "regcomp failed"
+#~ msgstr "regcomp fejlede"
+
+#~ msgid "re_match failed (%i)"
+#~ msgstr "re_match fejlede (%i)"
+
+#~ msgid "regexec failed"
+#~ msgstr "regexec fejlede"
+
+#~ msgid "Looking up entry '%s'..."
+#~ msgstr "Ser efter indgang '%s'..."
+
+#~ msgid "Getting info of entry %i (%i available)..."
+#~ msgid_plural "Getting info of entry %i (%i available)..."
+#~ msgstr[0] "Henter information om indgang %i (%i til rådighed)..."
+#~ msgstr[1] "Henter information om indgange %i (%i til rådighed)..."
+
+#~ msgid "Creating new device..."
+#~ msgstr "Danner ny enhed..."
+
+#~ msgid "Could not load '%s' ('%s')."
+#~ msgstr "Kunne ikke indlæse '%s' ('%s')."
+
+#~ msgid "Could not find 'gp_port_library_operations' in '%s' ('%s')"
+#~ msgstr "Kunne ikke finde 'gp_port_library_operations' i '%s' ('%s')"
+
+#~ msgid "Opening %s port..."
+#~ msgstr "Åbner %s port..."
+
+#~ msgid "Closing port..."
+#~ msgstr "Lukker port..."
+
+#~ msgid "Resetting port..."
+#~ msgstr "Nulstiller port..."
+
+#~ msgid "Freeing port..."
+#~ msgstr "Frigør port..."
+
+#~ msgid "Writing %i=0x%x byte(s) to port..."
+#~ msgstr "Skriver %i=0x%x byte til port..."
+
+#~ msgid "Could only write %i out of %i byte"
+#~ msgid_plural "Could only write %i out of %i bytes"
+#~ msgstr[0] "Kunne kun skrive %i ud af %i byte"
+#~ msgstr[1] "Kunne kun skrive %i ud af %i byte"
+
+#~ msgid "Reading %i=0x%x byte from port..."
+#~ msgid_plural "Reading %i=0x%x bytes from port..."
+#~ msgstr[0] "Læser %i=0x%x byte fra port..."
+#~ msgstr[1] "Læser %i=0x%x byte fra port..."
+
+#~ msgid "Could only read %i out of %i byte"
+#~ msgid_plural "Could only read %i out of %i byte(s)"
+#~ msgstr[0] "Kunne kun læse %i ud af %i byte"
+#~ msgstr[1] "Kunne kun læse %i ud af %i byte"
+
+#~ msgid "Reading %i=0x%x byte from interrupt endpoint..."
+#~ msgid_plural "Reading %i=0x%x bytes from interrupt endpoint..."
+#~ msgstr[0] "Læser %i=0x%x byte fra afbrudt endepunkt..."
+#~ msgstr[1] "Læser %i=0x%x byte fra afbrudte endepunkter..."
+
+#~ msgid "Could only read %i out of %i byte(s)"
+#~ msgstr "Kunne kun læse %i ud af %i byte"
+
+#~ msgid "Reading %i=0x%x byte from interrupt endpoint (fast)..."
+#~ msgid_plural "Reading %i=0x%x bytes from interrupt endpoint (fast)..."
+#~ msgstr[0] "Læser %i=0x%x byte fra afbrudt endepunkt (hurtig)..."
+#~ msgstr[1] "Læser %i=0x%x byte fra afbrudte endepunkter (hurtig)..."
+
+#~ msgid "Setting timeout to %i millisecond(s)..."
+#~ msgstr "Sætter tidsudløb til %i millisekund(er)..."
+
+#~ msgid "Getting timeout..."
+#~ msgstr "Henter tidsudløb..."
+
+#~ msgid "Current timeout: %i milliseconds"
+#~ msgstr "Nuværende tidsudløb: %i millisekunder"
+
+#~ msgid "Setting settings..."
+#~ msgstr "Sætter indstillinger..."
+
+#~ msgid "Getting level of pin %i..."
+#~ msgstr "Henter niveau for pin %i..."
+
+#~ msgid "Level of pin %i: %i"
+#~ msgstr "Niveau for pin %i: %i"
+
+#~ msgid "Setting pin %i (%s: '%s') to '%s'..."
+#~ msgstr "Sætter pin %i (%s: '%s') til '%s'..."
+
+#~ msgid "Sending break (%i milliseconds)..."
+#~ msgstr "Sender skift (%i millisekunder)..."
+
+#~ msgid "Flushing port..."
+#~ msgstr "Tømmer port..."
+
+#~ msgid "Clear halt..."
+#~ msgstr "Ryd stop..."
+
+#~ msgid "Writing message (request=0x%x value=0x%x index=0x%x size=%i=0x%x)..."
+#~ msgstr ""
+#~ "Skriver besked (forespørgsel=0x%x værdi=0x%x indeks=0x%x størrelse=%i=0x"
+#~ "%x)..."
+
+#~ msgid "Reading message (request=0x%x value=0x%x index=0x%x size=%i=0x%x)..."
+#~ msgstr ""
+#~ "Læser besked (forespørgsel=0x%x værdi=0x%x indeks=0x%x størrelse=%i=0x"
+#~ "%x)..."
+
+#~ msgid "Device has driver '%s' attached."
+#~ msgstr "Enheden har driver '%s' tilknyttet."
+
+#~ msgid "Device has driver '%s' attached, detaching it now."
+#~ msgstr "Enheden har driver '%s' tilknyttet, frigør det nu."
+
+#~ msgid ""
+#~ "USB device (vendor 0x%x, product 0x%x) is a mass storage device, and "
+#~ "might not function with gphoto2. Reference: %s"
+#~ msgstr ""
+#~ "USB-enheden (fremstiller 0x%x, produkt 0x%x) er en masselagerenhed, og "
+#~ "virker måske ikke med gphoto2. Reference: %s"
+
+#~ msgid "Device has a kernel driver attached (%d), detaching it now."
+#~ msgstr "Enheden har en kernedriver tilknyttet (%d), frigør den nu."
