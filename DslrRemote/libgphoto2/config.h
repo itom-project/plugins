@@ -40,4 +40,16 @@
 
 #define _GPHOTO2_INTERNAL_CODE // we need this as otherwise gpi_vsnprintf and gp_system_mkdir are undefined - is this intentional?
 
+#ifndef uint8_t
+	#define uint8_t uint8
+#endif
+#ifndef uint16_t
+	#define uint16_t uint16
+#endif
+#ifndef uint32_t
+	#define uint32_t uint32
+#endif
+
+#define inline __inline
+
 #endif

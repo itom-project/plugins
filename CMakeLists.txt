@@ -78,10 +78,10 @@ if (PLUGIN_dispWindow)
 endif (PLUGIN_dispWindow)
 
 # dslrRemote - not yet
-#OPTION(PLUGIN_DslrRemote "Build with this plugin." ON)
-#if (PLUGIN_DslrRemote)
-#    ADD_SUBDIRECTORY(DslrRemote)
-#endif (PLUGIN_DslrRemote)
+OPTION(PLUGIN_DslrRemote "Build with this plugin." ON)
+if (PLUGIN_DslrRemote)
+    ADD_SUBDIRECTORY(DslrRemote)
+endif (PLUGIN_DslrRemote)
 
 # DummyGrabber
 OPTION(PLUGIN_DummyGrabber "Build with this plugin." ON)

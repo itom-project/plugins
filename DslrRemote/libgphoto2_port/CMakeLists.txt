@@ -2,7 +2,7 @@ SET (target_name libgphoto2_port)
 
 project(${target_name})
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
