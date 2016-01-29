@@ -42,8 +42,6 @@
 #include <QtCore/QtPlugin>
 #include <math.h>
 
-int NTHREADS = 2;
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FFTWFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -81,12 +79,11 @@ To build this plugin you will need the libs from the fftw.";
     m_description = QObject::tr("Wrapper for the FFTW");
 //    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr(
-"This plugin provides several wrapper for several fftw-functions for itom::dataObject. These are for instance: \n\
+"This plugin provides several wrapper for several fftw-functions for dataObject. These are for instance: \n\
 - linewise FFT\n\
 - linewise inverse FFT \n\
 - 2D-fft \n\
 - inverse2d-FFT \n\
-- gaussian-filtering according to DIN EN ISO 16610-21 \n\
 \n\
 The FFTW package was developed at MIT by Matteo Frigo and Steven G. Johnson.\
 It was published unter GNU General Public License and can be downloaded unter http://www.fftw.org/ .\n\
@@ -97,10 +94,8 @@ To build this plugin you will need the libs from the fftw.");
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
-    m_license = QObject::tr("GPL");
+    m_license = QObject::tr("GPL (uses FFTW licensed under GPL, too)");
     m_aboutThis = QObject::tr("Algorithms using FFTW");       
-    
-    NTHREADS  = QThread::idealThreadCount();
 
     return;
 }
@@ -272,10 +267,11 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
 */
 ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, const bool forward, const bool lineWise)
 {
+    
     ito::RetVal retval = ito::retOk;
     
-    ito::DataObject *dObjIn = reinterpret_cast<ito::DataObject*>((*paramsMand)[0].getVal<void*>());    //Input object
-    ito::DataObject *dObjOut = reinterpret_cast<ito::DataObject*>((*paramsMand)[1].getVal<void*>());    //Output object
+    const ito::DataObject *dObjIn = (*paramsMand)[0].getVal<ito::DataObject*>();    //Input object
+    ito::DataObject *dObjOut = (*paramsMand)[1].getVal<ito::DataObject*>();    //Output object
     int plan_select = (*paramsOpt)[0].getVal<int>();                                            //plan selection string for fftw
     long int dimensions=0;
     unsigned int plan_sel = 0;
@@ -292,7 +288,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
     
-    retval += ito::dObjHelper::verifyDataObjectType(dObjIn, "dObjIn", 9, ito::tInt8, ito::tUInt8, 
+    retval += ito::dObjHelper::verifyDataObjectType(dObjIn, "sourceObject", 9, ito::tInt8, ito::tUInt8, 
                                                                          ito::tInt16, ito::tUInt16, 
                                                                          ito::tInt32, 
                                                                          ito::tFloat32, ito::tFloat64, 
@@ -349,7 +345,7 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         neededNewInput = true;
         inputObject = ito::DataObject(dimensions, dObjIn->getSize(), ito::tComplex128);
 
-        cv::Mat* scrMat;
+        const cv::Mat* scrMat;
         ito::complex128* cRowPtr;
 
         switch(dObjIn->getType())
@@ -526,12 +522,14 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
 
     if (plan_select == 1)            
     {
-        plan_sel = (0U);                            // from fftw.h: #define FFTW_MEASURE (0U), #define FFTW_ESTIMATE (1U << 6)
+        plan_sel = FFTW_MEASURE;                            // from fftw.h: #define FFTW_MEASURE (0U), #define FFTW_ESTIMATE (1U << 6)
     }
     else 
     {
-        plan_sel = (1U << 6);                        // estimate as standard, quicker planning, probably slower fft-computing
+        plan_sel = FFTW_ESTIMATE;                        // estimate as standard, quicker planning, probably slower fft-computing
     }
+
+    int numPlanes = inputObject.getNumPlanes();
 
     if (lineWise)
     {
@@ -539,16 +537,19 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
         fftw_complex *in  = (fftw_complex*)(((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(0)])->ptr<ito::complex128>());
         fftw_complex *out = (fftw_complex*)(((cv::Mat*)outputObject.get_mdata()[outputObject.seekMat(0)])->ptr<ito::complex128>());
 
+        //qDebug() << fftw_alignment_of((double*)in) << fftw_alignment_of((double*)out);
+        
+
         // 1D complex to complex
         if (ySize == 1)                    
         {
             fftw_plan plan = fftw_plan_dft_1d(xSize, in, out, planForwardBackWard, plan_sel);
             fftw_execute(plan);
 
-            for (int z = 1; z < inputObject.calcNumMats(); z++)
+            for (int z = 1; z < numPlanes; z++)
             {
-                fftw_complex *in  = (fftw_complex*)(((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>());
-                fftw_complex *out = (fftw_complex*)(((cv::Mat*)outputObject.get_mdata()[outputObject.seekMat(z)])->ptr<ito::complex128>());
+                fftw_complex *in = (fftw_complex*)((inputObject.get_mdata()[inputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
+                fftw_complex *out = (fftw_complex*)((outputObject.get_mdata()[outputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
                 fftw_execute_dft(plan, in, out);
             }        // end of 1D
 
@@ -561,10 +562,10 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
             fftw_plan plan = fftw_plan_many_dft(1, _xSize, ySize, in, NULL, 1, xSize, out, NULL, 1, xSize, planForwardBackWard, plan_sel);            
             fftw_execute(plan);
 
-            for (int z = 1; z < inputObject.calcNumMats(); z++)
+            for (int z = 1; z < numPlanes; z++)
             {
-                fftw_complex *in  = (fftw_complex*)(((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>());
-                fftw_complex *out = (fftw_complex*)(((cv::Mat*)outputObject.get_mdata()[outputObject.seekMat(z)])->ptr<ito::complex128>());
+                fftw_complex *in = (fftw_complex*)((inputObject.get_mdata()[inputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
+                fftw_complex *out = (fftw_complex*)((outputObject.get_mdata()[outputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
                 fftw_execute_dft(plan, in, out);
             }    
 
@@ -574,15 +575,15 @@ ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito
     else
     {
         msg = forward ? tr("Applied 2D-fft via FFTW (unscaled!)") : tr("Applied inverse 2D-fft via FFTW (unscaled!)");
-        fftw_complex *in  = (fftw_complex*)(((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(0)])->ptr<ito::complex128>());
-        fftw_complex *out = (fftw_complex*)(((cv::Mat*)outputObject.get_mdata()[outputObject.seekMat(0)])->ptr<ito::complex128>());
+        fftw_complex *in = (fftw_complex*)((inputObject.get_mdata()[inputObject.seekMat(0, numPlanes)])->ptr<ito::complex128>());
+        fftw_complex *out = (fftw_complex*)((outputObject.get_mdata()[outputObject.seekMat(0, numPlanes)])->ptr<ito::complex128>());
         fftw_plan plan = fftw_plan_dft_2d(ySize, xSize, in, out, planForwardBackWard, plan_sel);
         fftw_execute(plan);
 
-        for (int z = 1; z < inputObject.calcNumMats(); z++)
+        for (int z = 1; z < numPlanes; z++)
         {
-            fftw_complex *in  = (fftw_complex*)(((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>());
-            fftw_complex *out = (fftw_complex*)(((cv::Mat*)outputObject.get_mdata()[outputObject.seekMat(z)])->ptr<ito::complex128>());
+            fftw_complex *in = (fftw_complex*)((inputObject.get_mdata()[inputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
+            fftw_complex *out = (fftw_complex*)((outputObject.get_mdata()[outputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
             fftw_execute_dft(plan, in, out);
         }    
         fftw_destroy_plan(plan);
