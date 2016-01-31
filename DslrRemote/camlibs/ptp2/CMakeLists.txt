@@ -74,6 +74,7 @@ set(plugin_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ptpip.c
 #	${CMAKE_CURRENT_SOURCE_DIR}/ptp-pack.c
 	${CMAKE_CURRENT_SOURCE_DIR}/usb.c
+	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2/auxfuncs.c
 )
 
 #Add version information to the plugIn-dll unter MSVC
@@ -81,9 +82,18 @@ if(MSVC)
 #    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
+SET(LTDLLIB optimized ../../libtool/libltdl/$(Configuration)/libltdl debug ../../libtool/libltdl/$(Configuration)/libltdld)
+SET(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Configuration)/regexd)
+SET(LIBGPHOTO2 optimized ../../libgphoto2/$(Configuration)/libgphoto2 debug ../../libgphoto2/$(Configuration)/libgphoto2d)
+SET(LIBGPHOTO2PORT optimized ../../libgphoto2_port/$(Configuration)/libgphoto2_port debug ../../libgphoto2_port/$(Configuration)/libgphoto2_portd)
+
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
-TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} #../libgphoto2_port/$(Configuration)/libgphoto2_port #../libtool/libltdl/$(Configuration)/libltdl ../regex/$(Configuration)/regex
-)
+TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} 
+	${LTDLLIB}
+	${REGEXLIB}
+	${LIBGPHOTO2}
+	${LIBGPHOTO2PORT}
+	shell32)
 
 if(MSVC)
 #    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
@@ -91,10 +101,12 @@ if(MSVC)
 endif(MSVC)
 
 #documentation
-PLUGIN_DOCUMENTATION(${target_name} libgphoto2)
+PLUGIN_DOCUMENTATION(${target_name} ptp2)
 
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
+LIST(APPEND COPY_SOURCES "$<TARGET_FILE:ptp2>")
+LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
 ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)

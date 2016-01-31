@@ -51,5 +51,24 @@
 #endif
 
 #define inline __inline
+#ifndef usleep
+	#define usleep(MUS) Sleep(MUS / 1000)
+#endif
+
+#ifndef setenv
+inline int setenv(char const *name, char const *value, int overwrite)
+{
+	char buffer[255];
+	int const err = snprintf(buffer, sizeof(buffer), "%s=%s", name, value);
+	if (err < 0 || err >= sizeof(buffer))
+		return -1;
+	return _putenv(buffer);
+}
+#endif
+
+#ifndef unsetenv
+	#define unsetenv
+#endif
+
 
 #endif
