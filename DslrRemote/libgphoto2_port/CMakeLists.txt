@@ -88,8 +88,19 @@ if(MSVC)
 #    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
+SET(LTDLLIB optimized ../libtool/libltdl/$(Configuration)/libltdl debug ../libtool/libltdl/$(Configuration)/libltdld)
+SET(REGEXLIB optimized ../regex/$(Configuration)/regex debug ../regex/$(Configuration)/regexd)
+SET(LIBUSB1LIB optimized ./libusb1/$(Configuration)/libgphoto2_port_libusb1 debug ./libusb1/$(Configuration)/libgphoto2_port_libusb1d)
+SET(PTPPORTLIB optimized ./ptpip/$(Configuration)/libgphoto2_port_ptpip debug ./ptpip/$(Configuration)/libgphoto2_port_ptpipd)
+SET(DISKLIB optimized ./disk/$(Configuration)/libgphoto2_port_disk debug ./disk/$(Configuration)/libgphoto2_port_diskd)
+
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
-TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARIES} ../libtool/libltdl/$(Configuration)/libltdl ../regex/$(Configuration)/regex ./libusb1/$(Configuration)/libgphoto2_port_libusb1 ./ptpip/$(Configuration)/libgphoto2_port_ptpip ./disk/$(Configuration)/libgphoto2_port_disk)
+TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${LibUSB_LIBRARIES} 
+	${LTDLLIB}
+	${REGEXLIB}
+	${LIBUSB1LIB}
+	${PTPPORTLIB}
+	${DISKLIB})
 
 #documentation
 PLUGIN_DOCUMENTATION(${target_name} dslrRemote)
@@ -97,7 +108,7 @@ PLUGIN_DOCUMENTATION(${target_name} dslrRemote)
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
-#LIST(APPEND COPY_SOURCES "$<TARGET_FILE:dcraw>")
-#LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
+LIST(APPEND COPY_SOURCES "$<TARGET_FILE:libgphoto2_port>")
+LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
 ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)

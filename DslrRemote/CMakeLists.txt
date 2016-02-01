@@ -1,4 +1,4 @@
-SET (target_name dslrRemote)
+SET (target_name DslrRemote)
 
 project(${target_name})
 
@@ -336,20 +336,21 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port
     ${ITOM_SDK_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 )
 
 set(plugin_HEADERS
-#    ${CMAKE_CURRENT_SOURCE_DIR}/rawImport.h
-#    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+	${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.h
 )
 
 set(plugin_UI
 )
 
 set(plugin_SOURCES 
-#    ${CMAKE_CURRENT_SOURCE_DIR}/rawImport.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.cpp
 )
 
 set(plugin_RCC
@@ -361,16 +362,45 @@ if(MSVC)
     list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
-file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+#################################################################
+# Qt related pre-processing of the files above
+# (These methods create the moc, rcc and uic process.)
+#################################################################
+if (QT5_FOUND)
+    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+    QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+else (QT5_FOUND)
+    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+    QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+endif (QT5_FOUND)
 
-ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
-TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES})
+file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+#handle translations END STEP 1
+
+ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+
+SET(LTDLLIB optimized ./libtool/libltdl/$(Configuration)/libltdl debug ./libtool/libltdl/$(Configuration)/libltdld)
+SET(REGEXLIB optimized ./regex/$(Configuration)/regex debug ./regex/$(Configuration)/regexd)
+SET(LIBGPHOTO2 optimized ./libgphoto2/$(Configuration)/libgphoto2 debug ./libgphoto2/$(Configuration)/libgphoto2d)
+SET(LIBGPHOTO2PORT optimized ./libgphoto2_port/$(Configuration)/libgphoto2_port debug ./libgphoto2_port/$(Configuration)/libgphoto2_portd)
+
+TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} 
+ ${LTDLLIB}
+ ${REGEXLIB}
+ ${LIBGPHOTO2}
+ ${LIBGPHOTO2PORT}
+)
 if (QT5_FOUND)
     qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
 endif (QT5_FOUND)
 
-ADD_DEPENDENCIES(${target_name} libgphoto2)
+ADD_DEPENDENCIES(${target_name} regex)
+ADD_DEPENDENCIES(${target_name} libltdl)
 ADD_DEPENDENCIES(${target_name} libgphoto2_port)
+ADD_DEPENDENCIES(${target_name} libgphoto2)
+#ADD_DEPENDENCIES(${target_name} camlibs)
 
 #translation
 set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
