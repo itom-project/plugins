@@ -1221,7 +1221,7 @@ const ito::RetVal SerialIO::showConfDialog(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 SerialIO::SerialIO() : AddInDataIO(), m_debugMode(false), m_debugIgnoreEmpty(false)
 {
-    m_preBuf[0] = '\0';
+    m_preBuf.clear();
 
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "SerialIO", NULL);
     m_params.insert(paramVal.getName(), paramVal);
@@ -1747,7 +1747,7 @@ ito::RetVal SerialIO::execFunc(const QString funcName, QSharedPointer<QVector<it
     if (funcName == "clearInputBuffer")
     {
         retval = m_serport.sclearbuffer(0);
-        m_preBuf = "";
+        m_preBuf.clear();
     }
     else if (funcName == "clearOutputBuffer")
     {
@@ -1759,7 +1759,7 @@ ito::RetVal SerialIO::execFunc(const QString funcName, QSharedPointer<QVector<it
         retval = m_serport.sclearbuffer(bufferType);
         if (bufferType == 0)
         {
-            m_preBuf = "";
+            m_preBuf.clear();
         }
     }
 
