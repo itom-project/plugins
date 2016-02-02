@@ -45,9 +45,12 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 template<typename _Tp> ito::RetVal AutoFocusDerivate(const ito::DataObject *src, const QString &method, double *result)
 {
+    int type1 = (src->getType() == ito::tFloat32) ? CV_32FC1 : CV_64FC1;
+    int type2 = (src->getType() == ito::tFloat32) ? CV_32F : CV_64F;
+
     const cv::Mat *plane = src->getCvPlaneMat(0);
-    cv::Mat dstH(plane->rows, plane->cols, CV_64FC1);
-    cv::Mat dstV(plane->rows, plane->cols, CV_64FC1);
+    cv::Mat dstH(plane->rows, plane->cols, type1);
+    cv::Mat dstV(plane->rows, plane->cols, type1);
     int numPlanes = src->getNumPlanes();
 
     int num = plane->cols * plane->rows;
@@ -124,18 +127,18 @@ template<typename _Tp> ito::RetVal AutoFocusDerivate(const ito::DataObject *src,
         plane = src->get_mdata()[src->seekMat(p, numPlanes)];
         if (useSobel)
         {
-            cv::Sobel(*plane, dstH, CV_64F, 1, 0, ksize);
-            cv::Sobel(*plane, dstV, CV_64F, 0, 1, ksize);
+            cv::Sobel(*plane, dstH, type2, 1, 0, ksize);
+            cv::Sobel(*plane, dstV, type2, 0, 1, ksize);
         }
         else if (useLaplacian)
         {
-            cv::Laplacian(*plane, dstH, CV_64F, ksize);
-            cv::Laplacian(*plane, dstV, CV_64F, ksize);
+            cv::Laplacian(*plane, dstH, type2, ksize);
+            cv::Laplacian(*plane, dstV, type2, ksize);
         }
         else
         {
-            cv::filter2D(*plane, dstH, CV_64F, kernelH);
-            cv::filter2D(*plane, dstV, CV_64F, kernelV);
+            cv::filter2D(*plane, dstH, type2, kernelH);
+            cv::filter2D(*plane, dstV, type2, kernelV);
         }
 
         cv::Mat dst;
