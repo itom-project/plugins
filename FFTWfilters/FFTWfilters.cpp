@@ -63,39 +63,26 @@ FFTWFiltersInterface::FFTWFiltersInterface()
     m_type = ito::typeAlgo;
     setObjectName("FFTW-Filter");
 
-/*    char docstring[] = \
-"This plugin provides several wrapper for several fftw-functions for itom::dataObject. These are for instance: \n\
-- linewise FFT\n\
-- linewise inverse FFT \n\
-- 2D-fft \n\
-- inverse2d-FFT \n\
-- gaussian-filtering according to DIN EN ISO 16610-21 \n\
-\n\
-The FFTW package was developed at MIT by Matteo Frigo and Steven G. Johnson.\
-It was published unter GNU General Public License and can be downloaded unter http://www.fftw.org/ .\n\
-\n\
-To build this plugin you will need the libs from the fftw.";
-*/
     m_description = QObject::tr("Wrapper for the FFTW");
-//    m_detaildescription = QObject::tr(docstring);
+
     m_detaildescription = QObject::tr(
-"This plugin provides several wrapper for several fftw-functions for dataObject. These are for instance: \n\
-- linewise FFT\n\
-- linewise inverse FFT \n\
-- 2D-fft \n\
-- inverse2d-FFT \n\
+"This plugin provides wrappers for Fourier Transforms using the FFTW-library. These are for instance: \n\
+- 1D FFT (over an arbitrary axis)\n\
+- 1D inverse FFT (over an arbitrary axis)\n\
+- 2D FFT (over the last two axes)\n\
+- 2D inverse FFT (over the last two axes)\n\
 \n\
 The FFTW package was developed at MIT by Matteo Frigo and Steven G. Johnson.\
 It was published unter GNU General Public License and can be downloaded unter http://www.fftw.org/ .\n\
 \n\
 To build this plugin you will need the libs from the fftw.");
 
-    m_author = "W. Lyda, twip optical solutions GmbH, T. Boettcher, University Stuttgart";
+    m_author = "W. Lyda, twip optical solutions GmbH, T. Boettcher, M. Gronle, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("GPL (uses FFTW licensed under GPL, too)");
-    m_aboutThis = QObject::tr("Algorithms using FFTW");       
+    m_aboutThis = QObject::tr("1D and 2D FFT algorithms (using the fast FFTW library)");       
 
     return;
 }
@@ -111,6 +98,130 @@ FFTWFiltersInterface::~FFTWFiltersInterface()
 #if QT_VERSION < 0x050000
     Q_EXPORT_PLUGIN2(FFTWFiltersInterface, FFTWFiltersInterface)
 #endif
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+DataObjectAxisIterator::DataObjectAxisIterator(const ito::DataObject *objIn, ito::DataObject *objOut, int axis) :
+    m_axis(axis)
+{
+    m_obj[0] = objIn;
+    m_obj[1] = objOut;
+
+    m_len = objIn->getDims() - 2;
+
+    int lastSizeBiggerOne = 0;
+
+    m_sizes = new int[m_len];
+    for (int i = 0; i < m_len; ++i)
+    {
+        m_sizes[i] = objIn->getSize(i) - 1;
+        if (m_sizes[i] > 0)
+        {
+            lastSizeBiggerOne = i;
+        }
+    }
+    m_sizes[axis] = 0;
+
+    for (int n = 0; n < 2; ++n)
+    {
+        m_currentPlaneTreeIndex[n] = -1;
+        m_currentSizes[n] = new int[m_len];
+        memset(m_currentSizes[n], 0, sizeof(int) *(m_len));
+
+        m_steps[n] = new int[m_len];
+        m_steps[n][m_len - 1] = 1;
+        int steps = 1;
+        for (int i = m_len - 2; i >= 0; --i)
+        {
+            steps *= m_obj[n]->getOriginalSize(i + 1);
+            m_steps[n][i] = steps;
+        }
+
+        m_controlIndex[n] = lastSizeBiggerOne;
+
+        m_firstPlaneIndex[n] = m_obj[n]->seekMat(0);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+DataObjectAxisIterator::~DataObjectAxisIterator()
+{
+    delete[] m_sizes;
+    delete[] m_currentSizes[0];
+    delete[] m_currentSizes[1];
+    delete[] m_steps[0];
+    delete[] m_steps[1];
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool DataObjectAxisIterator::nextPlaneTreeIndex(int &planeIndexIn, int &planeIndexOut)
+{
+    if (m_obj[0] == m_obj[1]) //inplace
+    {
+        bool ret = nextPlaneTreeIndex(0, planeIndexIn);
+        planeIndexOut = planeIndexIn;
+        return ret;
+    }
+    else
+    {
+        nextPlaneTreeIndex(0, planeIndexIn);
+        return nextPlaneTreeIndex(1, planeIndexOut);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool DataObjectAxisIterator::nextPlaneTreeIndex(char idx, int &planeIndex)
+{
+    if (m_currentPlaneTreeIndex[idx] == -1)
+    {
+        m_currentPlaneTreeIndex[idx] = m_firstPlaneIndex[idx];
+        planeIndex = m_currentPlaneTreeIndex[idx];
+        return true;
+    }
+    else if (m_currentSizes[idx][m_controlIndex[idx]] < m_sizes[m_controlIndex[idx]]) //check if control index can still be incremented:
+    {
+        //yes it can
+        m_currentSizes[idx][m_controlIndex[idx]]++;
+        m_currentPlaneTreeIndex[idx] += m_steps[idx][m_controlIndex[idx]];
+        planeIndex = m_currentPlaneTreeIndex[idx];
+        return true;
+    }
+    else //one number before will be incremented and currentIndex is set to the last
+    {
+        //search from the back for the next index that can be incremented
+        for (int i = m_controlIndex[idx]; i >= 0; --i)
+        {
+            if (m_currentSizes[idx][i] < m_sizes[i])
+            {
+                m_currentSizes[idx][i]++;
+                memset(&m_currentSizes[idx][i + 1], 0, sizeof(int) * (m_len - i - 1));
+
+                m_currentPlaneTreeIndex[idx] = m_firstPlaneIndex[idx];
+                for (int j = 0; j <= i; ++j)
+                {
+                    m_currentPlaneTreeIndex[idx] += (m_steps[idx][j] * m_currentSizes[idx][j]);
+                }
+
+                planeIndex = m_currentPlaneTreeIndex[idx];
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int DataObjectAxisIterator::getPlaneStepIn() const
+{
+    return m_steps[0][m_axis];
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int DataObjectAxisIterator::getPlaneStepOut() const
+{
+    return m_steps[1][m_axis];
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -137,19 +248,72 @@ FFTWFilters::~FFTWFilters()
    \author ITO, Boettcher
    \date
 */
-ito::RetVal FFTWFilters::ParamsFFTW(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+ito::RetVal FFTWFilters::xfftw1dParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (!retval.containsError())
     {
-        ito::Param param = ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input Object").toLatin1().data());
+        ito::Param param = ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128)").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output Object").toLatin1().data());
+        param = ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output object (inplace allowed, but only feasible if source is complex64 or complex128). Destination has the same size than the input object, the type is either complex128 (for float64 or complex128 inputs) or complex64 (else).").toLatin1().data());
         paramsMand->append(param);
 
-        param = ito::Param("plan_flag", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("Planner flag, 0: estimate (default), 1: measure").toLatin1().data());
+        param = ito::Param("plan_flag", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, \
+tr("Method flag, 0: Estimate (default), 1: Measure.  Measure instructs FFTW to run and measure the execution time of several FFTs in order to \
+find the best way to compute the transform of size n. This process takes some time (usually a few seconds), depending on your machine and on the \
+size of the transform. Estimate, on the contrary, does not run any computation and just builds a reasonable plan that is probably sub-optimal. \
+In short, if your program performs many transforms of the same size and initialization time is not important, use Measure; otherwise use Estimate. ").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("axis", ito::ParamBase::Int | ito::ParamBase::In, -1, std::numeric_limits<int>::max(), -1, tr("Axis over which to compute the FFT. If not given, the last axis is used.").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("norm", ito::ParamBase::String | ito::ParamBase::In, "default", tr("Normalization method. no: neither fft nor ifft are scaled, default: direct transform (fft) is not scaled, inverse transform is scaled by 1/n, ortho: both direct and inverse transforms are scaled by 1/sqrt(n)").toLatin1().data());
+        ito::StringMeta sm(ito::StringMeta::String);
+        sm.addItem("no"); //neither fft nor ifft are scaled
+        sm.addItem("default"); //numpy default: fft is not scaled, ifft is scaled with 1/n
+        sm.addItem("ortho"); //fft and ifft are scaled with 1/sqrt(n)
+        param.setMeta(&sm, false);
         paramsOpt->append(param);
     
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\detail    Parameters for fftw filter
+\param[in|out]   paramsMand  Mandatory parameters for the filter function
+\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   outVals   Outputvalues, not implemented for this function
+\author ITO, Boettcher
+\date
+*/
+ito::RetVal FFTWFilters::xfftw2dParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (!retval.containsError())
+    {
+        ito::Param param = ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128)").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("destination", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Output object (inplace allowed, but only feasible if source is complex64 or complex128). Destination has the same size than the input object, the type is either complex128 (for float64 or complex128 inputs) or complex64 (else).").toLatin1().data());
+        paramsMand->append(param);
+
+        param = ito::Param("plan_flag", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, \
+            tr("Method flag, 0: Estimate (default), 1: Measure.  Measure instructs FFTW to run and measure the execution time of several FFTs in order to \
+               find the best way to compute the transform of size n. This process takes some time (usually a few seconds), depending on your machine and on the \
+               size of the transform. Estimate, on the contrary, does not run any computation and just builds a reasonable plan that is probably sub-optimal. \
+               In short, if your program performs many transforms of the same size and initialization time is not important, use Measure; otherwise use Estimate. ").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("norm", ito::ParamBase::String | ito::ParamBase::In, "default", tr("Normalization method. no: neither fft nor ifft are scaled, default: direct transform (fft) is not scaled, inverse transform is scaled by 1/n, ortho: both direct and inverse transforms are scaled by 1/sqrt(n)").toLatin1().data());
+        ito::StringMeta sm(ito::StringMeta::String);
+        sm.addItem("no"); //neither fft nor ifft are scaled
+        sm.addItem("default"); //numpy default: fft is not scaled, ifft is scaled with 1/n
+        sm.addItem("ortho"); //fft and ifft are scaled with 1/sqrt(n)
+        param.setMeta(&sm, false);
+        paramsOpt->append(param);
+
     }
 
     return retval;
@@ -164,21 +328,34 @@ ito::RetVal FFTWFilters::ParamsFFTW(QVector<ito::Param> *paramsMand, QVector<ito
    \author ITO, Boettcher
    \date 2012.03.06
 */
-const QString FFTWFilters::fftw1dDOC = QObject::tr("Perfom an unscaled 1D-fft for the given object. \n\
+const QString FFTWFilters::fftw1dDOC = QObject::tr("Compute the one-dimensional discrete Fourier Transform. \n\
 \n\
-This filter uses the fft function provided by the fftw-library to perfom a row-wise fft on the input object. \n\
+This method computes the one-dimensional n-point discrete Fourier Transform (DFT) with the efficient \n\
+Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform \n\
+is executed over a desired axis. \n\
 \n\
-If the object is a single column object the fft is calculated along the y axis. In other cases the fft is calculated along x axis.\n\
+This method applies the forward transform, use 'ifft' for the inverse transform. The method works both \n\
+inplace as well as out-of-place. The output is a complex64 object of the same size than the input object \n\
+if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the \n\
+input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
+a new dataObject is always put into the destination object. \n\
 \n\
-The filter works in-place and out-of-place. If the input object is not complex128, a temporary object of this type will be created.\n\
-If the filter is used with input- as output-object and the type is not complex128, the input-object will be overwritten with the output-type.\n\
+Meta and axes information are copied to the output object. Only properties of the chosen axis are changed: \n\
 \n\
-If the object has a ROI a ROI-less object correponding to the ROI is created. \n\
-If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n");
-
+* offset: 0.0 \n\
+* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
+* unit: inverse of previous-unit, e.g. '1/previous-unit' \n\
+\n\
+Per default, no value scaling is applied to the result. However, the optional parameter 'norm' influences this. \n\
+If 'norm' is set to 'ortho', the values are scaled by 1/sqrt(n). \n\
+\n\
+The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional \n\
+parameter 'plan_flag'. While Estimate selects a default algorithm, Measure will process some test runs with several \n\
+implementations on your machine in order to find out the fastest algorithm for the given type of object. This will \n\
+take some time but might speed-up calculations of huge objects.");
 ito::RetVal FFTWFilters::fftw1d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
-    return doFFTW(paramsMand, paramsOpt, true, true);
+    return doFFT1D(paramsMand, paramsOpt, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -190,21 +367,35 @@ ito::RetVal FFTWFilters::fftw1d(QVector<ito::ParamBase> *paramsMand, QVector<ito
    \author ITO, Boettcher
    \date 2012.03.06
 */
-const QString FFTWFilters::ifftw1dDOC = QObject::tr("Perfom an unscaled inverse 1D-fft for the given object. \n\
+const QString FFTWFilters::ifftw1dDOC = QObject::tr("Compute the inverse one-dimensional discrete Fourier Transform. \n\
 \n\
-This filter uses the fft function provided by the fftw-library to perfom a inverse row-wise fft on the input object. \n\
+This method computes the inverse one-dimensional n-point discrete Fourier Transform (DFT) with the efficient \n\
+Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform \n\
+is executed over a desired axis. \n\
 \n\
-If the object is a single column object the fft is calculated along the y axis. In other cases the fft is calculated along x axis.\n\
+This method applies the inverse transform, use 'fft' for the forward transform. The method works both \n\
+inplace as well as out-of-place. The output is a complex64 object of the same size than the input object \n\
+if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the \n\
+input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
+a new dataObject is always put into the destination object. \n\
 \n\
-The filter works in-place and out-of-place. If the input object is not complex128, a temporary object of this type will be created.\n\
-If the filter is used with input- as output-object and the type is not complex128, the input-object will be overwritten with the output-type.\n\
+Meta and axes information are copied to the output object. Only properties of the chosen axis are changed: \n\
 \n\
-If the object has a ROI a ROI-less object correponding to the ROI is created. \n\
-If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n");
+* offset: 0.0 \n\
+* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
+* unit: inverse of previous-unit, e.g. '1/previous-unit' \n\
+\n\
+Per default, the values are scaled by (1/n). However, the optional parameter 'norm' influences this. \n\
+If 'norm' is set to 'no', no scaling is applied, if 'norm' is set to 'ortho', the values are scaled by 1/sqrt(n). \n\
+\n\
+The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional \n\
+parameter 'plan_flag'. While Estimate selects a default algorithm, Measure will process some test runs with several \n\
+implementations on your machine in order to find out the fastest algorithm for the given type of object. This will \n\
+take some time but might speed-up calculations of huge objects.");
 
 ito::RetVal FFTWFilters::ifftw1d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
-    return doFFTW(paramsMand, paramsOpt, false, true);
+    return doFFT1D(paramsMand, paramsOpt, false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -216,19 +407,34 @@ ito::RetVal FFTWFilters::ifftw1d(QVector<ito::ParamBase> *paramsMand, QVector<it
    \author ITO, Boettcher
    \date 2012.03.06
 */
-const QString FFTWFilters::fftw2dDOC = QObject::tr("Perfom an unscaled 2D-fft for the given object. \n\
+const QString FFTWFilters::fftw2dDOC = QObject::tr("Compute the two-dimensional discrete Fourier Transform. \n\
 \n\
-This filter uses the fft function provided by the fftw-library to perfom a fft on the input object.\n\
+This method computes the two-dimensional n-point discrete Fourier Transform (DFT) with the efficient \n\
+Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform \n\
+is executed over the last two axes, denoted as planes. \n\
 \n\
-The filter works in-place and out-of-place. If the input object is not complex128, a temporary object of this type will be created.\n\
-If the filter is used with input- as output-object and the type is not complex128, the input-object will be overwritten with the output-type.\n\
+This method applies the forward transform, use 'ifft2D' for the inverse transform. The method works both \n\
+inplace as well as out-of-place. The output is a complex64 object of the same size than the input object \n\
+if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the \n\
+input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
+a new dataObject is always put into the destination object. \n\
 \n\
-If the object has a ROI a ROI-less object correponding to the ROI is created. \n\
-If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n");
-
+Meta and axes information are copied to the output object. Only properties of the last two axes are changed: \n\
+\n\
+* offset: 0.0 \n\
+* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
+* unit: inverse of previous-unit, e.g. '1/previous-unit' \n\
+\n\
+Per default, no value scaling is applied to the result. However, the optional parameter 'norm' influences this. \n\
+If 'norm' is set to 'ortho', the values are scaled by 1/sqrt(n). \n\
+\n\
+The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional \n\
+parameter 'plan_flag'. While Estimate selects a default algorithm, Measure will process some test runs with several \n\
+implementations on your machine in order to find out the fastest algorithm for the given type of object. This will \n\
+take some time but might speed-up calculations of huge objects.");
 ito::RetVal FFTWFilters::fftw2d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
-    return doFFTW(paramsMand, paramsOpt, true, false);
+    return doFFT2D(paramsMand, paramsOpt, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -240,405 +446,669 @@ ito::RetVal FFTWFilters::fftw2d(QVector<ito::ParamBase> *paramsMand, QVector<ito
    \author ITO, Boettcher
    \date 2012.03.06
 */
-const QString FFTWFilters::ifftw2dDOC = QObject::tr("Perfom an unscaled inverse 2D-fft for the given object. \n\
+const QString FFTWFilters::ifftw2dDOC = QObject::tr("Compute the inverse two-dimensional discrete Fourier Transform. \n\
 \n\
-This filter uses the fft function provided by the fftw-library to perfom a inverse fft on the input object.\n\
+This method computes the inverse two-dimensional n-point discrete Fourier Transform (DFT) with the efficient \n\
+Fast Fourier Transform (FFT) algorithm using the fast, GPL licensed library FFTW (fftw.org). The transform \n\
+is executed over the last two axes, denoted as planes. \n\
 \n\
-The filter works in-place and out-of-place. If the input object is not complex128, a temporary object of this type will be created.\n\
-If the filter is used with input- as output-object and the type is not complex128, the input-object will be overwritten with the output-type.\n\
+This method applies the inverse transform, use 'fft2D' for the forward transform. The method works both \n\
+inplace as well as out-of-place. The output is a complex64 object of the same size than the input object \n\
+if the input is of one of the following types: (u)int8, (u)int16, int32, float32 or complex64. If the \n\
+input object has one of the types float64 or complex128, the output is complex128. If a type conversion is necessary, \n\
+a new dataObject is always put into the destination object. \n\
 \n\
-If the object has a ROI a ROI-less object correponding to the ROI is created. \n\
-If the filter is used with ROI-object as input- / output-object, the input-object will be overwritten with the ROI-less object.\n");
+Meta and axes information are copied to the output object. Only properties of the last two axes are changed: \n\
+\n\
+* offset: 0.0 \n\
+* scaling: 1.0 / (previous-scaling * n), the factor 2pi is not considered here \n\
+* unit: inverse of previous-unit, e.g. '1/previous-unit' \n\
+\n\
+Per default, the values are scaled by (1/n). However, the optional parameter 'norm' influences this. \n\
+If 'norm' is set to 'no', no scaling is applied, if 'norm' is set to 'ortho', the values are scaled by 1/sqrt(n). \n\
+\n\
+The FFTW library comes with two execution strategies: Measure and Estimate. One of both can be chosen by the optional \n\
+parameter 'plan_flag'. While Estimate selects a default algorithm, Measure will process some test runs with several \n\
+implementations on your machine in order to find out the fastest algorithm for the given type of object. This will \n\
+take some time but might speed-up calculations of huge objects.");
 
 ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
-    return doFFTW(paramsMand, paramsOpt, false, false);
+    return doFFT2D(paramsMand, paramsOpt, false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*!\detail    Performs 1D and 2D ffts forward and backwards according to bool flags by means of fftw 
-   \param[in|out]   paramsMand  Mandatory parameters:   [0]complex Data object in, 
-                                                        [1]complex Data object out 
-   \param[in|out]   paramsOpt   Optional parameters:    [0]Plannerstring (estimate or other, cf. fftw-doc.)     
-   \param[in]       forward     toggle fft and ifft
-   \param[in]       lineWise    toggle fft-1D and fft-2D
-   \author Lyda, Boettcher
-   \date 2012.03.06
-*/
-ito::RetVal FFTWFilters::doFFTW(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, const bool forward, const bool lineWise)
+/*static*/ ito::RetVal FFTWFilters::doFFT1D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, const bool forward)
 {
-    
     ito::RetVal retval = ito::retOk;
-    
-    const ito::DataObject *dObjIn = (*paramsMand)[0].getVal<ito::DataObject*>();    //Input object
-    ito::DataObject *dObjOut = (*paramsMand)[1].getVal<ito::DataObject*>();    //Output object
-    int plan_select = (*paramsOpt)[0].getVal<int>();                                            //plan selection string for fftw
-    long int dimensions=0;
-    unsigned int plan_sel = 0;
+
+    const ito::DataObject *dObjIn = (*paramsMand)[0].getVal<ito::DataObject*>();  //Input object
+    ito::DataObject *dObjOut = (*paramsMand)[1].getVal<ito::DataObject*>();  //Output object
+    int plan_select = (*paramsOpt)[0].getVal<int>();  //plan selection string for fftw
+    unsigned int flags = (plan_select == 0) ? FFTW_ESTIMATE : FFTW_MEASURE;
+    int axis = (*paramsOpt)[1].getVal<int>();
+    QByteArray norm = paramsOpt->at(2).getVal<char*>();
     unsigned int planForwardBackWard = forward ? FFTW_FORWARD : FFTW_BACKWARD;
-    QString msg;
 
-    if (!dObjIn)
-    {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
-    }
-
-    if (!dObjOut)
-    {
-        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
-    }
-    
-    retval += ito::dObjHelper::verifyDataObjectType(dObjIn, "sourceObject", 9, ito::tInt8, ito::tUInt8, 
-                                                                         ito::tInt16, ito::tUInt16, 
-                                                                         ito::tInt32, 
-                                                                         ito::tFloat32, ito::tFloat64, 
-                                                                         ito::tComplex64, ito::tComplex128);
-
-    if (retval.containsError())
-    {
-        return retval;
-    }
-
-    bool neededNewOutput = false;
-    bool doItInplace = false;
-    bool neededNewInput = true;
-
-    bool inputHasROI = false;
-    bool outputHasROI = false;
-
-    dimensions = (*dObjIn).getDims();
-    if (dimensions < 2)
-    {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image not initilized").toLatin1().data());
-    }
-    
-    ito::DataObject inputObject;
-    ito::DataObject outputObject;
-
-    ito::int32 xSize = static_cast<ito::int32>(dObjIn->getSize(dimensions - 1));
-    ito::int32 ySize = static_cast<ito::int32>(dObjIn->getSize(dimensions - 2));
-
-    if (!lineWise && (xSize == 1 || ySize == 1))
-    {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image dimensions must not be 1xN or Nx1 for fft2D.").toLatin1().data());
-    }
-
-    int *sizes = new int[dimensions];
-    int *offsets = new int[dimensions];
-
-    dObjIn->locateROI(sizes, offsets);
-    if (sizes[dimensions - 2] != ySize || sizes[dimensions - 1] != xSize)
-    {
-        inputHasROI = true;
-    }
-
-    delete[] sizes;
-    delete[] offsets;
-    
-    if (dObjIn->getType() == ito::tComplex128 && !inputHasROI)
-    {
-        neededNewInput = false;
-        inputObject = *dObjIn;
-    }
-    else
-    {
-        neededNewInput = true;
-        inputObject = ito::DataObject(dimensions, dObjIn->getSize(), ito::tComplex128);
-
-        const cv::Mat* scrMat;
-        ito::complex128* cRowPtr;
-
-        switch(dObjIn->getType())
-        {
-            case ito::tInt8:
-                for (int z = 0; z < inputObject.calcNumMats(); z++)
-                {
-                    scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
-                    cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for (int y = 0; y < ySize; y++)
-                    {
-                        ito::dObjHelper::GetHLineC<ito::int8>(scrMat, 0, y, xSize, cRowPtr);
-                        cRowPtr = &(cRowPtr[xSize]);
-                    }
-                }
-                break;
-            case ito::tUInt8:
-                for (int z = 0; z < inputObject.calcNumMats(); z++)
-                {
-                    scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
-                    cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for (int y = 0; y < ySize; y++)
-                    {
-                        ito::dObjHelper::GetHLineC<ito::uint8>(scrMat, 0, y, xSize, cRowPtr);
-                        cRowPtr = &(cRowPtr[xSize]);
-                    }
-                }
-                break;
-            case ito::tInt16:
-                for (int z = 0; z < inputObject.calcNumMats(); z++)
-                {
-                    scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
-                    cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for (int y = 0; y < ySize; y++)
-                    {
-                        ito::dObjHelper::GetHLineC<ito::int16>(scrMat, 0, y, xSize, cRowPtr);
-                        cRowPtr = &(cRowPtr[xSize]);
-                    }
-                }
-                break;
-            case ito::tUInt16:
-                for (int z = 0; z < inputObject.calcNumMats(); z++)
-                {
-                    scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
-                    cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for (int y = 0; y < ySize; y++)
-                    {
-                        ito::dObjHelper::GetHLineC<ito::uint16>(scrMat, 0, y, xSize, cRowPtr);
-                        cRowPtr = &(cRowPtr[xSize]);
-                    }
-                }
-                break;
-            case ito::tInt32:
-                for (int z = 0; z < inputObject.calcNumMats(); z++)
-                {
-                    scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
-                    cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for (int y = 0; y < ySize; y++)
-                    {
-                        ito::dObjHelper::GetHLineC<ito::int32>(scrMat, 0, y, xSize, cRowPtr);
-                        cRowPtr = &(cRowPtr[xSize]);
-                    }
-                }
-                break;
-            case ito::tFloat32:
-                for (int z = 0; z < inputObject.calcNumMats(); z++)
-                {
-                    scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
-                    cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for (int y = 0; y < ySize; y++)
-                    {
-                        ito::dObjHelper::GetHLineC<ito::float32>(scrMat, 0, y, xSize, cRowPtr);
-                        cRowPtr = &(cRowPtr[xSize]);
-                    }
-                }
-                break;
-            case ito::tFloat64:
-                for (int z = 0; z < inputObject.calcNumMats(); z++)
-                {
-                    scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
-                    cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for (int y = 0; y < ySize; y++)
-                    {
-                        ito::dObjHelper::GetHLineC<ito::float64>(scrMat, 0, y, xSize, cRowPtr);
-                        cRowPtr = &(cRowPtr[xSize]);
-                    }
-                }
-                break;
-            case ito::tComplex64:
-                for (int z = 0; z < inputObject.calcNumMats(); z++)
-                {
-                    scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
-                    cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for (int y = 0; y < ySize; y++)
-                    {
-                        ito::dObjHelper::GetHLineC<ito::complex64>(scrMat, 0, y, xSize, cRowPtr);
-                        cRowPtr = &(cRowPtr[xSize]);
-                    }
-                }
-                break;
-            case ito::tComplex128:
-                for (int z = 0; z < inputObject.calcNumMats(); z++)
-                {
-                    scrMat = (cv::Mat*)(dObjIn->get_mdata()[dObjIn->seekMat(z)]);
-                    cRowPtr = (ito::complex128*)((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(z)])->ptr<ito::complex128>();
-                    for (int y = 0; y < ySize; y++)
-                    {
-                        ito::dObjHelper::GetHLineC<ito::complex128>(scrMat, 0, y, xSize, cRowPtr);
-                        cRowPtr = &(cRowPtr[xSize]);
-                    }
-                }
-                break;
-            default:
-                return ito::RetVal(ito::retError, 0, tr("Type not supported ").toLatin1().data());
-        }
-    }
-    
-    if (dObjIn == dObjOut)
-    {
-        outputObject = inputObject;
-
-        if (neededNewInput)
-        {
-            dObjIn->copyAxisTagsTo(outputObject);
-            dObjIn->copyTagMapTo(outputObject);
-            
-            doItInplace = true;
-            neededNewOutput = true;
-        }
-        else
-        {
-            //doItInplace = true;
-            neededNewOutput = false;
-            doItInplace = false;
-        }
-    }
-    else
-    {
-        int *sizes = new int[dObjOut->getDims()];
-        int *offsets = new int[dObjOut->getDims()];
-
-        int xSizeDest = dObjOut->getSize(dObjOut->getDims() - 1);
-        int ySizeDest = dObjOut->getSize(dObjOut->getDims() - 2);
-
-        dObjOut->locateROI(sizes, offsets);
-        if (sizes[dObjOut->getDims() - 2] != ySizeDest || sizes[dObjOut->getDims() - 1] != xSizeDest)
-        {
-            outputHasROI = true;
-        }
-
-        delete[] sizes;
-        delete[] offsets;
-
-        if (dObjIn->calcNumMats() != dObjOut->calcNumMats() ||
-           dObjOut->getType() != ito::tComplex128 ||
-           xSize !=  xSizeDest ||
-           ySize !=  ySizeDest ||
-           outputHasROI)
-        {
-            neededNewOutput = true;
-            doItInplace = false;
-            if (neededNewInput) outputObject = inputObject;
-            else outputObject = ito::DataObject(dimensions, dObjIn->getSize(), ito::tComplex128);
-        }
-        else
-        {
-            neededNewOutput = false;
-            doItInplace = true;
-            outputObject = *dObjOut;
-        }
-        dObjIn->copyAxisTagsTo(outputObject);
-        dObjIn->copyTagMapTo(outputObject);
-    }
-
-    if (plan_select == 1)            
-    {
-        plan_sel = FFTW_MEASURE;                            // from fftw.h: #define FFTW_MEASURE (0U), #define FFTW_ESTIMATE (1U << 6)
-    }
-    else 
-    {
-        plan_sel = FFTW_ESTIMATE;                        // estimate as standard, quicker planning, probably slower fft-computing
-    }
-
-    int numPlanes = inputObject.getNumPlanes();
-
-    if (lineWise)
-    {
-        msg = forward ? tr("Applied 1D-fft via FFTW (unscaled!)") : tr("Applied inverse 1D-fft via FFTW (unscaled!)");
-        fftw_complex *in  = (fftw_complex*)(((cv::Mat*)inputObject.get_mdata()[inputObject.seekMat(0)])->ptr<ito::complex128>());
-        fftw_complex *out = (fftw_complex*)(((cv::Mat*)outputObject.get_mdata()[outputObject.seekMat(0)])->ptr<ito::complex128>());
-
-        //qDebug() << fftw_alignment_of((double*)in) << fftw_alignment_of((double*)out);
-        
-
-        // 1D complex to complex
-        if (ySize == 1)                    
-        {
-            fftw_plan plan = fftw_plan_dft_1d(xSize, in, out, planForwardBackWard, plan_sel);
-            fftw_execute(plan);
-
-            for (int z = 1; z < numPlanes; z++)
-            {
-                fftw_complex *in = (fftw_complex*)((inputObject.get_mdata()[inputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
-                fftw_complex *out = (fftw_complex*)((outputObject.get_mdata()[outputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
-                fftw_execute_dft(plan, in, out);
-            }        // end of 1D
-
-            fftw_destroy_plan(plan);
-        }
-        else // 2D row by row complex to complex                            
-        {
-            // calculate plan before initialising _in_! some keywords destroy _in_ while planning
-            int _xSize[]={xSize};
-            fftw_plan plan = fftw_plan_many_dft(1, _xSize, ySize, in, NULL, 1, xSize, out, NULL, 1, xSize, planForwardBackWard, plan_sel);            
-            fftw_execute(plan);
-
-            for (int z = 1; z < numPlanes; z++)
-            {
-                fftw_complex *in = (fftw_complex*)((inputObject.get_mdata()[inputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
-                fftw_complex *out = (fftw_complex*)((outputObject.get_mdata()[outputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
-                fftw_execute_dft(plan, in, out);
-            }    
-
-            fftw_destroy_plan(plan);    
-        }
-    }
-    else
-    {
-        msg = forward ? tr("Applied 2D-fft via FFTW (unscaled!)") : tr("Applied inverse 2D-fft via FFTW (unscaled!)");
-        fftw_complex *in = (fftw_complex*)((inputObject.get_mdata()[inputObject.seekMat(0, numPlanes)])->ptr<ito::complex128>());
-        fftw_complex *out = (fftw_complex*)((outputObject.get_mdata()[outputObject.seekMat(0, numPlanes)])->ptr<ito::complex128>());
-        fftw_plan plan = fftw_plan_dft_2d(ySize, xSize, in, out, planForwardBackWard, plan_sel);
-        fftw_execute(plan);
-
-        for (int z = 1; z < numPlanes; z++)
-        {
-            fftw_complex *in = (fftw_complex*)((inputObject.get_mdata()[inputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
-            fftw_complex *out = (fftw_complex*)((outputObject.get_mdata()[outputObject.seekMat(z, numPlanes)])->ptr<ito::complex128>());
-            fftw_execute_dft(plan, in, out);
-        }    
-        fftw_destroy_plan(plan);
-    }
-    
-    if (neededNewOutput && !retval.containsError())
-    {
-        *dObjOut = outputObject;
-    }
+    retval += ito::dObjHelper::verifyDataObjectType(dObjIn, "source", 9, ito::tInt8, ito::tUInt8,
+        ito::tInt16, ito::tUInt16,
+        ito::tInt32,
+        ito::tFloat32, ito::tFloat64,
+        ito::tComplex64, ito::tComplex128);
 
     if (!retval.containsError())
     {
-        if (dObjIn != dObjOut) dObjIn->copyTagMapTo(*dObjOut);
-        dObjOut->addToProtocol(std::string(msg.toLatin1().data()));
+        int dims = dObjIn->getDims();
+        int inType = dObjIn->getType();
+        ito::tDataType destType = (inType == ito::tComplex128 || inType == ito::tFloat64) ? ito::tComplex128 : ito::tComplex64;
 
-        int curDim = dObjOut->getDims()-1;
-        std::string axisUnit;
-        bool test;
-        
-        ito::float64 newScale = dObjOut->getAxisScale(curDim);
-        if (ito::dObjHelper::isFinite<ito::float64>(newScale) && ito::dObjHelper::isNotZero<ito::float64>(newScale))
+        if (axis == -1)
         {
-            newScale = 1/newScale / dObjOut->getSize(curDim);
-            axisUnit = ito::dObjHelper::invertUnit(dObjOut->getAxisUnit(curDim, test));
-            dObjOut->setAxisUnit(curDim, axisUnit);
+            axis = dims - 1;
         }
-        else
+        else if (axis >= dims)
         {
-            newScale = 1.0;
-            dObjOut->setAxisUnit(curDim, "");
+            retval += ito::RetVal::format(ito::retError, 0, "axis out of range [0,%i]", dObjIn->getDims());
         }
-        dObjOut->setAxisScale(curDim, newScale);
-        dObjOut->setAxisOffset(curDim, 0.0);
 
-        if (!lineWise)
-        { 
-            curDim --;
+        if (dims == 0 || dObjIn->getTotal() == 0)
+        {
+            retval += ito::RetVal(ito::retError, 0, "source is empty");
+        }
 
-            newScale = dObjOut->getAxisScale(curDim);
+        if (!retval.containsError())
+        {
             
+            bool inplace = (dObjIn == dObjOut);
+            int numPlanes = dObjIn->getNumPlanes();
+
+            if (inType != destType)
+            {
+                ito::DataObject destination;
+                dObjIn->convertTo(destination, destType);
+                dObjIn = dObjOut;
+                *dObjOut = destination;
+                inType = destType;
+                inplace = true;
+            }
+            else if (!inplace)
+            {
+                if (dObjOut->getType() != destType || dObjOut->getDims() != dObjIn->getDims() || \
+                    dObjOut->getContinuous() != dObjIn->getContinuous() || dObjOut->getSize() != dObjIn->getSize())
+                {
+                    *dObjOut = ito::DataObject(dObjIn->getDims(), dObjIn->getSize(), destType, dObjIn->getContinuous());
+                    dObjIn->copyAxisTagsTo(*dObjOut);
+                    dObjIn->copyTagMapTo(*dObjOut);
+                }
+            }
+
+            int n[] = { 1 };
+
+            if (axis >= dims - 2) //axis is along x or y, works inplace and not-inplace
+            {
+                int otherAxis = (axis == (dims - 1)) ? dims - 2 : dims - 1;
+                cv::Mat *planeOut = dObjOut->get_mdata()[dObjOut->seekMat(0, numPlanes)];
+                const cv::Mat *planeIn = dObjIn->get_mdata()[dObjIn->seekMat(0, numPlanes)];
+
+                n[0] = dObjOut->getSize(axis);
+                int howmany = dObjOut->getSize(otherAxis);
+                int strideIn = dObjIn->getStep(axis);      //step size from one value to the next value (within one 1d data set)
+                int strideOut = dObjOut->getStep(axis);    //step size from one value to the next value (within one 1d data set)
+                int distIn = dObjIn->getStep(otherAxis);   //step size from one dft-line to the next dft-line.
+                int distOut = dObjOut->getStep(otherAxis); //step size from one dft-line to the next dft-line.
+
+                if (destType == ito::tComplex128)
+                {
+                    fftw_plan plan;
+                    fftw_complex *out = (fftw_complex*)planeOut->ptr<ito::complex128>(0);
+                    fftw_complex *in = (fftw_complex*)planeIn->ptr<ito::complex128>(0);
+                    if (flags == FFTW_ESTIMATE)
+                    {
+                        plan = fftw_plan_many_dft(1, n, howmany, in, NULL, strideIn, distIn, out, NULL, strideOut, distOut, planForwardBackWard, flags);
+                        fftw_execute(plan);
+                    }
+                    else //FFTW_MEASURE (in,out will be overwritten during measuring)
+                    {
+                        if (in == out)
+                        {
+                            in = (fftw_complex*)fftw_malloc(howmany * distIn * n[0] * strideIn * sizeof(fftw_complex));
+                            plan = fftw_plan_many_dft(1, n, howmany, in, NULL, strideIn, distIn, in, NULL, strideOut, distOut, planForwardBackWard, flags);
+                            fftw_free(in);
+                        }
+                        else
+                        {
+                            in = (fftw_complex*)fftw_malloc(howmany * distIn * n[0] * strideIn * sizeof(fftw_complex));
+                            plan = fftw_plan_many_dft(1, n, howmany, in, NULL, strideIn, distIn, out, NULL, strideOut, distOut, planForwardBackWard, flags);
+                            fftw_free(in);
+                        }
+
+                        in = (fftw_complex*)planeIn->ptr<ito::complex128>(0);
+                        fftw_execute_dft(plan, in, out);
+                    }
+
+                    for (int z = 1; z < numPlanes; z++)
+                    {
+                        out = (fftw_complex*)(dObjOut->get_mdata()[dObjOut->seekMat(z, numPlanes)])->ptr<ito::complex128>(0);
+                        in = (fftw_complex*)(dObjIn->get_mdata()[dObjIn->seekMat(z, numPlanes)])->ptr<ito::complex128>(0);
+                        fftw_execute_dft(plan, in, out);
+                    }
+
+                    fftw_destroy_plan(plan);
+                }
+                else
+                {
+                    fftwf_plan plan;
+                    fftwf_complex *out = (fftwf_complex*)planeOut->ptr<ito::complex64>(0);
+                    fftwf_complex *in = (fftwf_complex*)planeIn->ptr<ito::complex64>(0);
+                    if (flags == FFTW_ESTIMATE)
+                    {
+                        plan = fftwf_plan_many_dft(1, n, howmany, in, NULL, strideIn, distIn, out, NULL, strideOut, distOut, planForwardBackWard, flags);
+                        fftwf_execute(plan);
+                    }
+                    else //FFTW_MEASURE (in,out will be overwritten during measuring)
+                    {
+                        if (in == out)
+                        {
+                            in = (fftwf_complex*)fftwf_malloc(howmany * distIn * n[0] * strideIn * sizeof(fftwf_complex));
+                            plan = fftwf_plan_many_dft(1, n, howmany, in, NULL, strideIn, distIn, in, NULL, strideOut, distOut, planForwardBackWard, flags);
+                            fftwf_free(in);
+                        }
+                        else
+                        {
+                            in = (fftwf_complex*)fftwf_malloc(howmany * distIn * n[0] * strideIn * sizeof(fftwf_complex));
+                            plan = fftwf_plan_many_dft(1, n, howmany, in, NULL, strideIn, distIn, out, NULL, strideOut, distOut, planForwardBackWard, flags);
+                            fftwf_free(in);
+                        }
+
+                        in = (fftwf_complex*)planeIn->ptr<ito::complex64>(0);
+                        fftwf_execute_dft(plan, in, out);
+                    }
+
+                    for (int z = 1; z < numPlanes; z++)
+                    {
+                        out = (fftwf_complex*)(dObjOut->get_mdata()[dObjOut->seekMat(z, numPlanes)])->ptr<ito::complex64>(0);
+                        in = (fftwf_complex*)(dObjIn->get_mdata()[dObjIn->seekMat(z, numPlanes)])->ptr<ito::complex64>(0);
+                        fftwf_execute_dft(plan, in, out);
+                    }
+
+                    fftwf_destroy_plan(plan);
+                }
+            }
+            else if (dObjOut->getContinuous())
+            {
+                n[0] = dObjOut->getSize(axis);
+                int howmany = dObjOut->getSize(dObjOut->getDims() - 1);
+                int rowStepIn = dObjIn->getStep(dObjIn->getDims() - 2);
+                int rowStepOut = dObjOut->getStep(dObjOut->getDims() - 2);
+                int rows = dObjOut->getSize(dObjOut->getDims() - 2);
+                int strideIn = dObjIn->getStep(axis); //step size from one value to the next value (within one 1d data set)
+                int strideOut = dObjOut->getStep(axis); //step size from one value to the next value (within one 1d data set)
+                int dist = 1; //step size from one dft-line to the next dft-line.
+
+                DataObjectAxisIterator it(dObjIn, dObjOut, axis);
+                int planeIndexOut, planeIndexIn;
+
+                if (destType == ito::tComplex128)
+                {
+                    fftw_plan plan;
+                    fftw_complex *out = (fftw_complex*)dObjOut->get_mdata()[0]->ptr<ito::complex128>(0);
+                    fftw_complex *in = (fftw_complex*)dObjIn->get_mdata()[0]->ptr<ito::complex128>(0);
+                    if (flags == FFTW_ESTIMATE)
+                    {
+                        plan = fftw_plan_many_dft(1, n, howmany, in, NULL, strideIn, dist, out, NULL, strideOut, dist, planForwardBackWard, flags);
+                    }
+                    else //FFTW_MEASURE (in,out will be overwritten during measuring)
+                    {
+                        if (in == out)
+                        {
+                            in = (fftw_complex*)fftw_malloc(howmany * n[0] * strideIn * sizeof(fftw_complex));
+                            plan = fftw_plan_many_dft(1, n, howmany, in, NULL, strideIn, dist, in, NULL, strideOut, dist, planForwardBackWard, flags);
+                            fftw_free(in);
+                        }
+                        else
+                        {
+                            in = (fftw_complex*)fftw_malloc(howmany * n[0] * strideIn * sizeof(fftw_complex));
+                            plan = fftw_plan_many_dft(1, n, howmany, in, NULL, strideIn, dist, out, NULL, strideOut, dist, planForwardBackWard, flags);
+                            fftw_free(in);
+                        }
+                    }                    
+
+                    while (it.nextPlaneTreeIndex(planeIndexIn, planeIndexOut))
+                    {
+                        //handle first row
+                        out = (fftw_complex*)dObjOut->get_mdata()[planeIndexOut]->ptr<ito::complex128>(0);
+                        in = (fftw_complex*)dObjIn->get_mdata()[planeIndexIn]->ptr<ito::complex128>(0);
+                        fftw_execute_dft(plan, in, out);
+
+                        //handle all other rows
+                        for (int r = 1; r < rows; ++r)
+                        {
+                            out += rowStepOut;
+                            in += rowStepIn;
+                            fftw_execute_dft(plan, in, out);
+                        }
+                    }
+                    fftw_destroy_plan(plan);
+                }
+                else
+                {
+                    fftwf_plan plan;
+                    fftwf_complex *out = (fftwf_complex*)dObjOut->get_mdata()[0]->ptr<ito::complex64>(0);
+                    fftwf_complex *in = (fftwf_complex*)dObjIn->get_mdata()[0]->ptr<ito::complex64>(0);
+                    if (flags == FFTW_ESTIMATE)
+                    {
+                        plan = fftwf_plan_many_dft(1, n, howmany, in, NULL, strideIn, dist, out, NULL, strideOut, dist, planForwardBackWard, flags);
+                    }
+                    else //FFTW_MEASURE (in,out will be overwritten during measuring)
+                    {
+                        if (in == out)
+                        {
+                            in = (fftwf_complex*)fftwf_malloc(howmany * n[0] * strideIn * sizeof(fftwf_complex));
+                            plan = fftwf_plan_many_dft(1, n, howmany, in, NULL, strideIn, dist, in, NULL, strideOut, dist, planForwardBackWard, flags);
+                            fftwf_free(in);
+                        }
+                        else
+                        {
+                            in = (fftwf_complex*)fftwf_malloc(howmany * n[0] * strideIn * sizeof(fftwf_complex));
+                            plan = fftwf_plan_many_dft(1, n, howmany, in, NULL, strideIn, dist, out, NULL, strideOut, dist, planForwardBackWard, flags);
+                            fftwf_free(in);
+                        }
+                    }
+
+                    while (it.nextPlaneTreeIndex(planeIndexIn, planeIndexOut))
+                    {
+                        //handle first row
+                        out = (fftwf_complex*)dObjOut->get_mdata()[planeIndexOut]->ptr<ito::complex64>(0);
+                        in = (fftwf_complex*)dObjIn->get_mdata()[planeIndexIn]->ptr<ito::complex64>(0);
+                        fftwf_execute_dft(plan, in, out);
+
+                        //handle all other rows
+                        for (int r = 1; r < rows; ++r)
+                        {
+                            out += rowStepOut;
+                            in += rowStepIn;
+                            fftwf_execute_dft(plan, in, out);
+                        }
+                    }
+                    fftwf_destroy_plan(plan);
+                }
+            }
+            else //axis is within planes, not continuous object
+            {
+                n[0] = dObjOut->getSize(axis);
+                int howmany = dObjOut->getSize(dObjOut->getDims() - 1);
+                int rowStepIn = dObjIn->getStep(dObjIn->getDims() - 2);
+                int rowStepOut = dObjOut->getStep(dObjOut->getDims() - 2);
+                int rows = dObjOut->getSize(dObjOut->getDims() - 2);
+                int cols = dObjOut->getSize(dObjOut->getDims() - 1);
+                const cv::Mat **mdataIn = dObjIn->get_mdata();
+                cv::Mat **mdataOut = dObjOut->get_mdata();
+                
+
+
+                DataObjectAxisIterator it(dObjIn, dObjOut, axis);
+                int planeIndexOut, planeIndexIn;
+                int planeStepIn = it.getPlaneStepIn();
+                int planeStepOut = it.getPlaneStepOut();
+
+                if (destType == ito::tComplex128)
+                {
+                    //this is ok for estimate and measure
+                    ito::complex128 *out = new ito::complex128[n[0]];
+                    fftw_plan plan = fftw_plan_many_dft(1, n, 1, (fftw_complex*)out, NULL, 1, 1, (fftw_complex*)out, NULL, 1, 1, planForwardBackWard, flags);
+
+                    while (it.nextPlaneTreeIndex(planeIndexIn, planeIndexOut))
+                    {
+                        for (int row = 0; row < rows; ++row)
+                        {
+                            for (int col = 0; col < cols; ++col)
+                            {
+                                fListGetComplexLineToComplex128[inType](&mdataIn[planeIndexIn], planeStepIn, n[0], row, col, rowStepIn, out);
+                                fftw_execute_dft(plan, (fftw_complex*)out, (fftw_complex*)out);
+                                setComplexLine<ito::complex128>(&(mdataOut[planeIndexOut]), planeStepOut, n[0], row, col, rowStepOut, out);
+                            }
+                        }
+                    }
+                    fftw_destroy_plan(plan);
+                    delete[] out;
+                }
+                else
+                {
+                    //this is ok for estimate and measure
+                    ito::complex64 *out = new ito::complex64[n[0]];
+                    fftwf_plan plan = fftwf_plan_many_dft(1, n, 1, (fftwf_complex*)out, NULL, 1, 1, (fftwf_complex*)out, NULL, 1, 1, planForwardBackWard, flags);
+
+                    while (it.nextPlaneTreeIndex(planeIndexIn, planeIndexOut))
+                    {
+                        for (int row = 0; row < rows; ++row)
+                        {
+                            for (int col = 0; col < cols; ++col)
+                            {
+                                fListGetComplexLineToComplex64[inType](&mdataIn[planeIndexIn], planeStepIn, n[0], row, col, rowStepIn, out);
+                                fftwf_execute_dft(plan, (fftwf_complex*)out, (fftwf_complex*)out);
+                                setComplexLine<ito::complex64>(&(mdataOut[planeIndexOut]), planeStepOut, n[0], row, col, rowStepOut, out);
+                            }
+                        }
+                    }
+                    fftwf_destroy_plan(plan);
+                    delete[] out;
+                }
+            }
+
+            if (forward)
+            {
+                if (norm == "ortho")
+                {
+                    *dObjOut *= (1.0 / std::sqrt((double)n[0]));
+                    dObjOut->addToProtocol(tr("1D FFT (via FFTW). Scaled by 1/sqrt(n).").toLatin1().data());
+                }
+                else
+                {
+                    dObjOut->addToProtocol(tr("unscaled 1D FFT (via FFTW)").toLatin1().data());
+                }
+            }
+            else
+            {
+                if (norm == "default")
+                {
+                    *dObjOut *= (1.0 / (double)n[0]);
+                    dObjOut->addToProtocol(tr("inverse 1D FFT (via FFTW). Scaled by 1/n.").toLatin1().data());
+                }
+                else if (norm == "ortho")
+                {
+                    *dObjOut *= (1.0 / std::sqrt((double)n[0]));
+                    dObjOut->addToProtocol(tr("inverse 1D FFT (via FFTW). Scaled by 1/sqrt(n).").toLatin1().data());
+                }
+                else
+                {
+                    dObjOut->addToProtocol(tr("unscaled inverse 1D FFT (via FFTW)").toLatin1().data());
+                }
+            }
+
+            //set unit, scale and offset of transformed axis.
+            std::string axisUnit;
+            bool test;
+
+            ito::float64 newScale = dObjOut->getAxisScale(axis);
             if (ito::dObjHelper::isFinite<ito::float64>(newScale) && ito::dObjHelper::isNotZero<ito::float64>(newScale))
             {
-                newScale = 1/newScale / dObjOut->getSize(curDim);
-                axisUnit = ito::dObjHelper::invertUnit(dObjOut->getAxisUnit(curDim, test));
-                dObjOut->setAxisUnit(curDim, axisUnit);
+                newScale = 1.0 / (newScale * dObjOut->getSize(axis)); //factor of 2pi is missing, but is usually assumed to be part of the unit, e.g. lambda becomes k = 2pi / lambda
+                axisUnit = ito::dObjHelper::invertUnit(dObjOut->getAxisUnit(axis, test));
+                dObjOut->setAxisUnit(axis, axisUnit);
             }
             else
             {
                 newScale = 1.0;
-                dObjOut->setAxisUnit(curDim, "");
+                dObjOut->setAxisUnit(axis, "");
             }
-            dObjOut->setAxisScale(curDim, newScale);
-            dObjOut->setAxisOffset(curDim, 0.0);
+            dObjOut->setAxisScale(axis, newScale);
+            dObjOut->setAxisOffset(axis, 0.0);
         }
-    }    
+    }
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------
+template<typename _TpIn, typename _TpOut> /*static*/ void FFTWFilters::getComplexLine(const cv::Mat **mdata, int planeStep, int n, int row, int col, int rowStep, void* linedata)
+{
+    _TpOut *linedata_ = (_TpOut*)linedata;
+
+    for (int i = 0; i < n; ++i)
+    {
+        linedata_[i] = static_cast<_TpOut>(((_TpIn*)(mdata[i * planeStep]->data) + row * rowStep)[col]);
+    }
+}
+
+
+/*static*/ FFTWFilters::tGetComplexLine FFTWFilters::fListGetComplexLineToComplex64[] =
+{
+    getComplexLine<ito::int8, ito::complex64>,
+    getComplexLine<ito::uint8, ito::complex64>,
+    getComplexLine<ito::int16, ito::complex64>,
+    getComplexLine<ito::uint16, ito::complex64>,
+    getComplexLine<ito::int32, ito::complex64>,
+    getComplexLine<ito::uint32, ito::complex64>,
+    getComplexLine<ito::float32, ito::complex64>,
+    getComplexLine<ito::float64, ito::complex64>,
+    getComplexLine<ito::complex64, ito::complex64>,
+    getComplexLine<ito::complex128, ito::complex64>,
+    NULL
+};
+
+/*static*/ FFTWFilters::tGetComplexLine FFTWFilters::fListGetComplexLineToComplex128[] =
+{
+    getComplexLine<ito::int8, ito::complex128>,
+    getComplexLine<ito::uint8, ito::complex128>,
+    getComplexLine<ito::int16, ito::complex128>,
+    getComplexLine<ito::uint16, ito::complex128>,
+    getComplexLine<ito::int32, ito::complex128>,
+    getComplexLine<ito::uint32, ito::complex128>,
+    getComplexLine<ito::float32, ito::complex128>,
+    getComplexLine<ito::float64, ito::complex128>,
+    getComplexLine<ito::complex64, ito::complex128>,
+    getComplexLine<ito::complex128, ito::complex128>,
+    NULL
+};
+
+//------------------------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> /*static*/ void FFTWFilters::setComplexLine(cv::Mat **mdata, int planeStep, int n, int row, int col, int rowStep, const _Tp *linedata)
+{
+    for (int i = 0; i < n; ++i)
+    {
+        ((_Tp*)(mdata[i * planeStep]->data) + row * rowStep)[col] = linedata[i];
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal FFTWFilters::doFFT2D(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, const bool forward)
+{
+    ito::RetVal retval = ito::retOk;
+
+    const ito::DataObject *dObjIn = (*paramsMand)[0].getVal<ito::DataObject*>();  //Input object
+    ito::DataObject *dObjOut = (*paramsMand)[1].getVal<ito::DataObject*>();  //Output object
+    int plan_select = (*paramsOpt)[0].getVal<int>();  //plan selection string for fftw
+    unsigned int flags = (plan_select == 0) ? FFTW_ESTIMATE : FFTW_MEASURE;
+    QByteArray norm = paramsOpt->at(1).getVal<char*>();
+    unsigned int planForwardBackWard = forward ? FFTW_FORWARD : FFTW_BACKWARD;
+    int sizeX, sizeY;
+    int dims;
+
+    retval += ito::dObjHelper::verifyDataObjectType(dObjIn, "source", 9, ito::tInt8, ito::tUInt8,
+        ito::tInt16, ito::tUInt16,
+        ito::tInt32,
+        ito::tFloat32, ito::tFloat64,
+        ito::tComplex64, ito::tComplex128);
+
+    if (!retval.containsError())
+    {
+        dims = dObjIn->getDims();
+        if (dims < 2)
+        {
+            retval += ito::RetVal(ito::retError, 0, "source must have at least two dimensions");
+        }
+        else
+        {
+            sizeX = dObjIn->getSize(dims - 1);
+            sizeY = dObjIn->getSize(dims - 2);
+
+            if (sizeX < 2 || sizeY < 2)
+            {
+                retval += ito::RetVal(ito::retError, 0, "minimum plane size of source is 2x2.");
+            }
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        int inType = dObjIn->getType();
+        ito::tDataType destType = (inType == ito::tComplex128 || inType == ito::tFloat64) ? ito::tComplex128 : ito::tComplex64;
+
+        if (!retval.containsError())
+        {
+            bool inplace = (dObjIn == dObjOut);
+
+            if (dObjIn->get_mdata()[0]->isContinuous() == false)
+            {
+                inplace = false;
+            }
+
+            int numPlanes = dObjIn->getNumPlanes();
+
+            if (inType != destType)
+            {
+                ito::DataObject destination;
+                dObjIn->convertTo(destination, destType);
+                dObjIn = dObjOut;
+                *dObjOut = destination;
+                inType = destType;
+                inplace = true;
+            }
+            else if (!inplace)
+            {
+                if (dObjOut->getType() != destType || dObjOut->getDims() != dObjIn->getDims() || \
+                    dObjOut->getContinuous() != dObjIn->getContinuous() || dObjOut->getSize() != dObjIn->getSize())
+                {
+                    *dObjOut = ito::DataObject(dObjIn->getDims(), dObjIn->getSize(), destType, dObjIn->getContinuous());
+                    dObjIn->copyAxisTagsTo(*dObjOut);
+                    dObjIn->copyTagMapTo(*dObjOut);
+                }
+            }
+
+            int n[] = { 1 };
+
+            cv::Mat *planeOut = dObjOut->get_mdata()[dObjOut->seekMat(0, numPlanes)];
+            const cv::Mat *planeIn = dObjIn->get_mdata()[dObjIn->seekMat(0, numPlanes)];
+
+            if (destType == ito::tComplex128)
+            {
+                fftw_plan plan;
+                fftw_complex *in = (fftw_complex*)(planeIn->ptr<ito::complex128>());;
+                fftw_complex *out = (fftw_complex*)(planeOut->ptr<ito::complex128>());
+                if (flags == FFTW_ESTIMATE)
+                {
+                    plan = fftw_plan_dft_2d(sizeY, sizeX, in, out, planForwardBackWard, flags);
+                    fftw_execute(plan);
+                }
+                else //FFTW_MEASURE (in,out will be overwritten during measuring)
+                {
+                    if (in != out)
+                    {
+                        in = (fftw_complex*)fftw_malloc(sizeX * sizeY * sizeof(fftw_complex));
+                        plan = fftw_plan_dft_2d(sizeY, sizeX, in, out, planForwardBackWard, flags);
+                        fftw_free(in);
+                    }
+                    else
+                    {
+                        in = (fftw_complex*)fftw_malloc(sizeX * sizeY * sizeof(fftw_complex));
+                        plan = fftw_plan_dft_2d(sizeY, sizeX, in, in, planForwardBackWard, flags);
+                        fftw_free(in);
+                    }
+
+                    in = (fftw_complex*)(planeIn->ptr<ito::complex128>());
+                    fftw_execute_dft(plan, in, out);
+                }
+
+                for (int z = 1; z < numPlanes; z++)
+                {
+                    in = (fftw_complex*)(dObjIn->get_mdata()[dObjIn->seekMat(z, numPlanes)]->ptr<ito::complex128>());
+                    out = (fftw_complex*)(dObjOut->get_mdata()[dObjOut->seekMat(z, numPlanes)]->ptr<ito::complex128>());
+                    fftw_execute_dft(plan, in, out);
+                }
+
+                fftw_destroy_plan(plan);
+            }
+            else
+            {
+                fftwf_plan plan;
+                fftwf_complex *in = (fftwf_complex*)(planeIn->ptr<ito::complex128>());
+                fftwf_complex *out = (fftwf_complex*)(planeOut->ptr<ito::complex128>());
+                if (flags == FFTW_ESTIMATE)
+                {
+                    plan = fftwf_plan_dft_2d(sizeY, sizeX, in, out, planForwardBackWard, flags);
+                    fftwf_execute(plan);
+                }
+                else //FFTW_MEASURE (in,out will be overwritten during measuring)
+                {
+                    if (in != out)
+                    {
+                        in = (fftwf_complex*)fftwf_malloc(sizeX * sizeY * sizeof(fftwf_complex));
+                        plan = fftwf_plan_dft_2d(sizeY, sizeX, in, out, planForwardBackWard, flags);
+                        fftwf_free(in);
+                    }
+                    else
+                    {
+                        in = (fftwf_complex*)fftwf_malloc(sizeX * sizeY * sizeof(fftwf_complex));
+                        plan = fftwf_plan_dft_2d(sizeY, sizeX, in, in, planForwardBackWard, flags);
+                        fftwf_free(in);
+                    }
+                    in = (fftwf_complex*)(planeIn->ptr<ito::complex64>());
+                    fftwf_execute_dft(plan, in, out);
+                }
+
+                for (int z = 1; z < numPlanes; z++)
+                {
+                    in = (fftwf_complex*)(dObjIn->get_mdata()[dObjIn->seekMat(z, numPlanes)]->ptr<ito::complex64>());
+                    out = (fftwf_complex*)(dObjOut->get_mdata()[dObjOut->seekMat(z, numPlanes)]->ptr<ito::complex64>());
+                    fftwf_execute_dft(plan, in, out);
+                }
+
+                fftwf_destroy_plan(plan);
+            }
+
+            if (forward)
+            {
+                if (norm == "ortho")
+                {
+                    *dObjOut *= (1.0 / std::sqrt((double)n[0]));
+                    dObjOut->addToProtocol(tr("2D FFT (via FFTW). Scaled by 1/sqrt(n).").toLatin1().data());
+                }
+                else
+                {
+                    dObjOut->addToProtocol(tr("unscaled 2D FFT (via FFTW)").toLatin1().data());
+                }
+            }
+            else
+            {
+                if (norm == "default")
+                {
+                    *dObjOut *= (1.0 / (double)n[0]);
+                    dObjOut->addToProtocol(tr("inverse 2D FFT (via FFTW). Scaled by 1/n.").toLatin1().data());
+                }
+                else if (norm == "ortho")
+                {
+                    *dObjOut *= (1.0 / std::sqrt((double)n[0]));
+                    dObjOut->addToProtocol(tr("inverse 2D FFT (via FFTW). Scaled by 1/sqrt(n).").toLatin1().data());
+                }
+                else
+                {
+                    dObjOut->addToProtocol(tr("unscaled inverse 2D FFT (via FFTW)").toLatin1().data());
+                }
+            }
+
+            //set unit, scale and offset of last two axes.
+            std::string axisUnit;
+            bool test;
+
+            for (int axis = dims - 2; axis < dims; ++axis)
+            {
+                ito::float64 newScale = dObjOut->getAxisScale(axis);
+                if (ito::dObjHelper::isFinite<ito::float64>(newScale) && ito::dObjHelper::isNotZero<ito::float64>(newScale))
+                {
+                    newScale = 1.0 / (newScale * dObjOut->getSize(axis)); //factor of 2pi is missing, but is usually assumed to be part of the unit, e.g. lambda becomes k = 2pi / lambda
+                    axisUnit = ito::dObjHelper::invertUnit(dObjOut->getAxisUnit(axis, test));
+                    dObjOut->setAxisUnit(axis, axisUnit);
+                }
+                else
+                {
+                    newScale = 1.0;
+                    dObjOut->setAxisUnit(axis, "");
+                }
+                dObjOut->setAxisScale(axis, newScale);
+                dObjOut->setAxisOffset(axis, 0.0);
+            }
+        }
+    }
 
     return retval;
 }
@@ -1793,13 +2263,13 @@ ito::RetVal FFTWFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<
 
     if (sizeof(fftw_complex) == sizeof(ito::complex128))
     {
-        filter = new FilterDef(FFTWFilters::fftw1d, FFTWFilters::ParamsFFTW, fftw1dDOC);
+        filter = new FilterDef(FFTWFilters::fftw1d, FFTWFilters::xfftw1dParams, fftw1dDOC);
         m_filterList.insert("fftw", filter);
-        filter = new FilterDef(FFTWFilters::ifftw1d, FFTWFilters::ParamsFFTW, ifftw1dDOC);
+        filter = new FilterDef(FFTWFilters::ifftw1d, FFTWFilters::xfftw1dParams, ifftw1dDOC);
         m_filterList.insert("ifftw", filter);
-        filter = new FilterDef(FFTWFilters::fftw2d, FFTWFilters::ParamsFFTW, fftw2dDOC);
+        filter = new FilterDef(FFTWFilters::fftw2d, FFTWFilters::xfftw2dParams, fftw2dDOC);
         m_filterList.insert("fftw2D", filter);
-        filter = new FilterDef(FFTWFilters::ifftw2d, FFTWFilters::ParamsFFTW, ifftw2dDOC);
+        filter = new FilterDef(FFTWFilters::ifftw2d, FFTWFilters::xfftw2dParams, ifftw2dDOC);
         m_filterList.insert("ifftw2D", filter);
     }
     else
