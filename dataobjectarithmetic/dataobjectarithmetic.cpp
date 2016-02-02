@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "dataobjectarithmetic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -61,16 +61,7 @@ DataObjectArithmeticInterface::DataObjectArithmeticInterface()
     m_type = ito::typeAlgo;
     setObjectName("DataObjectArithmetic");
     
-    //for the docstring, please don't set any spaces at the beginning of the line.
-/*    char docstring[] = \
-"This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
-- min- or maximum value\n\
-- centroid along dimensions or inplane \n\
-\n\
-This plugin does not have any unusual dependencies.";
-*/
     m_description = QObject::tr("Operations and arithmetic calculations of dataObject.");
-//    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr("This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
 - min- or maximum value\n\
 - centroid along dimensions or inplane \n\
@@ -1925,6 +1916,9 @@ RetVal DataObjectArithmetic::init(QVector<ito::ParamBase> * /*paramsMand*/, QVec
 
     filter = new FilterDef(getPercentageThreshold, getPercentageThresholdParams, getPercentageThresholdDoc);
     m_filterList.insert("getPercentageThreshold", filter);
+
+    filter = new FilterDef(autoFocus, autoFocusParams, autoFocusDoc);
+    m_filterList.insert("autofocus", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
