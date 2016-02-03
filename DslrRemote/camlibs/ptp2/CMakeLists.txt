@@ -30,6 +30,7 @@ ADD_DEFINITIONS(-DCMAKE)
 ADD_DEFINITIONS(-DPACKAGE_VERSION="${PACKAGE_VERSION}")
 #ADD_DEFINITIONS(-DCAMLIBS="${CAMLIBS}")
 ADD_DEFINITIONS(-DHAVE_LIMITS_H)
+ADD_DEFINITIONS(-DDLLEXPORT)
 
 IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
     ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
@@ -47,7 +48,7 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-#	${CMAKE_CURRENT_SOURCE_DIR}/../libtool/libltdl	
+	${CMAKE_CURRENT_SOURCE_DIR}/../libtool
 	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2
 	${CMAKE_CURRENT_SOURCE_DIR}/../../libgphoto2_port
 	${CMAKE_CURRENT_SOURCE_DIR}/../../ #for gphoto2 directory
@@ -82,7 +83,7 @@ if(MSVC)
 #    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
-SET(LTDLLIB optimized ../../libtool/libltdl/$(Configuration)/libltdl debug ../../libtool/libltdl/$(Configuration)/libltdld)
+SET(LTDLLIB optimized ../../libtool/$(Configuration)/libltdl debug ../../libtool/$(Configuration)/libltdld)
 SET(REGEXLIB optimized ../../regex/$(Configuration)/regex debug ../../regex/$(Configuration)/regexd)
 SET(LIBGPHOTO2 optimized ../../libgphoto2/$(Configuration)/libgphoto2 debug ../../libgphoto2/$(Configuration)/libgphoto2d)
 SET(LIBGPHOTO2PORT optimized ../../libgphoto2_port/$(Configuration)/libgphoto2_port debug ../../libgphoto2_port/$(Configuration)/libgphoto2_portd)
@@ -97,7 +98,7 @@ TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES}
 
 if(MSVC)
 #    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-  set_target_properties(${target_name}  PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
+#  set_target_properties(${target_name}  PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
 endif(MSVC)
 
 #documentation
@@ -106,7 +107,7 @@ PLUGIN_DOCUMENTATION(${target_name} ptp2)
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
-LIST(APPEND COPY_SOURCES "$<TARGET_FILE:ptp2>")
-LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+LIST(APPEND COPY_SOURCES "$<TARGET_FILE:${target_name}>")
+LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/plugins/DslrRemote")
+#ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)

@@ -60,7 +60,7 @@ opendir (const char *path)
   if (entry != (DIR *) 0)
     {
       entry->firsttime = TRUE;
-      entry->hSearch = FindFirstFile (file_spec, &entry->Win32FindData);
+      entry->hSearch = FindFirstFile(file_spec, &entry->Win32FindData);
 
       if (entry->hSearch == INVALID_HANDLE_VALUE)
 	{

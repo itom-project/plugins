@@ -28,6 +28,12 @@
 #include <gphoto2/gphoto2-abilities-list.h>
 #include <gphoto2/gphoto2-camera.h>
 
+#ifdef DLLEXPORT
+#define CALLDEF __declspec(dllexport)
+#else
+#define CALLDEF 
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -69,9 +75,9 @@ typedef int (* CameraLibraryInitFunc)      (Camera *camera, GPContext *context);
  * the following three functions. Everything else should be declared
  * as static.
  */
-int camera_id		(CameraText *id);
-int camera_abilities 	(CameraAbilitiesList *list);
-int camera_init 	(Camera *camera, GPContext *context);
+CALLDEF int camera_id		(CameraText *id);
+CALLDEF int camera_abilities 	(CameraAbilitiesList *list);
+CALLDEF int camera_init 	(Camera *camera, GPContext *context);
 
 #ifdef __cplusplus
 }

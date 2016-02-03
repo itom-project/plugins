@@ -34,6 +34,7 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 #include <qmetaobject.h>
+#include <qcoreapplication.h>
 
 #include <qdockwidget.h>
 #include <qpushbutton.h>
@@ -275,6 +276,14 @@ ito::RetVal DslrRemote::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
     ItomSharedSemaphoreLocker locker(waitCond);
 
     ito::RetVal retVal;
+
+#ifdef WIN32
+    QString p = QCoreApplication::applicationDirPath() + "/plugins/DslrRemote/";
+    QByteArray newpath = "CAMLIBS=" + p.toLatin1(); //set libDir at the beginning of the path-variable
+    _putenv(newpath.data());
+    newpath = "IOLIBS=" + p.toLatin1(); //set libDir at the beginning of the path-variable
+    _putenv(newpath.data());
+#endif
 
     gp_camera_new(&m_camera);
     m_context = gp_context_new();

@@ -43,7 +43,10 @@ or obtained by writing to the Free Software Foundation, Inc.,
 
 /* Standard libtool archive file extension.  */
 #undef  LT_ARCHIVE_EXT
-#define LT_ARCHIVE_EXT	".la"
+//#define LT_ARCHIVE_EXT	".la"
+#define LT_ARCHIVE_EXT	".lib"
+
+#define LT_MODULE_EXT ".dll"
 
 /* max. filename length */
 #if !defined(LT_FILENAME_MAX)

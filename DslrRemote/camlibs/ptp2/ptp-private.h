@@ -61,6 +61,19 @@ inline static int log_on_ptp_error_helper( int _r, const char* _func, const char
 	}\
 } while(0)
 
+#ifdef WIN32
+// MSVC c-frontend has problems with variadic arguments in macros ...
+#define C_PTP_MSG(RESULT, MSG) do {\
+	uint16_t c_ptp_msg_ret = (RESULT);\
+	if (c_ptp_msg_ret != PTP_RC_OK) {\
+		const char* ptp_err_str = ptp_strerror(c_ptp_msg_ret, params->deviceinfo.VendorExtensionID);\
+		char fmt_str[256];\
+		snprintf(fmt_str, sizeof(fmt_str), "%s%s%s", "'%s' failed: ", MSG, " (0x%04x: %s)");\
+		GP_LOG_E (fmt_str, #RESULT, "", c_ptp_msg_ret, ptp_err_str);\
+		return translate_ptp_result (c_ptp_msg_ret);\
+    	}\
+} while(0)
+#else
 #define C_PTP_MSG(RESULT, MSG, ...) do {\
 	uint16_t c_ptp_msg_ret = (RESULT);\
 	if (c_ptp_msg_ret != PTP_RC_OK) {\
@@ -71,6 +84,7 @@ inline static int log_on_ptp_error_helper( int _r, const char* _func, const char
 		return translate_ptp_result (c_ptp_msg_ret);\
 	}\
 } while(0)
+#endif
 
 #define C_PTP_REP(RESULT) do {\
 	uint16_t c_ptp_rep_ret = (RESULT);\
@@ -82,6 +96,21 @@ inline static int log_on_ptp_error_helper( int _r, const char* _func, const char
 	}\
 } while(0)
 
+#ifdef WIN32
+// MSVC c-frontend has problems with variadic arguments in macros ...
+#define C_PTP_REP_MSG(RESULT, MSG) do {\
+	uint16_t c_ptp_rep_msg_ret = (RESULT);\
+	if (c_ptp_rep_msg_ret != PTP_RC_OK) {\
+		const char* ptp_err_str = ptp_strerror(c_ptp_rep_msg_ret, params->deviceinfo.VendorExtensionID);\
+		char fmt_str[256];\
+		snprintf(fmt_str, sizeof(fmt_str), "%s%s%s", "'%s' failed: ", MSG, " (0x%04x: %s)");\
+		GP_LOG_E (fmt_str, #RESULT, "", c_ptp_rep_msg_ret, ptp_err_str);\
+		snprintf(fmt_str, sizeof(fmt_str), "%s%s", MSG, " (0x%04x: %s)");\
+		gp_context_error (context, fmt_str, "", c_ptp_rep_msg_ret, dgettext(GETTEXT_PACKAGE, ptp_err_str));\
+		return translate_ptp_result (c_ptp_rep_msg_ret);\
+    	}\
+} while(0)
+#else
 #define C_PTP_REP_MSG(RESULT, MSG, ...) do {\
 	uint16_t c_ptp_rep_msg_ret = (RESULT);\
 	if (c_ptp_rep_msg_ret != PTP_RC_OK) {\
@@ -94,6 +123,7 @@ inline static int log_on_ptp_error_helper( int _r, const char* _func, const char
 		return translate_ptp_result (c_ptp_rep_msg_ret);\
 	}\
 } while(0)
+#endif
 
 #define CR(RESULT) do {\
 	int cr_r=(RESULT);\

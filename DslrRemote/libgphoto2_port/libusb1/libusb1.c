@@ -208,7 +208,9 @@ gp_port_library_list (GPPortInfoList *list)
 	gp_port_info_set_type (info, GP_PORT_USB);
 	gp_port_info_set_name (info, "");
 	gp_port_info_set_path (info, "^usb:");
-	C_GP (gp_port_info_list_append (list, info));
+//	C_GP (gp_port_info_list_append (list, info));
+    // if there are only generic entries in the list scanning usb will abort here ... is this intended?
+    gp_port_info_list_append(list, info); 
 
 	nrofdevs = libusb_get_device_list (ctx, &devs);
 	C_MEM (descs = malloc (sizeof(descs[0])*nrofdevs));
@@ -1070,7 +1072,7 @@ gp_libusb1_find_device_lib(GPPort *port, int idvendor, int idproduct)
 		    == LIBUSB_CLASS_MASS_STORAGE) {
 			GP_LOG_D ("USB device (vendor 0x%x, product 0x%x) is a mass"
 				  " storage device, and might not function with gphoto2."
-				  " Reference: %s", idvendor, idproduct, URL_USB_MASSSTORAGE);
+                  " Reference: %s", idvendor, idproduct, LIBUSB_CLASS_MASS_STORAGE);
 		}
 		port->settings.usb.config = confdesc->bConfigurationValue;
 		port->settings.usb.interface = confdesc->interface[interface].altsetting[altsetting].bInterfaceNumber;

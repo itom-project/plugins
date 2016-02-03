@@ -172,7 +172,7 @@ load_settings (void)
 
 	/* Make sure the directories are created */
 #ifdef WIN32
-	GetWindowsDirectory (buf, sizeof(buf));
+	GetWindowsDirectoryA (buf, sizeof(buf));
 	strcat (buf, "\\gphoto");
 #else
 	snprintf (buf, sizeof(buf), "%s/.gphoto", getenv ("HOME"));
@@ -182,7 +182,7 @@ load_settings (void)
 
 	glob_setting_count = 0;
 #ifdef WIN32
-	GetWindowsDirectory(buf, sizeof(buf));
+	GetWindowsDirectoryA(buf, sizeof(buf));
 	strcat(buf, "\\gphoto\\settings");
 #else
 	snprintf(buf, sizeof(buf), "%s/.gphoto/settings", getenv("HOME"));

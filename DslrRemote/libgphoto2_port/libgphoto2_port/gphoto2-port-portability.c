@@ -119,11 +119,11 @@ gp_system_dirent gp_system_readdir (gp_system_dir d) {
 
 
         if (d->handle == INVALID_HANDLE_VALUE) {
-                d->handle = FindFirstFile(dirn, &(d->search));
+                d->handle = FindFirstFileA(dirn, &(d->search));
                 if (d->handle == INVALID_HANDLE_VALUE)
                         return NULL;
         } else {
-                if (!FindNextFile(d->handle, &(d->search)))
+                if (!FindNextFileA(d->handle, &(d->search)))
                         return NULL;
         }
 

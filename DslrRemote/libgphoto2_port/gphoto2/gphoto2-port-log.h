@@ -133,10 +133,16 @@ __attribute__((__format__(printf,4,5)))
 # ifdef __GNUC__
 #  warning Disabling GP_DEBUG because variadic macros are not allowed
 # endif
+#ifdef WIN32
+#define GP_LOG_D(...) gp_log(GP_LOG_DEBUG, __func__, __VA_ARGS__)
+#define GP_LOG_E(...) gp_log_with_source_location(GP_LOG_ERROR, __FILE__, __LINE__, __func__, __VA_ARGS__)
+#define GP_LOG_DATA(DATA, SIZE, MSG, ...) gp_log_data(__func__, DATA, SIZE, MSG, ##__VA_ARGS__)
+#else
 #define GP_DEBUG (void) 
 #define GP_LOG_D(...) /* no-op */
 #define GP_LOG_E(...) /* no-op */
 #define GP_LOG_DATA(DATA, SIZE, ...) /* no-op */
+#endif
 #endif
 #endif /* _GPHOTO2_INTERNAL_CODE */
 
@@ -228,12 +234,22 @@ __attribute__((__format__(printf,4,5)))
 	}\
 } while(0)
 
+#ifdef WIN32
+  // MSVC c-frontend has problems with variadic arguments in macros ...
+#define C_PARAMS_MSG(PARAMS, MSG) do {\
+	if (!(PARAMS)) {\
+		GP_LOG_E ("Invalid parameters: " #MSG " ('%s' is NULL/FALSE.)", "", #PARAMS);\
+		return GP_ERROR_BAD_PARAMETERS;\
+    	}\
+  } while(0)
+#else
 #define C_PARAMS_MSG(PARAMS, MSG, ...) do {\
 	if (!(PARAMS)) {\
 		GP_LOG_E ("Invalid parameters: " #MSG " ('%s' is NULL/FALSE.)", ##__VA_ARGS__, #PARAMS);\
 		return GP_ERROR_BAD_PARAMETERS;\
 	}\
 } while(0)
+#endif
 
 #endif /* _GPHOTO2_INTERNAL_CODE */
 

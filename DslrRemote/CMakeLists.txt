@@ -308,9 +308,8 @@ WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
 
 WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" "#endif /*__BYTEORDER_H*/" APPEND)
 
-#ADD_SUBDIRECTORY(libdl)
 ADD_SUBDIRECTORY(regex)
-ADD_SUBDIRECTORY(libtool/libltdl)
+ADD_SUBDIRECTORY(libtool)
 ADD_SUBDIRECTORY(libgphoto2)
 ADD_SUBDIRECTORY(libgphoto2_port)
 ADD_SUBDIRECTORY(camlibs)
@@ -381,7 +380,7 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
-SET(LTDLLIB optimized ./libtool/libltdl/$(Configuration)/libltdl debug ./libtool/libltdl/$(Configuration)/libltdld)
+SET(LTDLLIB optimized ./libtool/$(Configuration)/libltdl debug ./libtool/$(Configuration)/libltdld)
 SET(REGEXLIB optimized ./regex/$(Configuration)/regex debug ./regex/$(Configuration)/regexd)
 SET(LIBGPHOTO2 optimized ./libgphoto2/$(Configuration)/libgphoto2 debug ./libgphoto2/$(Configuration)/libgphoto2d)
 SET(LIBGPHOTO2PORT optimized ./libgphoto2_port/$(Configuration)/libgphoto2_port debug ./libgphoto2_port/$(Configuration)/libgphoto2_portd)

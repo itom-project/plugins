@@ -52,7 +52,8 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/../libtool/libltdl
+	${CMAKE_CURRENT_SOURCE_DIR}/..
+	${CMAKE_CURRENT_SOURCE_DIR}/../libtool
 	${CMAKE_CURRENT_SOURCE_DIR}/../regex
 	${LibUSB_INCLUDE_DIRS}	
 )
@@ -88,7 +89,7 @@ if(MSVC)
 #    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
 endif(MSVC)
 
-SET(LTDLLIB optimized ../libtool/libltdl/$(Configuration)/libltdl debug ../libtool/libltdl/$(Configuration)/libltdld)
+SET(LTDLLIB optimized ../libtool/$(Configuration)/libltdl debug ../libtool/$(Configuration)/libltdld)
 SET(REGEXLIB optimized ../regex/$(Configuration)/regex debug ../regex/$(Configuration)/regexd)
 SET(LIBUSB1LIB optimized ./libusb1/$(Configuration)/libgphoto2_port_libusb1 debug ./libusb1/$(Configuration)/libgphoto2_port_libusb1d)
 SET(PTPPORTLIB optimized ./ptpip/$(Configuration)/libgphoto2_port_ptpip debug ./ptpip/$(Configuration)/libgphoto2_port_ptpipd)
@@ -108,7 +109,7 @@ PLUGIN_DOCUMENTATION(${target_name} dslrRemote)
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
-LIST(APPEND COPY_SOURCES "$<TARGET_FILE:libgphoto2_port>")
-LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+#LIST(APPEND COPY_SOURCES "$<TARGET_FILE:libgphoto2_port>")
+#LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
+#ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+#POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)

@@ -50,7 +50,7 @@
 typedef struct {
 	HANDLE handle;
 	int got_first;
-	WIN32_FIND_DATA search;
+	WIN32_FIND_DATAA search;
 	char dir[1024];
 	char drive[32][2];
 	int  drive_count;
@@ -60,7 +60,7 @@ typedef struct {
 
 /* Directory-oriented functions */
 # define gp_system_dir		  GPPORTWINDIR *
-# define gp_system_dirent	  WIN32_FIND_DATA *
+# define gp_system_dirent	  WIN32_FIND_DATAA *
 # define gp_system_dir_delim	  '\\'
 
 # define sleep(x) usleep((x) * 1000 * 1000)

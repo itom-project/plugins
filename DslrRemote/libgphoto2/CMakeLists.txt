@@ -47,7 +47,7 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/../libtool/libltdl	
+	${CMAKE_CURRENT_SOURCE_DIR}/../libtool
 	${CMAKE_CURRENT_SOURCE_DIR}/..
 	${CMAKE_CURRENT_SOURCE_DIR}/../libgphoto2_port
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
@@ -85,11 +85,16 @@ if(MSVC)
 endif(MSVC)
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS})
-TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ../libgphoto2_port/$(Configuration)/libgphoto2_port ../libtool/libltdl/$(Configuration)/libltdl ../regex/$(Configuration)/regex)
+
+
+TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} 
+	../libgphoto2_port/$(Configuration)/libgphoto2_port 
+	../libtool/$(Configuration)/libltdl
+	../regex/$(Configuration)/regex)
 
 if(MSVC)
 #    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-  set_target_properties(${target_name}  PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
+#  set_target_properties(${target_name}  PROPERTIES COMPILE_FLAGS "/Zc:wchar_t")
 endif(MSVC)
 
 #documentation
@@ -98,7 +103,7 @@ PLUGIN_DOCUMENTATION(${target_name} libgphoto2)
 # COPY SECTION
 set(COPY_SOURCES "")
 set(COPY_DESTINATIONS "")
-LIST(APPEND COPY_SOURCES "$<TARGET_FILE:libgphoto2>")
-LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+#LIST(APPEND COPY_SOURCES "$<TARGET_FILE:libgphoto2>")
+#LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
+#ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+#POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
