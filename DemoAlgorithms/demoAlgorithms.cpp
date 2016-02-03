@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "demoAlgorithms" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -355,6 +355,8 @@ ito::RetVal DemoAlgorithms::demoSnapImageParams(QVector<ito::Param> *paramsMand,
         paramsMand->append(param);
 
         paramsOpt->clear();
+        param = ito::Param("simulateWork", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1, some calculations are simulated during the wait for the camera thread in order to show a time efficient approach.").toLatin1().data());
+        paramsOpt->append(param);
     }
 
     return retval;
@@ -371,16 +373,17 @@ ito::RetVal DemoAlgorithms::demoSnapImageParams(QVector<ito::Param> *paramsMand,
 *   \date 04.2012
 *   \sa helperGrabber.h, ito::threadCamera
 */
-ito::RetVal DemoAlgorithms::demoSnapImage(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * /*paramsOpt*/, QVector<ito::ParamBase> * /*paramsOut*/)
+ito::RetVal DemoAlgorithms::demoSnapImage(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal retval = ito::retOk;
 
     ito::DataIOThreadCtrl myCamera(paramsMand->at(0), NULL);
+    bool simulateWork = paramsOpt->at(0).getVal<int>() > 0;
 
     ito::DataObject *image = static_cast<ito::DataObject*>((*paramsMand)[1].getVal<void*>());
     if (image == NULL)
     {
-        return ito::RetVal(ito::retError, 0, tr("Iamge handle empty").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("Image handle empty").toLatin1().data());
     }
 
     ito::DataObject dObj;   // create an mepty object
@@ -392,15 +395,51 @@ ito::RetVal DemoAlgorithms::demoSnapImage(QVector<ito::ParamBase> *paramsMand, Q
         return retval;  // end and return error of failed
     }
 
-    retval += myCamera.acquire(0);
-
-    if (!retval.containsError())     // Only try to getVal if retval is retOK ir retWarning
+    if (!simulateWork)
     {
-        retval += myCamera.getVal(dObj);
-        dObj.copyTo(*image);    // Make a deepcopy of the data, otherwise the content of image will be overwritten during the next snap
+        retval += myCamera.acquire(0, 5000);
+
+        if (!retval.containsError())     // Only try to getVal if retval is retOK or retWarning (e.g. no timeout while acquisition)
+        {
+            retval += myCamera.getVal(dObj, 5000);
+        }
+
+        if (!retval.containsError())     // Only try to copy the image if retval is retOK or retWarning (e.g. no timeout while getVal)
+        {
+            dObj.copyTo(*image);    // Make a deepcopy of the data, otherwise the content of image will be overwritten during the next snap
+        }
+    }
+    else
+    {
+        retval += myCamera.acquire(0, 0); //immediately return after the acquisition...
+        double v;
+        for (int i = 0; i < 1e6; ++i)
+        {
+            v = std::sin(2.54 * i);
+        }
+
+        retval += myCamera.waitForSemaphore(5000); //wait until the acquisition has been done in order to get synchronized with the camera thread
+
+        if (!retval.containsError())     // Only try to getVal if retval is retOK or retWarning (e.g. no timeout while acquisition)
+        {
+            retval += myCamera.getVal(dObj, 0); //get the image and do not wait for it to be ready...
+            for (int i = 0; i < 1e6; ++i) //do some intense work...
+            {
+                v = std::sin(2.54 * i);
+            }
+            retval += myCamera.waitForSemaphore(5000); //wait until the image has been obtained. If an error occurs here, don't read dObj since it is not in a valid state.
+        }
+        
+        if (!retval.containsError()) // Only try to copy the image if retval is retOK or retWarning (e.g. no timeout while getVal)
+        {
+            dObj.copyTo(*image);    // Make a deepcopy of the data, otherwise the content of image will be overwritten during the next snap
+        }
     }
 
-    retval += myCamera.stopDevice();
+    retval += myCamera.stopDevice(); //you have to call any method of the camera thread after timeout-based calls. If one of the methods above run into a timeout
+                                     //and you passed e.g. a dataObject to the camera thread that has been created in this method, you need to wait until the camera
+                                     //thread is not using this dataObject any more before it is deleted upon finishing this method! If stopDevice is finished,
+                                     //no other method of the camera thread is still running!
 
     if (!retval.containsError())
     {
