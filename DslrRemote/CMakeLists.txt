@@ -25,6 +25,8 @@ include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Core Widgets LinguistTools)
 find_package(VisualLeakDetector QUIET)
 
+IF(LibUSB_INCLUDE_DIRS)
+
 WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" 
 	"/* This file is generated automatically by configure */\n\
 /* It is valid only for the system type ${effective_target} */\n\
@@ -308,111 +310,115 @@ WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h"
 
 WRITE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/gphoto2-endian.h" "#endif /*__BYTEORDER_H*/" APPEND)
 
-ADD_SUBDIRECTORY(regex)
-ADD_SUBDIRECTORY(libtool)
-ADD_SUBDIRECTORY(libgphoto2)
-ADD_SUBDIRECTORY(libgphoto2_port)
-ADD_SUBDIRECTORY(camlibs)
+    ADD_SUBDIRECTORY(regex)
+    ADD_SUBDIRECTORY(libtool)
+    ADD_SUBDIRECTORY(libgphoto2)
+    ADD_SUBDIRECTORY(libgphoto2_port)
+    ADD_SUBDIRECTORY(camlibs)
 
-IF (BUILD_UNICODE)
-    ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
-ENDIF (BUILD_UNICODE)
-ADD_DEFINITIONS(-DCMAKE)
+    IF (BUILD_UNICODE)
+        ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
+    ENDIF (BUILD_UNICODE)
+    ADD_DEFINITIONS(-DCMAKE)
 
-IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
-    ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
-ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+    IF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
+        ADD_DEFINITIONS(-DVISUAL_LEAK_DETECTOR_CMAKE)
+    ENDIF(VISUALLEAKDETECTOR_FOUND AND VISUALLEAKDETECTOR_ENABLED)
 
-# default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
-IF (DEFINED CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ELSE(CMAKE_BUILD_TYPE)
-    SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
-ENDIF (DEFINED CMAKE_BUILD_TYPE)
+    # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
+    IF (DEFINED CMAKE_BUILD_TYPE)
+        SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    ELSE(CMAKE_BUILD_TYPE)
+        SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
+    ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
+    message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-INCLUDE_DIRECTORIES(
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port
-    ${ITOM_SDK_INCLUDE_DIRS}
-    ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-)
+    INCLUDE_DIRECTORIES(
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/libgphoto2_port
+        ${ITOM_SDK_INCLUDE_DIRS}
+        ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+    )
 
-set(plugin_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-	${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.h
-)
+    set(plugin_HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.h
+    )
 
-set(plugin_UI
-)
+    set(plugin_UI
+    )
 
-set(plugin_SOURCES 
-	${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.cpp
-)
+    set(plugin_SOURCES 
+        ${CMAKE_CURRENT_SOURCE_DIR}/DslrRemote.cpp
+    )
 
-set(plugin_RCC
-    #add absolute pathes to any *.qrc resource files here
-)
+    set(plugin_RCC
+        #add absolute pathes to any *.qrc resource files here
+    )
 
-#Add version information to the plugIn-dll unter MSVC
-if(MSVC)
-    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-endif(MSVC)
+    #Add version information to the plugIn-dll unter MSVC
+    if(MSVC)
+        list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    endif(MSVC)
 
-#################################################################
-# Qt related pre-processing of the files above
-# (These methods create the moc, rcc and uic process.)
-#################################################################
-if (QT5_FOUND)
-    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
-    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-    QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-else (QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-    QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-endif (QT5_FOUND)
+    #################################################################
+    # Qt related pre-processing of the files above
+    # (These methods create the moc, rcc and uic process.)
+    #################################################################
+    if (QT5_FOUND)
+        #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+        QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    else (QT5_FOUND)
+        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+        QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+        QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    endif (QT5_FOUND)
 
-file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-#handle translations END STEP 1
+    file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+    #handle translations END STEP 1
 
-ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
-SET(LTDLLIB optimized ./libtool/$(Configuration)/libltdl debug ./libtool/$(Configuration)/libltdld)
-SET(REGEXLIB optimized ./regex/$(Configuration)/regex debug ./regex/$(Configuration)/regexd)
-SET(LIBGPHOTO2 optimized ./libgphoto2/$(Configuration)/libgphoto2 debug ./libgphoto2/$(Configuration)/libgphoto2d)
-SET(LIBGPHOTO2PORT optimized ./libgphoto2_port/$(Configuration)/libgphoto2_port debug ./libgphoto2_port/$(Configuration)/libgphoto2_portd)
+    SET(LTDLLIB optimized ./libtool/$(Configuration)/libltdl debug ./libtool/$(Configuration)/libltdld)
+    SET(REGEXLIB optimized ./regex/$(Configuration)/regex debug ./regex/$(Configuration)/regexd)
+    SET(LIBGPHOTO2 optimized ./libgphoto2/$(Configuration)/libgphoto2 debug ./libgphoto2/$(Configuration)/libgphoto2d)
+    SET(LIBGPHOTO2PORT optimized ./libgphoto2_port/$(Configuration)/libgphoto2_port debug ./libgphoto2_port/$(Configuration)/libgphoto2_portd)
 
-TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} 
- ${LTDLLIB}
- ${REGEXLIB}
- ${LIBGPHOTO2}
- ${LIBGPHOTO2PORT}
-)
-if (QT5_FOUND)
-    qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
-endif (QT5_FOUND)
+    TARGET_LINK_LIBRARIES(${target_name} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} 
+     ${LTDLLIB}
+     ${REGEXLIB}
+     ${LIBGPHOTO2}
+     ${LIBGPHOTO2PORT}
+    )
+    if (QT5_FOUND)
+        qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
+    endif (QT5_FOUND)
 
-ADD_DEPENDENCIES(${target_name} regex)
-ADD_DEPENDENCIES(${target_name} libltdl)
-ADD_DEPENDENCIES(${target_name} libgphoto2_port)
-ADD_DEPENDENCIES(${target_name} libgphoto2)
-#ADD_DEPENDENCIES(${target_name} camlibs)
+    ADD_DEPENDENCIES(${target_name} regex)
+    ADD_DEPENDENCIES(${target_name} libltdl)
+    ADD_DEPENDENCIES(${target_name} libgphoto2_port)
+    ADD_DEPENDENCIES(${target_name} libgphoto2)
+    #ADD_DEPENDENCIES(${target_name} camlibs)
 
-#translation
-set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
-PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+    #translation
+    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+    PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
-#documentation
-PLUGIN_DOCUMENTATION(${target_name} dslrRemote)
+    #documentation
+    PLUGIN_DOCUMENTATION(${target_name} dslrRemote)
 
-# COPY SECTION
-set(COPY_SOURCES "")
-set(COPY_DESTINATIONS "")
-#LIST(APPEND COPY_SOURCES "$<TARGET_FILE:dcraw>")
-#LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
-ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    # COPY SECTION
+    set(COPY_SOURCES "")
+    set(COPY_DESTINATIONS "")
+    #LIST(APPEND COPY_SOURCES "$<TARGET_FILE:dcraw>")
+    #LIST(APPEND COPY_DESTINATIONS "${ITOM_APP_DIR}/lib")
+    ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+    POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+
+ELSE (LibUSB_INCLUDE_DIRS)
+    message(WARNING "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")    
+ENDIF (LibUSB_INCLUDE_DIRS)
