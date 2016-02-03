@@ -8,7 +8,7 @@ const char PATHSEP_CHAR = ';';
 const char DIRSEP_CHAR = '\\';
 const char ALTDIRSEP_CHAR = '/';
 static char errorTxtBuf[2048];
-std::map<std::string, lt__handle> loadedLibs;
+static std::map<std::string, lt__handle> loadedLibs;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 static int canonicalize_path(const char *path, char **pcanonical)
@@ -91,6 +91,12 @@ int lt_dlinit(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 int lt_dlexit(void)
 {
+    for (std::map<std::string, lt__handle>::iterator it = loadedLibs.begin();
+        it != loadedLibs.end(); ++it)
+    {
+        FreeLibrary((HMODULE)it->second.vtable);
+    }
+    loadedLibs.clear();
     return 0;
 }
 
@@ -142,6 +148,7 @@ lt_dlhandle lt_dlopenext(const char *filename)
     if (loadedLibs.find(base_name) != loadedLibs.end())
     {
         ret = &loadedLibs[base_name];
+        loadedLibs[base_name].depcount++;
         goto cleanup;
     }
     else
@@ -152,9 +159,15 @@ lt_dlhandle lt_dlopenext(const char *filename)
             lt__handle libHandle;
             libHandle.depcount = 0;
             libHandle.flags = 0;
+            libHandle.deplibs = NULL;
+            libHandle.interface_data = NULL;
             libHandle.module = NULL;
             libHandle.next = NULL;
             libHandle.system = NULL;
+            libHandle.info.name = NULL;
+            libHandle.info.is_resident = 0;
+            libHandle.info.is_symglobal = 0;
+            libHandle.info.ref_count = 0;
             libHandle.info.filename = (char*)calloc(sizeof(char), strlen(filename) + 1);
             strncpy(libHandle.info.filename, filename, strlen(filename));
             libHandle.vtable = lib;
@@ -175,6 +188,20 @@ cleanup:
 //----------------------------------------------------------------------------------------------------------------------------------
 int lt_dlclose(lt_dlhandle libhandle) 
 {
+    for (std::map<std::string, lt__handle>::iterator it = loadedLibs.begin();
+        it != loadedLibs.end(); ++it)
+    {
+        if (&it->second == libhandle)
+        {
+            it->second.depcount--;
+            if (it->second.depcount <= 0)
+            {
+                FreeLibrary((HMODULE)it->second.vtable);
+                loadedLibs.erase(it);
+            }
+            break;
+        }
+    }
     return 0;
 }
 
@@ -182,6 +209,8 @@ int lt_dlclose(lt_dlhandle libhandle)
 void * lt_dlsym(lt_dlhandle libhandle, const char *name)
 {
     void *funcAddr = GetProcAddress((HMODULE)libhandle->vtable, name);
+//    if (funcAddr)
+//        libhandle->depcount++;
     return funcAddr;
 }
 

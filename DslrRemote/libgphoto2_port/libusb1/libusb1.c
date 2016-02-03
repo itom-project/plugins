@@ -387,7 +387,9 @@ gp_libusb1_open (GPPort *port)
 				   strerror(saved_errno));
 		return GP_ERROR_IO;
 	}
+#ifndef WIN32
 	ret = libusb_kernel_driver_active (port->pl->dh, port->settings.usb.interface);
+#endif
 
 #if 0
 	if (strstr(name,"usbfs") || strstr(name,"storage")) {
@@ -395,7 +397,6 @@ gp_libusb1_open (GPPort *port)
 		gp_port_set_error (port, _("Camera is already in use."));
 		return GP_ERROR_IO_LOCK;
 	}
-#endif
 
 	switch (ret) {
 	case 1: GP_LOG_D ("Device has a kernel driver attached (%d), detaching it now.", ret);
@@ -410,6 +411,7 @@ gp_libusb1_open (GPPort *port)
 		gp_port_set_error (port, _("Could not query kernel driver of device."));
 		break;
 	}
+#endif
 
 	GP_LOG_D ("claiming interface %d", port->settings.usb.interface);
 	if (LOG_ON_LIBUSB_E (libusb_claim_interface (port->pl->dh, port->settings.usb.interface))) {
