@@ -26,7 +26,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "DataObject/dataObjectFuncs.h"
 #include "opencv2/imgproc/imgproc.hpp"
 
-
 //! creates template defined function table for all supported data types
 #define MAKEFUNCLIST(FuncName) static t##FuncName fList##FuncName[] =   \
 {                                                                       \

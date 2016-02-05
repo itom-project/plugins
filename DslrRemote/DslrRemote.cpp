@@ -161,7 +161,7 @@ void DslrRemote::error_func(GPContext *context, const char *format, va_list args
 {
     qDebug() << "Context error\n";
     fprintf(stderr, "Contexterror \n");
-    vfprintf(stderr, format, args);
+//    vfprintf(stderr, format, args);
     fprintf(stderr, "\n");
 }
 
@@ -169,7 +169,7 @@ void DslrRemote::error_func(GPContext *context, const char *format, va_list args
 void DslrRemote::message_func(GPContext *context, const char *format, va_list args, void *data) 
 {
     qDebug() << "Warning\n";
-    vfprintf(stdout, format, args);
+//    vfprintf(stdout, format, args);
     fprintf(stdout, "\n");
 }
 
