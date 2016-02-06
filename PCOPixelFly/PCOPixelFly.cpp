@@ -1406,10 +1406,13 @@ ito::RetVal PCOPixelFly::close(ItomSharedSemaphore *waitCond)
         goto endclose;
     }
 
-    setGrabberStarted(1);
-    retValue += this->stopDevice(0);
-    Sleep(50);    
-
+	if (grabberStartedCount() >= 1)
+	{
+		setGrabberStarted(1);
+		retValue += this->stopDevice(0);
+		Sleep(50); 
+	}
+       
     retValue += PCOFreeAllocatedBuffer();
 
     //delete_bwlut(this->m_pBWlut);
@@ -1540,7 +1543,7 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
 
     decGrabberStarted();
 
-    if (grabberStartedCount() < 1)
+    if (grabberStartedCount() == 1)
     {
 #if PCO_DRIVER_V2 == 1
         if (getboardval)
