@@ -75,6 +75,9 @@ class DslrRemote : public ito::AddInGrabber
         bool m_lineCamera;
         Camera *m_camera;
         GPContext *m_context;
+        CameraFile *m_camFile;
+        CameraFilePath m_cameraFilePath;
+        int m_waittime;
         static void error_func(GPContext *context, const char *format, va_list args, void *data);
         static void message_func(GPContext *context, const char *format, va_list args, void *data);
 

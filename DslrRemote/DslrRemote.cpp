@@ -212,7 +212,8 @@ DslrRemote::DslrRemote() :
     m_totalBinning(1),
     m_lineCamera(false),
     m_camera(NULL),
-    m_context(NULL)
+    m_context(NULL),
+    m_camFile(NULL)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "DslrRemote", "GrabberName");
     m_params.insert(paramVal.getName(), paramVal);
@@ -373,6 +374,18 @@ ito::RetVal DslrRemote::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<i
 ito::RetVal DslrRemote::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
+
+    if (m_camera)
+    {
+        gp_camera_unref(m_camera);
+        m_camera = NULL;
+    }
+
+    if (m_context)
+    {
+        gp_context_unref(m_context);
+        m_context = NULL;
+    }
 
     if (m_timerID > 0)
     {
@@ -674,7 +687,13 @@ ito::RetVal DslrRemote::acquire(const int /*trigger*/, ItomSharedSemaphore *wait
     int bpp = m_params["bpp"].getVal<double>();
     float gain = m_params["gain"].getVal<double>();
     float offset = m_params["offset"].getVal<double>();
+    int gpret = 0;
 
+    // take a shot
+    if ((gpret = gp_camera_capture(m_camera, GP_CAPTURE_IMAGE, &m_cameraFilePath, m_context)) != GP_OK)
+    {
+        retValue += ito::RetVal(ito::retError, gpret, tr("libpghoto error acquiring image").toLatin1().data());
+    }
 
     if (waitCond)
     {
@@ -794,6 +813,9 @@ ito::RetVal DslrRemote::copyVal(void *vpdObj, ItomSharedSemaphore *waitCond)
 ito::RetVal DslrRemote::retrieveData(ito::DataObject *externalDataObject)
 {
     ito::RetVal retValue(ito::retOk);
+    int gpret = 0;
+    void *gpdata = NULL;
+    CameraEventType evtype;
 
     if (m_isgrabbing == false)
     {
@@ -801,6 +823,24 @@ ito::RetVal DslrRemote::retrieveData(ito::DataObject *externalDataObject)
     }
     else
     {
+        while (1)
+        {
+            gpret = gp_camera_wait_for_event(m_camera, m_waittime, &evtype, &gpdata, m_context);
+            if (evtype == GP_EVENT_TIMEOUT)
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("time out while waiting for acquire picture to terminate").toLatin1().data());
+                break;
+            }
+            else if (evtype == GP_EVENT_CAPTURE_COMPLETE)
+            {
+                break;
+            }
+            else if (evtype != GP_EVENT_UNKNOWN)
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("received unexpected event from camera").toLatin1().data());
+                break;
+            }
+        }
         if (externalDataObject)
         {
             m_data.deepCopyPartial(*externalDataObject);
