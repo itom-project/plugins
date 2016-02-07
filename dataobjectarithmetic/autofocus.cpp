@@ -153,7 +153,7 @@ typedef ito::RetVal(*tAutoFocusDerivate)(const ito::DataObject *src, const QStri
 MAKEFUNCLIST(AutoFocusDerivate)
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString DataObjectArithmetic::autoFocusDoc = QObject::tr("Determines an auto focus estimate for every plane in a given 2D or 3D dataObject. \n\
+/*static*/ const QString DataObjectArithmetic::autoFocusEstimateDoc = QObject::tr("Determines an auto focus estimate for every plane in a given 2D or 3D dataObject. \n\
 \n\
 The estimate is returned in terms of a tuple of double values for each plane. The higher the estimate, the 'sharper' the image. \n\
 There are different methods implemented how the auto focus estimate is calculated. \n\
@@ -164,7 +164,7 @@ Many methods are based on linear filters. If so, their horizontal and vertical v
 result = sum(sqrt(H*H + V*V)) / numPixelsPerPlane");
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal DataObjectArithmetic::autoFocusParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+/*static*/ ito::RetVal DataObjectArithmetic::autoFocusEstimateParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
     ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
     if (!retval.containsError())
@@ -192,7 +192,7 @@ result = sum(sqrt(H*H + V*V)) / numPixelsPerPlane");
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal DataObjectArithmetic::autoFocus(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+/*static*/ ito::RetVal DataObjectArithmetic::autoFocusEstimate(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
     const ito::DataObject *src = paramsMand->at(0).getVal<ito::DataObject*>();

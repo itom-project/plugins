@@ -1917,8 +1917,8 @@ RetVal DataObjectArithmetic::init(QVector<ito::ParamBase> * /*paramsMand*/, QVec
     filter = new FilterDef(getPercentageThreshold, getPercentageThresholdParams, getPercentageThresholdDoc);
     m_filterList.insert("getPercentageThreshold", filter);
 
-    filter = new FilterDef(autoFocus, autoFocusParams, autoFocusDoc);
-    m_filterList.insert("autofocus", filter);
+    filter = new FilterDef(autoFocusEstimate, autoFocusEstimateParams, autoFocusEstimateDoc);
+    m_filterList.insert("autofocusEstimate", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
