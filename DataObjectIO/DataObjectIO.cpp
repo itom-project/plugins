@@ -40,6 +40,7 @@
 #include "common/sharedFunctionsQt.h"
 #include "pluginVersion.h"
 #include "qimagewriter.h"
+#include <qlocale.h>
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectIOInterface::getAddInInst(ito::AddInBase **addInInst)
@@ -4036,7 +4037,10 @@ ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
 //----------------------------------------------------------------------------------------------------------------------------------
 //! loadDataFromTxtParams
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString DataObjectIO::loadDataFromTxtDoc = QObject::tr("loads an ascii-based data file like csv, tsv or space separated values.");
+/*static*/ const QString DataObjectIO::loadDataFromTxtDoc = QObject::tr("loads an ascii-based data file like txt, csv, tsv or space separated values. \n\
+\n\
+The text file is loaded line by line and tried to be interpreted as an array. It is possible to ignore the first n lines (optional parameter ignoreLines). \n\
+The full content of these ignored lines is then saved in the tag 'ignoredLines' of the destinationObject.");
 
 /** loadNistSDFParams method, specifies the parameter list for loadNistSDFParams method.
 *   @param [in] paramsMand  mandatory argument parameters
@@ -4062,10 +4066,17 @@ ito::RetVal DataObjectIO::loadDataFromTxtParams(QVector<ito::Param> *paramsMand,
         param = ito::Param("asMatrix", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("(1) Try to interprete list elements with 3 elements per row as a matrix or (0) load as written.").toLatin1().data());
         paramsOpt->append(param);
 
-        param = ito::Param("seperatorSign", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Uses this as the seperator between elements. If NULL, try to guess.").toLatin1().data());
+        param = ito::Param("separatorSign", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Uses this as the separator between elements. If NULL, try to guess.").toLatin1().data());
         paramsOpt->append(param);
 
-        param = ito::Param("decimalSign", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Uses this as the sign for decimal numbers. If NULL, try to guess.").toLatin1().data());
+        param = ito::Param("decimalSign", ito::ParamBase::String | ito::ParamBase::In, "<guess>", tr("Uses this as the sign for decimal numbers. If <guess>, try to guess if the decimal sign is a dot (.) or comma (,).").toLatin1().data());
+        ito::StringMeta sm(ito::StringMeta::String, "<guess>");
+        sm.addItem(".");
+        sm.addItem(",");
+        param.setMeta(&sm, false);
+        paramsOpt->append(param);
+
+        param = ito::Param("wrapSign", ito::ParamBase::String | ito::ParamBase::In, "", tr("Sometimes numbers are wrapped by a sign (.e.g '2.3' or \"4.5\"). If so, indicate the character(s) that wrap the numbers.").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -4090,11 +4101,11 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
     QFileInfo fileinfo(QString::fromLatin1(filename));
     QFile dataIn(fileinfo.canonicalFilePath());
 
-    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+    ito::DataObject *dObjDst = (*paramsMand)[0].getVal<ito::DataObject*>();
 
     if (dObjDst == NULL)
     {
-        ret += ito::RetVal::format(ito::retError,0,tr("Dataobject not initialized").toLatin1().data(), filename);
+        ret += ito::RetVal::format(ito::retError,0,tr("DataObject not initialized").toLatin1().data(), filename);
     }
     else if (!fileinfo.exists())
     {
@@ -4106,7 +4117,7 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
     }
     else
     {   
-        QChar speratorSign(0);
+        QChar separatorSign(0);
         QChar decimalSign(0);
 
         int ignoreLines = (*paramsOpt)[0].getVal<int>();
@@ -4116,17 +4127,22 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
 
         if ((*paramsOpt)[2].getVal<char*>() != NULL)
         {
-            speratorSign = (*paramsOpt)[2].getVal<char*>()[0];
+            separatorSign = (*paramsOpt)[2].getVal<char*>()[0];
         }
 
-        if ((*paramsOpt)[3].getVal<char*>() != NULL)
+        if ((*paramsOpt)[3].getVal<char*>()[0] != '<') //!= <guess>
         {
             decimalSign = (*paramsOpt)[3].getVal<char*>()[0];
         }
 
+        QString wrapSign = paramsOpt->at(4).getVal<char*>();
+
         ito::float64 zscale(0.0);
-        ret += analyseTXTData(dataIn, *dObjDst, speratorSign, decimalSign, readFlag, ignoreLines);
-        if (!ret.containsError())ret += readTXTDataBlock(dataIn, *dObjDst, speratorSign, decimalSign, readFlag, ignoreLines);
+        ret += analyseTXTData(dataIn, *dObjDst, separatorSign, decimalSign, readFlag, ignoreLines);
+        if (!ret.containsError())
+        {
+            ret += readTXTDataBlock(dataIn, *dObjDst, separatorSign, decimalSign, readFlag, ignoreLines, wrapSign);
+        }
     }
 
     if (dataIn.isOpen())
@@ -4138,12 +4154,12 @@ ito::RetVal DataObjectIO::loadDataFromTxt(QVector<ito::ParamBase> *paramsMand, Q
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObject, QChar &sperator, QChar &decimalSign, const int flags, const int ignoreLines)
+ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObject, QChar &separator, QChar &decimalSign, const int flags, const int ignoreLines)
 {
     ito::RetVal ret(ito::retOk);
 
-    bool guessSeperator = sperator == 0;
-    bool guessDecimal = decimalSign == 0;
+    bool guessSeparator = (separator == 0);
+    bool guessDecimal = (decimalSign == 0);
 
     int tabs = 0;
     int points = 0;
@@ -4159,21 +4175,21 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
     QStringList elem;
     for (int i = 0; i < ignoreLines; i++)
     {
-        strIgnoredLines.append(inFile.readLine());
         if (inFile.atEnd())
         {
             ret += ito::RetVal(ito::retError, 0, tr("Unexpected end of file").toLatin1().data());
             break;
         }
+        strIgnoredLines.append(inFile.readLine());
     }
 
     if (!ret.containsError())
     {
-        curLine = inFile.readLine();
         if (inFile.atEnd())
         {
             ret += ito::RetVal(ito::retError, 0, tr("Unexpected end of file").toLatin1().data());
         }
+        curLine = inFile.readLine();
 
         tabs = curLine.count('\t');
         points = curLine.count('.');
@@ -4183,32 +4199,32 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
 
         if (decimalSign != 0 && decimalSign != '.' && decimalSign != ',')
         {
-            ret += ito::RetVal(ito::retError, 0, tr("The decimal sign has to be undefined (NULL), '.' or ','.").toLatin1().data());
+            ret += ito::RetVal(ito::retError, 0, tr("The decimal sign must be '<guess>', '.' or ','.").toLatin1().data());
         }
-        else if (decimalSign == sperator && !guessDecimal)
+        else if (decimalSign == separator && !guessDecimal)
         {
-            ret += ito::RetVal(ito::retError, 0, tr("The decimal sign and the seperator must differ.").toLatin1().data());
+            ret += ito::RetVal(ito::retError, 0, tr("The decimal sign and the separator must differ.").toLatin1().data());
         }
     }
 
     if (!ret.containsError())
     {
-        if (sperator == '.' && guessDecimal)
+        if (separator == '.' && guessDecimal)
         {
             decimalSign = ',';
             guessDecimal = false;
         }
-        if (sperator != ',' && !guessSeperator && guessDecimal)
+        if (separator != ',' && !guessSeparator && guessDecimal)
         {
             if (comma == 0) decimalSign = '.';
             else decimalSign = ',';
 
             guessDecimal = false;
         }
-        else if (sperator != '.' && !guessSeperator && guessDecimal)
+        else if (separator != '.' && !guessSeparator && guessDecimal)
         {
             if (points == 0) decimalSign = '.';
-            else if (sperator == ',') decimalSign = '.';
+            else if (separator == ',') decimalSign = '.';
             else
             {
                 decimalSign = ',';
@@ -4216,27 +4232,31 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
 
             guessDecimal = false;
         }
-        else if (decimalSign == ',' && guessSeperator)
+        else if (decimalSign == ',' && guessSeparator)
         {
-            if (tabs != 0) sperator = '\t';
-            else if (points != 0) sperator = '.';
-            else if (space != 0) sperator = ' ';
-            //else if (comma != 0) sperator = ',';
-            else if (sim != 0) sperator = ';';
-            else ret += ito::RetVal(ito::retError, 0, tr("The decimal was specified as (,) but no other seperators where found.").toLatin1().data());
-            guessSeperator = false;
+            if (tabs != 0) separator = '\t';
+            else if (space != 0) separator = ' ';
+            else if (sim != 0) separator = ';';
+            else if (points != 0) separator = '.'; //dot is the last check, since it might also be a thousand-separator
+            else
+            {
+                separator = ' ';
+                ret += ito::RetVal(ito::retWarning, 0, tr("No separator could be guessed. Maybe, there is only one value per row. The separator is set to a space character.").toLatin1().data());
+            }
         }
-        else if (decimalSign == '.' && guessSeperator)
+        else if (decimalSign == '.' && guessSeparator)
         {
-            if (tabs != 0) sperator = '\t';
-            //else if (points != 0) sperator = '.';
-            else if (space != 0) sperator = ' ';
-            else if (comma != 0) sperator = ',';
-            else if (sim != 0) sperator = ';';
-            else ret += ito::RetVal(ito::retError, 0, tr("The decimal was specified as (,) but no other seperators where found.").toLatin1().data());
-            guessSeperator = false;
+            if (tabs != 0) separator = '\t';
+            else if (space != 0) separator = ' ';
+            else if (sim != 0) separator = ';';
+            else if (comma != 0) separator = ','; //comma is the last check, since it might also be a thousand-separator
+            else
+            {
+                separator = ' ';
+                ret += ito::RetVal(ito::retWarning, 0, tr("No separator could be guessed. Maybe, there is only one value per row. The separator is set to a space character.").toLatin1().data());
+            }
         }
-        else if (guessSeperator && guessDecimal)
+        else if (guessSeparator && guessDecimal)
         {
             if (comma == 0 && points == 0)
             {
@@ -4249,83 +4269,90 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
             else if (comma != 0 && points != 0)
             {
                 decimalSign = '.';
-                sperator = ',';
+                separator = ',';
             }
             else if (comma != 0)
             {
                 decimalSign = ',';
-                if (tabs != 0) sperator = '\t';
-                else if (points != 0) sperator = '.';
-                else if (space != 0) sperator = ' ';
-                else if (sim != 0) sperator = ';';
+                if (tabs != 0) separator = '\t';
+                else if (space != 0) separator = ' ';
+                else if (sim != 0) separator = ';';
+                else if (points != 0) separator = '.';
                 else 
                 {
                     decimalSign = '.';
-                    sperator = ',';
+                    separator = ',';
                 }
             }
             else if (points != 0)
             {
                 decimalSign = '.';
-                if (tabs != 0) sperator = '\t';
-                else if (comma != 0) sperator = ',';
-                else if (space != 0) sperator = ' ';
-                else if (sim != 0) sperator = ';';
-                else ret += ito::RetVal(ito::retError, 0, tr("The decimal was specified as (,) but no other seperators where found.").toLatin1().data());
+                if (tabs != 0) separator = '\t';
+                else if (space != 0) separator = ' ';
+                else if (sim != 0) separator = ';';
+                else if (comma != 0) separator = ',';
+                else separator = ' ';
             }
-            guessSeperator = false;
             guessDecimal = false;
         }
     }
 
     if (!ret.containsError())
     { 
-        if (!guessSeperator && !guessSeperator)
+        if (guessSeparator)
         {
             int remove = 0;
 
             if (decimalSign == ',')
             {
                 remove = comma;
+                if (separator != '.')
+                {
+                    remove += points; //possible thousand group separator
+                }
             }
             else
             {
                 remove = points;
+                if (separator != ',')
+                {
+                    remove += comma; //possible thousand group separator
+                }
             }
 
-            if (sperator == '.')
+            if (separator == '.')
             {
                 if ((tabs + space + sim + comma - remove) > 0)
                 {
-                    ret += ito::RetVal(ito::retError, 0, tr("The seperator was specified as (.) but other possible seperators where found.").toLatin1().data());
+                    ret += ito::RetVal(ito::retWarning, 0, tr("The separator was specified as (.) but other separator signs are also possible.").toLatin1().data());
                 }            
             }
-            else if (sperator == ',')
+            else if (separator == ',')
             {
                 if ((tabs + space + sim + points - remove) > 0)
                 {
-                    ret += ito::RetVal(ito::retError, 0, tr("The seperator was specified as (,) but other possible seperators where found.").toLatin1().data());
+                    ret += ito::RetVal(ito::retWarning, 0, tr("The separator was specified as (,) but other separator signs are also possible.").toLatin1().data());
                 }            
             }
-            else if (sperator == '\t')
+            else if (separator == '\t')
             {
                 if ((points + space + sim + comma - remove) > 0)
                 {
-                    ret += ito::RetVal(ito::retError, 0, tr("The seperator was specified as (tab) but other possible seperators where found.").toLatin1().data());
+                    ret += ito::RetVal(ito::retWarning, 0, tr("The separator was specified as (tab) but other separator signs are also possible.").toLatin1().data());
                 }            
             }
-            else if (sperator == ' ')
+            else if (separator == ' ')
             {
                 if ((tabs + comma + sim + points - remove) > 0)
                 {
-                    ret += ito::RetVal(ito::retError, 0, tr("The seperator was specified as (space) but other possible seperators where found.").toLatin1().data());
+                    ret += ito::RetVal(ito::retWarning, 0, tr("The separator was specified as (space) but other separator signs are also possible.").toLatin1().data());
                 }            
             }
-            else if (sperator == ';')
+            else if (separator == ';')
             {
                 if ((tabs + space + comma + points - remove) > 0)
                 {
-                    ret += ito::RetVal(ito::retError, 0, tr("The seperator was specified as (;) but other possible seperators where found.").toLatin1().data());
+                    ret += ito::RetVal(ito::retWarning, 0, tr("The separator was specified as (;) but other separator signs are also possible.").toLatin1().data());
                 }            
             }
         }
@@ -4337,9 +4364,9 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
         if (flags & 0x01)
         {
 
-            if (curLine.split(sperator, QString::SkipEmptyParts).size() != 3)
+            if (curLine.split(separator, QString::SkipEmptyParts).size() != 3)
             {
-                ret += ito::RetVal(ito::retError, 0, tr("The file is no list with 3 columns and N rows or contains invalid seperators.").toLatin1().data());
+                ret += ito::RetVal(ito::retError, 0, tr("The file is no list with 3 columns and N rows or contains invalid separators.").toLatin1().data());
             }
             else
             {
@@ -4353,7 +4380,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
         }
         else
         {
-            cols = curLine.split(sperator, QString::KeepEmptyParts).size();
+            cols = curLine.split(separator, QString::KeepEmptyParts).size();
 
             while(!inFile.atEnd())
             {
@@ -4377,7 +4404,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newObject, const QChar &sperator, const QChar &decimalSign, const int flags, const int ignoreLines)
+ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newObject, const QChar &separator, const QChar &decimalSign, const int flags, const int ignoreLines, const QString &wrapSign)
 {
     ito::RetVal ret(ito::retOk);
     ito::float32* rowPtr = NULL;
@@ -4386,8 +4413,12 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
     int xsize = newObject.getSize(newObject.getDims() - 1);
     int xsizetmp = 0;
     bool check;
+    QByteArray curline;
     QList<QByteArray> curLineData;
     curLineData.reserve(xsize);
+    const char sep = separator.toLatin1();
+    QByteArray wrapSign_ = wrapSign.toLatin1();
+    int wrapSignLen = wrapSign_.size();
 
     if (!inFile.seek(0))
     {
@@ -4400,73 +4431,64 @@ ito::RetVal DataObjectIO::readTXTDataBlock(QFile &inFile, ito::DataObject &newOb
         inFile.readLine();
     }
 
+    QLocale local(QLocale::C); //per default a decimal sign is a dot (.) and the thousands group separator is (,)
+
     if (decimalSign == ',')
     {
-        const char sepTmp = sperator.toLatin1();
-        bool change = sepTmp == '.';
-        QByteArray curline;
-        curline.reserve(xsize*10);
-        for (int y = 0; y < ysize; y++)
+        local = QLocale(QLocale::German); //if the decimal sign is a comma (,), the thousands group separator is assumed to be a dot (.)
+    }
+
+    
+
+    for (int y = 0; y < ysize; ++y)
+    {
+        if (inFile.atEnd())
         {
-            if (inFile.atEnd())
+            ret += ito::RetVal(ito::retError, 0, tr("Unexpected end of file").toLatin1().data());
+            break;
+        }
+
+        curline = inFile.readLine();
+        curLineData = curline.trimmed().split(sep);
+
+        if (curLineData.size() > xsize)
+        {
+            ret += ito::RetVal::format(ito::retError, 0, tr("Line %i contains more elements than the first analyzed line").toLatin1().data(), y + ignoreLines);
+            break;
+        }
+
+        rowPtr = myMat->ptr<ito::float32>(y);
+        xsizetmp = std::min(xsize, curLineData.size());
+
+        for (int x = 0; x < xsizetmp; x++)
+        {
+            curline = curLineData[x].trimmed();
+            if (wrapSign_.isEmpty())
             {
-                ret += ito::RetVal(ito::retError, 0, tr("Unexpected end of file").toLatin1().data());
-                break;
-            }
-            curline = inFile.readLine();
-            if (change)
-            {   
-                curline.replace(sepTmp, ';');   // Change the seperator to ;
-                curline.replace(',', '.');      // Change the decimal to point to convert data correct in c++
-                curLineData = curline.split(';');
+                rowPtr[x] = local.toFloat(curline, &check);
+                if (!check) 
+                {
+                    rowPtr[x] = std::numeric_limits<ito::float32>::quiet_NaN();
+                }
             }
             else
             {
-                curline.replace(',', '.');      // Change the decimal to point to convert data correct in c++
-                curLineData = curline.split(sepTmp);            
-            }
-
-            curLineData.last() = curLineData.last().trimmed();
-
-            rowPtr = myMat->ptr<ito::float32>(y);
-            
-            xsizetmp = std::min(xsize, curLineData.size());
-
-            for (int x = 0; x < xsizetmp; x++)
-            {
-                rowPtr[x] = curLineData[x].toFloat(&check);
-                if (!check) 
+                if (curline.startsWith(wrapSign_) && curline.endsWith(wrapSign_))
+                {
+                    rowPtr[x] = local.toFloat(curline.mid(wrapSignLen, curline.size() - 2 * wrapSignLen), &check);
+                    if (!check) 
+                    {
+                        rowPtr[x] = std::numeric_limits<ito::float32>::quiet_NaN();
+                    }
+                }
+                else
                 {
                     rowPtr[x] = std::numeric_limits<ito::float32>::quiet_NaN();
                 }
-            }    
-    
-        }
-    }
-    else
-    {
-        const char sep = sperator.toLatin1();
-        for (int y = 0; y < ysize; y++)
-        {
-            if (inFile.atEnd())
-            {
-                ret += ito::RetVal(ito::retError, 0, tr("Unexpected end of file").toLatin1().data());
-                break;
             }
-            curLineData = inFile.readLine().split(sep);
-            curLineData.last() = curLineData.last().trimmed();
-            rowPtr = myMat->ptr<ito::float32>(y);
-            xsizetmp = std::min(xsize, curLineData.size());
+        }    
 
-            for (int x = 0; x < xsizetmp; x++)
-            {
-                rowPtr[x] = curLineData[x].toFloat(&check);
-                if (!check) 
-                {
-                    rowPtr[x] = std::numeric_limits<ito::float32>::quiet_NaN();
-                }
-            }    
-        }
+        
     }
 
     if (flags & 0x01)
