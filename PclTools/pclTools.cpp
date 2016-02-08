@@ -4375,6 +4375,11 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
     filter = new FilterDef(PclTools::pclGetNormalsAtCogFromMesh, PclTools::pclGetNormalsAtCogFromMeshParams, pclGetNormalsAtCogFromMeshDOC);
     m_filterList.insert("pclGetNormalsAtCogFromMesh", filter);
 
+#if PCLHASSURFACENURBS
+    filter = new FilterDef(PclTools::pclFitTrimmedBSpline, PclTools::pclFitTrimmedBSplineParams, pclFitTrimmedBSplineDOC);
+    m_filterList.insert("pclFitTrimmedBSpline", filter);
+#endif
+
     if (waitCond)
     {
         waitCond->returnValue = retval;

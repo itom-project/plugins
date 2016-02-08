@@ -35,6 +35,13 @@ IF(ITOM_SDK_PCL_SUPPORT)
         
         find_package(PCL 1.5.1 REQUIRED COMPONENTS common io kdtree search features segmentation filters surface)
         find_package(VisualLeakDetector QUIET)
+        
+        find_file(PCL_HAS_SURFACE_NURBS "nurbs_data.h" PATHS ${PCL_INCLUDE_DIRS} PATH_SUFFIXES "pcl/surface/on_nurbs")
+        IF (PCL_HAS_SURFACE_NURBS)
+            ADD_DEFINITIONS(-DPCLHASSURFACENURBS -D_PCLHASSURFACENURBS)
+        ELSE()
+            MESSAGE(STATUS "PCL has been build without the surface_nurbs module, therefore not all filters can be build")
+        ENDIF()
 
         include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
@@ -95,6 +102,7 @@ IF(ITOM_SDK_PCL_SUPPORT)
             ${CMAKE_CURRENT_SOURCE_DIR}/implIncludes.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFit.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pclModelFitGeneric.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/pclNurbs.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pclProjectInliers.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/random_sample_corrected.cpp
             ${CMAKE_CURRENT_SOURCE_DIR}/pcl/filters/impl/cylinder_clipper3D.hpp
