@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "LeicaMotorFocus" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -96,6 +96,8 @@ enum lmfStatus {
 #define FULLSPEED    (140/6.0)    /* 140mm in 6s */
 #define LMFDELAY 10
 
+/*static*/ QSharedPointer<QVector<ito::ParamBase> > LeicaMotorFocus::emptySharedParamBaseVec(new QVector<ito::ParamBase>());
+
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocusInterface::getAddInInst(ito::AddInBase **addInInst)
 {
@@ -177,15 +179,7 @@ const ito::RetVal LeicaMotorFocus::showConfDialog(void)
 // read buffer without delay
 const ito::RetVal LeicaMotorFocus::LMFDummyRead()
 {
-    /* discard any pending input */
-    /* Copied from UhlRegister not mcpp\lmfmotor */
-    int maxsize = 50;
-    QSharedPointer<int> bufsize(new int);
-    *bufsize = maxsize;
-    QSharedPointer<char> buf(new char[maxsize]);
-    memset(buf.data(), 0, maxsize*sizeof(char));
-
-    m_pSer->getVal(buf, bufsize);
+	m_pSer->execFunc("clearInputBuffer", emptySharedParamBaseVec, emptySharedParamBaseVec, emptySharedParamBaseVec);
     return ito::retOk;
 }
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -193,50 +187,12 @@ const ito::RetVal LeicaMotorFocus::LMFReadString(char *buf, const int bufsize, i
 {
     ito::RetVal retval = ito::retOk;
     QSharedPointer<int> len(new int);
-    *len = 0;
-    int totlen = 0;
-    int looped =0;
-    static char endline[3] = {0, 0, 0};
-    QSharedPointer<char> tempBuf;
 
-    //QSharedPointer<char> sharedEndline(&endline[0],doNotDelSharedPtr); //this is a workaround, the shared pointer doesn't delete the endline, since it is allocated on the stack and is deleted by itself.
-    //QSharedPointer<int> sharedLen(new int);
-    //*sharedLen = 3;
-
-    QSharedPointer<ito::Param> param(new ito::Param("endline"));
-    retval += m_pSer->getParam(param, NULL);
-
-    if (param->getType() == (ito::ParamBase::String & ito::paramTypeMask))
-    {
-        char* temp = param->getVal<char*>(); //borrowed reference
-        endline[0] = temp[0];
-        endline[1] = temp[1];
-        endline[2] = temp[2];
-    }
-
-    //retval += m_pSer->getParam("endline", sharedEndline, sharedLen, 0);
-
-    totlen = 0;
-    do
-    {
-        Sleep(LMFDELAY);
-        do
-        {
-            *len = bufsize - totlen;
-            tempBuf = QSharedPointer<char>(&buf[totlen], LeicaMotorFocus::doNotDelSharedPtr); //trick to access part of buf using a shared pointer. the shared pointer is not allowed to delete the char-array, therefore the Deleter-method.
-            retval += m_pSer->getVal(tempBuf, len);
-            totlen += *len;
-            Sleep(2);
-        }
-        while (!((buf[totlen - 2] == endline[0]) && (buf[totlen - 1] == endline[1])) && (totlen < bufsize) && (totlen > 0));
-        looped++;
-    }while ((totlen<1) && (looped <5));
-    if (totlen>0)
-        buf[totlen - 2] = 0;
-
-    *readsigns = totlen;
-
-    return retval;
+	*len = bufsize;
+    QSharedPointer<char> tempBuf(buf, LeicaMotorFocus::doNotDelSharedPtr); //trick to access part of buf using a shared pointer. the shared pointer is not allowed to delete the char-array, therefore the Deleter-method.
+    retval += m_pSer->getVal(tempBuf, len);
+	*readsigns = *len;
+	return retval;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -278,8 +234,6 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
     int got_id=0, got_cmd=0;
     int buflen=50;
     int redsigns=0;
-
-//    wchar_t errormassage[50];
 
     if (bufsize < 1)
         return ito::retError;
@@ -368,47 +322,6 @@ const ito::RetVal LeicaMotorFocus::LMFQueryL(int id, int cmd, long *plval)
 
     return retval;
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//const ito::RetVal LeicaMotorFocus::LMFWaitForAnswer(int timeout)
-//{
-//    char buf[50];
-//    unsigned long bufcnt = 0;    
-//    unsigned long chkcycles = 0;
-//    unsigned long cycle = 0;
-//    long lval = 0;
-//
-//    ito::RetVal retval = ito::retOk;
-//
-//    chkcycles =(long)ceil((double)timeout / LMFDELAY);
-//
-//    for (cycle = 0; cycle < chkcycles; cycle++)
-//    {    
-//        retval += LMFQueryL(70, GET_STATUS_BYTE, &lval);
-//        if (retval == ito::retError)
-//        {
-//            retval += ito::RetVal(ito::retError, 0, tr("Error during reading serial port").toLatin1().data());
-//            return retval;
-//        }
-//        if ( (lval & (1<<1)) || (lval & (1<<2)) ) 
-//        {
-//            retval += ito::RetVal(ito::retError, 0, tr("Hardware error during status check").toLatin1().data());
-//            return retval;
-//        }
-//        /* the physically upper limit is 'LOWER LIMIT' */
-//        if ((lval & (1<<6)) ||(lval == 0))
-//        {
-//            return retval;
-//        }
-//        Sleep(LMFDELAY);
-//        setAlive();
-//    }
-//
-//    if (chkcycles == cycle);
-//        retval += ito::RetVal(ito::retError, 0, tr("Dropped to time-out").toLatin1().data());
-//
-//    return retval;
-//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal LeicaMotorFocus::waitForDone(const int timeoutMS, const QVector<int> axis, const int /*flags*/)
@@ -761,13 +674,8 @@ ito::RetVal LeicaMotorFocus::init(QVector<ito::ParamBase> *paramsMand, QVector<i
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("stopbits",ito::ParamBase::Int,1)),NULL);
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("flow",ito::ParamBase::Int,1)),NULL);
         retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endline",ito::ParamBase::String,"\r\n")),NULL);
-
-        /*retval += m_pSer->setParam("baud", 9600, 0);
-        retval += m_pSer->setParam("bits", 8, 0);
-        retval += m_pSer->setParam("parity", 0.0, 0);
-        retval += m_pSer->setParam("stopbits", 1, 0);
-        retval += m_pSer->setParam("flow", 1, 0);
-        retval += m_pSer->setParam("endline", "\r\n", 0);*/
+		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("endlineRead",ito::ParamBase::String,"\r\n")),NULL);
+		retval += m_pSer->setParam(QSharedPointer<ito::ParamBase>(new ito::ParamBase("readline",ito::ParamBase::Int,1)),NULL);
         retval += this->LMFDummyRead();
     }
     else
