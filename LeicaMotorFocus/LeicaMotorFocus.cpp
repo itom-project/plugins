@@ -180,6 +180,7 @@ const ito::RetVal LeicaMotorFocus::showConfDialog(void)
 const ito::RetVal LeicaMotorFocus::LMFDummyRead()
 {
 	m_pSer->execFunc("clearInputBuffer", emptySharedParamBaseVec, emptySharedParamBaseVec, emptySharedParamBaseVec);
+	m_pSer->execFunc("clearOutputBuffer", emptySharedParamBaseVec, emptySharedParamBaseVec, emptySharedParamBaseVec);
     return ito::retOk;
 }
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -284,7 +285,7 @@ const ito::RetVal LeicaMotorFocus::LMFQueryS(int id, int cmd, char *buf, int buf
     }
     if (id != got_id || cmd != got_cmd) 
     {
-        retval += ito::RetVal(ito::retError, 0, tr("Answer \"%1\" does not match query").arg(answer).toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Answer \"%1\" to command '%2 %3' does not match query").arg(answer).arg(id).arg(cmd).replace('\r', "\\r").replace('\n', "\\n").toLatin1().data());
         free(copy);
         return retval;
     }
