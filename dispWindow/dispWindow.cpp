@@ -550,7 +550,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             retValue += locker.getSemaphore()->returnValue;
 
             m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
-            static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
+            static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages() - 1);
 
             if (!retValue.containsError())
             {
@@ -570,7 +570,7 @@ ito::RetVal DispWindow::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
             retValue += locker.getSemaphore()->returnValue;
 
             m_params["numgraybits"].setVal<int>(m_pWindow->getNumGrayImages()); //set dependend parameter
-            static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages());
+            static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(m_pWindow->getNumImages() - 1);
 
             if (!retValue.containsError())
             {
@@ -894,7 +894,7 @@ void DispWindow::numberOfImagesChanged(int numImg, int numGray, int numCos)
 {
     m_params["phaseshift"].setVal<int>(numCos);
     m_params["numgraybits"].setVal<int>(numGray);
-    static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(numImg);
+    static_cast<ito::IntMeta*>(m_params["numimg"].getMeta())->setMax(numImg - 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
