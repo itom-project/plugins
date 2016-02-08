@@ -977,16 +977,11 @@ ito::RetVal PCOPixelFly::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
 
     if (!retValue.containsError())
     {
-        if (grabberStartedCount())
+        if (grabberStartedCount() > 0)
         {
             running = grabberStartedCount();
             setGrabberStarted(1);
-            retValue += this->stopDevice(0);
-        }
-        else
-        {
-            setGrabberStarted(1);
-            this->stopDevice(0);
+            retValue += stopDevice(0);
         }
 
         int bitppix_old = m_params["bpp"].getVal<int>();
@@ -1469,52 +1464,55 @@ ito::RetVal PCOPixelFly::startDevice(ItomSharedSemaphore *waitCond)
     DWORD status_v2;
     int result;
 
+	if (grabberStartedCount() == 0)
+	{
     //check if camera is already started
 #if PCO_DRIVER_V2 == 1
-    if (getboardval)
-    {
-        while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-        {
-            iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
-        }
-        result = PCC_STATUS_CAM_RUN(status_v2);
-    }
-    else
-    {
-        while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-        {
-            iRetCode = getboardpar(m_hdriver, a, 20);
-        }
-        result = PCC_STATUS_CAM_RUN( (*((dword *)a+1)));
-    }
+		if (getboardval)
+		{
+			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works
+			{
+				iRetCode = getboardval(m_hdriver, PCC_VAL_BOARD_STATUS, &status_v2);
+			}
+			result = PCC_STATUS_CAM_RUN(status_v2);
+		}
+		else
+		{
+			while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works
+			{
+				iRetCode = getboardpar(m_hdriver, a, 20);
+			}
+			result = PCC_STATUS_CAM_RUN( (*((dword *)a+1)));
+		}
 #else
-    while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-    {
-        iRetCode = getboardpar(m_hdriver, a, 20);
-    }
-    result = PCC_CAM_RUN(a);
+		while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works
+		{
+			iRetCode = getboardpar(m_hdriver, a, 20);
+		}
+		result = PCC_CAM_RUN(a);
 #endif
-    if (iRetCode != 0)
-    {
-        retValue += PCOChkError(iRetCode);
-    }
-    else
-    {
-        //this makro is out of pccamdef.h, where you can find other usefull makros
-        if (!result)
-        {
-            iter = 6;
-            iRetCode = -7;
-            while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
-            {
-                iRetCode = start_camera(m_hdriver);
-            }
-            if (iRetCode != 0)
-            {
-                retValue += PCOChkError(iRetCode);
-            }
-        }
-    }
+		if (iRetCode != 0)
+		{
+			retValue += PCOChkError(iRetCode);
+		}
+		else
+		{
+			//this makro is out of pccamdef.h, where you can find other usefull makros
+			if (!result)
+			{
+				iter = 6;
+				iRetCode = -7;
+				while (--iter > 0 && iRetCode == -7) //-7: IO error, try this command up to 5 times, since a secondary call sometimes works then
+				{
+					iRetCode = start_camera(m_hdriver);
+				}
+				if (iRetCode != 0)
+				{
+					retValue += PCOChkError(iRetCode);
+				}
+			}
+		}
+	}
 
     if (!retValue.containsError())
     {
@@ -1540,8 +1538,6 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
     int iter = 6;
 
     int result;
-
-    decGrabberStarted();
 
     if (grabberStartedCount() == 1)
     {
@@ -1594,12 +1590,21 @@ ito::RetVal PCOPixelFly::stopDevice(ItomSharedSemaphore *waitCond)
                 retValue += ito::RetVal(ito::retWarning, 0, tr("Camera was already stopped.").toLatin1().data());
             }
         }
+
+		if (!retValue.containsError())
+		{
+			decGrabberStarted();
+		}
     }
-    if (grabberStartedCount() < 0)
+    else if (grabberStartedCount() <= 0)
     {
         setGrabberStarted(0);
         retValue += ito::RetVal(ito::retWarning, 0, tr("Camera was already stopped.").toLatin1().data());
     }
+	else
+	{
+		decGrabberStarted();
+	}	
 
     if (waitCond)
     {
