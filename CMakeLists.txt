@@ -307,6 +307,12 @@ if (PLUGIN_rawImport)
     ADD_SUBDIRECTORY(RawImport)
 endif (PLUGIN_rawImport)
 
+# Roughness
+OPTION(PLUGIN_Roughness "Build with this plugin." ON)
+if (PLUGIN_Roughness)
+    ADD_SUBDIRECTORY(Roughness)
+endif (PLUGIN_Roughness)
+
 # SerialIO
 OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
 if (PLUGIN_SerialIO)
