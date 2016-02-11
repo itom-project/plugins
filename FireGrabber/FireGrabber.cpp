@@ -1468,12 +1468,14 @@ ito::RetVal FireGrabber::initAVTCameras(const char *vendorName, const char *mode
     if (strcmp(vendorName, "AVT") == 0)
     {
         m_exposureParams.AVTCam = true;
-        UINT32 regValue;
+        
         //try to read timebase register
 #ifdef WIN32
+        UINT32 regValue;
         ResultType Result = Camera.ReadRegister(0xF1000208, &regValue);
         ResultType ResultOK = FCE_NOERROR;
 #else
+        uint32_t regValue;
         ResultType Result = dc1394_avt_get_timebase(camera, &regValue);
         ResultType ResultOK = DC1394_SUCCESS;
 #endif
