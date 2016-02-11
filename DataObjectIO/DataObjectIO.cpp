@@ -1564,7 +1564,7 @@ ito::RetVal DataObjectIO::loadNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         ito::StringMeta sm(ito::StringMeta::String, "m");
         sm.addItem("cm");
         sm.addItem("mm");
-        sm.addItem("µm");
+        sm.addItem(QString("_m").replace("_", QLatin1String("\u00B5")).toLatin1().data());
         sm.addItem("nm");
         param.setMeta(&sm, false);
         paramsOpt->append(param);
@@ -1573,7 +1573,7 @@ ito::RetVal DataObjectIO::loadNistSDFParams(QVector<ito::Param> *paramsMand, QVe
         ito::StringMeta sm2(ito::StringMeta::String, "m");
         sm2.addItem("cm");
         sm2.addItem("mm");
-        sm2.addItem("µm");
+        sm2.addItem(QString("_m").replace("_", QLatin1String("\u00B5")).toLatin1().data());
         sm2.addItem("nm");
         param.setMeta(&sm2, false);
         paramsOpt->append(param);
@@ -4643,7 +4643,7 @@ ito::RetVal DataObjectIO::savePtbPRParams(QVector<ito::Param> *paramsMand, QVect
         paramsMand->append(param);
         param = ito::Param("decimalSigns",ito::ParamBase::Int | ito::ParamBase::In, 0, 12, 6, tr("Number of decimal signs (default: 6).").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("ordinateUnit", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("unit of ordinate (0: nm [default], 1: µm)").toLatin1().data());
+        param = ito::Param("ordinateUnit", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("unit of ordinate (0: nm [default], 1: _m)").replace("_", QLatin1String("\u00B5")).toLatin1().data());
         paramsOpt->append(param);
     }
 
