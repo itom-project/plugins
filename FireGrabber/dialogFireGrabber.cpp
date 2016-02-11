@@ -207,7 +207,6 @@ int dialogFireGrabber::getVals(QMap<QString, ito::Param> *paramVals)
         if (!strcmp(param.getName(), "bpp"))
         {
             int ival = param.getVal<int>();
-            ui.spinBox_bpp->setValue(ival);
 
             if (!(param.getFlags() & ito::ParamBase::Readonly))
             {
@@ -224,27 +223,9 @@ int dialogFireGrabber::getVals(QMap<QString, ito::Param> *paramVals)
                 case 8:
                     ui.combo_bpp->setCurrentIndex(0);
                 break;
-                //case 10:
-                //    ui.combo_bpp->setCurrentIndex(1);
-                //break;
-                //case 12:
-                //    ui.combo_bpp->setCurrentIndex(2);
-                //break;
-                //case 14:
-                //    ui.combo_bpp->setCurrentIndex(3);
-                //break;
                 case 16:
-                    ui.combo_bpp->setCurrentIndex(4);
+                    ui.combo_bpp->setCurrentIndex(1);
                 break;
-  /*              case 24:
-                    ui.combo_bpp->setCurrentIndex(5);
-                break;
-                case 30:
-                    ui.combo_bpp->setCurrentIndex(6);
-                break;
-                case 32:
-                    ui.combo_bpp->setCurrentIndex(7);
-                break;*/
                 default:
                     ui.combo_bpp->setEnabled(false);
                     m_paramsVals["bpp"].setFlags(ito::ParamBase::Readonly);
@@ -406,27 +387,9 @@ int dialogFireGrabber::sendVals()
             case 0:
                 bppNew = 8;
             break;
-           /* case 1:
-                bppNew = 10;
-            break;
-            case 2:
-                bppNew = 12;
-            break;
-            case 3:
-                bppNew = 14;
-            break;*/
-            case 4:
+            case 1:
                 bppNew = 16;
             break;
-        /*    case 5:
-                bppNew = 24;
-            break;
-            case 6:
-                bppNew = 30;
-            break;
-            case 7:
-                bppNew = 32;
-            break;*/
         }
         if ((bppNew > 0) && (m_paramsVals["bpp"].getVal<int>() !=  bppNew))
         {

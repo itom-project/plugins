@@ -209,7 +209,7 @@ FireGrabber::FireGrabber() :
    //m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
-    DockWidgetFireGrabber *dw = new DockWidgetFireGrabber();
+    DockWidgetFireGrabber *dw = new DockWidgetFireGrabber(this);
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
@@ -444,7 +444,7 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         // here the new parameter is checked whether it's type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
         // meta structure.
-        retValue += apiValidateParam(*it, *val, false, true);
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
     if (!retValue.containsError())
@@ -1151,10 +1151,16 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         retValue += ito::RetVal(ito::retError,0, tr("no camera has been connected").toLatin1().data());
     }
+    else
+    {
+        retValue += checkData(); 
+
+        emit parametersChanged(m_params);
+    }
     
     m_isgrabbing = false;
 
-    retValue += checkData(); 
+    
 
 
     if (waitCond)
@@ -1447,6 +1453,11 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     m_isgrabbing = false;
 
     retValue += checkData();
+
+    if (!retValue.containsError())
+    {
+        emit parametersChanged(m_params);
+    }
 
     if (waitCond)
     {
@@ -2162,31 +2173,31 @@ void FireGrabber::IntegrationPropertiesChanged(double integrationtime)
     setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, integrationtime)), NULL);
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! slot called if the dock widget of the plugin becomes (in)visible
+/*!
+Overwrite this method if the plugin has a dock widget. If so, you can connect the parametersChanged signal of the plugin
+with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
+a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
+*/
 void FireGrabber::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
-        DockWidgetFireGrabber *dw = qobject_cast<DockWidgetFireGrabber*>(getDockWidget()->widget());
+        QWidget *widget = getDockWidget()->widget();
         if (visible)
         {
-            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            connect(dw, SIGNAL(GainOffsetPropertiesChanged(double,double)), this, SLOT(GainOffsetPropertiesChanged(double,double)));
-            connect(dw, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
-
-            QMetaObject::invokeMethod(dw, "setIdentifier", Q_ARG(QString, m_identifier));
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
 
             emit parametersChanged(m_params);
         }
         else
         {
-            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            disconnect(dw, SIGNAL(GainOffsetPropertiesChanged(double,double)), this, SLOT(GainOffsetPropertiesChanged(double,double)));
-            disconnect(dw, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
         }
     }
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // FIRE GRABBER
 

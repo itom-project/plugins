@@ -6,21 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>299</width>
-    <height>267</height>
+    <width>292</width>
+    <height>215</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
-    <height>219</height>
+    <height>0</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
     <number>3</number>
    </property>
    <item row="0" column="0">
@@ -176,7 +185,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="groupIntegration">
      <property name="title">
       <string>Integration</string>
      </property>
@@ -193,81 +202,24 @@
       <property name="bottomMargin">
        <number>8</number>
       </property>
-      <item row="0" column="2">
-       <widget class="QSpinBox" name="spinBox_offset">
+      <item row="1" column="1" colspan="3">
+       <widget class="SliderWidget" name="spinBox_gain">
+        <property name="maximum">
+         <double>100.000000000000000</double>
+        </property>
         <property name="suffix">
-         <string>%</string>
-        </property>
-        <property name="minimum">
-         <number>0</number>
-        </property>
-        <property name="maximum">
-         <number>100</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QSlider" name="horizontalSlider_gain">
-        <property name="maximum">
-         <number>100</number>
+         <string> %</string>
         </property>
         <property name="tracking">
          <bool>false</bool>
         </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_gain">
-        <property name="text">
-         <string>Gain</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QSlider" name="horizontalSlider_offset">
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="tracking">
-         <bool>false</bool>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QSpinBox" name="spinBox_gain">
-        <property name="suffix">
-         <string>%</string>
-        </property>
-        <property name="minimum">
-         <number>0</number>
-        </property>
-        <property name="maximum">
-         <number>100</number>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_offset">
-        <property name="text">
-         <string>Offset</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_integration_time">
-        <property name="text">
-         <string>Integrationtime</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
+      <item row="2" column="1" colspan="3">
        <widget class="QDoubleSpinBox" name="doubleSpinBox_integration_time">
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
         <property name="prefix">
          <string/>
         </property>
@@ -291,6 +243,27 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_gain">
+        <property name="text">
+         <string>Gain</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_integration_time">
+        <property name="text">
+         <string>Integrationtime</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="3">
+       <widget class="QCheckBox" name="checkGamma">
+        <property name="text">
+         <string>Gamma correction</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -309,71 +282,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SliderWidget</class>
+   <extends>QWidget</extends>
+   <header>sliderWidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>horizontalSlider_offset</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBox_offset</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>212</x>
-     <y>146</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>147</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_gain</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBox_gain</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>204</x>
-     <y>172</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>173</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_offset</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider_offset</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>286</x>
-     <y>147</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>212</x>
-     <y>146</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_gain</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider_gain</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>286</x>
-     <y>173</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>212</x>
-     <y>172</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

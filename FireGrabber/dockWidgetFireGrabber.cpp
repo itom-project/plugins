@@ -22,124 +22,132 @@
 
 #include "dockWidgetFireGrabber.h"
 
- DockWidgetFireGrabber::DockWidgetFireGrabber() : m_inEditing(false)
- {
-    ui.setupUi(this); 
-    
-    //default settings
-    ui.spinBox_gain->setEnabled(false);
-    ui.spinBox_gain->setKeyboardTracking(false);
-    ui.horizontalSlider_gain->setEnabled(false);
-    ui.spinBox_offset->setEnabled(false);
-    ui.spinBox_offset->setKeyboardTracking(false);
-    ui.horizontalSlider_offset->setEnabled(false);
-    ui.doubleSpinBox_integration_time->setEnabled(false);
-    ui.doubleSpinBox_integration_time->setKeyboardTracking(false);
- }
+#include <qmetaobject.h>
 
- void DockWidgetFireGrabber::setIdentifier(const QString &identifier)
- {
-     ui.lblID->setText(identifier);
- }
+//----------------------------------------------------------------------------
+DockWidgetFireGrabber::DockWidgetFireGrabber(ito::AddInDataIO *grabber) :
+    AbstractAddInDockWidget(grabber),
+    m_inEditing(false),
+    m_firstRun(true)
+{
+    ui.setupUi(this);
+    ui.groupIntegration->setEnabled(false);
+}
 
- void DockWidgetFireGrabber::valuesChanged(QMap<QString, ito::Param> params)
- {
-    if (!m_inEditing)
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetFireGrabber::parametersChanged(QMap<QString, ito::Param> params)
+{
+    if (m_firstRun)
     {
-        m_inEditing = true;
-        if (params.contains("bpp"))
-        {
-            ui.spinBpp->setValue(params["bpp"].getVal<int>());
-        }
-
-        if (params.contains("sizex"))
-        {
-            ui.spinWidth->setValue(params["sizex"].getVal<int>());
-        }
-
-        if (params.contains("sizey"))
-        {
-            ui.spinHeight->setValue(params["sizey"].getVal<int>());
-        }
-
-        if (params.contains("gain"))
-        {
-            if (!(params["gain"].getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_gain->setEnabled(true);
-                ui.horizontalSlider_gain->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_gain->setEnabled(false);
-                ui.horizontalSlider_gain->setEnabled(false);
-            }
-            ui.spinBox_gain->setValue((int)(params["gain"].getVal<double>()*100.0+0.5));
-        }
-
-        if (params.contains("offset"))
-        {
-            if (!(params["offset"].getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.spinBox_offset->setEnabled(true);
-                ui.horizontalSlider_offset->setEnabled(true);
-            }
-            else
-            {
-                ui.spinBox_offset->setEnabled(false);
-                ui.horizontalSlider_offset->setEnabled(false);
-            }
-            ui.spinBox_offset->setValue((int)(params["offset"].getVal<double>()*100.0+0.5));
-        }
-
-        if (params.contains("integration_time"))
-        {
-            if (!(params["integration_time"].getFlags() & ito::ParamBase::Readonly))
-            {
-                ui.doubleSpinBox_integration_time->setEnabled(true);
-            }
-            else
-            {
-                ui.doubleSpinBox_integration_time->setEnabled(false);
-            }
-            ui.doubleSpinBox_integration_time->setMaximum(params["integration_time"].getMax() *1000.0);
-            ui.doubleSpinBox_integration_time->setMinimum(params["integration_time"].getMin() *1000.0);
-            ui.doubleSpinBox_integration_time->setValue(params["integration_time"].getVal<double>()*1000.0);
-        }    
-        m_inEditing = false;
+        ui.groupIntegration->setEnabled(true);
+        m_firstRun = false;
     }
 
- }
-
-void DockWidgetFireGrabber::on_spinBox_gain_valueChanged(int d)
-{
     if (!m_inEditing)
     {
         m_inEditing = true;
-        emit GainOffsetPropertiesChanged( d/100.0, ui.spinBox_offset->value()/100.0);
+
+        ParamMapIterator it = params.find("gain");
+        if (it != params.end())
+        {
+            ui.spinBox_gain->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+            ui.spinBox_gain->setMinimum(it->getMin() * 100);
+            ui.spinBox_gain->setMaximum(it->getMax() * 100);
+            ui.spinBox_gain->setValue(it->getVal<double>() * 100);
+        }
+        else
+        {
+            ui.spinBox_gain->setVisible(false);
+        }
+
+        it = params.find("gamma");
+        if (it != params.end())
+        {
+            ui.checkGamma->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+            ui.checkGamma->setChecked(it->getVal<int>() > 0);
+        }
+        else
+        {
+            ui.checkGamma->setVisible(false);
+        }
+
+        it = params.find("integration_time");
+        if (it != params.end())
+        {
+            ui.doubleSpinBox_integration_time->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+            ui.doubleSpinBox_integration_time->setMinimum(it->getMin());
+            ui.doubleSpinBox_integration_time->setMaximum(it->getMax());
+            ui.doubleSpinBox_integration_time->setSingleStep((it->getMax() - it->getMin()) / 100.0);
+            ui.doubleSpinBox_integration_time->setValue(it->getVal<double>());
+        }
+        else
+        {
+            ui.doubleSpinBox_integration_time->setVisible(false);
+        }
+
+        it = params.find("bpp");
+        if (it != params.end())
+        {
+            ui.spinBpp->setValue(it->getVal<int>());
+        }
+
+        it = params.find("sizex");
+        if (it != params.end())
+        {
+            ui.spinWidth->setValue(it->getVal<int>());
+        }
+
+        it = params.find("sizey");
+        if (it != params.end())
+        {
+            ui.spinHeight->setValue(it->getVal<int>());
+        }
+
+
         m_inEditing = false;
     }
 }
 
-void DockWidgetFireGrabber::on_spinBox_offset_valueChanged(int d)
+//----------------------------------------------------------------------------------------------------------------------------------
+
+void DockWidgetFireGrabber::on_spinBox_gain_valueChanged(double d)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        emit GainOffsetPropertiesChanged( ui.spinBox_gain->value()/100.0, d/100.0);
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gain", ito::ParamBase::Double, d / 100.0));
+        setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DockWidgetFireGrabber::on_doubleSpinBox_integration_time_valueChanged(double d)
 {
     if (!m_inEditing)
     {
         m_inEditing = true;
-        emit IntegrationPropertiesChanged( d / 1000.0);
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time", ito::ParamBase::Double, d));
+        setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetFireGrabber::on_checkGamma_clicked(bool value)
+{
+    if (!m_inEditing)
+    {
+        m_inEditing = true;
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("gamma", ito::ParamBase::Int, value ? 1 : 0));
+        setPluginParameter(p, msgLevelWarningAndError);
+        m_inEditing = false;
+    }
+}
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
+void DockWidgetFireGrabber::identifierChanged(const QString &identifier)
+{
+    ui.lblID->setText(identifier);
+}
