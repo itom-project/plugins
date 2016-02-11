@@ -1496,7 +1496,12 @@ ito::RetVal FireGrabber::initAVTCameras(const char *vendorName, const char *mode
                     }
                 }
 
+#ifdef WIN32
                 Result = Camera.WriteRegister(0xF1000208, (regValue & 0xfffffff0) + newid);
+#else
+                dc1394_avt_set_timebase(camera, (regValue & 0xfffffff0) + newid);
+#endif
+                
 
                 //read register
 #ifdef WIN32
