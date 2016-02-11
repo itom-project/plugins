@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "FireGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -125,9 +125,12 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
         ExposureParameters m_exposureParams;
 #ifndef WIN32
         unsigned int  m_xSize, m_ySize;
+        typedef dc1394error_t ResultType;
 #else
         unsigned long  m_xSize, m_ySize;
+        typedef UINT32 ResultType;
 #endif
+
         bool m_isgrabbing; /*!< Check if camera is started */
         bool m_acquireReady; /*!< Check if frame was aquired */
         //bool saturation_on; /*!< Check if saturation is controlled manually */
@@ -144,6 +147,8 @@ class FireGrabber : public ito::AddInGrabber //, public FireGrabberInterface
         // cast shutter time to internal whatever
         double shutterToExposureSec(int shutter);
         int exposureSecToShutter(double exposure);
+
+        ito::RetVal initAVTCameras(const char *vendorName, const char *modelName, int desiredTimebase);
 
     public slots:
         //!< Get Camera-Parameter
