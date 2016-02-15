@@ -4189,7 +4189,7 @@ ito::RetVal DataObjectIO::analyseTXTData(QFile &inFile, ito::DataObject &newObje
         {
             ret += ito::RetVal(ito::retError, 0, tr("Unexpected end of file").toLatin1().data());
         }
-        curLine = inFile.readLine();
+        curLine = inFile.readLine().trimmed();
 
         tabs = curLine.count('\t');
         points = curLine.count('.');
