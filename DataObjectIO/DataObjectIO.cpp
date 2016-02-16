@@ -1,4 +1,4 @@
-/* ********************************************************************
+ï»¿/* ********************************************************************
     Plugin "DataObjectIO" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2013, Institut fuer Technische Optik (ITO),
@@ -179,6 +179,9 @@ ito::RetVal DataObjectIO::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(DataObjectIO::loadDataFromTxt, DataObjectIO::loadDataFromTxtParams, loadDataFromTxtDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("ASCII Data (*.txt *.csv *.tsv)"));
     m_filterList.insert("loadTXT", filter);
 
+    filter = new FilterDef(DataObjectIO::loadFrt, DataObjectIO::loadFrtParams, loadFrtDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iReadDataObject, tr("MicroProf FRT (*.frt)"));
+    m_filterList.insert("loadFRT", filter);
+
     filter = new FilterDef(DataObjectIO::savePtbPR, DataObjectIO::savePtbPRParams, savePtbPRDoc, ito::AddInAlgo::catDiskIO, ito::AddInAlgo::iWriteDataObject, tr("PR Line Profile (*.pr)"));
     m_filterList.insert("savePtbPR", filter);
 
@@ -248,8 +251,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
 
     // Optional parameters (sourceImage, filename, Format, bitscaling)
     ito::DataObject *dObj = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-    char *filename = NULL;
-    filename = (*paramsMand)[1].getVal<char*>();
+    char *filename = (*paramsMand)[1].getVal<char*>();
     QImage image;
 
     std::string imgFormat;
@@ -1074,7 +1076,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
     QFileInfo fileinfo(QString::fromLatin1(filename));
-    QFile dataOut(filename);
+    QFile dataOut(fileinfo.absoluteFilePath());
 
     ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
 
@@ -1167,7 +1169,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
         {
             xScale *= 1/1000.0;
         }
-        else if (unitStr == "µm")
+        else if (unitStr == "Âµm")
         {
             xScale *= 1/1000000.0;
         }
@@ -1182,7 +1184,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
         {
             yScale *= 1/1000.0;
         }
-        else if (unitStr == "µm")
+        else if (unitStr == "Âµm")
         {
             yScale *= 1/1000000.0;
         }
@@ -1246,7 +1248,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
         {
             zScale *= 1/1000.0;
         }
-        else if (unitStr == "µm")
+        else if (unitStr == "Âµm")
         {
             zScale *= 1/1000000.0;
         }
@@ -1958,7 +1960,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
         {
             xyFactor = 1000.0;
         }
-        else if (xyUnit == "µm")
+        else if (xyUnit == "Âµm")
         {
             xyFactor = 1.0e6;
         }
@@ -2010,7 +2012,7 @@ ito::RetVal DataObjectIO::readNistHeader(QFile &inFile, ito::DataObject &newObje
         {
             zscale *= 1000.0;
         }
-        else if (xyUnit == "µm")
+        else if (xyUnit == "Âµm")
         {
             zscale *= 1.0e6;
         }
@@ -4663,7 +4665,7 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
     ito::DataObject source = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "sourceObject", ito::Range(1,1), ito::Range::all(), ret, ito::tFloat64, 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tUInt32, ito::tFloat32, ito::tFloat64);
 
     int decimals = (*paramsOpt)[0].getVal<int>();
-    int ordinateUnit = paramsOpt->at(1).getVal<int>(); //0: nm, 1: µm
+    int ordinateUnit = paramsOpt->at(1).getVal<int>(); //0: nm, 1: Âµm
     int flags = DataObjectIO::invWrite;
 
     if (ret.containsError())
@@ -4687,12 +4689,12 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
             {
                 valueScale = 1.e-6;
             }
-            else //1, µm
+            else //1, Âµm
             {
                 valueScale = 1.e-3;
             }
         }
-        else if (valueUnit == "µm")
+        else if (valueUnit == "Âµm")
         {
             if (ordinateUnit == 0) //nm
             {
@@ -4704,7 +4706,7 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
             if (ordinateUnit == 0) //nm
             {
             }
-            else //1, µm
+            else //1, Âµm
             {
                 valueScale = 1.e3;
             }
@@ -4715,7 +4717,7 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
             {
                 valueScale = 1.e-7;
             }
-            else //1, µm
+            else //1, Âµm
             {
                 valueScale = 1.e-4;
             }
@@ -4726,14 +4728,14 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
             {
                 valueScale = 1.e-9;
             }
-            else //1, µm
+            else //1, Âµm
             {
                 valueScale = 1.e-6;
             }
         }
         else
         {
-            ret += ito::RetVal(ito::retWarning, 0, "The given input object does not have a metric value unit defined (m, cm, mm, µm, nm). No correct value transformation to µm or nm can be applied.");
+            ret += ito::RetVal(ito::retWarning, 0, "The given input object does not have a metric value unit defined (m, cm, mm, Âµm, nm). No correct value transformation to Âµm or nm can be applied.");
         }
 
         double length = len * source.getAxisScale(1); //length is assumed to be in mm
@@ -4743,7 +4745,7 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
         {
             
         }
-        else if (axisUnit == "µm")
+        else if (axisUnit == "Âµm")
         {
             length *= 1.e-3;
         }
@@ -4761,7 +4763,7 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
         }
         else
         {
-            ret += ito::RetVal(ito::retWarning, 0, "The given input object does not have a metric axis unit defined (m, cm, mm, µm, nm). No correct lateral unit value can be read. Values are assumed to be in mm.");
+            ret += ito::RetVal(ito::retWarning, 0, "The given input object does not have a metric axis unit defined (m, cm, mm, Âµm, nm). No correct lateral unit value can be read. Values are assumed to be in mm.");
         }
 
         unsigned char key1[] = { 'X', '-', 'M', 'a', 0xDF, ' ', '=', ' ', '\0' };
@@ -4770,39 +4772,39 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
         //write header
         dataOut.write("Profil ");
         dataOut.write(fileinfo.fileName().replace(" ", "_").toLatin1());
-        dataOut.write("\n");
-        dataOut.write((char*)key1);
-        dataOut.write(QByteArray::number(length, 'f', decimals));
-        dataOut.write((char*)key2);
-        if (length != 0.0)
-        {
-            dataOut.write(QByteArray::number((double)len / length , 'f', decimals));
-        }
-        else
-        {
-            dataOut.write("0.0");
-            ret += ito::RetVal(ito::retWarning, 0, "length of data set is 0.0");
-        }
-        dataOut.write(" Punkte/Zeile: ");
-        dataOut.write(QByteArray::number(len));
-        dataOut.write("\n");
+dataOut.write("\n");
+dataOut.write((char*)key1);
+dataOut.write(QByteArray::number(length, 'f', decimals));
+dataOut.write((char*)key2);
+if (length != 0.0)
+{
+    dataOut.write(QByteArray::number((double)len / length, 'f', decimals));
+}
+else
+{
+    dataOut.write("0.0");
+    ret += ito::RetVal(ito::retWarning, 0, "length of data set is 0.0");
+}
+dataOut.write(" Punkte/Zeile: ");
+dataOut.write(QByteArray::number(len));
+dataOut.write("\n");
 
-        //write data
-        const ito::float64 *row = (const ito::float64*)source.rowPtr(0,0);
-        for (int i = 0; i < len; ++i)
-        {
-            if (ito::dObjHelper::isFinite(row[i]))
-            {
-                dataOut.write(QByteArray::number(row[i] * valueScale, 'f', decimals));
-                dataOut.write("\n");
-            }
-            else
-            {
-                dataOut.write(QByteArray::number(0.0, 'f', decimals));
-                dataOut.write("\n");
-                ret += ito::RetVal::format(ito::retWarning, 0, "invalid value encountered in column %i", (i+1));
-            }
-        }
+//write data
+const ito::float64 *row = (const ito::float64*)source.rowPtr(0, 0);
+for (int i = 0; i < len; ++i)
+{
+    if (ito::dObjHelper::isFinite(row[i]))
+    {
+        dataOut.write(QByteArray::number(row[i] * valueScale, 'f', decimals));
+        dataOut.write("\n");
+    }
+    else
+    {
+        dataOut.write(QByteArray::number(0.0, 'f', decimals));
+        dataOut.write("\n");
+        ret += ito::RetVal::format(ito::retWarning, 0, "invalid value encountered in column %i", (i + 1));
+    }
+}
     }
 
     if (dataOut.isOpen())
@@ -4811,4 +4813,663 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
     }
 
     return ret;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ const QString DataObjectIO::loadFrtDoc = QObject::tr(\
+    "Loads MicroProf FRT data from profilometers (based on FRT File Format specification 4.0.1.0).");
+
+typedef struct
+{
+    ito::uint16 xres;
+    ito::uint16 yres;
+    ito::float64 xrange;
+    ito::float64 yrange;
+    ito::float64 zscale;
+    const unsigned char *data;
+} MicroProfFRTFile;
+
+ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (!retval.containsError())
+    {
+        ito::Param  param = ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("1D data object of any real data type. No invalid values are allowed.").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
+        paramsMand->append(param);
+
+        param = ito::Param("xyUnit", ito::ParamBase::String | ito::ParamBase::In, "mm", tr("Unit of x and y axes. Nist or BCR sdf files assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than 'm' lead to a multiplication of all values that might exceed the data type limit.)").toLatin1().data());
+        ito::StringMeta sm(ito::StringMeta::String, "m");
+        sm.addItem("cm");
+        sm.addItem("mm");
+        sm.addItem(QString("_m").replace("_", QLatin1String("\u00B5")).toLatin1().data());
+        sm.addItem("nm");
+        param.setMeta(&sm, false);
+        paramsOpt->append(param);
+
+        param = ito::Param("valueUnit", ito::ParamBase::String | ito::ParamBase::In, "mm", tr("Unit of value axis. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than 'm' lead to a multiplication of all values that might exceed the data type limit.)").toLatin1().data());
+        ito::StringMeta sm2(ito::StringMeta::String, "m");
+        sm2.addItem("cm");
+        sm2.addItem("mm");
+        sm2.addItem(QString("_m").replace("_", QLatin1String("\u00B5")).toLatin1().data());
+        sm2.addItem("nm");
+        param.setMeta(&sm2, false);
+        paramsOpt->append(param);
+    }
+
+    return retval;
+}
+
+/*static*/ ito::RetVal DataObjectIO::loadFrt(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+
+    const char fileID[] = { 'F', 'R', 'T', 'M', '_', 'G', 'L', 'I', 'D', 'E', 'R', 'V', '1', '.', '0', '0' }; //16 unsigned char
+    ito::int16 noOfBlocks = 0; //signed short (2 byte)
+    ito::uint32 fileSize = 0;
+
+    QFileInfo info(QLatin1String(paramsMand->at(1).getVal<char*>()));
+    fileSize = info.size();
+
+    std::string xyUnit = (paramsOpt->at(0).getVal<char*>());
+    std::string valueUnit = (paramsOpt->at(1).getVal<char*>());
+
+
+    if (!info.exists())
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "The file '%s' does not exist", paramsMand->at(1).getVal<char*>());
+    }
+    else if (fileSize < sizeof(fileID) + sizeof(noOfBlocks))
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "The file '%s' is no valid FRT file", paramsMand->at(1).getVal<char*>());
+    }
+    else
+    {
+        QFile file(info.absoluteFilePath());
+
+        if (!file.open(QIODevice::ReadOnly))
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "Error opening file '%s'", paramsMand->at(1).getVal<char*>());
+        }
+        else
+        {
+            QByteArray content = file.readAll();
+            const char* data = content.data();
+            const char* data_part;
+
+            ito::int16 blockType;
+            ito::int32 blockSize;
+
+            //mandatory blocks
+            bool block102detected = false;
+            bool block103detected = false;
+            bool block108detected = false;
+            bool block11detected = false;
+
+            struct
+            {
+                ito::int32 sizex;
+                ito::int32 sizey;
+                ito::int32 bpp;
+            } imageSize;
+
+            struct
+            {
+                ito::float64 rangex; //in m
+                ito::float64 rangey; //in m
+                ito::float64 offsetx; //in m
+                ito::float64 offsety; //in m
+                ito::float64 factorrangey; //in m
+                ito::int32 scandir;
+            } scanSize;
+
+            struct
+            {
+                ito::int32 measurerange;
+                ito::float64 zscaling; //in m / bit
+            } sensor;
+
+            ito::float64 zOffset = 0.0;
+
+            const char * scanDirections[] = { 
+                "", 
+                "pos x, low y", 
+                "neg x, low y", 
+                "pos y, low x", 
+                "neg y, low x", 
+                "pos x, high y", 
+                "neg x, high y", 
+                "pos y, high x", 
+                "neg y, high x", 
+                "meander start pos x, low y", 
+                "meander start pos y, low x", 
+                "meander start pos x, high y",
+                "meander start pos y, high x",
+                "unknown"
+            };
+
+            const char * measureRange[] = {
+                "+- 8 micrometer",
+                "+- 80 micrometer",
+                "+- 800 micrometer",
+                "+- 800 micrometer",
+                "+- 1 micrometer",
+                "+- 10 micrometer",
+                "+- 100 micrometer",
+                "+- 200 micrometer (uncalib)",
+                "unknown"
+            };
+
+            const char * hardware[] = {
+                "",
+                "200 micrometer Sensor",
+                "5 mm Sensor",
+                "CWL Sensor",
+                "700 micrometer Sensor with IF",
+                "ME300 ADC",
+                "Eddy Current Sensor 1",
+                "PCL A/D 16 Bit Card",
+                "CWL with IF",
+                "Camera",
+                "Data from script",
+                "Sios Stylus",
+                "Auto Focus Sensor",
+                "CWL FT",
+                "Eddy Current Sensor 2",
+                "Conoscopic Sensor",
+                "CWL F",
+                "CWL X",
+                "No Sensor",
+                "Konfocal Sensor",
+                "CWL F FT",
+                "FTR",
+                "WLI",
+                "PCL1741",
+                "Infared Interferometric",
+                "CFM",
+                "AFM SIS",
+                "WLI PL 2"
+                "unknown"
+            };
+
+            const char * xyTableType[] = {
+                "",
+                "400 micrometer2",
+                "5 mm2",
+                "100 mm2, mech. bear. piezo",
+                "100 mm2, air bearing xy",
+                "100 mm2 mech. bear",
+                "unknown"
+            }; //special is 41: 100 mm, air bearing linear
+
+            const char * zTableType[] = {
+                "",
+                "40 mm Stepper",
+                "40 mm DC",
+                "PMAC Controlled",
+                "C842 Controlled",
+                "Manual Z-Table",
+                "unknown"
+            };
+
+            ito::int32 firstValidValue = -1;
+            ito::int32 lastValidValue = -1;
+            
+            if (memcmp(data, fileID, sizeof(fileID)) != 0)
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "The file '%s' is no valid FRT file", paramsMand->at(1).getVal<char*>());
+            }
+
+            if (!retval.containsError())
+            {
+                data_part = data + sizeof(fileID);
+                noOfBlocks = *((ito::int16*)data_part);
+                data_part += sizeof(ito::int16);
+
+                if (noOfBlocks <= 1)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "invalid block size in FRT file");
+                }
+            }
+
+            if (!retval.containsError())
+            {
+                //verify if the file is valid and looks for block 102 (Imagesize_01).
+                const char* data_part_temp = data_part;
+                ito::tDataType dataType;
+
+                for (int block = 0; block < noOfBlocks; ++block)
+                {
+                    if (data_part + 2 + 4 > data + fileSize)
+                    {
+                        retval += ito::RetVal(ito::retError, 0, "file size of FRT file is too short for the pretended number of blocks.");
+                        break;
+                    }
+
+                    blockType = *((ito::int16*)data_part);
+                    data_part += sizeof(ito::int16);
+                    blockSize = *((ito::int32*)data_part);
+                    data_part += sizeof(ito::int32);
+
+                    if (data_part + blockSize > data + fileSize)
+                    {
+                        retval += ito::RetVal(ito::retError, 0, "file size of FRT file is too short for the pretended block data size.");
+                        break;
+                    }
+
+                    if (blockType == 102)
+                    {
+                        if (blockSize == 12)
+                        {
+                            imageSize.sizex = *((ito::int32*)(&data_part[0]));
+                            imageSize.sizey = *((ito::int32*)(&data_part[4]));
+                            imageSize.bpp = *((ito::int32*)(&data_part[8]));
+
+                            block102detected = true;
+
+                            if (imageSize.bpp == 16)
+                            {
+                                dataType = ito::tUInt16;
+                            }
+                            else if (imageSize.bpp == 32)
+                            {
+                                dataType = ito::tInt32;
+                            }
+                            else
+                            {
+                                retval += ito::RetVal(ito::retError, 0, "unknown bit depth in FRT file.");
+                            }
+                        }
+                        else
+                        {
+                            retval += ito::RetVal(ito::retError, 0, "wrong size of Imagesize block in FRT file.");
+                        }
+                    }
+
+                    data_part += blockSize;
+                }
+
+                
+
+                if (!retval.containsError())
+                {
+                    data_part = data_part_temp;
+                    ito::DataObject obj(imageSize.sizey, imageSize.sizex, dataType);
+                    bool error = false;
+                    QStringList warnings;
+
+                    //data_part always points to the start of the next block
+                    for (int block = 0; block < noOfBlocks && !error; ++block)
+                    {
+                        blockType = *((ito::int16*)data_part);
+                        data_part += sizeof(ito::int16);
+                        blockSize = *((ito::int32*)data_part);
+                        data_part += sizeof(ito::int32);
+
+                        switch (blockType)
+                        {
+                        case 11: /*Data_01*/
+                        {
+                            int desiredBlockSize = (imageSize.sizex * imageSize.sizey * (dataType == ito::tUInt16 ? 2 : 4));
+
+                            if (blockSize < desiredBlockSize)
+                            {
+                                retval += ito::RetVal(ito::retError, 0, "invalid block size of Data_01 block in FRT file.");
+                                error = true;
+                            }
+                            else
+                            {
+                                memcpy(obj.rowPtr(0, 0), data_part, desiredBlockSize);
+                                block11detected = true;
+                            }
+                            break;
+                        }
+                        case 101: /*Description_01*/
+                        {
+                            if (blockSize > 1 && data_part[blockSize - 1] == '\0')
+                            {
+                                obj.setTag("comment", data_part);
+                            }
+                            break;
+                        }
+                        case 102: /*Imagesize_01*/
+                            //already handled
+                            break;
+                        case 103: /*Scansize_01*/
+                            if (blockSize == 44)
+                            {
+                                scanSize.rangex = *((ito::float64*)(&data_part[0]));
+                                scanSize.rangey = *((ito::float64*)(&data_part[8]));
+                                scanSize.offsetx = *((ito::float64*)(&data_part[16]));
+                                scanSize.offsety = *((ito::float64*)(&data_part[24]));
+                                scanSize.factorrangey = *((ito::float64*)(&data_part[32]));
+                                scanSize.scandir = *((ito::int32*)(&data_part[40]));
+                                block103detected = true;
+
+                                if (imageSize.sizey > 1)
+                                {
+                                    ito::float64 scale = scanSize.rangey / imageSize.sizey;
+
+                                    if (xyUnit == "m")
+                                    {
+                                        //nothing
+                                    }
+                                    else if (xyUnit == "cm")
+                                    {
+                                        scale *= 1e2;
+                                    }
+                                    else if (xyUnit == "mm")
+                                    {
+                                        scale *= 1e3;
+                                    }
+                                    else if (xyUnit == "nm")
+                                    {
+                                        scale *= 1e9;
+                                    }
+                                    else //micrometer
+                                    {
+                                        scale *= 1e6;
+                                    }
+
+                                    obj.setAxisScale(0, scale);
+                                    obj.setAxisOffset(0, scanSize.offsety / scale);
+                                    obj.setAxisUnit(0, xyUnit);
+                                }
+
+                                if (imageSize.sizex > 1)
+                                {
+                                    ito::float64 scale = scanSize.rangex / imageSize.sizex;
+
+                                    if (xyUnit == "m")
+                                    {
+                                        //nothing
+                                    }
+                                    else if (xyUnit == "cm")
+                                    {
+                                        scale *= 1e2;
+                                    }
+                                    else if (xyUnit == "mm")
+                                    {
+                                        scale *= 1e3;
+                                    }
+                                    else if (xyUnit == "nm")
+                                    {
+                                        scale *= 1e9;
+                                    }
+                                    else //micrometer
+                                    {
+                                        scale *= 1e6;
+                                    }
+
+                                    obj.setAxisScale(1, scale);
+                                    obj.setAxisOffset(1, scanSize.offsetx / scale);
+                                    obj.setAxisUnit(1, xyUnit);
+                                }
+                                const char* temp = scanDirections[qBound(1, scanSize.scandir, 13)];
+                                obj.setTag("scanDirection", temp);
+                            }
+                            else
+                            {
+                                retval += ito::RetVal(ito::retError, 0, "wrong size of Scansize block in FRT file.");
+                                error = true;
+                            }
+                            break;
+                        case 104: /* Scanspeed_01*/
+                        {
+                            if (blockSize == 36)
+                            {
+                                ito::float64 speedx = *((ito::float64*)(&data_part[0])); //m/s
+                                ito::float64 speedy = *((ito::float64*)(&data_part[8])); //m/s
+                                ito::int32 overridespeed = *((ito::int32*)(&data_part[16]));
+                                ito::int32 checksensorerror = *((ito::int32*)(&data_part[20]));
+                                ito::int32 scanbackmeas = *((ito::int32*)(&data_part[24]));
+                                ito::int32 sensordelay = *((ito::int32*)(&data_part[28])); //ms
+                                ito::int32 sensorerrortime = *((ito::int32*)(&data_part[32])); //ms
+
+                                obj.setTag("sensorErrorTime", (double)sensorerrortime * 1e-3);
+                                if (overridespeed)
+                                {
+                                    obj.setTag("sensorDelay", (double)sensordelay * 1e-3);
+                                }
+                                else
+                                {
+                                    obj.setTag("speedX", speedx);
+                                    obj.setTag("speedY", speedy);
+                                }
+
+                                obj.setTag("checkSensorError", checksensorerror ? "true" : "false");
+                                obj.setTag("scanBackMeas", scanbackmeas ? "true" : "false");
+                            }
+                            else
+                            {
+                                warnings << "wrong size of Scanspeed block in FRT file.";
+                            }
+                            break;
+                        }
+                        case 108: /*Sensor_01*/
+                            if (blockSize == 12)
+                            {
+                                sensor.measurerange = *((ito::int32*)(&data_part[0]));
+                                sensor.zscaling = *((ito::float64*)(&data_part[4]));
+                                block108detected = true;
+
+                                const char* temp = measureRange[qBound(0, sensor.measurerange, 7)];
+                                obj.setTag("measureRange", temp);
+
+                                if (valueUnit == "mm")
+                                {
+                                    sensor.zscaling *= 1e3;
+                                }
+                                else if (valueUnit == "cm")
+                                {
+                                    sensor.zscaling *= 1e2;
+                                }
+                                else if (valueUnit == "nm")
+                                {
+                                    sensor.zscaling *= 1e9;
+                                }
+                                else if (valueUnit == "m")
+                                {
+                                    //
+                                }
+                                else //micrometer
+                                {
+                                    sensor.zscaling *= 1e6;
+                                }
+                                obj.setValueUnit(valueUnit);
+                            }
+                            else
+                            {
+                                retval += ito::RetVal(ito::retError, 0, "wrong size of Scansize block in FRT file.");
+                                error = true;
+                            }
+                            break;
+                        case 110: /*Hardware_01*/
+                            if (blockSize == 12)
+                            {
+                                int sensorType = *((ito::int32*)(&data_part[0]));
+                                int scanXYType = *((ito::int32*)(&data_part[4]));
+                                int scanZType = *((ito::int32*)(&data_part[8]));
+
+                                const char* temp = hardware[qBound(0, sensorType, 28)];
+                                obj.setTag("hardware", temp);
+                                temp = scanXYType == 41 ? "100 mm, air bearing linear" : xyTableType[qBound(0, scanXYType, 6)];
+                                obj.setTag("xyTableType", temp);
+                                temp = zTableType[qBound(0, scanZType, 6)];
+                                obj.setTag("zTableType", temp);
+                            }
+                            else
+                            {
+                                warnings << "wrong size of Hardware block in FRT file.";
+                            }
+                            break;
+                        case 112: /*Validval_01*/
+                            if (blockSize == 8)
+                            {
+                                firstValidValue = *((ito::int32*)(&data_part[0]));
+                                lastValidValue = *((ito::int32*)(&data_part[4]));
+                            }
+                            else
+                            {
+                                warnings << "wrong size of Validval block in FRT file.";
+                            }
+                            break;
+                        case 113: /*zoffset_01*/
+                        {
+                            if (blockSize == sizeof(ito::float64))
+                            {
+                                zOffset = *((ito::float64*)data_part);
+
+                                if (valueUnit == "mm")
+                                {
+                                    zOffset *= 1e3;
+                                }
+                                else if (valueUnit == "cm")
+                                {
+                                    zOffset *= 1e2;
+                                }
+                                else if (valueUnit == "nm")
+                                {
+                                    zOffset *= 1e9;
+                                }
+                                else if (valueUnit == "m")
+                                {
+                                    //
+                                }
+                                else //micrometer
+                                {
+                                    zOffset *= 1e6;
+                                }
+                            }
+                            else
+                            {
+                                warnings << "wrong block size for 'zoffset' block. This block is ignored.";
+                            }
+                            break;
+                        }
+                        case 114: /*Time_01*/
+                            if (blockSize == 12)
+                            {
+                                ito::int32 start = *((ito::int32*)(&data_part[0]));
+                                ito::int32 duration = *((ito::int32*)(&data_part[8]));
+                                obj.setTag("startTime", start);
+                                obj.setTag("duration", duration);
+                            }
+                            else
+                            {
+                                warnings << "wrong size of Time block in FRT file.";
+                            }
+                            break;
+                        case 119: /*NameOfSet_01*/
+                        {
+                            if (blockSize > 1 && data_part[blockSize - 1] == '\0')
+                            {
+                                obj.setTag("title", data_part);
+                            }
+                            break;
+                        }
+                        case 147: /*DEFINED_COLORS*/
+                            if (blockSize == 12)
+                            {
+                                int colorInvalidValues = *((ito::int32*)(&data_part[0]));
+                                int colorLowerValues = *((ito::int32*)(&data_part[4]));
+                                int colorUpperValues = *((ito::int32*)(&data_part[8]));
+                            }
+                            else
+                            {
+                                warnings << "wrong size of DEFINED_COLORS block in FRT file.";
+                            }
+                            break;
+                        case 179: /*HEATING_CHAMBER*/
+                        {
+                            if (blockSize == sizeof(ito::float64))
+                            {
+                                ito::float64 temp = *((ito::float64*)data_part);
+                                if (temp > -200.0 && temp < 1000.0)
+                                {
+                                    obj.setTag("temperature", temp);
+                                }
+                            }
+                            else
+                            {
+                                warnings << "wrong block size for 'heating_chamber' block. This block is ignored.";
+                            }
+                            break;
+                        }
+                        default:
+                            //warnings << QString("block type %1 unknown in FRT file. It will be ignored.").arg(blockType);
+                            break;
+                        }
+
+                        data_part += blockSize; 
+                    }
+
+                    if (warnings.size() > 0)
+                    {
+                        retval += ito::RetVal(ito::retWarning, 0, warnings.join("\n").toLatin1().data());
+                    }
+
+                    if (!block102detected || !block103detected || \
+                        !block108detected || !block11detected)
+                    {
+                        retval += ito::RetVal(ito::retError, 0, "missing mandatory blocks in FRT file.");
+                    }
+
+
+                    if (!retval.containsError())
+                    {
+                        if (sensor.zscaling != 1.0 || zOffset != 0)
+                        {
+                            ito::DataObject objConverted;
+                            retval += obj.convertTo(objConverted, ito::tFloat64, sensor.zscaling, zOffset);
+                            objConverted.setValueUnit(valueUnit);
+
+                            if (firstValidValue >= 0 && lastValidValue >= 0)
+                            {
+                                ito::float64 *destPtr = objConverted.rowPtr<ito::float64>(0, 0);
+                                int total = obj.getTotal();
+
+                                if (obj.getType() == ito::tUInt16)
+                                {
+                                    const ito::uint16 *srcPtr = obj.rowPtr<ito::uint16>(0, 0);
+                                    for (int i = 0; i < total; ++i)
+                                    {
+                                        if (srcPtr[i] < firstValidValue || srcPtr[i] > lastValidValue)
+                                        {
+                                            destPtr[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+                                        }
+                                    }
+                                }
+                                else if (obj.getType() == ito::tInt32)
+                                {
+                                    const ito::int32 *srcPtr = obj.rowPtr<ito::int32>(0, 0);
+                                    for (int i = 0; i < total; ++i)
+                                    {
+                                        if (srcPtr[i] < firstValidValue || srcPtr[i] > lastValidValue)
+                                        {
+                                            destPtr[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+                                        }
+                                    }
+                                }
+                            }
+
+                            *((*paramsMand)[0].getVal<ito::DataObject*>()) = objConverted;
+                        }
+                        else
+                        {
+                            *((*paramsMand)[0].getVal<ito::DataObject*>()) = obj;
+                        }
+                    }
+                }
+            }
+
+            file.close();
+        }
+
+    }
+
+
+    return retval;
 }
