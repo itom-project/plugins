@@ -29,6 +29,7 @@
 #include <qstringlist.h>
 #include <qvariant.h>
 #include <qnumeric.h>
+#include <qthread.h>
 
 #include "common/helperCommon.h"
 
@@ -36,7 +37,13 @@
 
 #include "pluginVersion.h"
 
+#ifdef USEOPENMP
+    #include <omp.h>
+#endif
+
 using namespace ito;
+
+int DataObjectArithmetic::numThreads = 1;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -74,7 +81,6 @@ This plugin does not have any unusual dependencies.");
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
     m_aboutThis         = tr("Arithmetic algorithms filters.");     
-    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -93,6 +99,7 @@ DataObjectArithmeticInterface::~DataObjectArithmeticInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObjectArithmetic::DataObjectArithmetic() : AddInAlgo()
 {
+    numThreads = std::max(1, QThread::idealThreadCount() - 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1034,91 +1041,122 @@ template<typename _Tp> ito::RetVal localCenterOfGravityHelper(const ito::DataObj
 {
     ito::RetVal retval;
     const cv::Mat *source_ = source.getCvPlaneMat(0);
-    const _Tp *sourceRow;
-
     const cv::Mat *coarse_ = coarse.getCvPlaneMat(0);
-    const ito::uint16* coarseRow;
-
-    ito::float64 *centroidsRow;
-
-    int start_row, end_row, start_col, end_col;
+    
     bool circleNotRect = (coarse_->cols == 3);
-    std::vector<_Tp> vals;
-    std::vector<int> x_px;
-    std::vector<int> y_px;
-    int count;
-    int half_width; //will be radius for circular roi
-    int half_height;
+    
     int max_half_width = source_->cols / 2; //will be max. radius for circular roi
     int max_half_height = source_->rows / 2;
-    int max_vals;
-    ito::float64 roiMinimum;
-    ito::float64 denomx, denomy, nom;
+
+    if (circleNotRect)
+    {
+        max_half_width = std::min(max_half_width, max_half_height);
+    }
+    
     _Tp high = cv::saturate_cast<_Tp>(std::min((ito::float64)std::numeric_limits<_Tp>::max(), highThreshold));
     if (!qIsFinite(highThreshold))
     {
         high = std::numeric_limits<_Tp>::max();
     }
 
-    if (circleNotRect)
-    {
-        max_half_width = std::min(max_half_width, max_half_height);
-    }
-
-
 #define LCOGRADIUS(r,c) std::sqrt((coarseRow[1] - r)*(coarseRow[1] - r)+(coarseRow[0] - c)*(coarseRow[0] - c))
 
-    for (int row = 0; row < coarse_->rows; ++row)
+#ifdef USEOPENMP
+    omp_set_num_threads(DataObjectArithmetic::numThreads);
+    #pragma omp parallel
     {
-        count = 0;
-        coarseRow = coarse_->ptr<ito::uint16>(row);
-        centroidsRow = centroids.rowPtr<ito::float64>(0, row);
-        roiMinimum = std::numeric_limits<ito::float64>::max();
+#endif  
+        //in a parallel for loop, these variables have to be created for each thread
+        std::vector<_Tp> vals;
+        std::vector<int> x_px;
+        std::vector<int> y_px;
+        int count;
+        const _Tp *sourceRow;
+        ito::float64 *centroidsRow;
+        const ito::uint16* coarseRow;
+        int half_width; //will be radius for circular roi
+        int half_height;
+        int max_vals;
+        ito::float64 roiMinimum;
+        ito::float64 denomx, denomy, nom;
+        int start_row, end_row, start_col, end_col;
 
-        if (coarseRow[0] < 0 || coarseRow[0] >= source_->cols || coarseRow[1] < 0 || coarseRow[1] >= source_->rows)
+#ifdef USEOPENMP
+        #pragma omp for schedule(dynamic, 100)
+#endif    
+        for (int row = 0; row < coarse_->rows; ++row)
         {
-            centroidsRow[0] = std::numeric_limits<ito::float64>::quiet_NaN();
-            centroidsRow[1] = std::numeric_limits<ito::float64>::quiet_NaN();
-            centroidsRow[2] = 0;
-            continue;
-        }
+            count = 0;
+            coarseRow = coarse_->ptr<ito::uint16>(row);
+            centroidsRow = centroids.rowPtr<ito::float64>(0, row);
+            roiMinimum = std::numeric_limits<ito::float64>::max();
 
-        if (circleNotRect)
-        {
-            half_width = qBound(0, (int)std::ceil((float)(coarseRow[2] - 1) / 2.0), max_half_width);
-            start_row = qBound(0, coarseRow[1] - half_width, source_->rows - 1);
-            end_row = qBound(0, coarseRow[1] + half_width, source_->rows - 1);
-            start_col = qBound(0, coarseRow[0] - half_width, source_->cols - 1);
-            end_col = qBound(0, coarseRow[0] + half_width, source_->cols - 1);
-        }
-        else
-        {
-            half_width = qBound(0, (int)std::ceil((float)(coarseRow[2] - 1) / 2.0), max_half_width);
-            half_height = qBound(0, (int)std::ceil((float)(coarseRow[3] - 1) / 2.0), max_half_height);
-            start_row = qBound(0, coarseRow[1] - half_height, source_->rows - 1);
-            end_row = qBound(0, coarseRow[1] + half_height, source_->rows - 1);
-            start_col = qBound(0, coarseRow[0] - half_width, source_->cols - 1);
-            end_col = qBound(0, coarseRow[0] + half_width, source_->cols - 1);
-        }
-
-        max_vals = (end_col - start_col + 1) * (end_row - start_row + 1);
-        vals.clear();
-        vals.reserve(max_vals);
-        x_px.clear();
-        x_px.reserve(max_vals);
-        y_px.clear();
-        y_px.reserve(max_vals);
-
-        
-        if (circleNotRect)
-        {
-            for (int r = start_row; r <= end_row; ++r)
+            if (coarseRow[0] < 0 || coarseRow[0] >= source_->cols || coarseRow[1] < 0 || coarseRow[1] >= source_->rows)
             {
-                sourceRow = &(source_->ptr<_Tp>(r)[start_col]);
+                centroidsRow[0] = std::numeric_limits<ito::float64>::quiet_NaN();
+                centroidsRow[1] = std::numeric_limits<ito::float64>::quiet_NaN();
+                centroidsRow[2] = 0;
+                continue;
+            }
 
-                for (int c = start_col; c <= end_col; ++c)
+            if (circleNotRect)
+            {
+                half_width = qBound(0, (int)std::ceil((float)(coarseRow[2] - 1) / 2.0), max_half_width);
+                start_row = qBound(0, coarseRow[1] - half_width, source_->rows - 1);
+                end_row = qBound(0, coarseRow[1] + half_width, source_->rows - 1);
+                start_col = qBound(0, coarseRow[0] - half_width, source_->cols - 1);
+                end_col = qBound(0, coarseRow[0] + half_width, source_->cols - 1);
+            }
+            else
+            {
+                half_width = qBound(0, (int)std::ceil((float)(coarseRow[2] - 1) / 2.0), max_half_width);
+                half_height = qBound(0, (int)std::ceil((float)(coarseRow[3] - 1) / 2.0), max_half_height);
+                start_row = qBound(0, coarseRow[1] - half_height, source_->rows - 1);
+                end_row = qBound(0, coarseRow[1] + half_height, source_->rows - 1);
+                start_col = qBound(0, coarseRow[0] - half_width, source_->cols - 1);
+                end_col = qBound(0, coarseRow[0] + half_width, source_->cols - 1);
+            }
+
+            max_vals = (end_col - start_col + 1) * (end_row - start_row + 1);
+            vals.clear();
+            vals.reserve(max_vals);
+            x_px.clear();
+            x_px.reserve(max_vals);
+            y_px.clear();
+            y_px.reserve(max_vals);
+
+
+            if (circleNotRect)
+            {
+                for (int r = start_row; r <= end_row; ++r)
                 {
-                    if (LCOGRADIUS(r, c) <= half_width)
+                    sourceRow = &(source_->ptr<_Tp>(r)[start_col]);
+
+                    for (int c = start_col; c <= end_col; ++c)
+                    {
+                        if (LCOGRADIUS(r, c) <= half_width)
+                        {
+                            if (ito::dObjHelper::isFinite<_Tp>(*sourceRow) && *sourceRow <= high)
+                            {
+                                roiMinimum = std::min(roiMinimum, (ito::float64)*sourceRow);
+                                vals.push_back(*sourceRow);
+                                x_px.push_back(c);
+                                y_px.push_back(r);
+                                count++;
+                            }
+                        }
+
+                        ++sourceRow;
+                    }
+                }
+            }
+            else
+            {
+                for (int r = start_row; r <= end_row; ++r)
+                {
+                    sourceRow = &(source_->ptr<_Tp>(r)[start_col]);
+
+                    for (int c = start_col; c <= end_col; ++c)
                     {
                         if (ito::dObjHelper::isFinite<_Tp>(*sourceRow) && *sourceRow <= high)
                         {
@@ -1128,87 +1166,69 @@ template<typename _Tp> ito::RetVal localCenterOfGravityHelper(const ito::DataObj
                             y_px.push_back(r);
                             count++;
                         }
-                    }
 
-                    ++sourceRow;
+                        ++sourceRow;
+                    }
                 }
             }
-        }
-        else
-        {
-            for (int r = start_row; r <= end_row; ++r)
+
+            if (count > 1)
             {
-                sourceRow = &(source_->ptr<_Tp>(r)[start_col]);
+                denomx = 0.0;
+                denomy = 0.0;
+                nom = 0.0;
 
-                for (int c = start_col; c <= end_col; ++c)
+                if (ito::dObjHelper::isFinite<ito::float64>(lowThreshold))
                 {
-                    if (ito::dObjHelper::isFinite<_Tp>(*sourceRow) && *sourceRow <= high)
+                    for (int c = 0; c < count; ++c)
                     {
-                        roiMinimum = std::min(roiMinimum, (ito::float64)*sourceRow);
-                        vals.push_back(*sourceRow);
-                        x_px.push_back(c);
-                        y_px.push_back(r);
-                        count++;
+                        if (vals[c] > lowThreshold)
+                        {
+                            denomx += x_px[c] * (vals[c] - lowThreshold);
+                            denomy += y_px[c] * (vals[c] - lowThreshold);
+                            nom += (vals[c] - lowThreshold);
+                        }
+                        else
+                        {
+                            count--;
+                        }
                     }
-
-                    ++sourceRow;
                 }
-            }
-        }
-
-        if (count > 1)
-        {
-            denomx = 0.0;
-            denomy = 0.0;
-            nom = 0.0;
-
-            if (ito::dObjHelper::isFinite<ito::float64>(lowThreshold))
-            {
-                for (int c = 0; c < count; ++c)
+                else
                 {
-                    if (vals[c] > lowThreshold)
+                    for (int c = 0; c < count; ++c)
                     {
-                        denomx += x_px[c] * (vals[c] - lowThreshold);
-                        denomy += y_px[c] * (vals[c] - lowThreshold);
-                        nom += (vals[c] - lowThreshold);
+                        denomx += x_px[c] * (vals[c] - roiMinimum);
+                        denomy += y_px[c] * (vals[c] - roiMinimum);
+                        nom += (vals[c] - roiMinimum);
                     }
-                    else
-                    {
-                        count--;
-                    }
+                }
+
+                if (ito::isZeroValue<ito::float64>(nom, std::numeric_limits<ito::float64>::epsilon()))
+                {
+                    centroidsRow[0] = coarseRow[0];
+                    centroidsRow[1] = coarseRow[1];
+                    centroidsRow[2] = count;
+                }
+                else
+                {
+                    centroidsRow[0] = denomx / nom;
+                    centroidsRow[1] = denomy / nom;
+                    centroidsRow[2] = count;
                 }
             }
             else
-            {
-                for (int c = 0; c < count; ++c)
-                {
-                    denomx += x_px[c] * (vals[c] - roiMinimum);
-                    denomy += y_px[c] * (vals[c] - roiMinimum);
-                    nom += (vals[c] - roiMinimum);
-                } 
-            }
-
-            if (ito::isZeroValue<ito::float64>(nom, std::numeric_limits<ito::float64>::epsilon()))
             {
                 centroidsRow[0] = coarseRow[0];
                 centroidsRow[1] = coarseRow[1];
                 centroidsRow[2] = count;
             }
-            else
-            {
-                centroidsRow[0] = denomx / nom;
-                centroidsRow[1] = denomy / nom;
-                centroidsRow[2] = count;
-            }
-        }
-        else
-        {
-            centroidsRow[0] = coarseRow[0];
-            centroidsRow[1] = coarseRow[1];
-            centroidsRow[2] = count;
+
         }
 
+#ifdef USEOPENMP
     }
+#endif  
 
     return retval;
 }

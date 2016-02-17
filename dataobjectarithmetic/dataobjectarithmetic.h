@@ -51,7 +51,6 @@ class DataObjectArithmeticInterface : public ito::AddInInterfaceBase
         DataObjectArithmeticInterface();       /*! <Class constructor */
         ~DataObjectArithmeticInterface();      /*! <Class destructor */
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);   /*! <Create a new instance of FittingFilters-Class */
-
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);  /*! <Destroy the loaded instance of FittingFilters-Class */
 
@@ -127,6 +126,8 @@ class DataObjectArithmetic : public ito::AddInAlgo
         static const QString autoFocusEstimateDoc;
         static ito::RetVal autoFocusEstimateParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
         static ito::RetVal autoFocusEstimate(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+
+        static int numThreads;
 
     private:
         template<typename _Tp> static ito::RetVal centroidHelper(const cv::Mat *mat, const ito::float64 &lowTreshold, const ito::float64 &highTreshold, ito::float64 &xCOG, ito::float64 &yCOG);             
