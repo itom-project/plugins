@@ -1059,7 +1059,7 @@ template<typename _Tp> ito::RetVal localCenterOfGravityHelper(const ito::DataObj
         high = std::numeric_limits<_Tp>::max();
     }
 
-#define LCOGRADIUS(r,c) std::sqrt((coarseRow[1] - r)*(coarseRow[1] - r)+(coarseRow[0] - c)*(coarseRow[0] - c))
+#define LCOGRADIUS(r,c) std::sqrt((float)(coarseRow[1] - r)*(float)(coarseRow[1] - r)+(float)(coarseRow[0] - c)*(float)(coarseRow[0] - c))
 
 #ifdef USEOPENMP
     omp_set_num_threads(DataObjectArithmetic::numThreads);
