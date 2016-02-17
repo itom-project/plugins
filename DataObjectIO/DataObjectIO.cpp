@@ -4818,7 +4818,31 @@ for (int i = 0; i < len; ++i)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ const QString DataObjectIO::loadFrtDoc = QObject::tr(\
-    "Loads MicroProf FRT data from profilometers (based on FRT File Format specification 4.0.1.0).");
+"Loads MicroProf FRT data from profilometers (based on FRT File Format specification 4.0.1.0). \n\
+\n\
+The files are loaded in a unit16, int32 or float64 data format. The FRT file format provides further \n\
+information about the measurement conditions and system settings. Several of these settings are saved \n\
+in tags of the resulting dataObject. These are among others (if available): \n\
+\n\
+* comment: optional multiline comment of the file \n\
+* scanDirection: string with the scan direction for the data acquisition \n\
+* measureRange: total measurement range \n\
+* startTime: start time of measurement (seconds from 1970) \n\
+* duration: duration of measurement in seconds \n\
+* zTableType: string with the type of the used z-scanning stage \n\
+* xyTableType: string with the type of the used xy-scanning stage \n\
+* hardware: name of the measurement device (str) \n\
+* speedX: speed of the x-stage in m/s (only given if overrideSpeed is false) \n\
+* speedY: speed of the y-stage in m/s (only given if overrideSpeed is false) \n\
+* sensorDelay: wait at each point so many ms (only given if overrideSpeed is true) \n\
+* checkSensorError: during measurement check the error state of the sensor \n\
+* sensorErrorTime: wait max. so many ms for non-error state of the sensor \n\
+* scanBackMeas: during scan: measure when scanning back \n\
+* title: name of dataset if given \n\
+* heatingChamber: temperature of heating chamber if given \n\
+* xyStitchingActive : 'true' if xy stitching was active, else 'false' \n\
+* xyStitchingResolutionDivisor : only given if xyStitchingActive is 'true' \n\
+ ");
 
 typedef struct
 {
@@ -4835,9 +4859,9 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
     ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
     if (!retval.containsError())
     {
-        ito::Param  param = ito::Param("sourceObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("1D data object of any real data type. No invalid values are allowed.").toLatin1().data());
+        ito::Param  param = ito::Param("destinationObject", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Destination dataObject").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Destination filename").toLatin1().data());
+        param = ito::Param("filename", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("Source filename").toLatin1().data());
         paramsMand->append(param);
 
         param = ito::Param("xyUnit", ito::ParamBase::String | ito::ParamBase::In, "mm", tr("Unit of x and y axes. Nist or BCR sdf files assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than 'm' lead to a multiplication of all values that might exceed the data type limit.)").toLatin1().data());
@@ -5089,6 +5113,11 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                     }
 
                     data_part += blockSize;
+                }
+
+                if (!block102detected)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "mandatory block Imagesize is missing in FRT file.");
                 }
 
                 
@@ -5382,6 +5411,22 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                                 warnings << "wrong size of DEFINED_COLORS block in FRT file.";
                             }
                             break;
+                        case 178: /*XYSTITCHING*/
+                            if (blockSize == 8)
+                            {
+                                int stitchingActive = *((ito::int32*)(&data_part[0]));
+                                int resolutionDivisor = *((ito::int32*)(&data_part[4]));
+                                obj.setTag("xyStitchingActive", stitchingActive ? "true": "false");
+                                if (stitchingActive)
+                                {
+                                    obj.setTag("xyStitchingResolutionDivisor", resolutionDivisor);
+                                }
+                            }
+                            else
+                            {
+                                warnings << "wrong size of XYSTITCHING block in FRT file.";
+                            }
+                            break;
                         case 179: /*HEATING_CHAMBER*/
                         {
                             if (blockSize == sizeof(ito::float64))
@@ -5389,7 +5434,7 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                                 ito::float64 temp = *((ito::float64*)data_part);
                                 if (temp > -200.0 && temp < 1000.0)
                                 {
-                                    obj.setTag("temperature", temp);
+                                    obj.setTag("heatingChamber", temp);
                                 }
                             }
                             else
