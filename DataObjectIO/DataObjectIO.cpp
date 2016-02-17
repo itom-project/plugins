@@ -251,7 +251,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
 
     // Optional parameters (sourceImage, filename, Format, bitscaling)
     ito::DataObject *dObj = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-    char *filename = (*paramsMand)[1].getVal<char*>();
+    QString imgFilename = QLatin1String((*paramsMand)[1].getVal<char*>());
     QImage image;
 
     std::string imgFormat;
@@ -278,7 +278,7 @@ ito::RetVal DataObjectIO::saveDataObject(QVector<ito::ParamBase> *paramsMand, QV
   /*  QVariant out1 = QVariant(2.0);    // showing any desired output on itom application.
     outVals->append(out1);*/
             
-    QString imgFilename(filename);
+    
 
     //Creating an Image in Mono Format
     if (imgFormat.compare("QImage::Format_Mono") == 0)
@@ -911,13 +911,13 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
     QImage image;
-    QFileInfo fileinfo(QString::fromLatin1(filename));
+    QFileInfo fileinfo = QLatin1String(filename);
 
     if (!fileinfo.exists())
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' does not exist.").toLatin1().data(), filename);
     }    
-    else if (!image.load(filename))
+    else if (!image.load(QLatin1String(filename)))
     {
         ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no readable image file.").toLatin1().data(), filename);
     }
@@ -3913,7 +3913,7 @@ ito::RetVal DataObjectIO::loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
 
-    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+    ito::DataObject *dObjDst = (*paramsMand)[0].getVal<ito::DataObject*>();
 
     if (dObjDst == NULL)
     {
@@ -3921,7 +3921,7 @@ ito::RetVal DataObjectIO::loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
     }
 
     ito::DataObject tempObject;
-    QString fileNameQt(filename);
+    QString fileNameQt = QLatin1String(filename);
     ret += ito::loadXML2DOBJ(&tempObject, fileNameQt, false);
 
     if (!ret.containsError())
@@ -4018,7 +4018,7 @@ ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
     bool onlyHeader = (*paramsOpt)[0].getVal<int>() > 0 ? true : false;
     bool asBinary   = (*paramsOpt)[1].getVal<int>() > 0 ? true : false;
 
-    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
+    ito::DataObject *dObjDst = (*paramsMand)[0].getVal<ito::DataObject*>();
 
     if (dObjDst == NULL)
     {
@@ -4026,7 +4026,7 @@ ito::RetVal DataObjectIO::saveItomIDO(QVector<ito::ParamBase> *paramsMand, QVect
     }
 
     ito::DataObject tempObject;
-    QString fileNameQt(filename);
+    QString fileNameQt = QLatin1String(filename);
     ret += ito::saveDOBJ2XML(dObjDst, fileNameQt, onlyHeader, asBinary);
 
     return ret;
@@ -4653,14 +4653,15 @@ ito::RetVal DataObjectIO::savePtbPRParams(QVector<ito::Param> *paramsMand, QVect
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! saveNistSDF
+//! savePtbPR
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
-    QFileInfo fileinfo(QString::fromLatin1(filename));
-    QFile dataOut(filename);
+    QString filename_ = QLatin1String(filename);
+    QFileInfo fileinfo(filename_);
+    QFile dataOut(filename_);
 
     ito::DataObject source = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "sourceObject", ito::Range(1,1), ito::Range::all(), ret, ito::tFloat64, 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tUInt32, ito::tFloat32, ito::tFloat64);
 
@@ -4772,39 +4773,39 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
         //write header
         dataOut.write("Profil ");
         dataOut.write(fileinfo.fileName().replace(" ", "_").toLatin1());
-dataOut.write("\n");
-dataOut.write((char*)key1);
-dataOut.write(QByteArray::number(length, 'f', decimals));
-dataOut.write((char*)key2);
-if (length != 0.0)
-{
-    dataOut.write(QByteArray::number((double)len / length, 'f', decimals));
-}
-else
-{
-    dataOut.write("0.0");
-    ret += ito::RetVal(ito::retWarning, 0, "length of data set is 0.0");
-}
-dataOut.write(" Punkte/Zeile: ");
-dataOut.write(QByteArray::number(len));
-dataOut.write("\n");
+        dataOut.write("\n");
+        dataOut.write((char*)key1);
+        dataOut.write(QByteArray::number(length, 'f', decimals));
+        dataOut.write((char*)key2);
+        if (length != 0.0)
+        {
+            dataOut.write(QByteArray::number((double)len / length, 'f', decimals));
+        }
+        else
+        {
+            dataOut.write("0.0");
+            ret += ito::RetVal(ito::retWarning, 0, "length of data set is 0.0");
+        }
+        dataOut.write(" Punkte/Zeile: ");
+        dataOut.write(QByteArray::number(len));
+        dataOut.write("\n");
 
-//write data
-const ito::float64 *row = (const ito::float64*)source.rowPtr(0, 0);
-for (int i = 0; i < len; ++i)
-{
-    if (ito::dObjHelper::isFinite(row[i]))
-    {
-        dataOut.write(QByteArray::number(row[i] * valueScale, 'f', decimals));
-        dataOut.write("\n");
-    }
-    else
-    {
-        dataOut.write(QByteArray::number(0.0, 'f', decimals));
-        dataOut.write("\n");
-        ret += ito::RetVal::format(ito::retWarning, 0, "invalid value encountered in column %i", (i + 1));
-    }
-}
+        //write data
+        const ito::float64 *row = (const ito::float64*)source.rowPtr(0, 0);
+        for (int i = 0; i < len; ++i)
+        {
+            if (ito::dObjHelper::isFinite(row[i]))
+            {
+                dataOut.write(QByteArray::number(row[i] * valueScale, 'f', decimals));
+                dataOut.write("\n");
+            }
+            else
+            {
+                dataOut.write(QByteArray::number(0.0, 'f', decimals));
+                dataOut.write("\n");
+                ret += ito::RetVal::format(ito::retWarning, 0, "invalid value encountered in column %i", (i + 1));
+            }
+        }
     }
 
     if (dataOut.isOpen())
@@ -4843,16 +4844,6 @@ in tags of the resulting dataObject. These are among others (if available): \n\
 * xyStitchingActive : 'true' if xy stitching was active, else 'false' \n\
 * xyStitchingResolutionDivisor : only given if xyStitchingActive is 'true' \n\
  ");
-
-typedef struct
-{
-    ito::uint16 xres;
-    ito::uint16 yres;
-    ito::float64 xrange;
-    ito::float64 yrange;
-    ito::float64 zscale;
-    const unsigned char *data;
-} MicroProfFRTFile;
 
 ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
