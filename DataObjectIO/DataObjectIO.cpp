@@ -4843,7 +4843,36 @@ in tags of the resulting dataObject. These are among others (if available): \n\
 * heatingChamber: temperature of heating chamber if given \n\
 * xyStitchingActive : 'true' if xy stitching was active, else 'false' \n\
 * xyStitchingResolutionDivisor : only given if xyStitchingActive is 'true' \n\
- ");
+\n\
+Some frt files can contain more than one dataset. Multiple datasets can represent different types (topology, intensity, phases...), \n\
+they can come from different sensors (e.g. upside and downside sensor) or they can be acquired at different levels. \n\
+Per default, the standard dataset (e.g. topology) is loaded. Set 'printAllBufferTypes' to 1 in order to get a list of available \n\
+buffers printed to the command line (only if more than one buffer is available). While buffers at different levels are automatically \n\
+loaded to a 3D data object instead of a 2D one, the user can select the type and sensor counter that should be loaded. Possible values are among others: \n\
+\n\
+bufferType \n\
+--------------- \n\
+\n\
+* 0x0001: piezo \n\
+* 0x0002: intensity \n\
+* 0x0004: topography \n\
+* 0x0008: re_part \n\
+* 0x0010: im_part \n\
+* 0x0040: camera \n\
+* 0x0080: thickness \n\
+* 0x0100: dibfromfile \n\
+* 0x0200: abs_val \n\
+* 0x0400: phase \n\
+* 0x0800: samplethickness \n\
+* 0x1000: afm \n\
+* 0x0200: quality \n\
+* 0x0401: fit \n\
+* 0x0402: slope \n\
+\n\
+sensorCounter \n\
+--------------- \n\
+\n\
+Currently, only 0 (sensor 1 - top) and 1 (sensor 2 - bottom) seems to be implemented in files. In future sensor 3 and sensor 4 (indices 2 and 3) might follow.");
 
 ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
 {
@@ -4872,6 +4901,15 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
         sm2.addItem("nm");
         param.setMeta(&sm2, false);
         paramsOpt->append(param);
+
+        param = ito::Param("bufferType", ito::ParamBase::Int | ito::ParamBase::In, 0, 0x0000ffdf, 0, tr("some files contain more than one dataset. Then pass the bufferType here (its mask is 0x0000ffdf), if 0 is given, the default buffer type is used.").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("sensorCounter", ito::ParamBase::Int | ito::ParamBase::In, 0, 3, 0, tr("some files contain more than one dataset. Its type is selected by 'bufferType'. Sometimes the result can come from different sensors, then select the sensor index here.").toLatin1().data());
+        paramsOpt->append(param);
+
+        param = ito::Param("printAllBufferTypes", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 0, tr("If 1 and different buffer types are available, they are printed to the command line.").toLatin1().data());
+        paramsOpt->append(param);
     }
 
     return retval;
@@ -4890,6 +4928,9 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
 
     std::string xyUnit = (paramsOpt->at(0).getVal<char*>());
     std::string valueUnit = (paramsOpt->at(1).getVal<char*>());
+    int desiredBufferType = paramsOpt->at(2).getVal<int>();
+    int desiredSensorCounter = paramsOpt->at(3).getVal<int>();
+    bool printBufferTypes = paramsOpt->at(4).getVal<int>() > 0;
 
 
     if (!info.exists())
@@ -4925,13 +4966,6 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
 
             struct
             {
-                ito::int32 sizex;
-                ito::int32 sizey;
-                ito::int32 bpp;
-            } imageSize;
-
-            struct
-            {
                 ito::float64 rangex; //in m
                 ito::float64 rangey; //in m
                 ito::float64 offsetx; //in m
@@ -4945,6 +4979,22 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                 ito::int32 measurerange;
                 ito::float64 zscaling; //in m / bit
             } sensor;
+
+            struct Buffer
+            {
+                int bufferType; //something within the mask 0x0000ffdf
+                int sensorCounter; //e.g. 0x10000000 or 0x00000000
+                ito::int32 sizex;
+                ito::int32 sizey;
+                ito::int32 bpp;
+                ito::int32 bytesPerBuffer;
+                std::vector<std::pair<int, const char*> > pointers; //buffer counter vs. start pointer to buffer
+            };
+
+            std::vector<Buffer> buffers;
+            Buffer data01buffer;
+            data01buffer.sizex = data01buffer.sizey = -1; //not initialized
+            int selectedBufferIndex = -1; //-1 not yet selected, this means take data01buffer, else take buffers[selectedBufferIndex]
 
             ito::float64 zOffset = 0.0;
 
@@ -5016,6 +5066,11 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                 "100 mm2, mech. bear. piezo",
                 "100 mm2, air bearing xy",
                 "100 mm2 mech. bear",
+                "unknown",
+                "unknown",
+                "unknown",
+                "unknown",
+                "Turbo PMac",
                 "unknown"
             }; //special is 41: 100 mm, air bearing linear
 
@@ -5026,12 +5081,17 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                 "PMAC Controlled",
                 "C842 Controlled",
                 "Manual Z-Table",
+                "unknown",
+                "unknown",
+                "unknown",
+                "unknown",
+                "Turbo PMac",
                 "unknown"
             };
 
             ito::int32 firstValidValue = -1;
             ito::int32 lastValidValue = -1;
-            
+
             if (memcmp(data, fileID, sizeof(fileID)) != 0)
             {
                 retval += ito::RetVal::format(ito::retError, 0, "The file '%s' is no valid FRT file", paramsMand->at(1).getVal<char*>());
@@ -5074,32 +5134,149 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                         break;
                     }
 
-                    if (blockType == 102)
+                    if (blockType == 11) //case 11: /*Data_01*/
+                    {
+                        block11detected = true;
+                        data01buffer.pointers.push_back(std::pair<int, const char*>(0x00000000, data_part));
+                        data01buffer.bytesPerBuffer = (data01buffer.sizex * data01buffer.sizey * (data01buffer.bpp == 16 ? 2 : 4));
+
+                        if (data01buffer.sizex >= 0) //size already initialized by block type 102, check the buffer size here now
+                        {
+                            if (blockSize < data01buffer.bytesPerBuffer)
+                            {
+                                retval += ito::RetVal(ito::retError, 0, "invalid block size of Data_01 block in FRT file.");
+                            }
+                        }
+                    }
+                    else if (blockType == 102)
                     {
                         if (blockSize == 12)
                         {
-                            imageSize.sizex = *((ito::int32*)(&data_part[0]));
-                            imageSize.sizey = *((ito::int32*)(&data_part[4]));
-                            imageSize.bpp = *((ito::int32*)(&data_part[8]));
-
+                            data01buffer.sizex = *((ito::int32*)(&data_part[0]));
+                            data01buffer.sizey = *((ito::int32*)(&data_part[4]));
+                            data01buffer.bpp = *((ito::int32*)(&data_part[8]));
                             block102detected = true;
 
-                            if (imageSize.bpp == 16)
-                            {
-                                dataType = ito::tUInt16;
-                            }
-                            else if (imageSize.bpp == 32)
-                            {
-                                dataType = ito::tInt32;
-                            }
-                            else
+                            if (data01buffer.bpp != 16 && data01buffer.bpp != 32)
                             {
                                 retval += ito::RetVal(ito::retError, 0, "unknown bit depth in FRT file.");
+                            }
+
+                            if (data01buffer.pointers.size() > 0) //already initialized pointers, check buffer size now
+                            {
+                                if ((data01buffer.sizex * data01buffer.sizey * (data01buffer.bpp == 16 ? 2 : 4)) > data01buffer.bytesPerBuffer)
+                                {
+                                    retval += ito::RetVal(ito::retError, 0, "invalid block size of Data_01 block in FRT file.");
+                                }
                             }
                         }
                         else
                         {
                             retval += ito::RetVal(ito::retError, 0, "wrong size of Imagesize block in FRT file.");
+                        }
+                    }
+                    else if (blockType == 125) /*Multibuffer_01*/
+                    {
+                        //read all buffers and put them into the buffers vector
+                        const char *data_temp = &(data_part[8]);
+                        int alias;
+                        int bufferTypeMask = 0x0000ffdf;
+                        int sensorCounterMask = 0x30000000;
+                        int bufferCounterMask = 0x0f000000;
+                        bool found = false;
+                        std::vector<Buffer>::iterator it;
+
+                        int numBuffers = *((ito::int32*)(&data_part[0])); //zero-based
+                        int defaultAlias = *((ito::int32*)(&data_part[4])); //alias from current buffer, corresponds to buffer type 11
+                        int counter;
+
+                        if (desiredBufferType == 0)
+                        {
+                            desiredBufferType = defaultAlias & bufferTypeMask;
+                            desiredSensorCounter = defaultAlias & sensorCounterMask;
+                        }
+                        else
+                        {
+                            desiredSensorCounter <<= 32;
+                        }
+
+                        //search for the right buffer
+                        for (int buf = 0; buf < numBuffers; ++buf)
+                        {
+                            alias = *((ito::int32*)(&data_temp[0]));
+                            it = buffers.begin();
+
+                            counter = -1;
+
+                            //search for an existing buffer
+                            while (it != buffers.end())
+                            {
+                                counter++;
+
+                                if (it->bufferType == (alias & bufferTypeMask) && \
+                                    it->sensorCounter == (alias & sensorCounterMask))
+                                {
+                                    break;
+                                }
+
+                                it++;
+                            }
+
+                            if (it == buffers.end())
+                            {
+                                counter++;
+                                Buffer newbuffer;
+                                //create new one
+                                buffers.push_back(newbuffer);
+                                it = buffers.end() - 1;
+                            }
+
+                            
+
+                            it->sizex = *((ito::int32*)(&data_temp[8])); //lines
+                            it->sizey = *((ito::int32*)(&data_temp[4])); //rows
+                            it->bpp = *((ito::int32*)(&data_temp[12])); //depth
+                            it->bytesPerBuffer = (it->sizex * it->sizey * (it->bpp == 16 ? 2 : 4));
+                            it->bufferType = alias & bufferTypeMask;
+                            it->sensorCounter = alias & sensorCounterMask;
+                            it->pointers.push_back(std::pair<int, const char*>(alias & bufferCounterMask, &data_temp[16]));
+                            data_temp += 16;
+                            data_temp += it->bytesPerBuffer;
+
+                            if (desiredBufferType == it->bufferType && desiredSensorCounter == it->sensorCounter)
+                            {
+                                selectedBufferIndex = counter;
+
+                                if (it->bpp != 16 && it->bpp != 32)
+                                {
+                                    retval += ito::RetVal(ito::retError, 0, "unknown bit depth of selected buffer in FRT file.");
+                                }
+                            }
+                        }
+
+                        if (selectedBufferIndex == -1)
+                        {
+                            retval += ito::RetVal(ito::retError, 0, "the selected bufferType in combination with the sensorCounter could not be found in the FRT data file.");
+                        }
+
+                        if (printBufferTypes)
+                        {
+                            std::cout << "Available buffer types in the frt file '" << paramsMand->at(1).getVal<char*>() << "'\n";
+                            std::cout << "------------------------------------------------------------------------------------------------------------------------------\n\n";
+
+                            for (int i = 0; i < buffers.size(); ++i)
+                            {
+                                std::cout << "type: " << buffers[i].bufferType << ", sensor counter: " << (buffers[i].sensorCounter >> 32) << ", num buffers (planes):" << buffers[i].pointers.size();
+
+                                if (i == selectedBufferIndex)
+                                {
+                                    std::cout << " (selected)\n" << std::endl;
+                                }
+                                else
+                                {
+                                    std::cout << "\n" << std::endl;
+                                }
+                            }
                         }
                     }
 
@@ -5111,12 +5288,69 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                     retval += ito::RetVal(ito::retError, 0, "mandatory block Imagesize is missing in FRT file.");
                 }
 
-                
-
                 if (!retval.containsError())
                 {
                     data_part = data_part_temp;
-                    ito::DataObject obj(imageSize.sizey, imageSize.sizex, dataType);
+                    ito::DataObject obj;
+                    int axisX = 1;
+                    int axisY = 0;
+                    const Buffer *usedBuffer = NULL;
+                    
+                    if (selectedBufferIndex == -1) //take data 01
+                    {
+                        if (data01buffer.bpp == 16)
+                        {
+                            dataType = ito::tUInt16;
+                        }
+                        else if (data01buffer.bpp == 32)
+                        {
+                            dataType = ito::tInt32;
+                        }
+
+                        obj = ito::DataObject(data01buffer.sizey, data01buffer.sizex, dataType);
+                        memcpy(obj.rowPtr(0, 0), data01buffer.pointers[0].second, data01buffer.bytesPerBuffer);
+                        usedBuffer = &data01buffer;
+                    }
+                    else
+                    {
+                        usedBuffer = &(buffers[selectedBufferIndex]);
+                        if (usedBuffer->bpp == 16)
+                        {
+                            dataType = ito::tUInt16;
+                        }
+                        else if (usedBuffer->bpp == 32)
+                        {
+                            dataType = ito::tInt32;
+                        }
+
+                        if (usedBuffer->pointers.size() == 1)
+                        {
+                            obj = ito::DataObject(usedBuffer->sizey, usedBuffer->sizex, dataType); //2d object
+                            memcpy(obj.rowPtr(0, 0), usedBuffer->pointers[0].second, usedBuffer->bytesPerBuffer);
+                        }
+                        else
+                        {
+                            axisX = 2;
+                            axisY = 1;
+                            obj = ito::DataObject(usedBuffer->pointers.size(), usedBuffer->sizey, usedBuffer->sizex, dataType); //3d object
+                            int currentPlane = -1;
+
+                            for (int z = 0; z < usedBuffer->pointers.size(); ++z)
+                            {
+                                for (int z2 = 0; z2 < usedBuffer->pointers.size(); ++z2)
+                                {
+                                    //search for the lowest, still unused buffer counter and copy it to sort for the buffer counters
+                                    if (usedBuffer->pointers[z2].first > currentPlane)
+                                    {
+                                        currentPlane = usedBuffer->pointers[z2].first;
+                                        memcpy(obj.rowPtr(z, 0), usedBuffer->pointers[z2].second, usedBuffer->bytesPerBuffer);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     bool error = false;
                     QStringList warnings;
 
@@ -5130,22 +5364,6 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
 
                         switch (blockType)
                         {
-                        case 11: /*Data_01*/
-                        {
-                            int desiredBlockSize = (imageSize.sizex * imageSize.sizey * (dataType == ito::tUInt16 ? 2 : 4));
-
-                            if (blockSize < desiredBlockSize)
-                            {
-                                retval += ito::RetVal(ito::retError, 0, "invalid block size of Data_01 block in FRT file.");
-                                error = true;
-                            }
-                            else
-                            {
-                                memcpy(obj.rowPtr(0, 0), data_part, desiredBlockSize);
-                                block11detected = true;
-                            }
-                            break;
-                        }
                         case 101: /*Description_01*/
                         {
                             if (blockSize > 1 && data_part[blockSize - 1] == '\0')
@@ -5165,12 +5383,21 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                                 scanSize.offsetx = *((ito::float64*)(&data_part[16]));
                                 scanSize.offsety = *((ito::float64*)(&data_part[24]));
                                 scanSize.factorrangey = *((ito::float64*)(&data_part[32]));
+
+                                //usually rangey should be rangex * factorrangey. If this is not the case,
+                                //we warn the use and reset reangey.
+                                if (ito::isZeroValue<ito::float64>(scanSize.rangey - scanSize.rangex * scanSize.factorrangey, std::numeric_limits<ito::float64>::epsilon()) == false)
+                                {
+                                    retval += ito::RetVal(ito::retWarning, 0, "rangey in block Scansize did not correspond to specs and was modified to (rangex * factorrangey)");
+                                    scanSize.rangey = scanSize.rangex * scanSize.factorrangey;
+                                }
+
                                 scanSize.scandir = *((ito::int32*)(&data_part[40]));
                                 block103detected = true;
 
-                                if (imageSize.sizey > 1)
+                                if (usedBuffer->sizey > 1)
                                 {
-                                    ito::float64 scale = scanSize.rangey / imageSize.sizey;
+                                    ito::float64 scale = scanSize.rangey / usedBuffer->sizey;
 
                                     if (xyUnit == "m")
                                     {
@@ -5193,14 +5420,14 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                                         scale *= 1e6;
                                     }
 
-                                    obj.setAxisScale(0, scale);
-                                    obj.setAxisOffset(0, scanSize.offsety / scale);
-                                    obj.setAxisUnit(0, xyUnit);
+                                    obj.setAxisScale(axisY, scale);
+                                    obj.setAxisOffset(axisY, scanSize.offsety / scale);
+                                    obj.setAxisUnit(axisY, xyUnit);
                                 }
 
-                                if (imageSize.sizex > 1)
+                                if (usedBuffer->sizex > 1)
                                 {
-                                    ito::float64 scale = scanSize.rangex / imageSize.sizex;
+                                    ito::float64 scale = scanSize.rangex / usedBuffer->sizex;
 
                                     if (xyUnit == "m")
                                     {
@@ -5223,9 +5450,9 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                                         scale *= 1e6;
                                     }
 
-                                    obj.setAxisScale(1, scale);
-                                    obj.setAxisOffset(1, scanSize.offsetx / scale);
-                                    obj.setAxisUnit(1, xyUnit);
+                                    obj.setAxisScale(axisX, scale);
+                                    obj.setAxisOffset(axisX, scanSize.offsetx / scale);
+                                    obj.setAxisUnit(axisX, xyUnit);
                                 }
                                 const char* temp = scanDirections[qBound(1, scanSize.scandir, 13)];
                                 obj.setTag("scanDirection", temp);
@@ -5315,9 +5542,9 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
 
                                 const char* temp = hardware[qBound(0, sensorType, 28)];
                                 obj.setTag("hardware", temp);
-                                temp = scanXYType == 41 ? "100 mm, air bearing linear" : xyTableType[qBound(0, scanXYType, 6)];
+                                temp = scanXYType == 41 ? "100 mm, air bearing linear" : xyTableType[qBound(0, scanXYType, 11)];
                                 obj.setTag("xyTableType", temp);
-                                temp = zTableType[qBound(0, scanZType, 6)];
+                                temp = zTableType[qBound(0, scanZType, 11)];
                                 obj.setTag("zTableType", temp);
                             }
                             else
@@ -5464,28 +5691,34 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
 
                             if (firstValidValue >= 0 && lastValidValue >= 0)
                             {
-                                ito::float64 *destPtr = objConverted.rowPtr<ito::float64>(0, 0);
-                                int total = obj.getTotal();
+                                int total = obj.getSize(axisX) * obj.getSize(axisY);
+                                ito::float64 *destPtr;
 
-                                if (obj.getType() == ito::tUInt16)
+                                for (int z = 0; z < obj.getNumPlanes(); ++z)
                                 {
-                                    const ito::uint16 *srcPtr = obj.rowPtr<ito::uint16>(0, 0);
-                                    for (int i = 0; i < total; ++i)
+                                    destPtr = objConverted.rowPtr<ito::float64>(z, 0);
+
+                                    if (obj.getType() == ito::tUInt16)
                                     {
-                                        if (srcPtr[i] < firstValidValue || srcPtr[i] > lastValidValue)
+                                        const ito::uint16 *srcPtr = obj.rowPtr<ito::uint16>(z, 0);
+                                        for (int i = 0; i < total; ++i)
                                         {
-                                            destPtr[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+                                            if (srcPtr[i] < firstValidValue || srcPtr[i] > lastValidValue)
+                                            {
+                                                //usually scrPtr[i] == 0: not measured, srcPtr[i] == 1: measured, but invalid
+                                                destPtr[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+                                            }
                                         }
                                     }
-                                }
-                                else if (obj.getType() == ito::tInt32)
-                                {
-                                    const ito::int32 *srcPtr = obj.rowPtr<ito::int32>(0, 0);
-                                    for (int i = 0; i < total; ++i)
+                                    else if (obj.getType() == ito::tInt32)
                                     {
-                                        if (srcPtr[i] < firstValidValue || srcPtr[i] > lastValidValue)
+                                        const ito::int32 *srcPtr = obj.rowPtr<ito::int32>(z, 0);
+                                        for (int i = 0; i < total; ++i)
                                         {
-                                            destPtr[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+                                            if (srcPtr[i] < firstValidValue || srcPtr[i] > lastValidValue)
+                                            {
+                                                destPtr[i] = std::numeric_limits<ito::float64>::quiet_NaN();
+                                            }
                                         }
                                     }
                                 }
