@@ -76,10 +76,10 @@ void DockWidgetFireGrabber::parametersChanged(QMap<QString, ito::Param> params)
         if (it != params.end())
         {
             ui.doubleSpinBox_integration_time->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
-            ui.doubleSpinBox_integration_time->setMinimum(it->getMin());
-            ui.doubleSpinBox_integration_time->setMaximum(it->getMax());
-            ui.doubleSpinBox_integration_time->setSingleStep((it->getMax() - it->getMin()) / 100.0);
-            ui.doubleSpinBox_integration_time->setValue(it->getVal<double>());
+            ui.doubleSpinBox_integration_time->setMinimum(it->getMin() * 1000);
+            ui.doubleSpinBox_integration_time->setMaximum(it->getMax() * 1000);
+            ui.doubleSpinBox_integration_time->setSingleStep((it->getMax() - it->getMin()) * 10.0);
+            ui.doubleSpinBox_integration_time->setValue(it->getVal<double>() * 1000);
         }
         else
         {
@@ -128,7 +128,7 @@ void DockWidgetFireGrabber::on_doubleSpinBox_integration_time_valueChanged(doubl
     if (!m_inEditing)
     {
         m_inEditing = true;
-        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time", ito::ParamBase::Double, d));
+        QSharedPointer<ito::ParamBase> p(new ito::ParamBase("integration_time", ito::ParamBase::Double, d / 1000.0));
         setPluginParameter(p, msgLevelWarningAndError);
         m_inEditing = false;
     }
