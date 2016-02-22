@@ -4975,6 +4975,7 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
             bool block103detected = false;
             bool block108detected = false;
             bool block11detected = false;
+            bool block171detected = false;
 
             struct
             {
@@ -4994,6 +4995,7 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
 
             struct Buffer
             {
+                int alias;
                 int bufferType; //something within the mask 0x0000ffdf
                 int sensorCounter; //e.g. 0x10000000 or 0x00000000
                 ito::int32 sizex;
@@ -5104,6 +5106,10 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
             ito::int32 firstValidValue = -1;
             ito::int32 lastValidValue = -1;
 
+            int bufferTypeMask = 0x0000ffdf;
+            int sensorCounterMask = 0x30000000;
+            int bufferCounterMask = 0x0f000000;
+
             if (memcmp(data, fileID, sizeof(fileID)) != 0)
             {
                 retval += ito::RetVal::format(ito::retError, 0, "The file '%s' is no valid FRT file", paramsMand->at(1).getVal<char*>());
@@ -5149,6 +5155,7 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                     if (blockType == 11) //case 11: /*Data_01*/
                     {
                         block11detected = true;
+                        data01buffer.alias = 0;
                         data01buffer.pointers.push_back(std::pair<int, const char*>(0x00000000, data_part));
                         data01buffer.bytesPerBuffer = (data01buffer.sizex * data01buffer.sizey * (data01buffer.bpp == 16 ? 2 : 4));
 
@@ -5164,6 +5171,7 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                     {
                         if (blockSize == 12)
                         {
+                            data01buffer.alias = 0;
                             data01buffer.sizex = *((ito::int32*)(&data_part[0]));
                             data01buffer.sizey = *((ito::int32*)(&data_part[4]));
                             data01buffer.bpp = *((ito::int32*)(&data_part[8]));
@@ -5192,14 +5200,17 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                         //read all buffers and put them into the buffers vector
                         const char *data_temp = &(data_part[8]);
                         int alias;
-                        int bufferTypeMask = 0x0000ffdf;
-                        int sensorCounterMask = 0x30000000;
-                        int bufferCounterMask = 0x0f000000;
                         bool found = false;
                         std::vector<Buffer>::iterator it;
 
                         int numBuffers = *((ito::int32*)(&data_part[0])); //zero-based
                         int defaultAlias = *((ito::int32*)(&data_part[4])); //alias from current buffer, corresponds to buffer type 11
+
+                        if ((defaultAlias & bufferTypeMask) == 0x0100 /*DIB -> last image, use topography instead */)
+                        {
+                            defaultAlias = 0x004 | (defaultAlias & (~bufferTypeMask));
+                        }
+
                         int counter;
 
                         if (desiredBufferType == 0)
@@ -5244,7 +5255,7 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                             }
 
                             
-
+                            it->alias = alias;
                             it->sizey = *((ito::int32*)(&data_temp[8])); //lines
                             it->sizex = *((ito::int32*)(&data_temp[4])); //rows
                             it->bpp = *((ito::int32*)(&data_temp[12])); //depth
@@ -5391,7 +5402,7 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                             if (blockSize == 44)
                             {
                                 scanSize.rangex = *((ito::float64*)(&data_part[0]));
-                                scanSize.rangey = *((ito::float64*)(&data_part[8]));
+                                scanSize.rangey = *((ito::float64*)(&data_part[8])); //sometimes rangey is not defined in older files, factorrangey should always be preferred.
                                 scanSize.offsetx = *((ito::float64*)(&data_part[16]));
                                 scanSize.offsety = *((ito::float64*)(&data_part[24]));
                                 scanSize.factorrangey = *((ito::float64*)(&data_part[32]));
@@ -5511,33 +5522,36 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                             if (blockSize == 12)
                             {
                                 sensor.measurerange = *((ito::int32*)(&data_part[0]));
-                                sensor.zscaling = *((ito::float64*)(&data_part[4]));
                                 block108detected = true;
-
                                 const char* temp = measureRange[qBound(0, sensor.measurerange, 7)];
                                 obj.setTag("measureRange", temp);
 
-                                if (valueUnit == "mm")
+                                if (!block171detected) //zscaling and offset not yet loaded from block171
                                 {
-                                    sensor.zscaling *= 1e3;
+                                    sensor.zscaling = *((ito::float64*)(&data_part[4]));
+                                    if (valueUnit == "mm")
+                                    {
+                                        sensor.zscaling *= 1e3;
+                                    }
+                                    else if (valueUnit == "cm")
+                                    {
+                                        sensor.zscaling *= 1e2;
+                                    }
+                                    else if (valueUnit == "nm")
+                                    {
+                                        sensor.zscaling *= 1e9;
+                                    }
+                                    else if (valueUnit == "m")
+                                    {
+                                        //
+                                    }
+                                    else //micrometer
+                                    {
+                                        sensor.zscaling *= 1e6;
+                                    }
+
+                                    obj.setValueUnit(valueUnit);
                                 }
-                                else if (valueUnit == "cm")
-                                {
-                                    sensor.zscaling *= 1e2;
-                                }
-                                else if (valueUnit == "nm")
-                                {
-                                    sensor.zscaling *= 1e9;
-                                }
-                                else if (valueUnit == "m")
-                                {
-                                    //
-                                }
-                                else //micrometer
-                                {
-                                    sensor.zscaling *= 1e6;
-                                }
-                                obj.setValueUnit(valueUnit);
                             }
                             else
                             {
@@ -5579,27 +5593,30 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                         {
                             if (blockSize == sizeof(ito::float64))
                             {
-                                zOffset = *((ito::float64*)data_part);
+                                if (!block171detected) //zscaling and offset not yet loaded from block171
+                                {
+                                    zOffset = *((ito::float64*)data_part);
 
-                                if (valueUnit == "mm")
-                                {
-                                    zOffset *= 1e3;
-                                }
-                                else if (valueUnit == "cm")
-                                {
-                                    zOffset *= 1e2;
-                                }
-                                else if (valueUnit == "nm")
-                                {
-                                    zOffset *= 1e9;
-                                }
-                                else if (valueUnit == "m")
-                                {
-                                    //
-                                }
-                                else //micrometer
-                                {
-                                    zOffset *= 1e6;
+                                    if (valueUnit == "mm")
+                                    {
+                                        zOffset *= 1e3;
+                                    }
+                                    else if (valueUnit == "cm")
+                                    {
+                                        zOffset *= 1e2;
+                                    }
+                                    else if (valueUnit == "nm")
+                                    {
+                                        zOffset *= 1e9;
+                                    }
+                                    else if (valueUnit == "m")
+                                    {
+                                        //
+                                    }
+                                    else //micrometer
+                                    {
+                                        zOffset *= 1e6;
+                                    }
                                 }
                             }
                             else
@@ -5641,6 +5658,87 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                                 warnings << "wrong size of DEFINED_COLORS block in FRT file.";
                             }
                             break;
+                        case 171: /*MULTIBUFFER_02*/
+                        {
+                            if (usedBuffer->alias != 0) //the buffer comes from a multibuffer item
+                            {
+                                //read all buffers and put them into the buffers vector
+                                const char *data_temp = &(data_part[4]);
+                                int alias;
+                                int absolute;
+                                int numBuffers = *((ito::int32*)(&data_part[0])); //zero-based
+                                for (int buf = 0; buf < numBuffers; ++buf)
+                                {
+                                    alias = *((ito::int32*)(&data_temp[0]));
+
+                                    if (alias == usedBuffer->alias)
+                                    {
+                                        sensor.zscaling = *((ito::float64*)(&data_part[4]));
+                                        if (valueUnit == "mm")
+                                        {
+                                            sensor.zscaling *= 1e3;
+                                        }
+                                        else if (valueUnit == "cm")
+                                        {
+                                            sensor.zscaling *= 1e2;
+                                        }
+                                        else if (valueUnit == "nm")
+                                        {
+                                            sensor.zscaling *= 1e9;
+                                        }
+                                        else if (valueUnit == "m")
+                                        {
+                                            //
+                                        }
+                                        else //micrometer
+                                        {
+                                            sensor.zscaling *= 1e6;
+                                        }
+
+                                        zOffset = *((ito::float64*)(&data_temp[12]));
+
+                                        if (valueUnit == "mm")
+                                        {
+                                            zOffset *= 1e3;
+                                        }
+                                        else if (valueUnit == "cm")
+                                        {
+                                            zOffset *= 1e2;
+                                        }
+                                        else if (valueUnit == "nm")
+                                        {
+                                            zOffset *= 1e9;
+                                        }
+                                        else if (valueUnit == "m")
+                                        {
+                                            //
+                                        }
+                                        else //micrometer
+                                        {
+                                            zOffset *= 1e6;
+                                        }
+
+                                        absolute = *((ito::float64*)(&data_temp[20]));
+
+                                        if (absolute)
+                                        {
+                                            sensor.zscaling = 1.0;
+                                            zOffset = 0.0;
+                                            obj.setValueUnit("");
+                                        }
+                                        else
+                                        {
+                                            obj.setValueUnit(valueUnit);
+                                        }
+
+                                        block171detected = true;
+                                        break;
+                                    }
+                                    data_temp += 24;
+                                }
+                            }
+                            break;
+                        }
                         case 178: /*XYSTITCHING*/
                             if (blockSize == 8)
                             {
@@ -5690,6 +5788,30 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                         !block108detected || !block11detected)
                     {
                         retval += ito::RetVal(ito::retError, 0, "missing mandatory blocks in FRT file.");
+                    }
+
+                    if (!retval.containsError() && usedBuffer->alias != 0 && !block171detected)
+                    {
+                        //retval += ito::RetVal(ito::retWarning, 0, "Data from a multibuffer section was loaded, but no scale or offset information found in Multibuffer_02 block found. Default values are taken.");
+                        //the warning was commented, since many *.frt files have block 125 but not block 171.
+
+                        //the following types are integer-based without physical unit!
+                        switch (usedBuffer->alias & bufferTypeMask)
+                        {
+                        case 0x00000002: /*INTENSITY*/
+                        case 0x00000008: /*RE_PART*/
+                        case 0x00000010: /*IM_PART*/
+                        case 0x00000040: /*CAMERA*/
+                        case 0x00000100: /*DIBFROMFILE*/
+                        case 0x00000200: /*ABS_VAL*/
+                        case 0x00000400: /*PHASE*/
+                        case 0x00002000: /*QUALITY*/
+                        case 0x00004001: /*FIT*/
+                        case 0x00004002: /*SLOPE*/
+                            obj.setValueUnit("");
+                            sensor.zscaling = 1.0;
+                            zOffset = 0.0;
+                        }
                     }
 
 
