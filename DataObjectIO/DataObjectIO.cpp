@@ -5646,6 +5646,43 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                             }
                             break;
                         }
+                        case 129: /*LAYER_01*/
+                        {
+                            ito::float64 r0 = *((ito::float64*)(&data_part[4]));
+                            ito::float64 rRest = *((ito::float64*)(&data_part[8]));
+
+                            if (valueUnit == "mm")
+                            {
+                                r0 *= 1e3;
+                                rRest *= 1e3;
+                            }
+                            else if (valueUnit == "cm")
+                            {
+                                r0 *= 1e2;
+                                rRest *= 1e2;
+                            }
+                            else if (valueUnit == "nm")
+                            {
+                                r0 *= 1e9;
+                                rRest *= 1e9;
+                            }
+                            else if (valueUnit == "m")
+                            {
+                                //
+                            }
+                            else //micrometer
+                            {
+                                r0 *= 1e6;
+                                rRest *= 1e6;
+                            }
+
+                            if (obj.getDims() == 3)
+                            {
+                                obj.setAxisScale(0, rRest); //step between two layers
+                                obj.setAxisOffset(0, -(0.5 * r0) / rRest); //center point of first layer
+                            }
+                            break;
+                        }
                         case 147: /*DEFINED_COLORS*/
                             if (blockSize == 12)
                             {
@@ -5673,7 +5710,7 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
 
                                     if (alias == usedBuffer->alias)
                                     {
-                                        sensor.zscaling = *((ito::float64*)(&data_part[4]));
+                                        sensor.zscaling = *((ito::float64*)(&data_temp[4]));
                                         if (valueUnit == "mm")
                                         {
                                             sensor.zscaling *= 1e3;
