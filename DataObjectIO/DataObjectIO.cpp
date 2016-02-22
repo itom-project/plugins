@@ -1074,8 +1074,14 @@ ito::RetVal DataObjectIO::saveNistSDFParams(QVector<ito::Param> *paramsMand, QVe
 ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal ret = ito::retOk;
-    char *filename = (*paramsMand)[1].getVal<char*>();
-    QFileInfo fileinfo(QString::fromLatin1(filename));
+    QString filename_ = QLatin1String((*paramsMand)[1].getVal<char*>());
+
+    if (!filename_.endsWith(".sdf", Qt::CaseInsensitive))
+    {
+        filename_.append(".sdf");
+    }
+
+    QFileInfo fileinfo(filename_);
     QFile dataOut(fileinfo.absoluteFilePath());
 
     ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
@@ -1111,7 +1117,7 @@ ito::RetVal DataObjectIO::saveNistSDF(QVector<ito::ParamBase> *paramsMand, QVect
     }
     else if (!dataOut.open(QIODevice::WriteOnly))
     {
-        ret += ito::RetVal::format(ito::retError,0,tr("The file '%s' is no writeable file.").toLatin1().data(), filename);
+        ret += ito::RetVal::format(ito::retError, 0, tr("The file '%s' is no writeable file.").toLatin1().data(), filename_.toLatin1().data());
     }
 
     if (!ret.containsWarningOrError())
@@ -4660,6 +4666,12 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
     QString filename_ = QLatin1String(filename);
+
+    if (!filename_.endsWith(".pr", Qt::CaseInsensitive))
+    {
+        filename_.append(".pr");
+    }
+
     QFileInfo fileinfo(filename_);
     QFile dataOut(filename_);
 
