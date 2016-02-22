@@ -4688,18 +4688,18 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
         {
             if (ordinateUnit == 0) //nm
             {
-                valueScale = 1.e-6;
+                valueScale = 1.e6;
             }
             else //1, µm
             {
-                valueScale = 1.e-3;
+                valueScale = 1.e3;
             }
         }
         else if (valueUnit == "µm")
         {
             if (ordinateUnit == 0) //nm
             {
-                valueScale = 1.e-3;
+                valueScale = 1.e3;
             }
         }
         else if (valueUnit == "nm")
@@ -4709,29 +4709,29 @@ ito::RetVal DataObjectIO::savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector
             }
             else //1, µm
             {
-                valueScale = 1.e3;
+                valueScale = 1.e-3;
             }
         }
         else if (valueUnit == "cm")
         {
             if (ordinateUnit == 0) //nm
             {
-                valueScale = 1.e-7;
+                valueScale = 1.e7;
             }
             else //1, µm
             {
-                valueScale = 1.e-4;
+                valueScale = 1.e4;
             }
         }
         else if (valueUnit == "m")
         {
             if (ordinateUnit == 0) //nm
             {
-                valueScale = 1.e-9;
+                valueScale = 1.e9;
             }
             else //1, µm
             {
-                valueScale = 1.e-6;
+                valueScale = 1.e6;
             }
         }
         else
@@ -5233,8 +5233,8 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
 
                             
 
-                            it->sizex = *((ito::int32*)(&data_temp[8])); //lines
-                            it->sizey = *((ito::int32*)(&data_temp[4])); //rows
+                            it->sizey = *((ito::int32*)(&data_temp[8])); //lines
+                            it->sizex = *((ito::int32*)(&data_temp[4])); //rows
                             it->bpp = *((ito::int32*)(&data_temp[12])); //depth
                             it->bytesPerBuffer = (it->sizex * it->sizey * (it->bpp == 16 ? 2 : 4));
                             it->bufferType = alias & bufferTypeMask;
