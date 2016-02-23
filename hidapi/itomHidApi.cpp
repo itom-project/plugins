@@ -116,9 +116,9 @@ const ito::RetVal ItomHidApi::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ItomHidApi::ItomHidApi() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL), m_timeoutMS(4000)
+ItomHidApi::ItomHidApi() : AddInDataIO(), m_debugMode(false), m_pDevice(NULL)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::NoAutosave, "ItomHidApi", "name of device");
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "HidApi", "name of device");
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("debug", ito::ParamBase::Int, 0, 5, 0, tr("If true, all out and inputs are written to dockingWidget").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -339,7 +339,7 @@ ito::RetVal ItomHidApi::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedS
 
     if (!retValue.containsError())
     {
-        else if (key == "debug")
+        if (key == "debug")
         {
             //check the new value and if ok, assign it to the internal parameter
             retValue += it->copyValueFrom( &(*val) );
