@@ -110,15 +110,18 @@ Parameters
 Additional functions (exec functions)
 =====================================
 
-.. py:function::  instance.exec('update_shading', illumination)
-
+.. py:function::  ximeaCam.exec('update_shading', illumination)
+    :noindex:
+    
     Change value of the shading correction
 
     :param illumination: Current intensity value
     :type illumination: int
 
-.. py:function::  instance.exec('initialize_shading', dark_image, white_image, x0, y0)
 
+.. py:function::  ximeaCam.exec('initialize_shading', dark_image, white_image, x0, y0)
+    :noindex:
+    
     Initialize pixel shading correction. At the moment you can only use one set of data which will be rescaled each time
 
     :param dark_image: Dark Image, if null, empty image will be generated
@@ -130,8 +133,10 @@ Additional functions (exec functions)
     :param y0: Position of ROI in y
     :type y0: int
 
-.. py:function::  instance.exec('shading_correction_values', integration_time, shading_correction_factor)
 
+.. py:function::  ximeaCam.exec('shading_correction_values', integration_time, shading_correction_factor)
+    :noindex:
+    
     Change value of the shading correction
 
     :param integration_time: Integrationtime of CCD programmed in s
@@ -139,15 +144,18 @@ Additional functions (exec functions)
     :param shading_correction_factor: Corresponding values for shading correction
     :type shading_correction_factor: seq. of float
 
+
 Image Acquisition and Frame Burst
 =================================
 
-If you acquire an image, the obtained data object has some tags defined::
+If you acquire an image, the obtained data object has some tags defined:
 
-	obj = dataObject()
-	cam.acquire() #cam must be started before
-	cam.getVal(obj)
-	print(obj.tags)
+.. code-block:: python
+    
+    obj = dataObject()
+    cam.acquire() #cam must be started before
+    cam.getVal(obj)
+    print(obj.tags)
 
 The tags are:
 
