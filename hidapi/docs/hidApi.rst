@@ -62,3 +62,8 @@ An example is::
     hidDevice.setVal(bytearray(trans))
     answer = bytearray(50) #init buffer with 50 characters
     numSignsRead = hidDevice.getVal(answer)
+    
+Changelog
+==========
+
+* itom 2.1.0: initial version of HidApi, compiled with hidapi-0.7.0
