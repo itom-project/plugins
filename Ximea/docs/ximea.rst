@@ -24,14 +24,14 @@ The following parameters are mandatory or optional for initializing an instance 
     
     .. plugininitparams::
         :plugin: Ximea
-        
+		
 Parameters
 ==========
 
-Each instance of this camera has the following internal parameters:
-
+**aeag**: {int}, read-only
+    Enable / Disable Automatic exposure / gain. AEAG is disabled in the current implementation.
 **api_version**: {str}, read-only
-	XIMEA API version
+    XIMEA API version
 **bad_pixel**: {int}
     Enable bad pixel correction.
 **binning**: {int}
@@ -45,7 +45,7 @@ Each instance of this camera has the following internal parameters:
 **cam_number**: {int}, read-only
     Index of the camera device.
 **device_driver**: {str}, read-only
-	Current device driver version
+    Current device driver version
 **device_type**: {str}, read-only
     Device type (1394, USB2.0, CURRERA, ...)
 **frame_burst_count**: {int}
@@ -75,7 +75,7 @@ Each instance of this camera has the following internal parameters:
 **integration_time**: {float}
     Exposure time (in seconds).
 **name**: {str}, read-only
-    name of the plugin
+    name of the camera
 **offset**: {float}, read-only
     Currently not used.
 **roi**: {int rect [x0,y0,width,height]}
@@ -97,7 +97,7 @@ Each instance of this camera has the following internal parameters:
 **trigger_mode**: {int}
     Set triggermode, 0: free run, 1: ext. rising edge, 2: ext. falling edge, 3: software.
 **trigger_selector**: {int}
-    Set trigger selector, 0: Exposure Frame Start, 1: Exposure Frame duration, 2: Frame Burst Start, 3: Frame Burst duration.
+    Set trigger selector, 0: Exposure Frame Start, 1: Exposure Frame duration, 2: Frame Burst Start, 3: Frame Burst duration (this parameter was called trigger_mode2 in a previous version of this plugin).
 **x0**: {int}
     First horizontal index within current ROI (deprecated, use parameter 'roi' instead).
 **x1**: {int}
@@ -106,18 +106,9 @@ Each instance of this camera has the following internal parameters:
     First vertical index within current ROI (deprecated, use parameter 'roi' instead).
 **y1**: {int}
     Last vertical index within current ROI (deprecated, use parameter 'roi' instead).
-	
+
 Additional functions (exec functions)
-=======================================	
-	
-.. py:function::  instance.exec('shading_correction_values', integration_time, shading_correction_factor)
-
-    Change value of the shading correction
-
-    :param integration_time: Integrationtime of CCD programmed in s
-    :type integration_time: float
-    :param shading_correction_factor: Corresponding values for shading correction
-    :type shading_correction_factor: seq. of float
+=====================================
 
 .. py:function::  instance.exec('update_shading', illumination)
 
@@ -138,19 +129,26 @@ Additional functions (exec functions)
     :type x0: int
     :param y0: Position of ROI in y
     :type y0: int
-	
-    
+
+.. py:function::  instance.exec('shading_correction_values', integration_time, shading_correction_factor)
+
+    Change value of the shading correction
+
+    :param integration_time: Integrationtime of CCD programmed in s
+    :type integration_time: float
+    :param shading_correction_factor: Corresponding values for shading correction
+    :type shading_correction_factor: seq. of float
+
 Image Acquisition and Frame Burst
-==================================
+=================================
 
 If you acquire an image, the obtained data object has some tags defined::
-    
-    obj = dataObject()
-    cam.acquire() #cam must be started before
-    cam.getVal(obj)
-    
-    print(obj.tags)
-    
+
+	obj = dataObject()
+	cam.acquire() #cam must be started before
+	cam.getVal(obj)
+	print(obj.tags)
+
 The tags are:
 
 * timestamp: timestamp of image acquisition in seconds (not MU family)
@@ -166,9 +164,9 @@ corresponds to the number of acquired frames. If this is the case, the tags are:
 
 * timestamp0, timestamp1, timestamp2, ... (for each sub-frame, not MU family)
 * frame_counter0, frame_counter1, ...
-    
+
 Installation
-=============
+============
 
 Install the XIMEA API (http://www.ximea.com/support/documents/4, currently tested with version 4.0.0.5 and 4.4.0) and check that
 your camera runs with the internal XiViewer from XIMEA. If this is the case, the camera should also run with itom.
@@ -176,10 +174,9 @@ your camera runs with the internal XiViewer from XIMEA. If this is the case, the
 If you want to externally trigger the camera, make sure that you check if your GPIO pins require a 5V or 24V signal. Some cameras
 only support 24V, modern camera devices support both. This is written at the housing (at least for xiQ USB3 cameras).
 
-
     
 Changelog
-==========
+=========
 
 * itom setup 1.2.0: This plugin has been compiled using the Ximea API 4.0.0.5
 * itom setup 1.3.0: This plugin has been compiled using the Ximea API 4.0.0.5
