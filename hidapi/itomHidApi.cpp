@@ -56,17 +56,14 @@ ItomHidApiInterface::ItomHidApiInterface()
     m_description = tr("itom-plugin for a usb HID API communication");
 
     //for the docstring, please don't set any spaces at the beginning of the line.
-char docstring[] = \
+    m_detaildescription = tr( \
 "HidApi is a plugin which gives direct/raw access to HID compliant devices (e.g. via USB).\n\
 It can be used by plugins for communication analog to the serial port.\n\
 The plugin is implemented for Windows, Linux and Mac.\n\
 \n\
 To connect to a device you need the vendor id and the product id.\n\
 \n\
-The setVal and getVal functions will write and read on the output or on the feature.";
-    m_detaildescription = tr(docstring);
-    m_detaildescription = tr(
-"");
+The setVal and getVal functions will write and read on the output or on the feature.");
 
     m_author = "M. Gronle, ITO, University of Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;

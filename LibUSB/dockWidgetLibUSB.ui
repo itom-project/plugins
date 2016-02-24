@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>194</width>
-    <height>177</height>
+    <width>249</width>
+    <height>225</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,7 +32,16 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
     <number>3</number>
    </property>
    <item>
@@ -210,7 +219,7 @@
         <item>
          <widget class="QCheckBox" name="CheckBox">
           <property name="text">
-           <string>ignor empty messages</string>
+           <string>ignore empty messages</string>
           </property>
          </widget>
         </item>
