@@ -353,6 +353,18 @@ IF (WIN32)
     endif (PLUGIN_ThorlabsCCS)
 ENDIF (WIN32)
 
+# UhlRegister
+OPTION(PLUGIN_UhlRegister "Build with this plugin." ON)
+if (PLUGIN_UhlRegister)
+    ADD_SUBDIRECTORY(UhlRegister)
+endif (PLUGIN_UhlRegister)
+
+# UhlText
+OPTION(PLUGIN_UhlText "Build with this plugin." ON)
+if (PLUGIN_UhlText)
+    ADD_SUBDIRECTORY(UhlText)
+endif (PLUGIN_UhlText)
+
 # USBMotion3XIII
 IF (WIN32)
     OPTION(PLUGIN_USBMotion3XIII "Build with this plugin." ON)
