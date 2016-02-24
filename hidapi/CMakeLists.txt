@@ -21,11 +21,25 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-find_package(ITOM_SDK REQUIRED)
+find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Widgets Xml LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
+
+
+IF(UNIX)
+    #find_package(LibUSB QUIET)
+    find_package(Libudev QUIET)
+    #find_file(LIBUDEV libudev.h)
+    IF(LIBUDEV_FOUND)
+        SET(HIDAPI_REQUIREMENTS_FOUND TRUE)
+    ELSE()
+    SET(HIDAPI_REQUIREMENTS_FOUND FALSE)
+    ENDIF()
+ELSE()
+    SET(HIDAPI_REQUIREMENTS_FOUND TRUE) #no requirements
+ENDIF(UNIX)
 
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 IF (BUILD_UNICODE)
@@ -47,83 +61,90 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
-INCLUDE_DIRECTORIES(
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${QT_QTCORE_INCLUDE_DIR}
-    ${OpenCV_DIR}/include
-    ${ITOM_SDK_INCLUDE_DIR}
-    ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/hidapi
-)
+IF(HIDAPI_REQUIREMENTS_FOUND)
 
-set(plugin_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
-)
-
-set(plugin_UI
-    ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.ui
-)
-
-IF(WIN32)
-    set(plugin_SOURCES 
-        ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/windows/hid.c
+    INCLUDE_DIRECTORIES(
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${QT_QTCORE_INCLUDE_DIR}
+        ${OpenCV_DIR}/include
+        ${ITOM_SDK_INCLUDE_DIR}
+        ${VISUALLEAKDETECTOR_INCLUDE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/hidapi
+        #${LibUSB_INCLUDE_DIRS}
+        ${LIBUDEV_INCLUDE_DIR}
     )
-    set(HIDAPI_LIBRARIES Setupapi)
-ELSEIF(UNIX)
-    set(plugin_SOURCES 
-        ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/linux/hid.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/linux/hid-libusb.c
+
+    set(plugin_HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     )
-    set(HIDAPI_LIBRARIES pkg-config libusb-1.0 libudev)
-ELSEIF(APPLE)
-    set(plugin_SOURCES 
-        ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/mac/hid.c
+
+    set(plugin_UI
+        ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.ui
     )
-    set(HIDAPI_LIBRARIES )
-ENDIF(WIN32)
 
-#Add version information to the plugIn-dll unter MSVC
-if(MSVC)
-    list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
-endif(MSVC)
+    IF(WIN32)
+        set(plugin_SOURCES 
+            ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/windows/hid.c
+        )
+        set(HIDAPI_LIBRARIES Setupapi)
+    ELSEIF(UNIX)
+        set(plugin_SOURCES 
+            ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/linux/hid.c
+            #${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/linux/hid-libusb.c
+        )
+        set(HIDAPI_LIBRARIES ${LIBUDEV_LIBRARY})
+    ELSEIF(APPLE)
+        set(plugin_SOURCES 
+            ${CMAKE_CURRENT_SOURCE_DIR}/itomHidApi.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/dockWidgetHidApi.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/hidapi-0.7.0/mac/hid.c
+        )
+        set(HIDAPI_LIBRARIES )
+    ENDIF(WIN32)
 
-if (QT5_FOUND)
-    #if automoc if OFF, you also need to call QT5_WRAP_CPP here
-    QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
-    QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-else (QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
-    QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
-    QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
-endif (QT5_FOUND)
+    #Add version information to the plugIn-dll unter MSVC
+    if(MSVC)
+        list(APPEND plugin_SOURCES ${ITOM_SDK_INCLUDE_DIR}/../pluginLibraryVersion.rc)
+    endif(MSVC)
 
-file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
+    if (QT5_FOUND)
+        #if automoc if OFF, you also need to call QT5_WRAP_CPP here
+        QT5_WRAP_UI(plugin_UI_MOC ${plugin_UI})
+        QT5_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    else (QT5_FOUND)
+        QT4_WRAP_CPP_ITOM(plugin_HEADERS_MOC ${plugin_HEADERS})
+        QT4_WRAP_UI_ITOM(plugin_UI_MOC ${plugin_UI})
+        QT4_ADD_RESOURCES(plugin_RCC_MOC ${plugin_RCC})
+    endif (QT5_FOUND)
 
-ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${HIDAPI_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-if (QT5_FOUND)
-    qt5_use_modules(${target_name} ${QT_COMPONENTS})
-endif (QT5_FOUND)
-    
-#translation
-set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
-PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
+    file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
-PLUGIN_DOCUMENTATION(${target_name} hidApi)
+    ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_HEADERS_MOC} ${plugin_UI_MOC} ${plugin_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${HIDAPI_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES}) #${LibUSB_LIBRARIES} 
+    if (QT5_FOUND)
+        qt5_use_modules(${target_name} ${QT_COMPONENTS})
+    endif (QT5_FOUND)
+        
+    #translation
+    set (FILES_TO_TRANSLATE ${plugin_SOURCES} ${plugin_HEADERS} ${plugin_UI})
+    PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
-# COPY SECTION
-set(COPY_SOURCES "")
-set(COPY_DESTINATIONS "")
-ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
-POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
-    
+    PLUGIN_DOCUMENTATION(${target_name} hidApi)
+
+    # COPY SECTION
+    set(COPY_SOURCES "")
+    set(COPY_DESTINATIONS "")
+    ADD_PLUGINLIBRARY_TO_COPY_LIST(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+    ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
+    POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
+
+ELSE(HIDAPI_REQUIREMENTS_FOUND)
+    message(WARNING "Linux package libudev, libudev-dev missing. ${target_name} will not be build")    
+ENDIF(HIDAPI_REQUIREMENTS_FOUND)

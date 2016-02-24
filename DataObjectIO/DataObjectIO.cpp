@@ -911,7 +911,7 @@ ito::RetVal DataObjectIO::loadDataObject(QVector<ito::ParamBase> *paramsMand, QV
     ito::RetVal ret = ito::retOk;
     char *filename = (*paramsMand)[1].getVal<char*>();
     QImage image;
-    QFileInfo fileinfo = QLatin1String(filename);
+    QFileInfo fileinfo = QString::fromLatin1(filename);
 
     if (!fileinfo.exists())
     {
@@ -4927,6 +4927,18 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
     return retval;
 }
 
+struct Buffer
+{
+    int alias;
+    int bufferType; //something within the mask 0x0000ffdf
+    int sensorCounter; //e.g. 0x10000000 or 0x00000000
+    ito::int32 sizex;
+    ito::int32 sizey;
+    ito::int32 bpp;
+    ito::int32 bytesPerBuffer;
+    std::vector<std::pair<int, const char*> > pointers; //buffer counter vs. start pointer to buffer
+};
+
 /*static*/ ito::RetVal DataObjectIO::loadFrt(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval;
@@ -4993,17 +5005,7 @@ ito::RetVal DataObjectIO::loadFrtParams(QVector<ito::Param> *paramsMand, QVector
                 ito::float64 zscaling; //in m / bit
             } sensor;
 
-            struct Buffer
-            {
-                int alias;
-                int bufferType; //something within the mask 0x0000ffdf
-                int sensorCounter; //e.g. 0x10000000 or 0x00000000
-                ito::int32 sizex;
-                ito::int32 sizey;
-                ito::int32 bpp;
-                ito::int32 bytesPerBuffer;
-                std::vector<std::pair<int, const char*> > pointers; //buffer counter vs. start pointer to buffer
-            };
+            
 
             std::vector<Buffer> buffers;
             Buffer data01buffer;
