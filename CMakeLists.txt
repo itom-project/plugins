@@ -210,10 +210,10 @@ endif (PLUGIN_MSMediaFoundation)
 ENDIF(WIN32)
 
 # NanotecStepMotor
-#OPTION(PLUGIN_NanotecStepMotor "Build with this plugin." OFF)
-#if (PLUGIN_NanotecStepMotor)
-#    ADD_SUBDIRECTORY(NanotecStepMotor)
-#endif (PLUGIN_NanotecStepMotor)
+OPTION(PLUGIN_NanotecStepMotor "Build with this plugin." ON)
+if (PLUGIN_NanotecStepMotor)
+    ADD_SUBDIRECTORY(NanotecStepMotor)
+endif (PLUGIN_NanotecStepMotor)
 
 # NewportSMC100
 OPTION(PLUGIN_NEWPORT_SMC100 "Build with this plugin." ON)
@@ -312,12 +312,6 @@ OPTION(PLUGIN_rawImport "Build with this plugin." ON)
 if (PLUGIN_rawImport)
     ADD_SUBDIRECTORY(RawImport)
 endif (PLUGIN_rawImport)
-
-# Roughness
-OPTION(PLUGIN_Roughness "Build with this plugin." ON)
-if (PLUGIN_Roughness)
-    ADD_SUBDIRECTORY(Roughness)
-endif (PLUGIN_Roughness)
 
 # SerialIO
 OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
