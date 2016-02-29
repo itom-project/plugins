@@ -9,7 +9,7 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+36"/>
         <source>General Information</source>
         <translation>Allgemeine Informationen</translation>
     </message>
@@ -50,8 +50,12 @@
     </message>
     <message>
         <location line="+11"/>
+        <source>ignore empty messages</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>ignor empty messages</source>
-        <translation>Leere Nachrichten ignorieren</translation>
+        <translation type="vanished">Leere Nachrichten ignorieren</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -62,7 +66,7 @@
 <context>
     <name>ItomUSBDevice</name>
     <message>
-        <location filename="../ItomLibUSB.cpp" line="+149"/>
+        <location filename="../ItomLibUSB.cpp" line="+144"/>
         <source>Timeout for reading commands in [s]</source>
         <translation>Timeout für Lesebefehle in [s]</translation>
     </message>
@@ -134,7 +138,7 @@
         <translation type="unfinished">Endpoint-Index für Schreiboperationen. Der benutzte Index entspricht LIBUSB_ENDPOINT_OUT + endpoint_write, mit LIBUSB_ENDPOINT_OUT = %1(Standard: Inizialisierungsparameter &apos;endpoint&apos;)</translation>
     </message>
     <message>
-        <location line="+304"/>
+        <location line="+292"/>
         <source>could not find a known device - please specify type and/or vid:pid and/or bus,dev</source>
         <translation>Das Gerät wurde nicht gefunden. Bitte den Typ, &apos;vid:pid&apos; und/oder den Bus spezifizieren</translation>
     </message>
@@ -149,12 +153,12 @@
         <translation type="unfinished">Kein Gerät zum Öffnen vorhanden</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+179"/>
         <source>StartDevice not necessary</source>
         <translation>&quot;StartDevice&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+15"/>
         <source>StopDevice not necessary</source>
         <translation>&quot;StopDevice&quot; nicht nötig</translation>
     </message>
@@ -164,7 +168,7 @@
         <translation>&quot;Acquire&quot; nicht nötig</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+61"/>
         <source>Number of written characters differ from designated size</source>
         <translation type="unfinished">Die Anzahl der übergebenen Zeichen entspricht nicht der Vorgabe</translation>
     </message>
@@ -172,12 +176,23 @@
 <context>
     <name>ItomUSBDeviceInterface</name>
     <message>
-        <location line="-677"/>
+        <location line="-675"/>
         <source>itom-plugin for a usb port communication</source>
         <translation>itom-Plugin für eine USB-Port Kommunikation</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+11"/>
+        <source>LibUSB is a itom-Plugin which gives direct/raw access to a device connected to the serial port.
+It can be used by plugins for communication analog to the serial port.
+The plugin is implemented for Windows, but Linux should be possible due to libUSB is also availble on Linux.
+
+To connect to a device you need the vendor id and the product id.
+
+The setVal and getVal functions will write and read on the specified endpoint.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <source>The vendor id of the device to connect to</source>
         <translation type="unfinished">Die Vendor-ID des Geräts für die Verbindung</translation>
     </message>
@@ -220,8 +235,12 @@
     </message>
     <message>
         <location line="+1"/>
+        <source>This plugin can be used for raw / lowlevel communication with USB-devices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>This plugin can be used for raw / lowlevel comminication with USB-devices</source>
-        <translation type="unfinished">Dieses Plugin kann nicht für Raw-/Lowlevel-Kommunikation mit USB-Geräten genutzt werden</translation>
+        <translation type="obsolete">Dieses Plugin kann nicht für Raw-/Lowlevel-Kommunikation mit USB-Geräten genutzt werden</translation>
     </message>
     <message>
         <source>Mandatory paramers are NULL</source>

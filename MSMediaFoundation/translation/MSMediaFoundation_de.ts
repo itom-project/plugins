@@ -148,7 +148,7 @@
 <context>
     <name>MSMediaFoundation</name>
     <message>
-        <location filename="../MSMediaFoundation.cpp" line="+184"/>
+        <location filename="../MSMediaFoundation.cpp" line="+203"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -273,7 +273,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+297"/>
+        <location line="+298"/>
         <source>invalid cameraNumber. Only %i cameras found</source>
         <translation type="unfinished"></translation>
     </message>
@@ -298,7 +298,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+412"/>
+        <location line="+415"/>
         <source>Timeout while acquiring image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -313,7 +313,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-936"/>
+        <location line="-940"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -358,7 +358,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+367"/>
+        <location line="+368"/>
         <source>No frame could be aquired from device %i</source>
         <translation type="unfinished"></translation>
     </message>
@@ -368,12 +368,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+230"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+22"/>
         <source>Tried to acquire without starting device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -426,7 +426,7 @@
 <context>
     <name>MSMediaFoundationInterface</name>
     <message>
-        <location line="-1221"/>
+        <location line="-1225"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -449,12 +449,34 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-50"/>
+        <location line="-69"/>
         <source>MSMediaFoundation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+23"/>
+        <source>This plugin uses the Microsoft Media Foundation framework (Windows Vista, 7, 8) for capturing supported camera devices (e.g. ordinary USB or integrated cameras). 
+Cameras must provide the UVC 1.1 interface for USB devices. 
+
+This driver detects an interal list of connected cameras. The parameter *cameraNumber* indicates the device to open (until now, there is no mechanism to open the next 
+not yet opened device!). The camera can either be used as colored camera, as gray valued camera or it is also possible to only select one color channel that is mapped 
+to the gray output. 
+
+Any detected and supported device can offer multiple framerates and sizes. Use the parameter *mediaTypeID* to select the right value. Open your device with *mediaTypeID* = -1 
+to let the plugin print a list of supported formats (the plugin initialization then stops with a desired error). 
+
+Build requirements 
+------------------- 
+For building this plugin the Windows SDK needs to be installed and Windows Vista or higher is required. 
+
+Affiliation 
+------------ 
+This plugin internally uses a modified version of VideoInput, proposed by Evgeny Pereguda and published under 
+http://www.codeproject.com/Articles/559437/Capturing-video-from-web-camera-on-Windows-7-and-8 (Code Project Open License)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>

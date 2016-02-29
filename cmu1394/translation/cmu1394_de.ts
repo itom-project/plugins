@@ -4,12 +4,18 @@
 <context>
     <name>CMU1394</name>
     <message>
-        <location filename="../cmu1394.cpp" line="+266"/>
+        <location filename="../cmu1394.cpp" line="+177"/>
+        <location line="+44"/>
+        <source>Error in copyFromData2D. Size of Buffer unequal size of DataObject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+52"/>
         <source>Please run stopDevice() and shut down live data before configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+34"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -24,7 +30,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+3"/>
         <source>Startvalue for ROI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -79,7 +85,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+38"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -154,22 +160,22 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+22"/>
         <source>Refresh camera list failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+8"/>
         <source>Get number of cameras failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+8"/>
         <source>Select camera failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+142"/>
         <source>PtGrey Kamera:illegaler Camera Mode! Only: 0)
 </source>
         <translation type="unfinished"></translation>
@@ -217,22 +223,22 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+123"/>
+        <location line="+122"/>
         <source>StartImageAcquisition failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+43"/>
         <source>StopImageAcquisition failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>Cameraflag was &lt; 0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+22"/>
         <source>Tried to acquire without starting device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -242,17 +248,17 @@ time out!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+44"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+100"/>
         <source>F Wrong picture Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+47"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
@@ -260,7 +266,7 @@ time out!</source>
 <context>
     <name>CMU1394Interface</name>
     <message>
-        <location line="-1219"/>
+        <location line="-1258"/>
         <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -331,12 +337,19 @@ time out!</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../cmu1394.cpp" line="-31"/>
+        <location filename="../cmu1394.cpp" line="-39"/>
         <source>Firewire via generic CMU-Driver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+12"/>
+        <source>This plugins provides generic firewire camera support based on CMU-Driver version 6.4.6. CMU 6.4.6 works for firewire specifications &lt;= v1.30.This library is currently developed and tested under Windows only. Tested with PointGrayResearch Firefly and AVT Marlin.
+
+In order to run this plugin you also need to install the CMU1394 drivers that can be obtained as installer from http://www.cs.cmu.edu/~iwan/1394/. Together with this plugin parts of the drivers (some header files and static libraries for 32 and 64bit) in version 6.4.6 are shipped and linked to this plugin at comile time. Therefore you need to install the drivers for the same version as well. Otherwise you can also change the files in the corresponding source folder of this plugin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>itom-plugin under LGPL / CMU1394 driver under LGPL</source>
         <translation type="unfinished"></translation>
     </message>

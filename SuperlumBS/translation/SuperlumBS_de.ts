@@ -573,12 +573,23 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../SuperlumBS.cpp" line="+77"/>
+        <location filename="../SuperlumBS.cpp" line="+66"/>
         <source>Plugin for Superlum BraodSweeper BS-840-1-HP, BS-840-2-HP, BS-1060-1-HP, BS-1060-2-HP.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+12"/>
+        <source>The SuperlumBS is an itom-plugin, which can be used to communicate with a Superlum BroadSweeper.
+Different BroadSweeper types (BS-840-1-HP, BS-840-2-HP, BS-1060-1-HP, BS-1060-2-HP) are implemented.
+Only BS-840-1-HP is tested.
+The company website can be found under http://www.superlumdiodes.com 
+This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization. 
+
+It is initialized by actuator(&quot;SuperlumBS&quot;, SerialIO).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -623,27 +634,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>( 1 ) MANual, ( 2 ) AUTOmatic, ( 3 ) EXTernal, ( 4 ) MODulation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>( 0 ) local or ( 1 ) remote mode.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>( -1 ) booster module is not installed, ( 0 ) optical output of booster is disabled, ( 1 ) optical output of booster is enabled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>( 0 ) LOW Power mode, ( 1 ) HIGH Power mode.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+10"/>
         <source>Modulation frequency in Two-Wavelength MODulation mode.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -658,12 +649,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>sweep speed in AUTOmatic or EXTernal mode between 2nm/s - 10000nm/s. Increment: 1nm/s.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>end modification wavelength in AUTOmatic or EXTernal sweep mode.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -673,28 +659,58 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>operation wavelength [nm] in MANual Mode. Increment: 0.05nm.</source>
+        <location line="-36"/>
+        <source>Name of plugin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>(1) MANual, (2) AUTOmatic, (3) EXTernal, (4) MODulation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>( 0 ) optical output is disabeld, ( 1 ) optical output is enabled.</source>
+        <source>(0) local or (1) remote mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+2"/>
+        <source>(-1) booster module is not installed, (0) optical output of booster is disabled, (1) optical output of booster is enabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>(0) LOW Power mode, (1) HIGH Power mode.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>sweep speed in AUTOmatic or EXTernal mode between 2 nm/s - 10000 nm/s. Increment: 1nm/s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>operation wavelength [nm] in MANual Mode. Increment: 0.05 nm.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>(0) optical output is disabeld, (1) optical output is enabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+11"/>
-        <location line="+631"/>
+        <location line="+629"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-561"/>
+        <location line="-559"/>
         <source>name of given parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -714,30 +730,106 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+31"/>
+        <location line="+93"/>
+        <location line="+40"/>
+        <location line="+33"/>
+        <location line="+29"/>
+        <location line="+6"/>
+        <location line="+281"/>
+        <location line="+105"/>
+        <location line="+393"/>
+        <location line="+237"/>
+        <location line="+30"/>
+        <location line="+55"/>
+        <location line="+190"/>
+        <source>invalid answer &apos;%s&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1486"/>
         <source>Optical output of device is enabled!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+12"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <location line="+18"/>
+        <location line="+13"/>
+        <location line="+5"/>
+        <location line="+43"/>
+        <location line="+13"/>
+        <location line="+18"/>
+        <location line="+34"/>
+        <location line="+38"/>
+        <location line="+23"/>
+        <location line="+41"/>
+        <location line="+19"/>
+        <location line="+17"/>
+        <location line="+21"/>
+        <location line="+16"/>
+        <location line="+16"/>
+        <location line="+16"/>
+        <location line="+109"/>
+        <location line="+105"/>
+        <location line="+7"/>
+        <location line="+466"/>
+        <location line="+19"/>
+        <location line="+25"/>
+        <location line="+26"/>
+        <location line="+25"/>
+        <location line="+26"/>
+        <location line="+36"/>
+        <location line="+30"/>
+        <location line="+55"/>
+        <location line="+16"/>
+        <location line="+16"/>
+        <location line="+16"/>
+        <location line="+16"/>
+        <location line="+23"/>
+        <location line="+10"/>
+        <location line="+16"/>
+        <location line="+16"/>
+        <location line="+61"/>
+        <source>invalid answer &apos;%s&apos; for sending  &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1342"/>
         <source>Optical Output is ENABLED!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+346"/>
+        <location line="+159"/>
+        <source>invalid sweep speed value &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+115"/>
+        <source>&apos;%s&apos; is not a possible modulation frequency.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+70"/>
         <source>Given parameter and m_param do not have the same type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+35"/>
+        <source>Device name &apos;%s&apos; not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Doesn&apos;t fit to interface DataIO!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+72"/>
-        <location line="+15"/>
-        <location line="+17"/>
-        <location line="+15"/>
+        <location line="+16"/>
+        <location line="+16"/>
+        <location line="+16"/>
         <location line="+16"/>
         <location line="+16"/>
         <location line="+16"/>
@@ -745,7 +837,7 @@
         <location line="+16"/>
         <location line="+16"/>
         <location line="+15"/>
-        <location line="+50"/>
+        <location line="+49"/>
         <source>function not defined</source>
         <translation type="unfinished"></translation>
     </message>
@@ -771,7 +863,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+72"/>
         <source>Could not read port number from serial port or port number invalid</source>
         <translation type="unfinished"></translation>
     </message>
@@ -779,7 +871,7 @@
 <context>
     <name>SuperlumBSInterface</name>
     <message>
-        <location line="-1261"/>
+        <location line="-1259"/>
         <source>An opened serial port (the right communcation parameters will be set by this Superlum BroadSweeper).</source>
         <translation type="unfinished"></translation>
     </message>

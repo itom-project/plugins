@@ -120,7 +120,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+16"/>
+        <source>This plugin can operate spectrometers from the Thorlabs CCS Series. 
+
+If you start the plugin without further parameters (device=&apos;&apos;), the first connected device is opened. 
+Set device = &apos;&lt;scan&gt;&apos; in order to get a printed list of detected devices. Use the device string or the desired 
+device in order to open this specific one. 
+
+This plugin has been tested with CCS175. 
+
+For compiling this plugin, you need to install the Thorlabs OSASW Instrumentation software, shipped with the spectrometer. 
+Then set the CMake variable THORLABS_IVI_VISA_SDK to the 32/64 IVI_VISA directory (e.g. C:/Program Files/IVI Foundation/...) where 
+subdirectories like include or bin are contained.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>LPGL, uses Thorlabs CCS VISA Instrument Driver (LGPL licensed)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -128,7 +143,7 @@
 <context>
     <name>ThorlabsCCS</name>
     <message>
-        <location line="+52"/>
+        <location line="+49"/>
         <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -153,17 +168,72 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+378"/>
+        <location line="+3"/>
+        <source>manufacturer name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>device name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>serial number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>firmware revision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>instrument driver revision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>wavelength in nm (air) for each pixel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+59"/>
+        <source>The initialization is terminated since only a list of found devices has been requested (&apos;&lt;scan&gt;&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>no devices found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Device %s could not be found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+276"/>
         <source>The grabber has already been stopped.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+27"/>
         <source>Tried to acquire an image without having started the device.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+112"/>
+        <location line="+37"/>
+        <source>device can not be triggered since it is not in an idle state</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>timeout while getting image from device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
         <source>Tried to get picture without triggering exposure</source>
         <translation type="unfinished"></translation>
     </message>

@@ -329,45 +329,75 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+199"/>
+        <location line="+128"/>
+        <source>deviceName could not be parsed to a valid COM-port number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>for RS232 connections, you need to indiciate a valid baudrate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>initialization breaked since list of TCP/IP devices has been printed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>no device with your name could be detected, similar devices are printed in the command line.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>initialization breaked since list of USB devices has been printed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>unknown connectionType &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
         <source>Doesn&apos;t fit to interface DataIO!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+83"/>
-        <location line="+33"/>
+        <location line="+84"/>
+        <location line="+34"/>
         <source>not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
-        <location line="+959"/>
+        <location line="+51"/>
+        <location line="+958"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-911"/>
+        <location line="-909"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+47"/>
         <source>Too many axis. This is currently a single axis device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+51"/>
         <source>Too many axis. This is currently a single axis device.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+68"/>
         <location line="+717"/>
         <source>controller device unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-577"/>
+        <location line="-579"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -377,7 +407,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+82"/>
         <location line="+43"/>
         <source>error could not be parsed</source>
         <translation type="unfinished"></translation>
@@ -483,18 +513,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-69"/>
+        <location line="+89"/>
         <source>unknown error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+66"/>
         <location line="+49"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+105"/>
         <source>could not identify controller. No answer for command *idn?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -504,7 +535,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+208"/>
+        <location line="+209"/>
         <source>the new position (rel) seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -522,7 +553,25 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+18"/>
+        <source>PI actuators following the GCS2 command set (e.g. E753) 
+This plugin is developped for single axis controllers following the GCS2 commandset. 
+
+Tested with E753, don&apos;t work with E-662 and E-665! 
+
+For the initialization you can connect to the device (if possible) via a USB port, a serial port 
+or a TCP/IP connection. Depending on the connection you should use the initialization parameters 
+in the following way: 
+* RS232: give the COM-port number (number only in Windows, COM-port name in Linux) as deviceName and indicate a valid baudrate as optional parameter. 
+* TCP/IP: give the full name of the device as deviceName or let deviceName empty in order to print out a list of all detected devices (the device name is one full line of the output! 
+* USB: similar to TCP/IP 
+
+Please note that you only need to indicate a baudrate for RS232 connections, in the other cases, 
+the default baudrate 0 forces the controller to connect with a default baudrate which is recommended for TCP/IP or USB connections.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>

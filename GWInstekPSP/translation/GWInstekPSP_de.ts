@@ -82,7 +82,7 @@
 <context>
     <name>GWInstekPSP</name>
     <message>
-        <location filename="../GWInstekPSP.cpp" line="+193"/>
+        <location filename="../GWInstekPSP.cpp" line="+200"/>
         <source>Undefined answer from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -188,7 +188,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+22"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -232,7 +232,7 @@
 <context>
     <name>GWInstekPSPInterface</name>
     <message>
-        <location line="-383"/>
+        <location line="-386"/>
         <source>An initialized SerialIO</source>
         <translation type="unfinished"></translation>
     </message>
@@ -245,12 +245,17 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-19"/>
+        <location line="-24"/>
         <source>Controller for power supplies PSP-405, PSP-603 and PSP-2010 of GWInstek</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+8"/>
+        <source>This itom-plugin allows communicating with power supplies PSP-405, PSP-603 and PSP-2010 (tested with PSP-405) of company GWInstek. Therefore an opened connected via the serial port (using the plugin &apos;SerialIO&apos;) is required. You need to give a valid handle to this instance when initializing this plugin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>

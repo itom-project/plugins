@@ -541,12 +541,21 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../USBMotion3XIII.cpp" line="+114"/>
+        <location filename="../USBMotion3XIII.cpp" line="+111"/>
         <source>A motor driver for the USB Motion 3x III card, COPTONIX GmbH, www.coptonix.com</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>This plugin is a wrapper for the driver of the USB Motion 3x III card of COPTONIX GmbH (www.coptonix.com). It is able to address up to three different 3-phase stepper motors with up to 64 microstep-accuracy. 
+
+The controller is connected to the computer by a USB connection. The wrapper addresses the methods given by the Windows library provided by COPTONIX. For more information about the driver see the corresponding website of the manufacturer (The 64bit DLL was directly provided by COPTONIX). 
+
+If you change any parameters like speed or acceleration, set the values and then read the values again, since the currently set values might slightly differ from the desired values due to rounding uncertainties.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -559,7 +568,7 @@
 <context>
     <name>USBMotion3XIII</name>
     <message>
-        <location line="+243"/>
+        <location line="+244"/>
         <source>indicates whether motor driver is connected (1) or not (0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -738,7 +747,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+31"/>
         <source>DLL USB3xIII.dll not loaded</source>
         <translation type="unfinished"></translation>
     </message>
@@ -748,12 +757,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>driver error: %1 [%2]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+181"/>
         <source>DLL USB3xIII.dll (USB3xIII64.dll for 64bit) not loaded</source>
         <translation type="unfinished"></translation>
     </message>
@@ -763,17 +772,44 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+22"/>
+        <source>no devices or no unused devices could be found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>invalid device index [0, %i]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Device with serial &apos;%s&apos; is already in use</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
         <source>device could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+153"/>
+        <location line="+154"/>
         <source>device could not be closed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1094"/>
+        <location line="+218"/>
+        <source>micro-steps must have one of these values: [1, 2, 4, 8, 16, 32, 64]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <location line="+213"/>
+        <location line="+48"/>
+        <source>axis must be 1, 2, 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+599"/>
         <source>interrupt occurred</source>
         <translation type="unfinished"></translation>
     </message>
@@ -783,78 +819,70 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-855"/>
-        <location line="+102"/>
+        <location line="-878"/>
+        <location line="+127"/>
         <location line="+86"/>
         <location line="+48"/>
         <source>this axis is not available (axisSteps = 0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-276"/>
-        <source>micro-steps must have one of these values: [1,2,4,8,16,32,64]</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-157"/>
+        <location line="-457"/>
         <source>any axis is moving. Parameters cannot be set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+144"/>
+        <location line="+143"/>
         <source>axis %1 is not available (axisSteps = 0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
-        <location line="+102"/>
-        <location line="+86"/>
-        <location line="+48"/>
+        <location line="+176"/>
         <source>axis must be 1,2,3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-216"/>
+        <location line="-105"/>
         <source>coilCurrentHigh is lower than the minimal allowed value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>coilCurrentHigh is bigger than the maximal allowed value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>coilCurrentLow is lower than the minimal allowed value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>coilCurrentLow is bigger than the maximal allowed value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+13"/>
         <source>coilCurrentRest is lower than the minimal allowed value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>coilCurrentRest is bigger than the maximal allowed value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>coilCurrentThreshold is lower than the minimal allowed value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>coilCurrentThreshold is bigger than the maximal allowed value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+69"/>
         <source>vMax is lower than the minimal allowed value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -889,25 +917,25 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+35"/>
         <source>calibration not possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
         <location line="+27"/>
-        <location line="+133"/>
-        <location line="+68"/>
+        <location line="+136"/>
+        <location line="+66"/>
         <location line="+67"/>
         <location line="+74"/>
         <source>motor is running. Further action is not possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-329"/>
-        <location line="+68"/>
-        <location line="+56"/>
-        <location line="+72"/>
+        <location line="-330"/>
+        <location line="+70"/>
+        <location line="+57"/>
+        <location line="+70"/>
         <location line="+63"/>
         <location line="+80"/>
         <location line="+81"/>
@@ -915,13 +943,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-321"/>
+        <location line="-320"/>
         <source>at least one axis not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
-        <location line="+72"/>
+        <location line="+30"/>
+        <location line="+70"/>
         <location line="+63"/>
         <location line="+80"/>
         <source>axis not enabled</source>
@@ -931,7 +959,7 @@
 <context>
     <name>USBMotion3XIIIInterface</name>
     <message>
-        <location line="-1663"/>
+        <location line="-1688"/>
         <source>serial number or string of the device to open, or &apos;auto&apos; if next unused device should be opened or &apos;0&apos;,&apos;1&apos;... to indicate the index of the device to open.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -981,7 +1009,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>DLL could not be unloaded</source>
         <translation type="unfinished"></translation>
     </message>

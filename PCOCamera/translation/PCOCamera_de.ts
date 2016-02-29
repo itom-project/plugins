@@ -204,7 +204,7 @@
 <context>
     <name>PCOCamera</name>
     <message>
-        <location filename="../PCOCamera.cpp" line="+189"/>
+        <location filename="../PCOCamera.cpp" line="+195"/>
         <source>camera interface</source>
         <translation type="unfinished"></translation>
     </message>
@@ -324,12 +324,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+226"/>
+        <location line="+223"/>
         <source>Acquire of PCOCamera can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+93"/>
+        <location line="+92"/>
         <source>Error waiting for image acquisition (%1).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -346,17 +346,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+85"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+39"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-108"/>
+        <location line="-105"/>
         <source>getVal of PCOCamera failed, since undefined bitdepth.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -364,12 +364,24 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1405"/>
+        <location line="-1408"/>
         <source>DLL for PCO-Cameras</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+12"/>
+        <source>The PCOCamera is a plugin to access PCO.XXXX, e.g. PCO.1300 or PCO.2000. 
+This plugin has been tested with the cameras PCO.1200s, PCO.1300 and PCO.2000. 
+
+For compiling this plugin, set the CMake variable **PCO_SDK_DIR** to the base directory of the pco.sdk. 
+The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). 
+Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board. 
+
+For GigE cameras, make sure that the PCO GigE driver is installed and that the camera connection is properly configured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>LGPL / copyright of the external DLLs belongs to PCO</source>
         <translation type="unfinished"></translation>
     </message>

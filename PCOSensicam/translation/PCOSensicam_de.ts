@@ -208,7 +208,7 @@
 <context>
     <name>PCOSensicam</name>
     <message>
-        <location filename="../PCOSensicam.cpp" line="+184"/>
+        <location filename="../PCOSensicam.cpp" line="+188"/>
         <source>Integrationtime of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -298,27 +298,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1164"/>
+        <location line="+1157"/>
         <source>Wrong picture type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1168"/>
+        <location line="-1161"/>
         <source>bits per pixel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+620"/>
+        <location line="+617"/>
         <source>StopDevice of PCOSensicam can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+436"/>
+        <location line="+433"/>
         <source>Acquire of PCOSensicam can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+147"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -331,12 +331,21 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-1373"/>
+        <location line="-1369"/>
         <source>DLL for PCO-Sensicam cameras</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+9"/>
+        <source>The PCOSensicam is a plugin to access PCO sensicam, dicam pro and hsfc pro cameras. 
+
+For compiling this plugin, set the CMake variable **PCO_SENSICAM_SDK_DIR** to the base directory of the pco.sensicam.sdk. 
+The SDK from PCO can be downloaded from http://www.pco.de (pco Software-Development-Toolkit (SDK)). 
+Download the SDK and install it at any location. Additionally you need to install the drivers for operating your framegrabber board.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>LGPL / copyright of the external DLLs belongs to PCO</source>
         <translation type="unfinished"></translation>
     </message>

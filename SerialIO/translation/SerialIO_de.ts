@@ -66,7 +66,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../SerialIO.cpp" line="+267"/>
+        <location filename="../SerialIO.cpp" line="+268"/>
         <location line="+157"/>
         <source>invalid baud rate</source>
         <translation>Ungültige Baudrate</translation>

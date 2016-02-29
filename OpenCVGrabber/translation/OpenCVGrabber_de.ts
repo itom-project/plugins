@@ -12,17 +12,17 @@
 <context>
     <name>OpenCVGrabber</name>
     <message>
-        <location filename="../OpenCVGrabber.cpp" line="+342"/>
+        <location filename="../OpenCVGrabber.cpp" line="+351"/>
         <source>bpp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+405"/>
+        <location line="+406"/>
         <source>Camera (%i) could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-299"/>
+        <location line="-300"/>
         <source>unknown bpp</source>
         <translation type="unfinished"></translation>
     </message>
@@ -42,12 +42,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+603"/>
+        <location line="+607"/>
         <source>the grabber already had zero users.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+22"/>
         <source>Tried to acquire without starting device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -62,7 +62,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-729"/>
+        <location line="-734"/>
         <source>ROI (x,y,width,height)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -117,7 +117,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+697"/>
+        <location line="+702"/>
         <source>Error: grabbed image is empty</source>
         <translation type="unfinished"></translation>
     </message>
@@ -147,7 +147,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+89"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane or 0 planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -157,12 +157,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-36"/>
+        <location line="-35"/>
         <source>A camera with a bitdepth &gt; 8 cannot be operated in color mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+98"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
@@ -170,7 +170,7 @@
 <context>
     <name>OpenCVGrabberInterface</name>
     <message>
-        <location line="-1070"/>
+        <location line="-1073"/>
         <source>consecutive number of the connected camera (starting with 0, default)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -183,12 +183,25 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-32"/>
+        <location line="-46"/>
         <source>OpenCV Video Capture (USB-Cams, Firewire CMU1394...)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+19"/>
+        <source>This plugin wraps the video capture framework of OpenCV. Therefore it requires further libraries of OpenCV (core, highgui, improc and partially tbb). 
+
+Usually all ordinary USB cameras are supported. If you compiled OpenCV with the CMU1384 flag, these firewire cameras are supported as well. Currently, a queuing problem in the Windows version for USB cameras exists. Therefore the plugin requests multiple images per frame in order to finally get the newest one. Therefore this implementation is not the fastest connection to any USB cameras. 
+
+Some supported cameras are only available if OpenCV is compiled with their support, e.g. CMU1394 (not included per default in pre-compiled binaries of OpenCV. 
+
+The parameters of this plugin are double values that are directly redirected to the OpenCV drivers and might have different units / interpretations for various device types. Especially for DirectShow cameras, also use the native settings dialog (accessible via the configuration dialog) to further parameterize the plugin, especially set the manual / auto flag of parameters (not directly available via source code of OpenCV). 
+
+For some devices, an acquisition might deliver an older image. In order to get an actual image, use the parameter &apos;dump_grabs&apos; to set a number of images that is obtained before the real image is delivered to the getVal / copyVal command (default: 0, DirectShow: recommended: 5).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>

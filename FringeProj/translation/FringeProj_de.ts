@@ -4,7 +4,7 @@
 <context>
     <name>FringeProj</name>
     <message>
-        <location filename="../FringeProj.cpp" line="+631"/>
+        <location filename="../FringeProj.cpp" line="+633"/>
         <source>Calculate the indexmap for graycode image stack</source>
         <translation type="unfinished"></translation>
     </message>
@@ -73,12 +73,12 @@
     </message>
     <message>
         <location line="+127"/>
-        <location line="+111"/>
+        <location line="+112"/>
         <source>Contrast threashold (val &lt; threas = invalid)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-234"/>
+        <location line="-235"/>
         <location line="+125"/>
         <source>Value for overexposured pixels</source>
         <translation type="unfinished"></translation>
@@ -118,12 +118,12 @@
         <location line="+7"/>
         <location line="+109"/>
         <location line="+7"/>
-        <location line="+134"/>
+        <location line="+135"/>
         <source>error calling calcPhaseMap4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-245"/>
+        <location line="-246"/>
         <source>image stack must have format uint8 or uint16</source>
         <translation type="unfinished"></translation>
     </message>
@@ -143,7 +143,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+108"/>
         <source>Highest possible unwrapped phase</source>
         <translation type="unfinished"></translation>
     </message>
@@ -223,7 +223,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+22"/>
         <source>disparity map must not be NULL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -231,7 +231,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-615"/>
+        <location line="-616"/>
         <source>Algorithms used for fringe projection (phase shifting and Gray code)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -248,6 +248,19 @@
     <message>
         <location line="+1"/>
         <source>N.A.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+681"/>
+        <source>creates a 1xN lookup table to convert a gray-code value into its corresponding decimal value. 
+
+The gray-code has a maximal width of graycodeBitWidth. Hence, N corresponds 1 &lt;&lt; (graycodeBitWidth+1) 
+To apply this lookup table to a dataObject or numpy array, consider using the numpy method take(lut,array) that returns (lut[array[i]] for i in array).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+113"/>
+        <source>generates the graycode pattern that fills up the given data object of type uint8, uint16 or uint32</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

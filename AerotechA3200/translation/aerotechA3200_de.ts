@@ -4,7 +4,7 @@
 <context>
     <name>AerotechA3200</name>
     <message>
-        <location filename="../aerotechA3200.cpp" line="+128"/>
+        <location filename="../aerotechA3200.cpp" line="+131"/>
         <source>asynchronous move (1), synchronous (0) [default]</source>
         <translation>Asynchrone Fahrt (1), synchrone Fahrt (0) [Voreinstellung]</translation>
     </message>
@@ -414,12 +414,18 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../aerotechA3200.cpp" line="-13"/>
+        <location filename="../aerotechA3200.cpp" line="-16"/>
         <source>Plugin for the A3200-controller of Aerotech</source>
         <translation>Plugin des A3200-Controllers von Aerotech</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>This plugin allows communicating with controllers of type A3200 of company Aerotech. 
+For details please check C:\A3200\MANUAL.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Licensed under LGPL, The Aerotech A3200 library belongs to Aerotech under their specific license (accessible by their free FTP server).</source>
         <translation type="unfinished"></translation>
     </message>

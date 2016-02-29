@@ -232,7 +232,7 @@ WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Contr
 <context>
     <name>UhlRegister</name>
     <message>
-        <location filename="../UhlRegister.cpp" line="+173"/>
+        <location filename="../UhlRegister.cpp" line="+170"/>
         <source>UHL errormessage: </source>
         <translation type="unfinished">Uhl Fehlermeldung: </translation>
     </message>
@@ -406,7 +406,7 @@ Wenn es sich wirklich um einen Uhltisch handelt, sollte ein anderer Joystick aus
 <context>
     <name>UhlRegisterInterface</name>
     <message>
-        <location line="-1427"/>
+        <location line="-1437"/>
         <source>DLL for old 2-3 axis Uhl-Controller</source>
         <translation>DLL für alte 2-3 achsige Uhltische</translation>
     </message>
@@ -425,17 +425,21 @@ WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Contr
     </message>
     <message>
         <location line="+1"/>
-        <source>The UhlRegister is a itom-PlugIn, which can be used to control the 2-3 axis
+        <source>The UhlRegister is a plugin, which can be used to control the 2-3 axis
 stepper motor devices from Uhl (F9S-x)
+
 It is initialized by actuator(&quot;UhlRegister&quot;, SerialIO, ...).
+
 WARNING: There are different controller versions with different
 command languages. This DLL is for F9S Register devices.
-WARNING: The calibration direction of the stages differes according to motor / controller.
-Check calibration direction before usage.</source>
+WARNING: The calibration direction of the stages differs according to motor / controller.
+Check calibration direction before usage. 
+
+This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+15"/>
         <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>

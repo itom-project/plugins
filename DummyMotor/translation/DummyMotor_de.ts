@@ -242,7 +242,7 @@
 <context>
     <name>DummyMotor</name>
     <message>
-        <location filename="../DummyMotor.cpp" line="+138"/>
+        <location filename="../DummyMotor.cpp" line="+146"/>
         <source>Axis number to plot</source>
         <translation type="unfinished">Achsennummer des Plots</translation>
     </message>
@@ -278,12 +278,12 @@
     </message>
     <message>
         <location line="+435"/>
-        <location line="+97"/>
+        <location line="+96"/>
         <source>Any motor axis is moving. The motor is locked.</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren. Der Motor ist gesperrt.</translation>
     </message>
     <message>
-        <location line="+180"/>
+        <location line="+181"/>
         <source>Axis and velocity vector differ in size.</source>
         <translation type="unfinished">Achse und Geschwindigkeitsvektor unterscheiden sich in der Größe.</translation>
     </message>
@@ -305,13 +305,13 @@
     </message>
     <message>
         <location line="+236"/>
-        <location line="+97"/>
+        <location line="+96"/>
         <source>axis number is out of boundary</source>
         <translation type="unfinished">Die Anzahl der Achsen liegt außerhalb des Gültigkeitsbereichs</translation>
     </message>
     <message>
-        <location line="-74"/>
-        <location line="+97"/>
+        <location line="-73"/>
+        <location line="+96"/>
         <source>Axis is out of range.</source>
         <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs.</translation>
     </message>
@@ -326,7 +326,7 @@
         <translation type="unfinished">Eine Zeitüberschreitung ist aufgetreten</translation>
     </message>
     <message>
-        <location line="-450"/>
+        <location line="-449"/>
         <location line="+59"/>
         <source>Any motor axis is already moving</source>
         <translation type="unfinished">Ein Achsenmotor wird gerade verfahren</translation>
@@ -372,12 +372,19 @@
         <translation type="obsolete">Ein virtueller Motor um Anwendungen zu testen</translation>
     </message>
     <message>
-        <location line="-12"/>
+        <location line="-20"/>
         <source>A virtual motor to test real actuators.</source>
         <translation type="unfinished">Ein virtueller Motor um echte Aktuatoren zu testen.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>The DummyMotor is a virtual actuator plugin that emulates up to 10 linear axes. 
+
+The real number of simulated axes is given by the initialization parameter &apos;numAxis&apos;. Use this plugin to simulate or develop your measurement system at another computer. Whenever a position command is executed, this plugin sleeps until the time needed for the positioning (with respect to the speed of the axis) expired.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
         <source>Licensed under LPGL.</source>
         <translation type="unfinished"></translation>
     </message>

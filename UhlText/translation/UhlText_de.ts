@@ -142,7 +142,7 @@
         <translation type="obsolete">Endanschlag im seriellen Puffer erkannt</translation>
     </message>
     <message>
-        <location filename="../UhlText.cpp" line="+336"/>
+        <location filename="../UhlText.cpp" line="+332"/>
         <location line="+22"/>
         <source>No signs read after 10 tries</source>
         <translation type="unfinished">Keine Antwort auch nach 10 Versuchen</translation>
@@ -517,12 +517,11 @@
 <context>
     <name>UhlTextInterface</name>
     <message>
-        <location line="-2235"/>
+        <location line="-2244"/>
         <source>DLL for 2-4 axis Uhl / Lang LStep-Controller</source>
         <translation type="unfinished">DLL für 2-4 achsige Uhltische / LStep-Kontroller</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>The UhlText is a iTom-PlugIn, which can be used to control the 2-4 axis
 stepper motor devices from Uhl (F9S-x) and Lang LSTEP 2x
 It is initialized by actuator(&quot;UhlText&quot;, SerialIO, ...).
@@ -530,13 +529,27 @@ WARNING: There are different controller versions with different
 command languages. This DLL is for ??? devices.
 WARNING: The calibration direction of the stages differes according to motor / controller.
 Check calibration direction before usage.</source>
-        <translation type="unfinished">UhlText ist ein itom-Plugin, welches zur Steuerung für 2-4 achsige Schrittmotorgeräten von Uhl (F9S-x) und Lang LSTEP 2x verwendet werden kann.
+        <translation type="obsolete">UhlText ist ein itom-Plugin, welches zur Steuerung für 2-4 achsige Schrittmotorgeräten von Uhl (F9S-x) und Lang LSTEP 2x verwendet werden kann.
 Die Initialisierung erfolg über &apos;actuator(&quot;UhlText&quot;, SerialIO, ...)&apos;.
 WARNUNG: Es gibt unterschiedliche Controller-Versionen mit unterschiedlichen Befehlen. Diese DLL ist für ??? Geräte.
 WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Controller. Vor der Benutzung die Fahrrichtung der Kalibrierung überprüfen.</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+1"/>
+        <source>The UhlText is a plugin, which can be used to control the 2-4 axis
+stepper motor devices from Uhl (F9S-x) and Lang LSTEP 2x
+It is initialized by actuator(&quot;UhlText&quot;, SerialIO, ...).
+
+WARNING: There are different controller versions with different
+command languages. This DLL is for devices that are controlled by ASCII commands via the RS232 port.
+WARNING: The calibration direction of the stages differs according to motor / controller.
+Check calibration direction before usage. 
+
+This plugin was published with the kind permission of company Walter Uhl, technische Mikroskopie GmbH &amp; Co. KG.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -589,7 +602,7 @@ WARNUNG: Die Kalibrierrichtung der Achsen unterscheiden sich je nach Motor/Contr
 <context>
     <name>dialogUhl</name>
     <message>
-        <location filename="../dialogUhl.cpp" line="+31"/>
+        <location filename="../../UhlRegister/dialogUhl.cpp" line="+31"/>
         <source>Configuration Dialog</source>
         <translation>Konfigurationsdialg</translation>
     </message>
