@@ -1698,8 +1698,6 @@ ito::RetVal SerialIO::getVal(QSharedPointer<char> data, QSharedPointer<int> leng
         }
     }
 
-    qDebug() << *length;
-
     if (m_debugMode)
     {
         emit serialLog(QByteArray(data.data(),*length), "", '<');
