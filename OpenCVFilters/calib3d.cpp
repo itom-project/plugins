@@ -37,10 +37,10 @@
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString OpenCVFilters::cvFindCirclesDoc = QObject::tr("Finds circles in a grayscale image using the Hough transform.\n\
 \n\
-This filter is a wrapper for the openCV-function cv::HoughCircles.\
-he function finds circles in a grayscale image using a modification of the Hough transform.\
+This filter is a wrapper for the OpenCV-function cv::HoughCircles.\
+The function finds circles in a grayscale image using a modification of the Hough transform.\
 Based on this filter, circles are identified and located.\
-The result is dataObject with rows = (n-Circles) and cols = (x,y,r).\n\
+The result is a dataObject where the number of rows corresponds to the number of found circles, each row is (x,y,r).\n\
 ");
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -50,23 +50,23 @@ ito::RetVal OpenCVFilters::cvFindCirclesParams(QVector<ito::Param> *paramsMand, 
     if (!retval.containsError())
     {
         // Mandatory Parameters
-        ito::Param param = ito::Param("Image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Must be 8bit").toLatin1().data());
+        ito::Param param = ito::Param("image", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("input image of type uint8").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("Circles", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("").toLatin1().data());
+        param = ito::Param("circles", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("").toLatin1().data());
         paramsMand->append(param);
 
         // Optional Parameters
         param = ito::Param("dp", ito::ParamBase::Double | ito::ParamBase::In, 1.0, 100.0, 1.0, tr("dp: Inverse ratio of the accumulator resolution to the image resolution.").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("Min Distance", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 20.0, tr("Minimum center distance of the circles.").toLatin1().data());
+        param = ito::Param("min_dist", ito::ParamBase::Double | ito::ParamBase::In, 1.0, 100000.0, 20.0, tr("Minimum center distance of the circles.").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("threshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 255.0, 200.0, tr("The higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).").toLatin1().data());
+        param = ito::Param("canny_threshold", ito::ParamBase::Double | ito::ParamBase::In, 1.0, 255.0, 200.0, tr("The higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("accumulator threshold", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 255.0, 100.0, tr("The accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.").toLatin1().data());
+        param = ito::Param("acc_threshold", ito::ParamBase::Double | ito::ParamBase::In, 1.0, 255.0, 100.0, tr("The accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("Min Radius [px]", ito::ParamBase::Int | ito::ParamBase::In, 1, 2048, 0, tr("Min Radius in x/y").toLatin1().data());
+        param = ito::Param("min_radius", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("Min Radius in x/y").toLatin1().data());
         paramsOpt->append(param);
-        param = ito::Param("Max Radius [px]", ito::ParamBase::Int | ito::ParamBase::In, 1, 2048, 0, tr("Max Radius in x/y").toLatin1().data());
+        param = ito::Param("max_radius", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("Max Radius in x/y (if 0: the maximum of the image width or height is taken)").toLatin1().data());
         paramsOpt->append(param);
     }
 
@@ -83,14 +83,9 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
     ito::RetVal retval = ito::retOk;
 
     // Initialize pointers to the input and output dataObjects
-    ito::DataObject *dObjImages = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();
-    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();
+    ito::DataObject input = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<ito::DataObject*>(), "image", ito::Range::all(), ito::Range::all(), retval, -1, 1, ito::tUInt8);
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();
 
-    // Check if source dataObject exists
-    if (!dObjImages)
-    {
-        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
-    }
 
     // Check if destination dataObject exists
     if (!dObjDst)
@@ -98,55 +93,52 @@ ito::RetVal OpenCVFilters::cvFindCircles(QVector<ito::ParamBase> *paramsMand, QV
         return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
     }
 
-    // Check if source dataObject is an image (2D)
-    if (dObjImages->getDims() != 2)
+    if (!retval.containsError())
     {
-        return ito::RetVal(ito::retError, 0, tr("Error: source is not an image").toLatin1().data());
-    }
 
-    double dp = (*paramsOpt)[0].getVal<double>();
-    double MinDist = (*paramsOpt)[1].getVal<double>();
-    double Threshold = (*paramsOpt)[2].getVal<double>();
-    double AccThreshold = (*paramsOpt)[3].getVal<double>();
-    int MinRadius = (*paramsOpt)[4].getVal<int>();
-    int MaxRadius = (*paramsOpt)[5].getVal<int>();
+        double dp = (*paramsOpt)[0].getVal<double>();
+        double MinDist = (*paramsOpt)[1].getVal<double>();
+        double Threshold = (*paramsOpt)[2].getVal<double>();
+        double AccThreshold = (*paramsOpt)[3].getVal<double>();
+        int MinRadius = (*paramsOpt)[4].getVal<int>();
+        int MaxRadius = (*paramsOpt)[5].getVal<int>();
 
-    // Copy input image to a cv Mat
-    cv::Mat *cvplaneIn = NULL;
-    cvplaneIn = (cv::Mat_<unsigned char> *)(dObjImages->get_mdata())[0];
+        // Copy input image to a cv Mat
+        const cv::Mat *cvplaneIn = input.getCvPlaneMat(0);
 
-    // Declare the output vector to hold the circle coordinates and radii
+        // Declare the output vector to hold the circle coordinates and radii
 #if (CV_MAJOR_VERSION >= 3)
-    std::vector<cv::Vec3f> circles;
+        std::vector<cv::Vec3f> circles;
 #else
-    cv::vector<cv::Vec3f> circles;
+        cv::vector<cv::Vec3f> circles;
 #endif
 
-    /*    void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0)
-        dp – Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
-        param1 – First method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).
-        param2 – Second method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.*/
-    cv::HoughCircles(*cvplaneIn, circles, CV_HOUGH_GRADIENT, dp, MinDist, Threshold, AccThreshold, MinRadius, MaxRadius);
+        /*    void HoughCircles(InputArray image, OutputArray circles, int method, double dp, double minDist, double param1=100, double param2=100, int minRadius=0, int maxRadius=0)
+            dp – Inverse ratio of the accumulator resolution to the image resolution. For example, if dp=1 , the accumulator has the same resolution as the input image. If dp=2 , the accumulator has half as big width and height.
+            param1 – First method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the higher threshold of the two passed to the Canny() edge detector (the lower one is twice smaller).
+            param2 – Second method-specific parameter. In case of CV_HOUGH_GRADIENT , it is the accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles, corresponding to the larger accumulator values, will be returned first.*/
+        cv::HoughCircles(*cvplaneIn, circles, CV_HOUGH_GRADIENT, dp, MinDist, Threshold, AccThreshold, MinRadius, MaxRadius);
 
 
-    // Copy the circles into the output dataObject
-    if (circles.size() > 0)
-    {
-        int sizes[2] = {(int)circles.size(), 3};
-        *dObjDst = ito::DataObject(2, sizes, ito::tFloat32);
-        ito::float32 *rowPtr = NULL;
-
-        for(size_t i = 0; i < circles.size(); i++)
+        // Copy the circles into the output dataObject
+        if (circles.size() > 0)
         {
-            //    This can be used to draw the circles directly into the input image
-            /*    cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-                int radius = cvRound(circles[i][2]);
-                circle(*cvplaneIn, center, radius, 70, 3, 8, 0);*/
+            int sizes[2] = { (int)circles.size(), 3 };
+            *dObjDst = ito::DataObject(2, sizes, ito::tFloat32);
+            ito::float32 *rowPtr = NULL;
 
-            rowPtr = (ito::float32*)dObjDst->rowPtr(0, i);
-            rowPtr[0] = circles[i][0];
-            rowPtr[1] = circles[i][1];
-            rowPtr[2] = circles[i][2];
+            for (size_t i = 0; i < circles.size(); i++)
+            {
+                //    This can be used to draw the circles directly into the input image
+                /*    cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+                    int radius = cvRound(circles[i][2]);
+                    circle(*cvplaneIn, center, radius, 70, 3, 8, 0);*/
+
+                rowPtr = (ito::float32*)dObjDst->rowPtr(0, i);
+                rowPtr[0] = circles[i][0];
+                rowPtr[1] = circles[i][1];
+                rowPtr[2] = circles[i][2];
+            }
         }
     }
 

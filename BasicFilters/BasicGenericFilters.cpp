@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "BasicFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -2862,9 +2862,9 @@ ito::RetVal BasicFilters::spikeCompFilterStdParams(QVector<ito::Param> *paramsMa
     ito::RetVal retval = prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (!retval.containsError())
     {
-        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("n-dim DataObject").toLatin1().data());
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("source dataObject of any real data type.").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("n-dim DataObject of type sourceImage").toLatin1().data());
+        param = ito::Param("destImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("destination dataObject (can be the same than source)").toLatin1().data());
         paramsMand->append(param);
         param = ito::Param("kernelx", ito::ParamBase::Int | ito::ParamBase::In, 1, 101, 3, tr("Odd kernelsize in x").toLatin1().data());
         paramsMand->append(param);
@@ -2872,33 +2872,35 @@ ito::RetVal BasicFilters::spikeCompFilterStdParams(QVector<ito::Param> *paramsMa
         paramsMand->append(param);
         param = ito::Param("delta", ito::ParamBase::Double | ito::ParamBase::In, std::numeric_limits<ito::float64>::epsilon() * 10, std::numeric_limits<ito::float64>::max(), 0.05, tr("Delta value for comparison").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("newValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("value set to clipped values (default: 0.0)").toLatin1().data());
+        param = ito::Param("newValue", ito::ParamBase::Double, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0.0, tr("value set to clipped values").toLatin1().data());
         paramsMand->append(param);
+        param = ito::Param("replaceSpikeByNewValue", ito::ParamBase::Int, 0, 1, 1, tr("if 1 (default), a spike value is replaced by the parameter 'newValue', else it is replaced by the value from the filtered object.").toLatin1().data());
+        paramsOpt->append(param);
 
     }
 
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::DataObject *scrObj, const ito::DataObject &compObj, ito::DataObject *outObj, const _cType delta, const _Type newValue, const bool noCopyNeeded)
+template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::DataObject *scrObj, const ito::DataObject &compObj, ito::DataObject *outObj, const _cType delta, const _Type newValue, const bool noCopyNeeded, const bool replaceByNewValueNotCompObj)
 {
-    _Type *compRowPtr = NULL;
-    _Type *scrRowPtr = NULL;
+    const _Type *compRowPtr = NULL;
+    const _Type *scrRowPtr = NULL;
     _Type *dstRowPtr = NULL;
 
-    cv::Mat *scrMat;
-    cv::Mat *compMat;
+    const cv::Mat *scrMat;
+    const cv::Mat *compMat;
     cv::Mat *dstMat;
 
-    ito::int32 z_length = outObj->calcNumMats();  // get the number of Mats (planes) in the input object
+    ito::int32 z_length = outObj->getNumPlanes();  // get the number of Mats (planes) in the input object
 
     if (std::numeric_limits<_Type>::is_integer && std::numeric_limits<_cType>::is_integer)
     {
-        for(int plane = 0; plane < z_length; plane++)
+        for(int plane = 0; plane < z_length; ++plane)
         {
-            scrMat = (cv::Mat*)(scrObj->get_mdata()[scrObj->seekMat(plane)]);
-            compMat = (cv::Mat*)(compObj.get_mdata()[compObj.seekMat(plane)]);
-            dstMat = (cv::Mat*)(outObj->get_mdata()[outObj->seekMat(plane)]);
+            scrMat = scrObj->get_mdata()[scrObj->seekMat(plane, z_length)];
+            compMat = compObj.get_mdata()[compObj.seekMat(plane, z_length)];
+            dstMat = outObj->get_mdata()[outObj->seekMat(plane, z_length)];
             
             if (noCopyNeeded)
             {
@@ -2911,7 +2913,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                     {
                         if (myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
                         {
-                            dstRowPtr[x] = newValue;
+                            dstRowPtr[x] = replaceByNewValueNotCompObj ? newValue : compRowPtr[x];
                         }
                     }            
                 }
@@ -2927,7 +2929,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                     {
                         if (myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
                         {
-                            dstRowPtr[x] = newValue;
+                            dstRowPtr[x] = replaceByNewValueNotCompObj ? newValue : compRowPtr[x];
                         }
                         else
                         {
@@ -2942,9 +2944,9 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
     {
         for(int plane = 0; plane < z_length; plane++)
         {
-            scrMat = (cv::Mat*)(scrObj->get_mdata()[scrObj->seekMat(plane)]);
-            compMat = (cv::Mat*)(compObj.get_mdata()[compObj.seekMat(plane)]);
-            dstMat = (cv::Mat*)(outObj->get_mdata()[outObj->seekMat(plane)]);
+            scrMat = scrObj->get_mdata()[scrObj->seekMat(plane, z_length)];
+            compMat = compObj.get_mdata()[compObj.seekMat(plane, z_length)];
+            dstMat = outObj->get_mdata()[outObj->seekMat(plane, z_length)];
 
             if (noCopyNeeded)
             {
@@ -2957,7 +2959,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                     {
                         if (ito::dObjHelper::isFinite(scrRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
                         {
-                            dstRowPtr[x] = newValue;
+                            dstRowPtr[x] = replaceByNewValueNotCompObj ? newValue : compRowPtr[x];
                         }
                     }            
                 }
@@ -2973,7 +2975,7 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
                     {
                         if (ito::dObjHelper::isFinite(scrRowPtr[x]) && ito::dObjHelper::isFinite(compRowPtr[x]) && myAbs((_cType)(compRowPtr[x]) - (_cType)(scrRowPtr[x])) > delta)
                         {
-                            dstRowPtr[x] = newValue;
+                            dstRowPtr[x] = replaceByNewValueNotCompObj ? newValue : compRowPtr[x];
                         }
                         else
                         {
@@ -2987,6 +2989,14 @@ template<typename _Type, typename _cType> ito::RetVal SpikeCompBlock(const ito::
     return ito::retOk;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+const QString BasicFilters::spikeMedianFilterDoc = QObject::tr("Performs a median filter with kernelsize (kernelx, kernely) and pixelwise comparison of \n\
+filtered image and original image to remove spikes according to delta value. \n\
+\n\
+At first the input image is filtered by a median filter (filter: 'medianFilter') using the given kernel size. The output \n\
+image then contains the input image, where every pixel is replaced 'newValue' if the absolute distance between the median \n\
+filtered and the input image at the specific pixel is bigger than 'delta'.\n\
+\n\
+This filter also works inplace (same source and destination).");
 /*!
 \detail This function use the generic filter engine with the median filter to set values to remove spikes from an image
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -3002,6 +3012,14 @@ ito::RetVal BasicFilters::spikeMedianFilter(QVector<ito::ParamBase> *paramsMand,
     return spikeGenericFilter(paramsMand, paramsOpt, paramsOut, tGenericMedian);
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+const QString BasicFilters::spikeMeanFilterDoc = QObject::tr("Performs a linear mean filter with kernelsize (kernelx, kernely) and pixelwise comparison of \n\
+filtered image and original image to remove spikes according to delta value. \n\
+\n\
+At first the input image is filtered by a linear mean filter (filter: 'lowPassFilter') using the given kernel size. The output \n\
+image then contains the input image, where every pixel is replaced 'newValue' if the absolute distance between the median \n\
+filtered and the input image at the specific pixel is bigger than 'delta'. \n\
+\n\
+This filter also works inplace (same source and destination).");
 /*!
 \detail This function use the generic filter engine with the median filter to set values to remove spikes from an image
 \param[in|out]   paramsMand  Mandatory parameters for the filter function
@@ -3020,8 +3038,16 @@ ito::RetVal BasicFilters::spikeMeanFilter(QVector<ito::ParamBase> *paramsMand, Q
 ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * paramsOut, const tFilterType filter )
 {
     ito::RetVal retval = ito::retOk;
-    ito::DataObject *dObjSrc = (ito::DataObject*)(*paramsMand)[0].getVal<void*>();  //Input object
-    ito::DataObject *dObjDst = (ito::DataObject*)(*paramsMand)[1].getVal<void*>();  //Filtered output object
+    const ito::DataObject *dObjSrc = (*paramsMand)[0].getVal<ito::DataObject*>();  //Input object
+    ito::DataObject *dObjDst = (*paramsMand)[1].getVal<ito::DataObject*>();  //Filtered output object
+    // get the kernelsize
+    ito::int32 kernelsizex = (*paramsMand)[2].getVal<int>();
+    ito::int32 kernelsizey = (*paramsMand)[3].getVal<int>();
+
+    ito::float64 deltaValue = (*paramsMand)[4].getVal<double>();
+    ito::float64 newValue = (*paramsMand)[5].getVal<double>();
+
+    bool replaceSpikeByNewValue = paramsOpt->at(0).getVal<int>() > 0;
 
     ito::DataObject tempFilterObject;
 
@@ -3033,7 +3059,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     }
     else if (dObjSrc->getDims() < 1) // Report error of input object is empty
     {
-        return ito::RetVal(ito::retError, 0, tr("Ito data object is empty").toLatin1().data());
+        return ito::RetVal(ito::retError, 0, tr("source object must not be empty.").toLatin1().data());
     }
     if (!dObjDst)    // Report error of output object is not defined
     {
@@ -3062,9 +3088,6 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     if (retval.containsError())
         return retval;
 
-    // get the kernelsize
-    ito::int32 kernelsizex = (*paramsMand)[2].getVal<int>();
-    ito::int32 kernelsizey = (*paramsMand)[3].getVal<int>();
 
     if (kernelsizex % 2 == 0) //even
     {
@@ -3075,12 +3098,6 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     {
         return ito::RetVal(ito::retError, 0, tr("Error: kernel in y must be odd").toLatin1().data());
     }
-
-    ito::float64 deltaValue = (*paramsMand)[4].getVal<double>();
-    ito::float64 deltaCasted = deltaValue;
-
-    ito::float64 newValue = (*paramsMand)[5].getVal<double>();
-    ito::float64 newValueCasted = newValue;
 
     QVector<ito::Param> paramsMandMedian;
     QVector<ito::Param> paramsOptMedian;
@@ -3102,7 +3119,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     }
     else
     {
-        param->setVal<void*>(dObjSrc);
+        param->setVal<const ito::DataObject*>(dObjSrc);
     }
 
     param = ito::getParamByName(&paramsMandMedian, "destImage", &retval);
@@ -3113,7 +3130,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     }
     else
     {
-        param->setVal<void*>(&tempFilterObject);
+        param->setVal<ito::DataObject*>(&tempFilterObject);
     }
 
     param = ito::getParamByName(&paramsMandMedian, "kernelx", &retval);
@@ -3161,7 +3178,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
             retval += genericLowPassFilter(&paramsMandMedianBase, &paramsOptMedianBase, &paramsOutMedianBase);
             if (retval.containsError())
             {
-                retval.appendRetMessage(tr(" while running spike removal by median filter").toLatin1().data());
+                retval.appendRetMessage(tr(" while running spike removal by mean filter").toLatin1().data());
                 return retval;        
             }
         break;
@@ -3179,7 +3196,8 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
         }
     }
 
-
+    double newValueCasted = 0.0;
+    double deltaCasted = 0.0;
 
     switch(dObjSrc->getType())
     {
@@ -3191,7 +3209,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
             ito::int32 deltaVal = cv::saturate_cast<ito::int32>(deltaValue);
             deltaCasted = (ito::float64)(deltaVal);
 
-            SpikeCompBlock<ito::int8, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
+            SpikeCompBlock<ito::int8, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded, replaceSpikeByNewValue);
         }
         break;
         case ito::tUInt8:
@@ -3202,7 +3220,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
             ito::int32 deltaVal = cv::saturate_cast<ito::int32>(deltaValue);
             deltaCasted = (ito::float64)(deltaVal);
 
-            SpikeCompBlock<ito::uint8, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
+            SpikeCompBlock<ito::uint8, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded, replaceSpikeByNewValue);
         }
         break;
         case ito::tInt16:
@@ -3213,7 +3231,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
             ito::int32 deltaVal = cv::saturate_cast<ito::int32>(deltaValue);
             deltaCasted = (ito::float64)(deltaVal);
 
-            SpikeCompBlock<ito::int16, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
+            SpikeCompBlock<ito::int16, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded, replaceSpikeByNewValue);
         }
         break;
         case ito::tUInt16:
@@ -3223,7 +3241,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
 
             ito::int32 deltaVal = cv::saturate_cast<ito::int32>(deltaValue);
             deltaCasted = (ito::float64)(deltaVal);
-            SpikeCompBlock<ito::uint16, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
+            SpikeCompBlock<ito::uint16, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded, replaceSpikeByNewValue);
         }
         break;
         case ito::tInt32:
@@ -3234,7 +3252,7 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
             ito::int32 deltaVal = cv::saturate_cast<ito::int32>(deltaValue);
             deltaCasted = (ito::int32)(deltaVal);
 
-            SpikeCompBlock<ito::int32, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
+            SpikeCompBlock<ito::int32, ito::int32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded, replaceSpikeByNewValue);
         }
         break;
         case ito::tFloat32:
@@ -3252,14 +3270,14 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
 
             ito::float32 deltaVal = cv::saturate_cast<ito::float32>(deltaValue);
             deltaCasted = (ito::float32)(deltaVal);
-            SpikeCompBlock<ito::float32, ito::float32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded);
+            SpikeCompBlock<ito::float32, ito::float32>(dObjSrc, tempFilterObject, dObjDst, deltaVal, newVal, noCopyNeeded, replaceSpikeByNewValue);
         }
         break;
         case ito::tFloat64:
         {
             newValueCasted = newValue;
             deltaCasted = deltaValue;
-            SpikeCompBlock<ito::float64, ito::float64>(dObjSrc, tempFilterObject, dObjDst, deltaValue, newValue, noCopyNeeded);
+            SpikeCompBlock<ito::float64, ito::float64>(dObjSrc, tempFilterObject, dObjDst, deltaValue, newValue, noCopyNeeded, replaceSpikeByNewValue);
         }
         break;
     }
@@ -3267,10 +3285,8 @@ ito::RetVal BasicFilters::spikeGenericFilter(QVector<ito::ParamBase> *paramsMand
     // if no errors reported -> create new dataobject with values stored in cvMatOut
     if (!retval.containsError())
     {
-        // Add Protokoll
-        QString msg;
-        msg = tr("spike removal filter via median filter with kernel %1 x %2 for delta = %3 and newValue %4 ").arg(kernelsizex).arg(kernelsizey).arg(deltaCasted).arg(newValueCasted);
-        //        dObjDst -> addToProtocol(std::string(prot));
+        // Add protocol
+        QString msg = tr("spike removal filter via median filter with kernel %1 x %2 for delta = %3 and newValue %4 ").arg(kernelsizex).arg(kernelsizey).arg(deltaCasted).arg(newValueCasted);
 
         dObjDst->addToProtocol(std::string(msg.toLatin1().data()));
     }

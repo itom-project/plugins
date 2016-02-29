@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "dataobjectarithmetic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -51,7 +51,6 @@ class DataObjectArithmeticInterface : public ito::AddInInterfaceBase
         DataObjectArithmeticInterface();       /*! <Class constructor */
         ~DataObjectArithmeticInterface();      /*! <Class destructor */
         ito::RetVal getAddInInst(ito::AddInBase **addInInst);   /*! <Create a new instance of FittingFilters-Class */
-
     private:
         ito::RetVal closeThisInst(ito::AddInBase **addInInst);  /*! <Destroy the loaded instance of FittingFilters-Class */
 
@@ -105,6 +104,10 @@ class DataObjectArithmetic : public ito::AddInAlgo
         static const QString centerOfGravityDoc;
         static ito::RetVal centerOfGravity(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut); //*< Static filter function to calcuate the center of gravity of a dataObject in x and y */
         static ito::RetVal centerOfGravityParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);              //*< Static parameter function for the centerOfGravity-Filter */
+
+        static const QString localCenterOfGravityDoc;
+        static ito::RetVal localCenterOfGravity(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut); //*< Static filter function to calcuate the center of gravity of a dataObject in x and y */
+        static ito::RetVal localCenterOfGravityParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);              //*< Static parameter function for the centerOfGravity-Filter */
         
 		static const QString boundingBoxDoc;
         static ito::RetVal boundingBox(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut); //*< Static filter function to calcuate the center of gravity of a dataObject in x and y */
@@ -119,6 +122,12 @@ class DataObjectArithmetic : public ito::AddInAlgo
         static const QString getPercentageThresholdDoc;
         static ito::RetVal getPercentageThresholdParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                 
         static ito::RetVal getPercentageThreshold(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+
+        static const QString autoFocusEstimateDoc;
+        static ito::RetVal autoFocusEstimateParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        static ito::RetVal autoFocusEstimate(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+
+        static int numThreads;
 
     private:
         template<typename _Tp> static ito::RetVal centroidHelper(const cv::Mat *mat, const ito::float64 &lowTreshold, const ito::float64 &highTreshold, ito::float64 &xCOG, ito::float64 &yCOG);             

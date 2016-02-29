@@ -16,6 +16,9 @@ Overview
 
 .. pluginsummaryextended::
     :plugin: FireGrabber
+    
+For cameras from Allied Vision it is recommended to use the new Vimba interface and the itom plugin AVTVimba. This
+supports more types of cameras and features than the deprecated FirePackage driver from Allied Vision.
 
 Initialization
 ==============
@@ -30,42 +33,41 @@ Parameters
 
 An instance of this plugin has the following internal parameters:
 
-**name**: {str}, read-only
-    name of plugin
-**vendor**: {int}, read-only
-    vendor ID of the camera
-**cameraID**: {int}, read-only
-    camera ID of the camera
-**vendorName**: {str}, read-only
-    vendor name of the camera [if connected]
-**modelName**: {str}, read-only
-    model name of the camera [if connected]
-**integration_time**: {float}
-    Integrationtime of CCD programmed in s
-**frame_time**: {float}, read-only
-    Transmission time per frame in s
 **bpp**: {int}
     bit depth of camera
 **brightness**: {float}
     Brightness value (if supported)
-**sharpness**: {float}
-    Sharpness value (if supported)
-**gamma**: {int}
-    Gamma correction (0: off, 1: on, default: off)
+**cameraID**: {int}, read-only
+    camera ID of the camera
+**frame_time**: {float}, read-only
+    Transmission time per frame in s
 **gain**: {float}
     Virtual gain
+**gamma**: {int}
+    Gamma correction (0: off, 1: on, default: off)
+**integration_time**: {float}
+    Integrationtime of CCD programmed in s
+**modelName**: {str}, read-only
+    model name of the camera [if connected]
+**name**: {str}, read-only
+    name of plugin
 **offset**: {float}, read-only
-    Offset not used here
-**x0**: {int}
-    Startvalue for ROI
-**y0**: {int}
-    Startvalue for ROI
-**x1**: {int}
-    Stopvalue for ROI
-**y1**: {int}
-    Stopvalue for ROI
+    Offset not used here.
 **sizex**: {int}, read-only
     Pixelsize in x (cols)
 **sizey**: {int}, read-only
     Pixelsize in y (rows)
-	
+**timebase**: {int}, read-only
+    timebase (step width of integration_time) in µs
+**vendorID**: {int}, read-only
+    vendor ID of the camera
+**vendorName**: {str}, read-only
+    vendor name of the camera [if connected]
+**x0**: {int}
+    Startvalue for ROI
+**x1**: {int}
+    Stopvalue for ROI
+**y0**: {int}
+    Startvalue for ROI
+**y1**: {int}
+    Stopvalue for ROI

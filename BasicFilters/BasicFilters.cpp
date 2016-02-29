@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "BasicFilters" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -219,10 +219,10 @@ ito::RetVal BasicFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector
     filter = new FilterDef(BasicFilters::genericGaussianFilter, BasicFilters::genericGaussianParams, tr("Performs a gaussian blur filter with kernelsize (x ,y) and according to sigmaX and sigmaY using the generic mcpp filter engine"));
     m_filterList.insert("gaussianFilter", filter);
 
-    filter = new FilterDef(BasicFilters::spikeMedianFilter, BasicFilters::spikeCompFilterStdParams, tr("Performs a median filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value."));
+    filter = new FilterDef(BasicFilters::spikeMedianFilter, BasicFilters::spikeCompFilterStdParams, spikeMedianFilterDoc);
     m_filterList.insert("spikeMedianFilter", filter);
 
-    filter = new FilterDef(BasicFilters::spikeMeanFilter, BasicFilters::spikeCompFilterStdParams, tr("Performs a low pass filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value."));
+    filter = new FilterDef(BasicFilters::spikeMeanFilter, BasicFilters::spikeCompFilterStdParams, spikeMeanFilterDoc);
     m_filterList.insert("spikeMeanFilter", filter);
 
     filter = new FilterDef(BasicFilters::fillGeometricPrimitiv, BasicFilters::fillGeometricParams, fillGeometricDoc);

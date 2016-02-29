@@ -30,7 +30,6 @@ Parameters
 
 An instance of this plugin has the following parameters:
 
-Plugin parameters are:
 **binning**: {int}
     Binning of different pixel, binning = x-factor * 100 + y-factor (binning in y only possible if height of sensor >= 4.
 **bpp**: {int}

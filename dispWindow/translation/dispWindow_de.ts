@@ -152,12 +152,12 @@
 <context>
     <name>DispWindow</name>
     <message>
-        <location filename="../dispWindow.cpp" line="+186"/>
+        <location filename="../dispWindow.cpp" line="+184"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+20"/>
         <source>Cosine period</source>
         <translation type="unfinished"></translation>
     </message>
@@ -182,12 +182,12 @@
         <translation type="unfinished">Anzahl der unterschiedlichen Bilder: Phasenschiebung + Grauwert + 2</translation>
     </message>
     <message>
-        <location line="+227"/>
+        <location line="+224"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-273"/>
+        <location line="-269"/>
         <source>Calculate lookup-table for the calibration between projected grayvalue and the registered camera intensity (maps 256 gray-values to its respective mean ccd values, see parameter &apos;lut&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -212,7 +212,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+8"/>
+        <source>name of the plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>x0 position of display window [px]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -247,7 +252,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+380"/>
+        <location line="+57"/>
+        <source>Supported OpenGL Version is lower than 2.0 and therefore not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+177"/>
+        <source>Currently the lut only has %i values, therefore the index must be in the range [0,%i]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+141"/>
         <source>mandatory or optional parameters vector not initialized!!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -257,17 +272,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>wrong x-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>wrong y-size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>wrong data type (uint8) required</source>
         <translation type="unfinished"></translation>
     </message>
@@ -286,12 +301,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+50"/>
         <source>insufficient gray values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+116"/>
+        <location line="+93"/>
+        <source>timeout while grabbing current OpenGL frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>timeout while projecting a single-color image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>function name &apos;%s&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -299,12 +324,12 @@
 <context>
     <name>DispWindowInterface</name>
     <message>
-        <location line="-939"/>
+        <location line="-944"/>
         <source>Window for SLM/LCD-Applications</source>
         <translation type="unfinished">Fenster für SLM/LCD-Anwendungen</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+14"/>
         <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -445,6 +470,13 @@
     <message>
         <location line="+9"/>
         <source>error out of memory (cosine init 6)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dispWindow.cpp" line="-13"/>
+        <source>This plugin opens a borderless window at a given position and displays horizontal or vertical cosine fringes including various graycode fringes (for unwrapping). The visualization is done with the help of OpenGL and the open source library GLEW. 
+
+For building this plugin, download (the binaries) of glew from http://glew.sourceforge.net/ and set the variable GLEW_DIR in CMake to the corresponding folder. The necessary library will finally be copied to the lib-folder of itom such that an entry in the environment variable path is not necessary. Please make sure, that you use always the same version of glew for all plugins that require this library.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

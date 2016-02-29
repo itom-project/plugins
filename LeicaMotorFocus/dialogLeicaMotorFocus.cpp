@@ -125,7 +125,7 @@ void DialogLeicaMotorFocus::on_cmdHoming_clicked()
         enableDialog(false);
         QMetaObject::invokeMethod(m_pluginInstance,"calib",Q_ARG(int,0),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
-        if (!locker.getSemaphore()->wait(30000))
+        if (!locker.getSemaphore()->wait(60000))
         {
             QMessageBox::critical( this, tr("error"), tr("timeout when homing"));
         }

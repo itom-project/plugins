@@ -105,7 +105,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../Ximea.cpp" line="+77"/>
+        <location filename="../Ximea.cpp" line="+75"/>
         <source>Ximea xiQ-Camera</source>
         <translation type="unfinished"></translation>
     </message>
@@ -129,7 +129,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
 <context>
     <name>Ximea</name>
     <message>
-        <location line="+47"/>
+        <location line="+45"/>
         <source>Dark Image, if null, empty image will be generated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -175,7 +175,12 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+14"/>
+        <source>name of the camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Exposure time (in seconds).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -326,6 +331,11 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
     </message>
     <message>
         <location line="+2"/>
+        <source>Enable / Disable Automatic exposure / gain. AEAG is disabled in the current implementation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Set the output pin modes for all available gpo pins. This is a list whose lengths corresponds to the number of available pins. Use gpo_mode[i] to access the i-th pin.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -370,22 +380,17 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+232"/>
+        <location line="+17"/>
+        <source>this camera cannot be configured and used since it is propably used by another process</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+235"/>
         <source>Camera is not connected or does not work properly!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+366"/>
-        <source>LoadLibrary(&quot;m3apiX64.dll&quot;)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>LoadLibrary(&quot;./plugins/Ximea/m3api.dll&quot;)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location line="+367"/>
         <location line="+43"/>
         <source>Cannot get function xiGetNumberDevices</source>
         <translation type="unfinished"></translation>
@@ -461,12 +466,12 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+723"/>
+        <location line="+716"/>
         <source>stopDevice ignored since camera was not started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+684"/>
+        <location line="+679"/>
         <source>Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -482,13 +487,13 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1620"/>
+        <location line="-1608"/>
         <location line="+43"/>
         <source>Cannot get function mmProcessFrame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-410"/>
+        <location line="-412"/>
         <source>Camera handle deleted before closing procedure</source>
         <translation type="unfinished"></translation>
     </message>
@@ -498,12 +503,384 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1280"/>
+        <location line="+35"/>
+        <source>Invalid handle during sending</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Register read error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Register write error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Freeing resources error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Freeing channel error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Freeing bandwith error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Read block error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Write block error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>No image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid arguments supplied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Attach buffers error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Overlapped result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Memory allocation error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>DLL context is NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>DLL context is non zero</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>DLL context exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Too many devices connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Camera context error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Unknown hardware</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid TM file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid TM tag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Incomplete TM</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Bus reset error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Not implemented</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Shading too bright</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Shading too dark</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Gain is too low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <location line="+15"/>
+        <source>Invalid bad pixel list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-12"/>
+        <source>Bad pixel list realloc error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid pixel list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid Flash File System</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Invalid buffer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Timing generator is busy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Wrong operation open/write/read/close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Acquisition already started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Old version of device driver installed to the system</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>To get error code please call GetLastError function</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Data can&apos;t be processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Error occured and acquisition has been stoped or didn&apos;t start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Acquisition has been stoped with error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Input ICC profile missed or corrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Output ICC profile missed or corrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Device not ready to operate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Shading too contrast</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Module already initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Application doesn&apos;t enough privileges(one or more applications opened)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>installed driver incompatible with current software</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>TM file was not loaded successfully from resources</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Device has been reseted, abnormal initial state</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>No Devices found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Resource (device) or function  locked by mutex</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>unknown parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>wrong parameter value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>wrong parameter type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>wrong parameter size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>input buffer too small</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>parameter not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>parameter info not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>data format not supported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>read only parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>no devices found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>this camera does not support currently available bandwidth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>unknown error code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>ximea m3api error &apos;%1&apos; (%2). Value: %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>ximea m3api error &apos;%1&apos; (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <location line="+11"/>
+        <source>LoadLibrary(&quot;m3apiX64.dll&quot;). Error code: %i</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+398"/>
+        <source>frame_burst_count != 1 can only be applied if trigger_selector = frame_burst_start (%i) and trigger_mode != off (0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>frame_burst_count &gt; %i or infinite frame_burst_count (0) is not recommended since the maximum number of buffers in this plugin is %i</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+185"/>
+        <source>xiApi-Parameter &apos;%s&apos; is out of allowed range [%i,%i]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>xiApi-Parameter &apos;%s&apos; must have an increment of %i (minimum value %i)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+391"/>
         <source>Tried to acquire without starting device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+129"/>
+        <location line="+128"/>
         <source>Tried to get picture without starting device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -513,7 +890,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+117"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
@@ -523,7 +900,7 @@ This plugin has been tested using monchrome USB3.0 cameras (e.g. MQ013MG-E2, MQ0
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+171"/>
         <source>function name &apos;%1&apos; does not exist</source>
         <translation type="unfinished"></translation>
     </message>

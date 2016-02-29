@@ -135,7 +135,7 @@
 <context>
     <name>GLDisplay</name>
     <message>
-        <location filename="../glDisplay.cpp" line="+177"/>
+        <location filename="../glDisplay.cpp" line="+210"/>
         <source>mean grey values from intensity calibration</source>
         <translation type="unfinished"></translation>
     </message>
@@ -175,7 +175,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+8"/>
+        <source>name of the plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>0: Red, 1: Green, 2: Blue, 3: White</source>
         <translation type="unfinished"></translation>
     </message>
@@ -225,7 +230,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+148"/>
+        <location line="+146"/>
         <source>lut has wrong size, 256 values required!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -260,7 +265,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+99"/>
         <source>timeout while adding textures</source>
         <translation type="unfinished"></translation>
     </message>
@@ -283,12 +288,12 @@
 <context>
     <name>GLDisplayInterface</name>
     <message>
-        <location line="-694"/>
+        <location line="-723"/>
         <source>Frameless window to display images using OpenGL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+25"/>
         <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -320,6 +325,31 @@
     <message>
         <location line="+3"/>
         <source>Lookup table for a gamma correction with 256 values. If given, the gamma correction will be enabled (default: off) and the projected values are then modified with lut[value].</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location line="-36"/>
+        <source>This plugin displays a frameless window that displays one or multiple arrays using OpenGL technology. 
+Each array is then created as texture, where the horizontal and vertical wrap property can be chosen individually. 
+OpenGL allows a fast switch between all created textures. 
+
+Per default, the window is either displayed in a second screen (fullscreen) or if only one screen is available - 
+placed as small window in the top left corner of the main screen. Otherwise chose an appropriate x0, y0, xsize and ysize 
+parameter at initialization. 
+
+In order to assign textures, use the exec-function &apos;addTextures&apos; and pass a 2d or 3d dataObject, where in the latter case 
+every plane of the 3d dataObject is registered as single texture. Create the tags &apos;wrapT&apos;, &apos;wrapS&apos;, &apos;MinFilter&apos; or &apos;MagFilter&apos; 
+to control the repeatability of every texture or its interpolation method. 
+
+Allowed values for these tags are: 
+
+* &apos;MagFilter&apos; (interpolation used when the texture is smaller than the window size): &apos;GL_NEAREST&apos; (default) or &apos;GL_LINEAR&apos; 
+* &apos;MinFilter&apos; (interpolation used when the texture is bigger than the window size): &apos;GL_NEAREST&apos; (default), &apos;GL_LINEAR&apos;, &apos;GL_LINEAR_MIPMAP_NEAREST&apos;, &apos;GL_NEAREST_MIPMAP_NEAREST&apos;, &apos;GL_LINEAR_MIPMAP_LINEAR&apos; 
+* &apos;wrapT&apos; (vertical scaling mode): &apos;GL_REPEAT&apos; (default), &apos;SCALED&apos;, &apos;GL_MIRRORED_REPEAT, &apos;GL_CLAMP_TO_EDGE&apos; 
+* &apos;wrapS&apos; (horizontal scaling mode): &apos;GL_REPEAT&apos; (default), &apos;SCALED&apos;, &apos;GL_MIRRORED_REPEAT&apos;, &apos;GL_CLAMP_TO_EDGE&apos;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

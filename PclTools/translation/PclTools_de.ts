@@ -4,7 +4,7 @@
 <context>
     <name>PclTools</name>
     <message>
-        <location filename="../pclTools.cpp" line="+4097"/>
+        <location filename="../pclTools.cpp" line="+4264"/>
         <source>saves pointCloud to hard drive (format pcd(binary or ascii), ply(binary or ascii), vtk(ascii), xyz(ascii)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -51,7 +51,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>removes NaN values from input point cloud (input and output can be the same).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -116,7 +116,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4011"/>
+        <location line="-4164"/>
         <source>point cloud to save</source>
         <translation type="unfinished"></translation>
     </message>
@@ -152,7 +152,7 @@
     </message>
     <message>
         <location line="+81"/>
-        <location line="+188"/>
+        <location line="+189"/>
         <source>ply-support is not compiled in this version (since this is not supported in PCL1.5.1 or lower</source>
         <translation type="unfinished"></translation>
     </message>
@@ -193,23 +193,28 @@
     </message>
     <message>
         <location line="+26"/>
-        <location line="+556"/>
+        <location line="+557"/>
         <source>file &apos;%s&apos; could not be opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-528"/>
+        <location line="-538"/>
+        <source>file &apos;%s&apos; does not contain point cloud data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>vtk file format cannot be loaded (not supported)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <location line="+549"/>
+        <location line="+550"/>
         <source>unsupported format &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-425"/>
+        <location line="-426"/>
         <source>The loaded point cloud has an uncompatible format.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -224,7 +229,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+29"/>
         <source>data object to save (two or three dimensional, uint8 or uint16)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -249,7 +254,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+196"/>
+        <location line="+24"/>
+        <location line="+15"/>
+        <source>dataObject must be uint8 or uint16</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>filename is empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+145"/>
         <source>polygon mesh to save</source>
         <translation type="unfinished"></translation>
     </message>
@@ -284,7 +300,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+1"/>
+        <source>complete filename (type is read by suffix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>type (&apos;obj&apos;,&apos;vtk&apos;,&apos;stl&apos;,&apos;ply&apos;, &apos;auto&apos; [default, check suffix of filename])</source>
         <translation type="unfinished"></translation>
     </message>
@@ -322,16 +343,16 @@
     <message>
         <location filename="../pclModelFitGeneric.cpp" line="+77"/>
         <location filename="../pclTools.cpp" line="+19"/>
-        <location line="+136"/>
-        <location line="+177"/>
-        <location line="+130"/>
+        <location line="+137"/>
+        <location line="+284"/>
+        <location line="+125"/>
         <location line="+185"/>
         <location line="+203"/>
         <location line="+189"/>
         <location line="+148"/>
         <location line="+138"/>
         <location line="+136"/>
-        <location line="+194"/>
+        <location line="+193"/>
         <location line="+248"/>
         <location line="+126"/>
         <source>point cloud must not be NULL</source>
@@ -343,8 +364,8 @@
         <location filename="../pclModelFitGeneric.cpp" line="+39"/>
         <location line="+140"/>
         <location line="+328"/>
-        <location filename="../pclModelFit.cpp" line="+766"/>
-        <location line="+61"/>
+        <location filename="../pclModelFit.cpp" line="+768"/>
+        <location line="+60"/>
         <source>Fit of model type %1 not supported</source>
         <translation type="unfinished"></translation>
     </message>
@@ -391,28 +412,69 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pclModelFit.cpp" line="-660"/>
-        <location line="+221"/>
+        <location filename="../pclNurbs.cpp" line="+204"/>
+        <location filename="../pclModelFit.cpp" line="-662"/>
+        <location line="+222"/>
         <location line="+39"/>
         <location line="+38"/>
         <location line="+38"/>
-        <location line="+43"/>
-        <location line="+41"/>
-        <location line="+41"/>
-        <location line="+70"/>
-        <location filename="../pclTools.cpp" line="-1933"/>
+        <location line="+44"/>
+        <location line="+42"/>
+        <location line="+42"/>
+        <location line="+69"/>
+        <location filename="../pclTools.cpp" line="-2035"/>
         <source>Input point cloud with normal values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-530"/>
+        <location line="+3"/>
+        <source>fitted mesh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>polynomial order of the B-spline surface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>number of refinement iterations, where for each iteration control-points are inserted, approximately doubling the control points in each parametric direction of the B-spline surface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>number of iterations that are performed after refinement is completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>the number of vertices in each parametric direction, used for triangulation of the B-spline surface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>filename of a *.3dm OpenNURBS file. If given, the B-spline surface and curve are saved as two layers in the file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>parameters for the B-spline surface fitting (interior_smoothness, interior_weight, boundary_smoothness, boundary_weight)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>parameters for the B-spline curve fitting (addCPsAccuracy, addCPsIteration (int), maxCPs (int), accuracy, iterations (int), closest_point_resolution (int), closest_point_weight, closest_point_sigma2, interior_sigma2, smooth_concavity, smoothness)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclModelFit.cpp" line="-533"/>
         <location filename="../pclTools.cpp" line="+2"/>
         <source>Model type according to enum pcl::SacModel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <location line="+218"/>
+        <location line="+219"/>
         <location line="+39"/>
         <location line="+38"/>
         <location line="+38"/>
@@ -420,14 +482,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-329"/>
-        <location line="+333"/>
-        <location line="+42"/>
+        <location line="-330"/>
+        <location line="+334"/>
+        <location line="+43"/>
         <source>(normal-)axis to fit to [x, y, z]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-374"/>
+        <location line="-376"/>
         <source>maximum divergence between (normal-)axis and model orientation in radiant</source>
         <translation type="unfinished"></translation>
     </message>
@@ -442,7 +504,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+94"/>
         <source>Input data object</source>
         <translation type="unfinished"></translation>
     </message>
@@ -452,7 +514,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+122"/>
+        <location line="+121"/>
         <source>point on axis of symmetry of cylinder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -468,68 +530,68 @@
     </message>
     <message>
         <location line="+108"/>
+        <location line="+43"/>
         <location line="+42"/>
-        <location line="+41"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>maximum divergence between (normal-)axis and model oriantation in radiant</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-457"/>
-        <location line="+215"/>
+        <location line="-461"/>
+        <location line="+216"/>
         <location line="+39"/>
         <location line="+38"/>
         <location line="+42"/>
+        <location line="+43"/>
         <location line="+42"/>
-        <location line="+41"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Set the relative weight (between 0 and 1) to give to the angular distance (0 to pi/2) between point normals and the plane normal [default: 0.1]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-458"/>
-        <location line="+215"/>
+        <location line="-462"/>
+        <location line="+216"/>
         <location line="+39"/>
         <location line="+38"/>
         <location line="+42"/>
+        <location line="+43"/>
         <location line="+42"/>
-        <location line="+41"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>maximum number of RANSAC iterations [default: 10000]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-458"/>
-        <location line="+215"/>
+        <location line="-462"/>
+        <location line="+216"/>
         <location line="+39"/>
         <location line="+38"/>
         <location line="+42"/>
+        <location line="+43"/>
         <location line="+42"/>
-        <location line="+41"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>distanceThreshold of pcl [default: 0.05]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-243"/>
+        <location line="-246"/>
         <location line="+39"/>
         <source>if 1: nonlinear optimization over al 7 parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-253"/>
-        <location line="+215"/>
+        <location line="-254"/>
+        <location line="+216"/>
         <location line="+39"/>
         <location line="+38"/>
         <location line="+42"/>
+        <location line="+43"/>
         <location line="+42"/>
-        <location line="+41"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>the probability of choosing at least one sample free from outliers. [default: 0.99]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-354"/>
+        <location line="-356"/>
         <source>The api-functions are not defined. Init of filter failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -544,14 +606,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-127"/>
-        <location line="+217"/>
+        <location line="-129"/>
+        <location line="+218"/>
         <location line="+38"/>
         <location line="+38"/>
         <location line="+43"/>
-        <location line="+41"/>
-        <location line="+41"/>
-        <location line="+43"/>
+        <location line="+42"/>
+        <location line="+42"/>
+        <location line="+44"/>
         <source>number of points considered after filtering outliers (due to RANSAC principle)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -571,7 +633,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pclModelFit.cpp" line="-208"/>
+        <location filename="../pclModelFit.cpp" line="-211"/>
         <source>resulting center point of spehre</source>
         <translation type="unfinished"></translation>
     </message>
@@ -583,14 +645,14 @@
     <message>
         <location line="+33"/>
         <location line="+42"/>
+        <location line="+43"/>
         <location line="+42"/>
-        <location line="+41"/>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>if 1: nonlinear optimization over all parameters is run (Careful: radius may exceed the given boundaries and then the resulting, considered indices become empty.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-163"/>
+        <location line="-166"/>
         <source>resulting center point (xy) of circle</source>
         <translation type="unfinished"></translation>
     </message>
@@ -606,35 +668,35 @@
     </message>
     <message>
         <location line="+1"/>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>resulting normal vector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-40"/>
+        <location line="-41"/>
         <source>resulting fitted radius of the circle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+42"/>
         <source>resulting last value of Hesse Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
-        <location line="+42"/>
+        <location line="+31"/>
+        <location line="+43"/>
         <source>axis to fit to [x, y, z]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-32"/>
-        <location line="+42"/>
+        <location line="-33"/>
+        <location line="+43"/>
         <source>resulting point on the line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-41"/>
-        <location line="+42"/>
+        <location line="-42"/>
+        <location line="+43"/>
         <source>resulting oriantation vector</source>
         <translation type="unfinished"></translation>
     </message>
@@ -649,19 +711,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+53"/>
         <location filename="../pclTools.cpp" line="-1"/>
         <source>Output point cloud with distances</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+758"/>
+        <location line="+755"/>
         <source>Model type according to enum pcl::SacModel (sphere: 4, cylinder: 5)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-754"/>
+        <location line="-752"/>
         <location filename="../pclTools.cpp" line="+4"/>
         <source>point on cylinder symmetrie axis</source>
         <translation type="unfinished"></translation>
@@ -679,7 +741,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+750"/>
+        <location line="+748"/>
         <source>Input data object (real type)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -694,8 +756,23 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+84"/>
+        <source>four coefficients are required for a sphere model (p_x, p_y, p_z, r)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>seven coefficients are required for a sphere model (p_x, p_y, p_z, v_x, v_y, v_z, r)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>modelType %i not supported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../pclProjectInliers.cpp" line="-119"/>
-        <location filename="../pclModelFit.cpp" line="-727"/>
+        <location filename="../pclModelFit.cpp" line="-818"/>
         <source>pclDistanceToModel not implemented for PCL 1.6.1 or lower</source>
         <translation type="unfinished"></translation>
     </message>
@@ -719,7 +796,7 @@
     </message>
     <message>
         <location line="+19"/>
-        <location filename="../pclModelFit.cpp" line="+18"/>
+        <location filename="../pclModelFit.cpp" line="+17"/>
         <source>Cylinder model must have 7 parameters, [x,y,z], [dx, dy, dz] and r. [x,y,z] was not defined correctly.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -731,8 +808,8 @@
     </message>
     <message>
         <location line="+39"/>
-        <location filename="../pclModelFit.cpp" line="+38"/>
-        <location filename="../pclTools.cpp" line="+2832"/>
+        <location filename="../pclModelFit.cpp" line="+36"/>
+        <location filename="../pclTools.cpp" line="+2934"/>
         <source>invalid point cloud type not defined or point cloud invalid</source>
         <translation type="unfinished"></translation>
     </message>
@@ -748,7 +825,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pclTools.cpp" line="-2806"/>
+        <location filename="../pclTools.cpp" line="-2908"/>
         <source>Valid point cloud whose normals should be estimated</source>
         <translation type="unfinished"></translation>
     </message>
@@ -768,7 +845,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+35"/>
         <source>view point must be empty or a double list with three elements.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -788,8 +865,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
-        <location line="+124"/>
+        <location line="+134"/>
+        <location line="+119"/>
         <location line="+165"/>
         <location line="+221"/>
         <location line="+191"/>
@@ -797,14 +874,14 @@
         <location line="+133"/>
         <location line="+135"/>
         <location line="+198"/>
-        <location line="+246"/>
+        <location line="+245"/>
         <location line="+129"/>
         <source>Valid input point cloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1693"/>
-        <location line="+124"/>
+        <location line="-1687"/>
+        <location line="+119"/>
         <location line="+165"/>
         <location line="+221"/>
         <location line="+191"/>
@@ -951,12 +1028,12 @@
     </message>
     <message>
         <location line="+149"/>
-        <location line="+233"/>
+        <location line="+232"/>
         <source>Unable to find field name in point type.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-189"/>
+        <location line="-188"/>
         <source>field name, whose values are used for the calculation of the histogram</source>
         <translation type="unfinished"></translation>
     </message>
@@ -976,7 +1053,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+1"/>
         <source>The histogram is a int32 data object with size [1 x steps].</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1114,19 +1191,87 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+698"/>
+        <location line="+8"/>
+        <source>point cloud type not supported be given</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <location line="+311"/>
+        <source>a valid organized point cloud must be given</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-47"/>
+        <source>with a PCL &lt; 1.7.0 trianglePixelSizeRows and trianglePixelSizeColumns must be 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>wrong triangulationType parameter.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>the parameters organizedCloud and meshOut must not be NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>the given point cloud must be organized. The height property of an organized point cloud is bigger than one.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+132"/>
+        <location line="+65"/>
+        <source>Only tested / implemented for version 1.7.0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-58"/>
+        <location line="+69"/>
+        <source>the parameters meshIn and meshOut must not be NULL.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-64"/>
+        <source>the input mesh must be valid.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+69"/>
+        <source>the input point cloud must be valid.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+58"/>
+        <source>Valid polygonal mesh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>output point cloud with the same point type than contained in the mesh but including normal vectors.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Optional list with indices that should be considered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+156"/>
         <source>Uses copy an organized and dense pointcloud to an dataObject.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-487"/>
-        <location line="+28"/>
+        <location line="-537"/>
+        <location line="+29"/>
         <location line="+194"/>
         <source>Valid, organized point cloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-221"/>
+        <location line="-222"/>
         <location line="+1"/>
         <location line="+1"/>
         <source>Output dataObject with z-Values</source>
@@ -1143,7 +1288,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <location line="+194"/>
         <location line="+65"/>
         <source>output polygonal mesh</source>
@@ -1185,12 +1330,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+142"/>
+        <location line="+188"/>
         <source>Projects points onto a given model.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location line="+51"/>
         <source>Used SimplificationRemoveUnusedVertices from the PCL to simplify a pcl mesh.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1203,7 +1348,7 @@
 <context>
     <name>PclToolsInterface</name>
     <message>
-        <location line="-4064"/>
+        <location line="-4232"/>
         <source>Filters and methods for pointClouds and polygonMeshes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1211,13 +1356,334 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>This plugin contains methods for filtering, transforming, saving and loading 
+point clouds and polygon meshes. Most methods are wrappers for functions provided 
+by the open source project PointCloudLibrary (pcl). The function calls are usually 
+implemented for the cloud types supported by the itom classes itom.pointCloud 
+and itom.polygonMesh (XYZ,XYZI,XYZRGBA,XYZNormals...). 
+
+This library uses also methods from the current pcl version 1.7.1, however also 
+compiles with older versions. In this case some methods are not compiled. 
+
+This plugin also covers the methods for loading and saving point clouds and polygon 
+meshes to common formats like pcd, ply, stl, obj... Once the plugin is loaded 
+itom in general is also able to load and save such structures using the methods provided 
+by this plugin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+1"/>
         <source>N.A.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <location line="+228"/>
+        <location line="+482"/>
+        <location line="+95"/>
+        <location line="+120"/>
+        <location line="+131"/>
+        <location line="+296"/>
+        <location line="+119"/>
+        <location line="+386"/>
+        <location line="+191"/>
+        <location line="+152"/>
+        <location line="+133"/>
+        <location line="+135"/>
+        <location line="+198"/>
+        <location line="+245"/>
+        <location line="+129"/>
+        <location line="+129"/>
+        <location line="+134"/>
+        <location line="+51"/>
+        <location line="+311"/>
+        <location line="+194"/>
+        <location line="+64"/>
+        <source>
+
+
+
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-3417"/>
+        <source>saves a 2D or 3D uint8 or uint16 data object to a VTK imageData volume image
+
+This file format allows displaying volume data from the given 3D data object for instance using ParaView.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1131"/>
+        <source>pclCropBox is a filter that allows the user to filter all the data inside of a given box.
+
+Indicate the minimum and maximum values in x,y and z direction for the box and optionally tranlate and rotate the box to 
+adjust its position and orientation. The rotation vector are the euler angles rx, ry and rz.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2379"/>
+        <source>calculates a point cloud with normal information which contains the normal at each triangle of the given 
+polygonal mesh centered at the center of gravity of the triangle. Use indices to filter only certain triangles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclProjectInliers.cpp" line="-79"/>
+        <source>
+
+
+Possible types are: 
+--------------------
+SACMODEL_PLANE = 0, 
+SACMODEL_LINE = 1, 
+SACMODEL_CIRCLE2D = 2, 
+SACMODEL_CIRCLE3D = 3, 
+SACMODEL_SPHERE = 4, 
+SACMODEL_CYLINDER = 5, 
+SACMODEL_CONE = 6, 
+SACMODEL_TORUS = 7, 
+SACMODEL_PARALLEL_LINE = 8, 
+SACMODEL_PERPENDICULAR_PLANE = 9, 
+SACMODEL_PARALLEL_LINES = 10, 
+SACMODEL_NORMAL_PLANE = 11, 
+SACMODEL_NORMAL_SPHERE = 12, 
+SACMODEL_REGISTRATION = 13, 
+SACMODEL_REGISTRATION_2D = 14, 
+SACMODEL_PARALLEL_PLANE = 15, 
+SACMODEL_NORMAL_PARALLEL_PLANE = 16, 
+SACMODEL_STICK = 17 
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclNurbs.cpp" line="-35"/>
+        <source>This filter fits a trimmed B-spline to a point cloud. 
+This filter is mainly derived from the example at http://pointclouds.org/documentation/tutorials/bspline_fitting.php. 
+
+After the fit, you can either obtain the result as a polygonMesh that is discretized from the resulting B-spline or 
+the fitted B-spline can be saved in the OpenNURBS format (3dm) to the harddrive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclModelFit.cpp" line="-830"/>
+        <source>fits a geometric model to the given input point cloud using a RANSAC based approach. 
+
+The method used for this fit is from the sample consensus module of point cloud library. 
+(See http://docs.pointclouds.org/1.7.0/group__sample__consensus.html). 
+
+The following models are available: 
+
+Plane (0). Hessian Normal Form (n_vec * pt + d = 0). Coefficients: 
+
+* n_x 
+* n_y 
+* n_z 
+* d 
+
+Line (1). Output is the line vector (v) and one point (p) on the line. Coefficients: 
+
+* p_x 
+* p_y 
+* p_z 
+* v_x 
+* v_y 
+* v_z 
+
+Circle 2D (2). Output is the center point (p) of the circle and its radius (r) - (Fit in X, Y direction only). Coefficients: 
+
+* p_x 
+* p_y 
+* r 
+
+Circle 3D (3). Output is the normal vector (v), the center point (p) of the circle and the circle radius (r). Coefficients: 
+
+* p_x 
+* p_y 
+* p_z 
+* r 
+* v_x 
+* v_y 
+* v_z 
+
+Sphere (4). Output is the center point (p) and the radius (r). Coefficients: 
+
+* p_x 
+* p_y 
+* p_z 
+* r 
+
+Cylinder (5)*. Output is the orientation vector (v), one point (p) on the line and the cylinder radius (r). Coefficients: 
+
+* p_x 
+* p_y 
+* p_z 
+* v_x 
+* v_y 
+* v_z 
+* r 
+
+Cone (6)*. Output is the orientation vector (v), the tip point (p) and the opening angle in rad. Coefficients: 
+
+* p_x 
+* p_y 
+* p_z 
+* v_x 
+* v_y 
+* v_z 
+* angle 
+
+Models with * need an input cloud where normal vectors are defined.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+109"/>
+        <source>fits a geometric model to the given input data object using a RANSAC based approach. 
+
+The input data object is transformed to a point cloud where the values are the Z coordinates, the X and Y coordinates are 
+calculated using a meshgrid based on the axis scales and offsets. 
+
+The method used for this fit is from the sample consensus module of point cloud library. 
+(See http://docs.pointclouds.org/1.7.0/group__sample__consensus.html). 
+
+The following models are available: 
+
+Plane (0). Hessian Normal Form (n_vec * pt + d = 0). Coefficients: 
+
+* n_x 
+* n_y 
+* n_z 
+* d 
+
+Line (1). Output is the line vector (v) and one point (p) on the line. Coefficients: 
+
+* p_x 
+* p_y 
+* p_z 
+* v_x 
+* v_y 
+* v_z 
+
+Circle 2D (2). Output is the center point (p) of the circle and its radius (r) - (Fit in X, Y direction only). Coefficients: 
+
+* p_x 
+* p_y 
+* r 
+
+Circle 3D (3). Output is the normal vector (v), the center point (p) of the circle and the circle radius (r). Coefficients: 
+
+* p_x 
+* p_y 
+* p_z 
+* r 
+* v_x 
+* v_y 
+* v_z 
+
+Sphere (4). Output is the center point (p) and the radius (r). Coefficients: 
+
+* p_x 
+* p_y 
+* p_z 
+* r 
+
+Cylinder (5). Output is the orientation vector (v), one point (p) on the line and the cylinder radius (r). Coefficients: 
+
+* p_x 
+* p_y 
+* p_z 
+* v_x 
+* v_y 
+* v_z 
+* r 
+
+Cone (6). Output is the orientation vector (v), the tip point (p) and the opening angle in rad. Coefficients: 
+
+* p_x 
+* p_y 
+* p_z 
+* v_x 
+* v_y 
+* v_z 
+* angle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+179"/>
+        <source>fits a cylindrical model to the given input point cloud using a RANSAC based approach (must have normals defined).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>fits a spherical model to the given input point cloud using a RANSAC based approach</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>fits a planar circle model to the given input point cloud using a RANSAC based approach</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>fits a 3D-circle model to the given input point cloud using a RANSAC based approach</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
+        <source>fits a plane model to the given input point cloud using a RANSAC based approach</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>fits a line model to the given input point cloud using a RANSAC based approach</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>fits a conical model to the given input point cloud using a RANSAC based approach (must have normals defined)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
+        <source>Calculates the distances of points of a point cloud to a given model. 
+
+Possible types are: 
+--------------------
+SACMODEL_SPHERE = 4, 
+SACMODEL_CYLINDER = 5, 
+
+Not supported yet: 
+------------------- 
+SACMODEL_PLANE = 0, 
+SACMODEL_LINE = 1, 
+SACMODEL_CIRCLE2D = 2, 
+SACMODEL_CIRCLE3D = 3, 
+SACMODEL_CONE = 6, 
+SACMODEL_TORUS = 7, 
+SACMODEL_PARALLEL_LINE = 8, 
+SACMODEL_PERPENDICULAR_PLANE = 9, 
+SACMODEL_PARALLEL_LINES = 10, 
+SACMODEL_NORMAL_PLANE = 11, 
+SACMODEL_NORMAL_SPHERE = 12, 
+SACMODEL_REGISTRATION = 13, 
+SACMODEL_REGISTRATION_2D = 14, 
+SACMODEL_PARALLEL_PLANE = 15, 
+SACMODEL_NORMAL_PARALLEL_PLANE = 16, 
+SACMODEL_STICK = 17 
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+781"/>
+        <source>calculates the distance from points in a given data object to a model.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

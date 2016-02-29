@@ -4,7 +4,7 @@
 <context>
     <name>AerotechEnsemble</name>
     <message>
-        <location filename="../aerotechEnsemble.cpp" line="+135"/>
+        <location filename="../aerotechEnsemble.cpp" line="+149"/>
         <source>asynchronous move (1), synchronous (0) [default]</source>
         <translation>Asynchrone Fahrt (1), synchrone Fahrt (0) [Voreinstellung]</translation>
     </message>
@@ -353,12 +353,24 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../aerotechEnsemble.cpp" line="-12"/>
+        <location filename="../aerotechEnsemble.cpp" line="-26"/>
         <source>Plugin for the Ensemble-controller of Aerotech</source>
         <translation>Plugin des Ensemble-Controllers von Aerotech</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>This plugin allows communicating with controllers of type Ensemble (4.xx Version) of company Aerotech. 
+
+If no parameters are given, the plugin connects to all available axes of the controller. Else you can provide a list of axis numbers (0..9) that should be connected. The first axis of this list then gets the axis ID 0, the second the axis ID 1 and so on. 
+For running this plugin you need an installed Ensemble driver and a connected device. 
+
+This plugin comes with version 4.06 of the Ensemble driver. You can change them by newer libraries (Version 4.XX). The manual of Ensemble allows redistributing the Ensemble libraries without having the end-user install the Ensemble software. For further information about license information of Aerotech see their documentation. 
+
+For loading the Ensemble library you need the Visual C++ 2008 SP1 Redistributable Package provided by Microsoft (see Ensemble Programming Help).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
         <source>Licensed under LGPL, The Aerotech Ensemble library belongs to Aerotech under their specific license.</source>
         <translation></translation>
     </message>

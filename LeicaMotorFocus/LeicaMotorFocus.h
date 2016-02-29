@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "LeicaMotorFocus" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -83,6 +83,7 @@ class LeicaMotorFocus : public ito::AddInActuator
         ito::RetVal waitForDone(const int timeoutMS = -1, const QVector<int> axis = QVector<int>() /*if empty -> all axis*/, const int flags = 0 /*for your use*/);
 
         static void doNotDelSharedPtr(char * /*ptr*/) {} /*!<workaround for deleter for QSharedPointer, such that the pointer is NOT deleted if shared-pointer's reference drops towards zero.*/
+		static QSharedPointer<QVector<ito::ParamBase> > emptySharedParamBaseVec;
 
     public slots:
         ito::RetVal getParam(QSharedPointer<ito::Param> val, ItomSharedSemaphore *waitCond = NULL);

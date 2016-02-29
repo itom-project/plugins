@@ -42,7 +42,7 @@
 <context>
     <name>QCam</name>
     <message>
-        <location filename="../QCam.cpp" line="+104"/>
+        <location filename="../QCam.cpp" line="+99"/>
         <source>Integration time of CCD programmed in s</source>
         <translation type="unfinished"></translation>
     </message>
@@ -97,25 +97,245 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+648"/>
+        <location line="+64"/>
+        <source>the first 10 connected cameras are already opened.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>no QCam cameras are connected to this computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+398"/>
+        <source>not implemented yet. todo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+83"/>
+        <source>value &apos;%s&apos; out of bounds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+96"/>
         <source>camera has already stopped</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+22"/>
         <source>Tried to acquire without starting device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+166"/>
+        <location line="+28"/>
+        <source>callback-done failed. Corrupt data!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>errors while data transmission. Pixels might be filled with black values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>no grabbed image data available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>size of image data does not fit to size parameters of plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
+        <source>unsupported bpp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+45"/>
         <source>Empty object handle retrieved from caller</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Function is not supported for this device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>A parameter used was invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The QCam_Settings structure is corrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>No user driver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Firewire device driver is missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Driver connection error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The driver has already been loaded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The driver has not been loaded.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The QCam_Handle has been corrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Camera model is unknown to this version of QCam</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Camera id used in QCam_OpenCamera is invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Deprecated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Hardware fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Firewire fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Camera fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Driver fault</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Invalid frame index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Frame buffer (pBuffer) is too small for image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Out of memory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Out of shared memory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The function used cannot be processed at this time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The queue for frame and settings changes is full</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The function used requires that streaming be on</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The host and the computer are out of sync, the frame returned is invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Data is missing in the frame returned</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The host has more data than it can process, restart streaming.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The camera has been unplugged or turned off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The camera is already open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Stream allocation failed, there may not be enough bandwidth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>QCam needs to be updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The ROI used is too small</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>last</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>force32</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>invalid camera handle</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QCamInterface</name>
     <message>
-        <location line="-891"/>
+        <location line="-1093"/>
         <source>N.A.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -123,12 +343,17 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-11"/>
+        <location line="-9"/>
         <source>Firewire QCam cameras from QImaging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+3"/>
+        <source>This plugin is currently under development.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>itom-plugin under LGPL / QCam driver under ???</source>
         <translation type="unfinished"></translation>
     </message>
@@ -224,7 +449,7 @@
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+1023"/>
+        <location filename="../../../../build/itom/SDK/include/common/addInInterface.h" line="+993"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>

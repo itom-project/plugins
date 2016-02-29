@@ -163,7 +163,18 @@
         <translation>SVS Vistek GigE Grabber.</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+16"/>
+        <source>itom plugin for GigE cameras from SVS Vistek. Every camera is simply initialized by the serial number of the connected SVS Vistek camera. (see camera housing). 
+
+Some files of the SVGigE SDK are shipped within this plugin (currently 1.4.24). Please check the SVS Vistek website for newer versions of the SDK and replace the files if desired. Additionally, it is stated that SVS Vistek does not provide any support for this specific plugin wrapping the official SDK of SVS Vistek. 
+
+This plugin requires the necessary libraries from the SVS Vistek SDK (SVGigE.dll, SVGigETLFilter.dll, SVGigETLWinsock.dll or 64bit versions). Please check the right version and make these libraries available for itom (PATH environment variable, system directory...). 
+
+For a robust data communication please install the SVGigE FilterDriver and enable Jumbo frames at your network adapter.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>licensed under LGPL, the necessary Vistek drivers, header files and libraries have their own license.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -184,7 +195,7 @@
 <context>
     <name>Vistek</name>
     <message>
-        <location filename="../Vistek.cpp" line="+124"/>
+        <location filename="../Vistek.cpp" line="+123"/>
         <source>Camera Model ID</source>
         <translation>Kameramodell ID</translation>
     </message>
@@ -209,17 +220,21 @@
         <translation>Kameranummer</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Exposure time in [s]</source>
-        <translation>Belichtungszeit in [s]</translation>
+        <translation type="vanished">Belichtungszeit in [s]</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+7"/>
         <source>Gain [0..18 dB]</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+4"/>
+        <source>Binning mode (OFF = 0 [default], HORIZONTAL = 1 (or 102), VERTICAL = 2 (or 201),  2x2 = 3 (or 202), 3x3 = 4 (or 303), 4x4 = 5 (or 404)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Used streaming packet size (in bytes, more than 1500 usually only possible if you enable jumbo-frames at your network adapter)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -229,7 +244,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+539"/>
+        <location line="+550"/>
         <source>acquisition not possible, since Vistek camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -243,7 +258,7 @@
         <translation type="obsolete">Binning der unterschiedlichen Pixel</translation>
     </message>
     <message>
-        <location line="-608"/>
+        <location line="-619"/>
         <source>Width of current camera frame</source>
         <translation>Breite des aktuellen Kamerabilds</translation>
     </message>
@@ -262,37 +277,156 @@
         <translation>Zeit in ms seit dem letzten Bild (Ende der Belichtung)</translation>
     </message>
     <message>
-        <location line="-23"/>
+        <location line="-25"/>
         <source>Serial number of the camera (see camera housing)</source>
         <translation>Seriennummer der Kamera (siehe Kameragehäuse)</translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>Offset [0.0..1.0]</source>
+        <location line="+7"/>
+        <source>Exposure time in [s] (deprecated: use integration_time instead; this is an alias for integration_time only)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Binning mode (OFF = 0 [default], HORIZONTAL = 1, VERTICAL = 2,  2x2 = 3, 3x3 = 4, 4x4 = 5</source>
+        <source>Exposure time in [s].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+4"/>
+        <source>Offset [0.0..1.0]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>bit-depth for camera buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+322"/>
+        <location line="+115"/>
+        <source>set log level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>set exposure time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>set gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>set offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>binning invalid: Accepted values are OFF = 0 [default], HORIZONTAL = 1 (or 102), VERTICAL = 2 (or 201),  2x2 = 3 (or 202), 3x3 = 4 (or 303), 4x4 = 5 (or 404)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <location line="+59"/>
+        <location line="+279"/>
+        <source>stop camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-334"/>
+        <source>set binning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <location line="+59"/>
+        <source>restart camera 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-58"/>
+        <location line="+59"/>
+        <source>restart camera 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-45"/>
+        <source>8bit not supported by this camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>10bit not supported by this camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>10bit not supported by this driver version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>12bit not supported by this camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>16bit not supported by this camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>unknown bpp value (use 8bit, 10bit, 12bit or 16bit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>set pixel depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+90"/>
         <source>No free camera found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+190"/>
+        <location line="+99"/>
+        <source>%s: Vistek DLL error %i &apos;%s&apos; occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%s: unknown Vistek DLL error %i occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>streaming server not started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>set software trigger and start 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>set software trigger and start 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
         <source>StopDevice of Vistek can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+88"/>
+        <location line="+46"/>
+        <source>Camera trigger failed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>getVal of Vistek can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -302,18 +436,169 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+7"/>
+        <source>invalid image data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>timeout while retrieving image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>new image available, transfer was successful</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>an image could not be completed in time and was therefore abandoned</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>end of exposure is currently mapped to transfer started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>available network bandwidth has been exceeded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>driver problem due to old-style driver behavior (prior to 2003, not WDM driver)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>a test packet arrived</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>the camera has finished an image transfer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>connection to camera got lost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>an exceptional situation occurred during a multicast transmission</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>a frame could not be properly completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>a next entry was put into the message FIFO before the old one was released</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>the camera has finished a shutter sequence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>the camera detected a trigger violation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>any error occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>connection to camera lost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>error while retrieving image: %i</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+34"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+40"/>
         <source>Empty object handle retrieved from caller</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+56"/>
         <source>Requested camera could not be selected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Requested camera is occupied by another application</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Enforcing valid network settings failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Selected camera could not be opened.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Camera does not support software triggers. This camera cannot be used by this plugin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+144"/>
+        <location line="+2"/>
+        <source>Error getting image size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>given pixeltype not supported. Supported is only MONO8, MONO12, MONO12_PACKED and MONO16</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>maximal packet size determination</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>set streaming packet size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>memory allocation error when creating stream with %i buffers. Retry and use less buffers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Streaming channel creation failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Event creation failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Message callback registration failed</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

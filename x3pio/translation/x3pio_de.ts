@@ -4,7 +4,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../x3pio.cpp" line="+255"/>
+        <location filename="../x3pio.cpp" line="+249"/>
         <source>x3p Import/Export</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13,7 +13,7 @@
         <translation type="obsolete">Speichert Datenobjekte im X3P-Dateiformat</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+13"/>
         <source>LGPL / ISO5436-2 XML under LPGL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -23,90 +23,96 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
-        <source>saves dataObject to x3p file. x3p defines all axes in meter, if the unit of any axis is m, cm, mm, �m or nm they are correctly converted to m.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+41"/>
         <source>loads dataObject from x3p file</source>
         <translation type="unfinished">Läd Datenobjekte im X3P-Dateiformat</translation>
     </message>
     <message>
-        <location line="+55"/>
-        <location line="+17"/>
-        <location line="+21"/>
-        <location line="+17"/>
-        <location line="+21"/>
-        <location line="+17"/>
-        <location line="+27"/>
-        <location line="+24"/>
-        <location line="+27"/>
-        <location line="+24"/>
-        <location line="+28"/>
-        <location line="+27"/>
-        <source>error writing is5436_2 file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+161"/>
+        <location line="+568"/>
         <source>data type mismatch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>error reading is5436_2 file</source>
+        <location line="-621"/>
+        <source>This plugin provides methods to save and load dataObjects in/from the file format &apos;x3p&apos;. This format is specified in ISO 25178 - Geometrical product specification (GPS). 
+
+The library ISO 5436-2 XML, that is necessary for this plugin and included in the sources, 
+is licensed under the LGPL license and uses further libraries. For more information about the license 
+of the library itself see www.opengps.eu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+435"/>
-        <source>error opening file: %s</source>
+        <location line="+50"/>
+        <source>saves dataObject to x3p file. x3p defines all axes in meter, if the unit of any axis is m, cm, mm, u00B5m or nm they are correctly converted to m.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-409"/>
-        <location line="+335"/>
+        <location line="+32"/>
+        <source>no error details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+82"/>
+        <location line="+21"/>
+        <location line="+25"/>
+        <location line="+21"/>
+        <location line="+25"/>
+        <location line="+21"/>
+        <location line="+31"/>
+        <location line="+28"/>
+        <location line="+31"/>
+        <location line="+28"/>
+        <location line="+32"/>
+        <location line="+31"/>
+        <source>error writing is5436_2 file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <source>error reading is5436_2 file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>warning while opening the file: %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>error while opening the file: %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
         <source>empty data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-331"/>
-        <location line="+335"/>
+        <location line="+4"/>
         <source>no filename specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-302"/>
+        <location line="+32"/>
         <source>unsupported data type. Supported types are (Int8), Int16, Int32, Float32 and Float64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+261"/>
-        <source>Empty dataObject</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>source file name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+98"/>
-        <source>error opening file</source>
+        <location line="+213"/>
+        <source>data set is no matrix: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>X3pIO</name>
     <message>
-        <location line="-906"/>
+        <location line="-866"/>
         <location line="+3"/>
         <source>X3P Files (*.x3p)</source>
         <translation>X3P-Datei (*.x3p)</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+67"/>
         <source>DataObject</source>
         <translation type="unfinished"></translation>
     </message>
@@ -121,13 +127,88 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+790"/>
+        <location line="+550"/>
+        <source>data object must have at least two dimensions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+117"/>
+        <source>x3p stores its data in meter, therefore a scaling factor has to be applied. The format of the stored data is changed to double</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+173"/>
+        <source>unit &apos;%s&apos; cannot be interpreted. Meter as default unit is assumed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Empty dataObject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>source file name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Unit of x and y axes. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Unit of value axis. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>empty data object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>no filename specified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+59"/>
+        <source>error opening file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>warning while opening the file: %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>error while opening the file: %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>only feature types SUR (surface) or PRF (profile) are supported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>x3p file does not contain any data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>x3p file does not contain organized matrix or list data. Unordered list data is not supported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+65"/>
+        <source>x- and y-axes must have an incremental axis type. absolute x- and y-axes not supported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>x-axis must have an incremental axis type.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

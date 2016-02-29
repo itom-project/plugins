@@ -884,24 +884,26 @@ ito::RetVal Ximea::LoadLib(void)
 #else
 #if _WIN64
 #if UNICODE
-        ximeaLib = LoadLibrary(L"m3apiX64.dll"); //L"./lib/m3apiX64.dll");
+        ximeaLib = LoadLibrary(L"./lib/m3apiX64.dll"); //L"./lib/m3apiX64.dll");
 #else
-        ximeaLib = LoadLibrary("m3apiX64.dll"); //"./lib/m3apiX64.dll");
+        ximeaLib = LoadLibrary("./lib/m3apiX64.dll"); //"./lib/m3apiX64.dll");
 #endif
         //ximeaLib = LoadLibrary("./plugins/Ximea/m3apiX64.dll");
         if (!ximeaLib)
         {
-            return ito::RetVal(ito::retError, 0, tr("LoadLibrary(\"m3apiX64.dll\")").toLatin1().data());
+			int error = GetLastError();
+            return ito::RetVal::format(ito::retError, 0, tr("LoadLibrary(\"m3apiX64.dll\"). Error code: %i").toLatin1().data(), error);
         }
 #else
 #if UNICODE
-        ximeaLib = LoadLibrary(L"m3api.dll");
+        ximeaLib = LoadLibrary(L"./lib/m3api.dll");
 #else
-        ximeaLib = LoadLibrary("m3api.dll");
+        ximeaLib = LoadLibrary("./lib/m3api.dll");
 #endif
         if (!ximeaLib)
         {
-            return ito::RetVal(ito::retError, 0, tr("LoadLibrary(\"./plugins/Ximea/m3api.dll\")").toLatin1().data());
+			int error = GetLastError();
+            return ito::RetVal::format(ito::retError, 0, tr("LoadLibrary(\"m3apiX64.dll\"). Error code: %i").toLatin1().data(), error);
         }
 #endif
 #endif

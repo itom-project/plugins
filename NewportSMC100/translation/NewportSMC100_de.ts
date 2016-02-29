@@ -35,6 +35,50 @@
         <source>Asynchrone</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>MZ and encoder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current Pos as Home</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MZ only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EoR ans encoder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EoR only</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Calibration mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> units/sec</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Acceleration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> units/sec^2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>revert the changed configurations of this axis.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DockWidgetSMC100</name>
@@ -71,10 +115,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Nr</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>move step</source>
         <translation type="unfinished"></translation>
     </message>
@@ -102,6 +142,10 @@
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>no</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -115,6 +159,11 @@
     </message>
     <message>
         <source>N.A.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>NewportSMC100 is an itom-plugin, which can be used to communicate with the Newport controllers SMC100CC and SMC100PP.
+It has been tested with two connected controllers SMC100CC. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1,8 +1,24 @@
 /* ********************************************************************
-    Template for a camera / grabber plugin for the software itom
-    
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
+Plugin "Roughness" for itom software
+URL : http ://www.uni-stuttgart.de/ito
+Copyright(C) 2016, Institut fuer Technische Optik (ITO),
+Universitaet Stuttgart, Germany;
+IPROM, TU Braunschweig, Germany
+
+This file is part of a plugin for the measurement software itom.
+
+This itom - plugin is free software; you can redistribute it and / or modify it
+under the terms of the GNU Library General Public Licence as published by
+the Free Software Foundation; either version 2 of the Licence, or(at
+your option) any later version.
+
+itom and its plugins are distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the GNU Library
+General Public Licence for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with itom.If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #define ITOM_IMPORT_API
@@ -34,25 +50,13 @@ AvtVimbaInterface::AvtVimbaInterface()
 
     m_description = QObject::tr("AVT GigE and firewire cameras using Vimba interface");
 
-    //for the docstring, please don't set any spaces at the beginning of the line.
-/*    char docstring[] = \
-"This plugin supports Allied Vision GigE and firewire cameras and has currently been tested with the following models: \n\
-\n\
-- Marlin, F033 (monochrome, Firewire) \n\
-- Manta G-917B and G-146B (monochrome, GigE) \n\
-\n\
-The plugin has been compiled using the AVT Vimba version 1.3.0. \n\
-\n\
-In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. \n\
-Color formats are not supported.";
-    m_detaildescription = QObject::tr(docstring);*/
     m_detaildescription = QObject::tr(
 "This plugin supports Allied Vision GigE and firewire cameras and has currently been tested with the following models: \n\
 \n\
 - Marlin, F033 (monochrome, Firewire) \n\
 - Manta G-917B and G-146B (monochrome, GigE) \n\
 \n\
-The plugin has been compiled using the AVT Vimba version 1.3.0. \n\
+The plugin is compiled using the AVT Vimba version 1.3.0. \n\
 \n\
 In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. \n\
 Color formats are not supported.");

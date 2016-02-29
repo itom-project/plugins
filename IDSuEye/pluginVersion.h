@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -32,13 +32,13 @@
 
 #define PLUGIN_VERSION_MAJOR 1
 #define PLUGIN_VERSION_MINOR 0
-#define PLUGIN_VERSION_PATCH 1
+#define PLUGIN_VERSION_PATCH 2
 #define PLUGIN_VERSION_REVISION 0
 #define PLUGIN_VERSION        CREATE_VERSION(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_VERSION_STRING CREATE_VERSION_STRING(PLUGIN_VERSION_MAJOR,PLUGIN_VERSION_MINOR,PLUGIN_VERSION_PATCH)
 #define PLUGIN_COMPANY        "ITO Uni Stuttgart, Pulsar Photonics"
 #define PLUGIN_AUTHOR         "M. Gronle (ITO Uni Stuttgart); A. Kempe (ILT Aachen, Pulsar Photonics)"
-#define PLUGIN_COPYRIGHT      "(C) 2015, ITO Uni Stuttgart, Pulsar Photonics"
+#define PLUGIN_COPYRIGHT      "(C) 2016, ITO Uni Stuttgart, Pulsar Photonics"
 #define PLUGIN_NAME           "IDSuEye"
 
 

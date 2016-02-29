@@ -2,7 +2,7 @@
     Plugin "IDSuEye" for itom software
     URL: http://www.bitbucket.org/itom/plugins
     Copyright (C) 2014, Pulsar Photonics GmbH, Aachen
-    Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -394,6 +394,7 @@ ito::RetVal IDSuEye::close(ItomSharedSemaphore *waitCond)
             is_FreeImageMem(m_camera, m_pMemory[n].ppcImgMem, m_pMemory[n].pid);
             m_pMemory[n].ppcImgMem = NULL;
             m_pMemory[n].pid = -1;
+            m_pMemory[n].height = -1; //invalidate the buffer
         }
     }
 
@@ -1007,8 +1008,22 @@ ito::RetVal IDSuEye::stopDevice(ItomSharedSemaphore *waitCond)
     {
         if (m_captureVideoActive)
         {
-            retValue += checkError(is_StopLiveVideo(m_camera, IS_WAIT ));
+            //sometimes it is necessary to stop the acquisition twice (e.g. if the trigger mode is changed on-the-fly)
+            retValue += checkError(is_StopLiveVideo(m_camera, IS_FORCE_VIDEO_STOP ));
+            retValue += checkError(is_StopLiveVideo(m_camera, IS_DONT_WAIT ));
             m_captureVideoActive = false;
+
+            //for (int n = 0; n < BUFSIZE; n++)
+            //{
+            //    is_ClearSequence (m_camera);
+            //    if (m_pMemory[n].ppcImgMem != NULL)
+            //    {
+            //        is_FreeImageMem(m_camera, m_pMemory[n].ppcImgMem, m_pMemory[n].pid);
+            //        m_pMemory[n].ppcImgMem = NULL;
+            //        m_pMemory[n].pid = -1;
+            //        m_pMemory[n].height = -1; //invalidate the buffer
+            //    }
+            //}
         }
     }
     else if (grabberStartedCount() < 0)
@@ -1097,7 +1112,7 @@ ito::RetVal IDSuEye::acquire(const int trigger, ItomSharedSemaphore *waitCond)
         {
             char *current;
             INT num;
-		    retValue += checkError(is_GetActSeqBuf(m_camera, &num, &current, &imgBuffer));
+            retValue += checkError(is_GetActSeqBuf(m_camera, &num, &current, &imgBuffer));
         }
 
         if (!retValue.containsError())

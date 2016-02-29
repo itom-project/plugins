@@ -1,8 +1,24 @@
 /* ********************************************************************
-    Template for a camera / grabber plugin for the software itom
-    
-    You can use this template, use it in your plugins, modify it,
-    copy it and distribute it without any license restrictions.
+Plugin "Roughness" for itom software
+URL : http ://www.uni-stuttgart.de/ito
+Copyright(C) 2016, Institut fuer Technische Optik (ITO),
+Universitaet Stuttgart, Germany;
+IPROM, TU Braunschweig, Germany
+
+This file is part of a plugin for the measurement software itom.
+
+This itom - plugin is free software; you can redistribute it and / or modify it
+under the terms of the GNU Library General Public Licence as published by
+the Free Software Foundation; either version 2 of the Licence, or(at
+your option) any later version.
+
+itom and its plugins are distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the GNU Library
+General Public Licence for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with itom.If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #include "dialogAvtVimba.h"
@@ -33,7 +49,7 @@ DialogAvtVimba::DialogAvtVimba(ito::AddInBase *grabber, const BppEnum *bppEnum/*
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
-{
+{ 
     if (m_firstRun)
     {
         setWindowTitle(QString((params)["name"].getVal<char*>()) + " - " + tr("Configuration Dialog"));
@@ -60,9 +76,9 @@ void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
         ui.rangeY01->setMaximum(im->getMax());
         ui.rangeY01->setMaximumValue(im->getMax());
 #endif
-
+        
         ui.groupGigE->setVisible( QString("GigE") == params["interface"].getVal<char*>());
-        window()->resize(window()->size());
+        //window()->resize(window()->size());
 
         int binV_min = (int)(params["binning"].getMin()) % 100;
         int binH_min = ((int)(params["binning"].getMin()) - binV_min) / 100;
@@ -81,14 +97,14 @@ void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
 
         ui.comboTriggerActivation->clear();
         const ito::StringMeta *sm = (const ito::StringMeta*)(params["trigger_activation"].getMeta());
-        for (int i = 0; i < sm->getLen(); ++sm)
+        for (int i = 0; i < sm->getLen(); ++i)
         {
             ui.comboTriggerActivation->addItem(sm->getString(i), sm->getString(i));
         }
 
         ui.comboTriggerSource->clear();
         sm = (const ito::StringMeta*)(params["trigger_source"].getMeta());
-        for (int i = 0; i < sm->getLen(); ++sm)
+        for (int i = 0; i < sm->getLen(); ++i)
         {
             ui.comboTriggerSource->addItem(sm->getString(i), sm->getString(i));
         }
@@ -98,7 +114,6 @@ void DialogAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
         //now activate group boxes, since information is available now (at startup, information is not available, since parameters are sent by a signal)
         enableDialog(true);
     }
-
 
 #if defined(ITOM_ADDININTERFACE_VERSION) && ITOM_ADDININTERFACE_VERSION > 0x010300
     int *roi = params["roi"].getVal<int*>();

@@ -69,12 +69,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+417"/>
+        <location line="+413"/>
         <source>Tried to acquire without starting device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+116"/>
+        <location line="+115"/>
         <source>Wrong picture type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -97,7 +97,7 @@
 <context>
     <name>AvantesAvaSpecInterface</name>
     <message>
-        <location line="-705"/>
+        <location line="-700"/>
         <source>VendorID of spectrometer, 0x1992 for AvaSpec-3648, 0x471 for AvaSpec-ULS3648...</source>
         <translation type="unfinished"></translation>
     </message>

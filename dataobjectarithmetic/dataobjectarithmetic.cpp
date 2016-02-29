@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "dataobjectarithmetic" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -29,6 +29,7 @@
 #include <qstringlist.h>
 #include <qvariant.h>
 #include <qnumeric.h>
+#include <qthread.h>
 
 #include "common/helperCommon.h"
 
@@ -36,7 +37,13 @@
 
 #include "pluginVersion.h"
 
+#ifdef USEOPENMP
+    #include <omp.h>
+#endif
+
 using namespace ito;
+
+int DataObjectArithmetic::numThreads = 1;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 
@@ -61,16 +68,7 @@ DataObjectArithmeticInterface::DataObjectArithmeticInterface()
     m_type = ito::typeAlgo;
     setObjectName("DataObjectArithmetic");
     
-    //for the docstring, please don't set any spaces at the beginning of the line.
-/*    char docstring[] = \
-"This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
-- min- or maximum value\n\
-- centroid along dimensions or inplane \n\
-\n\
-This plugin does not have any unusual dependencies.";
-*/
     m_description = QObject::tr("Operations and arithmetic calculations of dataObject.");
-//    m_detaildescription = QObject::tr(docstring);
     m_detaildescription = QObject::tr("This plugin provides several arithmetic calculations for dataObject. These are for instance: \n\
 - min- or maximum value\n\
 - centroid along dimensions or inplane \n\
@@ -83,7 +81,6 @@ This plugin does not have any unusual dependencies.");
     m_minItomVer        = MINVERSION;
     m_maxItomVer        = MAXVERSION;
     m_aboutThis         = tr("Arithmetic algorithms filters.");     
-    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -102,6 +99,7 @@ DataObjectArithmeticInterface::~DataObjectArithmeticInterface()
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObjectArithmetic::DataObjectArithmetic() : AddInAlgo()
 {
+    numThreads = std::max(1, QThread::idealThreadCount() - 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -994,6 +992,313 @@ template<typename _Tp> ito::RetVal DataObjectArithmetic::centroidHelper(const cv
 
     return ito::retOk;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString DataObjectArithmetic::localCenterOfGravityDoc = QObject::tr("This filter determines the sub-pixel \n\
+spot position of multiple spots in an image. The pixel-precise spot position must be given including the size \n\
+of the area around the coarse spot position over which the center of gravity algorithm is applied. \n\
+\n\
+The area can either be a rectangle (width and height, odd values) or a circle (odd diameter). \n\
+\n\
+The COG is calculated by the following algorithm: \n\
+\n\
+cXI = \\frac{\\sum{idx_x * (I - lowThreshold)}}{\\sum{(I - lowThreshold)} \n\
+cYI = \\frac{\\sum{idx_y * (I - lowThreshold)}}{\\sum{(I - lowThreshold)} \n\
+\n\
+The lowThreshold can either be given or (if it is NaN), the minimum value of each area will be taken as local lower threshold. \n\
+Only values <= highThreshold are considered, set highThreshold to NaN or Inf in order to do not consider this constraint. \n\
+\n\
+Usually, the resulting 'centroids' object contains the sub-pixel x and y position as well as the number of valid pixels in each row. \n\
+If no or only one valid pixel has been encountered, the coarse pixel x and y position as well as 0 or 1 (for no or one valid pixel) is returned. \n\
+\n\
+If the coarse spot position lies outside of the image, the resulting row in 'centroids' contains NaN coordinates. \n\
+Please consider, that all input and output coordinates are assumed to be pixel values, the scaling and offset of the image are not considered.");
+
+ito::RetVal DataObjectArithmetic::localCenterOfGravityParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (!retval.containsError())
+    {
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr, NULL, tr("2D source image data object (u)int8, (u)int16, int32, float32 or float64 only.").toLatin1().data());
+        paramsMand->append(param);
+
+        param = ito::Param("coarseSpots", ito::ParamBase::DObjPtr, NULL, tr("Mx3 or Mx4 2D data object of type uint16, each row corresponds to one spot. The line contains [px_x, px_y, circle_diameter] if the cog should be determined within a circle or [px_x, px_y, width, height] if the cog should be determined within a rectangle. circle_diameter, width or height have to be odd.").toLatin1().data());
+        paramsMand->append(param);
+
+        param = ito::Param("centroids", ito::ParamBase::DObjPtr, NULL, tr("resulting Mx3 data object of type float64 with the sub-pixel precise position of the spots (all is given in pixel coordinates, never physical coordinates). Each row is [subpix_x, subpix_y, nr_of_valid_elements_within_search_mask] or [px_x, px_y, 0 | 1] if the spot only contained one or no valid values.").toLatin1().data());
+        paramsMand->append(param);
+
+        param = Param("lowThreshold", ito::ParamBase::Double, -1 * std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::quiet_NaN(), tr("values < lowThreshold are ignored. lowThreshold is subtracted from each valid value before COG determination. if lowThreshold is NaN (default), the lowest value within each spot search area is taken as local minimum value.").toLatin1().data());
+        paramsOpt->append(param);
+        param = Param("highThreshold", ito::ParamBase::Double, -1 * std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), std::numeric_limits<ito::float64>::max(), tr("values > highThreshold are ignored.").toLatin1().data());
+        paramsOpt->append(param);
+    }
+
+    return retval;
+}
+
+template<typename _Tp> ito::RetVal localCenterOfGravityHelper(const ito::DataObject &source, const ito::DataObject &coarse, ito::DataObject &centroids, const ito::float64 &lowThreshold, const ito::float64 &highThreshold)
+{
+    ito::RetVal retval;
+    const cv::Mat *source_ = source.getCvPlaneMat(0);
+    const cv::Mat *coarse_ = coarse.getCvPlaneMat(0);
+    
+    bool circleNotRect = (coarse_->cols == 3);
+    
+    int max_half_width = source_->cols / 2; //will be max. radius for circular roi
+    int max_half_height = source_->rows / 2;
+
+    if (circleNotRect)
+    {
+        max_half_width = std::min(max_half_width, max_half_height);
+    }
+    
+    _Tp high = cv::saturate_cast<_Tp>(std::min((ito::float64)std::numeric_limits<_Tp>::max(), highThreshold));
+    if (!qIsFinite(highThreshold))
+    {
+        high = std::numeric_limits<_Tp>::max();
+    }
+
+#define LCOGRADIUS(r,c) std::sqrt((float)(coarseRow[1] - r)*(float)(coarseRow[1] - r)+(float)(coarseRow[0] - c)*(float)(coarseRow[0] - c))
+
+#ifdef USEOPENMP
+    omp_set_num_threads(DataObjectArithmetic::numThreads);
+    #pragma omp parallel
+    {
+#endif  
+        //in a parallel for loop, these variables have to be created for each thread
+        std::vector<_Tp> vals;
+        std::vector<int> x_px;
+        std::vector<int> y_px;
+        int count;
+        const _Tp *sourceRow;
+        ito::float64 *centroidsRow;
+        const ito::uint16* coarseRow;
+        int half_width; //will be radius for circular roi
+        int half_height;
+        int max_vals;
+        ito::float64 roiMinimum;
+        ito::float64 denomx, denomy, nom;
+        int start_row, end_row, start_col, end_col;
+
+#ifdef USEOPENMP
+        #pragma omp for schedule(dynamic, 100)
+#endif    
+        for (int row = 0; row < coarse_->rows; ++row)
+        {
+            count = 0;
+            coarseRow = coarse_->ptr<ito::uint16>(row);
+            centroidsRow = centroids.rowPtr<ito::float64>(0, row);
+            roiMinimum = std::numeric_limits<ito::float64>::max();
+
+            if (coarseRow[0] < 0 || coarseRow[0] >= source_->cols || coarseRow[1] < 0 || coarseRow[1] >= source_->rows)
+            {
+                centroidsRow[0] = std::numeric_limits<ito::float64>::quiet_NaN();
+                centroidsRow[1] = std::numeric_limits<ito::float64>::quiet_NaN();
+                centroidsRow[2] = 0;
+                continue;
+            }
+
+            if (circleNotRect)
+            {
+                half_width = qBound(0, (int)std::ceil((float)(coarseRow[2] - 1) / 2.0), max_half_width);
+                start_row = qBound(0, coarseRow[1] - half_width, source_->rows - 1);
+                end_row = qBound(0, coarseRow[1] + half_width, source_->rows - 1);
+                start_col = qBound(0, coarseRow[0] - half_width, source_->cols - 1);
+                end_col = qBound(0, coarseRow[0] + half_width, source_->cols - 1);
+            }
+            else
+            {
+                half_width = qBound(0, (int)std::ceil((float)(coarseRow[2] - 1) / 2.0), max_half_width);
+                half_height = qBound(0, (int)std::ceil((float)(coarseRow[3] - 1) / 2.0), max_half_height);
+                start_row = qBound(0, coarseRow[1] - half_height, source_->rows - 1);
+                end_row = qBound(0, coarseRow[1] + half_height, source_->rows - 1);
+                start_col = qBound(0, coarseRow[0] - half_width, source_->cols - 1);
+                end_col = qBound(0, coarseRow[0] + half_width, source_->cols - 1);
+            }
+
+            max_vals = (end_col - start_col + 1) * (end_row - start_row + 1);
+            vals.clear();
+            vals.reserve(max_vals);
+            x_px.clear();
+            x_px.reserve(max_vals);
+            y_px.clear();
+            y_px.reserve(max_vals);
+
+
+            if (circleNotRect)
+            {
+                for (int r = start_row; r <= end_row; ++r)
+                {
+                    sourceRow = &(source_->ptr<_Tp>(r)[start_col]);
+
+                    for (int c = start_col; c <= end_col; ++c)
+                    {
+                        if (LCOGRADIUS(r, c) <= half_width)
+                        {
+                            if (ito::dObjHelper::isFinite<_Tp>(*sourceRow) && *sourceRow <= high)
+                            {
+                                roiMinimum = std::min(roiMinimum, (ito::float64)*sourceRow);
+                                vals.push_back(*sourceRow);
+                                x_px.push_back(c);
+                                y_px.push_back(r);
+                                count++;
+                            }
+                        }
+
+                        ++sourceRow;
+                    }
+                }
+            }
+            else
+            {
+                for (int r = start_row; r <= end_row; ++r)
+                {
+                    sourceRow = &(source_->ptr<_Tp>(r)[start_col]);
+
+                    for (int c = start_col; c <= end_col; ++c)
+                    {
+                        if (ito::dObjHelper::isFinite<_Tp>(*sourceRow) && *sourceRow <= high)
+                        {
+                            roiMinimum = std::min(roiMinimum, (ito::float64)*sourceRow);
+                            vals.push_back(*sourceRow);
+                            x_px.push_back(c);
+                            y_px.push_back(r);
+                            count++;
+                        }
+
+                        ++sourceRow;
+                    }
+                }
+            }
+
+            if (count > 1)
+            {
+                denomx = 0.0;
+                denomy = 0.0;
+                nom = 0.0;
+
+                if (ito::dObjHelper::isFinite<ito::float64>(lowThreshold))
+                {
+                    for (int c = 0; c < count; ++c)
+                    {
+                        if (vals[c] > lowThreshold)
+                        {
+                            denomx += x_px[c] * (vals[c] - lowThreshold);
+                            denomy += y_px[c] * (vals[c] - lowThreshold);
+                            nom += (vals[c] - lowThreshold);
+                        }
+                        else
+                        {
+                            count--;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int c = 0; c < count; ++c)
+                    {
+                        denomx += x_px[c] * (vals[c] - roiMinimum);
+                        denomy += y_px[c] * (vals[c] - roiMinimum);
+                        nom += (vals[c] - roiMinimum);
+                    }
+                }
+
+                if (ito::isZeroValue<ito::float64>(nom, std::numeric_limits<ito::float64>::epsilon()))
+                {
+                    centroidsRow[0] = coarseRow[0];
+                    centroidsRow[1] = coarseRow[1];
+                    centroidsRow[2] = count;
+                }
+                else
+                {
+                    centroidsRow[0] = denomx / nom;
+                    centroidsRow[1] = denomy / nom;
+                    centroidsRow[2] = count;
+                }
+            }
+            else
+            {
+                centroidsRow[0] = coarseRow[0];
+                centroidsRow[1] = coarseRow[1];
+                centroidsRow[2] = count;
+            }
+
+        }
+
+#ifdef USEOPENMP
+    }
+#endif  
+
+    return retval;
+}
+
+ito::RetVal DataObjectArithmetic::localCenterOfGravity(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    ito::DataObject source = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(0).getVal<const ito::DataObject*>(), "sourceImage", ito::Range::all(), ito::Range::all(), retval, -1, 7, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tFloat32, ito::tFloat64);
+    ito::DataObject coarseSpots = ito::dObjHelper::squeezeConvertCheck2DDataObject(paramsMand->at(1).getVal<const ito::DataObject*>(), "coarseSpots", ito::Range::all(), ito::Range(3,4), retval, -1, 1, ito::tUInt16);
+    ito::float64 low = paramsOpt->at(0).getVal<ito::float64>();
+    ito::float64 high = paramsOpt->at(1).getVal<ito::float64>();
+
+    int numSpots = coarseSpots.getSize(0);
+
+    if (source.getSize(0) < 2 || source.getSize(1) < 2)
+    {
+        retval += ito::RetVal(ito::retError, 0, "sourceImage must have a minimum size of 2x2.");
+    }
+    
+    if (!retval.containsError())
+    {
+        if (numSpots > 0)
+        {
+            ito::DataObject centroids(numSpots, 3, ito::tFloat64);
+
+            switch (source.getType())
+            {
+            case ito::tUInt8:
+                retval += localCenterOfGravityHelper<ito::uint8>(source, coarseSpots, centroids, low, high);
+                break;
+            case ito::tInt8:
+                retval += localCenterOfGravityHelper<ito::int8>(source, coarseSpots, centroids, low, high);
+                break;
+            case ito::tUInt16:
+                retval += localCenterOfGravityHelper<ito::uint16>(source, coarseSpots, centroids, low, high);
+                break;
+            case ito::tInt16:
+                retval += localCenterOfGravityHelper<ito::int16>(source, coarseSpots, centroids, low, high);
+                break;
+            case ito::tUInt32:
+                retval += localCenterOfGravityHelper<ito::uint32>(source, coarseSpots, centroids, low, high);
+                break;
+            case ito::tInt32:
+                retval += localCenterOfGravityHelper<ito::int32>(source, coarseSpots, centroids, low, high);
+                break;
+            case ito::tFloat32:
+                retval += localCenterOfGravityHelper<ito::float32>(source, coarseSpots, centroids, low, high);
+                break;
+            case ito::tFloat64:
+                retval += localCenterOfGravityHelper<ito::float64>(source, coarseSpots, centroids, low, high);
+                break;
+            }
+
+            if (!retval.containsError())
+            {
+                *((*paramsMand)[2].getVal<ito::DataObject*>()) = centroids;
+            }
+        }
+        else
+        {
+            *((*paramsMand)[2].getVal<ito::DataObject*>()) = ito::DataObject();
+        }
+    }
+
+    return retval;
+}
+
+
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString DataObjectArithmetic::centerOfGravity1DimDoc = QObject::tr("Calculate center of gravity for each plane along the x- or y-direction. \n\
@@ -1911,6 +2216,9 @@ RetVal DataObjectArithmetic::init(QVector<ito::ParamBase> * /*paramsMand*/, QVec
     filter = new FilterDef(DataObjectArithmetic::centerOfGravity, DataObjectArithmetic::centerOfGravityParams, centerOfGravityDoc);
     m_filterList.insert("centroidXY", filter);
 
+    filter = new FilterDef(DataObjectArithmetic::localCenterOfGravity, DataObjectArithmetic::localCenterOfGravityParams, localCenterOfGravityDoc);
+    m_filterList.insert("localCentroidXY", filter);
+
 	filter = new FilterDef(DataObjectArithmetic::boundingBox, DataObjectArithmetic::boundingBoxParams, boundingBoxDoc);
     m_filterList.insert("boundingBox", filter);
 
@@ -1925,6 +2233,9 @@ RetVal DataObjectArithmetic::init(QVector<ito::ParamBase> * /*paramsMand*/, QVec
 
     filter = new FilterDef(getPercentageThreshold, getPercentageThresholdParams, getPercentageThresholdDoc);
     m_filterList.insert("getPercentageThreshold", filter);
+
+    filter = new FilterDef(autoFocusEstimate, autoFocusEstimateParams, autoFocusEstimateDoc);
+    m_filterList.insert("autofocusEstimate", filter);
 
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;

@@ -232,6 +232,13 @@ class PclTools : public ito::AddInAlgo
         static ito::RetVal pclGetNormalsAtCogFromMesh(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal pclGetNormalsAtCogFromMeshParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+#ifdef PCLHASSURFACENURBS
+        static const QString pclFitTrimmedBSplineDOC;
+        static ito::RetVal pclFitTrimmedBSpline(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal pclFitTrimmedBSplineParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+#endif
+
     protected:
         //static int savePolygonFileSTLB(const std::string &file_name, const pcl::PolygonMesh& mesh);
         static int nthreads;

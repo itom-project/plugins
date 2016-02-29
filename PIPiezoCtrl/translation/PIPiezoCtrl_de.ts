@@ -329,45 +329,75 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+199"/>
+        <location line="+128"/>
+        <source>deviceName could not be parsed to a valid COM-port number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>for RS232 connections, you need to indiciate a valid baudrate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>initialization breaked since list of TCP/IP devices has been printed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>no device with your name could be detected, similar devices are printed in the command line.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>initialization breaked since list of USB devices has been printed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>unknown connectionType &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
         <source>Doesn&apos;t fit to interface DataIO!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+83"/>
-        <location line="+33"/>
+        <location line="+84"/>
+        <location line="+34"/>
         <source>not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
-        <location line="+959"/>
+        <location line="+51"/>
+        <location line="+958"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-911"/>
+        <location line="-909"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+47"/>
         <source>Too many axis. This is currently a single axis device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+51"/>
         <source>Too many axis. This is currently a single axis device.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+68"/>
         <location line="+717"/>
         <source>controller device unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-577"/>
+        <location line="-579"/>
         <source>could not read endline parameter from serial port</source>
         <translation type="unfinished"></translation>
     </message>
@@ -377,7 +407,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+82"/>
         <location line="+43"/>
         <source>error could not be parsed</source>
         <translation type="unfinished"></translation>
@@ -483,18 +513,19 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-69"/>
+        <location line="+89"/>
         <source>unknown error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+66"/>
         <location line="+49"/>
         <source>value could not be parsed to a double value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+104"/>
+        <location line="+105"/>
         <source>could not identify controller. No answer for command *idn?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -504,7 +535,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+208"/>
+        <location line="+209"/>
         <source>the new position (rel) seems to be out of the allowed position range (software check only). Please check params &apos;posLimitHigh&apos; and &apos;posLimitLow&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -517,7 +548,7 @@
 <context>
     <name>PIPiezoCtrlInterface</name>
     <message>
-        <location filename="../PIPiezoCtrlInterface.cpp" line="+84"/>
+        <location filename="../PIPiezoCtrlInterface.cpp" line="+92"/>
         <source>An opened serial port (the right communcation parameters will be set by this piezo-controller).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -530,12 +561,21 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-25"/>
+        <location line="-33"/>
         <source>PI Piezos E662, E-816, E-621, E-625, E665</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+13"/>
+        <source>The PIPiezoCtrl is an itom-plugin, which can be used to communicate with PI piezo-controllers.Different PI-Piezo Controller (E-816, E-621, E-625, E-665 or E662) are implemented.
+
+It has been tested with different Piefocs and Piezo-stages. This system needs a serial port, which differs depending on the controller type. The parameters of the serial port (besides port number) are set automatically during initialization. 
+
+WARNING: The calibration between applied voltage and desired position is depending on every single PI device and is stored in the corresponding PI controller. Therefore don&apos;t mix stages and controllers but only use the original, calibrated combination.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>

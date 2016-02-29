@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>362</height>
+    <width>408</width>
+    <height>344</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -38,27 +38,13 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_bpp">
-          <property name="text">
-           <string>BitPerPix</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QSpinBox" name="spinBox_bpp">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
          <widget class="QLabel" name="label_bpp_2">
           <property name="text">
            <string>BitPerPix</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="0" column="1">
          <widget class="QComboBox" name="combo_bpp">
           <property name="enabled">
            <bool>false</bool>
@@ -73,37 +59,7 @@
           </item>
           <item>
            <property name="text">
-            <string>10</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>12</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>14</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
             <string>16</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>24</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>30</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>32</string>
            </property>
           </item>
          </widget>

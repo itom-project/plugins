@@ -90,7 +90,7 @@ The setVal and getVal functions will write and read on the specified endpoint.")
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
-    m_aboutThis = QObject::tr("This plugin can be used for raw / lowlevel comminication with USB-devices");  
+    m_aboutThis = QObject::tr("This plugin can be used for raw / lowlevel communication with USB-devices");  
 
     ito::Param paramVal("VendorID", ito::ParamBase::Int, 0, std::numeric_limits<unsigned short>::max(), 0x1cbe, tr("The vendor id of the device to connect to").toLatin1().data());
     m_initParamsMand.append(paramVal);
@@ -244,16 +244,6 @@ ito::RetVal ItomUSBDevice::setParam(QSharedPointer<ito::ParamBase> val, ItomShar
 
     if (!retValue.containsError())
     {
-        //here the new parameter is checked whether its type corresponds or can be cast into the
-        // value in m_params and whether the new type fits to the requirements of any possible
-        // meta structure.
-        retValue += apiValidateParam(*it, *val, false, true);
-
-        //if you program for itom 1.4.0 or higher (Interface version >= 1.3.1) you should use this
-        //API method instead of the one above: The difference is, that incoming parameters that are
-        //compatible but do not have the same type than the corresponding m_params value are cast
-        //to the type of the internal parameter and incoming double values are rounded to the
-        //next value (depending on a possible step size, if different than 0.0)
         retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 

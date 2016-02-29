@@ -751,7 +751,11 @@ ito::RetVal USBMotion3XIII::init(QVector<ito::ParamBase> *paramsMand, QVector<it
 
                 //if (initparamfromeep(DWTIMEOUT)) // load values from EEPROM or default values
                 //{
+				ito::RetVal retValue2 = errorCheck(initparamtodefault(DWTIMEOUT));
+				if (retValue2.containsError())
+				{
                     retValue += errorCheck(initparamtodefault(DWTIMEOUT));
+				}
                 //}
 
                 unsigned char mcStatus;
@@ -2013,20 +2017,21 @@ ito::RetVal USBMotion3XIII::waitForDone(const int timeoutMS, const QVector<int> 
 //---------------------------------------------------------------------------------------------------------------------------------- 
 void USBMotion3XIII::dockWidgetVisibilityChanged(bool visible)
 {
-    if (USBMotion3XIIIWid)
+    if (getDockWidget())
     {
+        QWidget *widget = getDockWidget()->widget();
         if (visible)
         {
-            connect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), USBMotion3XIIIWid, SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-            connect(this, SIGNAL(targetChanged(QVector<double>)), USBMotion3XIIIWid, SLOT(targetChanged(QVector<double>)));
-            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), USBMotion3XIIIWid, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), widget, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
+            connect(this, SIGNAL(targetChanged(QVector<double>)), widget, SLOT(targetChanged(QVector<double>)));
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
             emit parametersChanged(m_params);
         }
         else
         {
-            disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)), USBMotion3XIIIWid, SLOT(actuatorStatusChanged(QVector<int>,QVector<double>)));
-            disconnect(this, SIGNAL(targetChanged(QVector<double>)), USBMotion3XIIIWid, SLOT(targetChanged(QVector<double>)));
-            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), USBMotion3XIIIWid, SLOT(parametersChanged(QMap<QString, ito::Param>)));
+            disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), widget, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
+            disconnect(this, SIGNAL(targetChanged(QVector<double>)), widget, SLOT(targetChanged(QVector<double>)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
         }
     }
 }

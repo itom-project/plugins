@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "FireGrabber" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -111,10 +111,12 @@ license browse to http://www.alliedvisiontec.com. This plugin was mainly tested 
     // TODO: check if code runs for multiple cameras at same time. (not done yet)
 
 #ifdef WIN32
-    m_initParamsOpt.append(ito::Param("cameraID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("specific number of the camera, don't use with cameraNumber (0 = unused)").toLatin1().data()));
-    m_initParamsOpt.append(ito::Param("vendorID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("number of the vendor (e.g. Allied: vendorID=673537), don't use with cameraNumber (0 = unused)").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("cameraID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("specific number of the camera, don't use with cameraNumber (0 = unused) - this parameter does not exist in linux version.").toLatin1().data()));
+    m_initParamsOpt.append(ito::Param("vendorID", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 0, tr("number of the vendor (e.g. Allied: vendorID=673537), don't use with cameraNumber (0 = unused) - this parameter does not exist in linux version.").toLatin1().data()));
 #endif
     m_initParamsOpt.append(ito::Param("cameraNumber", ito::ParamBase::Int | ito::ParamBase::In, 0, 25, 0, tr("number of order of plugging the cameras (0 = parameter not used)").toLatin1().data()));
+
+    m_initParamsOpt.append(ito::Param("timebase", ito::ParamBase::Int | ito::ParamBase::In, 1, 1000, 20, tr("timebase [in _s] as step width of integration time. This mainly influences the allowed range of the integration time (only AVT cameras). Values: 1, 2, 5, 10, 20 [default], 50, 100, 200, 500, 1000").replace("_", QLatin1String("\u00B5")).toLatin1().data()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -174,6 +176,9 @@ FireGrabber::FireGrabber() :
    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 24, 8, tr("bit depth of camera").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
+   paramVal = ito::Param("timebase", ito::ParamBase::Int | ito::ParamBase::Readonly, 1, 1000, 20, tr("timebase (step width of integration_time) in mus").replace("mu", QLatin1String("\u00B5")).toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+
    paramVal = ito::Param("brightness", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Brightness value (if supported)").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("sharpness", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Sharpness value (if supported)").toLatin1().data());
@@ -204,7 +209,7 @@ FireGrabber::FireGrabber() :
    //m_params.insert(paramVal.getName(), paramVal);
 
     //now create dock widget for this plugin
-    DockWidgetFireGrabber *dw = new DockWidgetFireGrabber();
+    DockWidgetFireGrabber *dw = new DockWidgetFireGrabber(this);
     Qt::DockWidgetAreas areas = Qt::AllDockWidgetAreas;
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable;
     createDockWidget(QString(m_params["name"].getVal<char *>()), features, areas, dw);
@@ -399,7 +404,7 @@ ito::RetVal FireGrabber::getParam(QSharedPointer<ito::Param> val, ItomSharedSema
     return retValue;
 }
 
-#ifndef WIN32
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
@@ -417,10 +422,14 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
     bool hasIndex;
     int index;
     QString suffix;
-    QMap<QString, ito::Param>::iterator it;
+    ParamMapIterator it;
 
+#ifdef WIN32
+    UINT32 Result = 0;
+#else
     uint32_t min, max, value;
     dc1394error_t Result = dc1394error_t(0);
+#endif
     // parse the given parameter-name (if you support indexed or suffix-based parameters)
     retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
 
@@ -435,7 +444,7 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         // here the new parameter is checked whether it's type corresponds or can be cast into the
         // value in m_params and whether the new type fits to the requirements of any possible
         // meta structure.
-        retValue += apiValidateParam(*it, *val, false, true);
+        retValue += apiValidateAndCastParam(*it, *val, false, true, true);
     }
 
     if (!retValue.containsError())
@@ -457,12 +466,43 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
         }
         else if (!key.compare("integration_time")) // set integration time
         {
+#ifdef WIN32
+            unsigned long dblVal = (unsigned long)(exposureSecToShutter(val->getVal<double>())); //convert to camera specific value
+            Result = Camera.SetParameter(FGP_SHUTTER, dblVal);
+            retValue += AlliedChkError(Result);
+#else
             uint32_t dblVal = (exposureSecToShutter(val->getVal<double>())); //convert to camera specific value
             retValue += AlliedChkError(dc1394_feature_set_value(camera,DC1394_FEATURE_SHUTTER, dblVal));
             retValue += AlliedChkError(Result);
+#endif
         }
         else if (!key.compare("bpp")) // the bits per pixel (only 8 and 16bit monochromatic implemented yet.
         {
+#ifdef WIN32
+            Result = Camera.GetParameter(FGP_XSIZE, &m_xSize);
+            Result = Camera.GetParameter(FGP_YSIZE, &m_ySize);
+            if (val->getVal<int>() == 8)
+            {
+                Result = Camera.SetParameter(FGP_IMAGEFORMAT, MAKEIMAGEFORMAT(RES_SCALABLE, CM_Y8, 0));
+            }
+            else if (val->getVal<int>() == 16)
+            {
+                Result = Camera.SetParameter(FGP_IMAGEFORMAT, MAKEIMAGEFORMAT(RES_SCALABLE, CM_Y16, 0));
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retError, 0, tr("only 8 and 16 bit are implemented").toLatin1().data());
+            }
+
+            retValue += AlliedChkError(Result);
+
+            if (!retValue.containsError())
+            {
+                Result = Camera.SetParameter(FGP_XSIZE, m_xSize);
+                Result = Camera.SetParameter(FGP_YSIZE, m_ySize);
+                retValue += AlliedChkError(Result);
+            }
+#else
             dc1394_get_image_size_from_video_mode(camera, video_mode, &m_xSize, &m_ySize);
             if (val->getVal<int>() == 8)
             {
@@ -485,194 +525,88 @@ ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomShared
             }
 
             retValue += AlliedChkError(Result);
+#endif
         }
         else if (!key.compare("gain")) // set gain
         {
+#ifdef WIN32
+            FGPINFO valInfo = m_camProperties["gain"];
+            unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
+            retValue += AlliedChkError(Camera.SetParameter(FGP_GAIN, valnew));
+#else
             Result = dc1394_feature_get_boundaries(camera, DC1394_FEATURE_GAIN, &min, &max);
             retValue += AlliedChkError(Result);
             Result =  dc1394_feature_get_value(camera, DC1394_FEATURE_GAIN, &value);
             retValue += AlliedChkError(Result);
             unsigned long valnew = min + (max - min) * val->getVal<double>();
             retValue += AlliedChkError(dc1394_feature_set_value(camera, DC1394_FEATURE_GAIN,valnew));
+#endif
         }
         else if (!key.compare("brightness")) //set brigtness
         {
+#ifdef WIN32
+            FGPINFO valInfo = m_camProperties["brightness"];
+            unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
+            retValue += AlliedChkError(Camera.SetParameter(FGP_BRIGHTNESS, valnew));
+#else
             Result = dc1394_feature_get_boundaries(camera, DC1394_FEATURE_BRIGHTNESS, &min, &max);
             retValue += AlliedChkError(Result);
             Result =  dc1394_feature_get_value(camera, DC1394_FEATURE_BRIGHTNESS, &value);
             retValue += AlliedChkError(Result);
             unsigned long valnew = min + (max - min) * val->getVal<double>();
             retValue += AlliedChkError(dc1394_feature_set_value(camera, DC1394_FEATURE_BRIGHTNESS,valnew));
+#endif
         }
         else if (!key.compare("sharpness")) //set sharpness
         {
+#ifdef WIN32
+            FGPINFO valInfo = m_camProperties["sharpness"];
+            unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
+            retValue += AlliedChkError(Camera.SetParameter(FGP_SHARPNESS, valnew));
+#else
             Result = dc1394_feature_get_boundaries(camera, DC1394_FEATURE_SHARPNESS, &min, &max);
             retValue += AlliedChkError(Result);
             Result =  dc1394_feature_get_value(camera, DC1394_FEATURE_SHARPNESS, &value);
             retValue += AlliedChkError(Result);
             unsigned long valnew = min + (max - min) * val->getVal<double>();
             retValue += AlliedChkError(dc1394_feature_set_value(camera, DC1394_FEATURE_SHARPNESS,valnew));
+#endif
         }
         else if (!key.compare("gamma")) //set gamma
         {
+#ifdef WIN32
+            retValue += AlliedChkError(Camera.SetParameter(FGP_GAMMA, it->getVal<int>()));
+#else
             Result = dc1394_feature_get_boundaries(camera, DC1394_FEATURE_GAMMA, &min, &max);
             retValue += AlliedChkError(Result);
             Result =  dc1394_feature_get_value(camera, DC1394_FEATURE_GAMMA, &value);
             retValue += AlliedChkError(Result);
             unsigned long valnew = min + (max - min) * val->getVal<double>();
-            retValue += AlliedChkError(dc1394_feature_set_value(camera, DC1394_FEATURE_GAMMA,valnew));            }
+            retValue += AlliedChkError(dc1394_feature_set_value(camera, DC1394_FEATURE_GAMMA,valnew));   
+#endif
+        }
 
         if (!retValue.containsError())
         {
             retValue += it->copyValueFrom( &(*val) );
         }
+#ifndef WIN32
         usleep(50000); //here the internal camera firmware is slow and we do not get a ready signal out of it so better wait or it will chrash
-}
-
-    emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
-
-    retValue += checkData();
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-    return retValue;
-}
-
-#else
-//----------------------------------------------------------------------------------------------------------------------------------
-/*!
-    \detail This method copies the value of val to to the m_params-parameter and sets the corresponding camera parameters.
-
-    \param [in] val  is a input of type::tparam containing name, value and further informations
-    \param [in] waitCond is the semaphore (default: NULL), which is released if this method has been terminated
-    \return retOk in case that everything is ok, else retError
-    \sa ito::tParam, ItomSharedSemaphore
-*/
-ito::RetVal FireGrabber::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond)
-{
-    ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retValue(ito::retOk);
-    QString key;
-    bool hasIndex;
-    int index;
-    QString suffix;
-    QMap<QString, ito::Param>::iterator it;
-    UINT32 Result = 0;
-
-    // parse the given parameter-name (if you support indexed or suffix-based parameters)
-    retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
-
-    if (!retValue.containsError())
-    {
-        // gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
-        retValue += apiGetParamFromMapByKey(m_params, key, it, true);
-    }
-
-    if (!retValue.containsError())
-    {
-        // here the new parameter is checked whether it's type corresponds or can be cast into the
-        // value in m_params and whether the new type fits to the requirements of any possible
-        // meta structure.
-        retValue += apiValidateParam(*it, *val, false, true);
-    }
-
-    if (!retValue.containsError())
-    {
-        if ((!key.compare("x1") || !key.compare("y1") || !key.compare("x0") || !key.compare("y0")))
-        {
-            if (m_isgrabbing == true)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("camera is grabbing, stop camera first").toLatin1().data());        
-            }
-            else
-            {
-                int x0temp = key.compare("x0") == 0 ? val->getVal<int>() : m_params["x0"].getVal<int>();
-                int x1temp = key.compare("x1") == 0 ? val->getVal<int>() : m_params["x1"].getVal<int>();
-                int y0temp = key.compare("y0") == 0 ? val->getVal<int>() : m_params["y0"].getVal<int>();
-                int y1temp = key.compare("y1") == 0 ? val->getVal<int>() : m_params["y1"].getVal<int>();
-                retValue += adjustROI(x0temp, x1temp, y0temp, y1temp);
-            }
-        }
-        else
-        {
-            if (!key.compare("integration_time"))
-            {
-                unsigned long dblVal = (unsigned long)(exposureSecToShutter(val->getVal<double>()));
-                Result = Camera.SetParameter(FGP_SHUTTER, dblVal);
-                retValue += AlliedChkError(Result);
-                            }
-            else if (!key.compare("bpp"))
-            {
-                Result = Camera.GetParameter(FGP_XSIZE, &m_xSize);
-                Result = Camera.GetParameter(FGP_YSIZE, &m_ySize);
-                if (val->getVal<int>() == 8)
-                {
-                    Result = Camera.SetParameter(FGP_IMAGEFORMAT, MAKEIMAGEFORMAT(RES_SCALABLE, CM_Y8, 0));
-                }
-                else if (val->getVal<int>() == 16)
-                {
-                    Result = Camera.SetParameter(FGP_IMAGEFORMAT, MAKEIMAGEFORMAT(RES_SCALABLE, CM_Y16, 0));
-                }
-                else
-                {
-                    retValue += ito::RetVal(ito::retError, 0, tr("only 8 and 16 bit are implemented").toLatin1().data());
-                }
-
-                retValue += AlliedChkError(Result);
-
-                if (!retValue.containsError())
-                {
-                    Result = Camera.SetParameter(FGP_XSIZE, m_xSize);
-                    Result = Camera.SetParameter(FGP_YSIZE, m_ySize);
-                    retValue += AlliedChkError(Result);
-                }
-            }
-            else if (!key.compare("gain"))
-            {
-                FGPINFO valInfo = m_camProperties["gain"];
-                unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
-                retValue += AlliedChkError(Camera.SetParameter(FGP_GAIN, valnew));
-            }
-            else if (!key.compare("brightness"))
-            {
-                FGPINFO valInfo = m_camProperties["brightness"];
-                unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
-                retValue += AlliedChkError(Camera.SetParameter(FGP_BRIGHTNESS, valnew));
-            }
-            else if (!key.compare("sharpness"))
-            {
-                FGPINFO valInfo = m_camProperties["sharpness"];
-                unsigned long valnew = valInfo.MinValue + (valInfo.MaxValue - valInfo.MinValue) * val->getVal<double>();
-                retValue += AlliedChkError(Camera.SetParameter(FGP_SHARPNESS, valnew));
-            }
-            else if (!key.compare("gamma"))
-            {
-                retValue += AlliedChkError(Camera.SetParameter(FGP_GAMMA, it->getVal<int>()));
-            }
-            
-            if (!retValue.containsError())
-            {
-                retValue += it->copyValueFrom( &(*val) );
-            }
-        }
-    }
-
-    emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
-
-    retValue += checkData();
-
-    if (waitCond)
-    {
-        waitCond->returnValue = retValue;
-        waitCond->release();
-    }
-    return retValue;
-}
-
 #endif
+}
+
+    emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
+
+    retValue += checkData();
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+    return retValue;
+}
+
 
 #ifndef WIN32
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -883,7 +817,8 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     //Allied Pike: cameraID = 269109919 (specific!!!)
     //Allied Marlin: cameraID = 235356461 (specific!!!)    
 
-    plugNR = paramsOpt->value(0).getVal<int>();
+    plugNR = paramsOpt->at(0).getVal<int>();
+    int timebase = paramsOpt->at(1).getVal<int>();
 
     // TODO: implement other selection methods
     //camID = paramsOpt->value(0).getVal<int>();
@@ -897,6 +832,13 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         camID = 0;
         venID = 0;
         retValue += ito::RetVal(ito::retWarning, 0, tr("too much input parameters, plugin number is used").toLatin1().data());
+    }
+
+    if (timebase != 1 && timebase != 2 && timebase != 5 && timebase != 10 && \
+        timebase != 20 && timebase != 50 && timebase != 100 && timebase != 200 && \
+        timebase != 500 && timebase != 1000)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("timebase must be 1, 2, 5, 10, 20, 50, 100, 200, 500 or 1000 (timebase is only considered for AVT cameras)").toLatin1().data());
     }
 
     FireGrabber::m_numberOfInstances++;
@@ -1030,89 +972,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             m_params["modelName"].setVal<char*>(modelName);
             m_identifier = QString("%1 (%2)").arg(modelName).arg(vendorName);
 
-            if (strcmp(vendorName,"AVT") == 0)
-            {
-                m_exposureParams.AVTCam = true;
-                uint32_t regValue;
-                //try to read timebase register
-                Result = dc1394_avt_get_timebase(camera, &regValue);
-                if (Result == DC1394_SUCCESS)
-                {
-                    if (1) //timebase present ther is nothing in the first bits in linux or what is the mask for??
-                    {
-                        int id = regValue & 0x0000000f;
-                        int timebases[] = {1,2,5,10,20,50,100,200,500,1000};
-                        m_exposureParams.timebaseMs = timebases[id] / 1000.0;
-                    }
-                    else
-                    {
-                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
-                        m_exposureParams.timebaseMs = 20.0 / 1000.0;
-                    }
-                }
-                else
-                {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
-                    m_exposureParams.timebaseMs = 20.0 / 1000.0;
-                }
-
-                QMap<QString,int> offsets;
-                offsets["Marlin F033B"] = 12;
-                offsets["Marlin F033C"] = 12;
-                offsets["Marlin F046B"] = 12;
-                offsets["Marlin F046C"] = 12;
-                offsets["Marlin F080B"] = 30;
-                offsets["Marlin F080C"] = 30;
-                offsets["Marlin F080B-30fps"] = 30;
-                offsets["Marlin F080C-30fps"] = 30;
-                offsets["Marlin F145B2"] = 18;
-                offsets["Marlin F145C2"] = 18;
-                offsets["Marlin F146B"] = 26;
-                offsets["Marlin F146C"] = 26;
-                offsets["Marlin F201B"] = 39;
-                offsets["Marlin F201C"] = 39;
-                offsets["Marlin F131B"] = 1;
-                offsets["Marlin F131C"] = 1;
-
-                offsets["Pike F032"] = 17;
-                offsets["Pike F100"] = 42;
-                offsets["Pike F145"] = 38;
-                offsets["Pike F145-15fps"] = 70;
-                offsets["Pike F210"] = 42;
-                offsets["Pike F421"] = 69;
-                offsets["Pike F421B"] = 69;
-                offsets["Pike F505"] = 26;
-                offsets["Pike F1100"] = 128;
-                offsets["Pike F1600"] = 635;
-
-                offsets["GUPPY F033"] = 109;
-                offsets["GUPPY F036"] = -21;
-                offsets["GUPPY F038"] = 42;
-                offsets["GUPPY F038 NIR"] = 42;
-                offsets["GUPPY F044"] = 42;
-                offsets["GUPPY F044 NIR"] = 42;
-                offsets["GUPPY F046"] = 22;
-                offsets["GUPPY F080"] = 34;
-                offsets["GUPPY F146"] = 20;
-                offsets["GUPPY F503"] = -42;
-
-                if (offsets.contains(modelName))
-                {
-                    m_exposureParams.offsetMs = offsets[modelName] / 1000.0;
-                }
-                else
-                {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("no exposure offset is available for this camera model. Therefore the offset is set to 0 and your exposure time might be few microseconds smaller than the real value.").toLatin1().data());
-                    m_exposureParams.offsetMs = 0.0;
-                }
-            }
-            else
-            {
-                m_exposureParams.AVTCam = false;
-                m_exposureParams.offsetMs = 0.0;
-                m_exposureParams.timebaseMs = 20.0;
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Camera model is not known. Therefore the integration time represents the shutter value, not the real exposure time in seconds.").toLatin1().data());
-            }
+            retValue += initAVTCameras(vendorName, modelName, timebase);
         }
         else
         {
@@ -1291,10 +1151,16 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     {
         retValue += ito::RetVal(ito::retError,0, tr("no camera has been connected").toLatin1().data());
     }
+    else
+    {
+        retValue += checkData(); 
+
+        emit parametersChanged(m_params);
+    }
     
     m_isgrabbing = false;
 
-    retValue += checkData(); 
+    
 
 
     if (waitCond)
@@ -1316,17 +1182,17 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     ito::RetVal retValue(ito::retOk);
 
     // get the optional parameters "cameraID" and "vendorID"
-    int camID = NULL;
-    int venID = NULL;
-    int plugNR = NULL;
     int nodeNR = NULL;
     int tempID = NULL;
     //Allied: vendorID = 673537
     //Allied Pike: cameraID = 269109919 (specific!!!)
     //Allied Marlin: cameraID = 235356461 (specific!!!)
-    camID = paramsOpt->value(0).getVal<int>();
-    venID = paramsOpt->value(1).getVal<int>();
-    plugNR = paramsOpt->value(2).getVal<int>();
+    int camID = paramsOpt->at(0).getVal<int>();
+    int venID = paramsOpt->at(1).getVal<int>();
+    int plugNR = paramsOpt->at(2).getVal<int>();
+    int timebase = paramsOpt->at(3).getVal<int>();
+
+
     int connected = false;
 
     if ((camID != 0 || venID != 0) && plugNR != 0)
@@ -1336,56 +1202,66 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
         retValue += ito::RetVal(ito::retWarning, 0, tr("too much input parameters, plugin number is used").toLatin1().data());
     }
 
+    if (timebase != 1 && timebase != 2 && timebase != 5 && timebase != 10 && \
+        timebase != 20 && timebase != 50 && timebase != 100 && timebase != 200 && \
+        timebase != 500 && timebase != 1000)
+    {
+        retValue += ito::RetVal(ito::retError, 0, tr("timebase must be 1, 2, 5, 10, 20, 50, 100, 200, 500 or 1000 (timebase is only considered for AVT cameras)").toLatin1().data());
+    }
+
     FireGrabber::m_numberOfInstances++;
 
-    UINT32 Result = 0;
+    ResultType Result = 0;
 
     UINT32 NodeCnt;
     FGNODEINFO NodeInfo[25];
 
-    if (FireGrabber::m_numberOfInstances == 1) // we are the first user, open DLL
-    {
-        retValue += AlliedChkError(FGInitModule(NULL));
-    }
-
-    Result = FGGetNodeList(NodeInfo, 25, &NodeCnt);  // Get list of connected nodes
-
-    if (plugNR != 0)
+    if (!retValue.containsError())
     {
 
-        Result = Camera.Connect(&NodeInfo[plugNR - 1].Guid);
-        if (Result == 0)
+        if (FireGrabber::m_numberOfInstances == 1) // we are the first user, open DLL
         {
-            connected = true;
+            retValue += AlliedChkError(FGInitModule(NULL));
         }
-        nodeNR = plugNR - 1;
-    }
-    else
-    {
-        // determine if camID and venID define the demanded camera clearly
-        if (NodeCnt >= 2)
+
+        Result = FGGetNodeList(NodeInfo, 25, &NodeCnt);  // Get list of connected nodes
+
+        if (plugNR != 0)
         {
-            for (unsigned long i = 0; i <= NodeCnt - 2; i++)
+
+            Result = Camera.Connect(&NodeInfo[plugNR - 1].Guid);
+            if (Result == 0)
             {
-                for (unsigned long j = i; j <= NodeCnt - 2; j++)
+                connected = true;
+            }
+            nodeNR = plugNR - 1;
+        }
+        else
+        {
+            // determine if camID and venID define the demanded camera clearly
+            if (NodeCnt >= 2)
+            {
+                for (unsigned long i = 0; i <= NodeCnt - 2; i++)
                 {
-                    if (camID != 0 && venID == 0 && (NodeInfo[i].Guid.Low == NodeInfo[j + 1].Guid.Low))
+                    for (unsigned long j = i; j <= NodeCnt - 2; j++)
                     {
-                        retValue += ito::RetVal(ito::retWarning, 0, tr("same cameraID for more than one camera, connected the first plugged and free camera").toLatin1().data());
-                    }
-                    if (camID == 0 && venID != 0 && (NodeInfo[i].Guid.High == NodeInfo[j + 1].Guid.High))
-                    {
-                        retValue += ito::RetVal(ito::retWarning, 0, tr("same vendorID for more than one camera, connected the first plugged and free camera").toLatin1().data());
+                        if (camID != 0 && venID == 0 && (NodeInfo[i].Guid.Low == NodeInfo[j + 1].Guid.Low))
+                        {
+                            retValue += ito::RetVal(ito::retWarning, 0, tr("same cameraID for more than one camera, connected the first plugged and free camera").toLatin1().data());
+                        }
+                        if (camID == 0 && venID != 0 && (NodeInfo[i].Guid.High == NodeInfo[j + 1].Guid.High))
+                        {
+                            retValue += ito::RetVal(ito::retWarning, 0, tr("same vendorID for more than one camera, connected the first plugged and free camera").toLatin1().data());
+                        }
                     }
                 }
             }
-        }
 
-        // find the right port of demanded camera and connect it
-        for (unsigned long i = 0; i <= NodeCnt-1; i++)
-        {
-            if (camID == NodeInfo[i].Guid.Low && venID == NodeInfo[i].Guid.High)    //camID and venID given
+            // find the right port of demanded camera and connect it
+            for (unsigned long i = 0; i <= NodeCnt - 1; i++)
             {
+                if (camID == NodeInfo[i].Guid.Low && venID == NodeInfo[i].Guid.High)    //camID and venID given
+                {
                     Result = Camera.Connect(&NodeInfo[i].Guid);        // Connect with node i
                     if (Result == 0)
                     {
@@ -1393,9 +1269,9 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     }
                     nodeNR = i;
                     break;
-            }
-            else if (camID == NodeInfo[i].Guid.Low && NodeInfo[i].Busy == 0 && venID == 0)    //only camID given
-            {
+                }
+                else if (camID == NodeInfo[i].Guid.Low && NodeInfo[i].Busy == 0 && venID == 0)    //only camID given
+                {
                     Result = Camera.Connect(&NodeInfo[i].Guid);
                     if (Result == 0)
                     {
@@ -1403,9 +1279,9 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     }
                     nodeNR = i;
                     break;
-            }
-            else if (camID == 0 && venID == NodeInfo[i].Guid.High && NodeInfo[i].Busy == 0)    //only venID given
-            {
+                }
+                else if (camID == 0 && venID == NodeInfo[i].Guid.High && NodeInfo[i].Busy == 0)    //only venID given
+                {
                     Result = Camera.Connect(&NodeInfo[i].Guid);
                     if (Result == 0)
                     {
@@ -1413,9 +1289,9 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     }
                     nodeNR = i;
                     break;
-            }
-            else if (camID == 0 && venID == 0 && NodeInfo[i].Busy == 0) //no camID and venID given, connect the first plugged and free camera to its node
-            {
+                }
+                else if (camID == 0 && venID == 0 && NodeInfo[i].Busy == 0) //no camID and venID given, connect the first plugged and free camera to its node
+                {
                     Result = Camera.Connect(&NodeInfo[i].Guid);   // Connect with node i
                     if (Result == 0)
                     {
@@ -1423,11 +1299,12 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
                     }
                     nodeNR = i;
                     break;
+                }
             }
         }
     }
 
-    if (Result == 0 && connected)
+    if (!retValue.containsError() && Result == 0 && connected)
     {
         // Set camera to scalable mode and max size
 
@@ -1450,92 +1327,7 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
             m_params["vendorName"].setVal<char*>(vendorName);
             m_params["modelName"].setVal<char*>(modelName);
             m_identifier = QString("%1 (%2)").arg(modelName).arg(vendorName);
-
-            if (strcmp(vendorName,"AVT") == 0)
-            {
-                m_exposureParams.AVTCam = true;
-                UINT32 regValue;
-                //try to read timebase register
-                Result = Camera.ReadRegister(0xF1000208, &regValue);
-
-                if (Result == FCE_NOERROR)
-                {
-
-                    if (regValue & 0x80000000) //timebase present
-                    {
-                        int id = regValue & 0x0000000f;
-                        int timebases[] = {1,2,5,10,20,50,100,200,500,1000};
-                        m_exposureParams.timebaseMs = timebases[id] / 1000.0;
-                    }
-                    else
-                    {
-                        retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
-                        m_exposureParams.timebaseMs = 20.0 / 1000.0;
-                    }
-                }
-                else
-                {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
-                    m_exposureParams.timebaseMs = 20.0 / 1000.0;
-                }
-
-                QMap<QString,int> offsets;
-
-                offsets["Marlin F033B"] = 12;
-                offsets["Marlin F033C"] = 12;
-                offsets["Marlin F046B"] = 12;
-                offsets["Marlin F046C"] = 12;
-                offsets["Marlin F080B"] = 30;
-                offsets["Marlin F080C"] = 30;
-                offsets["Marlin F080B-30fps"] = 30;
-                offsets["Marlin F080C-30fps"] = 30;
-                offsets["Marlin F145B2"] = 18;
-                offsets["Marlin F145C2"] = 18;
-                offsets["Marlin F146B"] = 26;
-                offsets["Marlin F146C"] = 26;
-                offsets["Marlin F201B"] = 39;
-                offsets["Marlin F201C"] = 39;
-                offsets["Marlin F131B"] = 1;
-                offsets["Marlin F131C"] = 1;
-
-                offsets["Pike F-032"] = 17;
-                offsets["Pike F-100"] = 42;
-                offsets["Pike F-145"] = 38;
-                offsets["Pike F-145-15fps"] = 70;
-                offsets["Pike F-210"] = 42;
-                offsets["Pike F-421"] = 69;
-                offsets["Pike F-505"] = 26;
-                offsets["Pike F-1100"] = 128;
-                offsets["Pike F-1600"] = 635;
-
-                offsets["GUPPY F-033"] = 109;
-                offsets["GUPPY F-036"] = -21;
-                offsets["GUPPY F-038"] = 42;
-                offsets["GUPPY F-038 NIR"] = 42;
-                offsets["GUPPY F-044"] = 42;
-                offsets["GUPPY F-044 NIR"] = 42;
-                offsets["GUPPY F-046"] = 22;
-                offsets["GUPPY F-080"] = 34;
-                offsets["GUPPY F-146"] = 20;
-                offsets["GUPPY F-503"] = -42;
-
-                if (offsets.contains(modelName))
-                {
-                    m_exposureParams.offsetMs = offsets[modelName] / 1000.0;
-                }
-                else
-                {
-                    retValue += ito::RetVal(ito::retWarning, 0, tr("no exposure offset is available for this camera model. Therefore the offset is set to 0 and your exposure time might be few microseconds smaller than the real value.").toLatin1().data());
-                    m_exposureParams.offsetMs = 0.0;
-                }
-            }
-            else
-            {
-                m_exposureParams.AVTCam = false;
-                m_exposureParams.offsetMs = 0.0;
-                m_exposureParams.timebaseMs = 20.0;
-                retValue += ito::RetVal(ito::retWarning, 0, tr("Camera model is not known. Therefore the integration time represents the shutter value, not the real exposure time in seconds.").toLatin1().data());
-            }
+            retValue += initAVTCameras(vendorName, modelName, timebase);
         }
         else
         {
@@ -1662,6 +1454,11 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     retValue += checkData();
 
+    if (!retValue.containsError())
+    {
+        emit parametersChanged(m_params);
+    }
+
     if (waitCond)
     {
         waitCond->returnValue = retValue;
@@ -1673,6 +1470,133 @@ ito::RetVal FireGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
     return retValue;
 }
 #endif
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal FireGrabber::initAVTCameras(const char *vendorName, const char *modelName, int desiredTimebase)
+{
+    ito::RetVal retValue;
+
+    if (strcmp(vendorName, "AVT") == 0)
+    {
+        m_exposureParams.AVTCam = true;
+        
+        //try to read timebase register
+#ifdef WIN32
+        UINT32 regValue;
+        ResultType Result = Camera.ReadRegister(0xF1000208, &regValue);
+        ResultType ResultOK = FCE_NOERROR;
+#else
+        uint32_t regValue;
+        ResultType Result = dc1394_avt_get_timebase(camera, &regValue);
+        ResultType ResultOK = DC1394_SUCCESS;
+#endif
+        if (Result == ResultOK)
+        {
+            if (regValue & 0x80000000) //timebase present
+            {
+                int timebases[] = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
+                
+                //try to set the desired typebase
+                int newid = 4; //20 mus per default
+                for (int idx = 0; idx < sizeof(timebases) / sizeof(int); ++idx)
+                {
+                    if (timebases[idx] == desiredTimebase)
+                    {
+                        newid = idx;
+                        break;
+                    }
+                }
+
+#ifdef WIN32
+                Result = Camera.WriteRegister(0xF1000208, (regValue & 0xfffffff0) + newid);
+#else
+                dc1394_avt_set_timebase(camera, (regValue & 0xfffffff0) + newid);
+#endif
+                
+
+                //read register
+#ifdef WIN32
+                Camera.ReadRegister(0xF1000208, &regValue);
+#else
+                dc1394_avt_get_timebase(camera, &regValue);
+#endif
+                int id = regValue & 0x0000000f;
+
+                m_exposureParams.timebaseMs = timebases[id] / 1000.0;
+                m_params["timebase"].setVal<int>(timebases[id]);
+            }
+            else
+            {
+                retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera is not available. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
+                m_exposureParams.timebaseMs = 20.0 / 1000.0;
+            }
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retWarning, 0, tr("timebase register of camera could not be read. Timebase is set to 20 %1s per default").arg(QChar(0x00, 0xB5)).toLatin1().data());  // \mu s
+            m_exposureParams.timebaseMs = 20.0 / 1000.0;
+        }
+
+        QMap<QString, int> offsets;
+
+        offsets["Marlin F033B"] = 12;
+        offsets["Marlin F033C"] = 12;
+        offsets["Marlin F046B"] = 12;
+        offsets["Marlin F046C"] = 12;
+        offsets["Marlin F080B"] = 30;
+        offsets["Marlin F080C"] = 30;
+        offsets["Marlin F080B-30fps"] = 30;
+        offsets["Marlin F080C-30fps"] = 30;
+        offsets["Marlin F145B2"] = 18;
+        offsets["Marlin F145C2"] = 18;
+        offsets["Marlin F146B"] = 26;
+        offsets["Marlin F146C"] = 26;
+        offsets["Marlin F201B"] = 39;
+        offsets["Marlin F201C"] = 39;
+        offsets["Marlin F131B"] = 1;
+        offsets["Marlin F131C"] = 1;
+
+        offsets["Pike F-032"] = 17;
+        offsets["Pike F-100"] = 42;
+        offsets["Pike F-145"] = 38;
+        offsets["Pike F-145-15fps"] = 70;
+        offsets["Pike F-210"] = 42;
+        offsets["Pike F-421"] = 69;
+        offsets["Pike F-505"] = 26;
+        offsets["Pike F-1100"] = 128;
+        offsets["Pike F-1600"] = 635;
+
+        offsets["GUPPY F-033"] = 109;
+        offsets["GUPPY F-036"] = -21;
+        offsets["GUPPY F-038"] = 42;
+        offsets["GUPPY F-038 NIR"] = 42;
+        offsets["GUPPY F-044"] = 42;
+        offsets["GUPPY F-044 NIR"] = 42;
+        offsets["GUPPY F-046"] = 22;
+        offsets["GUPPY F-080"] = 34;
+        offsets["GUPPY F-146"] = 20;
+        offsets["GUPPY F-503"] = -42;
+
+        if (offsets.contains(modelName))
+        {
+            m_exposureParams.offsetMs = offsets[modelName] / 1000.0;
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retWarning, 0, tr("no exposure offset is available for this camera model. Therefore the offset is set to 0 and your exposure time might be few microseconds smaller than the real value.").toLatin1().data());
+            m_exposureParams.offsetMs = 0.0;
+        }
+    }
+    else
+    {
+        m_exposureParams.AVTCam = false;
+        m_exposureParams.offsetMs = 0.0;
+        m_exposureParams.timebaseMs = 20.0;
+        retValue += ito::RetVal(ito::retWarning, 0, tr("Camera model is not known. Therefore the integration time represents the shutter value, not the real exposure time in seconds.").toLatin1().data());
+    }
+
+    return retValue;
+}
 
 #ifndef WIN32
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2249,31 +2173,31 @@ void FireGrabber::IntegrationPropertiesChanged(double integrationtime)
     setParam( QSharedPointer<ito::ParamBase>(new ito::ParamBase("integration_time", ito::ParamBase::Double, integrationtime)), NULL);
 }
 
+
 //----------------------------------------------------------------------------------------------------------------------------------
+//! slot called if the dock widget of the plugin becomes (in)visible
+/*!
+Overwrite this method if the plugin has a dock widget. If so, you can connect the parametersChanged signal of the plugin
+with the dock widget once its becomes visible such that no resources are used if the dock widget is not visible. Right after
+a re-connection emit parametersChanged(m_params) in order to send the current status of all plugin parameters to the dock widget.
+*/
 void FireGrabber::dockWidgetVisibilityChanged(bool visible)
 {
     if (getDockWidget())
     {
-        DockWidgetFireGrabber *dw = qobject_cast<DockWidgetFireGrabber*>(getDockWidget()->widget());
+        QWidget *widget = getDockWidget()->widget();
         if (visible)
         {
-            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            connect(dw, SIGNAL(GainOffsetPropertiesChanged(double,double)), this, SLOT(GainOffsetPropertiesChanged(double,double)));
-            connect(dw, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
-
-            QMetaObject::invokeMethod(dw, "setIdentifier", Q_ARG(QString, m_identifier));
+            connect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
 
             emit parametersChanged(m_params);
         }
         else
         {
-            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), dw, SLOT(valuesChanged(QMap<QString, ito::Param>)));
-            disconnect(dw, SIGNAL(GainOffsetPropertiesChanged(double,double)), this, SLOT(GainOffsetPropertiesChanged(double,double)));
-            disconnect(dw, SIGNAL(IntegrationPropertiesChanged(double)), this, SLOT(IntegrationPropertiesChanged(double)));
+            disconnect(this, SIGNAL(parametersChanged(QMap<QString, ito::Param>)), widget, SLOT(parametersChanged(QMap<QString, ito::Param>)));
         }
     }
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 // FIRE GRABBER
 

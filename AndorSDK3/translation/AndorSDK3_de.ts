@@ -119,7 +119,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+666"/>
+        <location line="+693"/>
         <source>StopDevice of AndorSDK3 can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -157,7 +157,19 @@
 <context>
     <name>AndorSDK3Interface</name>
     <message>
-        <location filename="../AndorSDK3Interface.cpp" line="+70"/>
+        <location filename="../AndorSDK3Interface.cpp" line="+65"/>
+        <source>This plugin supports Andor cameras that can be run using the SDK3 from Andor (e.g. Neo and Zyla series). It has been tested with the following models: 
+
+- Zyla 5.5 (Dual Camera Link) 
+
+The plugin has been compiled using the Andor SDK 3.8 
+
+In order to run your camera, please purchase and install the Andor SDK 3.8 or higher and make sure that the necessary libraries are accessible 
+by the Windows path environment variable (e.g. append &quot;C:/Program Files/Andor SDK3&quot; to the path variable).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -413,7 +425,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../AndorSDK3Interface.cpp" line="-21"/>
+        <location filename="../AndorSDK3Interface.cpp" line="-30"/>
         <source>Andor cameras via its SDK3 (Neo, Zyla).</source>
         <translation type="unfinished"></translation>
     </message>

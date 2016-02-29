@@ -77,6 +77,12 @@ if (PLUGIN_dispWindow)
     ADD_SUBDIRECTORY(dispWindow)
 endif (PLUGIN_dispWindow)
 
+# dslrRemote - not yet
+OPTION(PLUGIN_DslrRemote "Build with this plugin." ON)
+if (PLUGIN_DslrRemote)
+    ADD_SUBDIRECTORY(DslrRemote)
+endif (PLUGIN_DslrRemote)
+
 # DummyGrabber
 OPTION(PLUGIN_DummyGrabber "Build with this plugin." ON)
 if (PLUGIN_DummyGrabber)
@@ -163,6 +169,12 @@ if (PLUGIN_BasicGPLFilters)
     ADD_SUBDIRECTORY(BasicGPLFilters)
 endif (PLUGIN_BasicGPLFilters) 
 
+# BasicGPLFilters
+OPTION(PLUGIN_HidApi "Build with this plugin." ON)
+if (PLUGIN_HidApi)
+    ADD_SUBDIRECTORY(hidapi)
+endif (PLUGIN_HidApi) 
+
 # LeicaMotorFocus
 OPTION(PLUGIN_LeicaMotorFocus "Build with this plugin." ON)
 if (PLUGIN_LeicaMotorFocus)
@@ -198,10 +210,10 @@ endif (PLUGIN_MSMediaFoundation)
 ENDIF(WIN32)
 
 # NanotecStepMotor
-#OPTION(PLUGIN_NanotecStepMotor "Build with this plugin." OFF)
-#if (PLUGIN_NanotecStepMotor)
-#    ADD_SUBDIRECTORY(NanotecStepMotor)
-#endif (PLUGIN_NanotecStepMotor)
+OPTION(PLUGIN_NanotecStepMotor "Build with this plugin." ON)
+if (PLUGIN_NanotecStepMotor)
+    ADD_SUBDIRECTORY(NanotecStepMotor)
+endif (PLUGIN_NanotecStepMotor)
 
 # NewportSMC100
 OPTION(PLUGIN_NEWPORT_SMC100 "Build with this plugin." ON)
@@ -295,6 +307,12 @@ IF (WIN32)
     endif (PLUGIN_QCam)
 ENDIF (WIN32)
 
+# rawImport
+OPTION(PLUGIN_rawImport "Build with this plugin." ON)
+if (PLUGIN_rawImport)
+    ADD_SUBDIRECTORY(RawImport)
+endif (PLUGIN_rawImport)
+
 # SerialIO
 OPTION(PLUGIN_SerialIO "Build with this plugin." ON)
 if (PLUGIN_SerialIO)
@@ -328,6 +346,18 @@ IF (WIN32)
         ADD_SUBDIRECTORY(ThorlabsCCS)
     endif (PLUGIN_ThorlabsCCS)
 ENDIF (WIN32)
+
+# UhlRegister
+OPTION(PLUGIN_UhlRegister "Build with this plugin." ON)
+if (PLUGIN_UhlRegister)
+    ADD_SUBDIRECTORY(UhlRegister)
+endif (PLUGIN_UhlRegister)
+
+# UhlText
+OPTION(PLUGIN_UhlText "Build with this plugin." ON)
+if (PLUGIN_UhlText)
+    ADD_SUBDIRECTORY(UhlText)
+endif (PLUGIN_UhlText)
 
 # USBMotion3XIII
 IF (WIN32)

@@ -4,7 +4,7 @@
 <context>
     <name>BasicFilters</name>
     <message>
-        <location filename="../BasicFilters.cpp" line="+186"/>
+        <location filename="../BasicFilters.cpp" line="+204"/>
         <source>Set each pixel to the lowest value within the kernel (x ,y) using the generic mcpp filter engine</source>
         <translation type="unfinished"></translation>
     </message>
@@ -34,18 +34,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Performs a median filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Performs a low pass filter with kernelsize (x ,y) and pixelwise comparison of filtered image and original image to remove spikes according to delta value.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../BasicSpecialFilters.cpp" line="+3337"/>
-        <location filename="../BasicFilters.cpp" line="+31"/>
+        <location filename="../BasicSpecialFilters.cpp" line="+3335"/>
+        <location filename="../BasicFilters.cpp" line="+37"/>
         <source>Input image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -58,20 +48,18 @@
         <location filename="../BasicGenericFilters.cpp" line="+449"/>
         <location line="+1953"/>
         <location line="+238"/>
-        <location line="+225"/>
         <source>n-dim DataObject</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2414"/>
+        <location line="-2189"/>
         <location line="+1953"/>
         <location line="+238"/>
-        <location line="+225"/>
         <source>n-dim DataObject of type sourceImage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2414"/>
+        <location line="-2189"/>
         <location line="+1953"/>
         <location line="+463"/>
         <source>Odd kernelsize in x</source>
@@ -97,37 +85,27 @@
         <location line="+350"/>
         <location line="+603"/>
         <location line="+238"/>
-        <location line="+354"/>
+        <location line="+380"/>
         <source>Source object not defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2113"/>
+        <location line="-2139"/>
         <location line="+572"/>
         <location line="+350"/>
         <location line="+603"/>
         <location line="+238"/>
-        <location line="+354"/>
         <source>Ito data object is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2113"/>
+        <location line="-1759"/>
         <location line="+572"/>
         <location line="+350"/>
         <location line="+603"/>
         <location line="+238"/>
-        <location line="+354"/>
+        <location line="+380"/>
         <source>Destination object not defined</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-2084"/>
-        <location line="+572"/>
-        <location line="+350"/>
-        <location line="+602"/>
-        <location line="+591"/>
-        <source>Error: kernel in x must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -135,12 +113,21 @@
         <location line="+572"/>
         <location line="+350"/>
         <location line="+602"/>
-        <location line="+591"/>
+        <location line="+614"/>
+        <source>Error: kernel in x must be odd</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-2133"/>
+        <location line="+572"/>
+        <location line="+350"/>
+        <location line="+602"/>
+        <location line="+614"/>
         <source>Error: kernel in y must be odd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1877"/>
+        <location line="-1900"/>
         <source>high value filter with kernel %1 x %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -193,23 +180,52 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+223"/>
-        <source>Delta value for comparison</source>
+        <location line="+215"/>
+        <source>source dataObject of any real data type.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+219"/>
-        <location line="+8"/>
-        <location line="+11"/>
-        <location line="+11"/>
-        <location line="+11"/>
-        <location line="+31"/>
-        <location line="+8"/>
-        <source> while running spike removal by median filter</source>
+        <location line="+2"/>
+        <source>destination dataObject (can be the same than source)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+6"/>
+        <source>Delta value for comparison</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>value set to clipped values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>if 1 (default), a spike value is replaced by the parameter &apos;newValue&apos;, else it is replaced by the value from the filtered object.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+185"/>
+        <source>source object must not be empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+47"/>
+        <location line="+8"/>
+        <location line="+11"/>
+        <location line="+11"/>
+        <location line="+11"/>
+        <location line="+39"/>
+        <source> while running spike removal by median filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source> while running spike removal by mean filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Error: filter type not implemented for generic spike filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -219,25 +235,25 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="-3146"/>
-        <location line="+141"/>
+        <location filename="../BasicSpecialFilters.cpp" line="-3141"/>
+        <location line="+139"/>
         <location line="+72"/>
-        <location line="+168"/>
-        <location line="+1970"/>
+        <location line="+169"/>
+        <location line="+1973"/>
         <source>Error: source image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2346"/>
-        <location line="+141"/>
+        <location line="-2348"/>
+        <location line="+139"/>
         <location line="+77"/>
-        <location line="+2133"/>
-        <location line="+408"/>
+        <location line="+2137"/>
+        <location line="+403"/>
         <source>Error: dest image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2754"/>
+        <location line="-2751"/>
         <source>Error: Input image must be 3D</source>
         <translation type="unfinished"></translation>
     </message>
@@ -248,18 +264,18 @@
     </message>
     <message>
         <location line="+87"/>
-        <location line="+87"/>
-        <location line="+718"/>
+        <location line="+85"/>
+        <location line="+717"/>
         <source>Unknown type or type not implemented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-797"/>
+        <location line="-794"/>
         <source>Flattened object from 3d to 2d</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+39"/>
         <source>Error: Input image must be 2D</source>
         <translation type="unfinished"></translation>
     </message>
@@ -270,12 +286,12 @@
     </message>
     <message>
         <location line="+23"/>
-        <location line="+168"/>
+        <location line="+169"/>
         <source>Error: replace image ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-158"/>
+        <location line="-159"/>
         <source>source and replace image must have the same type and size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -290,7 +306,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+34"/>
         <source>Input image with 3 or 4 uint8 planes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -305,7 +321,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-229"/>
+        <location line="-230"/>
         <source>Input object of type float32 or float64 whose non-finite values will be replaced with the values in replaceImg.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -325,7 +341,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Output image with of type rgba32</source>
         <translation type="unfinished"></translation>
     </message>
@@ -335,7 +351,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+180"/>
+        <location line="+179"/>
         <source>3D input object of dimension [ZxMxN] with Z different planes.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -355,7 +371,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+207"/>
+        <location line="+206"/>
         <source>Error: sourceImageStack is Null-Pointer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -370,7 +386,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source>2D image or single plane n-D object</source>
         <translation type="unfinished"></translation>
     </message>
@@ -421,7 +437,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+239"/>
+        <location line="+234"/>
         <source>slice has not defined size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -441,31 +457,31 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+124"/>
-        <location line="+375"/>
+        <location line="+125"/>
+        <location line="+377"/>
         <source>input image [real typed data object]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-373"/>
-        <location line="+377"/>
+        <location line="-375"/>
+        <location line="+379"/>
         <source>destination image (inplace possible)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-375"/>
-        <location line="+377"/>
+        <location line="-377"/>
+        <location line="+379"/>
         <source>lowest value in range</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-375"/>
-        <location line="+377"/>
+        <location line="-377"/>
+        <location line="+379"/>
         <source>highest value in range</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+405"/>
+        <location line="+410"/>
         <source>2D or multidimensional source data object ((u)int8, (u)int16, (u)int32, float32, float64 or rgba32)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -490,17 +506,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="+102"/>
         <source>Histogram can only be calculated for (u)int8, (u)int16, (u)int32, float32, float64 or rgba32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+129"/>
+        <location line="+127"/>
         <source>Calculated histogramm between %1 : %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+591"/>
+        <location line="+586"/>
         <source>Output image (1xN) of the same type than the input image, where N corresponds to different radiuses.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -520,74 +536,73 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicGenericFilters.cpp" line="-397"/>
-        <location filename="../BasicSpecialFilters.cpp" line="-1615"/>
-        <location line="+377"/>
+        <location line="-1616"/>
+        <location line="+379"/>
         <source>value set to clipped values (default: 0.0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicSpecialFilters.cpp" line="-375"/>
-        <location line="+377"/>
+        <location line="-377"/>
+        <location line="+379"/>
         <source>0: clip values outside of given range (default), 1: clip inside</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-354"/>
-        <location line="+378"/>
+        <location line="-355"/>
+        <location line="+380"/>
         <source>Error: source image empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-373"/>
-        <location line="+383"/>
+        <location line="-375"/>
+        <location line="+385"/>
         <source>Error: dest image empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-378"/>
-        <location line="+383"/>
-        <location line="+404"/>
+        <location line="-380"/>
+        <location line="+385"/>
+        <location line="+409"/>
         <source>Error: source is not a matrix or image stack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-782"/>
-        <location line="+392"/>
+        <location line="-789"/>
+        <location line="+394"/>
         <source>Error: minValue must be smaller than maxValue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-242"/>
-        <location line="+333"/>
+        <location line="-244"/>
+        <location line="+335"/>
         <location line="+104"/>
         <source>unknown type or type not implemented (e.g. complex)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-428"/>
-        <location line="+436"/>
+        <location line="-431"/>
+        <location line="+439"/>
         <source>Clipped values outside %1 : %2 to %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-432"/>
-        <location line="+436"/>
+        <location line="-435"/>
+        <location line="+439"/>
         <source>Clipped values inside %1 : %2 to %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-271"/>
+        <location line="-272"/>
         <source>input image [real typed data object] for comparision</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+41"/>
         <source>Error: comparison image empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+632"/>
+        <location line="+634"/>
         <source>Preallocated dataObject to be filled</source>
         <translation type="unfinished"></translation>
     </message>
@@ -617,7 +632,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+170"/>
+        <location line="+168"/>
         <source>Error: geometricElement ptr empty</source>
         <translation type="unfinished"></translation>
     </message>
@@ -638,8 +653,8 @@
     </message>
     <message>
         <location line="+38"/>
-        <location line="+76"/>
-        <location line="+99"/>
+        <location line="+75"/>
+        <location line="+98"/>
         <location line="+22"/>
         <location line="+22"/>
         <location line="+22"/>
@@ -650,12 +665,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-192"/>
+        <location line="-191"/>
         <source>Error: geometricElement must be either marker-style (8x1) or primitiv-style (1x11)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+18"/>
         <source>Error: radii of geometricElement must not be zero</source>
         <translation type="unfinished"></translation>
     </message>
@@ -673,12 +688,24 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../BasicFilters.cpp" line="-184"/>
+        <location filename="../BasicFilters.cpp" line="-202"/>
         <source>ITO developed filter-functions for data objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>This plugin provides several basic filter calculations for itom::dataObject. These are for instance: 
+
+* merging of planes
+* swap byte order of objects 
+* resample slices from dataObjects 
+* mean value filter along axis 
+
+This plugin does not have any unusual dependencies.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -688,7 +715,72 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../BasicGenericFilters.cpp" line="-2399"/>
+        <location line="+50"/>
+        <source>replaces infinite and/or nan-values by values of second matrix. 
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Flattens a z-Stack of Mx1xN or MxNx1 matrixes to NxM or MxN. 
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Swap byte order for input image. 
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Merge 3 or 4 color planes to a single tRGBA32 or tInt32-plane. 
+
+If second object is tInt32 and of right size in x and y, the stack object will be convertet to tInt32. In all other cases the object will be tRGBA32 
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Calculate mean value (and optional standard deviation) of a 3D data object in z-direction. 
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Interpolate 1D-slice from along the defined line from a 2D-Object. 
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>clip values outside or inside of minValue and maxValue to newValue (default = 0) 
+
+Depending on the parameter &apos;insideFlag&apos;, this filter sets all values within (1) or outside (0) of the range (minValue, maxValue) to the value given by &apos;newValue&apos;. In both cases the range boundaries are not clipped and replaced. If clipping is executed outside of range, NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>clip values of image A to newValue (default = 0) outside or inside of minValue and maxValue in image B 
+
+Depending on the parameter &apos;insideFlag&apos;, this filter sets all values in image A depending on image B within (1) or outside (0) of the range (minValue, maxValue) to the value given by &apos;newValue&apos;. In both cases the range boundaries are not clipped and replaced. If clipping is executed outside of range, NaN and Inf values are replaced as well (floating point data objects only). This filter supports only real value data types.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>fills a ROI, which defined by a geometric primitive, of the given dataObject with a defined value
+
+Depending on the parameter &apos;insideFlag&apos;, this filter sets all values of the dataObject depending on the geometric primitiv within (1) or outside (2) or both (3) to the value given by &apos;newValueInside&apos; and &apos;newValueOutside&apos;. The &apos;edgeFlag&apos; is currently not used but shall manage the edge handling of primitive.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../BasicGenericFilters.cpp" line="-2813"/>
         <source>Tried to run generic filter engine without correct initilization of all buffers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -720,6 +812,42 @@
     <message>
         <location line="+8"/>
         <source>Not enough memory to allocate output line buffer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2470"/>
+        <source>Performs a median filter with kernelsize (kernelx, kernely) and pixelwise comparison of 
+filtered image and original image to remove spikes according to delta value. 
+
+At first the input image is filtered by a median filter (filter: &apos;medianFilter&apos;) using the given kernel size. The output 
+image then contains the input image, where every pixel is replaced &apos;newValue&apos; if the absolute distance between the median 
+filtered and the input image at the specific pixel is bigger than &apos;delta&apos;.
+
+This filter also works inplace (same source and destination).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Performs a linear mean filter with kernelsize (kernelx, kernely) and pixelwise comparison of 
+filtered image and original image to remove spikes according to delta value. 
+
+At first the input image is filtered by a linear mean filter (filter: &apos;lowPassFilter&apos;) using the given kernel size. The output 
+image then contains the input image, where every pixel is replaced &apos;newValue&apos; if the absolute distance between the median 
+filtered and the input image at the specific pixel is bigger than &apos;delta&apos;. 
+
+This filter also works inplace (same source and destination).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../BasicSpecialFilters.cpp" line="-815"/>
+        <source>calculates histgram of real input data object.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+822"/>
+        <source>Calculates the mean value for radial circles with a given center point an a radius step size 
+
+The radiuses are the distances from the given center point to the physical coordinates of each pixel.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

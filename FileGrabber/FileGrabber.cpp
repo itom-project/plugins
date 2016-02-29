@@ -499,7 +499,7 @@ ito::RetVal FileGrabber::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::
 
     if ( paramsMand->at(1).getVal<char*>() )
     {
-        m_searchFolder = QString(paramsMand->at(1).getVal<char*>());
+        m_searchFolder = QLatin1String(paramsMand->at(1).getVal<char*>());
     }
     else
     {

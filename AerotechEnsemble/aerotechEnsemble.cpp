@@ -1347,31 +1347,19 @@ ito::RetVal AerotechEnsemble::requestStatusAndPosition(bool sendCurrentPos, bool
 //---------------------------------------------------------------------------------------------------------------------------------- 
 void AerotechEnsemble::dockWidgetVisibilityChanged(bool visible)
 {
-    if (m_pAerotechEnsembleWid)
+    if (getDockWidget())
     {
+        QWidget *widget = getDockWidget()->widget();
         if (visible)
         {
-            QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
-            QObject::connect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
+            QObject::connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), widget, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
+            QObject::connect(this, SIGNAL(targetChanged(QVector<double>)), widget, SLOT(targetChanged(QVector<double>)));
             requestStatusAndPosition(true, true);
         }
         else
         {
-            QObject::disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), getDockWidget()->widget(), SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
-            QObject::disconnect(this, SIGNAL(targetChanged(QVector<double>)), getDockWidget()->widget(), SLOT(targetChanged(QVector<double>)));
+            QObject::disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), widget, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
+            QObject::disconnect(this, SIGNAL(targetChanged(QVector<double>)), widget, SLOT(targetChanged(QVector<double>)));
         }
     }
-    /*if (USBMotion3XIIIWid)
-    {
-        if (visible)
-        {
-            connect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), USBMotion3XIIIWid, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
-            connect(this, SIGNAL(targetChanged(QVector<double>)), USBMotion3XIIIWid, SLOT(targetChanged(QVector<double>)));
-        }
-        else
-        {
-            disconnect(this, SIGNAL(actuatorStatusChanged(QVector<int>, QVector<double>)), USBMotion3XIIIWid, SLOT(actuatorStatusChanged(QVector<int>, QVector<double>)));
-            disconnect(this, SIGNAL(targetChanged(QVector<double>)), USBMotion3XIIIWid, SLOT(targetChanged(QVector<double>)));
-        }
-    }*/
 }

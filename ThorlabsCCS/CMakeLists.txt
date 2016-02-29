@@ -16,7 +16,7 @@ OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WA
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET (CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
-SET (THORLABS_IVI_VISA_SDK "" CACHE PATH "base path to the sdk of IVI Foundation, VISA (e.g. folder WinNT, having subfolders include, lib, lib_x64...)")
+SET (THORLABS_IVI_VISA_SDK "" CACHE PATH "base path to the sdk of IVI Foundation, VISA (e.g. folder C:/Program Files/IVI Foundation/VISA/Win64 or C:/Program Files (x86)/IVI Foundation/VISA/WinNT, having subfolders include, lib, lib_x64...)")
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${ITOM_SDK_DIR})
 

@@ -40,11 +40,11 @@ DialogSMC100::DialogSMC100(ito::AddInBase *actuator) :
 
     freshStarted = true;
 
-    m_calibStatusNames.append("MZ and encoder");
-    m_calibStatusNames.append("Current Pos as Home");
-    m_calibStatusNames.append("MZ only");
-    m_calibStatusNames.append("EoR ans encoder");
-    m_calibStatusNames.append("EoR only");
+    m_calibStatusNames.append(tr("MZ and encoder"));
+    m_calibStatusNames.append(tr("Current Pos as Home"));
+    m_calibStatusNames.append(tr("MZ only"));
+    m_calibStatusNames.append(tr("EoR ans encoder"));
+    m_calibStatusNames.append(tr("EoR only"));
     
     //disable dialog, since no parameters are known. Parameters will immediately be sent by the slot parametersChanged.
     enableDialog(false);
@@ -70,10 +70,10 @@ void DialogSMC100::parametersChanged(QMap<QString, ito::Param> params)
     }
 
     // get Initial Parameters
-    memcpy(m_calibInitialStatus.data(), params["calib_mode"].getVal<int*>(), sizeof(int)*m_numAxis);
-    memcpy(m_InitialStatus.data(), params["current_status"].getVal<double*>(), sizeof(double)*m_numAxis);
-    memcpy(m_speedInitialStatus.data(), params["speed"].getVal<double*>(), sizeof(double)*m_numAxis);
-    memcpy(m_accelInitialStatus.data(), params["accel"].getVal<double*>(), sizeof(double)*m_numAxis);
+    memcpy(m_calibInitialStatus.data(), params["calib_mode"].getVal<int*>(), sizeof(int) * m_numAxis);
+    memcpy(m_InitialStatus.data(), params["current_status"].getVal<double*>(), sizeof(double) * m_numAxis);
+    memcpy(m_speedInitialStatus.data(), params["speed"].getVal<double*>(), sizeof(double) * m_numAxis);
+    memcpy(m_accelInitialStatus.data(), params["accel"].getVal<double*>(), sizeof(double) * m_numAxis);
 
     if (freshStarted)
     { // Execute those lines only once to create the list entries
@@ -238,7 +238,7 @@ void DialogSMC100::comboBoxChanged(int itemIdx)
 {
     QFrame *senderFrame = qobject_cast<QFrame*>(QObject::sender()->parent());
     int i = senderFrame->objectName().toInt();
-    senderFrame->setStyleSheet("#"+senderFrame->objectName()+" {background-color: DeepSkyBlue}");
+    senderFrame->setStyleSheet("#" + senderFrame->objectName() + " {background-color: DeepSkyBlue}");
     m_axisToInitialize[i] = true;
 }
 
@@ -247,7 +247,7 @@ void DialogSMC100::spinboxChanged(double value)
 {
     QFrame *senderFrame = qobject_cast<QFrame*>(QObject::sender()->parent());
     int i = senderFrame->objectName().toInt();
-    senderFrame->setStyleSheet("#"+senderFrame->objectName()+" {background-color: DeepSkyBlue}");
+    senderFrame->setStyleSheet("#" + senderFrame->objectName() + " {background-color: DeepSkyBlue}");
     m_axisToInitialize[i] = true;
 }
 
@@ -286,9 +286,9 @@ void DialogSMC100::createUiListEntry(const int i)
 {
     // Create outer elements
     QFrame *frame = new QFrame(ui.scrollAreaWidgetContents);
-    ui.scrollAreaWidgetContents->layout()->setContentsMargins(0,0,0,0);
+    ui.scrollAreaWidgetContents->layout()->setContentsMargins(0, 0, 0, 0);
     QHBoxLayout *layout = new QHBoxLayout(frame);
-    layout->setContentsMargins(0,0,0,0);
+    layout->setContentsMargins(0, 0, 0, 0);
     frame->setLayout(layout);
     frame->setObjectName(QString::number(i));
      
@@ -298,32 +298,32 @@ void DialogSMC100::createUiListEntry(const int i)
     nrLabel->setAlignment(Qt::AlignCenter);
 
     QComboBox *statusCombo = new QComboBox(frame);     
-    statusCombo->setToolTip("Calibration mode");
+    statusCombo->setToolTip(tr("Calibration mode"));
     for (int i = 0; i < m_calibStatusNames.size(); ++i)
     {
-        statusCombo->addItem(QIcon(), QString::number(i)+" "+m_calibStatusNames[i], QVariant(i));
+        statusCombo->addItem(QIcon(), QString::number(i) + " " + m_calibStatusNames[i], QVariant(i));
     }
 
     QDoubleSpinBox *speedSpin = new QDoubleSpinBox(frame);
-    speedSpin->setToolTip("Speed");
+    speedSpin->setToolTip(tr("Speed"));
     // TODO hier muessen noch die Werte ausgelesen werden
     speedSpin->setMaximum(100);
     speedSpin->setMinimum(0);
-    speedSpin->setSuffix(" units/sec");
+    speedSpin->setSuffix(tr(" units/sec"));
 
     QDoubleSpinBox *accelSpin = new QDoubleSpinBox(frame);
-    accelSpin->setToolTip("Acceleration");
+    accelSpin->setToolTip(tr("Acceleration"));
     accelSpin->setMaximum(100);
     accelSpin->setMinimum(0);
-    accelSpin->setSuffix(" units/sec²");
+    accelSpin->setSuffix(tr(" units/sec^2"));
     
     QPushButton *resetButton = new QPushButton(frame);
-    resetButton->setToolTip("revert the changed configurations of this axis.");
+    resetButton->setToolTip(tr("revert the changed configurations of this axis."));
     resetButton->setIcon(QIcon(":/dialogue/reset.png"));
-    resetButton->setIconSize(QSize(20,20));
+    resetButton->setIconSize(QSize(20, 20));
     resetButton->setMaximumHeight(22);
     resetButton->setMaximumWidth(22);
-    resetButton->setContentsMargins(0,0,0,0);
+    resetButton->setContentsMargins(0, 0, 0, 0);
 
     // inser elements in Layout
     layout->insertWidget(0, nrLabel);
@@ -333,7 +333,7 @@ void DialogSMC100::createUiListEntry(const int i)
     layout->insertWidget(4, resetButton);
 
     frame->setLayout(layout);
-    ui.verticalListLayout->insertWidget(ui.verticalListLayout->count()-1, frame);
+    ui.verticalListLayout->insertWidget(ui.verticalListLayout->count() - 1, frame);
 
     //// Map signals from each line to corresponding slot
     connect(statusCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));

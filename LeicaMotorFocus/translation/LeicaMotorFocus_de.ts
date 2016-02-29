@@ -211,18 +211,18 @@
 <context>
     <name>LeicaMotorFocus</name>
     <message>
-        <location filename="../LeicaMotorFocus.cpp" line="+298"/>
+        <location filename="../LeicaMotorFocus.cpp" line="+259"/>
         <source>Unexspected #(17) at first sign in buffer. Sign deleted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+10"/>
         <source>No answer read</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+19"/>
-        <source>Answer &quot;%1&quot; does not match query</source>
+        <source>Answer &quot;%1&quot; to command &apos;%2 %3&apos; does not match query</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -231,7 +231,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+74"/>
         <source>upper reference switch reached</source>
         <translation type="unfinished"></translation>
     </message>
@@ -256,7 +256,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+26"/>
         <source>Speed in m/s (Default=Maximum: 23,33 mm/s)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -281,13 +281,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+40"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+11"/>
-        <location line="+88"/>
+        <location line="+89"/>
         <source>parameter not found in m_params.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -317,47 +317,47 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+70"/>
         <source>Doesn&apos;t fit to interface DataIO!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+64"/>
         <location line="+116"/>
-        <location line="+118"/>
+        <location line="+125"/>
         <source>motor is running. Further action is not possible</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-176"/>
+        <location line="-184"/>
         <source>error: no reference switch reached</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
-        <location line="+254"/>
+        <location line="+41"/>
+        <location line="+252"/>
         <source>Error. Number of axis must be 1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-209"/>
+        <location line="-206"/>
         <source>Error. Number of axes must be 1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+36"/>
-        <location line="+148"/>
+        <location line="+37"/>
+        <location line="+144"/>
         <location line="+44"/>
         <source>Axis does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-156"/>
+        <location line="-150"/>
         <source>Error. Too many Axis / wrong Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+181"/>
+        <location line="+175"/>
         <source>Error. Too many Axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -365,7 +365,7 @@
 <context>
     <name>LeicaMotorFocusInterface</name>
     <message>
-        <location line="-1093"/>
+        <location line="-997"/>
         <source>An initialized SerialIO</source>
         <translation type="unfinished"></translation>
     </message>
@@ -373,12 +373,19 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-9"/>
+        <location line="-16"/>
         <source>Plugin for Leica MZ12.X focus actuator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>The LeiceMotorFocus is an itom-plugin, which can be used to control the z-stage of Leica MZ12 or MZ12.5 stereo-microscopes.
+
+For the initialization of this plugin you already need an opened serial IO port (using the plugin &apos;SerialIO&apos;). Give the handle of the opened serial port to the constructor of this plugin. This plugin will keep a reference of the serial port until the actuator is closed again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>

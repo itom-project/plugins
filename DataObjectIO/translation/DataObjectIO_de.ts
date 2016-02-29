@@ -16,7 +16,7 @@
         <translation type="obsolete">Läd 1D und 2D Datenobjekte aus gängigen Bildformaten (bmp, png, jpg, pgm...)</translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="+123"/>
+        <location filename="../DataObjectIO.cpp" line="+140"/>
         <source>Images (*.pgm *.pbm *.ppm *.sr *.ras *.bmp *.dib *.png *.tif *.tiff *.jpg *.jpeg *.jp2 *.gif *.xbm *.xpm)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -73,28 +73,29 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
-        <location line="+823"/>
+        <location line="+39"/>
+        <location line="+818"/>
         <source>2D-DataObject of anytype or 3-planes DataObject of uint8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-821"/>
-        <location line="+823"/>
-        <location line="+1085"/>
+        <location line="-816"/>
+        <location line="+818"/>
+        <location line="+1144"/>
+        <location line="+73"/>
+        <location line="+76"/>
+        <location line="+77"/>
         <location line="+72"/>
         <location line="+72"/>
+        <location line="+65"/>
         <location line="+74"/>
-        <location line="+68"/>
-        <location line="+69"/>
-        <location line="+64"/>
-        <location line="+71"/>
-        <location line="+1306"/>
+        <location line="+1305"/>
+        <location line="+654"/>
         <source>Destination filename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3702"/>
+        <location line="-4428"/>
         <source>Format of the Image according to QImage: [&apos;QImage::Format_Mono&apos;, &apos;QImage::Format_MonoLSB&apos;, &apos;QImage::Format_Indexed8&apos;, &apos;QImage::Format_RGB32&apos;, &apos;QImage::Format_ARGB32&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -119,14 +120,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+45"/>
         <source>Save to image failed: lowLimit must be unequal to highLimit and smaller than highLimit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+145"/>
         <location line="+158"/>
-        <location line="+68"/>
+        <location line="+66"/>
         <location line="+63"/>
         <location line="+35"/>
         <location line="+62"/>
@@ -135,13 +136,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-416"/>
+        <location line="-414"/>
         <source>Save to image failed: Only 2D DataObject is supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+159"/>
-        <location line="+67"/>
+        <location line="+158"/>
+        <location line="+66"/>
         <location line="+98"/>
         <location line="+101"/>
         <source>Only 2D DataObject is supported</source>
@@ -149,33 +150,33 @@
     </message>
     <message>
         <location line="+5"/>
-        <location line="+2226"/>
+        <location line="+2302"/>
         <source>Entered Image format is not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2200"/>
+        <location line="-2277"/>
         <source>Empty dataObjet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+2595"/>
-        <location line="+412"/>
-        <location line="+101"/>
+        <location line="+2673"/>
+        <location line="+411"/>
+        <location line="+104"/>
         <source>Source file name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3070"/>
-        <location line="+670"/>
-        <location line="+1981"/>
-        <location line="+464"/>
+        <location line="-3150"/>
+        <location line="+711"/>
+        <location line="+2018"/>
+        <location line="+473"/>
         <source>The file &apos;%s&apos; does not exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3111"/>
+        <location line="-3198"/>
         <source>The file &apos;%s&apos; is no readable image file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -185,7 +186,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+30"/>
         <source>Power of 10 for the zValue (Default: -3, micrometer), only for floating point objects.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -195,71 +196,86 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+74"/>
+        <location line="+3570"/>
         <source>The file &apos;%s&apos; is no writeable file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+477"/>
-        <location line="+2445"/>
+        <location line="-3065"/>
         <source>Dataobject not initialized</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2437"/>
-        <location line="+2445"/>
+        <location line="+8"/>
+        <location line="+2491"/>
         <source>The file &apos;%s&apos; is no readable file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1425"/>
+        <location line="-1435"/>
         <source>2D-DataObject of anytype</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-486"/>
+        <location line="-505"/>
         <source>Color palette name [gray, gray16, ...]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+76"/>
         <source>Compression rate, 0: high, 100: low</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+76"/>
         <source>Compression rate, 0: high, 9: low</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+343"/>
+        <location line="+357"/>
         <source>Color palette name [gray, ...]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-133"/>
-        <location line="+64"/>
+        <location line="-137"/>
+        <location line="+65"/>
         <source>Enable binary coding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2388"/>
+        <location line="-2463"/>
         <source>Images (*.xpm *.xbm)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+732"/>
-        <location line="+2595"/>
+        <location line="+24"/>
+        <source>MicroProf FRT (*.frt)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>PR Line Profile (*.pr)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+706"/>
+        <location line="+2673"/>
         <source>Color element: asIs (default) | alpha | R | G | B | RGB | ARGB | GRAY; &apos;asIs&apos; ignores alpha channel from supported file types (use rgba instead).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2441"/>
+        <location line="-2520"/>
         <source>Toggles NaN handling if dataObject is floating-type. 0: Write NaN (Default); 1: Skip Value, 2: Substitute by InvalidValue, 3: Substitute by BAD for MountainsMaps.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+480"/>
+        <location line="+4"/>
+        <source>File format version: &apos;aNIST-1.0&apos; or &apos;aISO-1.0&apos; for DIN EN ISO 25178-71</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+517"/>
         <source>data object where the file data is loaded to. The type of destinationObject corresponds to the type of the data block in the sdf file (uint8, uint16, uint32, int8, int16, int32, float32, float64) or always float64 if the header value Zscale is != 1.0 or the valueUnit is != &apos;m&apos;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -270,42 +286,49 @@
     </message>
     <message>
         <location line="+3"/>
+        <location line="+3328"/>
         <source>Unit of x and y axes. Nist or BCR sdf files assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="-3319"/>
+        <location line="+3328"/>
         <source>Unit of value axis. x3p assumes to have m as default unit, this can be scaled using other values than m. Default: m (Be careful that other units than &apos;m&apos; lead to a multiplication of all values that might exceed the data type limit.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="-3319"/>
         <source>If this string occurs in the data block, the value will be replaced by NaN if float32 or float64 as output format. If &apos;&lt;minrange&gt;&apos; or &lt;maxrange&gt; the minimum or maximum value of the data type in the data block is assumed (e.g. &lt;maxrange&gt; is used by Zygo to describe NaN values). MountainsMap writes &apos;BAD&apos; as invalid value (following ISO25178-71).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+123"/>
+        <location line="+124"/>
         <source>The file &apos;%s&apos; does not contain an &apos;aNIST-1.0&apos;, &apos;aISO-1.0&apos; or &apos;aBCR-1.0&apos;-header.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+450"/>
+        <location line="+415"/>
+        <source>number of values in data block does not correspond to NumPoints * NumProfiles of header block</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+52"/>
+        <location line="+73"/>
+        <location line="+76"/>
+        <location line="+77"/>
         <location line="+72"/>
         <location line="+72"/>
-        <location line="+74"/>
-        <location line="+68"/>
-        <location line="+69"/>
-        <location line="+64"/>
+        <location line="+65"/>
         <source>Real, 2D data object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-343"/>
+        <location line="-358"/>
         <source>Color palette name [gray, gray16, rgb, rgba, &lt;any-name-of-a-color-palette&gt;]. &apos;gray16&apos; supported for &apos;.jp2&apos; only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+76"/>
         <source>Color palette name [gray, gray16, rgba, rgb, &lt;any-name-of-a-color-palette&gt;].</source>
         <translation type="unfinished"></translation>
     </message>
@@ -315,86 +338,86 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Color palette name [gray, rgba, rgb, &lt;any-name-of-a-color-palette&gt;].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+72"/>
         <source>Color palette name [gray, rgb, &lt;any-name-of-a-color-palette&gt;, ...]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Color palette name [gray, &lt;any-name-of-a-color-palette&gt;, ...]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+65"/>
         <source>Color palette name [gray, gray16]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+140"/>
-        <location line="+437"/>
+        <location line="+145"/>
+        <location line="+435"/>
         <source>File name empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-433"/>
-        <location line="+437"/>
+        <location line="-431"/>
+        <location line="+435"/>
         <source>Palette name empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-431"/>
-        <location line="+437"/>
+        <location line="-429"/>
+        <location line="+435"/>
         <source>The given dataObject must have exactly one plane</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-433"/>
-        <location line="+437"/>
+        <location line="-431"/>
+        <location line="+435"/>
         <source>Complex data types not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-421"/>
-        <location line="+437"/>
+        <location line="-419"/>
+        <location line="+435"/>
         <source>Filename not valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-432"/>
-        <location line="+437"/>
+        <location line="-430"/>
+        <location line="+435"/>
         <source>File is not writeable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-359"/>
-        <location line="+382"/>
+        <location line="-357"/>
+        <location line="+380"/>
         <source>Image format not valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-274"/>
+        <location line="-272"/>
         <source>Image format does not support 16-Bit gray values.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+19"/>
-        <location line="+332"/>
+        <location line="+330"/>
         <location line="+32"/>
         <source>DataObject must be of type rgba32 in order to save it to the rgba color format.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-338"/>
+        <location line="-337"/>
         <source>DataObject must be of type rgba32 in order to save it to the rgb color format.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+67"/>
         <location line="+48"/>
         <location line="+289"/>
         <location line="+48"/>
@@ -412,18 +435,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
-        <location line="+412"/>
+        <location line="+50"/>
+        <location line="+411"/>
         <source>DataObject that will be filled with the loaded file content</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-254"/>
+        <location line="-253"/>
         <source>The loaded image has multiple channels with a bitdepth of uint16 each. This is currently unsupported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+292"/>
+        <location line="+290"/>
         <source>If 0 the complete dataObject is saved (data + metadata) [default], else the filter saves only metadata</source>
         <translation type="unfinished"></translation>
     </message>
@@ -433,25 +456,136 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+65"/>
         <source>Empty dataObject</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1137"/>
-        <location line="+381"/>
+        <location line="+11"/>
+        <source>Uses this as the separator between elements. If NULL, try to guess.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Uses this as the sign for decimal numbers. If &lt;guess&gt;, try to guess if the decimal sign is a dot (.) or comma (,).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Sometimes numbers are wrapped by a sign (.e.g &apos;2.3&apos; or &quot;4.5&quot;). If so, indicate the character(s) that wrap the numbers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>DataObject not initialized</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+94"/>
+        <source>The decimal sign must be &apos;&lt;guess&gt;&apos;, &apos;.&apos; or &apos;,&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The decimal sign and the separator must differ.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <location line="+12"/>
+        <source>No separator could be guessed. Maybe, there is only one value per row. The separator is set to a space character.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+71"/>
+        <source>The separator was specified as (.) but other separator signs are also possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The separator was specified as (,) but other separator signs are also possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The separator was specified as (tab) but other separator signs are also possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The separator was specified as (space) but other separator signs are also possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The separator was specified as (;) but other separator signs are also possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The file is no list with 3 columns and N rows or contains invalid separators.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+87"/>
+        <source>Line %i contains more elements than the first analyzed line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+184"/>
+        <source>1D data object of any real data type. No invalid values are allowed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Number of decimal signs (default: 6).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>unit of ordinate (0: nm [default], 1: _m)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+240"/>
+        <source>Destination dataObject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Source filename</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>some files contain more than one dataset. Then pass the bufferType here (its mask is 0x0000ffdf), if 0 is given, the default buffer type is used.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>some files contain more than one dataset. Its type is selected by &apos;bufferType&apos;. Sometimes the result can come from different sensors, then select the sensor index here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If 1 and different buffer types are available, they are printed to the command line.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1995"/>
+        <location line="+379"/>
         <source>DataObject-Type could not be converted to unsigned int 8-bit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-329"/>
+        <location line="-327"/>
         <source>DataObject-Type could not be converted to unsigned int 16-bit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+29"/>
-        <location line="+26"/>
-        <location line="+117"/>
+        <location line="+25"/>
+        <location line="+116"/>
         <location line="+189"/>
         <location line="+32"/>
         <location line="+116"/>
@@ -465,30 +599,30 @@
     </message>
     <message>
         <location line="+5"/>
-        <location line="+486"/>
+        <location line="+487"/>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-56"/>
-        <location line="+327"/>
-        <location line="+104"/>
+        <location line="-55"/>
+        <location line="+324"/>
+        <location line="+105"/>
         <source>Destination dataObject is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-319"/>
+        <location line="-318"/>
         <source>Format of the image is currently not supported by itom.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+28"/>
         <location line="+40"/>
         <source>Color import of channels with uint16 bitdepth not supported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+29"/>
         <source>Color format of the file is currently not compatible with itom. Wait for next itom version.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -503,7 +637,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+77"/>
         <source>Ignore the first n-lines.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -513,72 +647,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Uses this as the seperator between elements. If NULL, try to guess.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Uses this as the sign for decimal numbers. If NULL, try to guess.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+96"/>
-        <location line="+11"/>
-        <location line="+239"/>
-        <location line="+40"/>
+        <location line="+114"/>
+        <location line="+10"/>
+        <location line="+257"/>
         <source>Unexpected end of file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-268"/>
-        <source>The decimal sign has to be undefined (NULL), &apos;.&apos; or &apos;,&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>The decimal sign and the seperator must differ.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+36"/>
-        <location line="+10"/>
-        <location line="+38"/>
-        <source>The decimal was specified as (,) but no other seperators where found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+26"/>
-        <source>The seperator was specified as (.) but other possible seperators where found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The seperator was specified as (,) but other possible seperators where found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The seperator was specified as (tab) but other possible seperators where found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The seperator was specified as (space) but other possible seperators where found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The seperator was specified as (;) but other possible seperators where found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>The file is no list with 3 columns and N rows or contains invalid seperators.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-3233"/>
+        <location line="-3415"/>
         <source>Number of decimal signs (default: 3). For MountainsMaps reduce total number of digits to 5</source>
         <translation type="unfinished"></translation>
     </message>
@@ -597,13 +673,415 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../DataObjectIO.cpp" line="-958"/>
+        <location filename="../DataObjectIO.cpp" line="-974"/>
         <source>import or export dataObject from/to several file formats.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+20"/>
+        <source>This filter contains two different export- / import-functionalities for dataObjects, image or raw.
+
+Image-export functions converts dataObjects to image data and saves them as common image-formats.
+
+* uint8 or uint16 are saved as gray-values (8bit or if supported as 16bit) or if the image format allows color are saved according to the defined color palette.
+* float32 or float64 are saved as gray-values (8bit or if suppored as 16bit) or according to the defined color palette. Therefore the values must be between 0.0 and 1.0.
+  Values outside these borders are clipped. If the image format supports RGBA, invalid values are saved as transparent values (alpha=zero) else as black values.
+* rgba32 can be saved as &apos;rgb&apos; (full opacity), &apos;rgba&apos; (alpha channel is considered, not supported by all formats) or gray formats, where the color image is transformed to gray. 
+  if a format from a color palette is indicated, the color image is transformed to gray first and then interpreted using the indicated color palette. 
+
+Basic export-filter definition: source object, filename, palette, ...
+Basic import-filter definition: destination object, filename, channel-specification, ...
+
+Raw-export functions write/read the data to/from txt-based or binary file formats.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
         <source>Licensed under LPGL.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+100"/>
+        <source>saves 1D and 2D dataObject to image formats via QImage (for saving images it is recommended to use the specific saveABC (savePNG, saveGIF, saveBMP...) commands).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+658"/>
+        <source>loads a 2D data object from image formats via QImage (*.gif *.xbm *.xpm). 
+This filter is deprecated and can also be directly used via the filter &apos;loadAnyImage&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+160"/>
+        <source>saves 1D and 2D dataObject to the ascii surface data file format (sdf), version aNIST-1.0 (no official standard) or aISO-1.0 (in compliance with ISO 25178-71).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+529"/>
+        <source>loads an ascii-based surface data file to a 1D or 2D data object (sdf), versions aNIST-1.0, aISO-1.0 (ISO 25178-71) or aBCR-1.0 (e.g. Zygo export format) are supported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+587"/>
+        <source>Saves a real, 2D dataObject as tiff-file (tagged image format, 8bit and 16bit supported). 
+
+The following conventions hold for saving the image: 
+
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
+  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette 
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535] 
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
+  value. Invalid values are saved as transparent values (alpha = 0). 
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
+  as uint8 or uint16 data type. 
+
+The following base color palettes exist (further, user-defined palettes can be used, too): 
+
+* gray: [0,255] gray-values, 8bit 
+* gray16: [0,65535] gray-values, 16bit 
+* rgba: color with transparency, 8bit (rgba32 input only) 
+* rgb: color without transparency, 8bit (rgba32 input only) 
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
+* hotIron: [0,255], hot iron map, 8bit 
+* red: [0,255], from black to red, 8bit 
+* green: [0,255], from black to green, 8bit 
+* blue: [0,255], from black to blue, 8bit 
+
+This filters uses OpenCV to save the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+74"/>
+        <source>Saves a real, 2D dataObject as jpg-file or jp2-file (only jp2 supports 16bit but is not much known). 
+
+The following conventions hold for saving the image: 
+
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
+  supported 8bit range [0,255] and saved using the given color palette 
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] 
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
+  value. Invalid values are saved as transparent values (alpha = 0). 
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
+  as uint8 or uint16 data type. 
+
+The following base color palettes exist (further, user-defined palettes can be used, too): 
+
+* gray: [0,255] gray-values, 8bit 
+* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only) 
+* rgb: color without transparency, 8bit (rgba32 input only) 
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
+* hotIron: [0,255], hot iron map, 8bit 
+* red: [0,255], from black to red, 8bit 
+* green: [0,255], from black to green, 8bit 
+* blue: [0,255], from black to blue, 8bit 
+
+This filters uses OpenCV to save the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+75"/>
+        <source>Saves a real, 2D dataObject as png-file (portable network graphic). 
+
+The following conventions hold for saving the image: 
+
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
+  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette 
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535] 
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
+  value. Invalid values are saved as transparent values (alpha = 0). 
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
+  as uint8 or uint16 data type. 
+
+The following base color palettes exist (further, user-defined palettes can be used, too): 
+
+* gray: [0,255] gray-values, 8bit 
+* gray16: [0,65535] gray-values, 16bit 
+* rgba: color with transparency, 8bit (rgba32 input only) 
+* rgb: color without transparency, 8bit (rgba32 input only) 
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
+* hotIron: [0,255], hot iron map, 8bit 
+* red: [0,255], from black to red, 8bit 
+* green: [0,255], from black to green, 8bit 
+* blue: [0,255], from black to blue, 8bit 
+
+This filters uses OpenCV to save the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+78"/>
+        <source>Saves a real, 2D dataObject as xpm-file (X PixMap) or xbm (X BitMap, black-white only). 
+
+The following conventions hold for saving the image: 
+
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
+  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette 
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535] 
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
+  value. Invalid values are saved as transparent values (alpha = 0). 
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
+  as uint8 or uint16 data type. 
+
+The following base color palettes exist (further, user-defined palettes can be used, too): 
+
+* gray: [0,255] gray-values, 8bit 
+* rgba: color with transparency, 8bit (rgba32 input only) 
+* rgb: color without transparency, 8bit (rgba32 input only) 
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
+* hotIron: [0,255], hot iron map, 8bit 
+* red: [0,255], from black to red, 8bit 
+* green: [0,255], from black to green, 8bit 
+* blue: [0,255], from black to blue, 8bit 
+
+This filters uses Qt to save the image. In the format xbm, a threshold at 128 is applied to separate black and white.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+72"/>
+        <source>Saves a real, 2D dataObject as bmp-file or dip-file (bitmap, 8bit only). 
+
+The following conventions hold for saving the image: 
+
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
+  supported 8bit range [0,255] and saved using the given color palette 
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] 
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
+  value. Invalid values are saved as transparent values (alpha = 0). 
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
+  as uint8 or uint16 data type. 
+
+The following base color palettes exist (further, user-defined palettes can be used, too): 
+
+* gray: [0,255] gray-values, 8bit 
+* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only) 
+* rgb: color without transparency, 8bit (rgba32 input only) 
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
+* hotIron: [0,255], hot iron map, 8bit 
+* red: [0,255], from black to red, 8bit 
+* green: [0,255], from black to green, 8bit 
+* blue: [0,255], from black to blue, 8bit 
+
+This filters uses OpenCV to save the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+72"/>
+        <source>Saves a real, 2D dataObject as ppm-file (portable pixel map, 8bit only). 
+
+The following conventions hold for saving the image: 
+
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
+  supported 8bit range [0,255] and saved using the given color palette 
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] 
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
+  value. Invalid values are saved as transparent values (alpha = 0). 
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
+  as uint8 or uint16 data type. 
+
+The following base color palettes exist (further, user-defined palettes can be used, too): 
+
+* gray: [0,255] gray-values, 8bit 
+* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only) 
+* rgb: color without transparency, 8bit (rgba32 input only) 
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
+* hotIron: [0,255], hot iron map, 8bit 
+* red: [0,255], from black to red, 8bit 
+* green: [0,255], from black to green, 8bit 
+* blue: [0,255], from black to blue, 8bit 
+
+This filters uses OpenCV to save the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+74"/>
+        <source>Saves a real, 2D dataObject as pgm-file or pbm-file (portable gray map or portable bit map, 16bit only for pgm-format). 
+
+The following conventions hold for saving the image: 
+
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
+  supported 8bit range [0,255] or 16bit range [0, 65535] and saved using the given color palette (only gray-valued maps are allowed) 
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] or 16bit range [0, 65535] 
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
+  value. Invalid values are saved as transparent values (alpha = 0). 
+* rgba32 data type are saved depending on the given color palette. The object is at first transformed to gray and than handled 
+  as uint8 or uint16 data type. Coloured images are not supported by this format.
+
+The following base color palettes are supported: 
+
+* gray: [0,255] gray-values, 8bit 
+* gray16: [0,65535] gray-values, 16bit 
+
+This filters uses OpenCV to save the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+65"/>
+        <source>Saves a real, 2D dataObject as sr-file or ras-file (Sun Raster, 8bit only). 
+
+The following conventions hold for saving the image: 
+
+* fixed-point data types (uint8, uint16, uint32, int8, int16, int32) will be scaled to the 
+  supported 8bit range [0,255] and saved using the given color palette 
+* float32 or float64 data types are scaled from [0.0, 1.0] to the supported 8bit range [0,255] 
+  and saved using the given color palette. Values outside of [0.0, 1.0] are clipped to the boundary 
+  value. Invalid values are saved as transparent values (alpha = 0). 
+* rgba32 data type are saved depending on the given color palette. They can be saved as colored image 
+  without transparency (&apos;rgb&apos;) or with considering the alpha channel as transparent values (&apos;rgba&apos;). If another 
+  color palette than &apos;rgb&apos; or &apos;rgba&apos; is indicated, the object is at first transformed to gray and than handled 
+  as uint8 or uint16 data type. 
+
+The following base color palettes exist (further, user-defined palettes can be used, too): 
+
+* gray: [0,255] gray-values, 8bit 
+* rgba: color with transparency (converted to gray-levels however), 8bit (rgba32 input only) 
+* rgb: color without transparency, 8bit (rgba32 input only) 
+* grayMarked: [0,255], gray-values, 0: violet, 255: red, 8bit 
+* falseColor, falseColorIR: [0,255], (inverse) false colors, 8bit 
+* hotIron: [0,255], hot iron map, 8bit 
+* red: [0,255], from black to red, 8bit 
+* green: [0,255], from black to green, 8bit 
+* blue: [0,255], from black to blue, 8bit 
+
+This filters uses OpenCV to save the image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+864"/>
+        <source>load the following image formats from a file to a 2D data object: 
+
+* png: 8bit/16bit, color available, transparency available 
+* tiff/tif: 8bit/16bit, color available 
+* jpg: 8bit, color available
+* jp2: 8bit/16bit, color available
+* ras/sr: 8bit, color available 
+* ppm: 8bit, color available 
+* pgm: 8bit/16bit 
+* pbm: 8bit, color available 
+* bmp/dip: 8bit, color available 
+* gif: 8bit, color available, transparency available 
+* xbm: 8bit, color available, transparency available (X BitMap)
+* xpm: 8bit, color available, transparency available (X PixMap)
+
+The file format only provides color or transparency data if indicated above. 
+
+You can choose which channel (colorElement) of the loaded file should be used for the data object. 
+`asIs` loads the file as it is: monochrome formats are loaded as uint8 or uint16 data object, while 
+colored file formats are loaded as rgba32 data object. The color elements `alpha`, `R`, `G`, `B`, `RGB`, 
+`RGBA` are only available for colored file formats are only load the selected channels to either a uint8/uint16 data object 
+or a rgba32 data object (rgb and rgba only). `GRAY` converts a colored file format to grayscale before loading it 
+to an uint8 or uint16 data object. 
+
+All file formats are loaded using OpenCV, besides gif, xbm, xpm which are loaded via Qt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+433"/>
+        <source>Tries to load the given ido or idh-file as itom dataObject. Data in the given file 
+must have been saved using `saveIDO` in a xml-compatible file format, whereas *.idh only 
+contains meta information of a data object and *.ido contains the full object.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>The given dataObject of any size and data format is saved in an itom-specific xml-file (suffix: ido, idh). 
+
+It is possible to define if only meta information (tags, scaling, offset...) should be saved in the xml-file (suffix: idh, itom data header) 
+or if the array and meta information should be saved (suffix: ido, itom data object). Data is always saved in a base64-encoded format while the header text 
+is mostly written in plain, ascii text. Using this filter, the data object including all its meta information is saved and 
+can be reload using `loadIDO`.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+75"/>
+        <source>loads an ascii-based data file like txt, csv, tsv or space separated values. 
+
+The text file is loaded line by line and tried to be interpreted as an array. It is possible to ignore the first n lines (optional parameter ignoreLines). 
+The full content of these ignored lines is then saved in the tag &apos;ignoredLines&apos; of the destinationObject.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+579"/>
+        <source>saves a 1D data object to the PR format used for the reference software for roughness metrology (https://www.ptb.de/rptb) of PTB (Physikalisch Technische Bundesanstalt).
+
+The .pr format requires the lateral scaling values in mm. If another metric unit (m, cm, mm, _m, nm) is given in the axis unit tag, an automatic conversion is applied. Else a 
+warning is returned. The same holds for the values (ordinate). You can choose if the .pr format should contain the ordinate values in nm or _m. An auto-conversion is implemented, too. 
+
+This filter uses the hex-code DF for the german Umlaut &apos;oe&apos; and F6 for &apos;sz&apos; like required by the input file format description of the RPTB tool (since RPTB Version 2.01).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+206"/>
+        <source>Loads MicroProf FRT data from profilometers (based on FRT File Format specification 4.0.1.0). 
+
+The files are loaded in a unit16, int32 or float64 data format. The FRT file format provides further 
+information about the measurement conditions and system settings. Several of these settings are saved 
+in tags of the resulting dataObject. These are among others (if available): 
+
+* comment: optional multiline comment of the file 
+* scanDirection: string with the scan direction for the data acquisition 
+* measureRange: total measurement range 
+* startTime: start time of measurement (seconds from 1970) 
+* duration: duration of measurement in seconds 
+* zTableType: string with the type of the used z-scanning stage 
+* xyTableType: string with the type of the used xy-scanning stage 
+* hardware: name of the measurement device (str) 
+* speedX: speed of the x-stage in m/s (only given if overrideSpeed is false) 
+* speedY: speed of the y-stage in m/s (only given if overrideSpeed is false) 
+* sensorDelay: wait at each point so many ms (only given if overrideSpeed is true) 
+* checkSensorError: during measurement check the error state of the sensor 
+* sensorErrorTime: wait max. so many ms for non-error state of the sensor 
+* scanBackMeas: during scan: measure when scanning back 
+* title: name of dataset if given 
+* heatingChamber: temperature of heating chamber if given 
+* xyStitchingActive : &apos;true&apos; if xy stitching was active, else &apos;false&apos; 
+* xyStitchingResolutionDivisor : only given if xyStitchingActive is &apos;true&apos; 
+
+Some frt files can contain more than one dataset. Multiple datasets can represent different types (topology, intensity, phases...), 
+they can come from different sensors (e.g. upside and downside sensor) or they can be acquired at different levels. 
+Per default, the standard dataset (e.g. topology) is loaded. Set &apos;printAllBufferTypes&apos; to 1 in order to get a list of available 
+buffers printed to the command line (only if more than one buffer is available). While buffers at different levels are automatically 
+loaded to a 3D data object instead of a 2D one, the user can select the type and sensor counter that should be loaded. Possible values are among others: 
+
+bufferType 
+--------------- 
+
+* 0x0001: piezo 
+* 0x0002: intensity 
+* 0x0004: topography 
+* 0x0008: re_part 
+* 0x0010: im_part 
+* 0x0040: camera 
+* 0x0080: thickness 
+* 0x0100: dibfromfile 
+* 0x0200: abs_val 
+* 0x0400: phase 
+* 0x0800: samplethickness 
+* 0x1000: afm 
+* 0x0200: quality 
+* 0x0401: fit 
+* 0x0402: slope 
+
+sensorCounter 
+--------------- 
+
+Currently, only 0 (sensor 1 - top) and 1 (sensor 2 - bottom) seems to be implemented in files. In future sensor 3 and sensor 4 (indices 2 and 3) might follow.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -98,7 +98,28 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+42"/>
+        <location line="+6"/>
+        <source>Trigger</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source> fps</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Frame Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The frame rate affects the allowed integration times. However it is only considered if trigger is &apos;off&apos;. Press apply to update dependent values.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -149,7 +170,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+17"/>
         <source>gray %1 bit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -267,7 +288,22 @@
 <context>
     <name>IDSInterface</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="+107"/>
+        <location filename="../IDSInterface.cpp" line="+102"/>
+        <source>This plugin supports IDS uEye cameras and has currently been tested with the following models: 
+- UI145xSE-C (colored, USB2) 
+- UI124xSE-M (monochrome, USB2). 
+- UI224xSE-M (monochrome, USB2). 
+- UI337xCP-C (colored, USB3) 
+
+The plugin has been compiled using the IDS library version %1.%2. 
+
+In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. 
+
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
         <source>Licensed under LGPL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -295,7 +331,7 @@
 <context>
     <name>IDSuEye</name>
     <message>
-        <location filename="../IDSuEye.cpp" line="+57"/>
+        <location filename="../IDSuEye.cpp" line="+61"/>
         <source>Exposure time of chip (in seconds).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -311,12 +347,12 @@
     </message>
     <message>
         <location line="+2"/>
-        <source>Horizontal and vertical binning, depending on camera ability. 104 means a 1x binning in horizontal and 4x binning in vertical direction. (values up to 1x, 2x, 3x, 4x, 5x, 6x, 8x, 12x are valid; if read only binning is not supported)</source>
+        <source>Horizontal and vertical binning, depending on camera ability. 104 means a 1x binning in horizontal and 4x binning in vertical direction. (values up to 1x, 2x, 3x, 4x, 5x, 6x, 8x, 12x are valid; if read-only binning is not supported; some cameras only support certain combinations of binnings.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>frame rate in fps. This value is always set to the minimum value in order to allow huge exposure times. Since the camera is not run in free-run mode, the frame rate is not important.</source>
+        <source>frame rate in fps (will affect the allowed range of the integration_time, this frame_rate is only considered if trigger_mode == &apos;off&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -381,12 +417,33 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>trigger modes for starting a new image acquisition</source>
+        <source>trigger modes for starting a new image acquisition, depending on the camera the following modes are supported: &apos;off&apos; (fixed frame_rate), without fixed frame_rate: &apos;software&apos;, &apos;hi_lo&apos;, &apos;lo_hi&apos;, &apos;pre_hi_lo&apos;, &apos;pre_lo_hi&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>current fps reported by camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>timeout in seconds when waiting for the next image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1954"/>
+        <location line="+5"/>
+        <source>Warning framerate is out of bounds, set to closest value possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1981"/>
         <source>Model identifier of the attached camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Serial number of camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -410,12 +467,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Timeout for acquiring images in seconds</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+775"/>
+        <location line="+904"/>
         <source>StopDevice of IDSuEye can not be executed, since camera has not been started.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -425,12 +477,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>no valid camera memory has been allocated</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+66"/>
+        <location line="+137"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -440,7 +487,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+714"/>
+        <location line="+66"/>
+        <source>wrong picture type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+717"/>
         <source>Error during check data, external dataObject invalid. Object has more than 1 plane or zero planes. It must be of right size and type or an uninitialized image.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -453,7 +505,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../IDSInterface.cpp" line="-38"/>
+        <location filename="../IDSInterface.cpp" line="-51"/>
         <source>IDS uEye grabber.</source>
         <translation type="unfinished"></translation>
     </message>

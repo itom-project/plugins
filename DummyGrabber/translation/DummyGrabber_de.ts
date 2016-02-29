@@ -97,7 +97,7 @@
 <context>
     <name>DummyGrabber</name>
     <message>
-        <location filename="../DummyGrabber.cpp" line="+242"/>
+        <location filename="../DummyGrabber.cpp" line="+230"/>
         <source>Minimum time between the start of two consecutive acquisitions [s], default: 0.0.</source>
         <translation type="unfinished">Mindestzeit zwischen zwei fortlaufenden Bildanforderungen [s], standard: 0,0.</translation>
     </message>
@@ -122,22 +122,22 @@
         <translation type="unfinished">ROI (x, y, Breite, Höhe) [ersetzt die Werte x0, x1, y0, y1]</translation>
     </message>
     <message>
-        <location line="+351"/>
+        <location line="+375"/>
         <source>stopDevice of DummyGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished">&apos;stopDevice&apos; des DummyGrabbers kann nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
     <message>
-        <location line="+47"/>
+        <location line="+46"/>
         <source>wrong bit depth</source>
         <translation type="unfinished">Falsche Bittiefe</translation>
     </message>
     <message>
-        <location line="+220"/>
+        <location line="+221"/>
         <source>image could not be obtained since no image has been acquired.</source>
         <translation type="unfinished">Es konnte kein Bild abgeholt werden, da keines angefordert wurde.</translation>
     </message>
     <message>
-        <location line="-624"/>
+        <location line="-648"/>
         <source>size in x (cols) [px]</source>
         <translation type="unfinished">Größe in x (Spalten) [px]</translation>
     </message>
@@ -157,12 +157,12 @@
         <translation type="unfinished">Bittiefe des Images</translation>
     </message>
     <message>
-        <location line="+397"/>
+        <location line="+420"/>
         <source>Acquire of DummyGrabber can not be executed, since camera has not been started.</source>
         <translation type="unfinished">&apos;acquire&apos; kann vom DummyGrabber nicht ausgeführt werden, da die Kamera nicht gestartet wurde.</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <source>data object of getVal is NULL or cast failed</source>
         <translation type="unfinished">Das Datenobjekt von &apos;getVal&apos; ist NULL oder enthält ein falsches Bildformat</translation>
     </message>
@@ -175,7 +175,7 @@
 <context>
     <name>DummyGrabberInterface</name>
     <message>
-        <location line="-677"/>
+        <location line="-699"/>
         <source>N.A.</source>
         <translation>Nicht verfügbar.</translation>
     </message>
@@ -186,8 +186,12 @@
     </message>
     <message>
         <location line="+3"/>
+        <source>Height of virtual sensor chip, please set this value to 1 (line camera) or a value dividable by 4 for a 2D camera.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Height of virtual sensor chip</source>
-        <translation type="unfinished">Höhe des virtuellen Sensors</translation>
+        <translation type="obsolete">Höhe des virtuellen Sensors</translation>
     </message>
     <message>
         <source>Maximum x size of image</source>
@@ -206,12 +210,23 @@
 <context>
     <name>QObject</name>
     <message>
-        <location line="-17"/>
+        <location line="-28"/>
         <source>A virtual white noise grabber</source>
         <translation type="unfinished">Ein virtueller Weißrausch-Grabber</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
+        <source>The DummyGrabber is a virtual camera which emulates a camera with white noise. 
+
+The camera is initialized with a maximum width and height of the simulated camera chip (both need to be a multiple of 4). The noise is always scaled in the range between 0 and the current bitdepth (bpp - bit per pixel). The real size of the camera image is controlled using the parameter &apos;roi&apos; if the sizes stay within the limits given by the size of the camera chip.
+
+You can initialize this camera either as a 2D sensor with a width and height &gt;= 4 or as line camera whose height is equal to 1. 
+
+This plugin can also be used as template for other grabber.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
         <source>Licensed under LPGL.</source>
         <translation type="unfinished"></translation>
     </message>

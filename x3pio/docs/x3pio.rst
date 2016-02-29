@@ -56,7 +56,8 @@ Compilation
 ===============
 
 This plugin requires the 3rd party libary CodeSynthesis XSD 3.3.0. Other versions are not officially supported by the
-underlying x3p library (see www.opengps.eu). Please install CodeSynthesis XSD 3.3.0 and indicate XERCESC_ROOT_DIR to the base
+underlying x3p library (see www.opengps.eu), but XSD 4.0 also works (with the bugfix mentioned below). 
+Please install CodeSynthesis XSD 3.3.0 or CodeSynthesis XSD 4.0.0 and indicate XERCESC_ROOT_DIR to the base
 directory of CodeSynthesis. XERCESC_INCLUDE must then point to the include directory. The variables XERCESC_LIBRARY, XERCESC_LIBRARY_DEBUG...
 should then be automatically found.
 
@@ -71,4 +72,22 @@ the corresponding option in the setup of CodeSynthesis.
 
 If there is a problem with the compilation, saying that the option cxx-tree is not available within xsd.exe, then you should check the variable XSD_EXECUTABLE.
 This should point to xsd.exe within the bin folder of CodeSynthesis, not to any windows directory.
+
+Bugfix for CodeSynthesis XSD 4.0.0
+=====================================
+
+If you get a compiler error telling that DOMDocument is an ambigious symbol (conflict with Windows SDK), then you need to change two lines in xsd/cxx/tree/serialization.txx:
+
+.. code-block:: c++
+    
+    //old
+    DOMDocument& doc (*e.getOwnerDocument ());
+    const DOMElement& se (x.dom_content ().get ());
+    
+    //replace by new:
+    xercesc::DOMDocument& doc (*e.getOwnerDocument ());
+    const xercesc::DOMElement& se (x.dom_content ().get ());
+    
+The maintainer from XSD promised in a forum that this bug will be fixed in the 4.1 release.
+
 

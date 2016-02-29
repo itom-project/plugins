@@ -169,6 +169,10 @@ class DataObjectIO : public ito::AddInAlgo
         static ito::RetVal loadItomIDO(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal loadItomIDOParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+        static const QString loadFrtDoc;
+        static ito::RetVal loadFrt(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+        static ito::RetVal loadFrtParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
         static const QString savePtbPRDoc;
         static ito::RetVal savePtbPR(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
         static ito::RetVal savePtbPRParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
@@ -177,8 +181,8 @@ class DataObjectIO : public ito::AddInAlgo
         static ito::RetVal saveDataObjectOpenCV(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, const ImageFormat &imageFormat);
         static ito::RetVal saveDataObjectQt(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut, const ImageFormat &imageFormat);
 
-        static ito::RetVal analyseTXTData(QFile &inFile, ito::DataObject &newObject, QChar &sperator, QChar &decimalSign, const int flags, const int ignoreLines);
-        static ito::RetVal readTXTDataBlock(QFile &inFile, ito::DataObject &newObject, const QChar &sperator, const QChar &decimalSign, const int flags, const int ignoreLines);
+        static ito::RetVal analyseTXTData(QFile &inFile, ito::DataObject &newObject, QChar &separator, QChar &decimalSign, const int flags, const int ignoreLines);
+        static ito::RetVal readTXTDataBlock(QFile &inFile, ito::DataObject &newObject, const QChar &separator, const QChar &decimalSign, const int flags, const int ignoreLines, const QString &wrapSign);
 
         template<typename _Tp> static ito::RetVal writeDataBlock(QFile &outFile, const ito::DataObject *scrObject, const double zScale, const int decimals, const int flags, const char seperator, const double nanValue);
         template<typename _Tp> static ito::RetVal readDataBlock(QFile &inFile, ito::DataObject &newObject, const double zScale, const int flags, const QByteArray &nanString);
