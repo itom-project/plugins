@@ -46,11 +46,18 @@ void DockWidgetAvtVimba::parametersChanged(QMap<QString, ito::Param> params)
         m_firstRun = false;
     }
 
+    ParamMapIterator it = params.find("gain");
+    if (it != params.end())
+    {
+        //this is a special case, since the auto-gain checkbox has to trigger the enable property of the gain slider
+        ui.sW_Gain->setDisabled(it->getFlags() & ito::ParamBase::Readonly);
+    }
+
     if (!m_inEditing)
     {
         m_inEditing = true;
         
-        ParamMapIterator it = params.find("gain");
+        it = params.find("gain");
         if (it != params.end())
         {
             ui.sW_Gain->setDisabled(it->getFlags() & ito::ParamBase::Readonly);

@@ -6,7 +6,7 @@
 **Summary**:    :pluginsummary:`AVTVimba`
 **Type**:       :plugintype:`AVTVimba`
 **License**:    :pluginlicense:`AVTVimba`
-**Platforms**:  Windows (Firewire + GigE), Linux only supports GigE (not tested yet)
+**Platforms**:  Windows (Firewire + GigE + USB3), Linux only supports GigE (not tested yet)
 **Devices**:    AVT Cameras driven by Vimba interface
 **Author**:     :pluginauthor:`AVTVimba`
 =============== ========================================================================================================
@@ -31,49 +31,44 @@ Parameters
 
 An instance of this plugin has the following internal parameters:
 
-**name**: {str}, read-only
-    AVTVimba
-**interface**: {str}, read-only
-    Interface type (Firewire, GigE)
-**serial_no**: {str}, read-only
-    Serial number
-**roi**: {int seq.}
-    ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
-**binning**: {int}
+**binning**: {int}, read-only
     binning (horizontal_factor * 100 + vertical_factor)
-**timeout**: {float}
-    timeout for image acquisition in sec
-**sizex**: {int}, read-only
-    width of ROI
-**sizex**: {int}, read-only
-    height of ROI
-**camera_number**: {int}
-    Camera Number
 **bpp**: {int}
     Bit depth of sensor
-**integration_time**: {float}
-    Integrationtime of CCD [s]
-**offset**: {float}
-    Offset as physical value that is a DC offset applied to the video signal. This values changes the blacklevel
+**camera_number**: {int}
+    Camera Number
 **gain**: {float}
-    Gain of AD in dB, set it to 0.0 for best image quality
+    Gain of AD in dB, set it to 0.0 for best image quality.
 **gain_auto**: {int}
     auto-controlled gain (0: off, 1: continuously varies the gain; gain will be read-only then)
 **gamma**: {float}
     Gamma value
-**stream_bps**: {int}
-    Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter Installation
-**packet_size**: {int}
-    Bandwidth allocation for each camera. Must be adapted if multiple cameras are connected to the same ethernet adapter
-**device_temperature**:{float}, read-only
-    device temperature of sensor in °C
-**trigger_mode**:{int}
+**integration_time**: {float}
+    Integrationtime of CCD [s]
+**interface**: {str}, read-only
+    Interface type (Firewire, GigE)
+**name**: {str}, read-only
+    name of plugin
+**offset**: {float}
+    Offset as physical value that is a DC offset applied to the video signal. This values changes the blacklevel.
+**roi**: {int rect [x0,y0,width,height]}
+    ROI (x,y,width,height) [this replaces the values x0,x1,y0,y1]
+**serial_no**: {str}, read-only
+    Serial number
+**sizex**: {int}, read-only
+    width of ROI
+**sizey**: {int}, read-only
+    height of ROI
+**timeout**: {float}
+    timeout for image acquisition in sec
+**trigger_activation**: {str}
+    trigger activation (RisingEdge, FallingEdge, AnyEdge, LevelHigh, LevelLow). Not all values are supported for all cameras.
+**trigger_mode**: {int}
     trigger mode (0: Off, 1: On)
 **trigger_source**: {str}
-    trigger source (Freerun, Line1, Line2, Line3, Line4, FixedRate, Software, InputLines). Not all values are supported for all cameras
-**trigger_activation**: {str}
-    trigger activation (RisingEdge, FallingEdge, AnyEdge, LevelHigh, LevelLow). Not all values are supported for all cameras
+    trigger source (Freerun, Line1, Line2, Line3, Line4, FixedRate, Software, InputLines). Not all values are supported for all cameras.
 
+Usage
 =============
 
 In order to use this plugin, please install the Vimba SDK from Allied Vision in version 1.3.0 or higher (see http://www.alliedvisiontec.com/de/produkte/software.html).
@@ -97,3 +92,4 @@ Changelog
 
 * itom setup 1.4.0: This plugin has been compiled using AVT Vimba 1.3.0
 * itom setup 2.0.0: This plugin has been compiled using AVT Vimba 1.3.0
+* itom setup 2.1.0: This plugin has been compiled using AVT Vimba 1.4.0
