@@ -35,3 +35,4 @@ Changelog
 
 * itom setup 1.2.0: This plugin has been compiled using the PCL 1.6.0
 * itom setup 2.0.0: This plugin has been compiled using the PCL 1.8.0
+* itom setup 2.1.0: This plugin has been compiled using the PCL 1.8.0

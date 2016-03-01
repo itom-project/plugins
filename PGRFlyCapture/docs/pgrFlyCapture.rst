@@ -123,6 +123,7 @@ Changelog
 * itom setup 1.3.0: This plugin has been compiled using the FlyCapture 2.6.3.4
 * itom setup 1.4.0: This plugin has been compiled using the FlyCapture 2.6.3.4
 * itom setup 2.0.0: This plugin has been compiled using the FlyCapture 2.7.3.18
+* itom setup 2.1.0: This plugin has been compiled using the FlyCapture 2.7.3.18
 
 Linux
 ======
