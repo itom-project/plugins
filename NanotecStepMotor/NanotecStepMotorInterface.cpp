@@ -79,7 +79,7 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
     m_initParamsMand.append(param);
 
     param = ito::Param("axisSteps", ito::ParamBase::DoubleArray, NULL, tr("number of full steps per unit (deg or mm) of axis").toLatin1().data());
-    ito::DoubleArrayMeta ias(0.0, std::numeric_limits<double>::max(), 1.0, 1, 255, 1);
+    ito::DoubleArrayMeta ias(0.0, std::numeric_limits<double>::max(), 0.0, 1, 255, 1);
     param.setMeta(&ias, false);
     m_initParamsMand.append(param);
 
