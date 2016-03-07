@@ -35,9 +35,7 @@ parameters of the constructor. During the runtime of an instance, the value of t
 parameters can be changed using *setParam*. If a parameter is read-only, it is not writeable or supported by the specific camera.
 	
 **bpp**: {int}
-    Bitdepth of the returned camera image (e.g. 8, 12 or 16 bits per pixel). Please consider that some cameras having an 12bit A/D converter
-    allow to obtain 16bit values. This possible however results in a bigger data volume that needs to be transmitted. Consider to use 12bit instead
-    that is also mapped to an uint16 data object. At startup, the highest possible value is set, it can be limited by the initialization parameter **bppLimit**.
+    bitdepth of each pixel
 **cam_firmware_build_time**: {str}, read-only
     Built time of the firmware used in the connected camera
 **cam_firmware_version**: {str}, read-only
@@ -59,37 +57,37 @@ parameters can be changed using *setParam*. If a parameter is read-only, it is n
 **color_mode**: {str}, read-only
     colorMode: 'gray' (default) or 'color' if color camera
 **exposure_ev**: {int}
-    Camera brightness control (EV) in absolute values. Read-only if not available.
+    Camera brightness control (EV)
 **extended_shutter**: {int}
     1 (default): extended shutter is on (long integration times are supported and frame_time becomes invalid), 0: frames are only acquired in the pulse given by frame_time.
 **frame_time**: {float}, read-only
-    frame time in seconds, inverse of frame rate in fps. The frame time is a constant time step at which images can be acquired. The frame time is only writeable if extended shutter is False. If the extended shutter is enabled, the maximum acquisition speed is given by the integration time only.
+    Frame rate in seconds. This is only considered if the camera is not in an extended shutter mode. The frame_time might influence the integration time.
 **gain**: {float}
-    The normalized gain of the camera [0,1]. Read-only if not available.
+    gain (normalized value 0..1)
 **gamma**: {int}
-    Camera gamma control in absolute values. Read-only if not available.
+    Gamma adjustment
 **integration_time**: {float}
-    integration time in seconds. The range of the integration is limited if *extended_shutter* is False. Enable extended shutter to set bigger values for the integration time.
+    Integrationtime of CCD programmed in seconds.
+**metadata**: {int}
+    If 1 (default), the timestamp, frame counter and roi position (depending on the camera model) will be acquired and added into the first pixels of the image (available as tag of the data object as well), 0: metadata disabled
 **name**: {str}, read-only
     name of the camera
-**metadata**: {int}
-	If 1 (default), the timestamp, frame counter and roi position (depending on the camera model) will be acquired and added into the first pixels of the image (available as tag of the data object as well), 0: metadata disabled
 **offset**: {float}
-    The normalized offset of the camera[0,1]. Read-only if not available. Corresponds to Point Grey property Brightness.
+    offset (normalized value 0..1, mapped to PG-parameter BRIGHTNESS)
 **packetsize**: {int}
     Packet size of current image settings
 **roi**: {int rect [x0,y0,width,height]}
-    Current region of interest of camera. Format (x0,y0,width,height). Change one of those parameters by using *setParam("roi[1]",16)*.
-**sharpness**: {int}
-    Camera sharpness control in absolute values. Read-only if not available.
+    region of interest, ROI (x,y,width,height)
+**sharpness**: {int}, read-only
+    Sharpness
 **sizex**: {int}, read-only
     Pixelsize in x (cols)
 **sizey**: {int}, read-only
     Pixelsize in y (rows)
 **timeout**: {float}
-    Timeout in seconds when acquiring an image and waiting for the resulting data.
+    Timeout for acquiring images in seconds
 **trigger_mode**: {int}
-    -1: Complete free run, 0: Disable trigger, 1: enable trigger mode, 2: enable software-trigger
+    -1: Complete free run, 0: enable standard external trigger (PtGrey mode 0), 1: Software Trigger (PtGrey mode 0, Software Source), 2: Bulb shutter external trigger (PtGrey mode 1), 3: Overlapped external trigger (PtGrey mode 14)
 **trigger_polarity**: {int}
     For hardware trigger only: Set the polarity of the trigger (0: trigger active low, 1: trigger active high)
 **video_mode**: {int}, read-only
