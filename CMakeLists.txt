@@ -151,6 +151,12 @@ if (PLUGIN_GWInstekPSP)
     ADD_SUBDIRECTORY(GWInstekPSP)
 endif (PLUGIN_GWInstekPSP)
 
+# Holography
+OPTION(PLUGIN_Holography "Build with this plugin." ON)
+if (PLUGIN_Holography)
+	ADD_SUBDIRECTORY(Holography)
+endif (PLUGIN_Holography)
+
 # IDSuEye
 OPTION(PLUGIN_IDSuEye "Build with this plugin." ON)
 if (PLUGIN_IDSuEye)
