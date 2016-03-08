@@ -23,7 +23,7 @@
 /*! \file FFTWfilters.cpp
    \brief   This file contains the itomflters class and interface definitions.
    
-   \author ITO 
+   \author ITO, UFAL
    \date 12.2011
 */
 
@@ -41,6 +41,14 @@
 
 #include <QtCore/QtPlugin>
 #include <math.h>
+
+#ifdef USEOPENMP
+#define useomp 1
+#else
+#define useomp 0
+#endif
+
+int NTHREADS = 2;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal FFTWFiltersInterface::getAddInInst(ito::AddInBase **addInInst)
@@ -84,6 +92,8 @@ To build this plugin you will need the libs from the fftw.");
     m_license = QObject::tr("GPL (uses FFTW licensed under GPL, too)");
     m_aboutThis = QObject::tr("1D and 2D FFT algorithms (using the fast FFTW library)");       
 
+    NTHREADS = QThread::idealThreadCount();
+
     return;
 }
 
@@ -99,6 +109,286 @@ FFTWFiltersInterface::~FFTWFiltersInterface()
     Q_EXPORT_PLUGIN2(FFTWFiltersInterface, FFTWFiltersInterface)
 #endif
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!\detail    Parameters for fftw filter
+\param[in|out]   paramsMand  Mandatory parameters for the filter function
+\param[in|out]   paramsOpt   Optinal parameters for the filter function
+\param[out]   outVals   Outputvalues, not implemented for this function
+\author ITO, Boettcher
+\date
+*/
+ito::RetVal FFTWFilters::xfftshiftParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    ito::Param param = ito::Param("source", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, tr("Input object (n-dimensional, (u)int8, (u)int16, int32, float32, float64, complex64, complex128)").toLatin1().data());
+    paramsMand->append(param);
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _TP> void doifftshift(_TP *field, int sx, int sy, int lineStep)
+{
+    int halfX = sx / 2, halfY = sy / 2;
+    int xodd = 0, yodd = 0;
+    _TP *colbuf = NULL, *rowbuf = NULL, zeroR, zeroC;
+    if (sx / 2 != sx / 2.0)
+    {
+        xodd = 1;
+        colbuf = (_TP*)malloc(sx * sizeof(_TP));
+        for (int n = 0; n < sy; n++)
+            colbuf[n] = field[n * lineStep + sx - 1];
+    }
+    if (sy / 2 != sy / 2.0)
+    {
+        yodd = 1;
+        rowbuf = (_TP*)malloc(sx * sizeof(_TP));
+        memcpy(rowbuf, field + (sy - 1) * lineStep, sx * sizeof(_TP));
+    }
+    if (xodd && yodd)
+    {
+        zeroR = field[(sy - 1) * lineStep + halfX];
+        zeroC = field[halfY * lineStep + sx - 1];
+    }
+#if (USEOMP)
+#pragma omp parallel num_threads(NTHREADS)
+    {
+#endif
+        _TP buffer;
+
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+        for (int n = halfY - 1; n >= 0; n--)
+        {
+            for (int m = halfX - 1; m >= 0; m--)
+            {
+                buffer = field[(n) * lineStep + m];
+                field[(n) * lineStep + m] = field[(n + halfY) * lineStep + m + halfX];
+                field[(n + halfY + yodd) * lineStep + m + halfX + xodd] = buffer;
+                buffer = field[(n + halfY) * lineStep + m];
+                field[(n + halfY + yodd) * lineStep + m] = field[(n) * lineStep + m + halfX];
+                field[n * lineStep + m + halfX + xodd] = buffer;
+            }
+        }
+
+        if (xodd)
+        {
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+            for (int n = 0; n < halfY + yodd; n++)
+            {
+                field[lineStep * n + halfX] = colbuf[n + halfY];
+                field[(n + halfY) * lineStep + halfX] = colbuf[n - yodd];
+            }
+        }
+
+        if (yodd)
+        {
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+            for (int m = 0; m < halfX + xodd; m++)
+            {
+                field[(halfY)* lineStep + m] = rowbuf[m + halfX];
+                field[(halfY)* lineStep + m + halfX] = rowbuf[m - xodd];
+            }
+        }
+#if (USEOMP)
+    }
+#endif
+    /*
+    if (xodd && yodd)
+    {
+        field[halfY * lineStep + sx - 1] = zeroR;
+        field[(sy - 1) * lineStep + halfX] = zeroC;
+    }
+    */
+    if (rowbuf)
+        free(rowbuf);
+    if (colbuf)
+        free(colbuf);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _TP> void dofftshift(_TP *field, int sx, int sy, int lineStep)
+{
+    int halfX = sx / 2, halfY = sy / 2;
+    int xodd = 0, yodd = 0;
+    _TP *colbuf = NULL, *rowbuf = NULL, zeroR, zeroC;
+    if (sx / 2 != sx / 2.0)
+    {
+        xodd = 1;
+        colbuf = (_TP*)malloc(sx * sizeof(_TP));
+        for (int n = 0; n < sy; n++)
+            colbuf[n] = field[n * lineStep];
+    }
+    if (sy / 2 != sy / 2.0)
+    {
+        yodd = 1;
+        rowbuf = (_TP*)malloc(sx * sizeof(_TP));
+        memcpy(rowbuf, field, sx * sizeof(_TP));
+    }
+    if (xodd && yodd)
+    {
+        zeroR = field[halfX];
+        zeroC = field[halfY * lineStep];
+    }
+#if (USEOMP)
+#pragma omp parallel num_threads(NTHREADS)
+    {
+#endif
+        _TP buffer;
+
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
+        for (int n = 0; n < halfY; n++)
+        {
+            for (int m = 0; m < halfX; m++)
+            {
+                buffer = field[(n + yodd) * lineStep + m + xodd];
+                field[n * lineStep + m] = field[(n + yodd + halfY) * lineStep + m + halfX + xodd];
+                field[(n + halfY + yodd) * lineStep + m + halfX + xodd] = buffer;
+                buffer = field[(n + yodd + halfY) * lineStep + m + xodd];
+                field[(n + halfY + yodd) * lineStep + m] = field[(n + yodd) * lineStep + m + halfX + xodd];
+                field[n * lineStep + m + halfX + xodd] = buffer;
+            }
+        }
+        
+        if (xodd)
+        {
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
+            for (int n = 0; n < halfY; n++)
+            {
+                field[lineStep * n + halfX] = colbuf[n + halfY + yodd];
+                field[(n + halfY) * lineStep + halfX] = colbuf[n];
+            }
+        }
+
+        if (yodd)
+        {
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
+            for (int m = 0; m < halfX; m++)
+            {
+                field[(halfY) * lineStep + m] = rowbuf[m + halfX + xodd];
+                field[(halfY) * lineStep + m + halfX] = rowbuf[m];
+            }
+        }
+#if (USEOMP)
+    }
+#endif
+    if (xodd && yodd)
+    {
+        field[halfY * lineStep + sx - 1] = zeroR;
+        field[(sy - 1) * lineStep + halfX] = zeroC;
+    }
+
+    if (rowbuf)
+        free(rowbuf);
+    if (colbuf)
+        free(colbuf);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString FFTWFilters::fftshiftDOC = QObject::tr("Perform fftshift as known from Python, Matlab and so on, i.e. make the \n\
+zero order of diffraction appear in the center.\n");
+/*static*/ ito::RetVal FFTWFilters::fftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+    ito::DataObject *inField = paramsMand->at(0).getVal<ito::DataObject*>();
+
+    if (!inField)
+        return retval;
+
+    switch (inField->getType())
+    {
+        case ito::tInt8:
+        case ito::tUInt8:
+            dofftshift<ito::uint8>((ito::uint8*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+        case ito::tInt16:
+        case ito::tUInt16:
+            dofftshift<ito::uint16>((ito::uint16*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+        case ito::tInt32:
+        case ito::tUInt32:
+            dofftshift<ito::uint32>((ito::uint32*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+        case ito::tFloat32:
+            dofftshift<ito::float32>((ito::float32*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+        case ito::tFloat64:
+            dofftshift<ito::float64>((ito::float64*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+        case ito::tComplex64:
+            dofftshift<ito::complex64>((ito::complex64*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+        case ito::tComplex128:
+            dofftshift<ito::complex128>((ito::complex128*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString FFTWFilters::ifftshiftDOC = QObject::tr("Perform ifftshift as known from Python, Matlab and so on, i.e. move the \n\
+zero order of diffraction back to the corner to run the inverse fft correctly.\n");
+/*static*/ ito::RetVal FFTWFilters::ifftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval = ito::retOk;
+    ito::DataObject *inField = paramsMand->at(0).getVal<ito::DataObject*>();
+
+    if (!inField)
+        return retval;
+
+    switch (inField->getType())
+    {
+    case ito::tInt8:
+    case ito::tUInt8:
+        doifftshift<ito::uint8>((ito::uint8*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+    case ito::tInt16:
+    case ito::tUInt16:
+        doifftshift<ito::uint16>((ito::uint16*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+    case ito::tInt32:
+    case ito::tUInt32:
+        doifftshift<ito::uint32>((ito::uint32*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+    case ito::tFloat32:
+        doifftshift<ito::float32>((ito::float32*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+    case ito::tFloat64:
+        doifftshift<ito::float64>((ito::float64*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+    case ito::tComplex64:
+        doifftshift<ito::complex64>((ito::complex64*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+
+    case ito::tComplex128:
+        doifftshift<ito::complex128>((ito::complex128*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
+        break;
+    }
+
+    return retval;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObjectAxisIterator::DataObjectAxisIterator(const ito::DataObject *objIn, ito::DataObject *objOut, int axis) :
@@ -2271,6 +2561,10 @@ ito::RetVal FFTWFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<
         m_filterList.insert("fftw2D", filter);
         filter = new FilterDef(FFTWFilters::ifftw2d, FFTWFilters::xfftw2dParams, ifftw2dDOC);
         m_filterList.insert("ifftw2D", filter);
+        filter = new FilterDef(FFTWFilters::fftshift, FFTWFilters::xfftshiftParams, fftshiftDOC);
+        m_filterList.insert("fftshift", filter);
+        filter = new FilterDef(FFTWFilters::ifftshift, FFTWFilters::xfftshiftParams, ifftshiftDOC);
+        m_filterList.insert("ifftshift", filter);
     }
     else
     {
@@ -2289,5 +2583,4 @@ ito::RetVal FFTWFilters::close(ItomSharedSemaphore * /*waitCond*/)
     return retval;
 }
 
-
-
+//----------------------------------------------------------------------------------------------------------------------------------

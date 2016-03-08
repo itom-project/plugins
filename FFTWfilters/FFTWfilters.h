@@ -122,6 +122,8 @@ class FFTWFilters : public ito::AddInAlgo
         static const QString ifftw1dDOC;
         static const QString fftw2dDOC;
         static const QString ifftw2dDOC;
+        static const QString fftshiftDOC;
+        static const QString ifftshiftDOC;
 
         static ito::RetVal xfftw1dParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);                   /**< Get the standard IO-Parameters for fftw filter */
         static ito::RetVal fftw1d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< Calculate DFT by means of FFTW */
@@ -130,6 +132,10 @@ class FFTWFilters : public ito::AddInAlgo
         static ito::RetVal xfftw2dParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
         static ito::RetVal fftw2d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< Calculate DFT by means of FFTW */
         static ito::RetVal ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< Calculate DFT by means of FFTW */
+
+        static ito::RetVal xfftshiftParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+        static ito::RetVal fftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< do fftshift i.e. move zero order to center */
+        static ito::RetVal ifftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);              /**< do ifftshift i.e. move zero order to corner */
 
     private:
         typedef void(*tGetComplexLine)(const cv::Mat **mdata, int planeStep, int n, int row, int col, int rowStep, void* linedata);
