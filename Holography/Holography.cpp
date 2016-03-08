@@ -260,11 +260,11 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     retval += prepareParamVectors(paramsMand,paramsOpt,paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append( ito::Param("dObjOut", ito::ParamBase::DObjPtr, NULL, "2d complex output data field") );
+    paramsMand->append(ito::Param("dObjOut", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "2d complex output data field"));
     paramsMand->append(ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 1000, "field size in x-direction"));
     paramsMand->append(ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 1000, "field size in y-direction"));
     paramsMand->append( ito::Param("dist", ito::ParamBase::Double | ito::ParamBase::In, -1.0e64, 1.0e64, 1000.0, "Propagation distance") );
-    paramsMand->append( ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In | ito::ParamBase::Out, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation") );	
+    paramsMand->append( ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation") );	
     paramsMand->append( ito::Param("wavelen", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0e10, 0.6328, "wavelength used for propagation") );
 
     paramsOpt->append(ito::Param("makeSquare", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, "make square propagators only"));
@@ -272,7 +272,7 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     paramsOpt->append(ito::Param("h1Re", ito::ParamBase::Double | ito::ParamBase::In | ito::ParamBase::Out, -1.0e208, 1.0e208, 0.0, "Real part of 'h1' phase factor"));
     paramsOpt->append(ito::Param("h1Im", ito::ParamBase::Double | ito::ParamBase::In | ito::ParamBase::Out, -1.0e208, 1.0e208, 0.0, "Imag part of 'h1' phase factor"));
 
-    paramsOut->append(ito::Param("objSampleSize", ito::ParamBase::Double | ito::ParamBase::In | ito::ParamBase::Out, 0.0, 1.0e208, 0.001, "Sampling step size in object plane"));
+    paramsOut->append(ito::Param("objSampleSize", ito::ParamBase::Double | ito::ParamBase::Out, 0.0, 1.0e208, 0.001, "Sampling step size in object plane"));
 
     return retval;
 }
@@ -344,9 +344,9 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     retVal += prepareParamVectors(paramsMand, paramsOpt, paramsOut);
     if (retVal.containsError()) return retVal;
 
-    paramsMand->append(ito::Param("inpField", ito::ParamBase::DObjPtr, NULL, "2d complex input data field"));
-    paramsMand->append(ito::Param("outpField", ito::ParamBase::DObjPtr, NULL, "2d complex output data field"));
-    paramsMand->append(ito::Param("propagators", ito::ParamBase::DObjPtr, NULL, "2d complex data field with propagator phase masks"));
+    paramsMand->append(ito::Param("inpField", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "2d complex input data field"));
+    paramsMand->append(ito::Param("outpField", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "2d complex output data field"));
+    paramsMand->append(ito::Param("propagators", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "2d complex data field with propagator phase masks"));
 
     return retVal;
 }
@@ -488,11 +488,11 @@ end:
     retval += prepareParamVectors(paramsMand, paramsOpt, paramsOut);
     if (retval.containsError()) return retval;
 
-    paramsMand->append(ito::Param("dObjOut", ito::ParamBase::DObjPtr, NULL, "2d complex output data field"));
+    paramsMand->append(ito::Param("dObjOut", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "2d complex output data field"));
     paramsMand->append(ito::Param("sizex", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 1000, "field size in x-direction"));
     paramsMand->append(ito::Param("sizey", ito::ParamBase::Int | ito::ParamBase::In, 0, 10000, 1000, "field size in y-direction"));
     paramsMand->append(ito::Param("dist", ito::ParamBase::Double | ito::ParamBase::In, -1.0e64, 1.0e64, 1000.0, "Propagation distance"));
-    paramsMand->append(ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In | ito::ParamBase::Out, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation"));
+    paramsMand->append(ito::Param("pixelsize", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 100000.0, 5.0, "pixel i.e. sampling spacing of input object, returns sampling spacing after propagation"));
     paramsMand->append(ito::Param("wavelen", ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0e10, 0.6328, "wavelength used for propagation"));
 
     paramsOpt->append(ito::Param("dtype", ito::ParamBase::Int | ito::ParamBase::In, ito::tComplex64, ito::tComplex128, ito::tComplex128, "data type for phase masks"));
@@ -550,9 +550,9 @@ end:
     retVal += prepareParamVectors(paramsMand, paramsOpt, paramsOut);
     if (retVal.containsError()) return retVal;
 
-    paramsMand->append(ito::Param("inpField", ito::ParamBase::DObjPtr, NULL, "2d complex input data field"));
-    paramsMand->append(ito::Param("outpField", ito::ParamBase::DObjPtr, NULL, "2d complex output data field"));
-    paramsMand->append(ito::Param("propagator", ito::ParamBase::DObjPtr, NULL, "2d complex data field with propagator phase mask"));
+    paramsMand->append(ito::Param("inpField", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "2d complex input data field"));
+    paramsMand->append(ito::Param("outpField", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, "2d complex output data field"));
+    paramsMand->append(ito::Param("propagator", ito::ParamBase::DObjPtr | ito::ParamBase::In, NULL, "2d complex data field with propagator phase mask"));
 
     return retVal;
 }
