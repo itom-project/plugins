@@ -1,25 +1,25 @@
 ===================
- PclTools
+ Fringe Proj
 ===================
 
 =============== ========================================================================================================
-**Summary**:    :pluginsummary:`PclTools`
-**Type**:       :plugintype:`PclTools`
-**License**:    :pluginlicense:`PclTools`
+**Summary**:    :pluginsummary:`FringeProj`
+**Type**:       :plugintype:`FringeProj`
+**License**:    :pluginlicense:`FringeProj`
 **Platforms**:  Windows, Linux
-**Author**:     :pluginauthor:`PclTools`
+**Author**:     :pluginauthor:`FringeProj`
 =============== ========================================================================================================
   
 Overview
 ========
 
 .. pluginsummaryextended::
-    :plugin: PclTools
+    :plugin: FringeProj
 
 These filters are defined in the plugin:
 
 .. pluginfilterlist::
-    :plugin: PclTools
+    :plugin: FringeProj
     :overviewonly:
 
 Filters
@@ -28,11 +28,5 @@ Filters
 Detailed overview about all defined filters:
     
 .. pluginfilterlist::
-    :plugin: PclTools
+    :plugin: FringeProj
 
-Changelog
-==========
-
-* itom setup 1.2.0: This plugin has been compiled using the PCL 1.6.0
-* itom setup 2.0.0: This plugin has been compiled using the PCL 1.8.0
-* itom setup 2.1.0: This plugin has been compiled using the PCL 1.8.0

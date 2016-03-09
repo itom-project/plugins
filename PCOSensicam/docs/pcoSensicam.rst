@@ -88,3 +88,5 @@ Changelog
 ==========
 
 * plugin inserted after the release of itom 1.4.0
+* itom setup 2.1.0: This plugin has been compiled using pco.sensicam SDK V601_04
+

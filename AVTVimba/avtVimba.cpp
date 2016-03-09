@@ -56,7 +56,7 @@ AvtVimbaInterface::AvtVimbaInterface()
 - Marlin, F033 (monochrome, Firewire) \n\
 - Manta G-917B and G-146B (monochrome, GigE) \n\
 \n\
-The plugin is compiled using the AVT Vimba version 1.3.0. \n\
+The plugin was tested with AVT Vimba 1.3.0 and 1.4.0. \n\
 \n\
 In order to run your camera, please install the Vimba SDK in the right version such that the necessary drivers are installed. \n\
 Color formats are not supported.");
@@ -121,7 +121,7 @@ AvtVimba::AvtVimba() :
     m_aliveTimer(NULL),
     m_aliveTimerThread(NULL)
 {
-    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AVTVimba", NULL);
+    ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly, "AVTVimba", tr("Name of plugin").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
 
     paramVal = ito::Param("interface", ito::ParamBase::String | ito::ParamBase::Readonly, "Unknown", tr("Interface type (Firewire, GigE)").toLatin1().data());
@@ -1029,11 +1029,34 @@ ito::RetVal AvtVimba::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSem
         {
             if (!hasIndex)
             {
+                const int* old_roi = it->getVal<const int*>();
                 const int* roi = val->getVal<const int*>();
-                retValue += setIntFeature("OffsetX", roi[0]);
-                retValue += setIntFeature("OffsetY", roi[1]);
-                retValue += setIntFeature("Width", roi[2]);
-                retValue += setIntFeature("Height", roi[3]);
+
+                if (old_roi[0] >= roi[0])
+                {
+                    //offset is decreased, do it first, then width
+                    retValue += setIntFeature("OffsetX", roi[0]);
+                    retValue += setIntFeature("Width", roi[2]);
+                }
+                else
+                {
+                    //offset is increased, decrease width at first, then increase offset
+                    retValue += setIntFeature("Width", roi[2]);
+                    retValue += setIntFeature("OffsetX", roi[0]);  
+                }
+
+                if (old_roi[1] >= roi[1])
+                {
+                    //offset is decreased, do it first, then width
+                    retValue += setIntFeature("OffsetY", roi[1]);
+                    retValue += setIntFeature("Height", roi[3]);
+                }
+                else
+                {
+                    //offset is increased, decrease width at first, then increase offset
+                    retValue += setIntFeature("Height", roi[3]);
+                    retValue += setIntFeature("OffsetY", roi[1]);
+                }
             }
             else
             {
@@ -1479,8 +1502,8 @@ ito::RetVal AvtVimba::synchronizeParameters(int features)
             if (it != m_params.end())
             {
                 ito::RectMeta roiMeta(\
-                    ito::RangeMeta(x0_min, width_max - 1, x0_inc, w_min, w_max, w_inc), \
-                    ito::RangeMeta(y0_min, height_max - 1, y0_inc, h_min, h_max, h_inc));
+                    ito::RangeMeta(x0_min, width_max - 1, x0_inc, w_min, width_max - x0_min, w_inc), \
+                    ito::RangeMeta(y0_min, height_max - 1, y0_inc, h_min, height_max - y0_min, h_inc));
                 it->setMeta(&roiMeta, false);
                 int roi[] = {x0, y0, w, h};
                 it->setVal<int*>(roi, 4);
