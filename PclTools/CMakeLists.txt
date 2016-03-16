@@ -33,7 +33,7 @@ IF(ITOM_SDK_PCL_SUPPORT)
     
     IF(VTK_FOUND)
         
-        find_package(PCL 1.5.1 REQUIRED COMPONENTS common io kdtree search features segmentation filters surface)
+        find_package(PCL 1.5.1 REQUIRED COMPONENTS common io kdtree search features segmentation filters surface recognition)
         find_package(VisualLeakDetector QUIET)
         
         find_file(PCL_HAS_SURFACE_NURBS "nurbs_data.h" PATHS ${PCL_INCLUDE_DIRS} PATH_SUFFIXES "pcl/surface/on_nurbs")

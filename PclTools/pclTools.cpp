@@ -1,7 +1,7 @@
 /* ********************************************************************
     Plugin "PCLTools" for itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2014, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of a plugin for the measurement software itom.
@@ -64,6 +64,9 @@
 #include <pcl/filters/crop_box.h>
 #include "random_sample_corrected.h" //corrected version for errornous version of random_sample filter in pcl 1.6.0
 #include <pcl/common/pca.h>
+
+#include <pcl/recognition/ransac_based/trimmed_icp.h>
+#include <pcl/recognition/auxiliary.h>
 
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/surface/organized_fast_mesh.h>
@@ -3347,6 +3350,88 @@ const QString PclTools::pclPCADOC = QObject::tr("\n\
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+const QString PclTools::pclTrimmedICPDOC = QObject::tr("\n\
+\n\
+\n\
+\n\
+\n");
+
+ito::RetVal PclTools::pclTrimmedICPParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::Param param;
+    ito::RetVal retval = ito::retOk;
+    retval += ito::checkParamVectors(paramsMand,paramsOpt,paramsOut);
+    if (retval.containsError())
+    {
+        return retval;
+    }
+
+    paramsMand->clear();
+    paramsMand->append(ito::Param("pointCloudTarget", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Valid target point cloud of type XYZ").toLatin1().data()));
+
+    paramsMand->append(ito::Param("pointCloudSource", ito::ParamBase::PointCloudPtr | ito::ParamBase::In, NULL, tr("Point cloud of same type than target cloud. This cloud is registered to the target.").toLatin1().data()));
+    
+    paramsMand->append(ito::Param("numSourcePointsToUse", ito::ParamBase::Int | ito::ParamBase::In, 0, std::numeric_limits<int>::max(), 100, tr("gives the number of closest source points taken into account for registration. By closest source points we mean the source points closest to the target. These points are computed anew at each iteration.").toLatin1().data()));
+    paramsMand->append(ito::Param("transform", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("	is the estimated rigid transform. IMPORTANT: this matrix is also taken as the initial guess for the alignment. If there is no guess, set the matrix to identity!").toLatin1().data()));
+    
+    return retval;
+}
+
+ito::RetVal PclTools::pclTrimmedICP(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
+{
+    ito::RetVal retval;
+    const ito::PCLPointCloud *pclTarget = (*paramsMand)[0].getVal<ito::PCLPointCloud*>();
+    const ito::PCLPointCloud *pclSource = (*paramsMand)[1].getVal<ito::PCLPointCloud*>();
+    int pointsToUse = paramsMand->at(2).getVal<int>();
+    ito::DataObject *transform = (*paramsMand)[3].getVal<ito::DataObject*>();
+    Eigen::Matrix<float, 4, 4> transform_;
+
+    if (!pclTarget || !pclSource || !transform)
+    {
+        retval += ito::RetVal(ito::retError, 0, "at least one mandatory argument is invalid or NULL");
+    }
+    else if (pclTarget->getType() != pclSource->getType())
+    {
+        retval += ito::RetVal(ito::retError, 0, "target and source cloud must have the same type pointXYZ");
+    }
+    else if (pclTarget->getType() != ito::pclXYZ)
+    {
+        retval += ito::RetVal(ito::retError, 0, "target and source cloud must have the same type pointXYZ");
+    }
+    
+
+    if (!retval.containsError())
+    {
+        retval += ito::pclHelper::dataObjToEigenMatrix<float, 4, 4>(*transform, transform_);
+    }
+
+    if (!retval.containsError())
+    {
+        pointsToUse = std::min((uint32_t)pointsToUse, pclSource->height() * pclSource->width());
+        switch(pclTarget->getType())
+        {
+        case ito::pclInvalid:
+            break;
+        case ito::pclXYZ: //pcl::PointXYZ, toPointXYZ
+            {
+                pcl::recognition::TrimmedICP<pcl::PointXYZ, float> icp;
+                icp.init(pclTarget->toPointXYZ());
+                icp.align(*(pclSource->toPointXYZ()), pointsToUse, transform_);
+            }
+            break;
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        ito::pclHelper::eigenMatrixToDataObj<float, 4, 4>(transform_, *transform);
+    }
+
+    return retval;
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------
 const QString PclTools::pclPolygonMeshFromIndicesDOC = QObject::tr("\n\
 \n\
 \n\
@@ -4374,7 +4459,9 @@ ito::RetVal PclTools::init(QVector<ito::ParamBase> * /*paramsMand*/, QVector<ito
 
     filter = new FilterDef(PclTools::pclGetNormalsAtCogFromMesh, PclTools::pclGetNormalsAtCogFromMeshParams, pclGetNormalsAtCogFromMeshDOC);
     m_filterList.insert("pclGetNormalsAtCogFromMesh", filter);
-
+    
+    filter = new FilterDef(PclTools::pclTrimmedICP, PclTools::pclTrimmedICPParams, pclTrimmedICPDOC);
+    m_filterList.insert("pclTrimmedICP", filter);
 #if PCLHASSURFACENURBS
     filter = new FilterDef(PclTools::pclFitTrimmedBSpline, PclTools::pclFitTrimmedBSplineParams, pclFitTrimmedBSplineDOC);
     m_filterList.insert("pclFitTrimmedBSpline", filter);
