@@ -219,8 +219,8 @@ template<typename _T1, typename _T2> void RScalcPhaseMask(_T1 *PM, _T2 *X, _T2 *
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2, _T1 *H3, _T2 *X, _T2 *Y, int sx, int sy, double dist, double px, double wavelen)
 {
-    H1->real(cos(2.0 * CV_PI / wavelen / dist) / (wavelen * dist));
-    H1->imag(sin(2.0 * CV_PI / wavelen / dist) / (wavelen * dist));
+    H1->real(cos(2.0 * CV_PI / wavelen * dist) / (wavelen * dist));
+    H1->imag(sin(2.0 * CV_PI / wavelen * dist) / (wavelen * dist));
 #if (USEOMP)
 #pragma omp parallel num_threads(NTHREADS)
     {
