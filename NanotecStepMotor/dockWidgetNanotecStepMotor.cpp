@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "DockWidgetNanotecStepMotor.h"
+#include "dockWidgetNanotecStepMotor.h"
 
 #include "common/addInInterface.h"
 

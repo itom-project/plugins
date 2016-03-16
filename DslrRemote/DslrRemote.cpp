@@ -35,6 +35,8 @@
 #include <QtCore/QtPlugin>
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
+#include <qdatetime.h>
+#include <qdir.h>
 
 #include <qdockwidget.h>
 #include <qpushbutton.h>
@@ -375,18 +377,19 @@ ito::RetVal DslrRemote::close(ItomSharedSemaphore *waitCond)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
 
-    if (m_camera)
+    if (m_camera && m_context)
     {
-        gp_camera_unref(m_camera);
+//        gp_camera_unref(m_camera);
+        gp_camera_exit(m_camera, m_context);
         m_camera = NULL;
     }
-
+/*
     if (m_context)
     {
         gp_context_unref(m_context);
         m_context = NULL;
     }
-
+*/
     if (m_timerID > 0)
     {
         killTimer(m_timerID);
@@ -712,7 +715,7 @@ ito::RetVal DslrRemote::acquire(const int /*trigger*/, ItomSharedSemaphore *wait
     else
     {
         m_isgrabbing = true;
-		m_isgrabbing = false;
+//		m_isgrabbing = false;
     }
 
     return retValue;
@@ -828,8 +831,8 @@ ito::RetVal DslrRemote::retrieveData(ito::DataObject *externalDataObject)
             gpret = gp_camera_wait_for_event(m_camera, m_waittime, &evtype, &gpdata, m_context);
             if (evtype == GP_EVENT_TIMEOUT)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("time out while waiting for acquire picture to terminate").toLatin1().data());
-                break;
+                m_isgrabbing = false;
+                return retValue += ito::RetVal(ito::retError, 0, tr("time out while waiting for acquire picture to terminate").toLatin1().data());
             }
             else if (evtype == GP_EVENT_CAPTURE_COMPLETE)
             {
@@ -837,10 +840,78 @@ ito::RetVal DslrRemote::retrieveData(ito::DataObject *externalDataObject)
             }
             else if (evtype != GP_EVENT_UNKNOWN)
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("received unexpected event from camera").toLatin1().data());
+                m_isgrabbing = false;
+                return retValue += ito::RetVal(ito::retError, 0, tr("received unexpected event from camera").toLatin1().data());
+            }
+            else if (evtype = GP_EVENT_UNKNOWN)
                 break;
+        }
+
+
+        CameraFileInfo finfo;
+        uint64_t fsize;
+        QString tmpPath = QDir::tempPath();
+        qsrand(QDateTime::currentDateTime().toTime_t());
+        QString tmpFileName;
+//        FILE *tmpFile = fopen(tmpFileName.toLatin1().data(), "w+");
+
+        if (tmpPath.lastIndexOf("/") < tmpPath.length() - 1
+            && tmpPath.lastIndexOf("\\") < tmpPath.length() - 1)
+        {
+             tmpFileName = tmpPath + "/" + QString::number(qrand());
+        }
+        else
+        {
+            tmpFileName = tmpPath + QString::number(qrand());
+        }
+        gpret = gp_camera_file_get_info(m_camera, m_cameraFilePath.folder, m_cameraFilePath.name, &finfo, m_context);
+        char *buf = (char*)malloc(finfo.file.size);
+//        m_data = ito::DataObject(finfo.file.height, finfo.file.width, ito::tUInt32);
+        gpret = gp_camera_file_read(m_camera, m_cameraFilePath.folder, m_cameraFilePath.name,
+                            GP_FILE_TYPE_NORMAL,
+                            0,
+                             buf, &fsize,
+                             m_context);
+        CameraFile *camFile = NULL;
+        gp_file_new(&camFile);
+        gp_file_set_name(camFile, tmpFileName.toLatin1().data());
+        gp_camera_file_get(m_camera, m_cameraFilePath.folder, m_cameraFilePath.name,
+                           GP_FILE_TYPE_NORMAL, camFile, m_context);
+        gp_file_save(camFile, tmpFileName.toLatin1().data());
+        gp_file_free(camFile);
+
+        if (finfo.file.type == "image/x-raw")
+        {
+            QVector<ito::ParamBase> filterParamsMand(0);
+            QVector<ito::ParamBase> filterParamsOpt(0);
+            QVector<ito::ParamBase> filterParamsOut(0);
+
+            filterParamsOpt[0].setVal<int>(0);
+            retValue += apiFilterParamBase("loadRawImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
+            filterParamsMand[0].setVal<char*>((char*)&m_data);
+            filterParamsMand[1].setVal<char*>(tmpFileName.toLatin1().data());
+            if (!retValue.containsWarningOrError())
+            {
+                retValue += apiFilterCall("loadRawImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
             }
         }
+        else
+        {
+            QVector<ito::ParamBase> filterParamsMand(0);
+            QVector<ito::ParamBase> filterParamsOpt(0);
+            QVector<ito::ParamBase> filterParamsOut(0);
+
+            retValue += apiFilterParamBase("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
+            filterParamsMand[0].setVal<char*>((char*)&m_data);
+            filterParamsMand[1].setVal<char*>(tmpFileName.toLatin1().data());
+            if (!retValue.containsWarningOrError())
+            {
+                retValue += apiFilterCall("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
+            }
+        }
+        remove(tmpFileName.toLatin1().data());
+
+
         if (externalDataObject)
         {
             m_data.deepCopyPartial(*externalDataObject);

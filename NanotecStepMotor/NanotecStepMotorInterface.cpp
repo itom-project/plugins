@@ -70,8 +70,10 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");    
-    
-    m_initParamsMand.append(ito::Param("serial", ito::ParamBase::HWRef, NULL, new ito::HWMeta("SerialIO"), tr("An initialized SerialIO").toLatin1().data()));
+
+    // not compiling on Linux
+    //m_initParamsMand.append(ito::Param("serial", ito::ParamBase::HWRef, NULL, new ito::HWMeta("SerialIO"), tr("An initialized SerialIO").toLatin1().data()));
+    m_initParamsMand.append(ito::Param("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data()));
 
     ito::Param param("axisID", ito::ParamBase::IntArray, NULL, tr("internal ID of axis (default 1, 2, 3, ...), range: 1..254").toLatin1().data());
     ito::IntArrayMeta iam(1, 254, 1, 1, 255, 1);

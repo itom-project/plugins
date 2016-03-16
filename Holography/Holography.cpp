@@ -362,6 +362,7 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     int sx0 = 0, sy0 = 0, isizex = 0, isizey = 0;
     int sdiffy = 0, sdiffx = 0;
     int roi1[4], roi2[4];
+    int limits[6] = { -1, 0, 0, 0, 0, 0 };
 
     QVector<ito::ParamBase> filterParamsMand0(0), filterParamsMand1(0);
     QVector<ito::ParamBase> filterParamsOpt0(0), filterParamsOpt1(0);
@@ -439,7 +440,6 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     if (retVal.containsError())
         goto end;
 
-    int limits[6] = { -1, 0, 0, 0, 0, 0 };
     pMasksPtr->adjustROI(3, limits);
     *outpObjPtr = outpObjPtr->mul(*pMasksPtr);
     filterParamsMand1[0].setVal<ito::DataObject*>(outpObjPtr);

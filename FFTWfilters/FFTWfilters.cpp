@@ -296,47 +296,67 @@ template<typename _TP> void dofftshift(_TP *field, int sx, int sy, int lineStep)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString FFTWFilters::fftshiftDOC = QObject::tr("Perform fftshift as known from Python, Matlab and so on, i.e. make the \n\
-zero order of diffraction appear in the center.\n");
+zero order of diffraction appear in the center.\n\
+\n\
+The shift is currently implemented as 2D shift and executed within each plane of the source dataObject.");
 /*static*/ ito::RetVal FFTWFilters::fftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
     ito::DataObject *inField = paramsMand->at(0).getVal<ito::DataObject*>();
 
     if (!inField)
-        return retval;
-
-    switch (inField->getType())
     {
-        case ito::tInt8:
-        case ito::tUInt8:
-            dofftshift<ito::uint8>((ito::uint8*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+        return ito::RetVal(ito::retError, 0, "source not available");
+    }
 
-        case ito::tInt16:
-        case ito::tUInt16:
-            dofftshift<ito::uint16>((ito::uint16*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+    retval += ito::dObjHelper::verifyDataObjectType(inField, "source", 10, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, \
+                                                    ito::tUInt32, ito::tFloat32, ito::tFloat64, ito::tComplex64, ito::tComplex128);
+    int dims = inField->getDims();
+    int numPlanes = inField->getNumPlanes();
 
-        case ito::tInt32:
-        case ito::tUInt32:
-            dofftshift<ito::uint32>((ito::uint32*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+    if (dims < 2)
+    {
+        retval += ito::RetVal(ito::retError, 0, "source must have at least two dimensions");
+    }
 
-        case ito::tFloat32:
-            dofftshift<ito::float32>((ito::float32*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+    if (!retval.containsError())
+    {
+        for (int p = 0; p < numPlanes; ++p)
+        {
+            switch (inField->getType())
+            {
+            case ito::tInt8:
+            case ito::tUInt8:
+                dofftshift<ito::uint8>((ito::uint8*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
 
-        case ito::tFloat64:
-            dofftshift<ito::float64>((ito::float64*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+            case ito::tInt16:
+            case ito::tUInt16:
+                dofftshift<ito::uint16>((ito::uint16*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
 
-        case ito::tComplex64:
-            dofftshift<ito::complex64>((ito::complex64*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+            case ito::tInt32:
+            case ito::tUInt32:
+                dofftshift<ito::uint32>((ito::uint32*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
 
-        case ito::tComplex128:
-            dofftshift<ito::complex128>((ito::complex128*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+            case ito::tFloat32:
+                dofftshift<ito::float32>((ito::float32*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
+
+            case ito::tFloat64:
+                dofftshift<ito::float64>((ito::float64*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
+
+            case ito::tComplex64:
+                dofftshift<ito::complex64>((ito::complex64*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
+
+            case ito::tComplex128:
+                dofftshift<ito::complex128>((ito::complex128*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
+            }
+        }
     }
 
     return retval;
@@ -344,47 +364,67 @@ zero order of diffraction appear in the center.\n");
 
 //----------------------------------------------------------------------------------------------------------------------------------
 const QString FFTWFilters::ifftshiftDOC = QObject::tr("Perform ifftshift as known from Python, Matlab and so on, i.e. move the \n\
-zero order of diffraction back to the corner to run the inverse fft correctly.\n");
+zero order of diffraction back to the corner to run the inverse fft correctly.\n\
+\n\
+The shift is currently implemented as 2D shift and executed within each plane of the source dataObject.");
 /*static*/ ito::RetVal FFTWFilters::ifftshift(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
 {
     ito::RetVal retval = ito::retOk;
     ito::DataObject *inField = paramsMand->at(0).getVal<ito::DataObject*>();
 
     if (!inField)
-        return retval;
-
-    switch (inField->getType())
     {
-    case ito::tInt8:
-    case ito::tUInt8:
-        doifftshift<ito::uint8>((ito::uint8*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+        return ito::RetVal(ito::retError, 0, "source not available");
+    }
 
-    case ito::tInt16:
-    case ito::tUInt16:
-        doifftshift<ito::uint16>((ito::uint16*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+    retval += ito::dObjHelper::verifyDataObjectType(inField, "source", 10, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, \
+                                                    ito::tUInt32, ito::tFloat32, ito::tFloat64, ito::tComplex64, ito::tComplex128);
+    int dims = inField->getDims();
+    int numPlanes = inField->getNumPlanes();
 
-    case ito::tInt32:
-    case ito::tUInt32:
-        doifftshift<ito::uint32>((ito::uint32*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+    if (dims < 2)
+    {
+        retval += ito::RetVal(ito::retError, 0, "source must have at least two dimensions");
+    }
 
-    case ito::tFloat32:
-        doifftshift<ito::float32>((ito::float32*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+    if (!retval.containsError())
+    {
+        for (int p = 0; p < numPlanes; ++p)
+        {
+            switch (inField->getType())
+            {
+            case ito::tInt8:
+            case ito::tUInt8:
+                doifftshift<ito::uint8>((ito::uint8*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
 
-    case ito::tFloat64:
-        doifftshift<ito::float64>((ito::float64*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+            case ito::tInt16:
+            case ito::tUInt16:
+                doifftshift<ito::uint16>((ito::uint16*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
 
-    case ito::tComplex64:
-        doifftshift<ito::complex64>((ito::complex64*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+            case ito::tInt32:
+            case ito::tUInt32:
+                doifftshift<ito::uint32>((ito::uint32*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
 
-    case ito::tComplex128:
-        doifftshift<ito::complex128>((ito::complex128*)inField->rowPtr(0, 0), inField->getSize(inField->getDims() - 1), inField->getSize(inField->getDims() - 2), inField->getStep(inField->getDims() - 2));
-        break;
+            case ito::tFloat32:
+                doifftshift<ito::float32>((ito::float32*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
+
+            case ito::tFloat64:
+                doifftshift<ito::float64>((ito::float64*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
+
+            case ito::tComplex64:
+                doifftshift<ito::complex64>((ito::complex64*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
+
+            case ito::tComplex128:
+                doifftshift<ito::complex128>((ito::complex128*)inField->rowPtr(p, 0), inField->getSize(dims - 1), inField->getSize(dims - 2), inField->getStep(dims - 2));
+                break;
+            }
+        }
     }
 
     return retval;
