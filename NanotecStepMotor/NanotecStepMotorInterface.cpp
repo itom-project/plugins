@@ -73,9 +73,11 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
 
     // not compiling on Linux
     //m_initParamsMand.append(ito::Param("serial", ito::ParamBase::HWRef, NULL, new ito::HWMeta("SerialIO"), tr("An initialized SerialIO").toLatin1().data()));
-    m_initParamsMand.append(ito::Param("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data()));
+    ito::Param param(ito::Param("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data()));
+    param.setMeta(new ito::HWMeta("SerialIO"), true);
+    m_initParamsMand.append(param);
 
-    ito::Param param("axisID", ito::ParamBase::IntArray, NULL, tr("internal ID of axis (default 1, 2, 3, ...), range: 1..254").toLatin1().data());
+    param = ito::Param("axisID", ito::ParamBase::IntArray, NULL, tr("internal ID of axis (default 1, 2, 3, ...), range: 1..254").toLatin1().data());
     ito::IntArrayMeta iam(1, 254, 1, 1, 255, 1);
     param.setMeta(&iam, false);
     m_initParamsMand.append(param);
