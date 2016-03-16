@@ -396,9 +396,9 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
             sdiffy = pMasksPtr->getSize(1) - inpObjPtr->getSize(0);
             sdiffx = pMasksPtr->getSize(2) - inpObjPtr->getSize(1);
             if (pMasksPtr->getSize(1) > inpObjPtr->getSize(0))
-                sy0 = floor(sdiffy / 2);
+                sy0 = sdiffy / 2;
             if (pMasksPtr->getSize(2) > inpObjPtr->getSize(1))
-                sx0 = floor(sdiffx / 2);
+                sx0 = sdiffx / 2;
             roi1[0] = -sy0;
             roi1[1] = -(sdiffy - sy0);
             roi1[2] = -sx0;
