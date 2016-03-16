@@ -71,8 +71,6 @@ NanotecStepMotorInterface::NanotecStepMotorInterface()
     m_license = QObject::tr("licensed under LGPL");
     m_aboutThis = QObject::tr("N.A.");    
 
-    // not compiling on Linux
-    //m_initParamsMand.append(ito::Param("serial", ito::ParamBase::HWRef, NULL, new ito::HWMeta("SerialIO"), tr("An initialized SerialIO").toLatin1().data()));
     ito::Param param(ito::Param("serial", ito::ParamBase::HWRef, NULL, tr("An initialized SerialIO").toLatin1().data()));
     param.setMeta(new ito::HWMeta("SerialIO"), true);
     m_initParamsMand.append(param);
