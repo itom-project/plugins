@@ -2,7 +2,7 @@
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2015, twip optical solutions GmbH
-    Copyright (C) 2015, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -201,7 +201,7 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 60.0, 2.0, tr("Acquisition timeout in s.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 14, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth).").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 8, 8, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth). For color cameras set bpp to 32 in order to obtain the color data.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("1x1 (101), 2x2 (202) or 4x4 (404) binning if available. See param 'binning_type' for setting the way binning is executed.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -245,6 +245,8 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("device_driver", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Current device driver version").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("color_camera", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, 1, 0, tr("0: monochrome camera, 1: color camera - set bpp to 32 to obtain color image.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     //now create dock widget for this plugin
         //now create dock widget for this plugin
     DockWidgetXimea *m_dockWidget = new DockWidgetXimea(getID(), this);
@@ -266,6 +268,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     ito::RetVal retValue(ito::retOk);
     int bandwidthLimit = paramsOpt->at(2).getVal<int>(); //0 auto bandwidth calculation
     int icam_number = (*paramsOpt)[0].getVal<int>();
+    int iscolor = 0;
     XI_RETURN ret;
 
     QFile paramFile;
@@ -352,6 +355,13 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 if (!retValue.containsError())
                 {
                     m_params["device_driver"].setVal<char*>(strBuf);
+                }
+
+                    
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_IMAGE_IS_COLOR, &iscolor, &pSize, &intType), "get: " XI_PRM_IMAGE_IS_COLOR);
+                if (!retValue.containsError())
+                {
+                    m_params["color_camera"].setVal<int>(iscolor);
                 }
 
 #if defined XI_PRM_DEVICE_MODEL_ID
@@ -501,6 +511,18 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 if (!retValue.containsError())
                 {
                     static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(output_bit_depth);
+                }
+
+                if (iscolor)
+                {
+                    //check color format
+                    bitppix = XI_RGB32;
+                    ito::RetVal retValue2 = checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, pSize, intType), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bitppix));
+                    retValue2 += checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
+                    if (!retValue2.containsError())
+                    {
+                        static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(32);
+                    }
                 }
 
                 // reset timestamp for MQ and MD cameras
@@ -1132,6 +1154,9 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             case 16:
                 bpp = XI_MONO16;
                 break;
+            case 32:
+                bpp = XI_RGB32;
+                break;
             default:
                 retValue = ito::RetVal(ito::retError, 0, tr("bpp value not supported").toLatin1().data());
             }
@@ -1140,6 +1165,14 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
             {
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bpp));
             }
+
+#ifdef XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA
+            if (!retValue.containsError() && bpp == XI_RGB32)
+            {
+                bpp = 255;
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA, &bpp, sizeof(int), xiTypeInteger), "set XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA", QString::number(255));
+            }
+#endif
 
             retValue += synchronizeCameraSettings(sBpp | sExposure | sRoi);
         }
@@ -1927,7 +1960,18 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             {
                 img.size = sizeof(XI_IMG);
                 img.bp = m_data.rowPtr(i, 0);
-                img.bp_size = curxsize * curysize * (m_data.getType() == ito::tUInt16 ? 2 : 1);
+                switch (m_data.getType())
+                {
+                case ito::tUInt8:
+                    img.bp_size = curxsize * curysize;
+                    break;
+                case ito::tUInt16:
+                    img.bp_size = curxsize * curysize * 2;
+                    break;
+                case ito::tRGBA32:
+                    img.bp_size = curxsize * curysize * 4;
+                    break;
+                }
 
                 retValue += checkError(pxiGetImage(m_handle, iPicTimeOut, &img), "pxiGetImage");
 
@@ -2506,9 +2550,13 @@ ito::RetVal Ximea::checkData(ito::DataObject *externalDataObject /*= NULL*/)
     {
         futureType = ito::tUInt16;
     }
-    else if (bpp <= 32)
+    else if (bpp < 32)
     {
         futureType = ito::tInt32;
+    }
+    else if (bpp == 32)
+    {
+        futureType = ito::tRGBA32;
     }
     else 
     {
