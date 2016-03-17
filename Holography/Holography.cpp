@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "FringeProj" for itom software
+    Plugin "Holography" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2013, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
@@ -99,7 +99,7 @@ HolographyInterface::~HolographyInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION < 0x050000
-Q_EXPORT_PLUGIN2(FringeProjInterface, FringeProjInterface)
+Q_EXPORT_PLUGIN2(HolographyInterface, HologaphyInterface)
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
