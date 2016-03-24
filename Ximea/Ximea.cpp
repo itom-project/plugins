@@ -1158,19 +1158,19 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         if (QString::compare(key, "bpp", Qt::CaseInsensitive) == 0)
         {
             int bitppix = val->getVal<int>();
-            int bpp = 0; 
-            switch (val->getVal<int>())
+            int format = 0; 
+            switch (bitppix)
             {
             case 8:
-                bpp = XI_MONO8;
+                format = XI_MONO8;
                 break;
             case 10:
             case 12:
             case 14:
             case 16:
-                if (bpp <= m_maxOutputBitDepth)
+                if (bitppix <= m_maxOutputBitDepth)
                 {
-                    bpp = XI_MONO16;
+                    format = XI_MONO16;
                 }
                 else
                 {
@@ -1178,7 +1178,8 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
                 }
                 break;
             case 32:
-                bpp = XI_RGB32;
+                format = XI_RGB32;
+				bitppix = m_params["max_sensor_bitdepth"].getVal<int>();
                 break;
             default:
                 retValue = ito::RetVal(ito::retError, 0, tr("bpp value not supported").toLatin1().data());
@@ -1186,15 +1187,17 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
             if (!retValue.containsError())
             {
-                retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bpp));
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &format, sizeof(int), xiTypeInteger), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(format));
+				retValue += checkError(pxiSetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, sizeof(int), xiTypeInteger), "set XI_PRM_OUTPUT_DATA_BIT_DEPTH", QString::number(bitppix));
             }
 
 #ifdef XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA
-            if (!retValue.containsError() && bpp == XI_RGB32)
+			//does not work for api 4.04 or 4.06
+            /*if (!retValue.containsError() && bpp == XI_RGB32)
             {
                 bpp = 255;
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA, &bpp, sizeof(int), xiTypeInteger), "set XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA", QString::number(255));
-            }
+            }*/
 #endif
 
             retValue += synchronizeCameraSettings(sBpp | sExposure | sRoi);
@@ -2084,7 +2087,8 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
 
                 if (!retValue.containsError())
                 {
-#ifndef XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA
+//#ifndef XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA
+					//set alpha values to 255.
                     if (m_data.getType() == ito::tRGBA32)
                     {
                         ito::Rgba32 *colordata = (ito::Rgba32*)(img.bp);
@@ -2093,7 +2097,7 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
                             colordata[i].alpha() = 255;
                         }
                     }
-#endif
+//#endif
 
                     if (m_numFrameBurst == 1)
                     {
