@@ -367,7 +367,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 if (!retValue.containsError())
                 {
                     m_params["color_camera"].setVal<int>(iscolor);
-                    m_params["gammaColor"].setFlags(0);
+                    m_params["gammaColor"].setFlags(iscolor ? 0 : ito::ParamBase::Readonly);
                 }
 
 #if defined XI_PRM_DEVICE_MODEL_ID
