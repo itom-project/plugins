@@ -1,5 +1,5 @@
 /* ********************************************************************
-    Plugin "FringeProj" for itom software
+    Plugin "Holography" for itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2013, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
@@ -99,7 +99,7 @@ HolographyInterface::~HolographyInterface()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION < 0x050000
-Q_EXPORT_PLUGIN2(FringeProjInterface, FringeProjInterface)
+Q_EXPORT_PLUGIN2(HolographyInterface, HologaphyInterface)
 #endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -219,8 +219,8 @@ template<typename _T1, typename _T2> void RScalcPhaseMask(_T1 *PM, _T2 *X, _T2 *
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2, _T1 *H3, _T2 *X, _T2 *Y, int sx, int sy, double dist, double px, double wavelen)
 {
-    H1->real(cos(2.0 * CV_PI / wavelen / dist) / (wavelen * dist));
-    H1->imag(sin(2.0 * CV_PI / wavelen / dist) / (wavelen * dist));
+    H1->real(cos(2.0 * CV_PI / wavelen * dist) / (wavelen * dist));
+    H1->imag(sin(2.0 * CV_PI / wavelen * dist) / (wavelen * dist));
 #if (USEOMP)
 #pragma omp parallel num_threads(NTHREADS)
     {
@@ -362,6 +362,7 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     int sx0 = 0, sy0 = 0, isizex = 0, isizey = 0;
     int sdiffy = 0, sdiffx = 0;
     int roi1[4], roi2[4];
+    int limits[6] = { -1, 0, 0, 0, 0, 0 };
 
     QVector<ito::ParamBase> filterParamsMand0(0), filterParamsMand1(0);
     QVector<ito::ParamBase> filterParamsOpt0(0), filterParamsOpt1(0);
@@ -395,9 +396,9 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
             sdiffy = pMasksPtr->getSize(1) - inpObjPtr->getSize(0);
             sdiffx = pMasksPtr->getSize(2) - inpObjPtr->getSize(1);
             if (pMasksPtr->getSize(1) > inpObjPtr->getSize(0))
-                sy0 = floor(sdiffy / 2);
+                sy0 = sdiffy / 2;
             if (pMasksPtr->getSize(2) > inpObjPtr->getSize(1))
-                sx0 = floor(sdiffx / 2);
+                sx0 = sdiffx / 2;
             roi1[0] = -sy0;
             roi1[1] = -(sdiffy - sy0);
             roi1[2] = -sx0;
@@ -439,7 +440,6 @@ template<typename _T1, typename _T2> void FresnelcalcPhaseMasks(_T1 *H1, _T1 *H2
     if (retVal.containsError())
         goto end;
 
-    int limits[6] = { -1, 0, 0, 0, 0, 0 };
     pMasksPtr->adjustROI(3, limits);
     *outpObjPtr = outpObjPtr->mul(*pMasksPtr);
     filterParamsMand1[0].setVal<ito::DataObject*>(outpObjPtr);

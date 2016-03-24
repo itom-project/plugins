@@ -2,7 +2,7 @@
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2015, twip optical solutions GmbH
-    Copyright (C) 2015, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -161,6 +161,7 @@ class Ximea : public ito::AddInGrabber
         int m_numGPIPins;
         int m_numGPOPins;
         int m_numFrameBurst;
+        int m_maxOutputBitDepth;
 
         ito::RetVal LoadLib();
         ito::RetVal getErrStr(const int error, const QString &command, const QString &value);

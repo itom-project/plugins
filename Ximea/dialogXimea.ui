@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>459</width>
-    <height>454</height>
+    <width>460</width>
+    <height>532</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -180,10 +180,74 @@
             <string>Integration</string>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_gain">
+            <item row="7" column="1">
+             <widget class="SliderWidget" name="sliderWidget_GammaColor">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="decimals">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <double>100.000000000000000</double>
+              </property>
+              <property name="suffix">
+               <string> %</string>
+              </property>
+              <property name="tracking">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QLabel" name="label_gain_3">
               <property name="text">
-               <string>Gain</string>
+               <string>Gamma (Chromaticity)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="1">
+             <widget class="SliderWidget" name="sliderWidget_Sharpness">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="decimals">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <double>100.000000000000000</double>
+              </property>
+              <property name="suffix">
+               <string> %</string>
+              </property>
+              <property name="tracking">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="SliderWidget" name="sliderWidget_framerate">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimum">
+               <double>0.800000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="suffix">
+               <string> fps</string>
+              </property>
+              <property name="tracking">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <widget class="QCheckBox" name="checkTimingMode">
+              <property name="text">
+               <string>Enable fixed framerate</string>
               </property>
              </widget>
             </item>
@@ -239,29 +303,43 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
-             <widget class="SliderWidget" name="sliderWidget_framerate">
+            <item row="5" column="1">
+             <widget class="SliderWidget" name="sliderWidget_Gamma">
               <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="minimum">
-               <double>0.800000000000000</double>
+              <property name="decimals">
+               <number>0</number>
               </property>
               <property name="maximum">
-               <double>1000.000000000000000</double>
+               <double>100.000000000000000</double>
               </property>
               <property name="suffix">
-               <string> fps</string>
+               <string> %</string>
               </property>
               <property name="tracking">
                <bool>false</bool>
               </property>
              </widget>
             </item>
-            <item row="2" column="0" colspan="2">
-             <widget class="QCheckBox" name="checkTimingMode">
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_gain_2">
               <property name="text">
-               <string>Enable fixed framerate</string>
+               <string>Gamma (Luminosity)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_gain">
+              <property name="text">
+               <string>Gain</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0">
+             <widget class="QLabel" name="label_gain_4">
+              <property name="text">
+               <string>Sharpness)</string>
               </property>
              </widget>
             </item>

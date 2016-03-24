@@ -73,7 +73,7 @@ class NanotecStepMotor : public ito::AddInActuator
         ito::RetVal getLastErrorText(const int deviceIndex, QString &errorText);
 
         ito::RetVal NSMSetPos(const QVector<int> axis, const QVector<double> posMM, bool relNotAbs, ItomSharedSemaphore *waitCond = NULL);    /*!< Set a position (absolute or relative) */
-        ito::RetVal NanotecStepMotor::NSMCheckStatus();
+        ito::RetVal NSMCheckStatus();
 
         double stepsToUnit(const int deviceIndex, const double &steps);
         int unitToSteps(const int deviceIndex, double unitStep);

@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`Ximea`
 **License**:    :pluginlicense:`Ximea`
 **Platforms**:  Windows, (Linux possible but yet not implemented)
-**Devices**:    Cameras from company *Ximea* (tested with various xiQ USB3 cameras, monochrome)
+**Devices**:    Cameras from company *Ximea* (tested with various xiQ USB3 cameras, monochrome and color)
 **Author**:     :pluginauthor:`Ximea`
 =============== ========================================================================================================
  
@@ -39,11 +39,13 @@ Parameters
 **binning_type**: {int}
     Type of binning if binning is enabled. 0: pixels are interpolated, 1: pixels are skipped (faster).
 **bpp**: {int}
-    Bit depth of the output data from camera in bpp (can differ from sensor bit depth).
+    Bit depth of the output data from camera in bpp (can differ from sensor bit depth). For color cameras set bpp to 32 in order to obtain the color data.
 **buffers_queue_size**: {int}, read-only
     Number of buffers in the queue.
 **cam_number**: {int}, read-only
     Index of the camera device.
+**color_camera**: {int}, read-only
+    0: monochrome camera, 1: color camera - set bpp to 32 to obtain color image.
 **device_driver**: {str}, read-only
     Current device driver version
 **device_type**: {str}, read-only
@@ -53,9 +55,11 @@ Parameters
 **framerate**: {float}, read-only
     Framerate of image acquisition (in fps). This parameter reflects the current framerate. If timing_mode is in XI_ACQ_TIMING_MODE_FREE_RUN (0, default), the framerate is readonly and fixed to the highest possible rate. For xiQ cameras only, timing_mode can be set to XI_ACQ_TIMING_MODE_FRAME_RATE (1) and the framerate is adjustable to a fixed value.
 **gain**: {float}
-    Gain in %.
+    Gain in % (the percentage is mapped to the dB-values).
 **gamma**: {float}
-    Luminosity gamma value (0.3 highest correction, 1 no correction).
+    Luminosity gamma value in %.
+**gammaColor**: {float}
+    Chromaticity gamma value in %. Only for color cameras.
 **gpi_level**: {seq. of int}, read-only
     Current level of all available gpi pins. (0: low level, 1: high level)
 **gpi_mode**: {seq. of int}
@@ -74,6 +78,8 @@ Parameters
     Second kneepoint (% of sensor saturation - not supported by all devices).
 **integration_time**: {float}
     Exposure time (in seconds).
+**max_sensor_bitdepth**: {int}, read-only
+    maximum bitdepth of the sensor.
 **name**: {str}, read-only
     name of the camera
 **offset**: {float}, read-only
@@ -85,7 +91,7 @@ Parameters
 **serial_number**: {str}, read-only
     Serial number of device.
 **sharpness**: {float}
-    Sharpness strength (-4 less sharp, +4 more sharp).
+    Sharpness strength in %.
 **sizex**: {int}, read-only
     Width of ROI (number of columns).
 **sizey**: {int}, read-only

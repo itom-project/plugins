@@ -2,7 +2,7 @@
     Plugin "Ximea" for itom software
     URL: http://www.twip-os.com
     Copyright (C) 2015, twip optical solutions GmbH
-    Copyright (C) 2015, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -112,16 +112,17 @@ const ito::RetVal Ximea::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Ximea::Ximea() : 
-    AddInGrabber(),  
-    m_saveParamsOnClose(false), 
-    m_handle(NULL), 
-    m_isgrabbing(false), 
-    m_acqRetVal(ito::retOk), 
+Ximea::Ximea() :
+    AddInGrabber(),
+    m_saveParamsOnClose(false),
+    m_handle(NULL),
+    m_isgrabbing(false),
+    m_acqRetVal(ito::retOk),
     m_pvShadingSettings(NULL),
     ximeaLib(NULL),
     m_family(familyUnknown),
-    m_numFrameBurst(1)
+    m_numFrameBurst(1),
+    m_maxOutputBitDepth(8)
 {
     //register exec functions
     QVector<ito::Param> pMand = QVector<ito::Param>()
@@ -160,14 +161,16 @@ Ximea::Ximea() :
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("integration_time", ito::ParamBase::Double, 0.00000, 0.000, 0.0000, tr("Exposure time (in seconds).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain in %.").toLatin1().data());
+   paramVal = ito::Param("gain", ito::ParamBase::Double, 0.0, 1.0, 0.0, tr("Gain in % (the percentage is mapped to the dB-values).").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
    paramVal = ito::Param("offset", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.0, 1.0, 0.0, tr("Currently not used.").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
-   paramVal = ito::Param("gamma", ito::ParamBase::Double, 0.3, 1.0, 1.0, tr("Luminosity gamma value (0.3 highest correction, 1 no correction).").toLatin1().data());
+   paramVal = ito::Param("gamma", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("Luminosity gamma value in %.").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
-   paramVal = ito::Param("sharpness", ito::ParamBase::Double, -4.0, 4.0, 0.0, tr("Sharpness strength (-4 less sharp, +4 more sharp).").toLatin1().data());
+   paramVal = ito::Param("gammaColor", ito::ParamBase::Double | ito::ParamBase::Readonly, 0.3, 1.0, 1.0, tr("Chromaticity gamma value in %. Only for color cameras.").toLatin1().data());
+   m_params.insert(paramVal.getName(), paramVal);
+   paramVal = ito::Param("sharpness", ito::ParamBase::Double, 0.0, 1.0, 1.0, tr("Sharpness strength in %.").toLatin1().data());
    m_params.insert(paramVal.getName(), paramVal);
 
    paramVal = ito::Param("hdr_enable", ito::ParamBase::Int, 0, 1, 0, tr("Enable HDR mode. default is OFF (not supported by all devices).").toLatin1().data());
@@ -201,7 +204,9 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("timeout", ito::ParamBase::Double, 0.0, 60.0, 2.0, tr("Acquisition timeout in s.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
-    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 12, 14, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth).").toLatin1().data());
+    paramVal = ito::Param("bpp", ito::ParamBase::Int, 8, 8, 8, tr("Bit depth of the output data from camera in bpp (can differ from sensor bit depth). For color cameras set bpp to 32 in order to obtain the color data.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("max_sensor_bitdepth", ito::ParamBase::Int | ito::ParamBase::Readonly, 8, 16, 8, tr("maximum bitdepth of the sensor.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("binning", ito::ParamBase::Int, 101, 404, 101, tr("1x1 (101), 2x2 (202) or 4x4 (404) binning if available. See param 'binning_type' for setting the way binning is executed.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -245,6 +250,8 @@ Ximea::Ximea() :
     m_params.insert(paramVal.getName(), paramVal);
     paramVal = ito::Param("device_driver", ito::ParamBase::String |ito::ParamBase::Readonly, "unknown", tr("Current device driver version").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
+    paramVal = ito::Param("color_camera", ito::ParamBase::Int |ito::ParamBase::Readonly, 0, 1, 0, tr("0: monochrome camera, 1: color camera - set bpp to 32 to obtain color image.").toLatin1().data());
+    m_params.insert(paramVal.getName(), paramVal);
     //now create dock widget for this plugin
         //now create dock widget for this plugin
     DockWidgetXimea *m_dockWidget = new DockWidgetXimea(getID(), this);
@@ -266,6 +273,7 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
     ito::RetVal retValue(ito::retOk);
     int bandwidthLimit = paramsOpt->at(2).getVal<int>(); //0 auto bandwidth calculation
     int icam_number = (*paramsOpt)[0].getVal<int>();
+    int iscolor = 0;
     XI_RETURN ret;
 
     QFile paramFile;
@@ -352,6 +360,14 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 if (!retValue.containsError())
                 {
                     m_params["device_driver"].setVal<char*>(strBuf);
+                }
+
+                    
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_IMAGE_IS_COLOR, &iscolor, &pSize, &intType), "get: " XI_PRM_IMAGE_IS_COLOR);
+                if (!retValue.containsError())
+                {
+                    m_params["color_camera"].setVal<int>(iscolor);
+                    m_params["gammaColor"].setFlags(iscolor ? 0 : ito::ParamBase::Readonly);
                 }
 
 #if defined XI_PRM_DEVICE_MODEL_ID
@@ -486,21 +502,43 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 m_params["timing_mode"].setFlags(ito::ParamBase::Readonly);
 #endif
                 //check the min-max-bitdepth by changing the format and reading the data_bit_depth value
-                int output_bit_depth = 0;
+                retValue += checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &m_maxOutputBitDepth, &pSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
+                m_params["max_sensor_bitdepth"].setVal<int>(m_maxOutputBitDepth);
+                
+                
+
+
                 int bitppix = XI_MONO8;
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, pSize, intType), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bitppix));
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
                 if (!retValue.containsError())
                 {
-                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMin(output_bit_depth);
+                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMin(8);
+                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(8);
+                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setStepSize(2);
                 }
 
                 bitppix = XI_MONO16;
-                retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, pSize, intType), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bitppix));
-                retValue += checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &pSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
-                if (!retValue.containsError())
+                int temp;
+                ito::RetVal retValue1 = checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, pSize, intType), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bitppix));
+
+                if (!retValue1.containsError())
                 {
-                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(output_bit_depth);
+                    retValue += checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH XI_PRM_INFO_MAX, &temp, &pSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH MAX");
+                    m_maxOutputBitDepth = qMax(m_maxOutputBitDepth, temp);
+                    m_params["max_sensor_bitdepth"].setVal<int>(m_maxOutputBitDepth);
+
+                    static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(m_maxOutputBitDepth);
+                }
+
+                if (iscolor)
+                {
+                    //check color format
+                    bitppix = XI_RGB32;
+                    ito::RetVal retValue2 = checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, pSize, intType), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bitppix));
+                    if (!retValue2.containsError())
+                    {
+                        static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(32);
+                    }
                 }
 
                 // reset timestamp for MQ and MD cameras
@@ -1120,17 +1158,28 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         if (QString::compare(key, "bpp", Qt::CaseInsensitive) == 0)
         {
             int bitppix = val->getVal<int>();
-            int bpp = 0; 
-            switch (val->getVal<int>())
+            int format = 0; 
+            switch (bitppix)
             {
             case 8:
-                bpp = XI_MONO8;
+                format = XI_MONO8;
                 break;
             case 10:
             case 12:
             case 14:
             case 16:
-                bpp = XI_MONO16;
+                if (bitppix <= m_maxOutputBitDepth)
+                {
+                    format = XI_MONO16;
+                }
+                else
+                {
+                    retValue = ito::RetVal::format(ito::retError, 0, tr("maximum gray-value bit depth is %i").toLatin1().data(), m_maxOutputBitDepth);
+                }
+                break;
+            case 32:
+                format = XI_RGB32;
+				bitppix = m_params["max_sensor_bitdepth"].getVal<int>();
                 break;
             default:
                 retValue = ito::RetVal(ito::retError, 0, tr("bpp value not supported").toLatin1().data());
@@ -1138,8 +1187,18 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
 
             if (!retValue.containsError())
             {
-                retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bpp, sizeof(int), xiTypeInteger), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bpp));
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &format, sizeof(int), xiTypeInteger), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(format));
+				retValue += checkError(pxiSetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &bitppix, sizeof(int), xiTypeInteger), "set XI_PRM_OUTPUT_DATA_BIT_DEPTH", QString::number(bitppix));
             }
+
+#ifdef XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA
+			//does not work for api 4.04 or 4.06
+            /*if (!retValue.containsError() && bpp == XI_RGB32)
+            {
+                bpp = 255;
+                retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA, &bpp, sizeof(int), xiTypeInteger), "set XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA", QString::number(255));
+            }*/
+#endif
 
             retValue += synchronizeCameraSettings(sBpp | sExposure | sRoi);
         }
@@ -1275,16 +1334,31 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         }
         else if (QString::compare(key, "sharpness", Qt::CaseInsensitive) == 0)
         {
-            float sharpness = (float)val->getVal<double>();
+            float minimum, maximum;
+            pxiGetParam(m_handle, XI_PRM_SHARPNESS XI_PRM_INFO_MIN, &minimum, &floatSize, &floatType);
+            pxiGetParam(m_handle, XI_PRM_SHARPNESS XI_PRM_INFO_MAX, &maximum, &floatSize, &floatType);
+            float sharpness = minimum + val->getVal<double>() * (maximum - minimum);
             retValue += checkError(pxiSetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, sizeof(float), xiTypeFloat), "set XI_PRM_SHARPNESS", QString::number(sharpness));
             retValue += synchronizeCameraSettings(sSharpness);
         }
         else if (QString::compare(key, "gamma", Qt::CaseInsensitive) == 0)
         {
-            float gamma = (float)val->getVal<double>();
+            float minimum, maximum;
+            pxiGetParam(m_handle, XI_PRM_GAMMAY XI_PRM_INFO_MIN, &minimum, &floatSize, &floatType);
+            pxiGetParam(m_handle, XI_PRM_GAMMAY XI_PRM_INFO_MAX, &maximum, &floatSize, &floatType);
+            float gamma = minimum + val->getVal<double>() * (maximum - minimum);
             retValue += checkError(pxiSetParam(m_handle, XI_PRM_GAMMAY, &gamma, sizeof(float), xiTypeFloat), "set XI_PRM_GAMMAY", QString::number(gamma));
             retValue += synchronizeCameraSettings(sGamma);
         } 
+        else if (QString::compare(key, "gammaColor", Qt::CaseInsensitive) == 0)
+        {
+            float minimum, maximum;
+            pxiGetParam(m_handle, XI_PRM_GAMMAC XI_PRM_INFO_MIN, &minimum, &floatSize, &floatType);
+            pxiGetParam(m_handle, XI_PRM_GAMMAC XI_PRM_INFO_MAX, &maximum, &floatSize, &floatType);
+            float gamma = minimum + val->getVal<double>() * (maximum - minimum);
+            retValue += checkError(pxiSetParam(m_handle, XI_PRM_GAMMAC, &gamma, sizeof(float), xiTypeFloat), "set XI_PRM_GAMMAC", QString::number(gamma));
+            retValue += synchronizeCameraSettings(sGamma);
+        }
         else if (QString::compare(key, "frame_burst_count", Qt::CaseInsensitive) == 0)
         {
             int trigger_mode = m_params["trigger_mode"].getVal<int>();
@@ -1350,10 +1424,10 @@ ito::RetVal Ximea::setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaph
         }
         else if (QString::compare(key, "gain", Qt::CaseInsensitive) == 0)
         {
-            float gain = val->getVal<double>();
-            float gain_max;
-            retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_MAX, &gain_max, &floatSize, &floatType), XI_PRM_GAIN XI_PRM_INFO_MAX);
-            gain = gain * gain_max;
+            float minimum, maximum;
+            pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_MIN, &minimum, &floatSize, &floatType);
+            pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_MAX, &maximum, &floatSize, &floatType);
+            float gain = minimum + val->getVal<double>() * (maximum - minimum);
             retValue += checkError(pxiSetParam(m_handle, XI_PRM_GAIN XI_PRMM_DIRECT_UPDATE, &gain, sizeof(float), xiTypeFloat), XI_PRM_GAIN XI_PRMM_DIRECT_UPDATE, QString::number(gain));
             retValue += synchronizeCameraSettings(sGain | sFrameRate | sExposure);
         }
@@ -1757,10 +1831,10 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
         retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAIN XI_PRM_INFO_INCREMENT, &gain_inc, &floatSize, &floatType), XI_PRM_GAIN XI_PRM_INFO_INCREMENT);
         retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAIN, &gain, &floatSize, &floatType), XI_PRM_GAIN);
         
-        if (!retValue.containsError())
+        if (!retValue.containsError() && (gain_max - gain_min) > 0)
         {
-            it->setVal<double>(gain/ gain_max);
-            it->setMeta(new ito::DoubleMeta(gain_min/ gain_max, gain_max/ gain_max, gain_inc/ gain_max), true);
+            it->setVal<double>((gain - gain_min) / (gain_max - gain_min));
+            it->setMeta(new ito::DoubleMeta(0.0, 1.0, gain_inc / (gain_max - gain_min)), true);
             it->setFlags(0);
         }
         else
@@ -1774,11 +1848,67 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
     }
     if (what & sGamma)
     {
-        retValue += readCameraFloatParam(XI_PRM_SHARPNESS, "gamma", false);
+        it = m_params.find("gamma");
+        //sets gamma value interval
+        float gamma, gamma_min, gamma_max, gamma_inc;
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAMMAY XI_PRM_INFO_MIN, &gamma_min, &floatSize, &floatType), XI_PRM_GAMMAY XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAMMAY XI_PRM_INFO_MAX, &gamma_max, &floatSize, &floatType), XI_PRM_GAMMAY XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAMMAY XI_PRM_INFO_INCREMENT, &gamma_inc, &floatSize, &floatType), XI_PRM_GAMMAY XI_PRM_INFO_INCREMENT);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAMMAY, &gamma, &floatSize, &floatType), XI_PRM_GAMMAY);
+
+        if (!retValue.containsError() && (gamma_max - gamma_min) > 0)
+        {
+            it->setVal<double>((gamma - gamma_min) / (gamma_max - gamma_min));
+            it->setMeta(new ito::DoubleMeta(0.0, 1.0, gamma_inc / (gamma_max - gamma_min)), true);
+            it->setFlags(0);
+        }
+        else
+        {
+            it->setFlags(ito::ParamBase::Readonly);
+        }
+
+        it = m_params.find("gammaColor");
+        if (!(it->getFlags() & ito::ParamBase::Readonly))
+        {
+            //sets gamma value interval
+            float gamma, gamma_min, gamma_max, gamma_inc;
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAMMAC XI_PRM_INFO_MIN, &gamma_min, &floatSize, &floatType), XI_PRM_GAMMAC XI_PRM_INFO_MIN);
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAMMAC XI_PRM_INFO_MAX, &gamma_max, &floatSize, &floatType), XI_PRM_GAMMAC XI_PRM_INFO_MIN);
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAMMAC XI_PRM_INFO_INCREMENT, &gamma_inc, &floatSize, &floatType), XI_PRM_GAMMAC XI_PRM_INFO_INCREMENT);
+            retValue += checkError(pxiGetParam(m_handle, XI_PRM_GAMMAC, &gamma, &floatSize, &floatType), XI_PRM_GAMMAC);
+
+            if (!retValue.containsError() && (gamma_max - gamma_min) > 0)
+            {
+                it->setVal<double>((gamma - gamma_min) / (gamma_max - gamma_min));
+                it->setMeta(new ito::DoubleMeta(0.0, 1.0, gamma_inc / (gamma_max - gamma_min)), true);
+                it->setFlags(0);
+            }
+            else
+            {
+                it->setFlags(ito::ParamBase::Readonly);
+            }
+        }
     }
     if (what & sSharpness)
     {
-        retValue += readCameraFloatParam(XI_PRM_SHARPNESS, "sharpness", false);
+        it = m_params.find("sharpness");
+        //sets gain value interval
+        float sharpness, sharpness_min, sharpness_max, sharpness_inc;
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_SHARPNESS XI_PRM_INFO_MIN, &sharpness_min, &floatSize, &floatType), XI_PRM_SHARPNESS XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_SHARPNESS XI_PRM_INFO_MAX, &sharpness_max, &floatSize, &floatType), XI_PRM_SHARPNESS XI_PRM_INFO_MIN);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_SHARPNESS XI_PRM_INFO_INCREMENT, &sharpness_inc, &floatSize, &floatType), XI_PRM_SHARPNESS XI_PRM_INFO_INCREMENT);
+        retValue += checkError(pxiGetParam(m_handle, XI_PRM_SHARPNESS, &sharpness, &floatSize, &floatType), XI_PRM_SHARPNESS);
+
+        if (!retValue.containsError() && (sharpness_max - sharpness_min) > 0)
+        {
+            it->setVal<double>((sharpness - sharpness_min) / (sharpness_max - sharpness_min));
+            it->setMeta(new ito::DoubleMeta(0.0, 1.0, sharpness_inc / (sharpness_max - sharpness_min)), true);
+            it->setFlags(0);
+        }
+        else
+        {
+            it->setFlags(ito::ParamBase::Readonly);
+        }
     }
     if (what & sTriggerMode)
     {
@@ -1792,10 +1922,23 @@ ito::RetVal Ximea::synchronizeCameraSettings(int what /*= sAll */)
     {
         it = m_params.find("bpp");
         int output_bit_depth = 0;
+        int data_format = 0;
+        retValTemp += checkError(pxiGetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &data_format, &intSize, &intType), "get XI_PRM_IMAGE_DATA_FORMAT");
         retValTemp = checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &output_bit_depth, &intSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
         if (!retValTemp.containsError())
         {
-            it->setVal<int>(output_bit_depth);
+            if (data_format == XI_RGB32)
+            {
+                it->setVal<int>(32);
+            }
+            else if (data_format == XI_MONO8 || data_format == XI_RAW8)
+            {
+                it->setVal<int>(8);
+            }
+            else
+            {
+                it->setVal<int>(output_bit_depth);
+            }
         }
         retValue += retValTemp;
     }
@@ -1927,12 +2070,35 @@ ito::RetVal Ximea::acquire(const int trigger, ItomSharedSemaphore *waitCond)
             {
                 img.size = sizeof(XI_IMG);
                 img.bp = m_data.rowPtr(i, 0);
-                img.bp_size = curxsize * curysize * (m_data.getType() == ito::tUInt16 ? 2 : 1);
+                switch (m_data.getType())
+                {
+                case ito::tUInt8:
+                    img.bp_size = curxsize * curysize;
+                    break;
+                case ito::tUInt16:
+                    img.bp_size = curxsize * curysize * 2;
+                    break;
+                case ito::tRGBA32:
+                    img.bp_size = curxsize * curysize * 4;
+                    break;
+                }
 
                 retValue += checkError(pxiGetImage(m_handle, iPicTimeOut, &img), "pxiGetImage");
 
                 if (!retValue.containsError())
                 {
+//#ifndef XI_PRM_IMAGE_DATA_FORMAT_RGB32_ALPHA
+					//set alpha values to 255.
+                    if (m_data.getType() == ito::tRGBA32)
+                    {
+                        ito::Rgba32 *colordata = (ito::Rgba32*)(img.bp);
+                        for (int i = 0; i < curxsize * curysize; ++i)
+                        {
+                            colordata[i].alpha() = 255;
+                        }
+                    }
+//#endif
+
                     if (m_numFrameBurst == 1)
                     {
                         if (m_family != familyMU)
@@ -2506,9 +2672,13 @@ ito::RetVal Ximea::checkData(ito::DataObject *externalDataObject /*= NULL*/)
     {
         futureType = ito::tUInt16;
     }
-    else if (bpp <= 32)
+    else if (bpp < 32)
     {
         futureType = ito::tInt32;
+    }
+    else if (bpp == 32)
+    {
+        futureType = ito::tRGBA32;
     }
     else 
     {
