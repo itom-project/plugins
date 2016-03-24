@@ -7,7 +7,7 @@
 **Type**:       :plugintype:`Ximea`
 **License**:    :pluginlicense:`Ximea`
 **Platforms**:  Windows, (Linux possible but yet not implemented)
-**Devices**:    Cameras from company *Ximea* (tested with various xiQ USB3 cameras, monochrome)
+**Devices**:    Cameras from company *Ximea* (tested with various xiQ USB3 cameras, monochrome and color)
 **Author**:     :pluginauthor:`Ximea`
 =============== ========================================================================================================
  

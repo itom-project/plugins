@@ -504,6 +504,9 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 //check the min-max-bitdepth by changing the format and reading the data_bit_depth value
                 retValue += checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH, &m_maxOutputBitDepth, &pSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH");
                 m_params["max_sensor_bitdepth"].setVal<int>(m_maxOutputBitDepth);
+                
+                
+
 
                 int bitppix = XI_MONO8;
                 retValue += checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, pSize, intType), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bitppix));
@@ -515,9 +518,15 @@ ito::RetVal Ximea::init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamB
                 }
 
                 bitppix = XI_MONO16;
+                int temp;
                 ito::RetVal retValue1 = checkError(pxiSetParam(m_handle, XI_PRM_IMAGE_DATA_FORMAT, &bitppix, pSize, intType), "set XI_PRM_IMAGE_DATA_FORMAT", QString::number(bitppix));
+
                 if (!retValue1.containsError())
                 {
+                    retValue += checkError(pxiGetParam(m_handle, XI_PRM_OUTPUT_DATA_BIT_DEPTH XI_PRM_INFO_MAX, &temp, &pSize, &intType), "get XI_PRM_OUTPUT_DATA_BIT_DEPTH MAX");
+                    m_maxOutputBitDepth = qMax(m_maxOutputBitDepth, temp);
+                    m_params["max_sensor_bitdepth"].setVal<int>(m_maxOutputBitDepth);
+
                     static_cast<ito::IntMeta*>(m_params["bpp"].getMeta())->setMax(m_maxOutputBitDepth);
                 }
 
