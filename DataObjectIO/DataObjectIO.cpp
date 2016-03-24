@@ -26,6 +26,7 @@
 #include "DataObjectIO.h"
 
 #include "transformations.h"
+#include "common/numeric.h"
 
 #include "DataObject/dataobj.h"
 #include <QtCore/QtPlugin>

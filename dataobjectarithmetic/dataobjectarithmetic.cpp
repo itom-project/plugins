@@ -30,6 +30,7 @@
 #include <qvariant.h>
 #include <qnumeric.h>
 #include <qthread.h>
+#include "common/numeric.h"
 
 #include "common/helperCommon.h"
 
