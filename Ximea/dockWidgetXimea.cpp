@@ -49,7 +49,15 @@ void DockWidgetXimea::parametersChanged(QMap<QString, ito::Param> params)
 		ui.label_serial->setText(params["serial_number"].getVal<char*>());
 		ui.label_width->setText(QString::number(params["sizex"].getVal<int>()));
 		ui.label_height->setText(QString::number(params["sizey"].getVal<int>()));
-		ui.label_bits->setText(QString::number(params["bpp"].getVal<int>()));
+
+        if (params["bpp"].getVal<int>() == 32)
+        {
+            ui.label_bits->setText("32bit, rgba");
+        }
+        else
+        {
+            ui.label_bits->setText(QString("%1, gray").arg(params["bpp"].getVal<int>()));
+        }
         //use params (identical to m_params of the plugin)
         //and initialize all widgets (e.g. min, max values, labels, enable some,...)
         

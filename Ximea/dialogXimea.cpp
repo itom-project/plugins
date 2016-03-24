@@ -78,12 +78,18 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		ui.combo_bin->setEnabled(!(params["binning"].getFlags() & ito::ParamBase::Readonly));
 
 		int bpp = params["bpp"].getVal<int>();
+        int sensor_bitdepth = params["max_sensor_bitdepth"].getVal<int>();
 		ito::IntMeta *bppMeta = static_cast<ito::IntMeta*>(params["bpp"].getMeta());
 		ui.combo_bpp->clear();
-		for(int i = bppMeta->getMin(); i <= bppMeta->getMax(); i+=2)
+        for (int i = bppMeta->getMin(); i <= qMin(sensor_bitdepth, bppMeta->getMax()); i += qMax(1, bppMeta->getStepSize()))
 		{
 			ui.combo_bpp->addItem(QString("%1").arg(i), i);
 		}
+
+        if (bppMeta->getMax() == 32)
+        {
+            ui.combo_bpp->addItem(QString("32bit, rgba"), 32);
+        }
 
         for (int i = 0; i < ui.combo_bpp->count(); ++i)
         {
@@ -120,6 +126,24 @@ void DialogXimea::parametersChanged(QMap<QString, ito::Param> params)
 		ui.sliderWidget_Gain->setMaximum(gain->getMax() * 100.0);
 		ui.sliderWidget_Gain->setValue(params["gain"].getVal<double>() * 100.0);
 		ui.sliderWidget_Gain->setEnabled(!(params["gain"].getFlags() & ito::ParamBase::Readonly));
+
+        ito::DoubleMeta *gamma = static_cast<ito::DoubleMeta*>(params["gamma"].getMeta());
+        ui.sliderWidget_Gamma->setMinimum(gamma->getMin() * 100.0);
+        ui.sliderWidget_Gamma->setMaximum(gamma->getMax() * 100.0);
+        ui.sliderWidget_Gamma->setValue(params["gamma"].getVal<double>() * 100.0);
+        ui.sliderWidget_Gamma->setEnabled(!(params["gamma"].getFlags() & ito::ParamBase::Readonly));
+
+        ito::DoubleMeta *gammaColor = static_cast<ito::DoubleMeta*>(params["gammaColor"].getMeta());
+        ui.sliderWidget_GammaColor->setMinimum(gammaColor->getMin() * 100.0);
+        ui.sliderWidget_GammaColor->setMaximum(gammaColor->getMax() * 100.0);
+        ui.sliderWidget_GammaColor->setValue(params["gammaColor"].getVal<double>() * 100.0);
+        ui.sliderWidget_GammaColor->setEnabled(!(params["gammaColor"].getFlags() & ito::ParamBase::Readonly));
+
+        ito::DoubleMeta *sharpness = static_cast<ito::DoubleMeta*>(params["sharpness"].getMeta());
+        ui.sliderWidget_Sharpness->setMinimum(sharpness->getMin() * 100.0);
+        ui.sliderWidget_Sharpness->setMaximum(sharpness->getMax() * 100.0);
+        ui.sliderWidget_Sharpness->setValue(params["sharpness"].getVal<double>() * 100.0);
+        ui.sliderWidget_Sharpness->setEnabled(!(params["sharpness"].getFlags() & ito::ParamBase::Readonly));
 
 		ito::DoubleMeta *integrationtime = static_cast<ito::DoubleMeta*>(params["integration_time"].getMeta());
 		ui.sliderWidget_integrationtime->setMinimum(secToMsec(integrationtime->getMin()));
@@ -316,10 +340,37 @@ ito::RetVal DialogXimea::applyParameters()
 
 	if(ui.sliderWidget_Gain->isEnabled())
     {
-        double gain = ui.sliderWidget_Gain->value();
+        double gain = ui.sliderWidget_Gain->value() / 100.0;
         if(qAbs(m_currentParameters["gain"].getVal<double>() - gain) > std::numeric_limits<double>::epsilon())
         {
             values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gain", ito::ParamBase::Double, gain)));
+        }
+    }
+
+    if (ui.sliderWidget_Gamma->isEnabled())
+    {
+        double gamma = ui.sliderWidget_Gamma->value() / 100.0;
+        if (qAbs(m_currentParameters["gamma"].getVal<double>() - gamma) > std::numeric_limits<double>::epsilon())
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gamma", ito::ParamBase::Double, gamma)));
+        }
+    }
+
+    if (ui.sliderWidget_GammaColor->isEnabled())
+    {
+        double gammaColor = ui.sliderWidget_GammaColor->value() / 100.0;
+        if (qAbs(m_currentParameters["gammaColor"].getVal<double>() - gammaColor) > std::numeric_limits<double>::epsilon())
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("gammaColor", ito::ParamBase::Double, gammaColor)));
+        }
+    }
+
+    if (ui.sliderWidget_Sharpness->isEnabled())
+    {
+        double sharpness = ui.sliderWidget_Sharpness->value() / 100.0;
+        if (qAbs(m_currentParameters["sharpness"].getVal<double>() - sharpness) > std::numeric_limits<double>::epsilon())
+        {
+            values.append(QSharedPointer<ito::ParamBase>(new ito::ParamBase("sharpness", ito::ParamBase::Double, sharpness)));
         }
     }
 

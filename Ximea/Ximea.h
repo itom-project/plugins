@@ -161,6 +161,7 @@ class Ximea : public ito::AddInGrabber
         int m_numGPIPins;
         int m_numGPOPins;
         int m_numFrameBurst;
+        int m_maxOutputBitDepth;
 
         ito::RetVal LoadLib();
         ito::RetVal getErrStr(const int error, const QString &command, const QString &value);
