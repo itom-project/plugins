@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>401</width>
+    <width>420</width>
     <height>578</height>
    </rect>
   </property>
@@ -43,7 +43,16 @@
         <string>Buffer</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
-        <property name="margin">
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>6</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
          <number>6</number>
         </property>
         <item row="0" column="0">
@@ -88,7 +97,16 @@
         <string>Data Acquisition</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <property name="margin">
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>6</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
          <number>6</number>
         </property>
         <item row="7" column="0">
@@ -107,6 +125,12 @@
         </item>
         <item row="2" column="1" colspan="2">
          <widget class="SliderWidget" name="sliderGain">
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="decimals">
            <number>2</number>
           </property>
@@ -120,6 +144,12 @@
         </item>
         <item row="7" column="1" colspan="2">
          <widget class="DoubleSpinBox" name="spinTimeout">
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="suffix">
            <string> s</string>
           </property>
@@ -140,6 +170,12 @@
         </item>
         <item row="4" column="1" colspan="2">
          <widget class="SliderWidget" name="sliderIntegrationTime">
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="decimals">
            <number>4</number>
           </property>
@@ -163,6 +199,12 @@
         </item>
         <item row="0" column="1" colspan="2">
          <widget class="SliderWidget" name="sliderOffset">
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="decimals">
            <number>1</number>
           </property>
@@ -199,6 +241,12 @@
         </item>
         <item row="6" column="1" colspan="2">
          <widget class="SliderWidget" name="sliderGamma">
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="decimals">
            <number>2</number>
           </property>
@@ -228,7 +276,16 @@
         <string>Trigger</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_4">
-        <property name="margin">
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>6</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
          <number>6</number>
         </property>
         <item row="0" column="0" colspan="2">
@@ -333,7 +390,16 @@
         <string>Size</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
-        <property name="margin">
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>6</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
          <number>6</number>
         </property>
         <item>
@@ -347,6 +413,12 @@
           </item>
           <item row="0" column="1">
            <widget class="RangeWidget" name="rangeX01">
+            <property name="maximumSize">
+             <size>
+              <width>265</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="maximum">
              <number>2048</number>
             </property>
@@ -389,6 +461,12 @@
           </item>
           <item row="1" column="1">
            <widget class="RangeWidget" name="rangeY01">
+            <property name="maximumSize">
+             <size>
+              <width>265</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="singleStep">
              <number>2</number>
             </property>
