@@ -101,7 +101,7 @@ OpenCVFiltersNonFree::~OpenCVFiltersNonFree()
 
 #if (CV_MAJOR_VERSION > 2 || CV_MINOR_VERSION > 3)
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ const QString OpenCVFiltersNonFree::cvSiftDetectorDescriptorExtractorDoc = tr("Implements the sift algorithm and extracts the corresponding descriptors. \n\
+/*static*/ const QString OpenCVFiltersNonFree::cvSiftDetectorDescriptorExtractorDoc = QObject::tr("Implements the sift algorithm and extracts the corresponding descriptors. \n\
 The sift algorithm is a scale invariant feature transform in which image content is transformed into local feature coordinates. \n\
 In each octave, the initial image is repeatedly convolved with Gaussians to produce a set of scale space images. Adjacent Gaussians are subtracted to produce the DOG. \n\
 After each octave, the Gaussian image is down-sampled by a factor of 2. \n\
