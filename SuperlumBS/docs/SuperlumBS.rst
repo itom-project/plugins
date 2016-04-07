@@ -80,7 +80,7 @@ Then create a new instance of the plugin **SuperlumBS** using the instance of th
 .. code-block:: python
     
     serial = dataIO("SerialIO", COM-Port, Baudrate, endline="\r\n")
-    bs = actuator("SuperlumBS", serial)
+    bs = DataIO("SuperlumBS", serial)
 	
 After the initialization of the plugin **SuperlumBS** the remote communication is set. The plugin works only, if the **remote access** is available, **Master-Key** is in position I and the **remote Interlock** is closed. 
 If the instance of **SuperlumBS** is deleted, the remote access is switched to the local mode. 
@@ -148,7 +148,7 @@ Then create a new instance of the acuator plugin **SuperlumBS**. A Mandatory par
 
 .. code-block:: python
     
-    bs = actuator("SuperlumBS", serial)
+    bs = DataIO("SuperlumBS", serial)
 
 All the parameter can be changed by using the function **setParam**. This example shows how the wavelength in the MANual Mode can be changed. 
 
@@ -170,3 +170,8 @@ The return integer value will be 1 for MANual, 2 for AUTOmatic, 3 for EXTneral a
 	>>bs.getParam("operation_mode")
 	1
 	>>
+
+    Changelog
+=========
+
+* plugin type changed to dataIO

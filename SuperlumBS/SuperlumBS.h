@@ -55,7 +55,7 @@
   * \warning    NA
   *
   */
-class SuperlumBS : public ito::AddInActuator 
+class SuperlumBS : public ito::AddInDataIO
 {
     Q_OBJECT
 

@@ -60,7 +60,7 @@ ito::RetVal SuperlumBSInterface::closeThisInst(ito::AddInBase **addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 SuperlumBSInterface::SuperlumBSInterface()
 {
-    m_type = ito::typeActuator;
+    m_type = ito::typeDataIO  | ito::typeRawIO;
     setObjectName("SuperlumBS");
 
     m_description = QObject::tr("Plugin for Superlum BraodSweeper BS-840-1-HP, BS-840-2-HP, BS-1060-1-HP, BS-1060-2-HP.");
@@ -82,7 +82,7 @@ The company website can be found under http://www.superlumdiodes.com \n\
 This system needs a serial port, which differs depending on the controller type. \
 The parameters of the serial port (besides port number) are set automatically during initialization. \n\
 \n\
-It is initialized by actuator(\"SuperlumBS\", SerialIO).");
+It is initialized by dataIO(\"SuperlumBS\", SerialIO).");
 
     m_author = "J. Krauter, ITO, University Stuttgart";
     m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
@@ -114,7 +114,7 @@ const ito::RetVal SuperlumBS::showConfDialog(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-SuperlumBS::SuperlumBS() : AddInActuator(), m_pSer(NULL), m_delayAfterSendCommandMS(0), m_dockWidget(NULL)
+SuperlumBS::SuperlumBS() : AddInDataIO(), m_pSer(NULL), m_delayAfterSendCommandMS(0), m_dockWidget(NULL)
 {
     ito::Param paramVal("name", ito::ParamBase::String | ito::ParamBase::Readonly | ito::ParamBase::NoAutosave, "Superlum BroadSweeper", tr("Name of plugin.").toLatin1().data());
     m_params.insert(paramVal.getName(), paramVal);
@@ -1125,8 +1125,6 @@ ito::RetVal SuperlumBS::waitForDone(const int timeoutMS, const QVector<int> /*ax
         waitMutex.unlock();
         setAlive();
     }
-
-    replaceStatus(m_currentStatus[0], ito::actuatorMoving, ito::actuatorAtTarget);
 
     return retVal;
 }
