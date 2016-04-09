@@ -848,7 +848,6 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
 
         if (!retval.containsError())
         {
-            
             bool inplace = (dObjIn == dObjOut);
             int numPlanes = dObjIn->getNumPlanes();
 
@@ -874,6 +873,14 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
 
             int n[] = { 1 };
 
+#if (USEOMP)
+            fftw_init_threads();
+#if WIN32
+            fftw_plan_with_nthreads(NTHREADS);
+#else
+            fftw_plan_with_nthreads(NTHREADS);
+#endif
+#endif
             if (axis >= dims - 2) //axis is along x or y, works inplace and not-inplace
             {
                 int otherAxis = (axis == (dims - 1)) ? dims - 2 : dims - 1;
@@ -1173,6 +1180,10 @@ ito::RetVal FFTWFilters::ifftw2d(QVector<ito::ParamBase> *paramsMand, QVector<it
             }
             dObjOut->setAxisScale(axis, newScale);
             dObjOut->setAxisOffset(axis, 0.0);
+
+#if (USEOMP)
+            fftw_cleanup_threads();
+#endif
         }
     }
 
@@ -1276,6 +1287,14 @@ template<typename _Tp> /*static*/ void FFTWFilters::setComplexLine(cv::Mat **mda
 
         if (!retval.containsError())
         {
+#if (USEOMP)
+            fftw_init_threads();
+#if WIN32
+            fftw_plan_with_nthreads(NTHREADS);
+#else
+            fftw_plan_with_nthreads(NTHREADS);
+#endif
+#endif
             bool inplace = (dObjIn == dObjOut);
 
             if (dObjIn->get_mdata()[0]->isContinuous() == false)
@@ -1437,6 +1456,9 @@ template<typename _Tp> /*static*/ void FFTWFilters::setComplexLine(cv::Mat **mda
                 dObjOut->setAxisScale(axis, newScale);
                 dObjOut->setAxisOffset(axis, 0.0);
             }
+#if (USEOMP)
+            fftw_cleanup_threads();
+#endif
         }
     }
 

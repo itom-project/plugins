@@ -36,6 +36,12 @@
 #include "DataObject/dataobj.h"
 #include <qsharedpointer.h>
 
+#ifdef USEOPENMP
+#define USEOMP 1
+#else
+#define USEOMP 0
+#endif
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class FFTWFiltersInterface
 *   @brief ITO developed filter functions for the itom
