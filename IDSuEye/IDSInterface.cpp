@@ -106,11 +106,11 @@ The first draft of this plugin has been implemented by Pulsar Photonics GmbH; fu
 - UI224xSE-M (monochrome, USB2). \n\
 - UI337xCP-C (colored, USB3) \n\
 \n\
-The plugin has been compiled using the IDS library version %1.%2. \n\
+The plugin has been compiled using the IDS library version %1.%2. You can run it with an installed driver version %3.%4x.xx. \n\
 \n\
 In order to run your camera, please install the SDK imaging software in the right version such that the necessary drivers are installed. \n\
 \n\
-The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.").arg(major).arg(minor);
+The first draft of this plugin has been implemented by Pulsar Photonics GmbH; further work has been done by ITO, University of Stuttgart.").arg(major).arg(minor).arg(major).arg(minor / 10);
 
     m_author = PLUGIN_AUTHOR;
     m_version = PLUGIN_VERSION;
