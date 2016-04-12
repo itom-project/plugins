@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PGRFlyCapture" for itom software
     URL: http://www.twip-os.com
-    Copyright (C) 2014, twip optical solutions GmbH
-    Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, twip optical solutions GmbH
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   

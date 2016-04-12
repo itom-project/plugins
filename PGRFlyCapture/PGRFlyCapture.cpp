@@ -1,8 +1,8 @@
 /* ********************************************************************
     Plugin "PGRFlyCapture" for itom software
     URL: http://www.twip-os.com
-    Copyright (C) 2014, twip optical solutions GmbH
-    Copyright (C) 2014, Institut fuer Technische Optik, Universitaet Stuttgart
+    Copyright (C) 2016, twip optical solutions GmbH
+    Copyright (C) 2016, Institut fuer Technische Optik, Universitaet Stuttgart
 
     This file is part of a plugin for the measurement software itom.
   
@@ -207,20 +207,20 @@ const ito::RetVal PGRFlyCapture::showConfDialog(void)
     \param [in] uniqueID is an unique identifier for this PGRFlyCapture-instance
     \sa ito::tParam, createDockWidget, setParam, getParam
 */
-PGRFlyCapture::PGRFlyCapture() :
-    AddInGrabber(),
-    m_isgrabbing(false),
-    m_camIdx(-1),
-    m_colorCam(false),
-    m_RunSoftwareSync(false),
-    m_hasFormat7(false),
-    m_gainMax(1.0),
-    m_gainMin(0.0),
-    m_offsetMax(1.0),
-    m_offsetMin(0.0),
-    m_extendedShutter(UNINITIALIZED),
-    m_colouredOutput(false),
-    m_firstTimestamp(-1.0)
+    PGRFlyCapture::PGRFlyCapture() :
+        AddInGrabber(),
+        m_isgrabbing(false),
+        m_camIdx(-1),
+        m_colorCam(false),
+        m_RunSoftwareSync(false),
+        m_hasFormat7(false),
+        m_gainMax(1.0),
+        m_gainMin(0.0),
+        m_offsetMax(1.0),
+        m_offsetMin(0.0),
+        m_extendedShutter(UNINITIALIZED),
+        m_colouredOutput(false),
+        m_firstTimestamp(std::numeric_limits<double>::quiet_NaN())
 {
     //qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
     //qRegisterMetaType<ito::DataObject>("ito::DataObject");
@@ -1764,6 +1764,7 @@ ito::RetVal PGRFlyCapture::startDevice(ItomSharedSemaphore *waitCond)
 
     if (grabberStartedCount() == 1)
     {
+        m_firstTimestamp = std::numeric_limits<double>::quiet_NaN(); //reset timer
         retError = m_myCam.StartCapture();
         if (retError != FlyCapture2::PGRERROR_OK)
         {
@@ -2860,18 +2861,52 @@ ito::RetVal PGRFlyCapture::checkData(ito::DataObject *externalDataObject)
 //----------------------------------------------------------------------------------------------
 double PGRFlyCapture::timeStampToDouble(const FlyCapture2::TimeStamp &timestamp)
 {
+    /*cycleSecond increments from 0 to 127
+      cycleCount increments from 0 to 7999, which equals one second
+      cycleOffset increments from 0 to x depending on implementation, where x equals one cycleCount
+
+      m_firstTimestamp is only used to unwrap the timestamp by the modulo 128
+    */
+
     double secOffset;
     double time1 = (double)timestamp.cycleSeconds + (((double)timestamp.cycleCount + ((double)timestamp.cycleOffset/3072.0))/8000.0);
 
-    if (m_firstTimestamp < 0.0)
+    if (qIsNaN(m_firstTimestamp))
     {
-        m_firstTimestamp = (double)(cv::getTickCount())/cv::getTickFrequency() - time1;
+        m_firstTimestamp = (double)(cv::getTickCount())/cv::getTickFrequency() - time1; //time (in seconds) when the zero-cycle in this cycle-phase of the camera started (e.g. +- 5sec)
         secOffset = 0.0;
     }
-    else
+    else if (timestamp.cycleSeconds < 64) //timestamp is in the first half of its entire cycle of 128 seconds
     {
+        qint64 secondsToFirstTimestamp = qRound64( (double)(cv::getTickCount()) / cv::getTickFrequency() - m_firstTimestamp );
+        int phasesOf128 = secondsToFirstTimestamp / 128;
+        int remainder = secondsToFirstTimestamp % 128;
+
+        if (remainder > 96)
+        {
+            phasesOf128++;
+        }
+
+        secOffset = phasesOf128 << 7;
+
+    }
+    else //timestamp is in the second half of its entire cycle of 128 seconds
+    {
+        qint64 secondsToFirstTimestamp = qRound64((double)(cv::getTickCount()) / cv::getTickFrequency() - m_firstTimestamp);
+        int phasesOf128 = secondsToFirstTimestamp / 128;
+        int remainder = secondsToFirstTimestamp % 128;
+
+        if (remainder < 32)
+        {
+            phasesOf128--;
+        }
+
+        secOffset = phasesOf128 << 7;
+
+        /*double secondsToFirstTimestamp = (double)(cv::getTickCount()) / cv::getTickFrequency() - m_firstTimestamp;
+
         double temp = (double)(cv::getTickCount())/cv::getTickFrequency();
-        secOffset = 128.0 * ((unsigned int)((temp - m_firstTimestamp)) >> 7);
+        secOffset = 128.0 * ((unsigned int)((temp - m_firstTimestamp)) >> 7);*/
     }
 
     return secOffset + time1;
