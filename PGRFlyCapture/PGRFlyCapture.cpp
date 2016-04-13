@@ -33,6 +33,7 @@
 #include <qstringlist.h>
 #include <QtCore/QtPlugin>
 #include <qmetaobject.h>
+#include <qnumeric.h>
 
 #include <qdockwidget.h>
 #include <qmetaobject.h>

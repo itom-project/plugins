@@ -313,7 +313,11 @@ ito::RetVal dialogSerialIO::applyParameters()
             endline[0] = 0;
         break;
         case 4:
+#if QT_VERSION < 0x050200
+			QByteArray var = ui.combo_endline->itemData(ui.combo_endline->currentIndex()).toByteArray();
+#else
             QByteArray var = ui.combo_endline->currentData().toByteArray();
+#endif
             memcpy(endline, var.data(), std::min(3, var.size()) * sizeof(char));
         break;
     }
@@ -341,7 +345,11 @@ ito::RetVal dialogSerialIO::applyParameters()
             endline[0] = 0;
         break;
         case 4:
+#if QT_VERSION < 0x050200
+			QByteArray var = ui.combo_endlineRead->itemData(ui.combo_endlineRead->currentIndex()).toByteArray();
+#else
             QByteArray var = ui.combo_endlineRead->currentData().toByteArray();
+#endif
             memcpy(endline, var.data(), std::min(3, var.size()) * sizeof(char));
         break;
     }
