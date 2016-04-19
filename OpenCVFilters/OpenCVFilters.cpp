@@ -2126,6 +2126,9 @@ ito::RetVal OpenCVFilters::init(QVector<ito::ParamBase> * /*paramsMand*/, QVecto
     filter = new FilterDef(OpenCVFilters::cvRot180, OpenCVFilters::stdParams2Objects, cvRot180Doc);
     m_filterList.insert("cvRotate180", filter);
 
+    filter = new FilterDef(OpenCVFilters::cvCannyEdge, OpenCVFilters::cvCannyEdgeParams, cvDilateDoc);
+    m_filterList.insert("cvCannyEdge", filter);
+
     setInitialized(true); //init method has been finished (independent on retval)
     return retval;
 }
@@ -2136,3 +2139,160 @@ ito::RetVal OpenCVFilters::close(ItomSharedSemaphore * /*waitCond*/)
     ito::RetVal retval = ito::retOk;
     return retval;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+const QString OpenCVFilters::cvCannyEdgeDoc = QObject::tr("Canny Edge detector using cv::DFT.\n\
+                                                        \n\
+                                                        It's just Canny's edge filter\n\
+                                                       ");
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvCannyEdgeParams(QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut)
+{
+    ito::RetVal retval = prepareParamVectors(paramsMand, paramsOpt, paramsOut);
+    if (!retval.containsError())
+    {
+        ito::Param param = ito::Param("sourceImage", ito::ParamBase::DObjPtr | ito::ParamBase::In | ito::ParamBase::Out, NULL, tr("Input Object handle, must be a single plane").toLatin1().data());
+        paramsMand->append(param);
+        param = ito::Param("destinationImage", ito::ParamBase::DObjPtr, NULL, tr("Output Object handle. Will be come complex-type").toLatin1().data());
+        paramsMand->append(param);
+
+        param = ito::Param("lowThreshold", ito::ParamBase::Double, -1.0e10, 1.0e10, 2.0, tr("Low Threshold").toLatin1().data());
+        paramsOpt->append(param);
+        param = ito::Param("highThresholdRatio", ito::ParamBase::Double, 0.0, 1.0e10, 3.0, tr("Ratio between High Threshold and Low Threshold, Canny's recommendation is three").toLatin1().data());
+        paramsOpt->append(param);
+        param = ito::Param("kernelSize", ito::ParamBase::Int, 3, 300, 3, tr("Kernel size for Sobel filter, default is 3").toLatin1().data());
+        paramsOpt->append(param);
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal OpenCVFilters::cvCannyEdge(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> * paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
+{
+    ito::RetVal retval = ito::retOk;
+
+    ito::DataObject *dObjInp = (*paramsMand)[0].getVal<ito::DataObject*>();
+    ito::DataObject *dObjOutp = (*paramsMand)[1].getVal<ito::DataObject*>();
+
+    ito::float64  lowThres = (*paramsOpt)[0].getVal<ito::float64>();
+    ito::float64  highThresRatio = (*paramsOpt)[1].getVal<ito::float64>();
+    ito::int16 kernelSize = (*paramsOpt)[2].getVal<ito::float64>();
+
+    ito::DataObject destTemp;
+
+    bool overWrite = true;
+
+    if (!dObjInp)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: source image ptr empty").toLatin1().data());
+    }
+
+    if (!dObjOutp)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: dest image ptr empty").toLatin1().data());
+    }
+
+    if (dObjInp->getDims() > 3)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Error: nDim-stacks not supported yet, only 2D and 3D.").toLatin1().data());
+    }
+
+    int ysize = dObjInp->getSize(dObjInp->getDims() - 2);
+    int xsize = dObjInp->getSize(dObjInp->getDims() - 1);
+    int planes = 0;
+    if (dObjInp->getDims() > 1)
+    {
+        planes = dObjInp->getSize(dObjInp->getDims() - 3);
+    }
+
+    if (!retval.containsError())
+    {
+        retval += ito::dObjHelper::verifyDataObjectType(dObjInp, "srcImage", 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tFloat32, ito::tFloat64);
+    }
+
+    if (!retval.containsError())
+    {
+        if (dObjOutp != dObjInp)
+        {
+            if (planes > 0)
+            {
+                ito::RetVal tRetval = ito::dObjHelper::verify3DDataObject(dObjOutp, "destImage", planes, planes, ysize, ysize, xsize, xsize, 1, dObjInp->getType());
+                if (tRetval.containsError())
+                {
+                    int sizes[3] = { planes, ysize, xsize };
+                    destTemp = ito::DataObject(3, sizes, dObjInp->getType());
+                }
+                else
+                {
+                    destTemp = *dObjOutp;
+                    overWrite = false;
+                }
+            }
+            else
+            {
+                ito::RetVal tRetval = ito::dObjHelper::verify2DDataObject(dObjOutp, "destImage", ysize, ysize, xsize, xsize, 1, dObjInp->getType());
+                if (tRetval.containsError())
+                {
+                    destTemp = ito::DataObject(ysize, xsize, dObjInp->getType());
+                }
+                else
+                {
+                    destTemp = *dObjOutp;
+                    overWrite = false;
+                }
+            }
+        }
+        else
+        {
+            //destDataPhase = ito::DataObject( ysize, xsize, ito::tFloat64);
+            destTemp = *dObjOutp;
+            overWrite = false;
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        int z_length = dObjInp->calcNumMats();
+
+        cv::Mat *cvMatIn = NULL;
+        cv::Mat *cvMatOut = NULL;
+
+        for (int z = 0; z < z_length; z++)
+        {
+            cvMatIn = (cv::Mat*)dObjInp->get_mdata()[dObjInp->seekMat(z)];
+            cvMatOut = (cv::Mat*)destTemp.get_mdata()[destTemp.seekMat(z)];
+            try
+            {
+                cv::Canny(*cvMatIn, *cvMatOut, lowThres, lowThres * highThresRatio, kernelSize);
+            }
+            catch (cv::Exception &exc)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("%1").arg((exc.err).c_str()).toLatin1().data());
+                break;
+            }
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        if (overWrite)
+        {
+            *dObjOutp = destTemp;
+        }
+
+        if (dObjOutp != dObjInp)
+        {
+            dObjInp->copyAxisTagsTo(*dObjOutp);
+            dObjInp->copyTagMapTo(*dObjOutp);
+        }
+
+        QString msg = tr("Canny edge filter");
+        dObjOutp->addToProtocol(std::string(msg.toLatin1().data()));
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
