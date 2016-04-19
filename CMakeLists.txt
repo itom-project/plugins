@@ -359,6 +359,14 @@ IF (WIN32)
     endif (PLUGIN_ThorlabsCCS)
 ENDIF (WIN32)
 
+# ThorlabsDCxCam cameras
+IF (WIN32)
+    OPTION(PLUGIN_ThorlabsDCxCam "Build with this plugin." OFF)
+    if (PLUGIN_ThorlabsDCxCam)
+        ADD_SUBDIRECTORY(ThorlabsDCxCam)
+    endif (PLUGIN_ThorlabsDCxCam)
+ENDIF (WIN32)
+
 # UhlRegister
 OPTION(PLUGIN_UhlRegister "Build with this plugin." ON)
 if (PLUGIN_UhlRegister)
