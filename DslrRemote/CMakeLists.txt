@@ -2,7 +2,7 @@ SET (target_name DslrRemote)
 
 project(${target_name})
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8)
 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_SHARED_LIBS "Build shared library." ON)
@@ -37,6 +37,7 @@ ELSE(WIN32)
     find_package(libgphoto REQUIRED)
 ENDIF(WIN32)
 
+IF (WIN32 OR LIBGPHOTO_FOUND)
     IF (BUILD_UNICODE)
         ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
     ENDIF (BUILD_UNICODE)
@@ -149,6 +150,9 @@ ENDIF(WIN32)
     ADD_QM_FILES_TO_COPY_LIST(${target_name} QM_FILES COPY_SOURCES COPY_DESTINATIONS)
     POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 
+ELSE (WIN32 OR LIBGPHOTO_FOUND)
+    message(WARNING "LIBGPHOTO_INCLUDE_DIR directory could not be found. ${target_name} will not be build.")
+ENDIF (WIN32 OR LIBGPHOTO_FOUND)
 ELSE (LibUSB_INCLUDE_DIRS)
     message(WARNING "LibUSB_INCLUDE_DIRS directory could not be found. ${target_name} will not be build.")    
 ENDIF (LibUSB_INCLUDE_DIRS)

@@ -25,8 +25,8 @@ find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIR
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
 
-find_package(Xerces)
-find_package(Xsd)
+find_package(Xerces QUIET)
+find_package(Xsd QUIET)
 find_package(VisualLeakDetector QUIET)
 
 IF(XERCESC_FOUND AND XSD_FOUND)

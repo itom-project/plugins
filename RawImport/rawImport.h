@@ -24,7 +24,7 @@
 #define RAWIMPORT_H
 
 #include "common/addInInterface.h"
-#include <QTemporaryDir>
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** \file rawImport.h
 *   \brief  Header for the rawImport filter / algorithm function(s)
@@ -73,7 +73,7 @@ class RawImport : public ito::AddInAlgo
 
     protected:
         RawImport();
-        ~RawImport() {};
+        ~RawImport();
 
     public:
         friend class RawImportInterface;
@@ -87,8 +87,6 @@ class RawImport : public ito::AddInAlgo
     //----------------------------------------------------------------------------------------------------------------------------------
 
     private:
-        QTemporaryDir *m_TempDir;
-        QString m_TempFile;
 
     public slots:
         ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL);

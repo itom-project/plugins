@@ -31,7 +31,11 @@
 #include <qprocess.h>
 #include <qmenu.h>
 #include <qcoreapplication.h>
-#include <qtemporarydir.h>
+#if QTVERSION < 0x050000
+    #include <qdir.h>
+#else
+    #include <qtemporarydir.h>
+#endif
 #include "common/apiFunctionsInc.h"
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -80,6 +84,11 @@ ito::RetVal RawImportInterface::closeThisInst(ito::AddInBase **addInInst)
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 RawImport::RawImport() : AddInAlgo()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RawImport::~RawImport()
 {
 }
 
@@ -139,14 +148,6 @@ ito::RetVal RawImport::close(ItomSharedSemaphore *waitCond)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString RawImport::GetTempDir()
-{
-    if (!m_TempDir)
-        m_TempDir = new QTemporaryDir();
-    return m_TempDir->path();
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 /** parameters for calling loadRawImage copied form the template "filterParams" and modified
 *    @param [in]    paramsMand    mandatory parameters for calling the corresponding filter
 *    @param [in]    paramsOpt    optional parameters for calling the corresponding filter
@@ -190,7 +191,7 @@ ito::RetVal RawImport::loadImageParams(QVector<ito::Param> *paramsMand, QVector<
 ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> * /*paramsOut*/)
 {
     ito::RetVal retval = ito::retOk;
-    QTemporaryDir *tmpDir = NULL;
+    
 
     QString filename = QString::fromLatin1((*paramsMand)[0].getVal<char*>());
     QString filenameLoad;
@@ -213,18 +214,26 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     /**/
     if ((*paramsOpt)[1].getVal<int>())
     {
-        tmpDir = new QTemporaryDir();
+        QString tmpPath = "";
+#if QTVERSION < 0x050000
+        tmpPath = QDir::tempPath();
+#else
+        QTemporaryDir *tmpDir = new QTemporaryDir();
+        tmpPath = tmpDir->path();
+        delete tmpDir;
+#endif
+
         QString tmpFilename(filename);
-        if (tmpDir->path().lastIndexOf("/") < tmpDir->path().length() - 1
-            && tmpDir->path().lastIndexOf("\\") < tmpDir->path().length() - 1)
+        if (tmpPath.lastIndexOf("/") < tmpPath.length() - 1
+            && tmpPath.lastIndexOf("\\") < tmpPath.length() - 1)
         {
-            filename = tmpDir->path() + "/" + ofileinfo.baseName() + "." + ofileinfo.completeSuffix();
-            filenameLoad = tmpDir->path() + "/" + ofileinfo.completeBaseName() + ".pgm";
+            filename = tmpPath + "/" + ofileinfo.baseName() + "." + ofileinfo.completeSuffix();
+            filenameLoad = tmpPath + "/" + ofileinfo.completeBaseName() + ".pgm";
         }
         else
         {
-            filename = tmpDir->path() + ofileinfo.baseName() + "." + ofileinfo.completeSuffix();
-            filenameLoad = tmpDir->path() + ofileinfo.completeBaseName() + ".pgm";
+            filename = tmpPath + ofileinfo.baseName() + "." + ofileinfo.completeSuffix();
+            filenameLoad = tmpPath + ofileinfo.completeBaseName() + ".pgm";
         }
         QFile::copy(tmpFilename, filename);
         ofileinfo = QFileInfo(filename);
@@ -267,9 +276,6 @@ ito::RetVal RawImport::loadImage(QVector<ito::ParamBase> *paramsMand, QVector<it
     {
         retval += apiFilterCall("loadAnyImage", &filterParamsMand, &filterParamsOpt, &filterParamsOut);
     }
-
-    if (tmpDir)
-        delete tmpDir;
 
     if (!retval.containsError())
     {
